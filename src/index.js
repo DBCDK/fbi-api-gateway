@@ -109,7 +109,7 @@ const recordResolver = async ({pid}) => {
 const root = {
   record: recordResolver
 };
-
+const port = process.env.PORT || 3000;
 const app = express();
 app.use(
   '/graphql',
@@ -119,5 +119,21 @@ app.use(
     graphiql: true
   })
 );
-app.listen(4000);
-console.log('Running a GraphQL API server at http://localhost:4000/graphql');
+const server = app.listen(port);
+console.log(`Running a GraphQL API server at http://localhost:${port}/graphql`);
+
+const signals = {
+  SIGINT: 2,
+  SIGTERM: 15
+};
+function shutdown(signal, value) {
+  server.close(function() {
+    console.log('server stopped by ' + signal);
+    process.exit(128 + value);
+  });
+}
+Object.keys(signals).forEach(function(signal) {
+  process.on(signal, function() {
+    shutdown(signal, signals[signal]);
+  });
+});
