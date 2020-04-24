@@ -1,0 +1,23 @@
+{
+  "name": "bibliotekdk-next-api",
+  "version": "1.0.0",
+  "description": "API for the future bibliotek.dk",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon ./src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier --single-quote --no-bracket-spacing --write 'src/**/*.js'"
+  },
+  "author": "Frontend @ DBC",
+  "license": "GNU",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^15.0.0",
+    "superagent": "^5.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3",
+    "prettier": "^1.19.1"
+  }
+}

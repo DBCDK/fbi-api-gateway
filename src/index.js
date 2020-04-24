@@ -1,0 +1,123 @@
+/**
+ * Trying out GraphQL for record fetching
+ * Using openplatform and a content-first recommender
+ *
+ */
+
+/*
+Example query:
+{
+  record(pid: "870970-basis:51020340") {
+    title
+    type
+    creator {
+      name
+    }
+    recommendations(limit: 2) {
+      record {
+        title
+        creator {
+          name
+        }
+        collection {
+          type
+        }
+      }
+      value
+    }
+  }
+}
+*/
+
+const express = require('express');
+const graphqlHTTP = require('express-graphql');
+const {buildSchema} = require('graphql');
+const request = require('superagent');
+const access_token = '7fcb59a1fe4dfd66493795b98c0666999120c0de'; // to be deleted. anonymous token content-first
+
+// Construct a schema, using GraphQL schema language
+const schema = buildSchema(`
+  type Query {
+    record(pid: String!): Record!
+  }
+  type Record {
+    pid: String!
+    title: String!
+    creator: Creator!
+    type: String!
+    collection: [Record!]!
+    recommendations(limit: Int): [Recommendation!]!
+  }
+  type Creator {
+    name: String!
+  }
+  type Recommendation {
+    record: Record!
+    value: Float
+  }
+`);
+const recommendationsFetcher = async ({pid, limit = 10}) => {
+  const response = await request
+    .post('http://recompass-work-1-2.mi-prod.svc.cloud.dbc.dk/recompass-work')
+    .send({
+      likes: [pid],
+      limit
+    });
+  return response.body;
+};
+const recordFetcher = async pid => {
+  const response = await request
+    .post('https://openplatform.dbc.dk/v3/work')
+    .send({
+      fields: ['title', 'collection', 'creator', 'type'],
+      access_token,
+      pids: [pid]
+    });
+  return response.body.data[0];
+};
+const recordResolver = async ({pid}) => {
+  const record = await recordFetcher(pid);
+
+  return {
+    pid,
+    title: () => {
+      return record.title[0];
+    },
+    collection: () => {
+      return record.collection.map(pid => recordResolver({pid}));
+    },
+    creator: () => {
+      return {name: record.creator[0]};
+    },
+    type: () => {
+      return record.type[0];
+    },
+    recommendations: async ({limit}) => {
+      return (await recommendationsFetcher({pid, limit})).response.map(
+        entry => {
+          return {
+            ...entry,
+            record: recordResolver({pid: entry.pid})
+          };
+        }
+      );
+    }
+  };
+};
+
+// The root provides a resolver function for each API endpoint
+const root = {
+  record: recordResolver
+};
+
+const app = express();
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true
+  })
+);
+app.listen(4000);
+console.log('Running a GraphQL API server at http://localhost:4000/graphql');
