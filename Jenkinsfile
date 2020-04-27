@@ -22,7 +22,6 @@ pipeline {
                 // Work around bug https://issues.jenkins-ci.org/browse/JENKINS-44609 , https://issues.jenkins-ci.org/browse/JENKINS-44789
                 sh "docker build -t ${IMAGE} --pull --no-cache ."
                 app = docker.image("${IMAGE}")
-                sh "docker-compose -f docker-compose-cypress.yml -p ${DOCKER_COMPOSE_NAME} build"
             } }
         }
         stage('Integration test') {
@@ -30,6 +29,7 @@ pipeline {
                 script {
                     ansiColor("xterm") {
                         sh "echo Integrating..."
+                        // sh "docker-compose -f docker-compose-cypress.yml -p ${DOCKER_COMPOSE_NAME} build"
                         // sh "IMAGE=${IMAGE} docker-compose -f docker-compose-cypress.yml -p ${DOCKER_COMPOSE_NAME} run e2e"
                     }
                 }
