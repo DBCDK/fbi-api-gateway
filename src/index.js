@@ -49,6 +49,8 @@ const schema = buildSchema(`
     collection: [Record!]!
     recommendations(limit: Int): [Recommendation!]!
     cover: Cover
+    date: String
+    abstract: String
   }
   type Creator {
     name: String!
@@ -74,7 +76,15 @@ const recordFetcher = async pid => {
   const response = await request
     .post('https://openplatform.dbc.dk/v3/work')
     .send({
-      fields: ['title', 'collection', 'creator', 'type', 'coverUrlFull'],
+      fields: [
+        'title',
+        'collection',
+        'creator',
+        'type',
+        'coverUrlFull',
+        'date',
+        'abstract'
+      ],
       access_token,
       pids: [pid]
     });
@@ -112,6 +122,18 @@ const recordResolver = async ({pid}) => {
         return null;
       }
       return {url: record.coverUrlFull[0]};
+    },
+    date: () => {
+      if (!record.date || !record.date[0]) {
+        return null;
+      }
+      return record.date[0];
+    },
+    abstract: () => {
+      if (!record.abstract || !record.abstract[0]) {
+        return null;
+      }
+      return record.abstract[0];
     }
   };
 };
