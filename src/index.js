@@ -1,160 +1,69 @@
 /**
  * Trying out GraphQL for record fetching
- * Using openplatform and a content-first recommender
+ * Using openformat and a content-first recommender
  *
  */
 
 /*
 Example query:
 {
-  record(pid: "870970-basis:51020340") {
+  manifestation(pid: "870970-basis:47619912") {
+    pid
     title
-    type
-    creator {
+    materialType
+    creators {
       name
     }
     recommendations(limit: 2) {
-      record {
+      manifestation {
         title
-        creator {
-          name
-        }
-        collection {
-          type
-        }
       }
       value
     }
+    materialType
   }
 }
 */
-
-const express = require('express');
-const cors = require('cors');
-const graphqlHTTP = require('express-graphql');
-const {buildSchema} = require('graphql');
-const request = require('superagent');
-const access_token = '7fcb59a1fe4dfd66493795b98c0666999120c0de'; // to be deleted. anonymous token content-first
-
-// Construct a schema, using GraphQL schema language
-const schema = buildSchema(`
-  type Query {
-    record(pid: String!): Record!
-  }
-  type Record {
-    pid: String!
-    title: String!
-    creator: Creator!
-    type: String!
-    collection: [Record!]!
-    recommendations(limit: Int): [Recommendation!]!
-    cover: Cover
-    date: String
-    abstract: String
-  }
-  type Creator {
-    name: String!
-  }
-  type Recommendation {
-    record: Record!
-    value: Float
-  }
-  type Cover {
-    url: String!
-  }
-`);
-const recommendationsFetcher = async ({pid, limit = 10}) => {
-  const response = await request
-    .post('http://recompass-work-1-2.mi-prod.svc.cloud.dbc.dk/recompass-work')
-    .send({
-      likes: [pid],
-      limit
-    });
-  return response.body;
-};
-const recordFetcher = async pid => {
-  const response = await request
-    .post('https://openplatform.dbc.dk/v3/work')
-    .send({
-      fields: [
-        'title',
-        'collection',
-        'creator',
-        'type',
-        'coverUrlFull',
-        'date',
-        'abstract'
-      ],
-      access_token,
-      pids: [pid]
-    });
-  return response.body.data[0];
-};
-const recordResolver = async ({pid}) => {
-  const record = await recordFetcher(pid);
-
-  return {
-    pid,
-    title: () => {
-      return record.title[0];
-    },
-    collection: () => {
-      return record.collection.map(pid => recordResolver({pid}));
-    },
-    creator: () => {
-      return {name: record.creator[0]};
-    },
-    type: () => {
-      return record.type[0];
-    },
-    recommendations: async ({limit}) => {
-      return (await recommendationsFetcher({pid, limit})).response.map(
-        entry => {
-          return {
-            ...entry,
-            record: recordResolver({pid: entry.pid})
-          };
-        }
-      );
-    },
-    cover: () => {
-      if (!record.coverUrlFull || !record.coverUrlFull[0]) {
-        return null;
-      }
-      return {url: record.coverUrlFull[0]};
-    },
-    date: () => {
-      if (!record.date || !record.date[0]) {
-        return null;
-      }
-      return record.date[0];
-    },
-    abstract: () => {
-      if (!record.abstract || !record.abstract[0]) {
-        return null;
-      }
-      return record.abstract[0];
-    }
-  };
-};
-
-// The root provides a resolver function for each API endpoint
-const root = {
-  record: recordResolver
-};
+import schema from './schema/schema';
+import openformatDS from './datasources/openformat.datasource';
+import recommendationsDS from './datasources/recommendations.datasource';
+import idmapperDS from './datasources/idmapper';
+import moreinfoDS from './datasources/moreinfo';
+import express from 'express';
+import cors from 'cors';
+import graphqlHTTP from 'express-graphql';
 const port = process.env.PORT || 3000;
 const app = express();
-app.use(cors());
-app.use(
-  '/graphql',
-  graphqlHTTP({
-    schema: schema,
-    rootValue: root,
-    graphiql: true
-  })
-);
-const server = app.listen(port);
-console.log(`Running a GraphQL API server at http://localhost:${port}/graphql`);
+let server;
+
+(async () => {
+  app.use(cors());
+
+  // set up context
+  app.use((req, res, next) => {
+    // user authentication could be done here
+
+    req.datasources = {
+      openformat: openformatDS,
+      recommendations: recommendationsDS,
+      idmapper: idmapperDS,
+      moreinfo: moreinfoDS
+    };
+    next();
+  });
+
+  app.use(
+    '/graphql',
+    graphqlHTTP({
+      schema: await schema(),
+      graphiql: true
+    })
+  );
+  server = app.listen(port);
+  console.log(
+    `Running a GraphQL API server at http://localhost:${port}/graphql`
+  );
+})();
 
 const signals = {
   SIGINT: 2,

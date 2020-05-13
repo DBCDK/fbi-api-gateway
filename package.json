@@ -4,7 +4,7 @@
   "description": "API for the future bibliotek.dk",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon ./src/index.js",
+    "dev": "nodemon -r esm ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --single-quote --no-bracket-spacing --write 'src/**/*.js'"
   },
@@ -12,9 +12,13 @@
   "license": "GNU",
   "dependencies": {
     "cors": "^2.8.5",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "graphql": "^15.0.0",
+    "graphql-tools": "^5.0.0",
+    "lodash": "^4.17.15",
+    "node-cache": "^5.1.0",
     "superagent": "^5.2.2"
   },
   "devDependencies": {

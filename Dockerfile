@@ -16,4 +16,4 @@ FROM $NODE_BASEIMAGE AS release
 WORKDIR /home/node/app
 COPY --chown=node:node --from=build /home/node/app/ ./
 USER node
-CMD ["node", "./src/index.js"]
+CMD ["node", "-r", "esm", "./src/index.js"]
