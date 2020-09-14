@@ -1,4 +1,4 @@
-import {get} from 'lodash';
+import { get } from "lodash";
 
 export const typeDef = `
 type SearchQuery {
@@ -10,13 +10,13 @@ type SearchQuery {
 export const resolvers = {
   SearchQuery: {
     searchCode(parent) {
-      return get(parent, 'searchCode.$', 'unknown');
+      return get(parent, "searchCode.$", "unknown");
     },
     searchString(parent) {
-      return get(parent, 'searchString.$', 'unknown');
+      return get(parent, "searchString.$", "unknown");
     },
     value(parent) {
-      return get(parent, 'value.$', 'unknown');
+      return get(parent, "value.$", "unknown");
     }
   }
 };

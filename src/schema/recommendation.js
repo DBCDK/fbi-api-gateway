@@ -10,7 +10,7 @@ export const resolvers = {
       return parent.value;
     },
     manifestation(parent) {
-      return {pid: parent.pid};
+      return { pid: parent.pid };
     }
   }
 };

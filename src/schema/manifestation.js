@@ -1,4 +1,4 @@
-import {get} from 'lodash';
+import { get } from "lodash";
 
 const getArray = (obj, path) => {
   const res = get(obj, path);
@@ -94,8 +94,8 @@ export const resolvers = {
     audience: getObjectArray,
     catalogcode: getStringArray,
     async collection(parent, args, context, info) {
-      const res = await context.datasources.idmapper.get({pid: parent.pid});
-      return res.map(pid => ({pid}));
+      const res = await context.datasources.idmapper.get({ pid: parent.pid });
+      return res.map(pid => ({ pid }));
     },
     content: getStringArray,
     async cover(parent, args, context, info) {
@@ -107,7 +107,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.get({
         pid: parent.pid
       });
-      return getArray(manifestation, 'details.creators.value');
+      return getArray(manifestation, "details.creators.value");
     },
     dk5: getObjectArray,
     edition: getStringArray,
@@ -120,7 +120,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.get({
         pid: parent.pid
       });
-      return getArray(manifestation, 'details.language.$');
+      return getArray(manifestation, "details.language.$");
     },
     latestReprint: getStringArray,
     lettal: getStringArray,
@@ -130,7 +130,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.get({
         pid: parent.pid
       });
-      return getArray(manifestation, 'details.materialType.$');
+      return getArray(manifestation, "details.materialType.$");
     },
     notes: getStringArray,
     onlineAccess: getStringArray,

@@ -1,6 +1,6 @@
-import request from 'superagent';
-import {cached} from './cache';
-import config from '../config';
+import request from "superagent";
+import { cached } from "./cache";
+import config from "../config";
 
 const createRequest = pid => `
 <mi:moreInfoRequest xmlns:mi="http://oss.dbc.dk/ns/moreinfo">
@@ -17,12 +17,12 @@ const createRequest = pid => `
 `;
 
 const get = cached(
-  async ({pid}) => {
+  async ({ pid }) => {
     // console.log({pid});
     const images = (
       await request
         .post(config.datasources.moreinfo.url)
-        .field('xml', createRequest(pid))
+        .field("xml", createRequest(pid))
     ).body.moreInfoResponse.identifierInformation
       .map(entry => entry.coverImage)
       .filter(entry => entry);
@@ -30,12 +30,12 @@ const get = cached(
     const res = {};
     images.forEach(entry => {
       entry.forEach(cover => {
-        res[cover['@imageSize'].$] = cover.$;
+        res[cover["@imageSize"].$] = cover.$;
       });
     });
     return res;
   },
-  {stdTTL: 60 * 60 * 24}
+  { stdTTL: 60 * 60 * 24 }
 );
 
-export default {get};
+export default { get };

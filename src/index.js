@@ -24,14 +24,14 @@ Example query:
   }
 }
 */
-import schema from './schema/schema';
-import openformatDS from './datasources/openformat.datasource';
-import recommendationsDS from './datasources/recommendations.datasource';
-import idmapperDS from './datasources/idmapper';
-import moreinfoDS from './datasources/moreinfo';
-import express from 'express';
-import cors from 'cors';
-import graphqlHTTP from 'express-graphql';
+import schema from "./schema/schema";
+import openformatDS from "./datasources/openformat.datasource";
+import recommendationsDS from "./datasources/recommendations.datasource";
+import idmapperDS from "./datasources/idmapper";
+import moreinfoDS from "./datasources/moreinfo";
+import express from "express";
+import cors from "cors";
+import graphqlHTTP from "express-graphql";
 const port = process.env.PORT || 3000;
 const app = express();
 let server;
@@ -53,7 +53,7 @@ let server;
   });
 
   app.use(
-    '/graphql',
+    "/graphql",
     graphqlHTTP({
       schema: await schema(),
       graphiql: true
@@ -71,7 +71,7 @@ const signals = {
 };
 function shutdown(signal, value) {
   server.close(function() {
-    console.log('server stopped by ' + signal);
+    console.log("server stopped by " + signal);
     process.exit(128 + value);
   });
 }

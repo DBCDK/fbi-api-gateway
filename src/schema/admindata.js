@@ -1,4 +1,4 @@
-import {get} from 'lodash';
+import { get } from "lodash";
 
 export const typeDef = `
 type AdminData {
@@ -11,7 +11,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.get({
         pid: parent.pid
       });
-      return get(manifestation, 'admindata.creationDate.$', 'unknown');
+      return get(manifestation, "admindata.creationDate.$", "unknown");
     }
   }
 };

@@ -1,4 +1,4 @@
-import NodeCache from 'node-cache';
+import NodeCache from "node-cache";
 
 export const cached = (fn, options) => {
   const cache = new NodeCache(options);
