@@ -1,3 +1,12 @@
+/**
+ * @file Cover type definition and resolvers
+ *
+ * Resolves responses from moreinfo
+ */
+
+/**
+ * The Cover type definition
+ */
 export const typeDef = `
 type Cover {
   detail_117: String
@@ -8,25 +17,11 @@ type Cover {
   detail: String
 }`;
 
+/**
+ * Resolvers for the Cover type
+ * Note that for fields not represented in resolvers, GraphQL
+ * uses its default resolver (it looks in parent obj for the field).
+ */
 export const resolvers = {
-  Cover: {
-    detail_117(parent) {
-      return parent.detail_117;
-    },
-    detail_207(parent) {
-      return parent.detail_207;
-    },
-    detail_42(parent) {
-      return parent.detail_42;
-    },
-    detail_500(parent) {
-      return parent.detail_500;
-    },
-    thumbnail(parent) {
-      return parent.thumbnail;
-    },
-    detail(parent) {
-      return parent.detail;
-    }
-  }
+  Cover: {}
 };

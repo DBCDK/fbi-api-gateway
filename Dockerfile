@@ -10,6 +10,9 @@ COPY . .
 RUN npm set progress=false && npm config set depth 0 && \
     npm install
 
+# test
+RUN npm test
+
 #
 # ---- Release ----
 FROM $NODE_BASEIMAGE AS release
