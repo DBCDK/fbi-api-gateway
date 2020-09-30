@@ -27,6 +27,15 @@ async function fetchManifestation({ pid }) {
 }
 
 /**
+ * The status function
+ *
+ * @throws Will throw error if service is down
+ */
+export async function status() {
+  await fetchManifestation({ pid: "870970-basis:51877330" });
+}
+
+/**
  * A DataLoader batch function
  *
  * Could possibly be optimised to fetch all pids in a single

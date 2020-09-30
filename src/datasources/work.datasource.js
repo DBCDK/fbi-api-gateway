@@ -45,6 +45,15 @@ async function batchLoader(keys) {
 }
 
 /**
+ * The status function
+ *
+ * @throws Will throw error if service is down
+ */
+export async function status() {
+  await fetchWork({ workId: "work-of:870970-basis:51877330" });
+}
+
+/**
  * Enhance batch function with Redis caching
  */
 export default withRedis(batchLoader, {

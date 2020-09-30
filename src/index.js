@@ -14,6 +14,8 @@ import cors from "cors";
 import graphqlHTTP from "express-graphql";
 import DataLoader from "dataloader";
 import config from "./config";
+import howruHandler from "./howru";
+
 const app = express();
 let server;
 
@@ -39,6 +41,7 @@ let server;
     next();
   });
 
+  // Setup route handler for GraphQL
   app.use(
     "/graphql",
     graphqlHTTP({
@@ -46,6 +49,9 @@ let server;
       graphiql: true
     })
   );
+
+  // Setup route handler for howru
+  app.get("/howru", howruHandler);
 
   server = app.listen(config.port);
   log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);

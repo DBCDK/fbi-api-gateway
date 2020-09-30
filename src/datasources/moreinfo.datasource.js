@@ -42,6 +42,15 @@ async function fetchMoreInfo({ pid }) {
 }
 
 /**
+ * The status function
+ *
+ * @throws Will throw error if service is down
+ */
+export async function status() {
+  await fetchMoreInfo({ pid: "870970-basis:51877330" });
+}
+
+/**
  * A DataLoader batch function
  *
  * Could be optimised to fetch all pids in a single
