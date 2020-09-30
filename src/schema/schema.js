@@ -34,7 +34,7 @@ export const internalSchema = makeExecutableSchema({
   typeDefs: [
     `type Query {
       manifestation(pid: String!): Manifestation!
-      work(id: String!): Work!
+      work(id: String!): Work
     }`,
     Work,
     ManifestationPreview,
@@ -53,9 +53,7 @@ export const internalSchema = makeExecutableSchema({
         return { pid: args.pid };
       },
       async work(parent, args, context, info) {
-        const { work } = await context.datasources.workservice.get({
-          workId: args.id
-        });
+        const { work } = await context.datasources.workservice.load(args.id);
         return { ...work, id: args.id };
       }
     },

@@ -1,6 +1,9 @@
+import { log } from "dbc-node-logger";
 import request from "superagent";
-import { cached } from "./cache";
 import config from "../config";
+import { withRedis } from "./redis.datasource";
+
+const { url, agencyId, profile, ttl, prefix } = config.datasources.work;
 
 /**
  * Fetches a work from the work service
@@ -8,7 +11,6 @@ import config from "../config";
  * @param {string} params.workId id of the work
  */
 async function fetchWork({ workId }) {
-  const { url, agencyId, profile } = config.datasources.work;
   return (
     await request.get(url).query({
       workId,
@@ -19,4 +21,33 @@ async function fetchWork({ workId }) {
   ).body;
 }
 
-export default { get: cached(fetchWork, { stdTTL: 60 * 60 * 24 }) };
+/**
+ * A DataLoader batch function
+ *
+ * @param {Array.<string>} keys The keys to fetch
+ */
+async function batchLoader(keys) {
+  return await Promise.all(
+    keys.map(async key => {
+      try {
+        return await fetchWork({ workId: key });
+      } catch (e) {
+        // We return error instead of throwing,
+        // se we don't fail entire Promise.all
+        // DataLoader will make sure its thrown in a resolver
+        if (e.status !== 404) {
+          log.error("Fetch work failed", { id: key, reason: e.message });
+        }
+        return e;
+      }
+    })
+  );
+}
+
+/**
+ * Enhance batch function with Redis caching
+ */
+export default withRedis(batchLoader, {
+  prefix,
+  ttl
+});

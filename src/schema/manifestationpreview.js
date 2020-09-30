@@ -37,9 +37,7 @@ export const resolvers = {
   ManifestationPreview: {
     cover(parent, args, context, info) {
       // Fetch cover, and pass it to Cover resolver
-      return context.datasources.moreinfo.get({
-        pid: parent.id
-      });
+      return context.datasources.moreinfo.load(parent.id);
     },
     manifestation(parent, args, context, info) {
       return { pid: parent.id };

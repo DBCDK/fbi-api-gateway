@@ -2,16 +2,18 @@
  * @file Setting up a GraphQL server using Express
  *
  */
+import { log } from "dbc-node-logger";
 import schema from "./schema/schema";
-import workDS from "./datasources/work.datasource";
-import openformatDS from "./datasources/openformat.datasource";
-import recommendationsDS from "./datasources/recommendations.datasource";
-import idmapperDS from "./datasources/idmapper";
-import moreinfoDS from "./datasources/moreinfo";
+import workLoader from "./datasources/work.datasource";
+import openformatLoader from "./datasources/openformat.datasource";
+import recommendationsLoader from "./datasources/recommendations.datasource";
+import idmapperLoader from "./datasources/idmapper.datasource";
+import moreinfoLoader from "./datasources/moreinfo.datasource";
 import express from "express";
 import cors from "cors";
 import graphqlHTTP from "express-graphql";
-const port = process.env.PORT || 3000;
+import DataLoader from "dataloader";
+import config from "./config";
 const app = express();
 let server;
 
@@ -23,11 +25,15 @@ let server;
     // user authentication could be done here
 
     req.datasources = {
-      openformat: openformatDS,
-      recommendations: recommendationsDS,
-      idmapper: idmapperDS,
-      moreinfo: moreinfoDS,
-      workservice: workDS
+      openformat: new DataLoader(openformatLoader),
+      recommendations: new DataLoader(recommendationsLoader, {
+        // the key of recommendation batchloader is an object
+        // hence we stringify
+        cacheKeyFn: key => JSON.stringify(key)
+      }),
+      idmapper: new DataLoader(idmapperLoader),
+      moreinfo: new DataLoader(moreinfoLoader),
+      workservice: new DataLoader(workLoader)
     };
 
     next();
@@ -41,10 +47,8 @@ let server;
     })
   );
 
-  server = app.listen(port);
-  console.log(
-    `Running a GraphQL API server at http://localhost:${port}/graphql`
-  );
+  server = app.listen(config.port);
+  log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);
 })();
 
 const signals = {
@@ -53,7 +57,7 @@ const signals = {
 };
 function shutdown(signal, value) {
   server.close(function() {
-    console.log("server stopped by " + signal);
+    log.info(`server stopped by ${signal}`);
     process.exit(128 + value);
   });
 }

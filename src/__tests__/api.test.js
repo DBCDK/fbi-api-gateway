@@ -175,7 +175,7 @@ describe("API test cases", () => {
       context: {
         datasources: {
           workservice: {
-            get: () => {
+            load: () => {
               throw new Error("Not Found");
             }
           }
@@ -189,7 +189,9 @@ describe("API test cases", () => {
           path: ["work"]
         }
       ],
-      data: null
+      data: {
+        work: null
+      }
     });
   });
 

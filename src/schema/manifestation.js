@@ -66,9 +66,7 @@ export const typeDef = `
 
 const getStringArray = async (parent, args, context, info) => {
   const fieldName = info.fieldName;
-  const manifestation = await context.datasources.openformat.get({
-    pid: parent.pid
-  });
+  const manifestation = await context.datasources.openformat.load(parent.pid);
   // console.log(manifestation);
   return getArray(manifestation, `details.${fieldName}.value`).map(
     entry => entry.$
@@ -76,9 +74,7 @@ const getStringArray = async (parent, args, context, info) => {
 };
 const getObjectArray = async (parent, args, context, info) => {
   const fieldName = info.fieldName;
-  const manifestation = await context.datasources.openformat.get({
-    pid: parent.pid
-  });
+  const manifestation = await context.datasources.openformat.load(parent.pid);
   return getArray(manifestation, `details.${fieldName}`);
 };
 const pass = parent => {
@@ -94,19 +90,17 @@ export const resolvers = {
     audience: getObjectArray,
     catalogcode: getStringArray,
     async collection(parent, args, context, info) {
-      const res = await context.datasources.idmapper.get({ pid: parent.pid });
+      const res = await context.datasources.idmapper.load(parent.pid);
       return res.map(pid => ({ pid }));
     },
     content: getStringArray,
     async cover(parent, args, context, info) {
-      return await context.datasources.moreinfo.get({
-        pid: parent.pid
-      });
+      return await context.datasources.moreinfo.load(parent.pid);
     },
     async creators(parent, args, context, info) {
-      const manifestation = await context.datasources.openformat.get({
-        pid: parent.pid
-      });
+      const manifestation = await context.datasources.openformat.load(
+        parent.pid
+      );
       return getArray(manifestation, "details.creators.value");
     },
     dk5: getObjectArray,
@@ -117,9 +111,9 @@ export const resolvers = {
     issn: getStringArray,
     isText: getStringArray,
     async language(parent, args, context, info) {
-      const manifestation = await context.datasources.openformat.get({
-        pid: parent.pid
-      });
+      const manifestation = await context.datasources.openformat.load(
+        parent.pid
+      );
       return getArray(manifestation, "details.language.$");
     },
     latestReprint: getStringArray,
@@ -127,9 +121,9 @@ export const resolvers = {
     level: getStringArray,
     lix: getStringArray,
     async materialType(parent, args, context, info) {
-      const manifestation = await context.datasources.openformat.get({
-        pid: parent.pid
-      });
+      const manifestation = await context.datasources.openformat.load(
+        parent.pid
+      );
       return getArray(manifestation, "details.materialType.$");
     },
     notes: getStringArray,
@@ -143,7 +137,7 @@ export const resolvers = {
     physicalDescription: getStringArray,
     publication: getStringArray,
     async recommendations(parent, args, context, info) {
-      const recommendations = await context.datasources.recommendations.find({
+      const recommendations = await context.datasources.recommendations.load({
         pid: parent.pid,
         limit: args.limit
       });

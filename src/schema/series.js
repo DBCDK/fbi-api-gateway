@@ -24,9 +24,9 @@ export const resolvers = {
       return "Et serienavn";
     },
     async works(parent, args, context, info) {
-      const { work } = await context.datasources.workservice.get({
-        workId: "work-of:870970-basis:21601470"
-      });
+      const { work } = await context.datasources.workservice.load(
+        "work-of:870970-basis:21601470"
+      );
       return [work];
     }
   }
