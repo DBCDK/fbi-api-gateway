@@ -35,29 +35,25 @@ describe("API test cases", () => {
       query: `
           query ($id: String!) {
             work(id: $id) {
-              creators
+              creators {
+                type
+                name
+              }
               description
               fullTitle
               manifestations {
-                creators
-                description
-                fullTitle
                 materialType
                 pid
-                subjects
-                title
               }
               materialTypes {
-                creators
-                description
-                fullTitle
                 materialType
                 pid
-                subjects
-                title
               }
               path
-              subjects
+              subjects {
+                type
+                value
+              }
               title
             }
           }

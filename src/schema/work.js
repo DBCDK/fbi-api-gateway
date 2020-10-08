@@ -13,13 +13,13 @@ export const typeDef = `
     title: String
     fullTitle: String
     description: String
-    creators: [String!]!
+    creators: [Creator!]!
     manifestations: [ManifestationPreview!]!
     materialTypes: [ManifestationPreview!]!
     path: [String!]!
     reviews: [Review!]!
     series: Series
-    subjects: [String!]!
+    subjects: [Subject!]!
   }
 `;
 
