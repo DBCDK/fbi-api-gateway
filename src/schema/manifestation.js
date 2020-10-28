@@ -67,7 +67,6 @@ export const typeDef = `
 const getStringArray = async (parent, args, context, info) => {
   const fieldName = info.fieldName;
   const manifestation = await context.datasources.openformat.load(parent.pid);
-  // console.log(manifestation);
   return getArray(manifestation, `details.${fieldName}.value`).map(
     entry => entry.$
   );

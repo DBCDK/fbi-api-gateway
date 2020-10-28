@@ -6,33 +6,32 @@ import { get } from "lodash";
 
 export const typeDef = `
 type Creator {
-  functionCode: String! @deprecated(reason: "Field is deprecated!")
-  functionSingular: String! @deprecated(reason: "Field is deprecated!")
-  functionPlural: String! @deprecated(reason: "Field is deprecated!")
+  functionCode: String!
+  functionSingular: String!
+  functionPlural: String! 
   name: String!
-  searchQuery: SearchQuery! @deprecated(reason: "Field is deprecated!")
   type: String!
 }`;
 
 export const resolvers = {
   Creator: {
     functionCode(parent) {
-      return get(parent, "functionCode.$", "unknown");
+      return get(parent, "functionCode.$", "");
     },
     functionSingular(parent) {
-      return get(parent, "functionSingular.$", "unknown");
+      return get(parent, "functionSingular.$", "");
     },
     functionPlural(parent) {
-      return get(parent, "functionPlural.$", "unknown");
+      return get(parent, "functionPlural.$", "");
     },
     name(parent) {
       if (parent.value) {
         return parent.value;
       }
-      return get(parent, "name.$", "unknown");
+      return get(parent, "name.$", "");
     },
-    searchQuery(parent) {
-      return { ...parent, value: parent.name };
+    type(parent) {
+      return parent.type || get(parent, "functionCode.$", "");
     }
   }
 };

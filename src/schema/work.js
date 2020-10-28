@@ -4,6 +4,7 @@
  */
 
 import { sortBy } from "lodash";
+import { getPageDescription } from "../utils/utils";
 
 /**
  * The Work type definition
@@ -14,11 +15,12 @@ export const typeDef = `
     fullTitle: String
     description: String
     creators: [Creator!]!
-    manifestations: [ManifestationPreview!]!
-    materialTypes: [ManifestationPreview!]!
+    manifestations: [WorkManifestation!]!
+    materialTypes: [WorkManifestation!]!
     path: [String!]!
     reviews: [Review!]!
     series: Series
+    seo: SEO!
     subjects: [Subject!]!
   }
 `;
@@ -68,6 +70,30 @@ export const resolvers = {
       ];
     },
     series(parent, args, context, info) {
+      return parent;
+    },
+    async seo(parent, args, context, info) {
+      // Get materialTypes via resolver
+      const materialTypes = resolvers.Work.materialTypes(
+        parent,
+        args,
+        context,
+        info
+      );
+
+      // Return title and description
+      return {
+        title: `${parent.title}${
+          parent.creators && parent.creators[0]
+            ? ` af ${parent.creators[0].value}`
+            : ""
+        }`,
+        description: getPageDescription({
+          title: parent.title,
+          creators: parent.creators,
+          materialTypes
+        })
+      };
       return parent;
     }
   }
