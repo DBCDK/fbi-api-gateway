@@ -51,22 +51,85 @@ export const resolvers = {
           media: "Jyllandsposten",
           rating: "4/5",
           reviewType: "INFOMEDIA",
-          url: "http://"
+          url: "http://",
+        },
+        {
+          author: "Didrik Pedersen",
+          media: "",
+          rating: "1/5",
+          reviewType: "LITTERATURSIDEN",
+          url: "http://",
+        },
+        {
+          author: "Svend Svendsen",
+          media: "",
+          rating: "3/5",
+          reviewType: "MATERIALREVIEWS",
+          url: "http://",
+        },
+        {
+          author: "Didrik Pedersen",
+          media: "Berlingske Tidende",
+          rating: "5/5",
+          reviewType: "INFOMEDIA",
+          url: "http://",
+        },
+        {
+          author: "Katinka Olsen",
+          media: "",
+          rating: "2/5",
+          reviewType: "LITTERATURSIDEN",
+          url: "http://",
+        },
+        {
+          author: "Ralf Bengtsen",
+          media: "",
+          rating: "1/5",
+          reviewType: "MATERIALREVIEWS",
+          url: "http://",
+        },
+        {
+          author: "Svend Svendsen",
+          media: "Jyllandsposten",
+          rating: "4/5",
+          reviewType: "INFOMEDIA",
+          url: "http://",
         },
         {
           author: "Svend Svendsen",
           media: "",
           rating: "4/5",
           reviewType: "LITTERATURSIDEN",
-          url: "http://"
+          url: "http://",
+        },
+        {
+          author: "Søren Kassebeer",
+          media: "Berlingske Tidende",
+          rating: "5/5",
+          reviewType: "INFOMEDIA",
+          url: "http://",
+        },
+        {
+          author: "Svend Svendsen",
+          media: "Jyllandsposten",
+          rating: "3/5",
+          reviewType: "INFOMEDIA",
+          url: "http://",
         },
         {
           author: "Svend Svendsen",
           media: "",
-          rating: "4/5",
-          reviewType: "MATERIALREVIEWS",
-          url: "http://"
-        }
+          rating: "3/5",
+          reviewType: "LITTERATURSIDEN",
+          url: "http://",
+        },
+        {
+          author: "Svend Svendsen",
+          media: "Jyllandsposten",
+          rating: "2/5",
+          reviewType: "INFOMEDIA",
+          url: "http://",
+        },
       ];
     },
     series(parent, args, context, info) {
@@ -91,12 +154,12 @@ export const resolvers = {
         description: getPageDescription({
           title: parent.title,
           creators: parent.creators,
-          materialTypes
-        })
+          materialTypes,
+        }),
       };
       return parent;
-    }
-  }
+    },
+  },
 };
 
 /**
@@ -111,8 +174,8 @@ function flattenRecords(work) {
   // The array that will hold the records
   const records = [];
   // Walk through every record
-  work.records.forEach(record => {
-    record.types.forEach(typeName => {
+  work.records.forEach((record) => {
+    record.types.forEach((typeName) => {
       records.push({ ...record, materialType: typeName });
     });
   });
@@ -137,7 +200,7 @@ function parseMaterialTypes(flattenedRecords) {
   const materialTypes = {};
 
   // Walk through every manifestation
-  flattenedRecords.forEach(record => {
+  flattenedRecords.forEach((record) => {
     // If we have not seen this type before
     // we put an array in the materialTypes
     if (!materialTypes[record.materialType]) {
@@ -152,9 +215,9 @@ function parseMaterialTypes(flattenedRecords) {
   const typeNames = sortBy(Object.keys(materialTypes));
 
   // Walk through every type name
-  typeNames.forEach(typeName => {
+  typeNames.forEach((typeName) => {
     // And sort array of manifestations for this specific type
-    materialTypes[typeName] = sortBy(materialTypes[typeName], record => {
+    materialTypes[typeName] = sortBy(materialTypes[typeName], (record) => {
       // For now we have 870970 first in the array
       if (record.id.startsWith("870970-basis")) {
         return -1;
@@ -165,5 +228,5 @@ function parseMaterialTypes(flattenedRecords) {
 
   // Finally, we return array of types
   // One record per array type
-  return typeNames.map(typeName => materialTypes[typeName][0]);
+  return typeNames.map((typeName) => materialTypes[typeName][0]);
 }

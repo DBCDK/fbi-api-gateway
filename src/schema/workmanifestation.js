@@ -69,7 +69,7 @@ export const resolvers = {
 
       return (
         getArray(manifestation, "details.abstract.value").map(
-          entry => entry.$
+          (entry) => entry.$
         )[0] || ""
       );
     },
@@ -111,7 +111,7 @@ export const resolvers = {
       );
       return (
         getArray(manifestation, "details.title.value").map(
-          entry => entry.$
+          (entry) => entry.$
         )[0] || ""
       );
     },
@@ -149,7 +149,9 @@ export const resolvers = {
         parent.id
       );
       return (
-        getArray(manifestation, "details.physicalDescription.value.$")[0] || ""
+        getArray(manifestation, "details.physicalDescription.value").map(
+          (entry) => entry.$
+        )[0] || ""
       );
     },
     pid(parent, args, context, info) {
@@ -167,7 +169,7 @@ export const resolvers = {
     async recommendations(parent, args, context, info) {
       const recommendations = await context.datasources.recommendations.load({
         pid: parent.id,
-        limit: args.limit
+        limit: args.limit,
       });
       return recommendations.response;
     },
@@ -180,9 +182,9 @@ export const resolvers = {
       );
       return (
         getArray(manifestation, "details.title.value").map(
-          entry => entry.$
+          (entry) => entry.$
         )[0] || ""
       );
-    }
-  }
+    },
+  },
 };
