@@ -83,10 +83,15 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      const publication =
-        getArray(manifestation, "details.publication.value.$")[0] || "";
-      const year = matchYear(publication);
-      return (year && year[0]) || "";
+      const publication = getArray(
+        manifestation,
+        "details.publication.value"
+      )[0];
+      if (publication && publication.$) {
+        const year = matchYear(publication.$);
+        return (year && year[0]) || "";
+      }
+      return "";
     },
     async edition(parent, args, context, info) {
       if (parent.edition) {
