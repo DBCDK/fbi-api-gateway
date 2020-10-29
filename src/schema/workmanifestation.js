@@ -46,7 +46,9 @@ export const resolvers = {
         parent.id
       );
       const contentStr =
-        getArray(manifestation, "details.content.value.contentText.$")[0] || "";
+        getArray(manifestation, "details.content.value.contentText").map(
+          entry => entry.$
+        )[0] || "";
 
       if (contentStr && typeof contentStr === "string") {
         // Make an array out of the content string.
@@ -69,7 +71,7 @@ export const resolvers = {
 
       return (
         getArray(manifestation, "details.abstract.value").map(
-          (entry) => entry.$
+          entry => entry.$
         )[0] || ""
       );
     },
@@ -100,7 +102,11 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      return getArray(manifestation, "details.edition.value.$")[0] || "";
+      return (
+        getArray(manifestation, "details.edition.value").map(
+          entry => entry.$
+        )[0] || ""
+      );
     },
     async fullTitle(parent, args, context, info) {
       if (parent.fullTitle) {
@@ -111,7 +117,7 @@ export const resolvers = {
       );
       return (
         getArray(manifestation, "details.title.value").map(
-          (entry) => entry.$
+          entry => entry.$
         )[0] || ""
       );
     },
@@ -122,7 +128,9 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      const res = getArray(manifestation, "details.isbn.value.$")[0];
+      const res = getArray(manifestation, "details.isbn.value").map(
+        entry => entry.$
+      )[0];
       if (typeof res === "string") {
         return res.replace(/-/g, "");
       }
@@ -131,7 +139,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      return getArray(manifestation, "details.language.$");
+      return getArray(manifestation, "details.language").map(entry => entry.$);
     },
 
     async materialType(parent, args, context, info) {
@@ -141,7 +149,11 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      return getArray(manifestation, "details.materialType.$")[0] || "";
+      return (
+        getArray(manifestation, "details.materialType").map(
+          entry => entry.$
+        )[0] || ""
+      );
     },
 
     async physicalDescription(parent, args, context, info) {
@@ -150,7 +162,7 @@ export const resolvers = {
       );
       return (
         getArray(manifestation, "details.physicalDescription.value").map(
-          (entry) => entry.$
+          entry => entry.$
         )[0] || ""
       );
     },
@@ -162,14 +174,17 @@ export const resolvers = {
         parent.id
       );
       const publication =
-        getArray(manifestation, "details.publication.value.$")[0] || "";
+        getArray(manifestation, "details.publication.value")
+          .map(entry => entry.$)
+          .filter(entry => entry.includes(","))[0] || "";
+
       // remove year, until this is done in openformat
-      return publication.replace(/\s*,\s*\d+$/, "");
+      return publication.replace(/\s*,\s*\d+.*$/, "");
     },
     async recommendations(parent, args, context, info) {
       const recommendations = await context.datasources.recommendations.load({
         pid: parent.id,
-        limit: args.limit,
+        limit: args.limit
       });
       return recommendations.response;
     },
@@ -182,9 +197,9 @@ export const resolvers = {
       );
       return (
         getArray(manifestation, "details.title.value").map(
-          (entry) => entry.$
+          entry => entry.$
         )[0] || ""
       );
-    },
-  },
+    }
+  }
 };
