@@ -1,5 +1,6 @@
 import { makeExecutableSchema, mergeSchemas } from "graphql-tools";
 
+import { typeDef as DK5, resolvers as DK5Resolvers } from "./dk5";
 import {
   typeDef as WorkManifestation,
   resolvers as WorkManifestationResolvers
@@ -38,6 +39,7 @@ export const internalSchema = makeExecutableSchema({
       manifestation(pid: String!): WorkManifestation!
       work(id: String!): Work
     }`,
+    DK5,
     Work,
     WorkManifestation,
     Manifestation,
@@ -61,6 +63,7 @@ export const internalSchema = makeExecutableSchema({
         return { ...work, id: args.id };
       }
     },
+    ...DK5Resolvers,
     ...WorkManifestationResolvers,
     ...WorkResolvers,
     ...ManifestationResolvers,

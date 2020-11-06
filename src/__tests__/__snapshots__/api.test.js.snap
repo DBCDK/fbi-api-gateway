@@ -28,14 +28,34 @@ Object {
             },
           ],
           "datePublished": "2012",
+          "dk5": Array [
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "86-096",
+              "value": "86-096",
+            },
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "sk",
+              "value": "sk",
+            },
+          ],
           "edition": "1. udgave",
           "isbn": "9788711407134",
           "language": Array [
             "Dansk",
           ],
           "materialType": "Bog",
+          "notes": Array [],
+          "originalTitle": "",
+          "originals": Array [
+            "Gengivelse af bogen",
+            "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
+            "Bogens originaludgave: 1988",
+          ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
           "publisher": "Kbh., Carlsen",
+          "shelf": "skønlitteratur",
         },
         Object {
           "content": null,
@@ -52,14 +72,34 @@ Object {
             },
           ],
           "datePublished": "2012",
+          "dk5": Array [
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "86-096",
+              "value": "86-096",
+            },
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "sk",
+              "value": "sk",
+            },
+          ],
           "edition": "1. udgave",
           "isbn": "9788711407134",
           "language": Array [
             "Dansk",
           ],
           "materialType": "Bog",
+          "notes": Array [],
+          "originalTitle": "",
+          "originals": Array [
+            "Gengivelse af bogen",
+            "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
+            "Bogens originaludgave: 1988",
+          ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
           "publisher": "Kbh., Carlsen",
+          "shelf": "skønlitteratur",
         },
         Object {
           "content": Array [
@@ -84,14 +124,34 @@ Object {
             },
           ],
           "datePublished": "2012",
+          "dk5": Array [
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "86-096",
+              "value": "86-096",
+            },
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "sk",
+              "value": "sk",
+            },
+          ],
           "edition": "1. udgave",
           "isbn": "9788711407134",
           "language": Array [
             "Dansk",
           ],
           "materialType": "Bog",
+          "notes": Array [],
+          "originalTitle": "",
+          "originals": Array [
+            "Gengivelse af bogen",
+            "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
+            "Bogens originaludgave: 1988",
+          ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
           "publisher": "Kbh., Carlsen",
+          "shelf": "skønlitteratur",
         },
         Object {
           "content": null,
@@ -108,14 +168,34 @@ Object {
             },
           ],
           "datePublished": "2012",
+          "dk5": Array [
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "86-096",
+              "value": "86-096",
+            },
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "sk",
+              "value": "sk",
+            },
+          ],
           "edition": "1. udgave",
           "isbn": "9788711407134",
           "language": Array [
             "Dansk",
           ],
           "materialType": "Ebog",
+          "notes": Array [],
+          "originalTitle": "",
+          "originals": Array [
+            "Gengivelse af bogen",
+            "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
+            "Bogens originaludgave: 1988",
+          ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
           "publisher": "Kbh., Carlsen",
+          "shelf": "skønlitteratur",
         },
       ],
       "materialTypes": Array [
@@ -142,14 +222,34 @@ Object {
             },
           ],
           "datePublished": "2012",
+          "dk5": Array [
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "86-096",
+              "value": "86-096",
+            },
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "sk",
+              "value": "sk",
+            },
+          ],
           "edition": "1. udgave",
           "isbn": "9788711407134",
           "language": Array [
             "Dansk",
           ],
           "materialType": "Bog",
+          "notes": Array [],
+          "originalTitle": "",
+          "originals": Array [
+            "Gengivelse af bogen",
+            "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
+            "Bogens originaludgave: 1988",
+          ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
           "publisher": "Kbh., Carlsen",
+          "shelf": "skønlitteratur",
         },
         Object {
           "content": null,
@@ -166,14 +266,34 @@ Object {
             },
           ],
           "datePublished": "2012",
+          "dk5": Array [
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "86-096",
+              "value": "86-096",
+            },
+            Object {
+              "searchCode": "dkcclphrase.ldk",
+              "searchString": "sk",
+              "value": "sk",
+            },
+          ],
           "edition": "1. udgave",
           "isbn": "9788711407134",
           "language": Array [
             "Dansk",
           ],
           "materialType": "Ebog",
+          "notes": Array [],
+          "originalTitle": "",
+          "originals": Array [
+            "Gengivelse af bogen",
+            "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
+            "Bogens originaludgave: 1988",
+          ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
           "publisher": "Kbh., Carlsen",
+          "shelf": "skønlitteratur",
         },
       ],
       "path": Array [

@@ -15,14 +15,19 @@ export const typeDef = `
       creators: [Creator!]!
       datePublished: String!
       description: String!
+      dk5: [DK5!]!
       edition: String!
       fullTitle: String!
       isbn: String
       language: [String!]!
       materialType: String!
+      notes: [String!]!
+      originals: [String!]!
+      originalTitle: String
       physicalDescription: String!
       pid: String!
       publisher: String!
+      shelf: String
       title: String
       recommendations(limit: Int): [Recommendation!]!
     }
@@ -45,6 +50,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
+
       const contentStr =
         getArray(manifestation, "details.content.value.contentText").map(
           entry => entry.$
@@ -74,6 +80,19 @@ export const resolvers = {
           entry => entry.$
         )[0] || ""
       );
+    },
+    async dk5(parent, args, context, info) {
+      if (parent.dk5) {
+        return parent.dk5;
+      }
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      return getArray(manifestation, "details.dk5").map(entry => ({
+        searchCode: (entry.searchCode && entry.searchCode.$) || "",
+        searchString: (entry.searchString && entry.searchString.$) || "",
+        value: (entry.value && entry.value.$) || ""
+      }));
     },
     async creators(parent, args, context, info) {
       const manifestation = await context.datasources.openformat.load(
@@ -128,6 +147,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
+
       const res = getArray(manifestation, "details.isbn.value").map(
         entry => entry.$
       )[0];
@@ -155,7 +175,44 @@ export const resolvers = {
         )[0] || ""
       );
     },
-
+    async notes(parent, args, context, info) {
+      if (parent.notes) {
+        return parent.notes;
+      }
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      return getArray(manifestation, "details.notes.value").map(
+        entry => entry.$
+      );
+    },
+    async originals(parent, args, context, info) {
+      if (parent.originals) {
+        return parent.originals;
+      }
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      if (JSON.stringify(manifestation).includes("ota")) {
+        console.log("ja");
+      }
+      return getArray(manifestation, "details.originals.value").map(
+        entry => entry.$
+      );
+    },
+    async originalTitle(parent, args, context, info) {
+      if (parent.originalTitle) {
+        return parent.originalTitle;
+      }
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      return (
+        getArray(manifestation, "details.originalTitle.value").map(
+          entry => entry.$
+        )[0] || ""
+      );
+    },
     async physicalDescription(parent, args, context, info) {
       const manifestation = await context.datasources.openformat.load(
         parent.id
@@ -187,6 +244,18 @@ export const resolvers = {
         limit: args.limit
       });
       return recommendations.response;
+    },
+    async shelf(parent, args, context, info) {
+      if (parent.shelf) {
+        return parent.shelf;
+      }
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+
+      return getArray(manifestation, "details.shelf.value").map(
+        entry => entry.$
+      )[0];
     },
     async title(parent, args, context, info) {
       if (parent.title) {

@@ -50,12 +50,21 @@ describe("API test cases", () => {
                     name
                   }
                   datePublished
+                  dk5 {
+                    searchCode
+                    searchString
+                    value
+                  }
                   edition
                   isbn
                   materialType
+                  notes
+                  originals
+                  originalTitle
                   language
                   physicalDescription
                   publisher
+                  shelf
                 }
                 materialTypes {
                   content
@@ -65,12 +74,21 @@ describe("API test cases", () => {
                     name
                   }
                   datePublished
+                  dk5 {
+                    searchCode
+                    searchString
+                    value
+                  }
                   edition
                   isbn
                   materialType
+                  notes
+                  originals
+                  originalTitle
                   language
                   physicalDescription
                   publisher
+                  shelf
                 }
                 path
                 seo {
