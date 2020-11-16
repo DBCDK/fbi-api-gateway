@@ -24,10 +24,20 @@ export const resolvers = {
       return "Et serienavn";
     },
     async works(parent, args, context, info) {
-      const { work } = await context.datasources.workservice.load(
-        "work-of:870970-basis:21601470"
+      // For now we use these works to be deisplayed in series
+      // This will be fixed when we get a series service
+      const works = await Promise.all(
+        [
+          "work-of:870970-basis:51438221",
+          "work-of:870970-basis:50980510",
+          "work-of:870970-basis:46095464",
+          "work-of:870970-basis:46090802",
+          "work-of:870970-basis:51578120",
+          "work-of:870970-basis:51965906",
+          "work-of:870970-basis:52649153"
+        ].map(async id => (await context.datasources.workservice.load(id)).work)
       );
-      return [work];
+      return works;
     }
   }
 };

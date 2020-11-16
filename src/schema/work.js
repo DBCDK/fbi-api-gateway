@@ -15,6 +15,8 @@ export const typeDef = `
     fullTitle: String
     description: String
     creators: [Creator!]!
+    cover: Cover!
+    id: String!
     manifestations: [WorkManifestation!]!
     materialTypes: [WorkManifestation!]!
     path: [String!]!
@@ -32,6 +34,21 @@ export const typeDef = `
  */
 export const resolvers = {
   Work: {
+    async cover(parent, args, context, info) {
+      const covers = await Promise.all(
+        parent.records.map(record => {
+          return context.datasources.moreinfo.load(record.id);
+        })
+      );
+      // Find a valid cover.
+      // TODO how to determine which cover to select
+      const cover = covers.find(entry => entry.detail);
+
+      return cover || {};
+    },
+    id(parent, args, context, info) {
+      return parent.workId;
+    },
     manifestations(parent, args, context, info) {
       return flattenRecords(parent);
     },
