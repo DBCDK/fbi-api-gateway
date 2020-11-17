@@ -9,6 +9,7 @@
  */
 export const typeDef = `
 type Series {
+  part: Int!
   title: String!
   works: [Work!]
 }`;
@@ -20,8 +21,11 @@ type Series {
  */
 export const resolvers = {
   Series: {
+    part(parent, args, context, info) {
+      return parent.part || 1;
+    },
     title(parent, args, context, info) {
-      return "Et serienavn";
+      return "Krimiserien med Kate Burkholder";
     },
     async works(parent, args, context, info) {
       // For now we use these works to be deisplayed in series
@@ -37,7 +41,7 @@ export const resolvers = {
           "work-of:870970-basis:52649153"
         ].map(async id => (await context.datasources.workservice.load(id)).work)
       );
-      return works;
+      return works.map((entry, index) => ({ ...entry, part: index + 1 }));
     }
   }
 };
