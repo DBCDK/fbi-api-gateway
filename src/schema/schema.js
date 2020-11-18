@@ -21,6 +21,10 @@ import {
   resolvers as SearchQueryResolvers
 } from "./searchquery";
 import { typeDef as SEO, resolvers as SEOResolvers } from "./seo";
+import {
+  typeDef as Search,
+  resolvers as SearchResolvers
+} from "./searchresponse";
 import { typeDef as Series, resolvers as SeriesResolvers } from "./series";
 import { typeDef as Subject, resolvers as SubjectResolvers } from "./subject";
 import {
@@ -38,6 +42,7 @@ export const internalSchema = makeExecutableSchema({
     `type Query {
       manifestation(pid: String!): WorkManifestation!
       work(id: String!): Work
+      search(q: String!): SearchResponse!
     }`,
     DK5,
     Work,
@@ -46,6 +51,7 @@ export const internalSchema = makeExecutableSchema({
     Recommendation,
     Review,
     Creator,
+    Search,
     SearchQuery,
     SEO,
     Series,
@@ -61,6 +67,9 @@ export const internalSchema = makeExecutableSchema({
       async work(parent, args, context, info) {
         const { work } = await context.datasources.workservice.load(args.id);
         return { ...work, id: args.id };
+      },
+      async search(parent, args, context, info) {
+        return { q: args.q };
       }
     },
     ...DK5Resolvers,
@@ -70,6 +79,7 @@ export const internalSchema = makeExecutableSchema({
     ...RecommendationResolvers,
     ...ReviewResolvers,
     ...CreatorResolvers,
+    ...SearchResolvers,
     ...SearchQueryResolvers,
     ...SEOResolvers,
     ...SeriesResolvers,

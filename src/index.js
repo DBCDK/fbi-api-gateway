@@ -9,6 +9,7 @@ import openformatLoader from "./datasources/openformat.datasource";
 import recommendationsLoader from "./datasources/recommendations.datasource";
 import idmapperLoader from "./datasources/idmapper.datasource";
 import moreinfoLoader from "./datasources/moreinfo.datasource";
+import simplesearchLoader from "./datasources/simplesearch.datasource";
 import express from "express";
 import cors from "cors";
 import graphqlHTTP from "express-graphql";
@@ -35,7 +36,12 @@ let server;
       }),
       idmapper: new DataLoader(idmapperLoader),
       moreinfo: new DataLoader(moreinfoLoader),
-      workservice: new DataLoader(workLoader)
+      workservice: new DataLoader(workLoader),
+      simplesearch: new DataLoader(simplesearchLoader, {
+        // the key of simplesearch batchloader is an object
+        // hence we stringify
+        cacheKeyFn: key => JSON.stringify(key)
+      })
     };
 
     next();
