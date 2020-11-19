@@ -8,6 +8,7 @@
  */
 export const typeDef = `
 type SearchResultRow {
+  creator: Creator!
   title: String!
   work: Work!
 }
@@ -22,6 +23,13 @@ type SearchResponse {
  */
 export const resolvers = {
   SearchResultRow: {
+    creator(parent, args, context, info) {
+      return {
+        value:
+          (parent.debug && parent.debug.creator && parent.debug.creator[0]) ||
+          ""
+      };
+    },
     title(parent, args, context, info) {
       return parent.title || "";
     },
@@ -34,7 +42,10 @@ export const resolvers = {
   SearchResponse: {
     async result(parent, args, context, info) {
       const { result } = await context.datasources.simplesearch.load(parent);
-      return result;
+      result.forEach(element => {
+        element.pids = element.pids.filter(pid => !pid.includes("_"));
+      });
+      return result.filter(entry => entry.pids.length > 0);
     }
   }
 };
