@@ -32,19 +32,44 @@ export const resolvers = {
     },
     title(parent, args, context, info) {
       return parent.title || "";
-    },
-    async work(parent, args, context, info) {
-      return (
-        await context.datasources.workservice.load(`work-of:${parent.pids[0]}`)
-      ).work;
     }
   },
   SearchResponse: {
     async result(parent, args, context, info) {
       const { result } = await context.datasources.simplesearch.load(parent);
+
+      // we don't want to look for pids containing '_'
       result.forEach(element => {
         element.pids = element.pids.filter(pid => !pid.includes("_"));
       });
+
+      // if the work field is requested we got to expand works
+      // maybe some works are not found in work service
+      // these should be removed from result
+      const requireWorkExpansion = !!info.fieldNodes[0].selectionSet.selections.find(
+        field => field.name.value === "work"
+      );
+
+      if (requireWorkExpansion) {
+        // Fetch works
+        const expanded = await Promise.all(
+          result.map(async element => {
+            try {
+              element.work = (
+                await context.datasources.workservice.load(
+                  `work-of:${element.pids[0]}`
+                )
+              ).work;
+              return element;
+            } catch (e) {
+              return null;
+            }
+          })
+        );
+        // remove works that could not be expanded
+        return expanded.filter(element => !!element);
+      }
+
       return result.filter(entry => entry.pids.length > 0);
     }
   }
