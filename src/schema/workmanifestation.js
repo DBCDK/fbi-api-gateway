@@ -26,7 +26,7 @@ export const typeDef = `
       originalTitle: String
       physicalDescription: String!
       pid: String!
-      publisher: String!
+      publisher: [String!]!
       shelf: String
       title: String
       recommendations(limit: Int): [Recommendation!]!
@@ -51,17 +51,13 @@ export const resolvers = {
         parent.id
       );
 
-      const contentStr =
-        getArray(manifestation, "details.content.value.contentText").map(
-          entry => entry.$
-        )[0] || "";
-
-      if (contentStr && typeof contentStr === "string") {
-        // Make an array out of the content string.
-        // Not perfect, the problem needs to be solved in openformat
-        // or somehwere other place.
-        return contentStr.replace(/indhold:\s*/i, "").split(/\s*[;]\s*/);
+      const content = getArray(manifestation, "details.content.value").map(
+        entry => entry.$
+      )[0];
+      if (content) {
+        return content.split(/\s*[;]\s*/);
       }
+      return [];
     },
     cover(parent, args, context, info) {
       // Fetch cover, and pass it to Cover resolver
@@ -104,15 +100,11 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      const publication = getArray(
-        manifestation,
-        "details.publication.value"
-      )[0];
-      if (publication && publication.$) {
-        const year = matchYear(publication.$);
-        return (year && year[0]) || "";
-      }
-      return "";
+      return (
+        getArray(manifestation, "details.publication.publicationYear").map(
+          entry => entry.$
+        )[0] || ""
+      );
     },
     async edition(parent, args, context, info) {
       if (parent.edition) {
@@ -193,9 +185,6 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      if (JSON.stringify(manifestation).includes("ota")) {
-        console.log("ja");
-      }
       return getArray(manifestation, "details.originals.value").map(
         entry => entry.$
       );
@@ -230,13 +219,9 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      const publication =
-        getArray(manifestation, "details.publication.value")
-          .map(entry => entry.$)
-          .filter(entry => entry.includes(","))[0] || "";
-
-      // remove year, until this is done in openformat
-      return publication.replace(/\s*,\s*\d+.*$/, "");
+      return getArray(manifestation, "details.publication.publisher").map(
+        entry => entry.$
+      );
     },
     async recommendations(parent, args, context, info) {
       const recommendations = await context.datasources.recommendations.load({

@@ -1,0 +1,246 @@
+{
+  "manifestation": {
+    "admindata": {
+      "pid": "opensearch.identifier",
+      "creationDate": "opensearch.creationDate"
+    },
+    "details": {
+      "abstract": [
+        {
+          "value": "{abstract}"
+        }
+      ],
+      "articleData": [
+        {
+          "article": "{article_data}"
+        }
+      ],
+      "articleIssn": [
+        {
+          "value": "{articleIssn}"
+        }
+      ],
+      "audience": [
+        {
+          "searchCode": "dkcclphrase.lnb",
+          "searchString": "{audience}",
+          "value": "{audience}"
+        }
+      ],
+      "catalogcode": [
+        {
+          "value": "{catalogcode}"
+        }
+      ],
+      "content": [
+        {
+          "value": "{content_note_element}"
+        }
+      ],
+      "creators": [
+        {
+          "value": "{creators_standard}"
+        }
+      ],
+      "dk5": [
+        {
+          "searchCode": "dkcclphrase.ldk",
+          "searchString": "{dk5}",
+          "value": "{dk5}"
+        }
+      ],
+      "edition": [
+        {
+          "value": "{edition}"
+        }
+      ],
+      "form": [
+        {
+          "searchCode": "phrase.subject",
+          "searchString": "{form}",
+          "value": "{form}"
+        }
+      ],
+      "hostPublication": [
+        {
+          "value": "{hostPublication}"
+        }
+      ],
+      "isbn": [
+        {
+          "value": "{isbn}"
+        }
+      ],
+      "issn": [
+        {
+          "value": "{issn}"
+        }
+      ],
+      "isText": [
+        {
+          "value": "{isText}"
+        }
+      ],
+      "language": "dkabm.dc:language.not(dcterms:ISO639-2)",
+      "latestReprint": [
+        {
+          "value": "{latestReprint}"
+        }
+      ],
+      "lettal": [
+        {
+          "value": "{lettal}"
+        }
+      ],
+      "level": [
+        {
+          "value": "{level}"
+        }
+      ],
+      "lix": [
+        {
+          "value": "{lix}"
+        }
+      ],
+      "materialType": "dkabm.dc:type.dkdcplus:BibDK-Type",
+      "notes": [
+        {
+          "value": "{notes}"
+        }
+      ],
+      "noteOnlineAccess": [
+        {
+          "value": "{note_online_access}"
+        }
+      ],
+      "noteContextOnlineAccess": [
+        {
+          "value": "{note_context_online_access}"
+        }
+      ],
+      "onlineAccess": [
+        {
+          "value": "{online_access}"
+        }
+      ],
+      "originals": [
+        {
+          "value": "{originals}"
+        }
+      ],
+      "originalsFaust": [
+        {
+          "searchCode": "dkcclterm.nr",
+          "searchString": "{originalsFaust}",
+          "value": "{originalsFaust}"
+        }
+      ],
+      "originalTitle": [
+        {
+          "value": "{originalTitle}"
+        }
+      ],
+      "otherClassification": [
+        {
+          "value": "{otherClassification}"
+        }
+      ],
+      "pagination": [
+        {
+          "value": "{article_pages}"
+        }
+      ],
+      "periodicalPublication": [
+        {
+          "value": "{periodicalPublication}"
+        }
+      ],
+      "physicalDescription": [
+        {
+          "value": "{physicalDescription}"
+        }
+      ],
+      "publication": {
+        "publisher": "{publisher}",
+        "publicationYear": "{publication_year}",
+        "latestReprint": {
+          "latestReprintElement": "{bibdk_latest_reprint}"
+        },
+        "format": "{physicalDescriptionArticles}"
+      },
+      "related": [
+        {
+          "value": "{related}"
+        }
+      ],
+      "relatedSeries": [
+        {
+          "value": "{related_series}"
+        }
+      ],
+      "series": [
+        {
+          "value": "{regular_series}"
+        }
+      ],
+      "shelf": [
+        {
+          "value": "{shelf}"
+        }
+      ],
+      "subject": [
+        {
+          "searchCode": "phrase.subject",
+          "searchString": "{subject}",
+          "value": "{subject}"
+        }
+      ],
+      "subjectLaesekompas": [
+        {
+          "searchCode": "dkcclphrase.lus",
+          "searchString": "{subjectLaesekompas}",
+          "value": "{subjectLaesekompas}"
+        }
+      ],
+      "systemaccess": [
+        {
+          "value": "{systemaccess}"
+        }
+      ],
+      "title": [
+        {
+          "value": "{titleBrief}"
+        }
+      ],
+      "titleFull": [
+        {
+          "value": "{titleFull}"
+        }
+      ],
+      "tracks": [
+        {
+          "header": "{track_header}"
+        },
+        {
+          "track": "{track_information}"
+        }
+      ],
+      "verifiedseries": [
+        {
+          "value": "{verifiedSeries}"
+        }
+      ],
+      "creatormatvurd": [
+        {
+          "value": "{creator_matvurd}"
+        }
+      ],
+      "fulltextmatvurd": [
+        {
+          "value": "{full_text}"
+        }
+      ]
+      
+    }
+  }
+}

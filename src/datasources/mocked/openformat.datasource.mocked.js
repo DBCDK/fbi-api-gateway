@@ -133,9 +133,9 @@ export default {
             }
           },
           publication: {
-            value: {
-              $: "Kbh., Carlsen, 2012"
-            }
+            publisher: { $: "Kronstork" },
+            publicationYear: { $: "2020" },
+            latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } }
           },
           shelf: {
             value: {
@@ -328,9 +328,9 @@ export default {
             }
           },
           publication: {
-            value: {
-              $: "Kbh., Carlsen, 2012"
-            }
+            publisher: { $: "Kronstork" },
+            publicationYear: { $: "2020" },
+            latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } }
           },
           shelf: {
             value: {
@@ -411,10 +411,8 @@ export default {
           },
           content: {
             value: {
-              contentText: {
-                $:
-                  "Indhold: Dansktop ; Evergreens ; Pop/rock-hits fra 50'rne og 60'rne ; Pop/rock hits 70'rne og nyere ; Børnesange ; Melodi Grand Prix ; Billedrunden"
-              }
+              $:
+                "Jeg bor i Hvidovre ; Jeg fremlejer en lejlighed ; Modsætningen mellem"
             }
           },
           creators: {
@@ -531,9 +529,9 @@ export default {
             }
           },
           publication: {
-            value: {
-              $: "Kbh., Carlsen, 2012"
-            }
+            publisher: { $: "Kronstork" },
+            publicationYear: { $: "2020" },
+            latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } }
           },
           shelf: {
             value: {

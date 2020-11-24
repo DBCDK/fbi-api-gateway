@@ -14,7 +14,7 @@ Object {
       "fullTitle": "Min kamp : roman. 1. bog",
       "manifestations": Array [
         Object {
-          "content": null,
+          "content": Array [],
           "creators": Array [
             Object {
               "functionCode": "aut",
@@ -27,7 +27,7 @@ Object {
               "name": "Peter Frödin",
             },
           ],
-          "datePublished": "2012",
+          "datePublished": "2020",
           "dk5": Array [
             Object {
               "searchCode": "dkcclphrase.ldk",
@@ -54,11 +54,13 @@ Object {
             "Bogens originaludgave: 1988",
           ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
-          "publisher": "Kbh., Carlsen",
+          "publisher": Array [
+            "Kronstork",
+          ],
           "shelf": "skønlitteratur",
         },
         Object {
-          "content": null,
+          "content": Array [],
           "creators": Array [
             Object {
               "functionCode": "aut",
@@ -71,7 +73,7 @@ Object {
               "name": "Peter Frödin",
             },
           ],
-          "datePublished": "2012",
+          "datePublished": "2020",
           "dk5": Array [
             Object {
               "searchCode": "dkcclphrase.ldk",
@@ -98,18 +100,16 @@ Object {
             "Bogens originaludgave: 1988",
           ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
-          "publisher": "Kbh., Carlsen",
+          "publisher": Array [
+            "Kronstork",
+          ],
           "shelf": "skønlitteratur",
         },
         Object {
           "content": Array [
-            "Dansktop",
-            "Evergreens",
-            "Pop/rock-hits fra 50'rne og 60'rne",
-            "Pop/rock hits 70'rne og nyere",
-            "Børnesange",
-            "Melodi Grand Prix",
-            "Billedrunden",
+            "Jeg bor i Hvidovre",
+            "Jeg fremlejer en lejlighed",
+            "Modsætningen mellem",
           ],
           "creators": Array [
             Object {
@@ -123,7 +123,7 @@ Object {
               "name": "Peter Frödin",
             },
           ],
-          "datePublished": "2012",
+          "datePublished": "2020",
           "dk5": Array [
             Object {
               "searchCode": "dkcclphrase.ldk",
@@ -150,11 +150,13 @@ Object {
             "Bogens originaludgave: 1988",
           ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
-          "publisher": "Kbh., Carlsen",
+          "publisher": Array [
+            "Kronstork",
+          ],
           "shelf": "skønlitteratur",
         },
         Object {
-          "content": null,
+          "content": Array [],
           "creators": Array [
             Object {
               "functionCode": "aut",
@@ -167,7 +169,7 @@ Object {
               "name": "Peter Frödin",
             },
           ],
-          "datePublished": "2012",
+          "datePublished": "2020",
           "dk5": Array [
             Object {
               "searchCode": "dkcclphrase.ldk",
@@ -194,20 +196,18 @@ Object {
             "Bogens originaludgave: 1988",
           ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
-          "publisher": "Kbh., Carlsen",
+          "publisher": Array [
+            "Kronstork",
+          ],
           "shelf": "skønlitteratur",
         },
       ],
       "materialTypes": Array [
         Object {
           "content": Array [
-            "Dansktop",
-            "Evergreens",
-            "Pop/rock-hits fra 50'rne og 60'rne",
-            "Pop/rock hits 70'rne og nyere",
-            "Børnesange",
-            "Melodi Grand Prix",
-            "Billedrunden",
+            "Jeg bor i Hvidovre",
+            "Jeg fremlejer en lejlighed",
+            "Modsætningen mellem",
           ],
           "creators": Array [
             Object {
@@ -221,7 +221,7 @@ Object {
               "name": "Peter Frödin",
             },
           ],
-          "datePublished": "2012",
+          "datePublished": "2020",
           "dk5": Array [
             Object {
               "searchCode": "dkcclphrase.ldk",
@@ -248,11 +248,13 @@ Object {
             "Bogens originaludgave: 1988",
           ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
-          "publisher": "Kbh., Carlsen",
+          "publisher": Array [
+            "Kronstork",
+          ],
           "shelf": "skønlitteratur",
         },
         Object {
-          "content": null,
+          "content": Array [],
           "creators": Array [
             Object {
               "functionCode": "aut",
@@ -265,7 +267,7 @@ Object {
               "name": "Peter Frödin",
             },
           ],
-          "datePublished": "2012",
+          "datePublished": "2020",
           "dk5": Array [
             Object {
               "searchCode": "dkcclphrase.ldk",
@@ -292,7 +294,9 @@ Object {
             "Bogens originaludgave: 1988",
           ],
           "physicalDescription": "1 cd i 1 mappe (67 min.)",
-          "publisher": "Kbh., Carlsen",
+          "publisher": Array [
+            "Kronstork",
+          ],
           "shelf": "skønlitteratur",
         },
       ],

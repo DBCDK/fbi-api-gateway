@@ -1,6 +1,7 @@
 import request from "superagent";
 import config from "../config";
 import { withRedis } from "./redis.datasource";
+import displayFormat from "./openformat.displayformat.json";
 
 const { url, ttl, prefix } = config.datasources.openformat;
 
@@ -11,7 +12,7 @@ function createRequest(pid) {
         <ns1:formatObjectRequest>
             <ns1:pid>${pid}</ns1:pid>
             <ns1:outputFormat>
-                netpunkt_standard
+              ${JSON.stringify(displayFormat)}
             </ns1:outputFormat>
             <ns1:outputType>
                 json
@@ -23,7 +24,7 @@ function createRequest(pid) {
 
 async function fetchManifestation({ pid }) {
   return (await request.post(url).field("xml", createRequest(pid))).body
-    .formatResponse.netpunkt_standard[0].manifestation;
+    .formatResponse.customDisplay[0].manifestation;
 }
 
 /**
