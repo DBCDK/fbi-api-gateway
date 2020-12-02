@@ -25,6 +25,10 @@ import {
   typeDef as Search,
   resolvers as SearchResolvers
 } from "./searchresponse";
+import {
+  typeDef as Suggest,
+  resolvers as SuggestResolvers
+} from "./suggestions";
 import { typeDef as Series, resolvers as SeriesResolvers } from "./series";
 import { typeDef as Subject, resolvers as SubjectResolvers } from "./subject";
 import {
@@ -43,6 +47,7 @@ export const internalSchema = makeExecutableSchema({
       manifestation(pid: String!): WorkManifestation!
       work(id: String!): Work
       search(q: String!): SearchResponse!
+      suggest(q: String!): SuggestResponse!
     }`,
     DK5,
     Work,
@@ -56,6 +61,7 @@ export const internalSchema = makeExecutableSchema({
     SEO,
     Series,
     Subject,
+    Suggest,
     AdminData,
     Cover
   ],
@@ -69,6 +75,9 @@ export const internalSchema = makeExecutableSchema({
         return { ...work, id: args.id };
       },
       async search(parent, args, context, info) {
+        return { q: args.q };
+      },
+      async suggest(parent, args, context, info) {
         return { q: args.q };
       }
     },
@@ -84,6 +93,7 @@ export const internalSchema = makeExecutableSchema({
     ...SEOResolvers,
     ...SeriesResolvers,
     ...SubjectResolvers,
+    ...SuggestResolvers,
     ...AdminDataResolvers,
     ...CoverResolvers
   }

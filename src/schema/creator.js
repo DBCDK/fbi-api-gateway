@@ -11,6 +11,8 @@ type Creator {
   functionPlural: String! 
   name: String!
   type: String!
+  description: String!
+  imageUrl: String
 }`;
 
 export const resolvers = {
@@ -32,6 +34,16 @@ export const resolvers = {
     },
     type(parent) {
       return parent.type || get(parent, "functionCode.$", "");
+    },
+    async description(parent, args, context, info) {
+      const name = parent.value || get(parent, "name.$", "");
+      const creator = await context.datasources.creator.load(name);
+      return get(creator, "description", "");
+    },
+    async imageUrl(parent, args, context, info) {
+      const name = parent.value || get(parent, "name.$", "");
+      const creator = await context.datasources.creator.load(name);
+      return get(creator, "image.url");
     }
   }
 };
