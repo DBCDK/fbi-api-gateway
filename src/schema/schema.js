@@ -1,5 +1,6 @@
 import { makeExecutableSchema, mergeSchemas } from "graphql-tools";
 
+import { typeDef as DataCollectInput } from "./input/datacollect";
 import { typeDef as DK5, resolvers as DK5Resolvers } from "./dk5";
 import {
   typeDef as WorkManifestation,
@@ -37,6 +38,7 @@ import {
 } from "./admindata";
 import { typeDef as Cover, resolvers as CoverResolvers } from "./cover";
 import drupalSchema from "./external/drupal";
+import { log } from "dbc-node-logger";
 
 /**
  * Create executable schema from type definitions and resolvers
@@ -49,6 +51,10 @@ export const internalSchema = makeExecutableSchema({
       search(q: String!): SearchResponse!
       suggest(q: String!): SuggestResponse!
     }`,
+    `type Mutation {
+      data_collect(input: DataCollectInput!): String!
+    }`,
+    DataCollectInput,
     DK5,
     Work,
     WorkManifestation,
@@ -79,6 +85,28 @@ export const internalSchema = makeExecutableSchema({
       },
       async suggest(parent, args, context, info) {
         return { q: args.q };
+      }
+    },
+    Mutation: {
+      data_collect(parent, args, context, info) {
+        // Check that exactly one input type is given
+        const inputObjects = Object.values(args.input);
+        if (inputObjects.length !== 1) {
+          throw new Error("Exactly 1 input must be specified");
+        }
+
+        // Convert keys, replace _ to -
+        const data = {};
+        Object.entries(inputObjects[0]).forEach(([key, val]) => {
+          data[key.replace(/_/g, "-")] = val;
+        });
+
+        // We log the object, setting 'type: "data"' on the root level
+        // of the log entry. In this way the data will be collected
+        // by the AI data collector
+        log.info(data, { type: "data" });
+
+        return "OK";
       }
     },
     ...DK5Resolvers,
