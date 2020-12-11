@@ -3,9 +3,10 @@
  */
 
 import request from "superagent";
+import monitor from "../utils/monitor";
 import { withRedis } from "./redis.datasource";
 
-export const find = async ({ pid, limit = 10 }) => {
+async function find({ pid, limit = 10 }) {
   return (
     await request
       .post("http://recompass-work-1-2.mi-prod.svc.cloud.dbc.dk/recompass-work")
@@ -14,7 +15,13 @@ export const find = async ({ pid, limit = 10 }) => {
         limit
       })
   ).body;
-};
+}
+
+// find monitored
+const monitored = monitor(
+  { name: "REQUEST_recommendations", help: "recommendations requests" },
+  find
+);
 
 /**
  * A DataLoader batch function
@@ -25,7 +32,7 @@ export const find = async ({ pid, limit = 10 }) => {
  * @param {Array.<string>} keys The keys to fetch
  */
 async function batchLoader(keys) {
-  return await Promise.all(keys.map(async key => await find(key)));
+  return await Promise.all(keys.map(async key => await monitored(key)));
 }
 
 /**

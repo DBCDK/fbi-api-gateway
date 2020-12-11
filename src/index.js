@@ -18,12 +18,35 @@ import graphqlHTTP from "express-graphql";
 import DataLoader from "dataloader";
 import config from "./config";
 import howruHandler from "./howru";
+import { metrics, observeDuration, count } from "./utils/monitor";
 
 const app = express();
 let server;
 
+const promExporterApp = express();
+// Setup route handler for metrics
+promExporterApp.get("/metrics", metrics);
+promExporterApp.listen(9599, () => {
+  log.info(`Running metrics endpoint at http://localhost:9599/metrics`);
+});
+
 (async () => {
   app.use(cors());
+
+  // Middleware that monitors performance of those GraphQL queries
+  // which specify a monitor name.
+  app.use(async (req, res, next) => {
+    const start = process.hrtime();
+    res.once("finish", () => {
+      // monitorName is added to context/req in the monitor resolver
+      if (req.monitorName) {
+        const elapsed = process.hrtime(start);
+        const seconds = elapsed[0] + elapsed[1] / 1e9;
+        observeDuration(req.monitorName, seconds);
+      }
+    });
+    next();
+  });
 
   // set up context per request
   app.use((req, res, next) => {
@@ -60,15 +83,23 @@ let server;
     "/graphql",
     graphqlHTTP({
       schema: await schema(),
-      graphiql: true
+      graphiql: true,
+      extensions: ({ document, context, result }) => {
+        if (document && document.definitions && !result.errors) {
+          count("query_success");
+        } else {
+          count("query_error");
+        }
+      }
     })
   );
 
   // Setup route handler for howru
   app.get("/howru", howruHandler);
 
-  server = app.listen(config.port);
-  log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);
+  server = app.listen(config.port, () => {
+    log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);
+  });
 })();
 
 const signals = {

@@ -1,5 +1,6 @@
 import request from "superagent";
 import config from "../config";
+import monitor from "../utils/monitor";
 import { withRedis } from "./redis.datasource";
 
 const {
@@ -41,6 +42,12 @@ async function fetchMoreInfo({ pid }) {
   return res;
 }
 
+// fetchMoreInfo monitored
+const monitored = monitor(
+  { name: "REQUEST_moreinfo", help: "moreinfo request" },
+  fetchMoreInfo
+);
+
 /**
  * The status function
  *
@@ -60,7 +67,7 @@ export async function status() {
  */
 async function batchLoader(keys) {
   return await Promise.all(
-    keys.map(async key => await fetchMoreInfo({ pid: key }))
+    keys.map(async key => await monitored({ pid: key }))
   );
 }
 

@@ -2,6 +2,7 @@ import request from "superagent";
 import config from "../config";
 import { withRedis } from "./redis.datasource";
 import displayFormat from "./openformat.displayformat.json";
+import monitor from "../utils/monitor";
 
 const { url, ttl, prefix } = config.datasources.openformat;
 
@@ -27,6 +28,12 @@ async function fetchManifestation({ pid }) {
     .formatResponse.customDisplay[0].manifestation;
 }
 
+// fetchManifestation monitored
+const monitored = monitor(
+  { name: "REQUEST_openformat", help: "openformat requests" },
+  fetchManifestation
+);
+
 /**
  * The status function
  *
@@ -46,7 +53,7 @@ export async function status() {
  */
 async function batchLoader(keys) {
   return await Promise.all(
-    keys.map(async key => await fetchManifestation({ pid: key }))
+    keys.map(async key => await monitored({ pid: key }))
   );
 }
 

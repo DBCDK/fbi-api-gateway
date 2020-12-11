@@ -1,6 +1,7 @@
 import { log } from "dbc-node-logger";
 import Redis from "ioredis";
 import config from "../config";
+import monitor from "../utils/monitor";
 
 // Redis client
 let redis;
@@ -58,6 +59,41 @@ function connectRedis({ host, port, prefix }) {
 }
 
 /**
+ * A monitored redis get operation
+ */
+const get = monitor(
+  { name: "REQUEST_redis_get", help: "Redis get request" },
+  async key => {
+    try {
+      return JSON.parse(await redis.get(key));
+    } catch (e) {
+      log.error(`Redis get failed`, {
+        key
+      });
+      return null;
+    }
+  }
+);
+
+/**
+ * A monitored redis set operation
+ */
+const set = monitor(
+  { name: "REQUEST_redis_set", help: "Redis set request" },
+  async (key, seconds, val) => {
+    try {
+      await redis.set(key, JSON.stringify(val), "ex", seconds);
+    } catch (e) {
+      log.error(`Redis setex failed`, {
+        key,
+        val,
+        seconds
+      });
+    }
+  }
+);
+
+/**
  * mget does not work when Redis is running in a cluster
  * and keys are on different nodes.
  * Therefore, we must call get per key.
@@ -68,18 +104,7 @@ async function mget(keys) {
   if (!isConnected) {
     return keys.map(() => null);
   }
-  return Promise.all(
-    keys.map(async key => {
-      try {
-        return JSON.parse(await redis.get(key));
-      } catch (e) {
-        log.error(`Redis get failed`, {
-          key
-        });
-        return null;
-      }
-    })
-  );
+  return Promise.all(keys.map(get));
 }
 
 /**
@@ -95,15 +120,7 @@ async function setex(key, seconds, val) {
   if (!isConnected) {
     return;
   }
-  try {
-    await redis.set(key, JSON.stringify(val), "ex", seconds);
-  } catch (e) {
-    log.error(`Redis setex failed`, {
-      key,
-      val,
-      seconds
-    });
-  }
+  await set(key, seconds, val);
 }
 
 function createPrefixedKey(prefix, key) {
