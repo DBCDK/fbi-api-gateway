@@ -4,37 +4,37 @@ import { typeDef as DataCollectInput } from "./input/datacollect";
 import { typeDef as DK5, resolvers as DK5Resolvers } from "./dk5";
 import {
   typeDef as WorkManifestation,
-  resolvers as WorkManifestationResolvers,
+  resolvers as WorkManifestationResolvers
 } from "./workmanifestation";
 import { typeDef as Work, resolvers as WorkResolvers } from "./work";
 import {
   typeDef as Manifestation,
-  resolvers as ManifestationResolvers,
+  resolvers as ManifestationResolvers
 } from "./manifestation";
 import {
   typeDef as Recommendation,
-  resolvers as RecommendationResolvers,
+  resolvers as RecommendationResolvers
 } from "./recommendation";
 import { typeDef as Review, resolvers as ReviewResolvers } from "./review";
 import { typeDef as Creator, resolvers as CreatorResolvers } from "./creator";
 import {
   typeDef as SearchQuery,
-  resolvers as SearchQueryResolvers,
+  resolvers as SearchQueryResolvers
 } from "./searchquery";
 import { typeDef as SEO, resolvers as SEOResolvers } from "./seo";
 import {
   typeDef as Search,
-  resolvers as SearchResolvers,
+  resolvers as SearchResolvers
 } from "./searchresponse";
 import {
   typeDef as Suggest,
-  resolvers as SuggestResolvers,
+  resolvers as SuggestResolvers
 } from "./suggestions";
 import { typeDef as Series, resolvers as SeriesResolvers } from "./series";
 import { typeDef as Subject, resolvers as SubjectResolvers } from "./subject";
 import {
   typeDef as AdminData,
-  resolvers as AdminDataResolvers,
+  resolvers as AdminDataResolvers
 } from "./admindata";
 import { typeDef as Cover, resolvers as CoverResolvers } from "./cover";
 import drupalSchema from "./external/drupal";
@@ -71,7 +71,7 @@ export const internalSchema = makeExecutableSchema({
     Subject,
     Suggest,
     AdminData,
-    Cover,
+    Cover
   ],
   resolvers: {
     Query: {
@@ -96,7 +96,7 @@ export const internalSchema = makeExecutableSchema({
       },
       async suggest(parent, args, context, info) {
         return { q: args.q };
-      },
+      }
     },
     Mutation: {
       data_collect(parent, args, context, info) {
@@ -115,10 +115,10 @@ export const internalSchema = makeExecutableSchema({
         // We log the object, setting 'type: "data"' on the root level
         // of the log entry. In this way the data will be collected
         // by the AI data collector
-        log.info(data, { type: "data" });
+        log.info(JSON.stringify(data), { type: "data" });
 
         return "OK";
-      },
+      }
     },
     ...DK5Resolvers,
     ...WorkManifestationResolvers,
@@ -134,8 +134,8 @@ export const internalSchema = makeExecutableSchema({
     ...SubjectResolvers,
     ...SuggestResolvers,
     ...AdminDataResolvers,
-    ...CoverResolvers,
-  },
+    ...CoverResolvers
+  }
 });
 
 /**
@@ -143,6 +143,6 @@ export const internalSchema = makeExecutableSchema({
  */
 export default async () => {
   return mergeSchemas({
-    subschemas: [{ schema: await drupalSchema() }, { schema: internalSchema }],
+    subschemas: [{ schema: await drupalSchema() }, { schema: internalSchema }]
   });
 };
