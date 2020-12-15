@@ -10,11 +10,16 @@ export const typeDef = `
     search_query_work: String!
     session_id: String!
   }
+  input DataCollectSearchInput {
+    search_query: String!
+    session_id: String!
+  }
   input DataCollectExampleInput {
     example: String!
     session_id: String!
   }
   input DataCollectInput {
+    search: DataCollectSearchInput
     search_work: DataCollectSearchWorkInput
     example: DataCollectExampleInput
   }
