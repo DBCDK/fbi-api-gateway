@@ -70,7 +70,7 @@ describe("API test cases", () => {
     // Check that entry is written to std out in th format AI expects
     expect(JSON.parse(spy.console.mock.calls[0][0])).toMatchObject({
       type: "data",
-      msg: JSON.stringify({
+      message: JSON.stringify({
         "search-query": "harry",
         "search-query-hit": 7,
         "search-query-work": "some-work-id",
