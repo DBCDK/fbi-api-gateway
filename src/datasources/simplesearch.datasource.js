@@ -12,6 +12,7 @@ async function find({ q }) {
     await request
       .post("http://simple-search-bibdk-1-0.mi-prod.svc.cloud.dbc.dk/search")
       .send({
+        "access-token": "479317f0-3f91-11eb-9ba0-4c1d96c9239f",
         q,
         debug: true,
         options: { "include-phonetic-creator": false }
