@@ -75,9 +75,8 @@ export const resolvers = {
         uniqKey: resolveAuthor(review),
         sortKey: resolveDate(review)
       }));
-
-      reviews = uniqBy(reviews, "uniqKey");
       reviews = orderBy(reviews, "sortKey", "desc");
+      reviews = uniqBy(reviews, "uniqKey");
 
       return reviews;
     },
