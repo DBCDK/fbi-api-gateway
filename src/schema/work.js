@@ -61,93 +61,11 @@ export const resolvers = {
       return ["Bøger", "Fiktion", "skønlitteratur", "roman"];
     },
     reviews(parent, args, context, info) {
-      // mocked
-      return [
-        {
-          author: "Svend Svendsen",
-          media: "Jyllandsposten",
-          rating: "4/5",
-          reviewType: "INFOMEDIA",
-          url: "http://"
-        },
-        {
-          author: "Didrik Pedersen",
-          media: "",
-          rating: "1/5",
-          reviewType: "LITTERATURSIDEN",
-          url: "http://"
-        },
-        {
-          author: "Svend Svendsen",
-          media: "",
-          rating: "3/5",
-          reviewType: "MATERIALREVIEWS",
-          url: "http://"
-        },
-        {
-          author: "Didrik Pedersen",
-          media: "Berlingske Tidende",
-          rating: "5/5",
-          reviewType: "INFOMEDIA",
-          url: "http://"
-        },
-        {
-          author: "Katinka Olsen",
-          media: "",
-          rating: "2/5",
-          reviewType: "LITTERATURSIDEN",
-          url: "http://"
-        },
-        {
-          author: "Ralf Bengtsen",
-          media: "",
-          rating: "1/5",
-          reviewType: "MATERIALREVIEWS",
-          url: "http://"
-        },
-        {
-          author: "Svend Svendsen",
-          media: "Jyllandsposten",
-          rating: "4/5",
-          reviewType: "INFOMEDIA",
-          url: "http://"
-        },
-        {
-          author: "Svend Svendsen",
-          media: "",
-          rating: "4/5",
-          reviewType: "LITTERATURSIDEN",
-          url: "http://"
-        },
-        {
-          author: "Søren Kassebeer",
-          media: "Berlingske Tidende",
-          rating: "5/5",
-          reviewType: "INFOMEDIA",
-          url: "http://"
-        },
-        {
-          author: "Svend Svendsen",
-          media: "Jyllandsposten",
-          rating: "3/5",
-          reviewType: "INFOMEDIA",
-          url: "http://"
-        },
-        {
-          author: "Svend Svendsen",
-          media: "",
-          rating: "3/5",
-          reviewType: "LITTERATURSIDEN",
-          url: "http://"
-        },
-        {
-          author: "Svend Svendsen",
-          media: "Jyllandsposten",
-          rating: "2/5",
-          reviewType: "INFOMEDIA",
-          url: "http://"
-        }
-      ];
+      // We find relations that are reviews
+      // and load data from openformat
+      return parent.relations
+        .filter(rel => rel.type === "review")
+        .map(review => context.datasources.openformat.load(review.id));
     },
     series(parent, args, context, info) {
       return parent;

@@ -3,28 +3,164 @@
  *
  */
 
+import { getArray } from "../utils/utils";
+
 /**
- * The Review type definition
+ * The Review type definitions
+ * Review is a union type, and may be ReviewInfomedia,
+ * ReviewLitteratursiden or ReviewMatVurd
  */
 export const typeDef = `
-enum ReviewType {
-  INFOMEDIA
-  LITTERATURSIDEN
-  MATERIALREVIEWS
-}
-type Review {
+type ReviewInfomedia {
   author: String!
+  date: String!
   media: String!
   rating: String!
-  reviewType: ReviewType!
+}
+type ReviewLitteratursiden {
+  author: String!
+  date: String!
   url: String!
-}`;
+}
+type ReviewMatVurd {
+  author: String!
+  date: String!
+  all: [TextWithWork!]!
+  about: [TextWithWork!]!
+  description: [TextWithWork!]!
+  evaluation: [TextWithWork!]!
+  other: [TextWithWork!]!
+}
+type TextWithWork {
+  "A piece of text mentioning a work at the end."
+  text: String!
+  "The work the text is refering to. When work is null, the text does not refer to a work."
+  work: Work
+}
+union Review = ReviewInfomedia | ReviewLitteratursiden | ReviewMatVurd
+`;
+
+/**
+ * Resolver for author
+ * @param {object} parent
+ */
+function resolveAuthor(parent) {
+  return (
+    getArray(parent, "details.creators.value").map(entry => entry.name.$)[0] ||
+    ""
+  );
+}
+
+/**
+ * Resolver for date
+ * @param {object} parent
+ */
+function resolveDate(parent) {
+  return (
+    getArray(parent, "details.articleData.article.volume").map(
+      entry => entry.$
+    )[0] ||
+    getArray(parent, "admindata.creationDate").map(entry => entry.$)[0] ||
+    ""
+  );
+}
+
+/**
+ * Resolver for media
+ * @param {object} parent
+ */
+function resolveMedia(parent) {
+  return (
+    getArray(parent, "details.hostPublication.title").map(
+      entry => entry.$
+    )[0] || ""
+  );
+}
 
 /**
  * Resolvers for the Review type
- * Note that for fields not represented in resolvers, GraphQL
- * uses its default resolver (it looks in parent obj for the field).
  */
 export const resolvers = {
-  Review: {}
+  TextWithWork: {
+    text(parent, args, context, info) {
+      return parent.text.$ || "hest";
+    },
+    async work(parent, args, context, info) {
+      try {
+        if (parent.faust && parent.faust.$) {
+          const id = `work-of:870970-basis:${parent.faust.$}`;
+          const { work } = await context.datasources.workservice.load(id);
+          return { ...work, id };
+        }
+      } catch (e) {
+        return null;
+      }
+    }
+  },
+  ReviewInfomedia: {
+    author: resolveAuthor,
+    date: resolveDate,
+    media: resolveMedia,
+    rating(parent, args, context, info) {
+      return (
+        getArray(parent, "details.reviewRatings").map(entry => entry.$)[0] || ""
+      );
+    }
+  },
+  ReviewLitteratursiden: {
+    author: resolveAuthor,
+    date: resolveDate,
+    url(parent, args, context, info) {
+      return (
+        getArray(parent, "details.onlineAccess.value.link").map(
+          entry => entry.$
+        )[0] || ""
+      );
+    }
+  },
+  ReviewMatVurd: {
+    author: resolveAuthor,
+    date: resolveDate,
+    all(parent, args, context, info) {
+      // return all text paragraps in fulltextmatvurd
+      let res = [];
+      getArray(parent, "details.fulltextmatvurd.value").forEach(entry => {
+        Object.values(entry).forEach(item => {
+          if (Array.isArray(item)) {
+            res = [...res, ...item];
+          } else {
+            res.push(item);
+          }
+        });
+      });
+      return res;
+    },
+    about(parent, args, context, info) {
+      return getArray(parent, "details.fulltextmatvurd.value.about");
+    },
+    description(parent, args, context, info) {
+      return getArray(parent, "details.fulltextmatvurd.value.description");
+    },
+    evaluation(parent, args, context, info) {
+      return getArray(parent, "details.fulltextmatvurd.value.evaluation");
+    },
+    other(parent, args, context, info) {
+      return getArray(parent, "details.fulltextmatvurd.value.other");
+    }
+  },
+  Review: {
+    __resolveType(parent, args, context, info) {
+      if (parent.details && parent.details.fulltextmatvurd) {
+        return "ReviewMatVurd";
+      } else if (
+        resolveMedia(parent)
+          .toLowerCase()
+          .includes("litteratursiden")
+      ) {
+        return "ReviewLitteratursiden";
+      } else {
+        return "ReviewInfomedia";
+      }
+    }
+  }
 };

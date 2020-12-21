@@ -63,7 +63,8 @@
       ],
       "hostPublication": [
         {
-          "value": "{hostPublication}"
+          "value": "{hostPublication}",
+          "title": "{bibdk_host_publication_title}"
         }
       ],
       "isbn": [
@@ -178,6 +179,7 @@
           "value": "{related_series}"
         }
       ],
+      "reviewRatings": "{review_ratings}",
       "series": [
         {
           "value": "{regular_series}"
@@ -240,7 +242,6 @@
           "value": "{full_text}"
         }
       ]
-      
     }
   }
 }

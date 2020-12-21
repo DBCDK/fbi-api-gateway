@@ -18,7 +18,8 @@ async function fetchWork({ workId }) {
       workId,
       // trackingId: 'bibdk-api', this should be dynamic, and be generated per graphql request
       agencyId,
-      profile
+      profile,
+      includeRelations: true
     })
   ).body;
 }

@@ -27,6 +27,28 @@ export default {
             { type: "genre", value: "krimi" },
             { value: "småbørnsbog" }
           ],
+          relations: [
+            {
+              id: "870971-anmeld:37860409",
+              type: "review",
+              types: ["Anmeldelse"]
+            },
+            {
+              id: "870971-anmeld:37931659",
+              type: "review",
+              types: ["Anmeldelse"]
+            },
+            {
+              id: "870971-anmeld:37969532",
+              type: "review",
+              types: ["Anmeldelse"]
+            },
+            {
+              id: "870976-anmeld:31605180",
+              type: "review",
+              types: ["Anmeldelse"]
+            }
+          ],
           title: "min kamp",
           workId: "work-of:870970-basis:28329490"
         }
