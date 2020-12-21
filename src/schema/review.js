@@ -32,6 +32,7 @@ type ReviewMatVurd {
   other: [TextWithWork!]!
 }
 type TextWithWork {
+  name: String!
   "A piece of text mentioning a work at the end."
   text: String!
   "The work the text is refering to. When work is null, the text does not refer to a work."
@@ -44,7 +45,7 @@ union Review = ReviewInfomedia | ReviewLitteratursiden | ReviewMatVurd
  * Resolver for author
  * @param {object} parent
  */
-function resolveAuthor(parent) {
+export function resolveAuthor(parent) {
   return (
     getArray(parent, "details.creators.value").map(entry => entry.name.$)[0] ||
     ""
@@ -55,7 +56,7 @@ function resolveAuthor(parent) {
  * Resolver for date
  * @param {object} parent
  */
-function resolveDate(parent) {
+export function resolveDate(parent) {
   return (
     getArray(parent, "details.articleData.article.volume").map(
       entry => entry.$
@@ -123,13 +124,15 @@ export const resolvers = {
     date: resolveDate,
     all(parent, args, context, info) {
       // return all text paragraps in fulltextmatvurd
-      let res = [];
+      const res = [];
       getArray(parent, "details.fulltextmatvurd.value").forEach(entry => {
-        Object.values(entry).forEach(item => {
+        Object.entries(entry).forEach(([name, item]) => {
           if (Array.isArray(item)) {
-            res = [...res, ...item];
+            item.forEach(item2 => {
+              res.push({ name, ...item2 });
+            });
           } else {
-            res.push(item);
+            res.push({ name, ...item });
           }
         });
       });

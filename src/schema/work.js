@@ -3,7 +3,8 @@
  *
  */
 
-import { sortBy } from "lodash";
+import { sortBy, orderBy, uniqBy } from "lodash";
+import { resolveAuthor, resolveDate } from "./review";
 import { getPageDescription } from "../utils/utils";
 
 /**
@@ -60,12 +61,25 @@ export const resolvers = {
       // Got to figure out how to generate this path
       return ["Bøger", "Fiktion", "skønlitteratur", "roman"];
     },
-    reviews(parent, args, context, info) {
+    async reviews(parent, args, context, info) {
       // We find relations that are reviews
       // and load data from openformat
-      return parent.relations
-        .filter(rel => rel.type === "review")
-        .map(review => context.datasources.openformat.load(review.id));
+      let reviews = (
+        await Promise.all(
+          parent.relations
+            .filter(rel => rel.type === "review")
+            .map(review => context.datasources.openformat.load(review.id))
+        )
+      ).map(review => ({
+        ...review,
+        uniqKey: resolveAuthor(review),
+        sortKey: resolveDate(review)
+      }));
+
+      reviews = uniqBy(reviews, "uniqKey");
+      reviews = orderBy(reviews, "sortKey", "desc");
+
+      return reviews;
     },
     series(parent, args, context, info) {
       return parent;
@@ -92,7 +106,6 @@ export const resolvers = {
           materialTypes
         })
       };
-      return parent;
     }
   }
 };
