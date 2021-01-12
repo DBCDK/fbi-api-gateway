@@ -6,7 +6,7 @@ const fetcher = async ({ query: queryDocument, variables, operationName }) => {
   const query = print(queryDocument);
   const fetchResult = await request
     .post(
-      "http://bibdk-backend-www-master.frontend-staging.svc.cloud.dbc.dk/graphql"
+      "http://bibdk-backend-www-master.frontend-prod.svc.cloud.dbc.dk/graphql"
     )
     .send({ query, variables, operationName });
   return await fetchResult.body;
