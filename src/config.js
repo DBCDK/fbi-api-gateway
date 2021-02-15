@@ -4,9 +4,16 @@ export default {
     openformat: {
       url:
         process.env.OPENFORMAT_URL ||
-        "http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php",
+        "http://openformat-php-master.frontend-staging.svc.cloud.dbc.dk/server.php",
       ttl: process.env.OPENFORMAT_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.OPENFORMAT_PREFIX || "openformat-1"
+    },
+    backend: {
+      url:
+        process.env.BACKEND_URL ||
+        "http://bibdk-backend-www-master.frontend-prod.svc.cloud.dbc.dk/graphql",
+      ttl: process.env.BACKEND_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
+      prefix: process.env.BACKEND_PREFIX || "backend-1"
     },
     moreinfo: {
       url: process.env.MOREINFO_URL,

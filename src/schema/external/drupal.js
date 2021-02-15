@@ -1,12 +1,15 @@
 import request from "superagent";
 import { introspectSchema, makeRemoteExecutableSchema } from "graphql-tools";
 import { print } from "graphql";
+import config from '../../config';
 
 const fetcher = async ({ query: queryDocument, variables, operationName }) => {
   const query = print(queryDocument);
+  console.log(query, "QUERY");
+  const url = config.datasources.backend.url
   const fetchResult = await request
     .post(
-      "http://bibdk-backend-www-master.frontend-prod.svc.cloud.dbc.dk/graphql"
+      url
     )
     .send({ query, variables, operationName });
   return await fetchResult.body;
