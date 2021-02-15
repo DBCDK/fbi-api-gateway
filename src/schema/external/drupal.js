@@ -8,7 +8,7 @@ const fetcher = async ({ query: queryDocument, variables, operationName }) => {
   const url = config.datasources.backend.url
   const fetchResult = await request
     .post(
-      url
+      "http://bibdk-backend-www-master.frontend-prod.svc.cloud.dbc.dk/graphql"
     )
     .send({ query, variables, operationName });
   return await fetchResult.body;
