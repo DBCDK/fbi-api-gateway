@@ -5,7 +5,6 @@ import config from '../../config';
 
 const fetcher = async ({ query: queryDocument, variables, operationName }) => {
   const query = print(queryDocument);
-  console.log(query, "QUERY");
   const url = config.datasources.backend.url
   const fetchResult = await request
     .post(
