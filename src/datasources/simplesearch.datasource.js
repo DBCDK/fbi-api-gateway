@@ -6,17 +6,18 @@
 import request from "superagent";
 import monitor from "../utils/monitor";
 import { withRedis } from "./redis.datasource";
+import config from "../config";
+
+const { url, prefix } = config.datasources.simplesearch;
 
 async function find({ q }) {
   return (
-    await request
-      .post("http://simple-search-bibdk-1-0.mi-prod.svc.cloud.dbc.dk/search")
-      .send({
-        "access-token": "479317f0-3f91-11eb-9ba0-4c1d96c9239f",
-        q,
-        debug: true,
-        options: { "include-phonetic-creator": false }
-      })
+    await request.post(url).send({
+      "access-token": "479317f0-3f91-11eb-9ba0-4c1d96c9239f",
+      q,
+      debug: true,
+      options: { "include-phonetic-creator": false },
+    })
   ).body;
 }
 
@@ -32,13 +33,13 @@ const monitored = monitor(
  * @param {Array.<string>} keys The keys to fetch
  */
 async function batchLoader(keys) {
-  return await Promise.all(keys.map(async key => await monitored(key)));
+  return await Promise.all(keys.map(async (key) => await monitored(key)));
 }
 
 /**
  * Enhance batch function with Redis caching
  */
 export default withRedis(batchLoader, {
-  prefix: "simplesearch",
-  ttl: 60 * 60 * 24
+  prefix,
+  ttl: 60 * 60 * 24,
 });
