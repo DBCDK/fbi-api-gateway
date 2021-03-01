@@ -7,21 +7,34 @@ export default {
           creators: [{ type: "aut", value: "karl ove knausgård" }],
           description: "Selvbiografisk roman",
           fullTitle: "Min kamp : roman. 1. bog",
-          records: [
+          groups: [
             {
-              id: "800010-katalog:99121962154805763__1",
-              types: ["Bog"]
+              records: [
+                {
+                  id: "800010-katalog:99121962154805763__1",
+                  types: ["Bog"]
+                }
+              ]
             },
             {
-              id: "300101-katalog:28486006",
-              types: ["Ebog", "Bog"]
+              records: [
+                {
+                  id: "300101-katalog:28486006",
+                  types: ["Ebog", "Bog"]
+                }
+              ]
             },
             {
-              id: "870970-basis:29433909",
+              records: [
+                {
+                  id: "870970-basis:29433909",
 
-              types: ["Bog"]
+                  types: ["Bog"]
+                }
+              ]
             }
           ],
+
           subjects: [
             { type: "dcterms:LCSH", value: "krimi" },
             { type: "genre", value: "krimi" },
