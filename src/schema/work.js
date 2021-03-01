@@ -36,8 +36,9 @@ export const typeDef = `
 export const resolvers = {
   Work: {
     async cover(parent, args, context, info) {
+      const records = flattenRecords(parent);
       const covers = await Promise.all(
-        parent.records.map(record => {
+        records.map(record => {
           return context.datasources.moreinfo.load(record.id);
         })
       );
