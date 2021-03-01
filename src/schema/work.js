@@ -120,8 +120,14 @@ export const resolvers = {
 function flattenRecords(work) {
   // The array that will hold the records
   const records = [];
+
+  // Get the primary records (first record of each group)
+  const primaryRecords = work.groups.map(group => {
+    return group.records[0];
+  });
+
   // Walk through every record
-  work.records.forEach(record => {
+  primaryRecords.forEach(record => {
     record.types.forEach(typeName => {
       records.push({ ...record, materialType: typeName });
     });
