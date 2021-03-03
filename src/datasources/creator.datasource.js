@@ -1,9 +1,9 @@
 /**
  * @file Get creator metadata
- * Based on data fetched from forfatterweb on 1.dec. 2020
+ * At some point we might have access to a creator/author service
  */
 
-import metadata from "./creators.json";
+const metadata = {};
 
 /**
  * Get metadata for a single creator
