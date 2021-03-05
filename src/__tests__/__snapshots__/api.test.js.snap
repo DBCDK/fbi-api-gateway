@@ -47,6 +47,7 @@ Object {
           ],
           "materialType": "Bog",
           "notes": Array [],
+          "onlineAccess": null,
           "originalTitle": "",
           "originals": Array [
             "Gengivelse af bogen",
@@ -93,6 +94,16 @@ Object {
           ],
           "materialType": "Bog",
           "notes": Array [],
+          "onlineAccess": Array [
+            Object {
+              "note": "Adgang til lån hos eReolen.dk",
+              "url": "https://ereolen.dk/ting/object/870970-basis:51796527",
+            },
+            Object {
+              "note": "Adgang til titlen på eReolen Go",
+              "url": "https://ereolengo.dk/ting/object/870970-basis:51796527",
+            },
+          ],
           "originalTitle": "",
           "originals": Array [
             "Gengivelse af bogen",
@@ -143,6 +154,7 @@ Object {
           ],
           "materialType": "Bog",
           "notes": Array [],
+          "onlineAccess": null,
           "originalTitle": "",
           "originals": Array [
             "Gengivelse af bogen",
@@ -189,6 +201,16 @@ Object {
           ],
           "materialType": "Ebog",
           "notes": Array [],
+          "onlineAccess": Array [
+            Object {
+              "note": "Adgang til lån hos eReolen.dk",
+              "url": "https://ereolen.dk/ting/object/870970-basis:51796527",
+            },
+            Object {
+              "note": "Adgang til titlen på eReolen Go",
+              "url": "https://ereolengo.dk/ting/object/870970-basis:51796527",
+            },
+          ],
           "originalTitle": "",
           "originals": Array [
             "Gengivelse af bogen",
@@ -241,6 +263,7 @@ Object {
           ],
           "materialType": "Bog",
           "notes": Array [],
+          "onlineAccess": null,
           "originalTitle": "",
           "originals": Array [
             "Gengivelse af bogen",
@@ -287,6 +310,16 @@ Object {
           ],
           "materialType": "Ebog",
           "notes": Array [],
+          "onlineAccess": Array [
+            Object {
+              "note": "Adgang til lån hos eReolen.dk",
+              "url": "https://ereolen.dk/ting/object/870970-basis:51796527",
+            },
+            Object {
+              "note": "Adgang til titlen på eReolen Go",
+              "url": "https://ereolengo.dk/ting/object/870970-basis:51796527",
+            },
+          ],
           "originalTitle": "",
           "originals": Array [
             "Gengivelse af bogen",

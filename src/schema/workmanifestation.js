@@ -9,6 +9,10 @@ import { getArray, matchYear } from "../utils/utils";
  * The WorkManifestation type definition
  */
 export const typeDef = `
+    type OnlineAccess {
+      url: String!
+      note: String!
+    }
     type WorkManifestation {
       content: [String!]
       cover: Cover! 
@@ -22,6 +26,7 @@ export const typeDef = `
       language: [String!]!
       materialType: String!
       notes: [String!]!
+      onlineAccess: [OnlineAccess!]
       originals: [String!]!
       originalTitle: String
       physicalDescription: String!
@@ -161,6 +166,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
+
       return (
         getArray(manifestation, "details.materialType").map(
           entry => entry.$
@@ -177,6 +183,22 @@ export const resolvers = {
       return getArray(manifestation, "details.notes.value").map(
         entry => entry.$
       );
+    },
+    async onlineAccess(parent, args, context, info) {
+      if (parent.onlineAccess) {
+        return parent.onlineAccess;
+      }
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      const onlineAccess = getArray(
+        manifestation,
+        "details.onlineAccess.value"
+      ).map(entry => ({
+        url: (entry.link && entry.link.$) || "",
+        note: (entry.note && entry.note.$) || ""
+      }));
+      return onlineAccess.length > 0 ? onlineAccess : null;
     },
     async originals(parent, args, context, info) {
       if (parent.originals) {

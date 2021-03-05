@@ -146,6 +146,10 @@ describe("API test cases", () => {
                   isbn
                   materialType
                   notes
+                  onlineAccess {
+                    url
+                    note
+                  }
                   originals
                   originalTitle
                   language
@@ -170,6 +174,10 @@ describe("API test cases", () => {
                   isbn
                   materialType
                   notes
+                  onlineAccess {
+                    url
+                    note
+                  }
                   originals
                   originalTitle
                   language
