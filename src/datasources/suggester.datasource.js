@@ -4,10 +4,11 @@
  * This is temporary until real suggester is implemented
  */
 
-import metadata from "./creators.json";
 import { orderBy } from "lodash";
 import simplesearchBatchLoader from "./simplesearch.datasource";
 import workBatchLoader from "./work.datasource";
+
+const metadata = {};
 
 // extract subjects from creators.json
 const subjects = {};
