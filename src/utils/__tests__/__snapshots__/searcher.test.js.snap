@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test searcher search: dots in begging and end 1`] = `
+Array [
+  Object {
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec convallis turpis. Praesent porttitor fringilla purus, eu auctor urna blandit at. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Etiam volutpat lacus orci, eget iaculis est dapibus in. Nulla id congue nisl. Sed mollis mi vel nulla bibendum, eget rhoncus urna ornare. Quisque fermentum ultrices sagittis. Phasellus cursus venenatis metus ut iaculis. Proin ut aliquet sapien, non accumsan arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus tristique mattis cursus. Nunc sed odio lorem. Curabitur facilisis massa a ex commodo, vitae ullamcorper lectus efficitur. Nam nec tellus nec nulla blandit consectetur condimentum id nisl. Morbi ante libero, accumsan nec auctor a, suscipit sed massa.",
+    "highlights": Object {
+      "body": "... est dapibus in. Nulla id congue nisl. Sed mollis mi vel nulla bibendum, eget rhoncus urna ornare. Quisque <mark>fermentum</mark> ultrices sagittis. Phasellus cursus venenatis metus ut iaculis. Proin ut aliquet sapien, non accumsan arcu. Pellentesque habitant ...",
+    },
+    "id": 0,
+    "match": Object {
+      "fermentum": Array [
+        "body",
+      ],
+    },
+    "score": 0,
+    "terms": Array [
+      "fermentum",
+    ],
+  },
+]
+`;
+
+exports[`Test searcher search: dots in beginning 1`] = `
+Array [
+  Object {
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec convallis turpis. Praesent porttitor fringilla purus, eu auctor urna blandit at. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Etiam volutpat lacus orci, eget iaculis est dapibus in. Nulla id congue nisl. Sed mollis mi vel nulla bibendum, eget rhoncus urna ornare. Quisque fermentum ultrices sagittis. Phasellus cursus venenatis metus ut iaculis. Proin ut aliquet sapien, non accumsan arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus tristique mattis cursus. Nunc sed odio lorem. Curabitur facilisis massa a ex commodo, vitae ullamcorper lectus efficitur. Nam nec tellus nec nulla blandit consectetur condimentum id nisl. Morbi ante libero, accumsan nec auctor a, suscipit sed massa.",
+    "highlights": Object {
+      "body": "... mattis cursus. Nunc sed odio lorem. Curabitur facilisis massa a ex commodo, vitae ullamcorper lectus efficitur. Nam nec tellus nec nulla blandit consectetur condimentum id nisl. Morbi ante libero, accumsan nec auctor a, <mark>suscipit</mark> sed massa.",
+    },
+    "id": 0,
+    "match": Object {
+      "suscipit": Array [
+        "body",
+      ],
+    },
+    "score": 0,
+    "terms": Array [
+      "suscipit",
+    ],
+  },
+]
+`;
+
+exports[`Test searcher search: dots in end 1`] = `
+Array [
+  Object {
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec convallis turpis. Praesent porttitor fringilla purus, eu auctor urna blandit at. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Etiam volutpat lacus orci, eget iaculis est dapibus in. Nulla id congue nisl. Sed mollis mi vel nulla bibendum, eget rhoncus urna ornare. Quisque fermentum ultrices sagittis. Phasellus cursus venenatis metus ut iaculis. Proin ut aliquet sapien, non accumsan arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus tristique mattis cursus. Nunc sed odio lorem. Curabitur facilisis massa a ex commodo, vitae ullamcorper lectus efficitur. Nam nec tellus nec nulla blandit consectetur condimentum id nisl. Morbi ante libero, accumsan nec auctor a, suscipit sed massa.",
+    "highlights": Object {
+      "body": "Lorem ipsum dolor <mark>sit</mark> amet, consectetur adipiscing elit. Nunc nec convallis turpis. Praesent porttitor fringilla purus, eu auctor urna blandit at. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Etiam volutpat ...",
+    },
+    "id": 0,
+    "match": Object {
+      "sit": Array [
+        "body",
+      ],
+    },
+    "score": 0,
+    "terms": Array [
+      "sit",
+    ],
+  },
+]
+`;
+
+exports[`Test searcher search: fuzzy search 1`] = `
+Array [
+  Object {
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec convallis turpis. Praesent porttitor fringilla purus, eu auctor urna blandit at. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Etiam volutpat lacus orci, eget iaculis est dapibus in. Nulla id congue nisl. Sed mollis mi vel nulla bibendum, eget rhoncus urna ornare. Quisque fermentum ultrices sagittis. Phasellus cursus venenatis metus ut iaculis. Proin ut aliquet sapien, non accumsan arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus tristique mattis cursus. Nunc sed odio lorem. Curabitur facilisis massa a ex commodo, vitae ullamcorper lectus efficitur. Nam nec tellus nec nulla blandit consectetur condimentum id nisl. Morbi ante libero, accumsan nec auctor a, suscipit sed massa.",
+    "highlights": Object {
+      "body": "Lorem ipsum dolor sit amet, <mark>consectetur</mark> adipiscing elit. Nunc nec convallis turpis. Praesent porttitor fringilla purus, eu auctor urna blandit at. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Etiam volutpat ...",
+    },
+    "id": 0,
+    "match": Object {
+      "consectetur": Array [
+        "body",
+      ],
+    },
+    "score": 0,
+    "terms": Array [
+      "consectetur",
+    ],
+  },
+]
+`;
+
+exports[`Test searcher search: no result 1`] = `Array []`;
+
+exports[`Test searcher search: prefix search 1`] = `
+Array [
+  Object {
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec convallis turpis. Praesent porttitor fringilla purus, eu auctor urna blandit at. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Etiam volutpat lacus orci, eget iaculis est dapibus in. Nulla id congue nisl. Sed mollis mi vel nulla bibendum, eget rhoncus urna ornare. Quisque fermentum ultrices sagittis. Phasellus cursus venenatis metus ut iaculis. Proin ut aliquet sapien, non accumsan arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus tristique mattis cursus. Nunc sed odio lorem. Curabitur facilisis massa a ex commodo, vitae ullamcorper lectus efficitur. Nam nec tellus nec nulla blandit consectetur condimentum id nisl. Morbi ante libero, accumsan nec auctor a, suscipit sed massa.",
+    "highlights": Object {
+      "body": "Lorem ipsum dolor sit amet, <mark>consectetur</mark> adipiscing elit. Nunc nec convallis turpis. Praesent porttitor fringilla purus, eu auctor urna blandit at. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Etiam volutpat ...",
+    },
+    "id": 0,
+    "match": Object {
+      "consectetur": Array [
+        "body",
+      ],
+    },
+    "score": 0,
+    "terms": Array [
+      "consectetur",
+    ],
+  },
+]
+`;

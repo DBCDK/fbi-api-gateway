@@ -2,6 +2,7 @@ import { makeExecutableSchema, mergeSchemas } from "graphql-tools";
 
 import { typeDef as DataCollectInput } from "./input/datacollect";
 import { typeDef as DK5, resolvers as DK5Resolvers } from "./dk5";
+import { typeDef as Help, resolvers as HelpResolvers } from "./help";
 import {
   typeDef as WorkManifestation,
   resolvers as WorkManifestationResolvers
@@ -52,12 +53,14 @@ export const internalSchema = makeExecutableSchema({
       work(id: String!): Work
       search(q: String!): SearchResponse!
       suggest(q: String!): SuggestResponse!
+      help(q: String!): HelpResponse
     }`,
     `type Mutation {
       data_collect(input: DataCollectInput!): String!
     }`,
     DataCollectInput,
     DK5,
+    Help,
     Work,
     WorkManifestation,
     Manifestation,
@@ -86,6 +89,9 @@ export const internalSchema = makeExecutableSchema({
         } catch (e) {
           return e.message;
         }
+      },
+      async help(parent, args, context, info) {
+        return { q: args.q };
       },
       async work(parent, args, context, info) {
         const { work } = await context.datasources.workservice.load(args.id);
@@ -121,6 +127,7 @@ export const internalSchema = makeExecutableSchema({
       }
     },
     ...DK5Resolvers,
+    ...HelpResolvers,
     ...WorkManifestationResolvers,
     ...WorkResolvers,
     ...ManifestationResolvers,
