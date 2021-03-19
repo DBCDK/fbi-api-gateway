@@ -36,16 +36,18 @@ async function get() {
   });
 
   // Parse them, strip html tags
-  const docs = res.body.data.nodeQuery.entities.map(text => ({
-    id: text.nid,
-    nid: text.nid,
-    title: text.title,
-    body: text.body.processed
-      .replace(/<.*?>/g, "")
-      .replace(/\n+/g, ". ")
-      .replace(/\.+/g, "."),
-    group: text.fieldHelpTextGroup
-  }));
+  const docs = res.body.data.nodeQuery.entities
+    .filter(text => !!text)
+    .map(text => ({
+      id: text.nid,
+      nid: text.nid,
+      title: text.title,
+      body: text.body.processed
+        .replace(/<.*?>/g, "")
+        .replace(/\n+/g, ". ")
+        .replace(/\.+/g, "."),
+      group: text.fieldHelpTextGroup
+    }));
 
   return docs;
 }
