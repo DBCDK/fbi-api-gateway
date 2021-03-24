@@ -60,7 +60,7 @@ promExporterApp.listen(9599, () => {
       recommendations: new DataLoader(recommendationsLoader, {
         // the key of recommendation batchloader is an object
         // hence we stringify
-        cacheKeyFn: key => JSON.stringify(key)
+        cacheKeyFn: (key) => JSON.stringify(key),
       }),
       idmapper: new DataLoader(idmapperLoader),
       moreinfo: new DataLoader(moreinfoLoader),
@@ -68,15 +68,14 @@ promExporterApp.listen(9599, () => {
       simplesearch: new DataLoader(simplesearchLoader, {
         // the key of simplesearch batchloader is an object
         // hence we stringify
-        cacheKeyFn: key => JSON.stringify(key)
+        cacheKeyFn: (key) => JSON.stringify(key),
       }),
       suggester: new DataLoader(suggesterLoader, {
         // the key of suggester batchloader is an object
         // hence we stringify
-        cacheKeyFn: key => JSON.stringify(key)
-      })
+        cacheKeyFn: (key) => JSON.stringify(key),
+      }),
     };
-
     next();
   });
 
@@ -91,11 +90,11 @@ promExporterApp.listen(9599, () => {
           count("query_success");
         } else {
           count("query_error");
-          result.errors.forEach(error => {
+          result.errors.forEach((error) => {
             log.error(error.message, error);
           });
         }
-      }
+      },
     })
   );
 
@@ -109,7 +108,7 @@ promExporterApp.listen(9599, () => {
 
 const signals = {
   SIGINT: 2,
-  SIGTERM: 15
+  SIGTERM: 15,
 };
 function shutdown(signal, value) {
   server.close(function() {

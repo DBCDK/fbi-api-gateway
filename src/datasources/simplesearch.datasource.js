@@ -11,6 +11,14 @@ import config from "../config";
 const { url, prefix } = config.datasources.simplesearch;
 
 async function find({ q, limit = 10, offset = 0 }) {
+  // Ensure no null values
+  if (!limit) {
+    limit = 10;
+  }
+  if (!offset) {
+    offset = 0;
+  }
+
   const response = (
     await request.post(url).send({
       "access-token": "479317f0-3f91-11eb-9ba0-4c1d96c9239f",
