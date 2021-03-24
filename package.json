@@ -4,7 +4,7 @@
   "description": "API for the future bibliotek.dk",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon -r esm ./src/index.js",
+    "dev": ". ./env.env && nodemon -r esm ./src/index.js",
     "test": "jest",
     "prettier": "prettier --write 'src/**/*.js'"
   },

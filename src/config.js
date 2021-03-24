@@ -28,7 +28,7 @@ export default {
         process.env.WORKSERVICE_URL ||
         "http://work-presentation-service.cisterne.svc.cloud.dbc.dk/api/work-presentation",
       agencyId: process.env.WORKSERVICE_AGENCY_ID || "190101",
-      profile: process.env.WORKSERVICE_PROFILE || "opac",
+      profile: process.env.WORKSERVICE_PROFILE || "default",
       ttl: process.env.WORKSERVICE_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.WORKSERVICE_PREFIX || "workservice-1",
     },

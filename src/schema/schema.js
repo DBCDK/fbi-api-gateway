@@ -51,7 +51,7 @@ export const internalSchema = makeExecutableSchema({
       manifestation(pid: String!): WorkManifestation!
       monitor(name: String!): String!
       work(id: String!): Work
-      search(q: String!): SearchResponse!
+      search(q: String!, limit: Int, offset: Int): SearchResponse!
       suggest(q: String!): SuggestResponse!
       help(q: String!): HelpResponse
     }`,
@@ -98,7 +98,7 @@ export const internalSchema = makeExecutableSchema({
         return { ...work, id: args.id };
       },
       async search(parent, args, context, info) {
-        return { q: args.q };
+        return { q: args.q, limit: args.limit, offset: args.offset };
       },
       async suggest(parent, args, context, info) {
         return { q: args.q };
