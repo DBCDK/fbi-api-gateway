@@ -13,6 +13,7 @@ type SearchResultRow {
   work: Work!
 }
 type SearchResponse {
+  hitcount: Int!
   result: [SearchResultRow!]!
 }`;
 
@@ -35,8 +36,12 @@ export const resolvers = {
     }
   },
   SearchResponse: {
+    async hitcount(parent, args, context, info) {
+      const { hitcount } = await context.datasources.simplesearch.load(parent);
+      return hitcount;
+    },
     async result(parent, args, context, info) {
-      const { result } = await context.datasources.simplesearch.load(parent);
+      let { result } = await context.datasources.simplesearch.load(parent);
 
       // we don't want to look for pids containing '_'
       result.forEach(element => {

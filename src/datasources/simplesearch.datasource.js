@@ -10,15 +10,33 @@ import config from "../config";
 
 const { url, prefix } = config.datasources.simplesearch;
 
-async function find({ q }) {
-  return (
+async function find({ q, limit = 10, offset = 0 }) {
+  // Ensure no null values
+  if (!limit) {
+    limit = 10;
+  }
+  if (!offset) {
+    offset = 0;
+  }
+
+  const response = (
     await request.post(url).send({
       "access-token": "479317f0-3f91-11eb-9ba0-4c1d96c9239f",
       q,
+      rows: 100,
       debug: true,
-      options: { "include-phonetic-creator": false },
+      options: { "include-phonetic-creator": false }
     })
   ).body;
+
+  // Get hitcount
+  const hitcount = response.result.length;
+
+  // Select range between offset and limit
+  return {
+    result: response.result.slice(offset, offset + limit),
+    hitcount
+  };
 }
 
 // find monitored
@@ -33,7 +51,7 @@ const monitored = monitor(
  * @param {Array.<string>} keys The keys to fetch
  */
 async function batchLoader(keys) {
-  return await Promise.all(keys.map(async (key) => await monitored(key)));
+  return await Promise.all(keys.map(async key => await monitored(key)));
 }
 
 /**
@@ -41,5 +59,5 @@ async function batchLoader(keys) {
  */
 export default withRedis(batchLoader, {
   prefix,
-  ttl: 60 * 60 * 24,
+  ttl: 60 * 60 * 24
 });

@@ -76,7 +76,6 @@ promExporterApp.listen(9599, () => {
         cacheKeyFn: key => JSON.stringify(key)
       })
     };
-
     next();
   });
 
