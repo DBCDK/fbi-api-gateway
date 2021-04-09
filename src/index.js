@@ -15,11 +15,12 @@ import simplesearchLoader from "./datasources/simplesearch.datasource";
 import suggesterLoader from "./datasources/suggester.datasource";
 import express from "express";
 import cors from "cors";
-import graphqlHTTP from "express-graphql";
+import { graphqlHTTP } from "express-graphql";
 import DataLoader from "dataloader";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration, count } from "./utils/monitor";
+import validateComplexity from "./utils/complexity";
 
 const app = express();
 let server;
@@ -79,11 +80,15 @@ promExporterApp.listen(9599, () => {
     next();
   });
 
+  let resolvedSchema;
+  (async () => {
+    resolvedSchema = await schema();
+  })();
   // Setup route handler for GraphQL
   app.use(
     "/graphql",
-    graphqlHTTP({
-      schema: await schema(),
+    graphqlHTTP(async (request, response, graphQLParams) => ({
+      schema: resolvedSchema,
       graphiql: true,
       extensions: ({ document, context, result }) => {
         if (document && document.definitions && !result.errors) {
@@ -94,8 +99,14 @@ promExporterApp.listen(9599, () => {
             log.error(error.message, error);
           });
         }
-      }
-    })
+      },
+      validationRules: [
+        validateComplexity({
+          query: graphQLParams.query,
+          variables: graphQLParams.variables
+        })
+      ]
+    }))
   );
 
   // Setup route handler for howru

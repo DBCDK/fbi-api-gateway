@@ -38,20 +38,26 @@ import {
   resolvers as AdminDataResolvers
 } from "./admindata";
 import { typeDef as Cover, resolvers as CoverResolvers } from "./cover";
+
+import { typeDef as Scalars, resolvers as ScalarResolvers } from "./scalars";
+
 import drupalSchema from "./external/drupal";
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
+
+const { GraphQLScalarType, Kind } = require("graphql");
 
 /**
  * Create executable schema from type definitions and resolvers
  */
 export const internalSchema = makeExecutableSchema({
   typeDefs: [
-    `type Query {
+    `
+    type Query {
       manifestation(pid: String!): WorkManifestation!
       monitor(name: String!): String!
       work(id: String!): Work
-      search(q: String!, limit: Int, offset: Int): SearchResponse!
+      search(q: String!, limit: PaginationLimit!, offset: Int): SearchResponse!
       suggest(q: String!): SuggestResponse!
       help(q: String!): HelpResponse
     }`,
@@ -74,7 +80,8 @@ export const internalSchema = makeExecutableSchema({
     Subject,
     Suggest,
     AdminData,
-    Cover
+    Cover,
+    Scalars
   ],
   resolvers: {
     Query: {
@@ -141,7 +148,8 @@ export const internalSchema = makeExecutableSchema({
     ...SubjectResolvers,
     ...SuggestResolvers,
     ...AdminDataResolvers,
-    ...CoverResolvers
+    ...CoverResolvers,
+    ...ScalarResolvers
   }
 });
 

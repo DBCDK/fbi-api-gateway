@@ -21,6 +21,10 @@ DataLoader has a builtin memory cache, preventing multiple requests for the same
 Batching is the primary feature of DataLoader. It groups requests to the same resource and let us (if the data source supports it) fetch the data in a single request. Even though, a data source does not support batch requests it is still highly beneficial. As soon as data is in the Redis cache, we fetch it using a batch requests.
 - **Global cache (Redis)**
 We use a global Redis cache shared across all GraphQL instances
+- **Complex query analysis**
+Queries are analyzed before execution, and if they are too complex they are rejected.
+These queries are typically highly nested, leading to a high number of requests to underlying data sources.
+
 
 
 ## Environment Variables

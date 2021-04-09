@@ -22,9 +22,12 @@
  */
 
 import { graphql } from "graphql";
+import { validate } from "graphql/validation";
+import { parse } from "graphql/language";
 import { internalSchema } from "../schema/schema";
 import mockedWorkDataSource from "../datasources/mocked/work.datasource.mocked";
 import mockedOpenformat from "../datasources/mocked/openformat.datasource.mocked";
+import validateComplexity from "../utils/complexity";
 
 async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
@@ -42,6 +45,57 @@ describe("API test cases", () => {
 
   afterAll(() => {
     spy.console.mockRestore();
+  });
+  test("Query complexity validation - no errors", () => {
+    const query = `{
+      work(id: "work-of:870970-basis:48221157") {
+        title
+        manifestations {
+          recommendations {
+            value
+            manifestation {
+              abstract
+            }
+          }
+        }
+      }
+    }
+    `;
+    const ast = parse(query);
+    const errors = validate(internalSchema, ast, [
+      validateComplexity({
+        query,
+        variables: {}
+      })
+    ]);
+    expect(errors).toMatchSnapshot();
+  });
+  test("Query complexity validation - exceeding complexitylimit", () => {
+    const query = `{
+      work(id: "work-of:870970-basis:48221157") {
+        title
+        manifestations {
+          recommendations {
+            value
+            manifestation {
+              abstract
+              recommendations {
+                value
+              }
+            }
+          }
+        }
+      }
+    }
+    `;
+    const ast = parse(query);
+    const errors = validate(internalSchema, ast, [
+      validateComplexity({
+        query,
+        variables: {}
+      })
+    ]);
+    expect(errors).toMatchSnapshot();
   });
   test("Mutation succes: data collect with search_work", async () => {
     const result = await performTestQuery({

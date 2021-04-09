@@ -1,5 +1,10 @@
 export default {
   port: process.env.PORT || 3000,
+  query: {
+    maxComplexity: process.env.MAX_QUERY_COMPLEXITY
+      ? parseInt(process.env.MAX_QUERY_COMPLEXITY, 10)
+      : 100000
+  },
   datasources: {
     openformat: {
       url:

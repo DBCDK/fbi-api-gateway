@@ -421,3 +421,11 @@ Object {
   },
 }
 `;
+
+exports[`API test cases Query complexity validation - exceeding complexitylimit 1`] = `
+Array [
+  [GraphQLError: The query exceeds the maximum complexity of 100000. Actual complexity is 1000000],
+]
+`;
+
+exports[`API test cases Query complexity validation - no errors 1`] = `Array []`;
