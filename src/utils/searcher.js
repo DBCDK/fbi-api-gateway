@@ -15,7 +15,7 @@ export function createIndexer({ options }) {
   // The index
   let _index;
 
-  const doIndex = docs => {
+  const doIndex = (docs) => {
     //Check if these are already indexed
     if (_docs !== docs) {
       _docs = docs;
@@ -34,7 +34,7 @@ export function createIndexer({ options }) {
       const res = _index
         .search(q, extra)
         .slice(0, 10)
-        .map(doc => {
+        .map((doc) => {
           // These are the unique matched terms found in the doc
           const matchedTerms = doc.terms;
 
@@ -44,10 +44,10 @@ export function createIndexer({ options }) {
           matchedTerms.sort((m1, m2) => m2.length - m1.length);
 
           // create highlights and trim content
-          options.fields.forEach(field => {
+          options.fields.forEach((field) => {
             const text = doc[field];
             // split by space, and highlight parts
-            const split = text.split(/\s+/).map(text => {
+            const split = text.split(/\s+/).map((text) => {
               for (let i = 0; i < matchedTerms.length; i++) {
                 const match = matchedTerms[i];
                 const replaced = text.replace(
@@ -57,7 +57,7 @@ export function createIndexer({ options }) {
                 if (replaced !== text) {
                   return {
                     highlight: true,
-                    text: replaced
+                    text: replaced,
                   };
                 }
               }
@@ -98,7 +98,7 @@ export function createIndexer({ options }) {
             }
 
             doc.highlights[field] = `${atBeginning ? "" : "... "}${split
-              .map(term => term.text)
+              .map((term) => term.text)
               .slice(offset, offset + max)
               .join(" ")}${atEnd ? "" : " ..."}`;
           });
@@ -107,6 +107,6 @@ export function createIndexer({ options }) {
         });
 
       return res;
-    }
+    },
   };
 }

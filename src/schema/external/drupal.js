@@ -17,7 +17,7 @@ export default async () => {
 
   const executableSchema = makeRemoteExecutableSchema({
     schema,
-    fetcher
+    fetcher,
   });
 
   return executableSchema;

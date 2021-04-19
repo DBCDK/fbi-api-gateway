@@ -28,12 +28,12 @@ export const resolvers = {
       return {
         value:
           (parent.debug && parent.debug.creator && parent.debug.creator[0]) ||
-          ""
+          "",
       };
     },
     title(parent, args, context, info) {
       return parent.title || "";
-    }
+    },
   },
   SearchResponse: {
     async hitcount(parent, args, context, info) {
@@ -44,21 +44,21 @@ export const resolvers = {
       let { result } = await context.datasources.simplesearch.load(parent);
 
       // we don't want to look for pids containing '_'
-      result.forEach(element => {
-        element.pids = element.pids.filter(pid => !pid.includes("_"));
+      result.forEach((element) => {
+        element.pids = element.pids.filter((pid) => !pid.includes("_"));
       });
 
       // if the work field is requested we got to expand works
       // maybe some works are not found in work service
       // these should be removed from result
       const requireWorkExpansion = !!info.fieldNodes[0].selectionSet.selections.find(
-        field => field.name.value === "work"
+        (field) => field.name.value === "work"
       );
 
       if (requireWorkExpansion) {
         // Fetch works
         const expanded = await Promise.all(
-          result.map(async element => {
+          result.map(async (element) => {
             try {
               element.work = (
                 await context.datasources.workservice.load(
@@ -72,10 +72,10 @@ export const resolvers = {
           })
         );
         // remove works that could not be expanded
-        return expanded.filter(element => !!element);
+        return expanded.filter((element) => !!element);
       }
 
-      return result.filter(entry => entry.pids.length > 0);
-    }
-  }
+      return result.filter((entry) => entry.pids.length > 0);
+    },
+  },
 };

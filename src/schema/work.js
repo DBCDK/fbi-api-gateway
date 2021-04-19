@@ -38,13 +38,13 @@ export const resolvers = {
     async cover(parent, args, context, info) {
       const records = flattenRecords(parent);
       const covers = await Promise.all(
-        records.map(record => {
+        records.map((record) => {
           return context.datasources.moreinfo.load(record.id);
         })
       );
       // Find a valid cover.
       // TODO how to determine which cover to select
-      const cover = covers.find(entry => entry.detail);
+      const cover = covers.find((entry) => entry.detail);
 
       return cover || {};
     },
@@ -68,13 +68,13 @@ export const resolvers = {
       let reviews = (
         await Promise.all(
           parent.relations
-            .filter(rel => rel.type === "review")
-            .map(review => context.datasources.openformat.load(review.id))
+            .filter((rel) => rel.type === "review")
+            .map((review) => context.datasources.openformat.load(review.id))
         )
-      ).map(review => ({
+      ).map((review) => ({
         ...review,
         uniqKey: resolveAuthor(review),
-        sortKey: resolveDate(review)
+        sortKey: resolveDate(review),
       }));
       reviews = orderBy(reviews, "sortKey", "desc");
       reviews = uniqBy(reviews, "uniqKey");
@@ -103,11 +103,11 @@ export const resolvers = {
         description: getPageDescription({
           title: parent.title,
           creators: parent.creators,
-          materialTypes
-        })
+          materialTypes,
+        }),
       };
-    }
-  }
+    },
+  },
 };
 
 /**
@@ -123,13 +123,13 @@ function flattenRecords(work) {
   const records = [];
 
   // Get the primary records (first record of each group)
-  const primaryRecords = work.groups.map(group => {
+  const primaryRecords = work.groups.map((group) => {
     return group.records[0];
   });
 
   // Walk through every record
-  primaryRecords.forEach(record => {
-    record.types.forEach(typeName => {
+  primaryRecords.forEach((record) => {
+    record.types.forEach((typeName) => {
       records.push({ ...record, materialType: typeName });
     });
   });
@@ -154,7 +154,7 @@ function parseMaterialTypes(flattenedRecords) {
   const materialTypes = {};
 
   // Walk through every manifestation
-  flattenedRecords.forEach(record => {
+  flattenedRecords.forEach((record) => {
     // If we have not seen this type before
     // we put an array in the materialTypes
     if (!materialTypes[record.materialType]) {
@@ -169,9 +169,9 @@ function parseMaterialTypes(flattenedRecords) {
   const typeNames = sortBy(Object.keys(materialTypes));
 
   // Walk through every type name
-  typeNames.forEach(typeName => {
+  typeNames.forEach((typeName) => {
     // And sort array of manifestations for this specific type
-    materialTypes[typeName] = sortBy(materialTypes[typeName], record => {
+    materialTypes[typeName] = sortBy(materialTypes[typeName], (record) => {
       // For now we have 870970 first in the array
       if (record.id.startsWith("870970-basis")) {
         return -1;
@@ -182,5 +182,5 @@ function parseMaterialTypes(flattenedRecords) {
 
   // Finally, we return array of types
   // One record per array type
-  return typeNames.map(typeName => materialTypes[typeName][0]);
+  return typeNames.map((typeName) => materialTypes[typeName][0]);
 }

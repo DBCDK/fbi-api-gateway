@@ -19,7 +19,7 @@ async function fetchWork({ workId }) {
       // trackingId: 'bibdk-api', this should be dynamic, and be generated per graphql request
       agencyId,
       profile,
-      includeRelations: true
+      includeRelations: true,
     })
   ).body;
 }
@@ -37,7 +37,7 @@ const monitored = monitor(
  */
 async function batchLoader(keys) {
   return await Promise.all(
-    keys.map(async key => {
+    keys.map(async (key) => {
       try {
         return await monitored({ workId: key });
       } catch (e) {
@@ -67,5 +67,5 @@ export async function status() {
  */
 export default withRedis(batchLoader, {
   prefix,
-  ttl
+  ttl,
 });

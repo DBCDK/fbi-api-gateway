@@ -36,14 +36,14 @@ export function getPageDescription({ title, creators, materialTypes }) {
   const allowedTypes = ["lydbog", "ebog", "bog"];
   const types = uniq(
     materialTypes
-      .map(entry => {
+      .map((entry) => {
         for (let i = 0; i < allowedTypes.length; i++) {
           if (entry.materialType.toLowerCase().includes(allowedTypes[i])) {
             return allowedTypes[i];
           }
         }
       })
-      .filter(type => !!type)
+      .filter((type) => !!type)
   );
 
   let typesString = "";

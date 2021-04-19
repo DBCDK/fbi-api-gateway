@@ -32,13 +32,13 @@ async function get() {
               }
             }
           }
-        }`
+        }`,
   });
 
   // Parse them, strip html tags
   const docs = res.body.data.nodeQuery.entities
-    .filter(text => !!text)
-    .map(text => ({
+    .filter((text) => !!text)
+    .map((text) => ({
       id: text.nid,
       nid: text.nid,
       title: text.title,
@@ -46,7 +46,7 @@ async function get() {
         .replace(/<.*?>/g, "")
         .replace(/\n+/g, ". ")
         .replace(/\.+/g, "."),
-      group: text.fieldHelpTextGroup
+      group: text.fieldHelpTextGroup,
     }));
 
   return docs;
@@ -55,14 +55,14 @@ async function get() {
 // Indexer options
 const options = {
   fields: ["title", "body", "group"], // fields to index for full-text search
-  storeFields: ["title", "body", "group"] // fields to return with search results
+  storeFields: ["title", "body", "group"], // fields to return with search results
 };
 
 // Default search options
 const searchOptions = {
   boost: { title: 100 },
   combineWith: "AND",
-  prefix: true
+  prefix: true,
 };
 
 // Create index instance
@@ -93,15 +93,15 @@ async function search({ q }) {
     // try fuzzy  match
     result = index.search(q, docs, {
       ...searchOptions,
-      fuzzy: 0.4
+      fuzzy: 0.4,
     });
   }
-  result = result.map(entry => ({
+  result = result.map((entry) => ({
     orgTitle: entry.title,
     group: entry.group,
     title: entry.highlights.title,
     body: entry.highlights.body,
-    nid: entry.id
+    nid: entry.id,
   }));
   return result;
 }
@@ -112,5 +112,5 @@ async function search({ q }) {
  * @param {Array.<string>} keys The keys to fetch
  */
 export default async function batchLoader(keys) {
-  return await Promise.all(keys.map(async key => await search({ q: key })));
+  return await Promise.all(keys.map(async (key) => await search({ q: key })));
 }

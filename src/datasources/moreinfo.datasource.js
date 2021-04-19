@@ -9,7 +9,7 @@ const {
   authenticationPassword,
   url,
   ttl,
-  prefix
+  prefix,
 } = config.datasources.moreinfo;
 
 function createRequest(pid) {
@@ -30,12 +30,12 @@ async function fetchMoreInfo({ pid }) {
   const images = (
     await request.post(url).field("xml", createRequest(pid))
   ).body.moreInfoResponse.identifierInformation
-    .map(entry => entry.coverImage)
-    .filter(entry => entry);
+    .map((entry) => entry.coverImage)
+    .filter((entry) => entry);
 
   const res = {};
-  images.forEach(entry => {
-    entry.forEach(cover => {
+  images.forEach((entry) => {
+    entry.forEach((cover) => {
       res[cover["@imageSize"].$] = cover.$;
     });
   });
@@ -67,7 +67,7 @@ export async function status() {
  */
 async function batchLoader(keys) {
   return await Promise.all(
-    keys.map(async key => await monitored({ pid: key }))
+    keys.map(async (key) => await monitored({ pid: key }))
   );
 }
 
@@ -76,5 +76,5 @@ async function batchLoader(keys) {
  */
 export default withRedis(batchLoader, {
   prefix,
-  ttl
+  ttl,
 });

@@ -48,14 +48,14 @@ export default function validateComplexity({ query, variables }) {
     estimators: [CustomFieldEstimator],
     maximumComplexity: config.query.maxComplexity,
     variables,
-    onComplete: complexity => {
+    onComplete: (complexity) => {
       if (complexity > config.query.maxComplexity) {
         log.error("Query exceeded complexity limit", {
           complexity,
           query,
-          maxComplexity: config.query.maxComplexity
+          maxComplexity: config.query.maxComplexity,
         });
       }
-    }
+    },
   });
 }

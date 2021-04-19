@@ -61,7 +61,7 @@ promExporterApp.listen(9599, () => {
       recommendations: new DataLoader(recommendationsLoader, {
         // the key of recommendation batchloader is an object
         // hence we stringify
-        cacheKeyFn: key => JSON.stringify(key)
+        cacheKeyFn: (key) => JSON.stringify(key),
       }),
       idmapper: new DataLoader(idmapperLoader),
       moreinfo: new DataLoader(moreinfoLoader),
@@ -69,13 +69,13 @@ promExporterApp.listen(9599, () => {
       simplesearch: new DataLoader(simplesearchLoader, {
         // the key of simplesearch batchloader is an object
         // hence we stringify
-        cacheKeyFn: key => JSON.stringify(key)
+        cacheKeyFn: (key) => JSON.stringify(key),
       }),
       suggester: new DataLoader(suggesterLoader, {
         // the key of suggester batchloader is an object
         // hence we stringify
-        cacheKeyFn: key => JSON.stringify(key)
-      })
+        cacheKeyFn: (key) => JSON.stringify(key),
+      }),
     };
     next();
   });
@@ -89,13 +89,13 @@ promExporterApp.listen(9599, () => {
     "/graphql",
     graphqlHTTP(async (request, response, graphQLParams) => ({
       schema: resolvedSchema,
-      graphiql: true,
+      graphiql: { headerEditorEnabled: true },
       extensions: ({ document, context, result }) => {
         if (document && document.definitions && !result.errors) {
           count("query_success");
         } else {
           count("query_error");
-          result.errors.forEach(error => {
+          result.errors.forEach((error) => {
             log.error(error.message, error);
           });
         }
@@ -103,9 +103,9 @@ promExporterApp.listen(9599, () => {
       validationRules: [
         validateComplexity({
           query: graphQLParams.query,
-          variables: graphQLParams.variables
-        })
-      ]
+          variables: graphQLParams.variables,
+        }),
+      ],
     }))
   );
 
@@ -119,16 +119,16 @@ promExporterApp.listen(9599, () => {
 
 const signals = {
   SIGINT: 2,
-  SIGTERM: 15
+  SIGTERM: 15,
 };
 function shutdown(signal, value) {
-  server.close(function() {
+  server.close(function () {
     log.info(`server stopped by ${signal}`);
     process.exit(128 + value);
   });
 }
-Object.keys(signals).forEach(function(signal) {
-  process.on(signal, function() {
+Object.keys(signals).forEach(function (signal) {
+  process.on(signal, function () {
     shutdown(signal, signals[signal]);
   });
 });

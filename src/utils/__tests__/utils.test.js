@@ -9,8 +9,8 @@ describe("Utils", () => {
       materialTypes: [
         { materialType: "Bog" },
         { materialType: "eBog" },
-        { materialType: "lydBog" }
-      ]
+        { materialType: "lydBog" },
+      ],
     };
     const actual = getPageDescription(work);
     const expected =
@@ -23,7 +23,7 @@ describe("Utils", () => {
       id: "some-work-id",
       title: "en Bogtitel",
       creators: [{ name: "En Forfatter" }],
-      materialTypes: [{ materialType: "lydbog" }]
+      materialTypes: [{ materialType: "lydbog" }],
     };
     const actual = getPageDescription(work);
     const expected =
@@ -36,7 +36,7 @@ describe("Utils", () => {
       id: "some-work-id",
       title: "en Bogtitel",
       creators: [{ name: "En Forfatter" }],
-      materialTypes: [{ materialType: "diskette" }]
+      materialTypes: [{ materialType: "diskette" }],
     };
     const actual = getPageDescription(work);
     const expected =

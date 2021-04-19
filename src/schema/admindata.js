@@ -12,6 +12,6 @@ export const resolvers = {
         parent.pid
       );
       return get(manifestation, "admindata.creationDate.$", "unknown");
-    }
-  }
+    },
+  },
 };

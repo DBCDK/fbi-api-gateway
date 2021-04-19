@@ -68,7 +68,7 @@ const getStringArray = async (parent, args, context, info) => {
   const fieldName = info.fieldName;
   const manifestation = await context.datasources.openformat.load(parent.pid);
   return getArray(manifestation, `details.${fieldName}.value`).map(
-    entry => entry.$
+    (entry) => entry.$
   );
 };
 const getObjectArray = async (parent, args, context, info) => {
@@ -76,7 +76,7 @@ const getObjectArray = async (parent, args, context, info) => {
   const manifestation = await context.datasources.openformat.load(parent.pid);
   return getArray(manifestation, `details.${fieldName}`);
 };
-const pass = parent => {
+const pass = (parent) => {
   return parent;
 };
 
@@ -90,7 +90,7 @@ export const resolvers = {
     catalogcode: getStringArray,
     async collection(parent, args, context, info) {
       const res = await context.datasources.idmapper.load(parent.pid);
-      return res.map(pid => ({ pid }));
+      return res.map((pid) => ({ pid }));
     },
     content: getStringArray,
     async cover(parent, args, context, info) {
@@ -138,7 +138,7 @@ export const resolvers = {
     async recommendations(parent, args, context, info) {
       const recommendations = await context.datasources.recommendations.load({
         pid: parent.pid,
-        limit: args.limit
+        limit: args.limit,
       });
       return recommendations.response;
     },
@@ -154,6 +154,6 @@ export const resolvers = {
     tracks: getStringArray,
     verifiedseries: getStringArray,
     creatormatvurd: getStringArray,
-    fulltextmatvurd: getStringArray
-  }
+    fulltextmatvurd: getStringArray,
+  },
 };

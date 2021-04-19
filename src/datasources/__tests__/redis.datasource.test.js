@@ -17,7 +17,7 @@ async function testWithRedis({
   missingKeys,
   batchReturn,
   newRedisEntries,
-  output
+  output,
 }) {
   let batchFunctionArgs = [];
   let mgetArgs = [];
@@ -25,7 +25,7 @@ async function testWithRedis({
 
   // call withRedis with spy functions
   const enhancedBatchFunc = withRedis(
-    keys => {
+    (keys) => {
       batchFunctionArgs = keys;
       return batchReturn;
     },
@@ -35,10 +35,10 @@ async function testWithRedis({
       setexFunc: (key, seconds, val) => {
         setexArgs.push({ key, seconds, val });
       },
-      mgetFunc: keys => {
+      mgetFunc: (keys) => {
         mgetArgs = keys;
         return mgetReturn;
-      }
+      },
     }
   );
 
@@ -80,7 +80,7 @@ describe("Testing the withRedis higher order function", () => {
       missingKeys,
       batchReturn,
       newRedisEntries,
-      output
+      output,
     });
   });
 
@@ -105,13 +105,13 @@ describe("Testing the withRedis higher order function", () => {
       {
         key: "prefix_a",
         seconds: 10,
-        val: "a_res"
+        val: "a_res",
       },
       {
         key: "prefix_c",
         seconds: 10,
-        val: "c_res"
-      }
+        val: "c_res",
+      },
     ];
 
     // The final result should look like this
@@ -124,7 +124,7 @@ describe("Testing the withRedis higher order function", () => {
       missingKeys,
       batchReturn,
       newRedisEntries,
-      output
+      output,
     });
   });
 
@@ -153,13 +153,13 @@ describe("Testing the withRedis higher order function", () => {
       {
         key: "prefix_a",
         seconds: 10,
-        val: "a_res"
+        val: "a_res",
       },
       {
         key: "prefix_c",
         seconds: 10,
-        val: "c_res"
-      }
+        val: "c_res",
+      },
     ];
 
     // The final result should look like this
@@ -172,7 +172,7 @@ describe("Testing the withRedis higher order function", () => {
       missingKeys,
       batchReturn,
       newRedisEntries,
-      output
+      output,
     });
   });
 });

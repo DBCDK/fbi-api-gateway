@@ -12,7 +12,7 @@ async function find({ pid, limit = 10 }) {
       .post("http://recompass-work-1-2.mi-prod.svc.cloud.dbc.dk/recompass-work")
       .send({
         likes: [pid],
-        limit
+        limit,
       })
   ).body;
 }
@@ -32,7 +32,7 @@ const monitored = monitor(
  * @param {Array.<string>} keys The keys to fetch
  */
 async function batchLoader(keys) {
-  return await Promise.all(keys.map(async key => await monitored(key)));
+  return await Promise.all(keys.map(async (key) => await monitored(key)));
 }
 
 /**
@@ -40,5 +40,5 @@ async function batchLoader(keys) {
  */
 export default withRedis(batchLoader, {
   prefix: "recommendations",
-  ttl: 60 * 60 * 24
+  ttl: 60 * 60 * 24,
 });

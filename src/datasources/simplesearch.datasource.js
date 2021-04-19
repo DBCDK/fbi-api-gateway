@@ -25,7 +25,7 @@ async function find({ q, limit = 10, offset = 0 }) {
       q,
       rows: 100,
       debug: true,
-      options: { "include-phonetic-creator": false }
+      options: { "include-phonetic-creator": false },
     })
   ).body;
 
@@ -35,7 +35,7 @@ async function find({ q, limit = 10, offset = 0 }) {
   // Select range between offset and limit
   return {
     result: response.result.slice(offset, offset + limit),
-    hitcount
+    hitcount,
   };
 }
 
@@ -51,7 +51,7 @@ const monitored = monitor(
  * @param {Array.<string>} keys The keys to fetch
  */
 async function batchLoader(keys) {
-  return await Promise.all(keys.map(async key => await monitored(key)));
+  return await Promise.all(keys.map(async (key) => await monitored(key)));
 }
 
 /**
@@ -59,5 +59,5 @@ async function batchLoader(keys) {
  */
 export default withRedis(batchLoader, {
   prefix,
-  ttl: 60 * 60 * 24
+  ttl: 60 * 60 * 24,
 });

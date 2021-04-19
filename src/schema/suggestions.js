@@ -27,11 +27,11 @@ export const resolvers = {
   SuggestRow: {
     __resolveType(parent, args, context, info) {
       return parent.__resolveType;
-    }
+    },
   },
   SuggestResponse: {
     result(parent, args, context, info) {
       return context.datasources.suggester.load(parent);
-    }
-  }
+    },
+  },
 };

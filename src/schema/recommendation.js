@@ -11,6 +11,6 @@ export const resolvers = {
     },
     manifestation(parent) {
       return { pid: parent.pid };
-    }
-  }
+    },
+  },
 };

@@ -12,11 +12,11 @@ const metadata = {};
 
 // extract subjects from creators.json
 const subjects = {};
-Object.values(metadata).forEach(entry => {
+Object.values(metadata).forEach((entry) => {
   if (typeof entry.about === "string") {
     subjects[entry.about] = true;
   } else if (Array.isArray(entry.about)) {
-    entry.about.forEach(subject => {
+    entry.about.forEach((subject) => {
       subjects[subject] = true;
     });
   }
@@ -52,12 +52,12 @@ function getScore(str, q) {
  */
 function getCreators(q) {
   return Object.values(metadata)
-    .map(entry => ({
+    .map((entry) => ({
       value: entry.wellName,
       score: getScore(entry.wellName, q),
-      __resolveType: "Creator"
+      __resolveType: "Creator",
     }))
-    .filter(entry => entry.score > 0);
+    .filter((entry) => entry.score > 0);
 }
 
 /**
@@ -67,29 +67,31 @@ function getCreators(q) {
  */
 function getSubjects(q) {
   return Object.keys(subjects)
-    .map(subject => ({
+    .map((subject) => ({
       value: subject,
       score: getScore(subject, q),
-      __resolveType: "Subject"
+      __resolveType: "Subject",
     }))
-    .filter(entry => entry.score > 0);
+    .filter((entry) => entry.score > 0);
 }
 
 async function getWorks(q) {
   const res = (await simplesearchBatchLoader([{ q }]))[0];
   const ids = res.result
-    .map(entry => entry.pids && entry.pids[0])
-    .filter(pid => !!pid)
-    .map(pid => `work-of:${pid}`);
+    .map((entry) => entry.pids && entry.pids[0])
+    .filter((pid) => !!pid)
+    .map((pid) => `work-of:${pid}`);
 
-  const works = (await workBatchLoader(ids)).filter(entry => entry.work.title);
+  const works = (await workBatchLoader(ids)).filter(
+    (entry) => entry.work.title
+  );
   return works
-    .map(entry => ({
+    .map((entry) => ({
       ...entry.work,
       score: getScore(entry.work.title, q),
-      __resolveType: "Work"
+      __resolveType: "Work",
     }))
-    .filter(entry => entry.score > 0);
+    .filter((entry) => entry.score > 0);
 }
 
 async function getSuggestions({ q }) {
@@ -108,5 +110,5 @@ async function getSuggestions({ q }) {
  * @param {Array.<string>} keys The keys to fetch
  */
 export default async function batchLoader(keys) {
-  return await Promise.all(keys.map(key => getSuggestions(key)));
+  return await Promise.all(keys.map((key) => getSuggestions(key)));
 }

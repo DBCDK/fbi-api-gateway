@@ -18,5 +18,5 @@ type Subject {
  * uses its default resolver (it looks in parent obj for the field).
  */
 export const resolvers = {
-  Subject: {}
+  Subject: {},
 };

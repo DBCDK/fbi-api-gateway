@@ -44,6 +44,6 @@ export const resolvers = {
       const name = parent.value || get(parent, "name.$", "");
       const creator = await context.datasources.creator.load(name);
       return get(creator, "image.url");
-    }
-  }
+    },
+  },
 };

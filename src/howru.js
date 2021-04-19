@@ -13,7 +13,7 @@ const services = [
   { name: "moreinfo", status: moreinfoStatus },
   { name: "openformat", status: openformatStatus },
   { name: "redis", status: redisStatus },
-  { name: "workservice", status: workStatus }
+  { name: "workservice", status: workStatus },
 ];
 
 // Fields in the config that must not
@@ -21,7 +21,7 @@ const services = [
 const omitKeys = [
   "authenticationUser",
   "authenticationGroup",
-  "authenticationPassword"
+  "authenticationPassword",
 ];
 
 /**
@@ -31,7 +31,7 @@ const omitKeys = [
 async function howru(req, res) {
   // Call status function of every service
   const results = await Promise.all(
-    services.map(async service => {
+    services.map(async (service) => {
       let ok = false;
       let message;
       try {
@@ -45,14 +45,14 @@ async function howru(req, res) {
       return {
         service: service.name,
         ok,
-        message
+        message,
       };
     })
   );
 
   // Loop through service results, to determine if all is ok
   let ok = true;
-  results.forEach(service => {
+  results.forEach((service) => {
     if (!service.ok) {
       ok = false;
       res.status(500);
@@ -63,7 +63,7 @@ async function howru(req, res) {
     ok,
     upSince,
     services: results,
-    config: omitDeep(config, omitKeys)
+    config: omitDeep(config, omitKeys),
   });
 }
 
@@ -78,7 +78,7 @@ export default howru;
 function omitDeep(collection, excludeKeys) {
   function omitFn(value) {
     if (value && typeof value === "object") {
-      excludeKeys.forEach(key => {
+      excludeKeys.forEach((key) => {
         delete value[key];
       });
     }

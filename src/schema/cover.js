@@ -23,5 +23,5 @@ type Cover {
  * uses its default resolver (it looks in parent obj for the field).
  */
 export const resolvers = {
-  Cover: {}
+  Cover: {},
 };

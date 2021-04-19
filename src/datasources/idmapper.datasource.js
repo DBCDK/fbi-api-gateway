@@ -18,7 +18,7 @@ export const get = async ({ pid }) =>
  * @param {Array.<string>} keys The keys to fetch
  */
 async function batchLoader(keys) {
-  return await Promise.all(keys.map(async key => await get({ pid: key })));
+  return await Promise.all(keys.map(async (key) => await get({ pid: key })));
 }
 
 /**
@@ -26,5 +26,5 @@ async function batchLoader(keys) {
  */
 export default withRedis(batchLoader, {
   prefix: "idmapper",
-  ttl: 60 * 60 * 24
+  ttl: 60 * 60 * 24,
 });

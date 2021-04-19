@@ -17,11 +17,11 @@ export default function monitor({ name, help }, func) {
   const hist = new client.Histogram({
     name,
     help,
-    buckets: [0.1, 0.5, 1, 2, 5]
+    buckets: [0.1, 0.5, 1, 2, 5],
   });
 
   // Return the wrapped function
-  return async function(...args) {
+  return async function (...args) {
     // Start timer
     const end = hist.startTimer();
 
@@ -52,7 +52,7 @@ export function createHistogram(name) {
     hist = new client.Histogram({
       name,
       help: "Histogram for durations",
-      buckets: [0.1, 0.5, 1, 2, 5]
+      buckets: [0.1, 0.5, 1, 2, 5],
     });
     histograms[name] = hist;
   }
@@ -86,7 +86,7 @@ export function count(name) {
   if (!counter) {
     counter = new client.Counter({
       name,
-      help: "A counter"
+      help: "A counter",
     });
     counters[name] = counter;
   }

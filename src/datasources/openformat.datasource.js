@@ -53,7 +53,7 @@ export async function status() {
  */
 async function batchLoader(keys) {
   return await Promise.all(
-    keys.map(async key => await monitored({ pid: key }))
+    keys.map(async (key) => await monitored({ pid: key }))
   );
 }
 
@@ -62,5 +62,5 @@ async function batchLoader(keys) {
  */
 export default withRedis(batchLoader, {
   prefix,
-  ttl
+  ttl,
 });

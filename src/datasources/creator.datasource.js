@@ -20,5 +20,5 @@ function getCreator(name) {
  * @param {Array.<string>} keys The keys to fetch
  */
 export default async function batchLoader(keys) {
-  return keys.map(name => getCreator(name));
+  return keys.map((name) => getCreator(name));
 }

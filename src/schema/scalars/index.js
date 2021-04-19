@@ -26,6 +26,6 @@ export const resolvers = {
     parseLiteral(ast) {
       // gets invoked to parse client input that was passed inline in the query.
       return inRange(ast.value, 1, 100);
-    }
-  })
+    },
+  }),
 };

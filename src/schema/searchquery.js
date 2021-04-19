@@ -17,6 +17,6 @@ export const resolvers = {
     },
     value(parent) {
       return get(parent, "value.$", "unknown");
-    }
-  }
+    },
+  },
 };

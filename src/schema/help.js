@@ -19,6 +19,6 @@ export const resolvers = {
   HelpResponse: {
     async result(parent, args, context, info) {
       return await context.datasources.helptexts.load(parent.q);
-    }
-  }
+    },
+  },
 };

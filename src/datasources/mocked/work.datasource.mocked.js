@@ -1,5 +1,5 @@
 export default {
-  load: workId => {
+  load: (workId) => {
     const data = {
       "work-of:870970-basis:26521556": {
         trackingId: "032113e2-a929-46f9-8a28-8217611d75e9",
@@ -12,61 +12,61 @@ export default {
               records: [
                 {
                   id: "800010-katalog:99121962154805763__1",
-                  types: ["Bog"]
-                }
-              ]
+                  types: ["Bog"],
+                },
+              ],
             },
             {
               records: [
                 {
                   id: "300101-katalog:28486006",
-                  types: ["Ebog", "Bog"]
-                }
-              ]
+                  types: ["Ebog", "Bog"],
+                },
+              ],
             },
             {
               records: [
                 {
                   id: "870970-basis:29433909",
 
-                  types: ["Bog"]
-                }
-              ]
-            }
+                  types: ["Bog"],
+                },
+              ],
+            },
           ],
 
           subjects: [
             { type: "dcterms:LCSH", value: "krimi" },
             { type: "genre", value: "krimi" },
-            { value: "småbørnsbog" }
+            { value: "småbørnsbog" },
           ],
           relations: [
             {
               id: "870971-anmeld:37860409",
               type: "review",
-              types: ["Anmeldelse"]
+              types: ["Anmeldelse"],
             },
             {
               id: "870971-anmeld:37931659",
               type: "review",
-              types: ["Anmeldelse"]
+              types: ["Anmeldelse"],
             },
             {
               id: "870971-anmeld:37969532",
               type: "review",
-              types: ["Anmeldelse"]
+              types: ["Anmeldelse"],
             },
             {
               id: "870976-anmeld:31605180",
               type: "review",
-              types: ["Anmeldelse"]
-            }
+              types: ["Anmeldelse"],
+            },
           ],
           title: "min kamp",
-          workId: "work-of:870970-basis:28329490"
-        }
-      }
+          workId: "work-of:870970-basis:28329490",
+        },
+      },
     };
     return data[workId];
-  }
+  },
 };

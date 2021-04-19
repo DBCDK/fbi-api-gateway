@@ -11,5 +11,5 @@ type SEO {
 }`;
 
 export const resolvers = {
-  SEO: {}
+  SEO: {},
 };

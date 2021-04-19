@@ -5,37 +5,37 @@ import { typeDef as DK5, resolvers as DK5Resolvers } from "./dk5";
 import { typeDef as Help, resolvers as HelpResolvers } from "./help";
 import {
   typeDef as WorkManifestation,
-  resolvers as WorkManifestationResolvers
+  resolvers as WorkManifestationResolvers,
 } from "./workmanifestation";
 import { typeDef as Work, resolvers as WorkResolvers } from "./work";
 import {
   typeDef as Manifestation,
-  resolvers as ManifestationResolvers
+  resolvers as ManifestationResolvers,
 } from "./manifestation";
 import {
   typeDef as Recommendation,
-  resolvers as RecommendationResolvers
+  resolvers as RecommendationResolvers,
 } from "./recommendation";
 import { typeDef as Review, resolvers as ReviewResolvers } from "./review";
 import { typeDef as Creator, resolvers as CreatorResolvers } from "./creator";
 import {
   typeDef as SearchQuery,
-  resolvers as SearchQueryResolvers
+  resolvers as SearchQueryResolvers,
 } from "./searchquery";
 import { typeDef as SEO, resolvers as SEOResolvers } from "./seo";
 import {
   typeDef as Search,
-  resolvers as SearchResolvers
+  resolvers as SearchResolvers,
 } from "./searchresponse";
 import {
   typeDef as Suggest,
-  resolvers as SuggestResolvers
+  resolvers as SuggestResolvers,
 } from "./suggestions";
 import { typeDef as Series, resolvers as SeriesResolvers } from "./series";
 import { typeDef as Subject, resolvers as SubjectResolvers } from "./subject";
 import {
   typeDef as AdminData,
-  resolvers as AdminDataResolvers
+  resolvers as AdminDataResolvers,
 } from "./admindata";
 import { typeDef as Cover, resolvers as CoverResolvers } from "./cover";
 
@@ -81,7 +81,7 @@ export const internalSchema = makeExecutableSchema({
     Suggest,
     AdminData,
     Cover,
-    Scalars
+    Scalars,
   ],
   resolvers: {
     Query: {
@@ -109,7 +109,7 @@ export const internalSchema = makeExecutableSchema({
       },
       async suggest(parent, args, context, info) {
         return { q: args.q };
-      }
+      },
     },
     Mutation: {
       data_collect(parent, args, context, info) {
@@ -131,7 +131,7 @@ export const internalSchema = makeExecutableSchema({
         log.info("data", { type: "data", message: JSON.stringify(data) });
 
         return "OK";
-      }
+      },
     },
     ...DK5Resolvers,
     ...HelpResolvers,
@@ -149,8 +149,8 @@ export const internalSchema = makeExecutableSchema({
     ...SuggestResolvers,
     ...AdminDataResolvers,
     ...CoverResolvers,
-    ...ScalarResolvers
-  }
+    ...ScalarResolvers,
+  },
 });
 
 /**
@@ -158,6 +158,6 @@ export const internalSchema = makeExecutableSchema({
  */
 export default async () => {
   return mergeSchemas({
-    subschemas: [{ schema: await drupalSchema() }, { schema: internalSchema }]
+    subschemas: [{ schema: await drupalSchema() }, { schema: internalSchema }],
   });
 };

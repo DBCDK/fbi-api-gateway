@@ -38,10 +38,12 @@ export const resolvers = {
           "work-of:870970-basis:46090802",
           "work-of:870970-basis:51578120",
           "work-of:870970-basis:51965906",
-          "work-of:870970-basis:52649153"
-        ].map(async id => (await context.datasources.workservice.load(id)).work)
+          "work-of:870970-basis:52649153",
+        ].map(
+          async (id) => (await context.datasources.workservice.load(id)).work
+        )
       );
       return works.map((entry, index) => ({ ...entry, part: index + 1 }));
-    }
-  }
+    },
+  },
 };

@@ -47,8 +47,9 @@ union Review = ReviewInfomedia | ReviewLitteratursiden | ReviewMatVurd
  */
 export function resolveAuthor(parent) {
   return (
-    getArray(parent, "details.creators.value").map(entry => entry.name.$)[0] ||
-    ""
+    getArray(parent, "details.creators.value").map(
+      (entry) => entry.name.$
+    )[0] || ""
   );
 }
 
@@ -59,9 +60,9 @@ export function resolveAuthor(parent) {
 export function resolveDate(parent) {
   return (
     getArray(parent, "details.articleData.article.volume").map(
-      entry => entry.$
+      (entry) => entry.$
     )[0] ||
-    getArray(parent, "admindata.creationDate").map(entry => entry.$)[0] ||
+    getArray(parent, "admindata.creationDate").map((entry) => entry.$)[0] ||
     ""
   );
 }
@@ -73,7 +74,7 @@ export function resolveDate(parent) {
 function resolveMedia(parent) {
   return (
     getArray(parent, "details.hostPublication.title").map(
-      entry => entry.$
+      (entry) => entry.$
     )[0] || ""
   );
 }
@@ -96,7 +97,7 @@ export const resolvers = {
       } catch (e) {
         return null;
       }
-    }
+    },
   },
   ReviewInfomedia: {
     author: resolveAuthor,
@@ -104,9 +105,10 @@ export const resolvers = {
     media: resolveMedia,
     rating(parent, args, context, info) {
       return (
-        getArray(parent, "details.reviewRatings").map(entry => entry.$)[0] || ""
+        getArray(parent, "details.reviewRatings").map((entry) => entry.$)[0] ||
+        ""
       );
-    }
+    },
   },
   ReviewLitteratursiden: {
     author: resolveAuthor,
@@ -114,10 +116,10 @@ export const resolvers = {
     url(parent, args, context, info) {
       return (
         getArray(parent, "details.onlineAccess.value.link").map(
-          entry => entry.$
+          (entry) => entry.$
         )[0] || ""
       );
-    }
+    },
   },
   ReviewMatVurd: {
     author: resolveAuthor,
@@ -125,10 +127,10 @@ export const resolvers = {
     all(parent, args, context, info) {
       // return all text paragraps in fulltextmatvurd
       const res = [];
-      getArray(parent, "details.fulltextmatvurd.value").forEach(entry => {
+      getArray(parent, "details.fulltextmatvurd.value").forEach((entry) => {
         Object.entries(entry).forEach(([name, item]) => {
           if (Array.isArray(item)) {
-            item.forEach(item2 => {
+            item.forEach((item2) => {
               res.push({ name, ...item2 });
             });
           } else {
@@ -149,21 +151,19 @@ export const resolvers = {
     },
     other(parent, args, context, info) {
       return getArray(parent, "details.fulltextmatvurd.value.other");
-    }
+    },
   },
   Review: {
     __resolveType(parent, args, context, info) {
       if (parent.details && parent.details.fulltextmatvurd) {
         return "ReviewMatVurd";
       } else if (
-        resolveMedia(parent)
-          .toLowerCase()
-          .includes("litteratursiden")
+        resolveMedia(parent).toLowerCase().includes("litteratursiden")
       ) {
         return "ReviewLitteratursiden";
       } else {
         return "ReviewInfomedia";
       }
-    }
-  }
+    },
+  },
 };

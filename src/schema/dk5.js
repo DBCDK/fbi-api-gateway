@@ -11,5 +11,5 @@ type DK5 {
 }`;
 
 export const resolvers = {
-  DK5: {}
+  DK5: {},
 };

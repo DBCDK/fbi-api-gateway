@@ -21,20 +21,20 @@ function connectRedis({ host, port, prefix }) {
   log.info(`Connecting to Redis`, {
     redisHost: host,
     redisPort: port,
-    redisPrefix: prefix
+    redisPrefix: prefix,
   });
   redis = new Redis.Cluster([{ host, port }], { keyPrefix: prefix });
 
-  redis.on("ready", function() {
+  redis.on("ready", function () {
     isConnected = true;
     log.info(`Connected to Redis`, {
       redisHost: host,
       redisPort: port,
-      redisPrefix: prefix
+      redisPrefix: prefix,
     });
   });
 
-  redis.on("close", function() {
+  redis.on("close", function () {
     if (!isConnected) {
       return;
     }
@@ -42,18 +42,18 @@ function connectRedis({ host, port, prefix }) {
     log.error(`Disconnected from Redis`, {
       redisHost: host,
       redisPort: port,
-      redisPrefix: prefix
+      redisPrefix: prefix,
     });
   });
 
-  redis.on("error", function() {
+  redis.on("error", function () {
     if (!isConnected) {
       return;
     }
     log.error(`Some Redis error occured: ${error.message}`, {
       redisHost: host,
       redisPort: port,
-      redisPrefix: prefix
+      redisPrefix: prefix,
     });
   });
 }
@@ -63,12 +63,12 @@ function connectRedis({ host, port, prefix }) {
  */
 const get = monitor(
   { name: "REQUEST_redis_get", help: "Redis get request" },
-  async key => {
+  async (key) => {
     try {
       return JSON.parse(await redis.get(key));
     } catch (e) {
       log.error(`Redis get failed`, {
-        key
+        key,
       });
       return null;
     }
@@ -87,7 +87,7 @@ const set = monitor(
       log.error(`Redis setex failed`, {
         key,
         val,
-        seconds
+        seconds,
       });
     }
   }
@@ -158,7 +158,7 @@ export function withRedis(
    */
   async function redisBatchLoader(keys) {
     // Create array of prefixed keys
-    const prefixedKeys = keys.map(key => createPrefixedKey(prefix, key));
+    const prefixedKeys = keys.map((key) => createPrefixedKey(prefix, key));
 
     // Get values of all prefixed keys from Redis
     const cachedValues = await mgetFunc(prefixedKeys);
@@ -218,6 +218,6 @@ if (
   connectRedis({
     host: config.datasources.redis.host,
     port: config.datasources.redis.port,
-    prefix: config.datasources.redis.prefix
+    prefix: config.datasources.redis.prefix,
   });
 }

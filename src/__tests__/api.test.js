@@ -65,8 +65,8 @@ describe("API test cases", () => {
     const errors = validate(internalSchema, ast, [
       validateComplexity({
         query,
-        variables: {}
-      })
+        variables: {},
+      }),
     ]);
     expect(errors).toMatchSnapshot();
   });
@@ -92,8 +92,8 @@ describe("API test cases", () => {
     const errors = validate(internalSchema, ast, [
       validateComplexity({
         query,
-        variables: {}
-      })
+        variables: {},
+      }),
     ]);
     expect(errors).toMatchSnapshot();
   });
@@ -110,16 +110,16 @@ describe("API test cases", () => {
             search_query: "harry",
             search_query_hit: 7,
             search_query_work: "some-work-id",
-            session_id: "some-session-id"
-          }
-        }
+            session_id: "some-session-id",
+          },
+        },
       },
-      context: {}
+      context: {},
     });
     expect(result).toEqual({
       data: {
-        data_collect: "OK"
-      }
+        data_collect: "OK",
+      },
     });
     // Check that entry is written to std out in th format AI expects
     expect(JSON.parse(spy.console.mock.calls[0][0])).toMatchObject({
@@ -128,8 +128,8 @@ describe("API test cases", () => {
         "search-query": "harry",
         "search-query-hit": 7,
         "search-query-work": "some-work-id",
-        "session-id": "some-session-id"
-      })
+        "session-id": "some-session-id",
+      }),
     });
   });
   test("Mutation error: data collect, multiple inputs not allowed", async () => {
@@ -145,12 +145,12 @@ describe("API test cases", () => {
             search_query: "harry",
             search_query_hit: 7,
             search_query_work: "some-work-id",
-            session_id: "some-session-id"
+            session_id: "some-session-id",
           },
-          example: { example: "some-string", session_id: "some-session-id" }
-        }
+          example: { example: "some-string", session_id: "some-session-id" },
+        },
       },
-      context: {}
+      context: {},
     });
     expect(result.errors[0].message).toEqual(
       "Exactly 1 input must be specified"
@@ -164,9 +164,9 @@ describe("API test cases", () => {
           }
         `,
       variables: {
-        input: {}
+        input: {},
       },
-      context: {}
+      context: {},
     });
     expect(result.errors[0].message).toEqual(
       "Exactly 1 input must be specified"
@@ -289,9 +289,9 @@ describe("API test cases", () => {
       context: {
         datasources: {
           workservice: mockedWorkDataSource,
-          openformat: mockedOpenformat
-        }
-      }
+          openformat: mockedOpenformat,
+        },
+      },
     });
     expect(result).toMatchSnapshot();
   });
@@ -309,17 +309,17 @@ describe("API test cases", () => {
           }
         `,
       variables: { id: "work-of:870970-basis:26521556" },
-      context: { datasources: { workservice: mockedWorkDataSource } }
+      context: { datasources: { workservice: mockedWorkDataSource } },
     });
     expect(result).toEqual({
       data: {
         work: {
           materialTypes: [
             { pid: "870970-basis:29433909", materialType: "Bog" },
-            { pid: "300101-katalog:28486006", materialType: "Ebog" }
-          ]
-        }
-      }
+            { pid: "300101-katalog:28486006", materialType: "Ebog" },
+          ],
+        },
+      },
     });
   });
 
@@ -333,14 +333,14 @@ describe("API test cases", () => {
               }
             `,
       variables: { id: "work-of:870970-basis:26521556" },
-      context: { datasources: { workservice: mockedWorkDataSource } }
+      context: { datasources: { workservice: mockedWorkDataSource } },
     });
     expect(result).toMatchObject({
       errors: [
         {
-          message: 'Cannot query field "dunno" on type "Work".'
-        }
-      ]
+          message: 'Cannot query field "dunno" on type "Work".',
+        },
+      ],
     });
   });
 
@@ -354,15 +354,16 @@ describe("API test cases", () => {
           }
         `,
       variables: {},
-      context: { datasources: { workservice: mockedWorkDataSource } }
+      context: { datasources: { workservice: mockedWorkDataSource } },
     });
 
     expect(result).toMatchObject({
       errors: [
         {
-          message: 'Variable "$id" of required type "String!" was not provided.'
-        }
-      ]
+          message:
+            'Variable "$id" of required type "String!" was not provided.',
+        },
+      ],
     });
   });
 
@@ -376,14 +377,14 @@ describe("API test cases", () => {
           }
         `,
       variables: {},
-      context: { datasources: { workservice: mockedWorkDataSource } }
+      context: { datasources: { workservice: mockedWorkDataSource } },
     });
     expect(result).toMatchObject({
       errors: [
         {
-          message: "Syntax Error: Expected Name, found <EOF>."
-        }
-      ]
+          message: "Syntax Error: Expected Name, found <EOF>.",
+        },
+      ],
     });
   });
 
@@ -405,21 +406,21 @@ describe("API test cases", () => {
           workservice: {
             load: () => {
               throw new Error("Not Found");
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     });
     expect(result).toMatchObject({
       errors: [
         {
           message: "Not Found",
-          path: ["work"]
-        }
+          path: ["work"],
+        },
       ],
       data: {
-        work: null
-      }
+        work: null,
+      },
     });
   });
 
