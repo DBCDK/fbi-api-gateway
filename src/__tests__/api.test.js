@@ -24,7 +24,7 @@
 import { graphql } from "graphql";
 import { validate } from "graphql/validation";
 import { parse } from "graphql/language";
-import { internalSchema } from "../schema/schema";
+import { internalSchema } from "../schemaLoader";
 import mockedWorkDataSource from "../datasources/mocked/work.datasource.mocked";
 import mockedOpenformat from "../datasources/mocked/openformat.datasource.mocked";
 import validateComplexity from "../utils/complexity";

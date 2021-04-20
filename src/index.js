@@ -3,7 +3,7 @@
  *
  */
 import { log } from "dbc-node-logger";
-import schema from "./schema/schema";
+import schema from "./schemaLoader";
 import creatorLoader from "./datasources/creator.datasource";
 import helpTextsLoader from "./datasources/helptext.datasource";
 import workLoader from "./datasources/work.datasource";
@@ -52,7 +52,10 @@ promExporterApp.listen(9599, () => {
 
   // set up context per request
   app.use((req, res, next) => {
-    // user authentication could be done here
+    // Get bearer token from authorization header
+    req.accessToken =
+      req.headers.authorization &&
+      req.headers.authorization.replace(/bearer /i, "");
 
     req.datasources = {
       creator: new DataLoader(creatorLoader),
