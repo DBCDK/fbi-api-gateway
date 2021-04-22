@@ -49,5 +49,12 @@ export default {
         "http://wp-simple-search.os-externals.svc.cloud.dbc.dk/search",
       prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-1",
     },
+    openplatform: {
+      url:
+          process.env.OPENPLATFORM_URL ||
+          "https://openplatform.dbc.dk/v3",
+      prefix: process.env.OPENPLATFORM_PREFIX || "openplatform-1",
+      ttl: process.env.OPENFORMAT_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
+    }
   },
 };

@@ -17,6 +17,7 @@ type Query {
   search(q: String!, limit: PaginationLimit!, offset: Int): SearchResponse!
   suggest(q: String!): SuggestResponse!
   help(q: String!): HelpResponse
+  library(agencyid: String!): Library
 }
 type Mutation {
   data_collect(input: DataCollectInput!): String!
@@ -49,9 +50,12 @@ export const resolvers = {
     async search(parent, args, context, info) {
       return { q: args.q, limit: args.limit, offset: args.offset };
     },
+    async library(parent, args, context, info) {
+      return { q: args.agencyid };
+    },
     async suggest(parent, args, context, info) {
       return { q: args.q };
-    },
+    }
   },
   Mutation: {
     data_collect(parent, args, context, info) {
