@@ -5,7 +5,7 @@ import config from "../config";
 
 const endpoint = "/libraries"
 async function Libraries(agencyid) {
-  console.log(agencyid, "AGENCYID");
+  // @TODO access token ??
   const url = config.datasources.openplatform.url + endpoint;
   return (
       await request
