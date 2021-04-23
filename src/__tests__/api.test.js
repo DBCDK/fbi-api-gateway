@@ -432,41 +432,6 @@ describe('API test cases', () => {
     });
   });
 
-  test('library - get branches', async () => {
-
-    console.error('TESTHEST');
-
-    const result = await performTestQuery({
-      query: `
-          query{
-            library(agencyid: "710100"){    
-              agencies{
-                agencyId
-                branchId
-                branchName
-                openingHours
-              }
-            }
-          }
-        `,
-      variables: {},
-      context: {datasources: {library: mockedLibrary}},
-    });
-
-    console.error(JSON.stringify(result), 'RESULT');
-
-
-    const tree = TestRenderer.create(result).toJSON();
-
-
-        expect(result).toMatchObject({
-      errors: [
-        {
-          message: 'fisk',
-        },
-      ],
-    });
-  });
 
   test('Datasource error: Invalid work response', async () => {
     // TODO
