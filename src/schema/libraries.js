@@ -3,14 +3,11 @@
  *
  */
 
-import {getArray} from '../utils/utils';
-import {get} from 'lodash';
-
 export const typeDef = `
   type Library {
-    agencies: [branch!]
+    agencies: [Branch!]
   }
-  type branch{
+  type Branch{
     agencyId: String!
     branchId: String!
     branchName: [String!]
@@ -23,7 +20,7 @@ export const resolvers = {
       return context.datasources.library.load(parent);
     }
   },
-  branch: {
+  Branch: {
     agencyId(parent, args, context, info) {
       return parent.agencyId;
     },
