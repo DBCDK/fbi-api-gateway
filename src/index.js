@@ -13,6 +13,7 @@ import idmapperLoader from "./datasources/idmapper.datasource";
 import moreinfoLoader from "./datasources/moreinfo.datasource";
 import simplesearchLoader from "./datasources/simplesearch.datasource";
 import suggesterLoader from "./datasources/suggester.datasource";
+import availabilityLoader from "./datasources/availabaility.datasource";
 import express from "express";
 import cors from "cors";
 import { graphqlHTTP } from "express-graphql";
@@ -76,6 +77,11 @@ promExporterApp.listen(9599, () => {
       }),
       suggester: new DataLoader(suggesterLoader, {
         // the key of suggester batchloader is an object
+        // hence we stringify
+        cacheKeyFn: (key) => JSON.stringify(key),
+      }),
+      availability: new DataLoader(availabilityLoader, {
+        // the key of availability batchloader is an object
         // hence we stringify
         cacheKeyFn: (key) => JSON.stringify(key),
       }),

@@ -35,6 +35,7 @@ export const typeDef = `
       shelf: String
       title: String
       recommendations(limit: Int): [Recommendation!]!
+      availability: Availability
     }
   `;
 
@@ -278,6 +279,12 @@ export const resolvers = {
           (entry) => entry.$
         )[0] || ""
       );
+    },
+    async availability(parent, args, context, info) {
+      return await context.datasources.availability.load({
+        pid: parent.id,
+        accessToken: context.accessToken,
+      });
     },
   },
 };

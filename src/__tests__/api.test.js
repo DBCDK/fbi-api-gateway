@@ -27,6 +27,7 @@ import { parse } from "graphql/language";
 import { internalSchema } from "../schemaLoader";
 import mockedWorkDataSource from "../datasources/mocked/work.datasource.mocked";
 import mockedOpenformat from "../datasources/mocked/openformat.datasource.mocked";
+import mockedAvailability from "../datasources/mocked/availability.datasource.mocked";
 import validateComplexity from "../utils/complexity";
 
 async function performTestQuery({ query, variables, context }) {
@@ -210,6 +211,12 @@ describe("API test cases", () => {
                   physicalDescription
                   publisher
                   shelf
+                  availability {
+                    willLend
+                    expectedDelivery
+                    orderPossible
+                    orderPossibleReason
+                  }
                 }
                 materialTypes {
                   content
@@ -287,9 +294,11 @@ describe("API test cases", () => {
         `,
       variables: { id: "work-of:870970-basis:26521556" },
       context: {
+        accessToken: "qwerty",
         datasources: {
           workservice: mockedWorkDataSource,
           openformat: mockedOpenformat,
+          availability: mockedAvailability,
         },
       },
     });
