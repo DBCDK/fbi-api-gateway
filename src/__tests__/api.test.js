@@ -31,9 +31,6 @@ import mockedOpenformat
 import mockedLibrary from '../datasources/mocked/library.datasource.mocked';
 import validateComplexity from '../utils/complexity';
 
-
-import TestRenderer from 'react-test-renderer';
-
 export async function performTestQuery({query, variables, context}) {
   return graphql(internalSchema, query, null, context, variables);
 }
