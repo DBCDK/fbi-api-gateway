@@ -17,9 +17,9 @@ export async function load(pids, accessToken) {
  *
  * @param {Array.<string>} keys The keys to fetch
  */
- export async function batchLoader(keys, loadFunc) {
-    const pids = keys.map((o) => o.pid);
-    const accessToken = keys[0].accessToken;
-  
-    return await loadFunc(pids, accessToken);
-  }
+export async function batchLoader(keys, loadFunc) {
+  const pids = keys.map((o) => o.pid);
+  const accessToken = keys[0].accessToken;
+
+  return await loadFunc(pids, accessToken);
+}
