@@ -1,0 +1,1401 @@
+{
+  "statusCode": 200,
+  "data": [
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710100",
+      "branchType": "H",
+      "branchName": [
+        "Hovedbiblioteket, Krystalgade",
+        "Copenhagen City Public Library"
+      ],
+      "branchShortName": [
+        "København",
+        "Copenhagen"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "hovinf@kff.kk.dk",
+      "branchIllEmail": "svafra@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Krystalgade 15",
+      "postalCode": "1172",
+      "city": "København K",
+      "isil": "DK-710100",
+      "junction": "715700",
+      "branchPNumber": "1003250859",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/registration",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2021-04-09T00:00:00+02:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.680887,
+        "longitude": 12.573619
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710104",
+      "branchType": "f",
+      "branchName": [
+        "Blågårdens Bibliotek",
+        "Blågård"
+      ],
+      "branchShortName": [
+        "Blågården",
+        "Blågård"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjebla@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Blågårds Plads 5",
+      "postalCode": "2200",
+      "city": "København N",
+      "isil": "DK-710104",
+      "junction": "715700",
+      "branchPNumber": "1008864043",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.6860904,
+        "longitude": 12.5567168
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710105",
+      "branchType": "f",
+      "branchName": [
+        "Brønshøj Bibliotek",
+        "Brønshøj"
+      ],
+      "branchShortName": [
+        "Brønshøj",
+        "Brønshøj"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjebrh@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Krabbesholmvej 3\r\n",
+      "postalCode": "2700",
+      "city": "Brønshøj",
+      "isil": "DK-710105",
+      "junction": "715700",
+      "branchPNumber": "1021473649",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.7042921,
+        "longitude": 12.4993836
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710106",
+      "branchType": "f",
+      "branchName": [
+        "Christianshavns Bibliotek",
+        "Christianshavn"
+      ],
+      "branchShortName": [
+        "Christianshavn",
+        "Christianshavn"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjechr@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Dronningensgade 53",
+      "postalCode": "1420",
+      "city": "København K",
+      "isil": "DK-710106",
+      "junction": "715700",
+      "branchPNumber": "1018525204",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.6723406,
+        "longitude": 12.5921292
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710107",
+      "branchType": "f",
+      "branchName": [
+        "Husum Bibliotek",
+        "Husum"
+      ],
+      "branchShortName": [
+        "Husum",
+        "Husum"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjehus@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Frederikssundsvej 290",
+      "postalCode": "2700",
+      "city": "Brønshøj",
+      "isil": "DK-710107",
+      "junction": "715700",
+      "branchPNumber": "1003252498",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.7113268,
+        "longitude": 12.4747123
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710108",
+      "branchType": "f",
+      "branchName": [
+        "Islands Brygge Bibliotek",
+        "Islands Brygge"
+      ],
+      "branchShortName": [
+        "Islands Brygge",
+        "Islands Bryge"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjebry@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Njalsgade 15",
+      "postalCode": "2300",
+      "city": "København S",
+      "isil": "DK-710108",
+      "junction": "715700",
+      "branchPNumber": "1003254386",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.6665428,
+        "longitude": 12.5791908
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710109",
+      "branchType": "f",
+      "branchName": [
+        "Øbro Jagtvej Bibliotek",
+        "Jagtvej"
+      ],
+      "branchShortName": [
+        "Øbro",
+        "Jagtvej"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjejag@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Jagtvej 227",
+      "postalCode": "2100",
+      "city": "København Ø",
+      "isil": "DK-710109",
+      "junction": "715700",
+      "branchPNumber": "1003253330",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.709173,
+        "longitude": 12.576458
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710110",
+      "branchType": "f",
+      "branchName": [
+        "Biblioteket Rentemestervej",
+        "Rentemestervej"
+      ],
+      "branchShortName": [
+        "Rentemestervej",
+        "Rentemestervej"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjeoer@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Rentemestervej 76",
+      "postalCode": "2400",
+      "city": "København NV",
+      "isil": "DK-710110",
+      "junction": "715700",
+      "branchPNumber": "1016893273",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.708421,
+        "longitude": 12.52288
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710111",
+      "branchType": "f",
+      "branchName": [
+        "Nørrebro Bibliotek",
+        "Nørrebro"
+      ],
+      "branchShortName": [
+        "Nørrebro",
+        "Nørrebro"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "norrebrobib@kff.kk.dk",
+      "branchIllEmail": "fjenoe@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Nørrebrohallen\r\nNørrebrogade 208",
+      "postalCode": "2200",
+      "city": "København N",
+      "isil": "DK-710111",
+      "junction": "715700",
+      "branchPNumber": "1003252863",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/biblioteker/norrebro",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.6990425,
+        "longitude": 12.5432118
+      },
+      "headOfBranchName": "Stine Høi Sørensen",
+      "headOfBranchTitle": "leder af 2200KULTUR",
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710112",
+      "branchType": "f",
+      "branchName": [
+        "Solvang Bibliotek",
+        "Solvang Bibliotek"
+      ],
+      "branchShortName": [
+        "Solvang Bibliotek",
+        "Solvang Bibliotek"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjesrm@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Remisevej 14",
+      "postalCode": "2300",
+      "city": "København S",
+      "isil": "DK-710112",
+      "junction": "715700",
+      "branchPNumber": "1003255291",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.6487443,
+        "longitude": 12.5955017
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710113",
+      "branchType": "f",
+      "branchName": [
+        "Sundby Bibliotek",
+        "Sundby"
+      ],
+      "branchShortName": [
+        "Sundby Bibliotek",
+        "Sundby"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjesun@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Kvarterhuset Jemtelandsgade 3",
+      "postalCode": "2300",
+      "city": "København S",
+      "isil": "DK-710113",
+      "junction": "715700",
+      "branchPNumber": "1003254933",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.6651998,
+        "longitude": 12.6038686
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710114",
+      "branchType": "f",
+      "branchName": [
+        "Bibliotekshuset",
+        "Bibliotekshuset"
+      ],
+      "branchShortName": [
+        "Bibliotekshuset",
+        "Bibliotekshuset"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjebro@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Rodosvej 4",
+      "postalCode": "2300",
+      "city": "København S",
+      "isil": "DK-710114",
+      "junction": "715700",
+      "branchPNumber": "1003255965",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.650359,
+        "longitude": 12.6132581
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710115",
+      "branchType": "f",
+      "branchName": [
+        "Sydhavnens Bibliotek",
+        "Sydhavnen"
+      ],
+      "branchShortName": [
+        "Sydhavnen Bibliotek",
+        "Sydhavnen"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjesyd@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Wagnersvej 19",
+      "postalCode": "2450",
+      "city": "København SV",
+      "isil": "DK-710115",
+      "junction": "715700",
+      "branchPNumber": "1003253706",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.6468105,
+        "longitude": 12.529623
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710116",
+      "branchType": "f",
+      "branchName": [
+        "Tingbjerg Bibliotek",
+        "Tingbjerg"
+      ],
+      "branchShortName": [
+        "Tingbjerg",
+        "Tingbjerg"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjetin@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Skolesiden 4",
+      "postalCode": "2700",
+      "city": "Brønshøj",
+      "isil": "DK-710116",
+      "junction": "715700",
+      "branchPNumber": "1003255060",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.718864,
+        "longitude": 12.481163
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710117",
+      "branchType": "f",
+      "branchName": [
+        "Valby Bibliotek",
+        "Valby"
+      ],
+      "branchShortName": [
+        "Valby Bibliotek",
+        "Valby"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjeval@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Annexstræde 2",
+      "postalCode": "2500",
+      "city": "Valby",
+      "isil": "DK-710117",
+      "junction": "715700",
+      "branchPNumber": "1003255576",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.665354,
+        "longitude": 12.513072
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710118",
+      "branchType": "f",
+      "branchName": [
+        "Kulturstationen Vanløse. Biblioteket",
+        "Vanløse"
+      ],
+      "branchShortName": [
+        "Vanløse",
+        "Vanløse"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjevan@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Jernbane Alle 38",
+      "postalCode": "2720",
+      "city": "Vanløse",
+      "isil": "DK-710118",
+      "junction": "715700",
+      "branchPNumber": "1003253354",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.686532,
+        "longitude": 12.491274
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710119",
+      "branchType": "f",
+      "branchName": [
+        "Vesterbro Bibliotek",
+        "Vesterbro"
+      ],
+      "branchShortName": [
+        "Vesterbro",
+        "Vesterbro"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjeves@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Lyrskovgade 4",
+      "postalCode": "1758",
+      "city": "København V",
+      "isil": "DK-710119",
+      "junction": "715700",
+      "branchPNumber": "1003254131",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.667836,
+        "longitude": 12.543681
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710120",
+      "branchType": "f",
+      "branchName": [
+        "Vigerslev Bibliotek",
+        "Vigerslev"
+      ],
+      "branchShortName": [
+        "Vigerslev",
+        "Vigerslev"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjevig@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Kirsebærhaven 23",
+      "postalCode": "2500",
+      "city": "Valby",
+      "isil": "DK-710120",
+      "junction": "715700",
+      "branchPNumber": "1003253536",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.649234,
+        "longitude": 12.5032789
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710121",
+      "branchType": "f",
+      "branchName": [
+        "Østerbro Bibliotek",
+        "Østerbro"
+      ],
+      "branchShortName": [
+        "Østerbro",
+        "Østerbro"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjeoes@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Dag Hammarskjölds Alle 19",
+      "postalCode": "2100",
+      "city": "København Ø",
+      "isil": "DK-710121",
+      "junction": "715700",
+      "branchPNumber": "1003252127",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.694579,
+        "longitude": 12.581699
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710122",
+      "branchType": "f",
+      "branchName": [
+        "Ørestad Bibliotek"
+      ],
+      "branchShortName": [
+        "Ørestad Bibliotek"
+      ],
+      "branchPhone": "33 66 30 00",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "fjeore@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Arne Jacobsens Allé 19",
+      "postalCode": "2300",
+      "city": "København S",
+      "isil": "DK-710122",
+      "junction": "715700",
+      "branchPNumber": "1017570613",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/",
+      "lookupUrl": "http://bibliotek.kk.dk/ting/object/870970-basis%3A",
+      "branchWebsiteUrl": "http://bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/node/137",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "registrationFormUrlText": "Bliv låner",
+      "userStatusUrl": "http://bibliotek.kk.dk/",
+      "librarydkSupportEmail": "bibliotek@kff.kk.dk",
+      "librarydkSupportPhone": "33 66 30 00",
+      "openingHours": [
+        "Åbningstider\r\nSe åbningstider på:\r\nbibliotek.kk.dk/biblioteker/",
+        "Opening hours\r\nSee opening hours on:\r\n<a href=\"https://bibliotek.kk.dk/biblioteker/\">bibliotek.kk.dk/biblioteker</a>"
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "geolocation": {
+        "latitude": 55.6313466,
+        "longitude": 12.5809647
+      },
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    },
+    {
+      "agencyName": "Københavns Biblioteker",
+      "agencyId": "710100",
+      "agencyType": "Folkebibliotek",
+      "agencyEmail": "bibliotek@kff.kk.dk",
+      "agencyPhone": "33 66 30 00",
+      "agencyCvrNumber": "64942212",
+      "agencyEanNumber": "5798009780300",
+      "branchId": "710123",
+      "branchType": "s",
+      "branchName": [
+        "Københavns Bibliotekers centrale sortering"
+      ],
+      "branchShortName": [
+        "Centralsorteringen",
+        "Central sorter"
+      ],
+      "branchPhone": "33663000 / 33666051 ",
+      "branchEmail": "bibliotek@kff.kk.dk",
+      "branchIllEmail": "svafra@kff.kk.dk",
+      "branchIsAgency": "0",
+      "postalAddress": "Djursvang 7C",
+      "postalCode": "2620",
+      "city": "Albertslund",
+      "isil": "DK-710123",
+      "junction": "715700",
+      "branchCatalogueUrl": "http://bibliotek.kk.dk/kkblink?kkbbase=www&kkbtype=menu",
+      "lookupUrl": "http://bibliotek.kk.dk/kkbvis?",
+      "branchWebsiteUrl": "http://www.bibliotek.kk.dk/",
+      "serviceDeclarationUrl": "http://bibliotek.kk.dk/bibliotekerne/lovgrundlag/servicedeklaration/view",
+      "registrationFormUrl": "https://bibliotek.kk.dk/gatewayf/registration/information",
+      "userStatusUrl": "https://stormp.kk.dk/sites/XWW/pub/patronstatus.html",
+      "librarydkSupportEmail": "hovlae@kff.kk.dk",
+      "librarydkSupportPhone": "33736037",
+      "openingHours": [
+        "ma-fre: 9-16",
+        "Monday-Friday from 9 am to 4 pm. "
+      ],
+      "temporarilyClosed": "0",
+      "illOrderReceiptText": [
+        "Vi henstiller til, at du p.t. kun benytter dig af muligheden for at bestille/låne, hvis du skal bruge bøger til forsknings-, studie- eller skolebrug",
+        "We recommend that you only make use of this service if you need materials for research-, study- or school use."
+      ],
+      "pickupAllowed": "1",
+      "dropOffBranch": "710123",
+      "dropOffName": "Københavns Bibliotekers centrale sortering",
+      "lastUpdated": "2020-12-14T00:00:00+01:00",
+      "isOclcRsLibrary": "0",
+      "stateAndUniversityLibraryCopyService": "1",
+      "headOfInstitutionName": "Jakob Heide Petersen",
+      "headOfInstitutionTitle": "Chef for Københavns Biblioteker",
+      "nationalDeliveryService": "1",
+      "willReceiveIll": "1",
+      "orderParameters": [
+        "userId",
+        "pincode",
+        "name",
+        "email"
+      ]
+    }
+  ]
+}

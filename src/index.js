@@ -23,6 +23,8 @@ import howruHandler from "./howru";
 import { metrics, observeDuration, count } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
 
+import libraryLoader from "./datasources/libraries.datasource";
+
 const app = express();
 let server;
 
@@ -67,6 +69,7 @@ promExporterApp.listen(9599, () => {
         // hence we stringify
         cacheKeyFn: (key) => JSON.stringify(key),
       }),
+
       idmapper: new DataLoader(idmapperLoader),
       moreinfo: new DataLoader(moreinfoLoader),
       workservice: new DataLoader(workLoader),
@@ -85,6 +88,7 @@ promExporterApp.listen(9599, () => {
         // hence we stringify
         cacheKeyFn: (key) => JSON.stringify(key),
       }),
+      library: new DataLoader(libraryLoader)
     };
     next();
   });
