@@ -55,7 +55,7 @@ export const resolvers = {
     },
     async suggest(parent, args, context, info) {
       return { q: args.q };
-    }
+    },
   },
   Mutation: {
     data_collect(parent, args, context, info) {

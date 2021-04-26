@@ -1,28 +1,24 @@
-import request from 'superagent';
-import monitor from '../utils/monitor';
-import {withRedis} from './redis.datasource';
+import request from "superagent";
+import monitor from "../utils/monitor";
+import { withRedis } from "./redis.datasource";
 import config from "../config";
 
-const endpoint = "/libraries"
+const endpoint = "/libraries";
 async function Libraries(agencyid) {
   // @TODO access token ??
   const url = config.datasources.openplatform.url + endpoint;
   return (
-      await request
-      .post(url)
-      .send({
-        "access_token": "qwerty",
-        "agencyIds": [
-          `${agencyid.q}`
-        ]
-      })
+    await request.post(url).send({
+      access_token: "qwerty",
+      agencyIds: [`${agencyid.q}`],
+    })
   ).body.data;
 }
 
 // find monitored
 const monitored = monitor(
-    {name: 'REQUEST_libraries', help: 'libraries endpoint'},
-    Libraries,
+  { name: "REQUEST_libraries", help: "libraries endpoint" },
+  Libraries
 );
 
 /**
@@ -37,5 +33,3 @@ export default async function batchLoader(keys) {
   // NOTE use redish
   return await Promise.all(keys.map((key) => Libraries(key)));
 }
-
-

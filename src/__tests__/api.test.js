@@ -28,18 +28,18 @@ import { internalSchema } from "../schemaLoader";
 import mockedWorkDataSource from "../datasources/mocked/work.datasource.mocked";
 import mockedOpenformat from "../datasources/mocked/openformat.datasource.mocked";
 import mockedAvailability from "../datasources/mocked/availability.datasource.mocked";
-import mockedLibrary from '../datasources/mocked/library.datasource.mocked';
+import mockedLibrary from "../datasources/mocked/library.datasource.mocked";
 import validateComplexity from "../utils/complexity";
 
-export async function performTestQuery({query, variables, context}) {
+export async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
 }
 
-describe('API test cases', () => {
+describe("API test cases", () => {
   let spy = {};
 
   beforeEach(() => {
-    spy.console = jest.spyOn(console, 'log').mockImplementation(() => {});
+    spy.console = jest.spyOn(console, "log").mockImplementation(() => {});
   });
   afterEach(() => {
     spy.console.mockClear();
@@ -48,7 +48,7 @@ describe('API test cases', () => {
   afterAll(() => {
     spy.console.mockRestore();
   });
-  test('Query complexity validation - no errors', () => {
+  test("Query complexity validation - no errors", () => {
     const query = `{
       work(id: "work-of:870970-basis:48221157") {
         title
@@ -72,7 +72,7 @@ describe('API test cases', () => {
     ]);
     expect(errors).toMatchSnapshot();
   });
-  test('Query complexity validation - exceeding complexitylimit', () => {
+  test("Query complexity validation - exceeding complexitylimit", () => {
     const query = `{
       work(id: "work-of:870970-basis:48221157") {
         title
@@ -99,7 +99,7 @@ describe('API test cases', () => {
     ]);
     expect(errors).toMatchSnapshot();
   });
-  test('Mutation succes: data collect with search_work', async () => {
+  test("Mutation succes: data collect with search_work", async () => {
     const result = await performTestQuery({
       query: `
           mutation ($input: DataCollectInput!) {
@@ -109,10 +109,10 @@ describe('API test cases', () => {
       variables: {
         input: {
           search_work: {
-            search_query: 'harry',
+            search_query: "harry",
             search_query_hit: 7,
-            search_query_work: 'some-work-id',
-            session_id: 'some-session-id',
+            search_query_work: "some-work-id",
+            session_id: "some-session-id",
           },
         },
       },
@@ -120,46 +120,45 @@ describe('API test cases', () => {
     });
     expect(result).toEqual({
       data: {
-        data_collect: 'OK',
+        data_collect: "OK",
       },
     });
     // Check that entry is written to std out in th format AI expects
     expect(JSON.parse(spy.console.mock.calls[0][0])).toMatchObject({
-      type: 'data',
+      type: "data",
       message: JSON.stringify({
-        'search-query': 'harry',
-        'search-query-hit': 7,
-        'search-query-work': 'some-work-id',
-        'session-id': 'some-session-id',
+        "search-query": "harry",
+        "search-query-hit": 7,
+        "search-query-work": "some-work-id",
+        "session-id": "some-session-id",
       }),
     });
   });
-  test('Mutation error: data collect, multiple inputs not allowed',
-      async () => {
-        const result = await performTestQuery({
-          query: `
+  test("Mutation error: data collect, multiple inputs not allowed", async () => {
+    const result = await performTestQuery({
+      query: `
           mutation ($input: DataCollectInput!) {
             data_collect(input: $input)
           }
         `,
-          variables: {
-            input: {
-              search_work: {
-                search_query: 'harry',
-                search_query_hit: 7,
-                search_query_work: 'some-work-id',
-                session_id: 'some-session-id',
-              },
-              example: {example: 'some-string', session_id: 'some-session-id'},
-            },
+      variables: {
+        input: {
+          search_work: {
+            search_query: "harry",
+            search_query_hit: 7,
+            search_query_work: "some-work-id",
+            session_id: "some-session-id",
           },
-          context: {},
-        });
-        expect(result.errors[0].message).toEqual(
-            'Exactly 1 input must be specified',
-        );
-      });
-  test('Mutation error: data collect, no inputs not allowed', async () => {
+          example: { example: "some-string", session_id: "some-session-id" },
+        },
+      },
+      context: {},
+    });
+    expect(result.errors[0].message).toEqual(
+      "Exactly 1 input must be specified"
+    );
+  });
+  test("Mutation error: data collect, no inputs not allowed", async () => {
     const result = await performTestQuery({
       query: `
           mutation ($input: DataCollectInput!) {
@@ -172,10 +171,10 @@ describe('API test cases', () => {
       context: {},
     });
     expect(result.errors[0].message).toEqual(
-        'Exactly 1 input must be specified',
+      "Exactly 1 input must be specified"
     );
   });
-  test('Get all work fields', async () => {
+  test("Get all work fields", async () => {
     const result = await performTestQuery({
       query: `
           query ($id: String!) {
@@ -294,7 +293,7 @@ describe('API test cases', () => {
               }
           }
         `,
-      variables: {id: 'work-of:870970-basis:26521556'},
+      variables: { id: "work-of:870970-basis:26521556" },
       context: {
         accessToken: "qwerty",
         datasources: {
@@ -307,11 +306,9 @@ describe('API test cases', () => {
     expect(result).toMatchSnapshot();
   });
 
-  test(
-      'Materialtypes should contain one manifestation per type - prefer 870970-basis',
-      async () => {
-        const result = await performTestQuery({
-          query: `
+  test("Materialtypes should contain one manifestation per type - prefer 870970-basis", async () => {
+    const result = await performTestQuery({
+      query: `
           query ($id: String!) {
             work(id: $id) {
               materialTypes {
@@ -321,22 +318,22 @@ describe('API test cases', () => {
             }
           }
         `,
-          variables: {id: 'work-of:870970-basis:26521556'},
-          context: {datasources: {workservice: mockedWorkDataSource}},
-        });
-        expect(result).toEqual({
-          data: {
-            work: {
-              materialTypes: [
-                {pid: '870970-basis:29433909', materialType: 'Bog'},
-                {pid: '300101-katalog:28486006', materialType: 'Ebog'},
-              ],
-            },
-          },
-        });
-      });
+      variables: { id: "work-of:870970-basis:26521556" },
+      context: { datasources: { workservice: mockedWorkDataSource } },
+    });
+    expect(result).toEqual({
+      data: {
+        work: {
+          materialTypes: [
+            { pid: "870970-basis:29433909", materialType: "Bog" },
+            { pid: "300101-katalog:28486006", materialType: "Ebog" },
+          ],
+        },
+      },
+    });
+  });
 
-  test('User error: query with unknown field', async () => {
+  test("User error: query with unknown field", async () => {
     const result = await performTestQuery({
       query: `
               query ($id: String!) {
@@ -345,8 +342,8 @@ describe('API test cases', () => {
                 }
               }
             `,
-      variables: {id: 'work-of:870970-basis:26521556'},
-      context: {datasources: {workservice: mockedWorkDataSource}},
+      variables: { id: "work-of:870970-basis:26521556" },
+      context: { datasources: { workservice: mockedWorkDataSource } },
     });
     expect(result).toMatchObject({
       errors: [
@@ -357,7 +354,7 @@ describe('API test cases', () => {
     });
   });
 
-  test('User error: Query missing variable', async () => {
+  test("User error: Query missing variable", async () => {
     const result = await performTestQuery({
       query: `
           query ($id: String!) {
@@ -367,20 +364,20 @@ describe('API test cases', () => {
           }
         `,
       variables: {},
-      context: {datasources: {workservice: mockedWorkDataSource}},
+      context: { datasources: { workservice: mockedWorkDataSource } },
     });
 
     expect(result).toMatchObject({
       errors: [
         {
           message:
-              'Variable "$id" of required type "String!" was not provided.',
+            'Variable "$id" of required type "String!" was not provided.',
         },
       ],
     });
   });
 
-  test('User error: syntax error', async () => {
+  test("User error: syntax error", async () => {
     const result = await performTestQuery({
       query: `
           query ($id: String!) {
@@ -390,18 +387,18 @@ describe('API test cases', () => {
           }
         `,
       variables: {},
-      context: {datasources: {workservice: mockedWorkDataSource}},
+      context: { datasources: { workservice: mockedWorkDataSource } },
     });
     expect(result).toMatchObject({
       errors: [
         {
-          message: 'Syntax Error: Expected Name, found <EOF>.',
+          message: "Syntax Error: Expected Name, found <EOF>.",
         },
       ],
     });
   });
 
-  test('Work not found', async () => {
+  test("Work not found", async () => {
     const result = await performTestQuery({
       query: `
           query ($id: String!) {
@@ -413,12 +410,12 @@ describe('API test cases', () => {
             }
           }
         `,
-      variables: {id: 'some-id'},
+      variables: { id: "some-id" },
       context: {
         datasources: {
           workservice: {
             load: () => {
-              throw new Error('Not Found');
+              throw new Error("Not Found");
             },
           },
         },
@@ -427,8 +424,8 @@ describe('API test cases', () => {
     expect(result).toMatchObject({
       errors: [
         {
-          message: 'Not Found',
-          path: ['work'],
+          message: "Not Found",
+          path: ["work"],
         },
       ],
       data: {
@@ -437,13 +434,12 @@ describe('API test cases', () => {
     });
   });
 
-
-  test('Datasource error: Invalid work response', async () => {
+  test("Datasource error: Invalid work response", async () => {
     // TODO
     // How should they be presented for user, and what about logging?
   });
 
-  test('Network error: datasource down', async () => {
+  test("Network error: datasource down", async () => {
     // TODO
     // How should they be presented for user, and what about logging?
   });

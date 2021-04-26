@@ -88,7 +88,7 @@ promExporterApp.listen(9599, () => {
         // hence we stringify
         cacheKeyFn: (key) => JSON.stringify(key),
       }),
-      library: new DataLoader(libraryLoader)
+      library: new DataLoader(libraryLoader),
     };
     next();
   });
