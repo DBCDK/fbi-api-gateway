@@ -14,6 +14,12 @@ Object {
       "fullTitle": "Min kamp : roman. 1. bog",
       "manifestations": Array [
         Object {
+          "availability": Object {
+            "expectedDelivery": "2021-05-15T00:00:00+02:00",
+            "orderPossible": false,
+            "orderPossibleReason": "owned_accepted",
+            "willLend": true,
+          },
           "content": Array [],
           "creators": Array [
             Object {
@@ -61,6 +67,12 @@ Object {
           "shelf": "skønlitteratur",
         },
         Object {
+          "availability": Object {
+            "expectedDelivery": "2021-04-14T00:00:00+02:00",
+            "orderPossible": false,
+            "orderPossibleReason": "owned_accepted",
+            "willLend": false,
+          },
           "content": Array [],
           "creators": Array [
             Object {
@@ -117,6 +129,12 @@ Object {
           "shelf": "skønlitteratur",
         },
         Object {
+          "availability": Object {
+            "expectedDelivery": "2021-03-13T00:00:00+02:00",
+            "orderPossible": true,
+            "orderPossibleReason": "owned_accepted",
+            "willLend": true,
+          },
           "content": Array [
             "Jeg bor i Hvidovre",
             "Jeg fremlejer en lejlighed",
@@ -168,6 +186,12 @@ Object {
           "shelf": "skønlitteratur",
         },
         Object {
+          "availability": Object {
+            "expectedDelivery": "2021-04-14T00:00:00+02:00",
+            "orderPossible": false,
+            "orderPossibleReason": "owned_accepted",
+            "willLend": false,
+          },
           "content": Array [],
           "creators": Array [
             Object {
