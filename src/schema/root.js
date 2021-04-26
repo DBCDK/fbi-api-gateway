@@ -51,7 +51,7 @@ export const resolvers = {
       return { q: args.q, limit: args.limit, offset: args.offset };
     },
     async library(parent, args, context, info) {
-      return { q: args.agencyid };
+      return { agencyid: args.agencyid, accessToken: context.accessToken };
     },
     async suggest(parent, args, context, info) {
       return { q: args.q };
