@@ -1,7 +1,5 @@
 import request from "superagent";
 import config from "../config";
-import monitor from "../utils/monitor";
-import { withRedis } from "./redis.datasource";
 
 const {
   authenticationUser,
@@ -26,7 +24,7 @@ function createRequest(pid) {
 </mi:moreInfoRequest>`;
 }
 
-async function fetchMoreInfo({ pid }) {
+export async function load(pid) {
   const images = (
     await request.post(url).field("xml", createRequest(pid))
   ).body.moreInfoResponse.identifierInformation
@@ -42,39 +40,18 @@ async function fetchMoreInfo({ pid }) {
   return res;
 }
 
-// fetchMoreInfo monitored
-const monitored = monitor(
-  { name: "REQUEST_moreinfo", help: "moreinfo request" },
-  fetchMoreInfo
-);
-
 /**
  * The status function
  *
  * @throws Will throw error if service is down
  */
-export async function status() {
-  await fetchMoreInfo({ pid: "870970-basis:51877330" });
+export async function status(loadFunc) {
+  await loadFunc("870970-basis:51877330");
 }
 
-/**
- * A DataLoader batch function
- *
- * Could be optimised to fetch all pids in a single
- * more info request.
- *
- * @param {Array.<string>} keys The keys to fetch
- */
-async function batchLoader(keys) {
-  return await Promise.all(
-    keys.map(async (key) => await monitored({ pid: key }))
-  );
-}
-
-/**
- * Enhance batch function with Redis caching
- */
-export default withRedis(batchLoader, {
-  prefix,
-  ttl,
-});
+export const options = {
+  redis: {
+    prefix,
+    ttl,
+  },
+};

@@ -5,37 +5,10 @@
  * and load type definitions and resolvers
  */
 
-import fs from "fs";
-import path from "path";
 import { makeExecutableSchema, mergeSchemas } from "graphql-tools";
 import drupalSchema from "./schema/external/drupal";
 import { log } from "dbc-node-logger";
-
-/**
- * Get files recursively
- * @param {string} dir
- * @param {array} result
- */
-const getFilesRecursive = function (dir, result = []) {
-  // list files in directory and loop through
-  fs.readdirSync(dir).forEach((file) => {
-    // builds full path of file
-    const fPath = path.resolve(dir, file);
-
-    // prepare stats obj
-    const fileStats = { file, path: fPath };
-
-    // if its a folder, we get files from that
-    if (fs.statSync(fPath).isDirectory()) {
-      return getFilesRecursive(fPath, result);
-    }
-
-    if (file.endsWith(".js")) {
-      result.push(fileStats);
-    }
-  });
-  return result;
-};
+import { getFilesRecursive } from "./utils/utils";
 
 /**
  * Will check all files in schema folder
@@ -52,6 +25,9 @@ function schemaLoader() {
 
   // Require typeDefs and resolvers
   files.forEach((file) => {
+    if (!file.path.endsWith(".js")) {
+      return;
+    }
     const { typeDef, resolvers } = require(file.path);
     if (typeDef) {
       allTypeDefs = [...allTypeDefs, typeDef];

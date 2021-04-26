@@ -4,13 +4,11 @@
  */
 
 import request from "superagent";
-import monitor from "../utils/monitor";
-import { withRedis } from "./redis.datasource";
 import config from "../config";
 
 const { url, prefix } = config.datasources.simplesearch;
 
-async function find({ q, limit = 10, offset = 0 }) {
+export async function load({ q, limit = 10, offset = 0 }) {
   // Ensure no null values
   if (!limit) {
     limit = 10;
@@ -39,25 +37,9 @@ async function find({ q, limit = 10, offset = 0 }) {
   };
 }
 
-// find monitored
-const monitored = monitor(
-  { name: "REQUEST_simplesearch", help: "simplesearch requests" },
-  find
-);
-
-/**
- * A DataLoader batch function
- *
- * @param {Array.<string>} keys The keys to fetch
- */
-async function batchLoader(keys) {
-  return await Promise.all(keys.map(async (key) => await monitored(key)));
-}
-
-/**
- * Enhance batch function with Redis caching
- */
-export default withRedis(batchLoader, {
-  prefix,
-  ttl: 60 * 60 * 24,
-});
+export const options = {
+  redis: {
+    prefix,
+    ttl: 60 * 60 * 24,
+  },
+};

@@ -1,19 +1,20 @@
 import _ from "lodash";
 import config from "./config";
-import { status as moreinfoStatus } from "./datasources/moreinfo.datasource";
-import { status as openformatStatus } from "./datasources/openformat.datasource";
+import { datasources } from "./datasourceLoader";
 import { status as redisStatus } from "./datasources/redis.datasource";
-import { status as workStatus } from "./datasources/work.datasource";
 
 // Create upSince timestamp
 let upSince = new Date();
 
 // Array of services to check
 const services = [
-  { name: "moreinfo", status: moreinfoStatus },
-  { name: "openformat", status: openformatStatus },
+  ...datasources
+    .filter((datasource) => datasource.statusChecker)
+    .map((datasource) => ({
+      name: datasource.name,
+      status: datasource.statusChecker,
+    })),
   { name: "redis", status: redisStatus },
-  { name: "workservice", status: workStatus },
 ];
 
 // Fields in the config that must not

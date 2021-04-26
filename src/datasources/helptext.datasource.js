@@ -77,7 +77,7 @@ const timeToLiveMS = 1000 * 60 * 5;
  *
  * @param {string} q the query
  */
-async function search({ q }) {
+export async function load(q) {
   const age = lastUpdateMS ? new Date().getTime() - lastUpdateMS : 0;
 
   if (!docs || age > timeToLiveMS) {
@@ -104,13 +104,4 @@ async function search({ q }) {
     nid: entry.id,
   }));
   return result;
-}
-
-/**
- * A DataLoader batch function
- *
- * @param {Array.<string>} keys The keys to fetch
- */
-export default async function batchLoader(keys) {
-  return await Promise.all(keys.map(async (key) => await search({ q: key })));
 }

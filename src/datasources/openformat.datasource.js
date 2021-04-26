@@ -1,8 +1,6 @@
 import request from "superagent";
 import config from "../config";
-import { withRedis } from "./redis.datasource";
 import displayFormat from "./openformat.displayformat.json";
-import monitor from "../utils/monitor";
 
 const { url, ttl, prefix } = config.datasources.openformat;
 
@@ -23,44 +21,23 @@ function createRequest(pid) {
 </SOAP-ENV:Envelope>`;
 }
 
-async function fetchManifestation({ pid }) {
+export async function load(pid) {
   return (await request.post(url).field("xml", createRequest(pid))).body
     .formatResponse.customDisplay[0].manifestation;
 }
-
-// fetchManifestation monitored
-const monitored = monitor(
-  { name: "REQUEST_openformat", help: "openformat requests" },
-  fetchManifestation
-);
 
 /**
  * The status function
  *
  * @throws Will throw error if service is down
  */
-export async function status() {
-  await fetchManifestation({ pid: "870970-basis:51877330" });
+export async function status(loadFunc) {
+  await loadFunc("870970-basis:51877330");
 }
 
-/**
- * A DataLoader batch function
- *
- * Could possibly be optimised to fetch all pids in a single
- * openformat request.
- *
- * @param {Array.<string>} keys The keys to fetch
- */
-async function batchLoader(keys) {
-  return await Promise.all(
-    keys.map(async (key) => await monitored({ pid: key }))
-  );
-}
-
-/**
- * Enhance batch function with Redis caching
- */
-export default withRedis(batchLoader, {
-  prefix,
-  ttl,
-});
+export const options = {
+  redis: {
+    prefix,
+    ttl,
+  },
+};
