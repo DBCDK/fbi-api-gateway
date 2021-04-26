@@ -4,25 +4,14 @@
  */
 import { log } from "dbc-node-logger";
 import schema from "./schemaLoader";
-import creatorLoader from "./datasources/creator.datasource";
-import helpTextsLoader from "./datasources/helptext.datasource";
-import workLoader from "./datasources/work.datasource";
-import openformatLoader from "./datasources/openformat.datasource";
-import recommendationsLoader from "./datasources/recommendations.datasource";
-import idmapperLoader from "./datasources/idmapper.datasource";
-import moreinfoLoader from "./datasources/moreinfo.datasource";
-import simplesearchLoader from "./datasources/simplesearch.datasource";
-import suggesterLoader from "./datasources/suggester.datasource";
 import express from "express";
 import cors from "cors";
 import { graphqlHTTP } from "express-graphql";
-import DataLoader from "dataloader";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration, count } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
-
-import libraryLoader from "./datasources/libraries.datasource";
+import createDataLoaders from "./datasourceLoader";
 
 const app = express();
 let server;
@@ -59,31 +48,8 @@ promExporterApp.listen(9599, () => {
       req.headers.authorization &&
       req.headers.authorization.replace(/bearer /i, "");
 
-    req.datasources = {
-      creator: new DataLoader(creatorLoader),
-      helptexts: new DataLoader(helpTextsLoader),
-      openformat: new DataLoader(openformatLoader),
-      recommendations: new DataLoader(recommendationsLoader, {
-        // the key of recommendation batchloader is an object
-        // hence we stringify
-        cacheKeyFn: (key) => JSON.stringify(key),
-      }),
+    req.datasources = createDataLoaders();
 
-      idmapper: new DataLoader(idmapperLoader),
-      moreinfo: new DataLoader(moreinfoLoader),
-      workservice: new DataLoader(workLoader),
-      simplesearch: new DataLoader(simplesearchLoader, {
-        // the key of simplesearch batchloader is an object
-        // hence we stringify
-        cacheKeyFn: (key) => JSON.stringify(key),
-      }),
-      suggester: new DataLoader(suggesterLoader, {
-        // the key of suggester batchloader is an object
-        // hence we stringify
-        cacheKeyFn: (key) => JSON.stringify(key),
-      }),
-      library: new DataLoader(libraryLoader)
-    };
     next();
   });
 

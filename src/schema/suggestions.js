@@ -30,8 +30,30 @@ export const resolvers = {
     },
   },
   SuggestResponse: {
-    result(parent, args, context, info) {
-      return context.datasources.suggester.load(parent);
+    async result(parent, args, context, info) {
+      const res = await context.datasources.suggester.load(parent);
+      return res.map(async (row) => {
+        if (row.type === "AUTHOR") {
+          return {
+            __resolveType: "Creator",
+            value: row.authorName,
+          };
+        }
+        if (row.type === "TAG") {
+          return {
+            __resolveType: "Subject",
+            value: row.tag,
+          };
+        }
+        if (row.type === "TITLE") {
+          return {
+            __resolveType: "Work",
+            ...(
+              await context.datasources.workservice.load(`work-of:${row.pid}`)
+            ).work,
+          };
+        }
+      });
     },
   },
 };

@@ -1,8 +1,6 @@
 import { log } from "dbc-node-logger";
 import request from "superagent";
 import config from "../config";
-import { withRedis } from "./redis.datasource";
-import monitor from "../utils/monitor";
 
 const { url, agencyId, profile, ttl, prefix } = config.datasources.work;
 
@@ -11,8 +9,7 @@ const { url, agencyId, profile, ttl, prefix } = config.datasources.work;
  * @param {Object} params
  * @param {string} params.workId id of the work
  */
-
-async function fetchWork({ workId }) {
+export async function load({ workId }) {
   return (
     await request.get(url).query({
       workId,
@@ -24,22 +21,16 @@ async function fetchWork({ workId }) {
   ).body;
 }
 
-// fetchWork monitored
-const monitored = monitor(
-  { name: "REQUEST_work", help: "work requests" },
-  fetchWork
-);
-
 /**
  * A DataLoader batch function
  *
  * @param {Array.<string>} keys The keys to fetch
  */
-async function batchLoader(keys) {
+export async function batchLoader(keys, loadFunc) {
   return await Promise.all(
     keys.map(async (key) => {
       try {
-        return await monitored({ workId: key });
+        return await loadFunc({ workId: key });
       } catch (e) {
         // We return error instead of throwing,
         // se we don't fail entire Promise.all
@@ -58,14 +49,13 @@ async function batchLoader(keys) {
  *
  * @throws Will throw error if service is down
  */
-export async function status() {
-  await monitored({ workId: "work-of:870970-basis:51877330" });
+export async function status(loadFunc) {
+  await loadFunc({ workId: "work-of:870970-basis:51877330" });
 }
 
-/**
- * Enhance batch function with Redis caching
- */
-export default withRedis(batchLoader, {
-  prefix,
-  ttl,
-});
+export const options = {
+  redis: {
+    prefix,
+    ttl,
+  },
+};

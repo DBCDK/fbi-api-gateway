@@ -1,6 +1,6 @@
 export const typeDef = `
 type Recommendation {
-  manifestation: Manifestation!
+  manifestation: WorkManifestation!
   value: Float
 }`;
 
@@ -10,7 +10,7 @@ export const resolvers = {
       return parent.value;
     },
     manifestation(parent) {
-      return { pid: parent.pid };
+      return { id: parent.pid };
     },
   },
 };

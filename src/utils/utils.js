@@ -1,4 +1,6 @@
 import { get, uniq } from "lodash";
+import fs from "fs";
+import path from "path";
 
 /**
  * Gets array at a path in some object
@@ -66,4 +68,28 @@ export function getPageDescription({ title, creators, materialTypes }) {
   return `Lån ${title}${
     creator ? ` af ${creator}` : ""
   }${typesString}. Bestil, reserver, lån fra alle danmarks biblioteker. Afhent på dit lokale bibliotek eller find online.`;
+}
+
+/**
+ * Get files recursively
+ * @param {string} dir
+ * @param {array} result
+ */
+export function getFilesRecursive(dir, result = []) {
+  // list files in directory and loop through
+  fs.readdirSync(dir).forEach((file) => {
+    // builds full path of file
+    const fPath = path.resolve(dir, file);
+
+    // prepare stats obj
+    const fileStats = { file, path: fPath };
+
+    // if its a folder, we get files from that
+    if (fs.statSync(fPath).isDirectory()) {
+      return getFilesRecursive(fPath, result);
+    }
+
+    result.push(fileStats);
+  });
+  return result;
 }
