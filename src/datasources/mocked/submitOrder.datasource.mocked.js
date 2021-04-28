@@ -11,6 +11,5 @@ const data = {
 };
 
 export async function load({}) {
-  console.error("FISK");
   return data.data;
 }
