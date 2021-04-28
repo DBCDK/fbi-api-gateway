@@ -29,7 +29,7 @@ export async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
 }
 
-test("library - get branches", async () => {
+test("submitorder", async () => {
   const result = await performTestQuery({
     query: `
           mutation{

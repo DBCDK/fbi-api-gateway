@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`submitorder 1`] = `
+Object {
+  "data": Object {
+    "submitOrder": Object {
+      "deleted": null,
+      "orderId": null,
+      "orsId": "1040184487",
+      "status": "ok",
+    },
+  },
+}
+`;
