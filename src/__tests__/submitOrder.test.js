@@ -29,6 +29,9 @@ export async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
 }
 
+/**
+ * testing happy path
+ */
 test("submitorder", async () => {
   const result = await performTestQuery({
     query: `
