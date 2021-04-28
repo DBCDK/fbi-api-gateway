@@ -3,8 +3,8 @@
  *
  */
 
-import { log } from "dbc-node-logger";
-import { createHistogram } from "../utils/monitor";
+import {log} from 'dbc-node-logger';
+import {createHistogram} from '../utils/monitor';
 
 /**
  * The root type definitions
@@ -17,10 +17,13 @@ type Query {
   search(q: String!, limit: PaginationLimit!, offset: Int): SearchResponse!
   suggest(q: String!): SuggestResponse!
   help(q: String!): HelpResponse
-  library(agencyid: String!): Library
+  library(agencyid: String!): Library 
+  order(input: SubmitOrderInput!): SubmitOrder
 }
+
 type Mutation {
   data_collect(input: DataCollectInput!): String!
+  submitOrder(input: SubmitOrderInput!): SubmitOrder!
 }`;
 
 /**
@@ -29,54 +32,59 @@ type Mutation {
 export const resolvers = {
   Query: {
     manifestation(parent, args, context, info) {
-      return { id: args.pid };
+      return {id: args.pid};
     },
     monitor(parent, args, context, info) {
       try {
         context.monitorName = args.name;
         createHistogram(args.name);
-        return "OK";
+        return 'OK';
       } catch (e) {
         return e.message;
       }
     },
     async help(parent, args, context, info) {
-      return { q: args.q };
+      return {q: args.q};
     },
     async work(parent, args, context, info) {
-      const { work } = await context.datasources.workservice.load(args.id);
-      return { ...work, id: args.id };
+      const {work} = await context.datasources.workservice.load(args.id);
+      return {...work, id: args.id};
     },
     async search(parent, args, context, info) {
-      return { q: args.q, limit: args.limit, offset: args.offset };
+      return {q: args.q, limit: args.limit, offset: args.offset};
     },
     async library(parent, args, context, info) {
-      return { agencyid: args.agencyid, accessToken: context.accessToken };
+      return {agencyid: args.agencyid, accessToken: context.accessToken};
     },
     async suggest(parent, args, context, info) {
-      return { q: args.q };
+      return {q: args.q};
     },
+
   },
   Mutation: {
     data_collect(parent, args, context, info) {
       // Check that exactly one input type is given
       const inputObjects = Object.values(args.input);
       if (inputObjects.length !== 1) {
-        throw new Error("Exactly 1 input must be specified");
+        throw new Error('Exactly 1 input must be specified');
       }
 
       // Convert keys, replace _ to -
       const data = {};
       Object.entries(inputObjects[0]).forEach(([key, val]) => {
-        data[key.replace(/_/g, "-")] = val;
+        data[key.replace(/_/g, '-')] = val;
       });
 
       // We log the object, setting 'type: "data"' on the root level
       // of the log entry. In this way the data will be collected
       // by the AI data collector
-      log.info("data", { type: "data", message: JSON.stringify(data) });
+      log.info('data', {type: 'data', message: JSON.stringify(data)});
 
-      return "OK";
+      return 'OK';
+    },
+    async submitOrder(parent, args, context, info) {
+      return await context.datasources.submitOrder.load(
+          {input: args.input, accessToken: context.accessToken});
     },
   },
 };
