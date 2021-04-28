@@ -6,6 +6,8 @@
  */
 
 import { makeExecutableSchema, mergeSchemas } from "graphql-tools";
+import { typeDefs as scalarTypeDefs } from "graphql-scalars";
+import { resolvers as scalarResolvers } from "graphql-scalars";
 import drupalSchema from "./schema/external/drupal";
 import { log } from "dbc-node-logger";
 import { getFilesRecursive } from "./utils/utils";
@@ -17,8 +19,8 @@ import { getFilesRecursive } from "./utils/utils";
  * These are then loaded
  */
 function schemaLoader() {
-  let allTypeDefs = [];
-  let allResolvers = {};
+  let allTypeDefs = [...scalarTypeDefs];
+  let allResolvers = { ...scalarResolvers };
 
   // Load files in schema folder
   const files = getFilesRecursive("./src/schema");

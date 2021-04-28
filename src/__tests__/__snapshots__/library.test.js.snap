@@ -4,336 +4,172 @@ exports[`library - get branches 1`] = `
 Object {
   "data": Object {
     "library": Object {
-      "agencies": Array [
+      "branches": Array [
         Object {
           "agencyId": "710100",
           "branchId": "710100",
-          "branchName": Array [
-            "Hovedbiblioteket, Krystalgade",
-            "Copenhagen City Public Library",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Hovedbiblioteket, Krystalgade",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 <a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710104",
-          "branchName": Array [
-            "Blågårdens Bibliotek",
-            "Blågård",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Blågårdens Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710105",
-          "branchName": Array [
-            "Brønshøj Bibliotek",
-            "Brønshøj",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Brønshøj Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710106",
-          "branchName": Array [
-            "Christianshavns Bibliotek",
-            "Christianshavn",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Christianshavns Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710107",
-          "branchName": Array [
-            "Husum Bibliotek",
-            "Husum",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Husum Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710108",
-          "branchName": Array [
-            "Islands Brygge Bibliotek",
-            "Islands Brygge",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Islands Brygge Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710109",
-          "branchName": Array [
-            "Øbro Jagtvej Bibliotek",
-            "Jagtvej",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Øbro Jagtvej Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710110",
-          "branchName": Array [
-            "Biblioteket Rentemestervej",
-            "Rentemestervej",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Biblioteket Rentemestervej",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710111",
-          "branchName": Array [
-            "Nørrebro Bibliotek",
-            "Nørrebro",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Nørrebro Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710112",
-          "branchName": Array [
-            "Solvang Bibliotek",
-            "Solvang Bibliotek",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Solvang Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710113",
-          "branchName": Array [
-            "Sundby Bibliotek",
-            "Sundby",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Sundby Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710114",
-          "branchName": Array [
-            "Bibliotekshuset",
-            "Bibliotekshuset",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Bibliotekshuset",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710115",
-          "branchName": Array [
-            "Sydhavnens Bibliotek",
-            "Sydhavnen",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Sydhavnens Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710116",
-          "branchName": Array [
-            "Tingbjerg Bibliotek",
-            "Tingbjerg",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Tingbjerg Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710117",
-          "branchName": Array [
-            "Valby Bibliotek",
-            "Valby",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Valby Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710118",
-          "branchName": Array [
-            "Kulturstationen Vanløse. Biblioteket",
-            "Vanløse",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Kulturstationen Vanløse. Biblioteket",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710119",
-          "branchName": Array [
-            "Vesterbro Bibliotek",
-            "Vesterbro",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Vesterbro Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710120",
-          "branchName": Array [
-            "Vigerslev Bibliotek",
-            "Vigerslev",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Vigerslev Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710121",
-          "branchName": Array [
-            "Østerbro Bibliotek",
-            "Østerbro",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Østerbro Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710122",
-          "branchName": Array [
-            "Ørestad Bibliotek",
-          ],
-          "openingHours": Array [
-            "Åbningstider
+          "name": "Ørestad Bibliotek",
+          "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-            "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          ],
         },
         Object {
           "agencyId": "710100",
           "branchId": "710123",
-          "branchName": Array [
-            "Københavns Bibliotekers centrale sortering",
-          ],
-          "openingHours": Array [
-            "ma-fre: 9-16",
-            "Monday-Friday from 9 am to 4 pm. ",
-          ],
+          "name": "Københavns Bibliotekers centrale sortering",
+          "openingHours": "ma-fre: 9-16",
         },
       ],
     },

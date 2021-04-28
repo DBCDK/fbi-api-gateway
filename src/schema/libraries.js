@@ -5,19 +5,22 @@
 
 export const typeDef = `
   type Library {
-    agencies: [Branch!]
+    branches: [Branch!]
   }
   type Branch{
     agencyId: String!
     branchId: String!
-    branchName: [String!]
-    openingHours: [String!]
+    name: String!
+    openingHours: String
   }`;
 
 export const resolvers = {
   Library: {
-    agencies(parent, args, context, info) {
-      return context.datasources.library.load(parent);
+    async branches(parent, args, context, info) {
+      return (await context.datasources.library.load(parent)).map((branch) => ({
+        ...branch,
+        language: parent.language || "da",
+      }));
     },
   },
   Branch: {
@@ -27,11 +30,24 @@ export const resolvers = {
     branchId(parent, args, context, info) {
       return parent.branchId;
     },
-    branchName(parent, args, context, info) {
-      return parent.branchName;
+    name(parent, args, context, info) {
+      // first item is danish
+      // second item is english
+      return (
+        parent.branchName[parent.language === "da" ? 0 : 1] ||
+        parent.branchName[0]
+      );
     },
     openingHours(parent, args, context, info) {
-      return parent.openingHours;
+      // first item is danish
+      // second item is english
+      if (!parent.openingHours) {
+        return null;
+      }
+      return (
+        parent.openingHours[parent.language === "da" ? 0 : 1] ||
+        parent.openingHours[0]
+      );
     },
   },
 };

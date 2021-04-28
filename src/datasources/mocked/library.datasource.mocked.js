@@ -1,6 +1,5 @@
 import agencyresponse from "./openplatform_agency_response.json";
-export default {
-  load: (agencyid) => {
-    return agencyresponse.data;
-  },
-};
+
+export async function load({ agencyid, accessToken }) {
+  return agencyresponse.data;
+}
