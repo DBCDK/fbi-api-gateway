@@ -13,11 +13,12 @@ export const typeDef = `
 type Query {
   manifestation(pid: String!): WorkManifestation!
   monitor(name: String!): String!
+  user: User!
   work(id: String!): Work
   search(q: String!, limit: PaginationLimit!, offset: Int): SearchResponse!
   suggest(q: String!): SuggestResponse!
   help(q: String!): HelpResponse
-  library(agencyid: String!): Library
+  library(agencyid: String!, language: LanguageCode): Library
 }
 type Mutation {
   data_collect(input: DataCollectInput!): String!
@@ -43,6 +44,9 @@ export const resolvers = {
     async help(parent, args, context, info) {
       return { q: args.q };
     },
+    async user(parent, args, context, info) {
+      return { ...args };
+    },
     async work(parent, args, context, info) {
       const { work } = await context.datasources.workservice.load(args.id);
       return { ...work, id: args.id };
@@ -51,7 +55,11 @@ export const resolvers = {
       return { q: args.q, limit: args.limit, offset: args.offset };
     },
     async library(parent, args, context, info) {
-      return { agencyid: args.agencyid, accessToken: context.accessToken };
+      return {
+        agencyid: args.agencyid,
+        language: args.language,
+        accessToken: context.accessToken,
+      };
     },
     async suggest(parent, args, context, info) {
       return { q: args.q };

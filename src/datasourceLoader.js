@@ -19,13 +19,26 @@ export const datasources = getFilesRecursive("./src/datasources")
     const name = file.file.replace(".datasource.js", "");
 
     // Monitor the load function from the datasource
-    const monitoredLoad = monitor(
+    let monitoredLoad = monitor(
       {
         name: `REQUEST_${name}`,
         help: `${name} requests`,
       },
       load
     );
+
+    // Log all request and responses
+    // useful for capturing mock data for tests
+    // Comment in to enable
+    // monitoredLoad = async (key) => {
+    //   const res = await load(key);
+    //   console.log(
+    //     "***MOCK****",
+    //     name,
+    //     JSON.stringify({ request: key, response: res })
+    //   );
+    //   return res;
+    // };
 
     // if datasource exports a createBatchLoader we use that,
     // otherwise we use default batch loader
@@ -75,4 +88,22 @@ export default function createDataLoaders() {
     });
   });
   return result;
+}
+
+export function createMockedDataLoaders() {
+  const mockedDatasources = {};
+  getFilesRecursive("./src/datasources/mocked")
+    .filter(
+      (file) =>
+        file.path.endsWith("datasource.mocked.js") && require(file.path).load
+    )
+    .map((file) => ({
+      ...file,
+      name: file.file.replace(".datasource.mocked.js", ""),
+      load: require(file.path).load,
+    }))
+    .forEach((loader) => {
+      mockedDatasources[loader.name] = loader;
+    });
+  return mockedDatasources;
 }

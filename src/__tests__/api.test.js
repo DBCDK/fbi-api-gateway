@@ -25,11 +25,8 @@ import { graphql } from "graphql";
 import { validate } from "graphql/validation";
 import { parse } from "graphql/language";
 import { internalSchema } from "../schemaLoader";
-import mockedWorkDataSource from "../datasources/mocked/work.datasource.mocked";
-import mockedOpenformat from "../datasources/mocked/openformat.datasource.mocked";
-import mockedAvailability from "../datasources/mocked/availability.datasource.mocked";
-import mockedLibrary from "../datasources/mocked/library.datasource.mocked";
 import validateComplexity from "../utils/complexity";
+import { createMockedDataLoaders } from "../datasourceLoader";
 
 export async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
@@ -296,11 +293,7 @@ describe("API test cases", () => {
       variables: { id: "work-of:870970-basis:26521556" },
       context: {
         accessToken: "qwerty",
-        datasources: {
-          workservice: mockedWorkDataSource,
-          openformat: mockedOpenformat,
-          availability: mockedAvailability,
-        },
+        datasources: createMockedDataLoaders(),
       },
     });
     expect(result).toMatchSnapshot();
@@ -319,7 +312,7 @@ describe("API test cases", () => {
           }
         `,
       variables: { id: "work-of:870970-basis:26521556" },
-      context: { datasources: { workservice: mockedWorkDataSource } },
+      context: { datasources: createMockedDataLoaders() },
     });
     expect(result).toEqual({
       data: {
@@ -343,7 +336,7 @@ describe("API test cases", () => {
               }
             `,
       variables: { id: "work-of:870970-basis:26521556" },
-      context: { datasources: { workservice: mockedWorkDataSource } },
+      context: { datasources: createMockedDataLoaders() },
     });
     expect(result).toMatchObject({
       errors: [
@@ -364,7 +357,7 @@ describe("API test cases", () => {
           }
         `,
       variables: {},
-      context: { datasources: { workservice: mockedWorkDataSource } },
+      context: { datasources: createMockedDataLoaders() },
     });
 
     expect(result).toMatchObject({
@@ -387,7 +380,7 @@ describe("API test cases", () => {
           }
         `,
       variables: {},
-      context: { datasources: { workservice: mockedWorkDataSource } },
+      context: { datasources: createMockedDataLoaders() },
     });
     expect(result).toMatchObject({
       errors: [

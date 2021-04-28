@@ -62,7 +62,7 @@ promExporterApp.listen(9599, () => {
     "/graphql",
     graphqlHTTP(async (request, response, graphQLParams) => ({
       schema: resolvedSchema,
-      graphiql: { headerEditorEnabled: true },
+      graphiql: { headerEditorEnabled: true, shouldPersistHeaders: true },
       extensions: ({ document, context, result }) => {
         if (document && document.definitions && !result.errors) {
           count("query_success");

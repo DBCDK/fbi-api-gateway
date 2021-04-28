@@ -1,0 +1,357 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`user - get agency danish 1`] = `
+Object {
+  "data": Object {
+    "user": Object {
+      "address": "Borgmesterskoven 45",
+      "agency": Object {
+        "branches": Array [
+          Object {
+            "name": "Hovedbiblioteket, Krystalgade",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Blågårdens Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Brønshøj Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Christianshavns Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Husum Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Islands Brygge Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Øbro Jagtvej Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Biblioteket Rentemestervej",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Nørrebro Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Solvang Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Sundby Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Bibliotekshuset",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Sydhavnens Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Tingbjerg Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Valby Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Kulturstationen Vanløse. Biblioteket",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Vesterbro Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Vigerslev Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Østerbro Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Ørestad Bibliotek",
+            "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          },
+          Object {
+            "name": "Københavns Bibliotekers centrale sortering",
+            "openingHours": "ma-fre: 9-16",
+          },
+        ],
+      },
+      "mail": null,
+      "name": "Freja Damgaard",
+      "postalCode": "8660",
+    },
+  },
+}
+`;
+
+exports[`user - get agency english 1`] = `
+Object {
+  "data": Object {
+    "user": Object {
+      "address": "Borgmesterskoven 45",
+      "agency": Object {
+        "branches": Array [
+          Object {
+            "name": "Copenhagen City Public Library",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Blågård",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Brønshøj",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Christianshavn",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Husum",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Islands Brygge",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Jagtvej",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Rentemestervej",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Nørrebro",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Solvang Bibliotek",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Sundby",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Bibliotekshuset",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Sydhavnen",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Tingbjerg",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Valby",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Vanløse",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Vesterbro",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Vigerslev",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Østerbro",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Ørestad Bibliotek",
+            "openingHours": "Opening hours
+See opening hours on:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          },
+          Object {
+            "name": "Københavns Bibliotekers centrale sortering",
+            "openingHours": "Monday-Friday from 9 am to 4 pm. ",
+          },
+        ],
+      },
+      "mail": null,
+      "name": "Freja Damgaard",
+      "postalCode": "8660",
+    },
+  },
+}
+`;
+
+exports[`user - get basic data 1`] = `
+Object {
+  "data": Object {
+    "user": Object {
+      "address": "Borgmesterskoven 45",
+      "mail": null,
+      "name": "Freja Damgaard",
+      "postalCode": "8660",
+    },
+  },
+}
+`;
+
+exports[`user - get debt 1`] = `
+Object {
+  "data": Object {
+    "user": Object {
+      "debt": Array [
+        Object {
+          "amount": "224",
+          "creator": null,
+          "currency": "DKK",
+          "date": 1969-12-31T23:00:00.000Z,
+          "title": "",
+        },
+        Object {
+          "amount": "50",
+          "creator": null,
+          "currency": "DKK",
+          "date": 1969-12-31T23:00:00.000Z,
+          "title": "",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`user - get loans 1`] = `
+Object {
+  "data": Object {
+    "user": Object {
+      "loans": Array [
+        Object {
+          "dueDate": 2021-05-01T22:00:00.000Z,
+          "loanId": "120200589",
+        },
+        Object {
+          "dueDate": 2021-04-29T22:00:00.000Z,
+          "loanId": "120200590",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`user - get orders 1`] = `
+Object {
+  "data": Object {
+    "user": Object {
+      "orders": Array [
+        Object {
+          "orderDate": 2021-04-21T11:37:49.000Z,
+          "orderId": "12341234",
+          "pickUpExpiryDate": 2021-05-02T22:00:00.000Z,
+          "status": "AT_RESERVATION_SHELF",
+        },
+      ],
+    },
+  },
+}
+`;
