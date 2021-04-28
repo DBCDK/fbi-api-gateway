@@ -18,12 +18,7 @@ type Query {
   search(q: String!, limit: PaginationLimit!, offset: Int): SearchResponse!
   suggest(q: String!): SuggestResponse!
   help(q: String!): HelpResponse
-<<<<<<< HEAD
-  library(agencyid: String!): Library 
-  order(input: SubmitOrderInput!): SubmitOrder
-=======
   library(agencyid: String!, language: LanguageCode): Library
->>>>>>> master
 }
 
 type Mutation {

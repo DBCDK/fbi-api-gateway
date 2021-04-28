@@ -21,9 +21,9 @@
  *
  */
 
-import mockedLibrary from "../datasources/mocked/library.datasource.mocked";
 import { graphql } from "graphql";
 import { internalSchema } from "../schemaLoader";
+import { createMockedDataLoaders } from "../datasourceLoader";
 
 export async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
@@ -32,19 +32,16 @@ export async function performTestQuery({ query, variables, context }) {
 test("library - get branches", async () => {
   const result = await performTestQuery({
     query: `
-          query{
-            library(agencyid: "710100"){    
-              agencies{
-                agencyId
-                branchId
-                branchName
-                openingHours
-              }
-            }
+          mutation{
+            submitOrder (input: { pickUpBranch:"790900", pids:["870970-basis:27925715"], name:"pjo-test"}){
+              status
+              orsId
+              orderId
+              deleted
           }
-        `,
+        }`,
     variables: {},
-    context: { datasources: { library: mockedLibrary } },
+    context: { datasources: createMockedDataLoaders() },
   });
   expect(result).toMatchSnapshot();
 });

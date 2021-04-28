@@ -50,10 +50,6 @@ export async function load({input, accessToken}) {
 
   const endpoint = "/order";
   const url = config.datasources.openplatform.url + endpoint;
-
-  console.log(realData, "DATA");
-
-
   return (
       await request.post(url).send(
           realData,
