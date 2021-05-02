@@ -3,9 +3,6 @@
  *
  */
 
-import {getArray} from '../utils/utils';
-import {get} from 'lodash';
-
 export const typeDef = `
    type SubmitOrder {
     status: String,
@@ -13,14 +10,19 @@ export const typeDef = `
     deleted: Boolean,
     orsId: String
    }
+   enum OrderType {
+      ESTIMATE,
+      HOLD,
+      LOAN,
+      NON_RETURNABLE_COPY,
+      NORMAL,
+      STACK_RETRIEVAL
+   }   
    input SubmitOrderInput{
-    fields: [String!],
-    pretty: Boolean,
-    timings: Boolean,
-    orderType: String,
+    orderType: OrderType,
     pids: [
       String!,
-    ],
+    ]!,
     pickUpBranch: String,
     name: String,
     address: String,
@@ -29,4 +31,23 @@ export const typeDef = `
     expires: String
   } `;
 
-
+/**
+ * Resolvers for the Profile type
+ */
+export const resolvers = {
+  SubmitOrderInput: {
+    // map ordertype to enum
+    async orderType(parent, args, context, info) {
+      return (
+        {
+          Estimate: "ESTIMATE",
+          Hold: "HOLD",
+          Loan: "LOAN",
+          "Non-returnable Copy": "NON_RETURNABLE_COPY",
+          normal: "NORMAL",
+          "Stack Retrieval": "STACK_RETRIEVAL",
+        }[parent.orderType] || "UNKNOWN"
+      );
+    },
+  },
+};

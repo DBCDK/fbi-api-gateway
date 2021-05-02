@@ -55,7 +55,6 @@ function expireDate() {
 export async function load({ input, accessToken }) {
   const realData = setInputObject(input, accessToken);
 
-  const endpoint = "/order";
   const url = config.datasources.openplatform.url + endpoint;
   return (await request.post(url).send(realData)).body.data;
 }
