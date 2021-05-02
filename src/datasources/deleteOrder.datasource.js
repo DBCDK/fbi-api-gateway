@@ -3,7 +3,9 @@ import request from "superagent";
 
 const endpoint = "/order";
 /**
- * Do the request
+ * Delete an order. - this is the same endpoint as submitOrder - but has
+ * its own datasource
+ *
  * @param input
  * @param accessToken
  * @return {Promise<*>}
