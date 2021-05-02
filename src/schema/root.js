@@ -19,11 +19,12 @@ type Query {
   suggest(q: String!): SuggestResponse!
   help(q: String!): HelpResponse
   library(agencyid: String!, language: LanguageCode): Library
+  deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
 }
 
 type Mutation {
   data_collect(input: DataCollectInput!): String!
-  submitOrder(input: SubmitOrderInput!): SubmitOrder!
+  submitOrder(input: SubmitOrderInput!): SubmitOrder
 }`;
 
 /**
@@ -65,6 +66,13 @@ export const resolvers = {
     },
     async suggest(parent, args, context, info) {
       return { q: args.q };
+    },
+    async deleteOrder(parent, args, context, info) {
+      return await context.datasources.deleteOrder.load({
+        orderId: args.orderId,
+        orderType: args.orderType,
+        accessToken: context.accessToken,
+      });
     },
   },
   Mutation: {

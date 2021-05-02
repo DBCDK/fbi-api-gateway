@@ -56,5 +56,6 @@ export async function load({ input, accessToken }) {
   const realData = setInputObject(input, accessToken);
 
   const url = config.datasources.openplatform.url + endpoint;
+  // @TODO some kind of check - maybe on body.error & body.statuscode
   return (await request.post(url).send(realData)).body.data;
 }
