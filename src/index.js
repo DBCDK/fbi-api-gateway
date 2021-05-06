@@ -55,7 +55,12 @@ promExporterApp.listen(9599, () => {
 
   let resolvedSchema;
   (async () => {
-    resolvedSchema = await schema();
+    try {
+      resolvedSchema = await schema();
+    } catch (e) {
+      log.error("Could not create schema, shutting down", e);
+      process.exit(1);
+    }
   })();
   // Setup route handler for GraphQL
   app.use(
