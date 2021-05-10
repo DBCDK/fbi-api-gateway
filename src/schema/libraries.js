@@ -12,6 +12,9 @@ export const typeDef = `
     branchId: String!
     name: String!
     openingHours: String
+    postalAddress: String
+    postalCode: String
+    city: String
   }`;
 
 export const resolvers = {

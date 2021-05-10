@@ -12,6 +12,7 @@ type User {
   address: String
   postalCode: String
   mail: String
+  culrMail: String
   agency(language: LanguageCode): Library!
   orders: [Order!]!
   loans: [Loan!]!
@@ -47,6 +48,10 @@ type Debt {
   title: String
 }
 `;
+
+function isEmail(email) {
+  return /\S+@\S+\.\S+/.test(email);
+}
 
 /**
  * Resolvers for the Profile type
@@ -87,6 +92,7 @@ export const resolvers = {
       const res = await context.datasources.user.load({
         accessToken: context.accessToken,
       });
+
       return res.postalCode;
     },
     async mail(parent, args, context, info) {
@@ -94,6 +100,19 @@ export const resolvers = {
         accessToken: context.accessToken,
       });
       return res.mail;
+    },
+    async culrMail(parent, args, context, info) {
+      const resUserInfo = await context.datasources.userinfo.load({
+        accessToken: context.accessToken,
+      });
+      const agencyWithEmail =
+        resUserInfo.attributes &&
+        resUserInfo.attributes.agencies &&
+        resUserInfo.attributes.agencies.find((agency) =>
+          isEmail(agency && agency.userId)
+        );
+
+      return agencyWithEmail && agencyWithEmail.userId;
     },
     async agency(parent, args, context, info) {
       const res = await context.datasources.user.load({

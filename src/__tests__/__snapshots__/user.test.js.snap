@@ -287,6 +287,7 @@ Object {
   "data": Object {
     "user": Object {
       "address": "Borgmesterskoven 45",
+      "culrMail": "some@mail.com",
       "mail": null,
       "name": "Freja Damgaard",
       "postalCode": "8660",

@@ -39,6 +39,9 @@ test("library - get branches", async () => {
                 branchId
                 name
                 openingHours
+                postalAddress
+                postalCode
+                city
               }
             }
           }

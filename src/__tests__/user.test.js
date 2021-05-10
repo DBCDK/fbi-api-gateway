@@ -18,6 +18,7 @@ test("user - get basic data", async () => {
                 address
                 postalCode
                 mail
+                culrMail
               }
             }
         `,

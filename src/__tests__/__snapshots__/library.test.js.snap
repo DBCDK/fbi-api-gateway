@@ -8,168 +8,233 @@ Object {
         Object {
           "agencyId": "710100",
           "branchId": "710100",
+          "city": "København K",
           "name": "Hovedbiblioteket, Krystalgade",
           "openingHours": "Åbningstider
 Se åbningstider på:
 <a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          "postalAddress": "Krystalgade 15",
+          "postalCode": "1172",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710104",
+          "city": "København N",
           "name": "Blågårdens Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Blågårds Plads 5",
+          "postalCode": "2200",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710105",
+          "city": "Brønshøj",
           "name": "Brønshøj Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Krabbesholmvej 3
+",
+          "postalCode": "2700",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710106",
+          "city": "København K",
           "name": "Christianshavns Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Dronningensgade 53",
+          "postalCode": "1420",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710107",
+          "city": "Brønshøj",
           "name": "Husum Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Frederikssundsvej 290",
+          "postalCode": "2700",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710108",
+          "city": "København S",
           "name": "Islands Brygge Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Njalsgade 15",
+          "postalCode": "2300",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710109",
+          "city": "København Ø",
           "name": "Øbro Jagtvej Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Jagtvej 227",
+          "postalCode": "2100",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710110",
+          "city": "København NV",
           "name": "Biblioteket Rentemestervej",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Rentemestervej 76",
+          "postalCode": "2400",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710111",
+          "city": "København N",
           "name": "Nørrebro Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Nørrebrohallen
+Nørrebrogade 208",
+          "postalCode": "2200",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710112",
+          "city": "København S",
           "name": "Solvang Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Remisevej 14",
+          "postalCode": "2300",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710113",
+          "city": "København S",
           "name": "Sundby Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Kvarterhuset Jemtelandsgade 3",
+          "postalCode": "2300",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710114",
+          "city": "København S",
           "name": "Bibliotekshuset",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Rodosvej 4",
+          "postalCode": "2300",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710115",
+          "city": "København SV",
           "name": "Sydhavnens Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Wagnersvej 19",
+          "postalCode": "2450",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710116",
+          "city": "Brønshøj",
           "name": "Tingbjerg Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Skolesiden 4",
+          "postalCode": "2700",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710117",
+          "city": "Valby",
           "name": "Valby Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Annexstræde 2",
+          "postalCode": "2500",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710118",
+          "city": "Vanløse",
           "name": "Kulturstationen Vanløse. Biblioteket",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Jernbane Alle 38",
+          "postalCode": "2720",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710119",
+          "city": "København V",
           "name": "Vesterbro Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Lyrskovgade 4",
+          "postalCode": "1758",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710120",
+          "city": "Valby",
           "name": "Vigerslev Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Kirsebærhaven 23",
+          "postalCode": "2500",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710121",
+          "city": "København Ø",
           "name": "Østerbro Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Dag Hammarskjölds Alle 19",
+          "postalCode": "2100",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710122",
+          "city": "København S",
           "name": "Ørestad Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "postalAddress": "Arne Jacobsens Allé 19",
+          "postalCode": "2300",
         },
         Object {
           "agencyId": "710100",
           "branchId": "710123",
+          "city": "Albertslund",
           "name": "Københavns Bibliotekers centrale sortering",
           "openingHours": "ma-fre: 9-16",
+          "postalAddress": "Djursvang 7C",
+          "postalCode": "2620",
         },
       ],
     },
