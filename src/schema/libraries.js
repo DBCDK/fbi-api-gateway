@@ -6,6 +6,7 @@
 export const typeDef = `
   type Library {
     branches: [Branch!]
+    name: String
   }
   type Branch{
     agencyId: String!
@@ -24,6 +25,10 @@ export const resolvers = {
         ...branch,
         language: parent.language || "da",
       }));
+    },
+    async name(parent, args, context, info) {
+      const branches = await context.datasources.library.load(parent);
+      return branches && branches[0] && branches[0].agencyName;
     },
   },
   Branch: {
