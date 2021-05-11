@@ -18,9 +18,28 @@ export const typeDef = `
     example: String!
     session_id: String!
   }
+  input DataCollectSuggestionInput {
+    type: String!
+    value: String!
+  }
+  input DataCollectSuggestClickInput {
+    suggest_query: String!
+    suggest_query_hit: Int!
+    suggest_query_request_types: [String!]!
+    suggest_query_result: DataCollectSuggestionInput!
+    session_id: String!
+  }
+  input DataCollectSuggestPresentedInput {
+    suggest_query: String!
+    suggest_query_request_types: [String!]!
+    suggest_query_results: [DataCollectSuggestionInput!]!
+    session_id: String!
+  }
   input DataCollectInput {
     search: DataCollectSearchInput
     search_work: DataCollectSearchWorkInput
+    suggest_presented: DataCollectSuggestPresentedInput
+    suggest_click: DataCollectSuggestClickInput
     example: DataCollectExampleInput
   }
 `;
