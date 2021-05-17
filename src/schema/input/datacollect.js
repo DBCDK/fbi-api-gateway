@@ -18,6 +18,14 @@ export const typeDef = `
     example: String!
     session_id: String!
   }
+  input DataCollectRecommenderClickInput {
+    recommender_based_on: String!
+    recommender_click_hit: Int!
+    recommender_click_work: String!
+    recommender_click_reader: String!
+    recommender_shown_recommendations: [String!]!
+    session_id: String!
+  }
   input DataCollectSuggestionInput {
     type: String!
     value: String!
@@ -36,6 +44,7 @@ export const typeDef = `
     session_id: String!
   }
   input DataCollectInput {
+    recommender_click: DataCollectRecommenderClickInput
     search: DataCollectSearchInput
     search_work: DataCollectSearchWorkInput
     suggest_presented: DataCollectSuggestPresentedInput
