@@ -31,7 +31,9 @@ promExporterApp.listen(9599, () => {
   app.use(function (req, res, next) {
     var originalSend = res.send;
     res.send = function () {
-      arguments[0] = arguments[0].replace(/ꜳ/g, "aa").replace(/Ꜳ/g, "Aa");
+      if (arguments[0] && arguments[0].replace) {
+        arguments[0] = arguments[0].replace(/ꜳ/g, "aa").replace(/Ꜳ/g, "Aa");
+      }
       originalSend.apply(res, arguments);
     };
     next();
