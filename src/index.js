@@ -26,6 +26,17 @@ promExporterApp.listen(9599, () => {
 (async () => {
   app.use(cors());
 
+  // Middleware for replacing certain characters in response body.
+  // This is a quick fix, and may be removed again if it is solved elsewhere.
+  app.use(function (req, res, next) {
+    var originalSend = res.send;
+    res.send = function () {
+      arguments[0] = arguments[0].replace(/ꜳ/g, "aa").replace(/Ꜳ/g, "Aa");
+      originalSend.apply(res, arguments);
+    };
+    next();
+  });
+
   // Middleware that monitors performance of those GraphQL queries
   // which specify a monitor name.
   app.use(async (req, res, next) => {
