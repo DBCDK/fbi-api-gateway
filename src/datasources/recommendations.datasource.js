@@ -14,7 +14,7 @@ export async function load({ pid, limit = 10 }) {
           like: [pid],
           agencies: [190101],
           persistent_work: true,
-          limit: limit,
+          limit,
         })
     ).body
   );
