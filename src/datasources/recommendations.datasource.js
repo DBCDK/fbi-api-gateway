@@ -22,7 +22,7 @@ export async function load({ pid, limit = 10 }) {
 
 export const options = {
   redis: {
-    prefix: "recommendations",
+    prefix: "recommendations-1",
     ttl: 60 * 60 * 24,
   },
 };
