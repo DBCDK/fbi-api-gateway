@@ -32,25 +32,24 @@ export const resolvers = {
   SuggestResponse: {
     async result(parent, args, context, info) {
       const res = await context.datasources.suggester.load(parent);
+
       return res.map(async (row) => {
-        if (row.type === "AUTHOR") {
+        if (row.type === "creator") {
           return {
             __resolveType: "Creator",
-            value: row.authorName,
+            value: row.term,
           };
         }
-        if (row.type === "TAG") {
+        if (row.type === "subject") {
           return {
             __resolveType: "Subject",
-            value: row.tag,
+            value: row.term,
           };
         }
-        if (row.type === "TITLE") {
+        if (row.type === "title") {
           return {
             __resolveType: "Work",
-            ...(
-              await context.datasources.workservice.load(`work-of:${row.pid}`)
-            ).work,
+            ...(await context.datasources.workservice.load(`${row.work}`)).work,
           };
         }
       });

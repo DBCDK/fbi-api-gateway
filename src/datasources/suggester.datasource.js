@@ -8,10 +8,9 @@ import request from "superagent";
 
 export async function load({ q }) {
   const result = await request
-    .get(
-      "http://laesekompas-webservice-service.os-externals.svc.cloud.dbc.dk/api/suggest"
-    )
-    .query({ query: q });
+    .get("http://ambra-1-0.mi-prod.svc.cloud.dbc.dk/suggest")
+    .query({ q: q, type: ["subject", "title", "creator"] });
+
   return result.body;
 }
 
