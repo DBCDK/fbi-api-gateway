@@ -217,32 +217,35 @@ describe("API test cases", () => {
                   }
                 }
                 materialTypes {
-                  content
-                  creators {
-                    functionCode
-                    functionSingular
-                    name
-                  }
-                  datePublished
-                  dk5 {
-                    searchCode
-                    searchString
-                    value
-                  }
-                  edition
-                  isbn
                   materialType
-                  notes
-                  onlineAccess {
-                    url
-                    note
+                  manifestations {
+                    content
+                    creators {
+                      functionCode
+                      functionSingular
+                      name
+                    }
+                    datePublished
+                    dk5 {
+                      searchCode
+                      searchString
+                      value
+                    }
+                    edition
+                    isbn
+                    materialType
+                    notes
+                    onlineAccess {
+                      url
+                      note
+                    }
+                    originals
+                    originalTitle
+                    language
+                    physicalDescription
+                    publisher
+                    shelf
                   }
-                  originals
-                  originalTitle
-                  language
-                  physicalDescription
-                  publisher
-                  shelf
                 }
                 path
                 reviews {
@@ -297,33 +300,6 @@ describe("API test cases", () => {
       },
     });
     expect(result).toMatchSnapshot();
-  });
-
-  test("Materialtypes should contain one manifestation per type - prefer 870970-basis", async () => {
-    const result = await performTestQuery({
-      query: `
-          query ($id: String!) {
-            work(id: $id) {
-              materialTypes {
-                pid
-                materialType
-              }
-            }
-          }
-        `,
-      variables: { id: "work-of:870970-basis:26521556" },
-      context: { datasources: createMockedDataLoaders() },
-    });
-    expect(result).toEqual({
-      data: {
-        work: {
-          materialTypes: [
-            { pid: "870970-basis:29433909", materialType: "Bog" },
-            { pid: "300101-katalog:28486006", materialType: "Ebog" },
-          ],
-        },
-      },
-    });
   });
 
   test("User error: query with unknown field", async () => {

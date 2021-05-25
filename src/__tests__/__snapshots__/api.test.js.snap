@@ -68,68 +68,6 @@ Object {
         },
         Object {
           "availability": Object {
-            "expectedDelivery": "2021-04-14T00:00:00+02:00",
-            "orderPossible": false,
-            "orderPossibleReason": "owned_accepted",
-            "willLend": false,
-          },
-          "content": Array [],
-          "creators": Array [
-            Object {
-              "functionCode": "aut",
-              "functionSingular": "forfatter",
-              "name": "Kim Fupz Ꜳkeson",
-            },
-            Object {
-              "functionCode": "dkind",
-              "functionSingular": "indlæser",
-              "name": "Peter Frödin",
-            },
-          ],
-          "datePublished": "2020",
-          "dk5": Array [
-            Object {
-              "searchCode": "dkcclphrase.ldk",
-              "searchString": "86-096",
-              "value": "86-096",
-            },
-            Object {
-              "searchCode": "dkcclphrase.ldk",
-              "searchString": "sk",
-              "value": "sk",
-            },
-          ],
-          "edition": "1. udgave",
-          "isbn": "9788711407134",
-          "language": Array [
-            "Dansk",
-          ],
-          "materialType": "Bog",
-          "notes": Array [],
-          "onlineAccess": Array [
-            Object {
-              "note": "Adgang til lån hos eReolen.dk",
-              "url": "https://ereolen.dk/ting/object/870970-basis:51796527",
-            },
-            Object {
-              "note": "Adgang til titlen på eReolen Go",
-              "url": "https://ereolengo.dk/ting/object/870970-basis:51796527",
-            },
-          ],
-          "originalTitle": "",
-          "originals": Array [
-            "Gengivelse af bogen",
-            "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
-            "Bogens originaludgave: 1988",
-          ],
-          "physicalDescription": "1 cd i 1 mappe (67 min.)",
-          "publisher": Array [
-            "Kronstork",
-          ],
-          "shelf": "skønlitteratur",
-        },
-        Object {
-          "availability": Object {
             "expectedDelivery": "2021-03-13T00:00:00+02:00",
             "orderPossible": true,
             "orderPossibleReason": "owned_accepted",
@@ -223,7 +161,7 @@ Object {
           "language": Array [
             "Dansk",
           ],
-          "materialType": "Ebog",
+          "materialType": "Ebog / Bog",
           "notes": Array [],
           "onlineAccess": Array [
             Object {
@@ -250,111 +188,168 @@ Object {
       ],
       "materialTypes": Array [
         Object {
-          "content": Array [
-            "Jeg bor i Hvidovre",
-            "Jeg fremlejer en lejlighed",
-            "Modsætningen mellem",
-          ],
-          "creators": Array [
+          "manifestations": Array [
             Object {
-              "functionCode": "aut",
-              "functionSingular": "forfatter",
-              "name": "Kim Fupz Ꜳkeson",
+              "content": Array [],
+              "creators": Array [
+                Object {
+                  "functionCode": "aut",
+                  "functionSingular": "forfatter",
+                  "name": "Kim Fupz Ꜳkeson",
+                },
+                Object {
+                  "functionCode": "dkind",
+                  "functionSingular": "indlæser",
+                  "name": "Peter Frödin",
+                },
+              ],
+              "datePublished": "2020",
+              "dk5": Array [
+                Object {
+                  "searchCode": "dkcclphrase.ldk",
+                  "searchString": "86-096",
+                  "value": "86-096",
+                },
+                Object {
+                  "searchCode": "dkcclphrase.ldk",
+                  "searchString": "sk",
+                  "value": "sk",
+                },
+              ],
+              "edition": "1. udgave",
+              "isbn": "9788711407134",
+              "language": Array [
+                "Dansk",
+              ],
+              "materialType": "Bog",
+              "notes": Array [],
+              "onlineAccess": null,
+              "originalTitle": "",
+              "originals": Array [
+                "Gengivelse af bogen",
+                "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
+                "Bogens originaludgave: 1988",
+              ],
+              "physicalDescription": "1 cd i 1 mappe (67 min.)",
+              "publisher": Array [
+                "Kronstork",
+              ],
+              "shelf": "skønlitteratur",
             },
             Object {
-              "functionCode": "dkind",
-              "functionSingular": "indlæser",
-              "name": "Peter Frödin",
+              "content": Array [
+                "Jeg bor i Hvidovre",
+                "Jeg fremlejer en lejlighed",
+                "Modsætningen mellem",
+              ],
+              "creators": Array [
+                Object {
+                  "functionCode": "aut",
+                  "functionSingular": "forfatter",
+                  "name": "Kim Fupz Ꜳkeson",
+                },
+                Object {
+                  "functionCode": "dkind",
+                  "functionSingular": "indlæser",
+                  "name": "Peter Frödin",
+                },
+              ],
+              "datePublished": "2020",
+              "dk5": Array [
+                Object {
+                  "searchCode": "dkcclphrase.ldk",
+                  "searchString": "86-096",
+                  "value": "86-096",
+                },
+                Object {
+                  "searchCode": "dkcclphrase.ldk",
+                  "searchString": "sk",
+                  "value": "sk",
+                },
+              ],
+              "edition": "1. udgave",
+              "isbn": "9788711407134",
+              "language": Array [
+                "Dansk",
+              ],
+              "materialType": "Bog",
+              "notes": Array [],
+              "onlineAccess": null,
+              "originalTitle": "",
+              "originals": Array [
+                "Gengivelse af bogen",
+                "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
+                "Bogens originaludgave: 1988",
+              ],
+              "physicalDescription": "1 cd i 1 mappe (67 min.)",
+              "publisher": Array [
+                "Kronstork",
+              ],
+              "shelf": "skønlitteratur",
             },
-          ],
-          "datePublished": "2020",
-          "dk5": Array [
-            Object {
-              "searchCode": "dkcclphrase.ldk",
-              "searchString": "86-096",
-              "value": "86-096",
-            },
-            Object {
-              "searchCode": "dkcclphrase.ldk",
-              "searchString": "sk",
-              "value": "sk",
-            },
-          ],
-          "edition": "1. udgave",
-          "isbn": "9788711407134",
-          "language": Array [
-            "Dansk",
           ],
           "materialType": "Bog",
-          "notes": Array [],
-          "onlineAccess": null,
-          "originalTitle": "",
-          "originals": Array [
-            "Gengivelse af bogen",
-            "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
-            "Bogens originaludgave: 1988",
-          ],
-          "physicalDescription": "1 cd i 1 mappe (67 min.)",
-          "publisher": Array [
-            "Kronstork",
-          ],
-          "shelf": "skønlitteratur",
         },
         Object {
-          "content": Array [],
-          "creators": Array [
+          "manifestations": Array [
             Object {
-              "functionCode": "aut",
-              "functionSingular": "forfatter",
-              "name": "Kim Fupz Ꜳkeson",
-            },
-            Object {
-              "functionCode": "dkind",
-              "functionSingular": "indlæser",
-              "name": "Peter Frödin",
+              "content": Array [],
+              "creators": Array [
+                Object {
+                  "functionCode": "aut",
+                  "functionSingular": "forfatter",
+                  "name": "Kim Fupz Ꜳkeson",
+                },
+                Object {
+                  "functionCode": "dkind",
+                  "functionSingular": "indlæser",
+                  "name": "Peter Frödin",
+                },
+              ],
+              "datePublished": "2020",
+              "dk5": Array [
+                Object {
+                  "searchCode": "dkcclphrase.ldk",
+                  "searchString": "86-096",
+                  "value": "86-096",
+                },
+                Object {
+                  "searchCode": "dkcclphrase.ldk",
+                  "searchString": "sk",
+                  "value": "sk",
+                },
+              ],
+              "edition": "1. udgave",
+              "isbn": "9788711407134",
+              "language": Array [
+                "Dansk",
+              ],
+              "materialType": "Ebog / Bog",
+              "notes": Array [],
+              "onlineAccess": Array [
+                Object {
+                  "note": "Adgang til lån hos eReolen.dk",
+                  "url": "https://ereolen.dk/ting/object/870970-basis:51796527",
+                },
+                Object {
+                  "note": "Adgang til titlen på eReolen Go",
+                  "url": "https://ereolengo.dk/ting/object/870970-basis:51796527",
+                },
+              ],
+              "originalTitle": "",
+              "originals": Array [
+                "Gengivelse af bogen",
+                "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
+                "Bogens originaludgave: 1988",
+              ],
+              "physicalDescription": "1 cd i 1 mappe (67 min.)",
+              "publisher": Array [
+                "Kronstork",
+              ],
+              "shelf": "skønlitteratur",
             },
           ],
-          "datePublished": "2020",
-          "dk5": Array [
-            Object {
-              "searchCode": "dkcclphrase.ldk",
-              "searchString": "86-096",
-              "value": "86-096",
-            },
-            Object {
-              "searchCode": "dkcclphrase.ldk",
-              "searchString": "sk",
-              "value": "sk",
-            },
-          ],
-          "edition": "1. udgave",
-          "isbn": "9788711407134",
-          "language": Array [
-            "Dansk",
-          ],
-          "materialType": "Ebog",
-          "notes": Array [],
-          "onlineAccess": Array [
-            Object {
-              "note": "Adgang til lån hos eReolen.dk",
-              "url": "https://ereolen.dk/ting/object/870970-basis:51796527",
-            },
-            Object {
-              "note": "Adgang til titlen på eReolen Go",
-              "url": "https://ereolengo.dk/ting/object/870970-basis:51796527",
-            },
-          ],
-          "originalTitle": "",
-          "originals": Array [
-            "Gengivelse af bogen",
-            "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
-            "Bogens originaludgave: 1988",
-          ],
-          "physicalDescription": "1 cd i 1 mappe (67 min.)",
-          "publisher": Array [
-            "Kronstork",
-          ],
-          "shelf": "skønlitteratur",
+          "materialType": "Ebog / Bog",
         },
       ],
       "path": Array [
