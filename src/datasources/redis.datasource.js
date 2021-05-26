@@ -84,7 +84,7 @@ const set = monitor(
     try {
       await redis.set(
         key,
-        JSON.stringify({ ...val, _redis_stored: Date.now() }),
+        JSON.stringify({ _redis_stored: Date.now(), val }),
         "ex",
         seconds
       );
@@ -227,7 +227,7 @@ export function withRedis(
     // Return array of values
     const res = keys.map((key, idx) => {
       if (cachedValues[idx]) {
-        return cachedValues[idx];
+        return cachedValues[idx].val;
       }
       return values.shift();
     });
