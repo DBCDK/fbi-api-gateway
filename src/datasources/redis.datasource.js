@@ -82,7 +82,12 @@ const set = monitor(
   { name: "REQUEST_redis_set", help: "Redis set request" },
   async (key, seconds, val) => {
     try {
-      await redis.set(key, JSON.stringify(val), "ex", seconds);
+      await redis.set(
+        key,
+        JSON.stringify({ ...val, _redis_stored: Date.now() }),
+        "ex",
+        seconds
+      );
     } catch (e) {
       log.error(`Redis setex failed`, {
         key,
@@ -138,6 +143,7 @@ function createPrefixedKey(prefix, key) {
  * @param {Object} options The options object
  * @param {string} options.prefix Prefix to put on each keys
  * @param {number} options.ttl Time to live in seconds
+ * @param {number} options.staleWhileRevalidate seconds to allow values to be stale
  * @param {function} options.setex Inject setex function (for testing)
  * @param {function} options.mget Inject mget function (for testing)
  *
@@ -145,7 +151,13 @@ function createPrefixedKey(prefix, key) {
  */
 export function withRedis(
   batchFunc,
-  { prefix = "", ttl = 60, setexFunc = setex, mgetFunc = mget }
+  {
+    prefix = "",
+    ttl = 60,
+    staleWhileRevalidate,
+    setexFunc = setex,
+    mgetFunc = mget,
+  }
 ) {
   /**
    * This is a DataLoader batch function
@@ -157,6 +169,8 @@ export function withRedis(
    * @param {Array.<string>} keys The keys to fetch
    */
   async function redisBatchLoader(keys) {
+    const now = Date.now();
+
     // Create array of prefixed keys
     const prefixedKeys = keys.map((key) => createPrefixedKey(prefix, key));
 
@@ -165,10 +179,14 @@ export function withRedis(
 
     // If some values were not found in Redis,
     // they are added to missing keys array
+    // If they are stale, they are added to staleKeys array
     const missingKeys = [];
+    const staleKeys = [];
     cachedValues.forEach((val, idx) => {
       if (!val) {
         missingKeys.push(keys[idx]);
+      } else if (now - val._redis_stored > ttl * 1000) {
+        staleKeys.push(keys[idx]);
       }
     });
 
@@ -181,10 +199,30 @@ export function withRedis(
       // We do not await here
       missingKeys.forEach((key, idx) => {
         if (!(values[idx] instanceof Error)) {
-          return setexFunc(createPrefixedKey(prefix, key), ttl, values[idx]);
+          return setexFunc(
+            createPrefixedKey(prefix, key),
+            staleWhileRevalidate || ttl,
+            values[idx]
+          );
         }
       });
     }
+
+    // Refresh stale values, we don't await
+    (async () => {
+      if (staleKeys.length > 0) {
+        const refreshedValues = await batchFunc(staleKeys);
+        staleKeys.forEach((key, idx) => {
+          if (!(refreshedValues[idx] instanceof Error)) {
+            return setexFunc(
+              createPrefixedKey(prefix, key),
+              staleWhileRevalidate || ttl,
+              refreshedValues[idx]
+            );
+          }
+        });
+      }
+    })();
 
     // Return array of values
     const res = keys.map((key, idx) => {

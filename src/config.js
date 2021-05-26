@@ -40,7 +40,7 @@ export default {
     redis: {
       host: process.env.REDIS_HOST || "127.0.0.1",
       port: process.env.REDIS_PORT || "6379",
-      prefix: process.env.REDIS_PREFIX || "bibdk-api-1",
+      prefix: process.env.REDIS_PREFIX || "bibdk-api-2",
       enabled: process.env.REDIS_ENABLED || true,
     },
     simplesearch: {
