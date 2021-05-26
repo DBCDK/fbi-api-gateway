@@ -34,7 +34,7 @@ export default {
       authenticationGroup: process.env.OPENORDER_GROUP,
       authenticationPassword: process.env.OPENORDER_PASSWORD,
       serviceRequester: process.env.OPENORDER_SERVICEREQUESTER,
-      ttl: process.env.OPENORDER_TIME_TO_LIVE_SECONDS || 1,
+      ttl: process.env.OPENORDER_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.OPENORDER_PREFIX || "openorder-1",
     },
     work: {

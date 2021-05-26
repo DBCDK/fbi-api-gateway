@@ -11,7 +11,7 @@ import { createHistogram } from "../utils/monitor";
  */
 export const typeDef = `
 type Query {
-  manifestation(pid: String!): WorkManifestation!
+  manifestation(pid: String! pickupBranch: String): WorkManifestation!
   monitor(name: String!): String!
   user: User!
   work(id: String!): Work
@@ -33,7 +33,7 @@ type Mutation {
 export const resolvers = {
   Query: {
     manifestation(parent, args, context, info) {
-      return { id: args.pid };
+      return { id: args.pid, pickupBranch: args.pickupBranch };
     },
     monitor(parent, args, context, info) {
       try {

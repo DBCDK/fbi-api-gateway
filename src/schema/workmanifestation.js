@@ -292,7 +292,7 @@ export const resolvers = {
     async checkorder(parent, args, context, info) {
       return await context.datasources.checkorder.load({
         pid: parent.id,
-        pickupAgency: "710100",
+        pickupBranch: parent.pickupBranch,
       });
     },
 
