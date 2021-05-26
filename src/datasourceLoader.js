@@ -53,6 +53,7 @@ export const datasources = getFilesRecursive("./src/datasources")
       monitoredBatchLoader = withRedis(monitoredBatchLoader, {
         prefix: options.redis.prefix,
         ttl: options.redis.ttl,
+        staleWhileRevalidate: options.redis.staleWhileRevalidate,
       });
     }
 

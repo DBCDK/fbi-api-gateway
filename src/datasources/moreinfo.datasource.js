@@ -53,5 +53,6 @@ export const options = {
   redis: {
     prefix,
     ttl,
+    staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
   },
 };
