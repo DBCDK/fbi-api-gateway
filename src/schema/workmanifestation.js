@@ -36,6 +36,8 @@ export const typeDef = `
       title: String
       recommendations(limit: Int): [Recommendation!]!
       availability: Availability
+      checkorder: CheckOrderPolicy
+      admin: AdminData
     }
   `;
 
@@ -285,6 +287,17 @@ export const resolvers = {
         pid: parent.id,
         accessToken: context.accessToken,
       });
+    },
+
+    async checkorder(parent, args, context, info) {
+      return await context.datasources.checkorder.load({
+        pid: parent.id,
+        pickupAgency: "710100",
+      });
+    },
+
+    async admin(parent, args, context, info) {
+      return { pid: parent.id };
     },
   },
 };

@@ -28,6 +28,15 @@ export default {
       ttl: process.env.MOREINFO_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.MOREINFO_PREFIX || "moreinfo-1",
     },
+    openorder: {
+      url: process.env.OPENORDER_URL,
+      authenticationUser: process.env.OPENORDER_USER,
+      authenticationGroup: process.env.OPENORDER_GROUP,
+      authenticationPassword: process.env.OPENORDER_PASSWORD,
+      serviceRequester: process.env.OPENORDER_SERVICEREQUESTER,
+      ttl: process.env.OPENORDER_TIME_TO_LIVE_SECONDS || 1,
+      prefix: process.env.OPENORDER_PREFIX || "openorder-1",
+    },
     work: {
       url:
         process.env.WORKSERVICE_URL ||

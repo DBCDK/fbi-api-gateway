@@ -2,7 +2,8 @@
   "manifestation": {
     "admindata": {
       "pid": "opensearch.identifier",
-      "creationDate": "opensearch.creationDate"
+      "creationDate": "opensearch.creationDate",
+      "requestButton": "{bibdk_request_button}"
     },
     "details": {
       "abstract": [
