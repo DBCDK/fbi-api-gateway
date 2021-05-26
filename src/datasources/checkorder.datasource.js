@@ -41,7 +41,6 @@ function createRequest(pid, pickupAgency) {
 
 export async function load({ pid, pickupBranch }) {
   const xml = createRequest(pid, pickupBranch);
-
   const policy = await request
     .post(url)
     .set("Content-Type", "text/xml")

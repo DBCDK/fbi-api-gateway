@@ -36,7 +36,7 @@ export const typeDef = `
       title: String
       recommendations(limit: Int): [Recommendation!]!
       availability: Availability
-      checkorder: CheckOrderPolicy
+      checkorder(pickupBranch: String!): CheckOrderPolicy
       admin: AdminData
     }
   `;
@@ -288,11 +288,10 @@ export const resolvers = {
         accessToken: context.accessToken,
       });
     },
-
     async checkorder(parent, args, context, info) {
       return await context.datasources.checkorder.load({
         pid: parent.id,
-        pickupBranch: parent.pickupBranch,
+        pickupBranch: args.pickupBranch,
       });
     },
 
