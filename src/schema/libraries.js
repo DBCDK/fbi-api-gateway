@@ -15,6 +15,7 @@ export const typeDef = `
     openingHours: String
     postalAddress: String
     postalCode: String
+    orderPolicy(pid:String!): CheckOrderPolicy
     city: String
   }`;
 
@@ -56,6 +57,12 @@ export const resolvers = {
         parent.openingHours[parent.language === "da" ? 0 : 1] ||
         parent.openingHours[0]
       );
+    },
+    async orderPolicy(parent, args, context, info) {
+      return await context.datasources.checkorder.load({
+        pickupBranch: parent.branchId,
+        pid: args.pid,
+      });
     },
   },
 };
