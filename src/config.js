@@ -55,8 +55,8 @@ export default {
     simplesearch: {
       url:
         process.env.SIMPLESEARCH_URL ||
-        "http://wp-simple-search.os-externals.svc.cloud.dbc.dk/search",
-      prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-1",
+        "http://simple-search-bibdk-1-0.mi-prod.svc.cloud.dbc.dk/search",
+      prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-2",
     },
     openplatform: {
       url: process.env.OPENPLATFORM_URL || "https://openplatform.dbc.dk/v3",

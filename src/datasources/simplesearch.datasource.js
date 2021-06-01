@@ -21,18 +21,20 @@ export async function load({ q, limit = 10, offset = 0 }) {
     await request.post(url).send({
       "access-token": "479317f0-3f91-11eb-9ba0-4c1d96c9239f",
       q,
-      rows: 100,
+      start: offset,
+      rows: limit,
       debug: true,
       options: { "include-phonetic-creator": false },
     })
   ).body;
 
   // Get hitcount
-  const hitcount = response.result.length;
+
+  const hitcount = response.hits;
 
   // Select range between offset and limit
   return {
-    result: response.result.slice(offset, offset + limit),
+    result: response.result,
     hitcount,
   };
 }
