@@ -139,9 +139,17 @@ function flattenRecords(work) {
   // The array that will hold the records
   const records = [];
 
-  // Get the primary records (first record of each group)
+  // Get the primary records
+  // Prefer 870970-basis, otherwise first record of each group
+  // We prefer 870970-basis since this is the pid we use to check for
+  // availability, and use when sending order requests.
+  // We may need to rethink this if there are cases where we should
+  // use another pid (or maybe we need to access all pids in a group)
   const primaryRecords = work.groups.map((group) => {
-    return group.records[0];
+    return (
+      group.records.find((record) => record.id.startsWith("870970-basis")) ||
+      group.records[0]
+    );
   });
 
   // Walk through every record
