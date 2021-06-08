@@ -13,6 +13,7 @@ Object {
           "openingHours": "Åbningstider
 Se åbningstider på:
 <a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          "pickupAllowed": true,
           "postalAddress": "Krystalgade 15",
           "postalCode": "1172",
         },
@@ -24,6 +25,7 @@ Se åbningstider på:
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Blågårds Plads 5",
           "postalCode": "2200",
         },
@@ -35,6 +37,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Krabbesholmvej 3
 ",
           "postalCode": "2700",
@@ -47,6 +50,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Dronningensgade 53",
           "postalCode": "1420",
         },
@@ -58,6 +62,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Frederikssundsvej 290",
           "postalCode": "2700",
         },
@@ -69,6 +74,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Njalsgade 15",
           "postalCode": "2300",
         },
@@ -80,6 +86,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Jagtvej 227",
           "postalCode": "2100",
         },
@@ -91,6 +98,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Rentemestervej 76",
           "postalCode": "2400",
         },
@@ -102,6 +110,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Nørrebrohallen
 Nørrebrogade 208",
           "postalCode": "2200",
@@ -114,6 +123,7 @@ Nørrebrogade 208",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Remisevej 14",
           "postalCode": "2300",
         },
@@ -125,6 +135,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Kvarterhuset Jemtelandsgade 3",
           "postalCode": "2300",
         },
@@ -136,6 +147,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Rodosvej 4",
           "postalCode": "2300",
         },
@@ -147,6 +159,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Wagnersvej 19",
           "postalCode": "2450",
         },
@@ -158,6 +171,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Skolesiden 4",
           "postalCode": "2700",
         },
@@ -169,6 +183,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Annexstræde 2",
           "postalCode": "2500",
         },
@@ -180,6 +195,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Jernbane Alle 38",
           "postalCode": "2720",
         },
@@ -191,6 +207,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Lyrskovgade 4",
           "postalCode": "1758",
         },
@@ -202,6 +219,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Kirsebærhaven 23",
           "postalCode": "2500",
         },
@@ -213,6 +231,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Dag Hammarskjölds Alle 19",
           "postalCode": "2100",
         },
@@ -224,6 +243,7 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
           "postalAddress": "Arne Jacobsens Allé 19",
           "postalCode": "2300",
         },
@@ -233,6 +253,7 @@ bibliotek.kk.dk/biblioteker/",
           "city": "Albertslund",
           "name": "Københavns Bibliotekers centrale sortering",
           "openingHours": "ma-fre: 9-16",
+          "pickupAllowed": true,
           "postalAddress": "Djursvang 7C",
           "postalCode": "2620",
         },

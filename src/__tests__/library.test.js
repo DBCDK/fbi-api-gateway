@@ -42,6 +42,7 @@ test("library - get branches", async () => {
                 postalAddress
                 postalCode
                 city
+                pickupAllowed
               }
             }
           }

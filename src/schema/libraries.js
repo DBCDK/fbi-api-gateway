@@ -17,6 +17,7 @@ export const typeDef = `
     postalCode: String
     orderPolicy(pid:String!): CheckOrderPolicy
     city: String
+    pickupAllowed: Boolean!
   }`;
 
 export const resolvers = {
@@ -63,6 +64,9 @@ export const resolvers = {
         pickupBranch: parent.branchId,
         pid: args.pid,
       });
+    },
+    pickupAllowed(parent, args, context, info) {
+      return parent.pickupAllowed === "1";
     },
   },
 };
