@@ -242,7 +242,8 @@
         {
           "value": "{full_text}"
         }
-      ]
+      ],
+      "inLanguage": "{bibdk_language_code}"
     }
   }
 }
