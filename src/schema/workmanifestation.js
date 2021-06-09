@@ -304,9 +304,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      return getArray(manifestation, "details.inLanguage").map(
-        (entry) => entry.$
-      );
+      return manifestation.details.inLanguage.$;
     },
   },
 };
