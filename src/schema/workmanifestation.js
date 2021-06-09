@@ -38,6 +38,7 @@ export const typeDef = `
       availability: Availability
       checkorder(pickupBranch: String!): CheckOrderPolicy
       admin: AdminData
+      inLanguage: String
     }
   `;
 
@@ -297,6 +298,13 @@ export const resolvers = {
 
     async admin(parent, args, context, info) {
       return { pid: parent.id };
+    },
+
+    async inLanguage(parent, args, context, info) {
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      return manifestation.details.inLanguage.$;
     },
   },
 };
