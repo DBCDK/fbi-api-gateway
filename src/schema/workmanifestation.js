@@ -304,7 +304,13 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      return manifestation.details.inLanguage.$;
+      return (
+        (manifestation &&
+          manifestation.details &&
+          manifestation.details.inLanguage &&
+          manifestation.details.inLanguage.$) ||
+        "da"
+      );
     },
   },
 };
