@@ -8,10 +8,13 @@ import request from "superagent";
 
 export async function load({ q }) {
   const result = await request
-    .get("http://ambra-1-0.mi-prod.svc.cloud.dbc.dk/suggest")
+    .get("http://simple-suggest-1-0.mi-prod.svc.cloud.dbc.dk/suggest")
     .query({ q: q, type: ["subject", "title", "creator"] });
 
-  return result.body;
+  if (Array.isArray(result.body)) {
+    return result.body;
+  }
+  return JSON.parse(result.text);
 }
 
 /**

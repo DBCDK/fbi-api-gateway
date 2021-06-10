@@ -46,12 +46,10 @@ export const resolvers = {
             value: row.term,
           };
         }
-        if (row.type === "title") {
-          return {
-            __resolveType: "Work",
-            ...(await context.datasources.workservice.load(`${row.work}`)).work,
-          };
-        }
+        return {
+          __resolveType: "Work",
+          ...(await context.datasources.workservice.load(`${row.work}`)).work,
+        };
       });
     },
   },
