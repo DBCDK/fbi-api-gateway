@@ -88,9 +88,9 @@ export async function load({ pid, pickupBranch }) {
  * @throws Will throw error if service is down
  */
 
-export async function status(loadFunc) {
-  await loadFunc("870970-basis:51877330", "710100");
-}
+// export async function status(loadFunc) {
+//   await loadFunc({pid: "870970-basis:51877330", pickupBranch: "710100"});
+// }
 
 export const options = {
   redis: {
