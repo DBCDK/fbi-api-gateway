@@ -1,3 +1,4 @@
+import { log } from "dbc-node-logger";
 import request from "superagent";
 import config from "../config";
 
@@ -25,19 +26,25 @@ function createRequest(pid) {
 }
 
 export async function load(pid) {
-  const images = (
-    await request.post(url).field("xml", createRequest(pid))
-  ).body.moreInfoResponse.identifierInformation
-    .map((entry) => entry.coverImage)
-    .filter((entry) => entry);
-
-  const res = {};
-  images.forEach((entry) => {
-    entry.forEach((cover) => {
-      res[cover["@imageSize"].$] = cover.$;
+  try {
+    const images = (
+      await request.post(url).field("xml", createRequest(pid))
+    ).body.moreInfoResponse.identifierInformation
+      .map((entry) => entry.coverImage)
+      .filter((entry) => entry);
+  
+    const res = {};
+    images.forEach((entry) => {
+      entry.forEach((cover) => {
+        res[cover["@imageSize"].$] = cover.$;
+      });
     });
-  });
-  return res;
+  
+    return res;
+  } catch(e) {
+    log.error(`Request to moreinfo failed for pid ${pid}`);
+    return {}
+  }
 }
 
 /**
