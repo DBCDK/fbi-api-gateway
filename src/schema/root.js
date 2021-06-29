@@ -10,12 +10,18 @@ import { createHistogram } from "../utils/monitor";
  * The root type definitions
  */
 export const typeDef = `
+enum FacetFilterType {
+      LITERATURE,
+      MOVIE,
+      ARTICLE
+   }
+
 type Query {
   manifestation(pid: String!): WorkManifestation!
   monitor(name: String!): String!
   user: User!
   work(id: String!): Work
-  search(q: String!, limit: PaginationLimit!, offset: Int): SearchResponse!
+  search(q: String!, limit: PaginationLimit!, offset: Int, facets: [FacetFilterType]): SearchResponse!
   suggest(q: String!): SuggestResponse!
   help(q: String!): HelpResponse
   library(agencyid: String!, language: LanguageCode): Library
@@ -55,7 +61,12 @@ export const resolvers = {
       return { ...work, id: args.id };
     },
     async search(parent, args, context, info) {
-      return { q: args.q, limit: args.limit, offset: args.offset };
+      return {
+        q: args.q,
+        limit: args.limit,
+        offset: args.offset,
+        facets: args.facets,
+      };
     },
     async library(parent, args, context, info) {
       return {
