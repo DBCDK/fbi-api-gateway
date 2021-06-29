@@ -39,10 +39,12 @@ export async function load({ q, limit = 10, offset = 0, facets = [] }) {
  */
 function setQuery(params) {
   // make an object of the facets array
-  const facetobj = params.facets.reduce((obj, facet) => {
-    obj[`facet.${facet.field}`] = facet.value;
-    return obj;
-  }, {});
+  const facetobj =
+    params.facets &&
+    params.facets.reduce((obj, facet) => {
+      obj[`facet.${facet.field}`] = facet.value;
+      return obj;
+    }, {});
 
   // make an object of the basic parameters
   const basequery = {
