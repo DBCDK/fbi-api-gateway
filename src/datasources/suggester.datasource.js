@@ -11,10 +11,17 @@ export async function load({ q }) {
     .get("http://simple-suggest-1-0.mi-prod.svc.cloud.dbc.dk/suggest")
     .query({ q: q, type: ["subject", "title", "creator"] });
 
-  if (Array.isArray(result.body)) {
-    return result.body;
+  let body;
+  try {
+    body = JSON.parse(result.text);
+  } catch (e) {
+    body = result.body;
   }
-  return JSON.parse(result.text);
+
+  if (Array.isArray(body)) {
+    return body;
+  }
+  return body.response;
 }
 
 /**
