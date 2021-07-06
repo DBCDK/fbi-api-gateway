@@ -35,7 +35,7 @@ export async function status(loadFunc) {
 
 export const options = {
   redis: {
-    prefix: "suggester-2",
+    prefix: "suggester-3",
     ttl: 60 * 60 * 24,
   },
 };
