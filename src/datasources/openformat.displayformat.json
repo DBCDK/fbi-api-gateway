@@ -65,7 +65,8 @@
       "hostPublication": [
         {
           "value": "{hostPublication}",
-          "title": "{bibdk_host_publication_title}"
+          "title": "{bibdk_host_publication_title}",
+          "details": "{bibdk_host_publication_details}"
         }
       ],
       "isbn": [

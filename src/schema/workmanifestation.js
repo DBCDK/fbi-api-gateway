@@ -9,6 +9,10 @@ import { getArray, matchYear } from "../utils/utils";
  * The WorkManifestation type definition
  */
 export const typeDef = `
+    type HostPublication {
+      title: String!
+      details: String!
+    }
     type OnlineAccess {
       url: String!
       note: String!
@@ -22,6 +26,10 @@ export const typeDef = `
       dk5: [DK5!]!
       edition: String!
       fullTitle: String!
+      """
+      Where this manifestation is published. For instance, in which magazine an article is published.
+      """
+      hostPublication: HostPublication
       isbn: String
       language: [String!]!
       materialType: String!
@@ -250,6 +258,17 @@ export const resolvers = {
       return getArray(manifestation, "details.publication.publisher").map(
         (entry) => entry.$
       );
+    },
+    async hostPublication(parent, args, context, info) {
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      return getArray(manifestation, "details.hostPublication").map(
+        (entry) => ({
+          title: (entry.title && entry.title.$) || "",
+          details: (entry.details && entry.details.$) || "",
+        })
+      )[0];
     },
     async recommendations(parent, args, context, info) {
       const recommendations = await context.datasources.recommendations.load({

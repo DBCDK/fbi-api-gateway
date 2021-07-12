@@ -196,6 +196,10 @@ describe("API test cases", () => {
                     value
                   }
                   edition
+                  hostPublication {
+                    title
+                    details
+                  }
                   isbn
                   materialType
                   notes

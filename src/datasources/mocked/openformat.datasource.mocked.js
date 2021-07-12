@@ -834,6 +834,13 @@ export function load(pid) {
             $: "1 cd i 1 mappe (67 min.)",
           },
         },
+        hostPublication: {
+          value: {
+            $: "I: Dansk veterinærtidsskrift, Årg. 97, nr. 10 (2014), 2014",
+          },
+          title: { $: "Dansk veterinærtidsskrift" },
+          details: { $: "Årg. 97, nr. 10 (2014)" },
+        },
         publication: {
           publisher: { $: "Kronstork" },
           publicationYear: { $: "2020" },
