@@ -17,7 +17,7 @@ type Query {
   work(id: String!): Work
   search(q: String!, limit: PaginationLimit!, offset: Int, facets: [FacetFilter]): SearchResponse!
   suggest(q: String!): SuggestResponse!
-  help(q: String!): HelpResponse
+  help(q: String!, language: LanguageCode): HelpResponse
   library(agencyid: String!, language: LanguageCode): Library
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
 }
@@ -45,7 +45,7 @@ export const resolvers = {
       }
     },
     async help(parent, args, context, info) {
-      return { q: args.q };
+      return { ...args };
     },
     async user(parent, args, context, info) {
       return { ...args };
