@@ -16,7 +16,7 @@ type Query {
   user: User!
   work(id: String!): Work
   search(q: String!, limit: PaginationLimit!, offset: Int, facets: [FacetFilter]): SearchResponse!
-  suggest(q: String!): SuggestResponse!
+  suggest(q: String!, worktype: WorkType): SuggestResponse!
   help(q: String!): HelpResponse
   library(agencyid: String!, language: LanguageCode): Library
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
@@ -70,7 +70,7 @@ export const resolvers = {
       };
     },
     async suggest(parent, args, context, info) {
-      return { q: args.q };
+      return { q: args.q, worktype: args.worktype };
     },
     async deleteOrder(parent, args, context, info) {
       return await context.datasources.deleteOrder.load({

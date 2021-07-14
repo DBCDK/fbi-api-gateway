@@ -7,6 +7,19 @@
  * The SuggestResponse and SuggestRow type definition
  */
 export const typeDef = `
+enum WorkType {
+      analysis, 
+      article, 
+      movie, 
+      literature, 
+      game, 
+      periodica, 
+      map, 
+      portrait, 
+      music, 
+      none, 
+      sheetmusic
+   }
 union SuggestRow = Creator | Subject | Work
 type SuggestSubject {
   title: String!

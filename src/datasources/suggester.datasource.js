@@ -6,10 +6,10 @@
 
 import request from "superagent";
 
-export async function load({ q }) {
+export async function load({ q, worktype = "none" }) {
   const result = await request
     .get("http://simple-suggest-1-0.mi-prod.svc.cloud.dbc.dk/suggest")
-    .query({ q: q, type: ["subject", "title", "creator"] });
+    .query({ q: q, type: ["subject", "title", "creator"], worktype: worktype });
 
   let body;
   try {
