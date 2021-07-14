@@ -47,6 +47,7 @@ Object {
             },
           ],
           "edition": "1. udgave",
+          "hostPublication": null,
           "isbn": "9788711407134",
           "language": Array [
             "Dansk",
@@ -104,6 +105,10 @@ Object {
             },
           ],
           "edition": "1. udgave",
+          "hostPublication": Object {
+            "details": "Årg. 97, nr. 10 (2014)",
+            "title": "Dansk veterinærtidsskrift",
+          },
           "isbn": "9788711407134",
           "language": Array [
             "Dansk",
@@ -157,6 +162,7 @@ Object {
             },
           ],
           "edition": "1. udgave",
+          "hostPublication": null,
           "isbn": "9788711407134",
           "language": Array [
             "Dansk",
