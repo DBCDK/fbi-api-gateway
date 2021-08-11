@@ -44,7 +44,7 @@ export default {
       agencyId: process.env.WORKSERVICE_AGENCY_ID || "190101",
       profile: process.env.WORKSERVICE_PROFILE || "default",
       ttl: process.env.WORKSERVICE_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
-      prefix: process.env.WORKSERVICE_PREFIX || "workservice-1",
+      prefix: process.env.WORKSERVICE_PREFIX || "workservice-10",
     },
     redis: {
       host: process.env.REDIS_HOST || "127.0.0.1",

@@ -33,7 +33,6 @@ export function load(workId) {
             ],
           },
         ],
-
         subjects: [
           { type: "dcterms:LCSH", value: "krimi" },
           { type: "genre", value: "krimi" },
@@ -63,6 +62,7 @@ export function load(workId) {
         ],
         title: "min kamp",
         workId: "work-of:870970-basis:28329490",
+        workTypes: ["literature"],
       },
     },
   };
