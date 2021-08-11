@@ -145,6 +145,7 @@ function flattenRecords(work) {
   // availability, and use when sending order requests.
   // We may need to rethink this if there are cases where we should
   // use another pid (or maybe we need to access all pids in a group)
+
   const primaryRecords = work.groups.map((group) => {
     return (
       group.records.find((record) => record.id.startsWith("870970-basis")) ||
@@ -154,7 +155,11 @@ function flattenRecords(work) {
 
   // Walk through every record
   primaryRecords.forEach((record) => {
-    records.push({ ...record, materialType: record.types.join(" / ") });
+    records.push({
+      ...record,
+      materialType: record.types.join(" / "),
+      workTypes: work.workTypes,
+    });
   });
 
   return sortBy(records, "materialType");
