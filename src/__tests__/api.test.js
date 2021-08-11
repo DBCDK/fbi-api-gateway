@@ -294,6 +294,7 @@ describe("API test cases", () => {
                   value
                 }
                 title
+                workTypes
               }
           }
         `,

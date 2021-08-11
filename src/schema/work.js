@@ -11,6 +11,22 @@ import { getPageDescription } from "../utils/utils";
  * The Work type definition
  */
 export const typeDef = `
+  enum WorkType {
+    analysis,
+    article,
+    bookdescription,
+    game,
+    literature,
+    map,
+    movie,
+    music,
+    none
+    periodica,
+    portrait,
+    review,
+    sheetmusic,
+    track,
+  }
   type MaterialType {
     materialType: String!
     cover: Cover!
@@ -30,6 +46,7 @@ export const typeDef = `
     series: Series
     seo: SEO!
     subjects: [Subject!]!
+    workTypes: [WorkType!]!
   }
 `;
 
