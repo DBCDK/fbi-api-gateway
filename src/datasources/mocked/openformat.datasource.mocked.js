@@ -905,6 +905,571 @@ export function load(pid) {
         tracks: [null, null],
       },
     },
+    "870971-anmeld:47403855": {
+      admindata: {
+        pid: {
+          $: "870971-anmeld:47403855",
+        },
+        creationDate: {
+          $: "2019-11-15",
+        },
+        requestButton: {
+          $: "true",
+        },
+      },
+      details: {
+        articleData: {
+          article: {
+            year: {
+              $: "2019",
+            },
+            volume: {
+              $: "2019-11-15",
+            },
+            pages: {
+              $: "Sektion 3, s. 12",
+            },
+            author: {
+              $: "Reinholdt, Merete",
+            },
+            title: {
+              $: "[Anmeldelse]",
+            },
+          },
+        },
+        articleIssn: {
+          value: {
+            $: "0106-4223",
+          },
+        },
+        catalogcode: {
+          value: {
+            $: "DAN201947",
+          },
+        },
+        creators: {
+          value: {
+            functionCode: {
+              $: "rev",
+            },
+            functionSingular: {
+              $: "anmelder",
+            },
+            functionPlural: {
+              $: "anmeldere",
+            },
+            searchCode: {
+              $: "phrase.creator",
+            },
+            searchString: {
+              $: "Merete Reinholdt",
+            },
+            name: {
+              $: "Merete Reinholdt",
+            },
+          },
+        },
+        hostPublication: {
+          value: {
+            $: "I: Berlingske tidende, 2019-11-15, 2019",
+          },
+          title: {
+            $: "Berlingske tidende",
+          },
+          details: {
+            $: "2019-11-15",
+          },
+        },
+        isText: {
+          value: {
+            $: "a",
+          },
+        },
+        language: {
+          $: "Dansk",
+        },
+        level: {
+          value: {
+            $: "Gymnasieniveau ; Alment niveau",
+          },
+        },
+        materialType: {
+          $: "Anmeldelse",
+        },
+        pagination: {
+          value: {
+            $: "Sektion 3, s. 12",
+          },
+        },
+        publication: {
+          publicationYear: {
+            $: "2019",
+          },
+          format: {
+            $: "Sektion 3, s. 12",
+          },
+        },
+        reviewRatings: {
+          $: "3/6",
+        },
+        title: {
+          value: {
+            $: "[Anmeldelse]",
+          },
+        },
+        tracks: [null, null],
+        inLanguage: {
+          $: "da",
+        },
+      },
+    },
+    "870971-anmeld:47403898": {
+      admindata: {
+        pid: {
+          $: "870971-anmeld:47403898",
+        },
+        creationDate: {
+          $: "2019-11-15",
+        },
+        requestButton: {
+          $: "true",
+        },
+      },
+      details: {
+        articleData: {
+          article: {
+            year: {
+              $: "2019",
+            },
+            volume: {
+              $: "2019-11-15",
+            },
+            pages: {
+              $: "Sektion 1 (østudgave), s. 21",
+            },
+            author: {
+              $: "Sauerberg, Lars Ole",
+            },
+            title: {
+              $: "[Anmeldelse]",
+            },
+          },
+        },
+        articleIssn: {
+          value: {
+            $: "0109-1182",
+          },
+        },
+        catalogcode: {
+          value: {
+            $: "DAN201947",
+          },
+        },
+        creators: {
+          value: {
+            functionCode: {
+              $: "rev",
+            },
+            functionSingular: {
+              $: "anmelder",
+            },
+            functionPlural: {
+              $: "anmeldere",
+            },
+            searchCode: {
+              $: "phrase.creator",
+            },
+            searchString: {
+              $: "Lars Ole Sauerberg",
+            },
+            name: {
+              $: "Lars Ole Sauerberg",
+            },
+          },
+        },
+        hostPublication: {
+          value: {
+            $: "I: Jyllands-posten, 2019-11-15, 2019",
+          },
+          title: {
+            $: "Jyllands-posten",
+          },
+          details: {
+            $: "2019-11-15",
+          },
+        },
+        isText: {
+          value: {
+            $: "a",
+          },
+        },
+        language: {
+          $: "Dansk",
+        },
+        level: {
+          value: {
+            $: "Gymnasieniveau ; Alment niveau",
+          },
+        },
+        materialType: {
+          $: "Anmeldelse",
+        },
+        pagination: {
+          value: {
+            $: "Sektion 1 (østudgave), s. 21",
+          },
+        },
+        publication: {
+          publicationYear: {
+            $: "2019",
+          },
+          format: {
+            $: "Sektion 1 (østudgave), s. 21",
+          },
+        },
+        reviewRatings: {
+          $: "3/6",
+        },
+        title: {
+          value: {
+            $: "[Anmeldelse]",
+          },
+        },
+        tracks: [null, null],
+        inLanguage: {
+          $: "da",
+        },
+      },
+    },
+    "870971-anmeld:47413281": {
+      admindata: {
+        pid: {
+          $: "870971-anmeld:47413281",
+        },
+        creationDate: {
+          $: "2019-11-18",
+        },
+        requestButton: {
+          $: "true",
+        },
+      },
+      details: {
+        articleData: {
+          article: {
+            year: {
+              $: "2019",
+            },
+            volume: {
+              $: "2019-11-16",
+            },
+            pages: {
+              $: "Sektion 4, s. 12",
+            },
+            author: {
+              $: "Frank Rasmussen, Nanna",
+            },
+            title: {
+              $: "[Anmeldelse]",
+            },
+          },
+        },
+        articleIssn: {
+          value: {
+            $: "0907-1814",
+          },
+        },
+        catalogcode: {
+          value: {
+            $: "DAN201948",
+          },
+        },
+        creators: {
+          value: {
+            functionCode: {
+              $: "rev",
+            },
+            functionSingular: {
+              $: "anmelder",
+            },
+            functionPlural: {
+              $: "anmeldere",
+            },
+            searchCode: {
+              $: "phrase.creator",
+            },
+            searchString: {
+              $: "Nanna Frank Rasmussen",
+            },
+            name: {
+              $: "Nanna Frank Rasmussen",
+            },
+          },
+        },
+        hostPublication: {
+          value: {
+            $: "I: Politiken, 2019-11-16, 2019",
+          },
+          title: {
+            $: "Politiken",
+          },
+          details: {
+            $: "2019-11-16",
+          },
+        },
+        isText: {
+          value: {
+            $: "a",
+          },
+        },
+        language: {
+          $: "Dansk",
+        },
+        level: {
+          value: {
+            $: "Gymnasieniveau ; Alment niveau",
+          },
+        },
+        materialType: {
+          $: "Anmeldelse",
+        },
+        pagination: {
+          value: {
+            $: "Sektion 4, s. 12",
+          },
+        },
+        publication: {
+          publicationYear: {
+            $: "2019",
+          },
+          format: {
+            $: "Sektion 4, s. 12",
+          },
+        },
+        reviewRatings: {
+          $: "2/6",
+        },
+        title: {
+          value: {
+            $: "[Anmeldelse]",
+          },
+        },
+        tracks: [null, null],
+        inLanguage: {
+          $: "da",
+        },
+      },
+    },
+    "870976-anmeld:129549769": {
+      admindata: {
+        pid: {
+          $: "870976-anmeld:129549769",
+        },
+        creationDate: {
+          $: "2019-11-05",
+        },
+        requestButton: {
+          $: "true",
+        },
+      },
+      details: {
+        catalogcode: {
+          value: {
+            $: "LEK201948 LEX201947",
+          },
+        },
+        creators: {
+          value: {
+            functionCode: {
+              $: "rev",
+            },
+            functionSingular: {
+              $: "anmelder",
+            },
+            functionPlural: {
+              $: "anmeldere",
+            },
+            searchCode: {
+              $: "phrase.creator",
+            },
+            searchString: {
+              $: "Carsten Güllich-Nørby",
+            },
+            name: {
+              $: "Carsten Güllich-Nørby",
+            },
+          },
+        },
+        language: {
+          $: "Dansk",
+        },
+        materialType: {
+          $: "Anmeldelse",
+        },
+        notes: {
+          value: {
+            $: "Bedemandens datter",
+          },
+        },
+        publication: null,
+        tracks: [null, null],
+        creatormatvurd: {
+          value: {
+            searchString: {
+              $: "Güllich-Nørby+Carsten",
+            },
+            name: {
+              $: "Carsten Güllich-Nørby",
+            },
+          },
+        },
+        fulltextmatvurd: {
+          value: {
+            about: {
+              text: {
+                $:
+                  "Til dig som er vant til at sluge Sara Blædels krimier er her godt nyt. Louise Rick er atter efterforskende hovedperson. På Bornholm findes liget af en ung pige i en klippesprække i Ekkodalen. Hun forsvandt sporløst på en lejrskoletur i 1995",
+              },
+            },
+            description: {
+              text: {
+                $:
+                  "Louise Rick er egentlig på orlov fra jobbet i drabsafdelingen, men er hjemme fra sin jordomrejse, da hendes bror forsøger at begå selvmord efter at hans kone, Trine, endnu engang har forladt ham og parrets to børn. Susan hed den unge pige, der blev fundet i Ekkodalen. Da Louise kigger Trines ting igennem opdager hun måske en sammenhæng. Et foto afslører, at Trine var med på den famøse lejrskoletur og altså klassekammerat med Susan. Samtidig opsøger Camilla Lind fra Morgenavisen en anden af Susans gamle klassekammerater, Pia, for at opdage hun lige har begået selvmord. Er der en sammenhæng mellem det hele, og kan Louise måske opklare et ældre mordmysterium på Bornholm? Det er krimi nr. 10 med Louise Rick som hovedperson og efterforsker. Sara Blædel har senest skrevet trilogien om skoleportrætfotografen Ilka begyndende med ",
+              },
+              faust: {
+                $: "52408725",
+              },
+              title: {
+                $: "Bedemandens datter",
+              },
+            },
+            evaluation: {
+              text: {
+                $:
+                  "Underholdende krimi på niveau med de andre i serien. Helt sikkert guf for de mange som sluger Blædel og som holder af en krimi, som foregår i Danmark",
+              },
+            },
+            other: {
+              text: {
+                $:
+                  "Matcher krimier af Elsebeth Egholm og Liza Marklund, hvor hovedpersonen også ofte blander efterforskning og privatliv sammen med store konsekvenser",
+              },
+            },
+          },
+        },
+      },
+    },
+    "870971-anmeld:47415543": {
+      admindata: {
+        pid: {
+          $: "870971-anmeld:47415543",
+        },
+        creationDate: {
+          $: "2019-11-18",
+        },
+        requestButton: {
+          $: "false",
+        },
+      },
+      details: {
+        articleData: {
+          article: {
+            year: {
+              $: "2019",
+            },
+            volume: {
+              $: "2019-11-15",
+            },
+            author: {
+              $: "Bæhr, Anne Klara",
+            },
+            title: {
+              $: "[Anmeldelse]",
+            },
+          },
+        },
+        articleIssn: {
+          value: {
+            $: "1901-3167",
+          },
+        },
+        catalogcode: {
+          value: {
+            $: "DAN201948 ARK201948",
+          },
+        },
+        creators: {
+          value: {
+            functionCode: {
+              $: "rev",
+            },
+            functionSingular: {
+              $: "anmelder",
+            },
+            functionPlural: {
+              $: "anmeldere",
+            },
+            searchCode: {
+              $: "phrase.creator",
+            },
+            searchString: {
+              $: "Anne Klara Bæhr",
+            },
+            name: {
+              $: "Anne Klara Bæhr",
+            },
+          },
+        },
+        hostPublication: {
+          value: {
+            $: "I: Litteratursiden.dk [online], 2019-11-15, 2019",
+          },
+          title: {
+            $: "Litteratursiden.dk online",
+          },
+          details: {
+            $: "2019-11-15",
+          },
+        },
+        isText: {
+          value: {
+            $: "a",
+          },
+        },
+        language: {
+          $: "Dansk",
+        },
+        level: {
+          value: {
+            $: "Gymnasieniveau ; Alment niveau",
+          },
+        },
+        materialType: {
+          $: "Anmeldelse",
+        },
+        onlineAccess: {
+          value: {
+            link: {
+              $: "https://litteratursiden.dk/boeger/pigen-under-traeet-krimi",
+            },
+          },
+        },
+        publication: {
+          publicationYear: {
+            $: "2019",
+          },
+        },
+        title: {
+          value: {
+            $: "[Anmeldelse]",
+          },
+        },
+        tracks: [null, null],
+        inLanguage: {
+          $: "da",
+        },
+      },
+    },
   };
+
   return data[pid];
 }
