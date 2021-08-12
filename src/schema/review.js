@@ -16,6 +16,7 @@ type ReviewInfomedia {
   date: String!
   media: String!
   rating: String!
+  content: InfomediaArticleContent!
 }
 type ReviewLitteratursiden {
   author: String!
@@ -108,6 +109,18 @@ export const resolvers = {
         getArray(parent, "details.reviewRatings").map((entry) => entry.$)[0] ||
         ""
       );
+    },
+    async content(parent, args, context, info) {
+      if (parent.admindata && parent.admindata.pid) {
+        const pid = parent.admindata.pid.$;
+
+        const article = await context.datasources.infomedia.load({
+          pid,
+          accessToken: context.accessToken,
+        });
+
+        return article[0];
+      }
     },
   },
   ReviewLitteratursiden: {

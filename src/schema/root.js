@@ -32,8 +32,12 @@ type Mutation {
  */
 export const resolvers = {
   Query: {
-    manifestation(parent, args, context, info) {
-      return { id: args.pid };
+    async manifestation(parent, args, context, info) {
+      // Fetch work to get workTypes (used by the articleContent)
+      const id = `work-of:${args.pid}`;
+      const { work } = await context.datasources.workservice.load(id);
+
+      return { id: args.pid, workTypes: work.workTypes };
     },
     monitor(parent, args, context, info) {
       try {

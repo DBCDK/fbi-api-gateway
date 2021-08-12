@@ -18,6 +18,7 @@ export const typeDef = `
       note: String!
     }
     type WorkManifestation {
+      articleContent: InfomediaArticleContent
       content: [String!]
       cover: Cover! 
       creators: [Creator!]!
@@ -60,6 +61,19 @@ export const typeDef = `
  */
 export const resolvers = {
   WorkManifestation: {
+    async articleContent(parent, args, context, info) {
+      const isArticle = parent.workTypes.includes("article");
+
+      if (isArticle) {
+        const article = await context.datasources.infomedia.load({
+          pid: parent.id,
+          accessToken: context.accessToken,
+        });
+        return article[0];
+      }
+      return null;
+    },
+
     async content(parent, args, context, info) {
       if (parent.content) {
         return parent.content;

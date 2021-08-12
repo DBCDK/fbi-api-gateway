@@ -183,6 +183,10 @@ describe("API test cases", () => {
                 description
                 fullTitle
                 manifestations {
+                  articleContent {
+                    id
+                    html
+                  }
                   content
                   creators {
                     functionCode
@@ -223,6 +227,10 @@ describe("API test cases", () => {
                 materialTypes {
                   materialType
                   manifestations {
+                    articleContent {
+                      id
+                      html
+                    }
                     content
                     creators {
                       functionCode
@@ -259,6 +267,10 @@ describe("API test cases", () => {
                     date
                     media
                     rating
+                    content {
+                      id
+                      html
+                    }
                   }
                   ... on ReviewLitteratursiden {
                     author
@@ -304,6 +316,75 @@ describe("API test cases", () => {
         datasources: createMockedDataLoaders(),
       },
     });
+    expect(result).toMatchSnapshot();
+  });
+
+  test("Work -> articleContent: infomedia article returns content", async () => {
+    const result = await performTestQuery({
+      query: `
+          query ($id: String!) {
+            work(id: $id) {
+              title
+              manifestations {
+                articleContent {
+                  id
+                  html
+                }
+              }
+            }
+          }
+        `,
+      variables: { id: "work-of:870971-avis:34591016" },
+      context: { datasources: createMockedDataLoaders() },
+    });
+
+    expect(result).toMatchSnapshot();
+  });
+
+  test("Manifestation -> articleContent: infomedia article returns content", async () => {
+    const result = await performTestQuery({
+      query: `
+          query ($pid: String!) {
+            manifestation(pid: $pid) {
+              articleContent {
+                id
+                html
+              }
+            }
+          }
+        `,
+      variables: { pid: "870971-avis:34591016" },
+      context: { datasources: createMockedDataLoaders() },
+    });
+
+    expect(result).toMatchSnapshot();
+  });
+
+  test("Work -> review: infomedia review returns content", async () => {
+    const result = await performTestQuery({
+      query: `
+          query ($id: String!) {
+            work(id: $id) {
+              reviews {
+                __typename
+                ... on ReviewInfomedia {
+                  author
+                  date
+                  media
+                  rating
+                  content {
+                    id
+                    html
+                  }
+                }
+              }
+            }
+          }
+        `,
+      variables: { id: "work-of:870970-basis:47051649" },
+      context: { datasources: createMockedDataLoaders() },
+    });
+
     expect(result).toMatchSnapshot();
   });
 
