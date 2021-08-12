@@ -47,6 +47,7 @@ export const typeDef = `
       checkorder(pickupBranch: String!): CheckOrderPolicy
       admin: AdminData
       inLanguage: String
+      usedLanguage: [String]
     }
   `;
 
@@ -317,6 +318,19 @@ export const resolvers = {
 
     async admin(parent, args, context, info) {
       return { pid: parent.id };
+    },
+
+    async usedLanguage(parent, args, context, info) {
+      const manifestation = await context.datasources.openformat.load(
+          parent.id
+      );
+      return (
+          (manifestation &&
+              manifestation.details &&
+              manifestation.details.usedLanguage &&
+      getArray(manifestation, "details.usedLanguage").map(
+          (entry) => entry.$
+      )));
     },
 
     async inLanguage(parent, args, context, info) {

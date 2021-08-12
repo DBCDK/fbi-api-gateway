@@ -108,7 +108,7 @@
       "materialType": "dkabm.dc:type.dkdcplus:BibDK-Type",
       "notes": [
         {
-          "value": "{notes}"
+          "value": "{note}"
         }
       ],
       "noteOnlineAccess": [
@@ -244,7 +244,8 @@
           "value": "{full_text}"
         }
       ],
-      "inLanguage": "{bibdk_language_code}"
+      "inLanguage": "{bibdk_language_code}",
+      "usedLanguage": "{bibdk_used_language}"
     }
   }
 }
