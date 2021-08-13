@@ -48,7 +48,8 @@ export const typeDef = `
       checkorder(pickupBranch: String!): CheckOrderPolicy
       admin: AdminData
       inLanguage: String
-      usedLanguage: [String]
+      usedLanguage: [String],
+      physicalDescriptionArticles: String
     }
   `;
 
@@ -336,15 +337,14 @@ export const resolvers = {
 
     async usedLanguage(parent, args, context, info) {
       const manifestation = await context.datasources.openformat.load(
-          parent.id
+        parent.id
       );
       return (
-          (manifestation &&
-              manifestation.details &&
-              manifestation.details.usedLanguage &&
-      getArray(manifestation, "details.usedLanguage").map(
-          (entry) => entry.$
-      )));
+        manifestation &&
+        manifestation.details &&
+        manifestation.details.usedLanguage &&
+        getArray(manifestation, "details.usedLanguage").map((entry) => entry.$)
+      );
     },
 
     async inLanguage(parent, args, context, info) {
@@ -357,6 +357,18 @@ export const resolvers = {
           manifestation.details.inLanguage &&
           manifestation.details.inLanguage.$) ||
         "da"
+      );
+    },
+    async physicalDescriptionArticles(parent, args, context, info) {
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      return (
+        (manifestation &&
+          manifestation.details &&
+          manifestation.details.physicalDescriptionArticles &&
+          manifestation.details.physicalDescriptionArticles.$) ||
+        null
       );
     },
   },
