@@ -305,6 +305,14 @@ describe("API test cases", () => {
                   type
                   value
                 }
+                series {
+                  part
+                  title
+                  works {
+                    id
+                    title
+                  }
+                }
                 title
                 workTypes
               }
@@ -382,6 +390,29 @@ describe("API test cases", () => {
           }
         `,
       variables: { id: "work-of:870970-basis:47051649" },
+      context: { datasources: createMockedDataLoaders() },
+    });
+
+    expect(result).toMatchSnapshot();
+  });
+
+  test("Work -> series: Get series info", async () => {
+    const result = await performTestQuery({
+      query: `
+          query ($id: String!) {
+            work(id: $id) {
+              series {
+                part
+                title
+                works {
+                  id
+                  title
+                }
+              }
+            }
+          }
+        `,
+      variables: { id: "work-of:870970-basis:52557240" },
       context: { datasources: createMockedDataLoaders() },
     });
 
