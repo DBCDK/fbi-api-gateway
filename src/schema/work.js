@@ -115,7 +115,16 @@ export const resolvers = {
 
       return reviews;
     },
-    series(parent, args, context, info) {
+    async series(parent, args, context, info) {
+      // Check if requested workId is a part of a series
+      const data = await context.datasources.series.load({
+        workId: parent.workId,
+      });
+
+      if (!data) {
+        return null;
+      }
+
       return parent;
     },
     async seo(parent, args, context, info) {
