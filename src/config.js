@@ -46,6 +46,15 @@ export default {
       ttl: process.env.WORKSERVICE_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.WORKSERVICE_PREFIX || "workservice-10",
     },
+    series: {
+      url:
+        process.env.SERIES_URL ||
+        "http://series-service.cisterne.svc.cloud.dbc.dk/v1/api/series-members",
+      agencyId: process.env.SERIES_AGENCY_ID || "190101",
+      profile: process.env.SERIES_PROFILE || "default",
+      ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
+      prefix: process.env.SERIES_PREFIX || "seriesservice-1",
+    },
     redis: {
       host: process.env.REDIS_HOST || "127.0.0.1",
       port: process.env.REDIS_PORT || "6379",

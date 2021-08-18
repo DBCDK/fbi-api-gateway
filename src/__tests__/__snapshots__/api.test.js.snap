@@ -433,6 +433,7 @@ Object {
         "description": "Lån min kamp som bog eller ebog. Bestil, reserver, lån fra alle danmarks biblioteker. Afhent på dit lokale bibliotek eller find online.",
         "title": "min kamp af karl ove knausgård",
       },
+      "series": null,
       "subjects": Array [
         Object {
           "type": "dcterms:LCSH",
@@ -590,6 +591,33 @@ Object {
           "__typename": "ReviewMatVurd",
         },
       ],
+    },
+  },
+}
+`;
+
+exports[`API test cases Work -> series: Get series info 1`] = `
+Object {
+  "data": Object {
+    "work": Object {
+      "series": Object {
+        "part": "1",
+        "title": "De syv søstre-serien",
+        "works": Array [
+          Object {
+            "id": "work-of:870970-basis:52557240",
+            "title": "De syv søstre",
+          },
+          Object {
+            "id": "work-of:870970-basis:53247768",
+            "title": "Stormsøsteren",
+          },
+          Object {
+            "id": "work-of:870970-basis:53557791",
+            "title": "Skyggesøsteren",
+          },
+        ],
+      },
     },
   },
 }

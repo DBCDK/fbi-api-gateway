@@ -115,8 +115,18 @@ export const resolvers = {
 
       return reviews;
     },
-    series(parent, args, context, info) {
-      return parent;
+    async series(parent, args, context, info) {
+      // Continue if series-service contains series data
+      const data = await context.datasources.series.load({
+        workId: parent.workId,
+      });
+
+      if (data) {
+        return parent;
+      }
+
+      // If no data available, set series to null
+      return null;
     },
     async seo(parent, args, context, info) {
       // Get materialTypes via resolver

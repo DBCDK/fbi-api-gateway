@@ -9,9 +9,9 @@
  */
 export const typeDef = `
 type Series {
-  part: Int!
-  title: String!
-  works: [Work!]
+  part: String
+  title: String
+  works: [Work!]!
 }`;
 
 /**
@@ -21,29 +21,47 @@ type Series {
  */
 export const resolvers = {
   Series: {
-    part(parent, args, context, info) {
-      return parent.part || 1;
+    async part(parent, args, context, info) {
+      // Return if the part numbers is given by the work-service
+      if (parent.series && parent.series.instalment) {
+        return parent.series.instalment;
+      }
+
+      // If not, return from series-service index
+      const data = await context.datasources.series.load({
+        workId: parent.workId,
+      });
+
+      if (data && data.seriesMembers) {
+        return data.seriesMembers.indexOf(parent.workId) + 1;
+      }
+
+      return null;
     },
     title(parent, args, context, info) {
-      return "Krimiserien med Kate Burkholder";
+      // Return series title from work-service
+      if (parent.series && parent.series.title) {
+        return parent.series.title;
+      }
+
+      return null;
     },
     async works(parent, args, context, info) {
-      // For now we use these works to be deisplayed in series
-      // This will be fixed when we get a series service
-      const works = await Promise.all(
-        [
-          "work-of:870970-basis:51438221",
-          "work-of:870970-basis:50980510",
-          "work-of:870970-basis:46095464",
-          "work-of:870970-basis:46090802",
-          "work-of:870970-basis:51578120",
-          "work-of:870970-basis:51965906",
-          "work-of:870970-basis:52649153",
-        ].map(
-          async (id) => (await context.datasources.workservice.load(id)).work
-        )
-      );
-      return works.map((entry, index) => ({ ...entry, part: index + 1 }));
+      const data = await context.datasources.series.load({
+        workId: parent.workId,
+      });
+
+      if (data && data.seriesMembers) {
+        const works = await Promise.all(
+          data.seriesMembers.map(
+            async (id) => (await context.datasources.workservice.load(id)).work
+          )
+        );
+
+        return works.map((entry, index) => ({ ...entry, part: index + 1 }));
+      }
+
+      return [];
     },
   },
 };

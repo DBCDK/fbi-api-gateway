@@ -371,6 +371,69 @@ export function load(workId) {
         workTypes: ["literature"],
       },
     },
+    "work-of:870970-basis:52557240": {
+      trackingId: "2ec4023b-0f2e-42da-a546-a51055cc9f32",
+      work: {
+        creators: [
+          {
+            type: "aut",
+            value: "Lucinda Riley",
+          },
+        ],
+        description:
+          "Pa Salt dør og hans seks adoptivdøtre står tilbage med muligheden for at finde deres ophav",
+        fullTitle: "De syv søstre : Maias historie",
+        series: {
+          instalment: "1",
+          title: "De syv søstre-serien",
+        },
+        title: "De syv søstre",
+        workId: "work-of:870970-basis:52557240",
+        workTypes: ["literature"],
+      },
+    },
+    "work-of:870970-basis:53247768": {
+      trackingId: "3dace99e-6e14-47ed-b434-aa745f60b9a0",
+      work: {
+        creators: [
+          {
+            type: "aut",
+            value: "Lucinda Riley",
+          },
+        ],
+        description:
+          "Da Allys adoptivfar Pa Salt dør, får Ally og hendes fem søstre hver især en ledetråd til at finde deres biologiske ophav. I Stormsøsteren føres Ally til Norge, hvor hendes historie er viklet ind i en stor slægt af klassiske musikeres historie",
+        fullTitle: "Stormsøsteren (mp3)",
+        series: {
+          instalment: "2. bind",
+          title: "De syv søstre-serien",
+        },
+        title: "Stormsøsteren",
+        workId: "work-of:870970-basis:53247768",
+        workTypes: ["literature"],
+      },
+    },
+    "work-of:870970-basis:53557791": {
+      trackingId: "b1087423-eeb0-4f6c-ac43-1973b4780fda",
+      work: {
+        creators: [
+          {
+            type: "aut",
+            value: "Lucinda Riley",
+          },
+        ],
+        description:
+          "Star er adopteret og får af sin adoptivfar en ledetråd til at finde sine biologiske forældre. Hendes vej krydser en gammel engelsk slægt, som har en fortryllende historie at fortælle",
+        fullTitle: "Skyggesøsteren",
+        series: {
+          instalment: "3",
+          title: "De syv søstre-serien",
+        },
+        title: "Skyggesøsteren",
+        workId: "work-of:870970-basis:53557791",
+        workTypes: ["literature"],
+      },
+    },
   };
 
   return data[workId];
