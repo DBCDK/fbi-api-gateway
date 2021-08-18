@@ -50,6 +50,7 @@ export const typeDef = `
       inLanguage: String
       usedLanguage: [String],
       physicalDescriptionArticles: String
+      volume: String
     }
   `;
 
@@ -368,6 +369,18 @@ export const resolvers = {
           manifestation.details &&
           manifestation.details.physicalDescriptionArticles &&
           manifestation.details.physicalDescriptionArticles.$) ||
+        null
+      );
+    },
+    async volume(parent, args, context, info) {
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      return (
+        (manifestation &&
+          manifestation.details &&
+          manifestation.details.volume &&
+          manifestation.details.volume.$) ||
         null
       );
     },
