@@ -43,7 +43,7 @@ export const typeDef = `
     materialTypes: [MaterialType!]!
     path: [String!]!
     reviews: [Review!]!
-    series: Series!
+    series: Series
     seo: SEO!
     subjects: [Subject!]!
     workTypes: [WorkType!]!
@@ -116,13 +116,6 @@ export const resolvers = {
       return reviews;
     },
     async series(parent, args, context, info) {
-      return parent;
-
-      // Continue if parent contains series data
-      if (parent.series) {
-        return parent;
-      }
-
       // Continue if series-service contains series data
       const data = await context.datasources.series.load({
         workId: parent.workId,

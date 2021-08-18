@@ -11,7 +11,7 @@ export const typeDef = `
 type Series {
   part: String
   title: String
-  works: [Work]
+  works: [Work!]!
 }`;
 
 /**
@@ -61,7 +61,7 @@ export const resolvers = {
         return works.map((entry, index) => ({ ...entry, part: index + 1 }));
       }
 
-      return null;
+      return [];
     },
   },
 };

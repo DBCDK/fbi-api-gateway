@@ -433,11 +433,7 @@ Object {
         "description": "Lån min kamp som bog eller ebog. Bestil, reserver, lån fra alle danmarks biblioteker. Afhent på dit lokale bibliotek eller find online.",
         "title": "min kamp af karl ove knausgård",
       },
-      "series": Object {
-        "part": null,
-        "title": null,
-        "works": null,
-      },
+      "series": null,
       "subjects": Array [
         Object {
           "type": "dcterms:LCSH",

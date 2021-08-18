@@ -1,11 +1,9 @@
 import request from "superagent";
 import config from "../config";
 
-export async function load({ workId, trackingId = null }) {
-  const url = config.datasources.series.url;
-  const agencyId = config.datasources.series.agencyId;
-  const profile = config.datasources.series.profile;
+const { url, agencyId, profile, ttl, prefix } = config.datasources.series;
 
+export async function load({ workId, trackingId = null }) {
   // trackingId can be added to the params by adding /${trackingId} to the end
   const params = `${agencyId}/${profile}/${workId}`;
 
@@ -17,3 +15,11 @@ export async function load({ workId, trackingId = null }) {
     return null;
   }
 }
+
+export const options = {
+  redis: {
+    prefix,
+    ttl,
+    staleWhileRevalidate: 60 * 60 * 24 * 7, // 7 days
+  },
+};
