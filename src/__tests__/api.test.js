@@ -183,10 +183,6 @@ describe("API test cases", () => {
                 description
                 fullTitle
                 manifestations {
-                  articleContent {
-                    id
-                    html
-                  }
                   content
                   creators {
                     functionCode
@@ -208,8 +204,16 @@ describe("API test cases", () => {
                   materialType
                   notes
                   onlineAccess {
-                    url
-                    note
+                    ... on UrlReference {
+                      url
+                      origin
+                      note
+                    }
+                    ... on HtmlContent {
+                      id
+                      origin
+                      html
+                    }
                   }
                   originals
                   originalTitle
@@ -227,10 +231,6 @@ describe("API test cases", () => {
                 materialTypes {
                   materialType
                   manifestations {
-                    articleContent {
-                      id
-                      html
-                    }
                     content
                     creators {
                       functionCode
@@ -248,8 +248,16 @@ describe("API test cases", () => {
                     materialType
                     notes
                     onlineAccess {
-                      url
-                      note
+                      ... on UrlReference {
+                        url
+                        origin
+                        note
+                      }
+                      ... on HtmlContent {
+                        id
+                        origin
+                        html
+                      }
                     }
                     originals
                     originalTitle
@@ -327,41 +335,25 @@ describe("API test cases", () => {
     expect(result).toMatchSnapshot();
   });
 
-  test("Work -> articleContent: infomedia article returns content", async () => {
+  test("Manifestation -> onlineAccess returns HtmlContent from infomedia", async () => {
     const result = await performTestQuery({
       query: `
-          query ($id: String!) {
-            work(id: $id) {
-              title
-              manifestations {
-                articleContent {
+        query ($id: String!) {
+          work(id: $id) {
+            title
+            manifestations {
+              onlineAccess {
+                ... on HtmlContent {
                   id
+                  origin
                   html
                 }
               }
             }
           }
+        }
         `,
       variables: { id: "work-of:870971-avis:34591016" },
-      context: { datasources: createMockedDataLoaders() },
-    });
-
-    expect(result).toMatchSnapshot();
-  });
-
-  test("Manifestation -> articleContent: infomedia article returns content", async () => {
-    const result = await performTestQuery({
-      query: `
-          query ($pid: String!) {
-            manifestation(pid: $pid) {
-              articleContent {
-                id
-                html
-              }
-            }
-          }
-        `,
-      variables: { pid: "870971-avis:34591016" },
       context: { datasources: createMockedDataLoaders() },
     });
 

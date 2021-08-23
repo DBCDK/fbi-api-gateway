@@ -14,7 +14,6 @@ Object {
       "fullTitle": "Min kamp : roman. 1. bog",
       "manifestations": Array [
         Object {
-          "articleContent": null,
           "availability": Object {
             "expectedDelivery": "2021-05-15T00:00:00+02:00",
             "orderPossible": false,
@@ -55,7 +54,7 @@ Object {
           ],
           "materialType": "Bog",
           "notes": Array [],
-          "onlineAccess": null,
+          "onlineAccess": Array [],
           "originalTitle": "",
           "originals": Array [
             "Gengivelse af bogen",
@@ -69,7 +68,6 @@ Object {
           "shelf": "skønlitteratur",
         },
         Object {
-          "articleContent": null,
           "availability": Object {
             "expectedDelivery": "2021-03-13T00:00:00+02:00",
             "orderPossible": true,
@@ -117,7 +115,7 @@ Object {
           ],
           "materialType": "Bog",
           "notes": Array [],
-          "onlineAccess": null,
+          "onlineAccess": Array [],
           "originalTitle": "",
           "originals": Array [
             "Gengivelse af bogen",
@@ -131,7 +129,6 @@ Object {
           "shelf": "skønlitteratur",
         },
         Object {
-          "articleContent": null,
           "availability": Object {
             "expectedDelivery": "2021-04-14T00:00:00+02:00",
             "orderPossible": false,
@@ -175,10 +172,12 @@ Object {
           "onlineAccess": Array [
             Object {
               "note": "Adgang til lån hos eReolen.dk",
+              "origin": "ereolen.dk",
               "url": "https://ereolen.dk/ting/object/870970-basis:51796527",
             },
             Object {
               "note": "Adgang til titlen på eReolen Go",
+              "origin": "ereolengo.dk",
               "url": "https://ereolengo.dk/ting/object/870970-basis:51796527",
             },
           ],
@@ -199,7 +198,6 @@ Object {
         Object {
           "manifestations": Array [
             Object {
-              "articleContent": null,
               "content": Array [],
               "creators": Array [
                 Object {
@@ -233,7 +231,7 @@ Object {
               ],
               "materialType": "Bog",
               "notes": Array [],
-              "onlineAccess": null,
+              "onlineAccess": Array [],
               "originalTitle": "",
               "originals": Array [
                 "Gengivelse af bogen",
@@ -247,7 +245,6 @@ Object {
               "shelf": "skønlitteratur",
             },
             Object {
-              "articleContent": null,
               "content": Array [
                 "Jeg bor i Hvidovre",
                 "Jeg fremlejer en lejlighed",
@@ -285,7 +282,7 @@ Object {
               ],
               "materialType": "Bog",
               "notes": Array [],
-              "onlineAccess": null,
+              "onlineAccess": Array [],
               "originalTitle": "",
               "originals": Array [
                 "Gengivelse af bogen",
@@ -304,7 +301,6 @@ Object {
         Object {
           "manifestations": Array [
             Object {
-              "articleContent": null,
               "content": Array [],
               "creators": Array [
                 Object {
@@ -341,10 +337,12 @@ Object {
               "onlineAccess": Array [
                 Object {
                   "note": "Adgang til lån hos eReolen.dk",
+                  "origin": "ereolen.dk",
                   "url": "https://ereolen.dk/ting/object/870970-basis:51796527",
                 },
                 Object {
                   "note": "Adgang til titlen på eReolen Go",
+                  "origin": "ereolengo.dk",
                   "url": "https://ereolengo.dk/ting/object/870970-basis:51796527",
                 },
               ],
@@ -457,12 +455,15 @@ Object {
 }
 `;
 
-exports[`API test cases Manifestation -> articleContent: infomedia article returns content 1`] = `
+exports[`API test cases Manifestation -> onlineAccess returns HtmlContent from infomedia 1`] = `
 Object {
   "data": Object {
-    "manifestation": Object {
-      "articleContent": Object {
-        "html": "<div class=\\"infomedia_HeadLine\\">Afghanistan: NATO bruger hvid fosfor i stort omfang mod Taleban</div>
+    "work": Object {
+      "manifestations": Array [
+        Object {
+          "onlineAccess": Array [
+            Object {
+              "html": "<div class=\\"infomedia_HeadLine\\">Afghanistan: NATO bruger hvid fosfor i stort omfang mod Taleban</div>
 <div class=\\"infomedia_SubHeadLine\\">Afghanistan: NATO bruger hvid fosfor i stort omfang mod Taleban</div>
 <div class=\\"infomedia_ByLine\\">Charlotte Aagaard, Anton Geist, Sebastian Gjerding, Emil Rottbøll, ,, ,  Og</div>
 <div class=\\"infomedia_DateLine\\">19. April 2011</div>
@@ -473,8 +474,13 @@ Object {
 <img src=\\"infomedia_logo.gif\\" alt=\\"logo\\"/>
 <p>Alt materiale i Infomedia er omfattet af lov om ophavsret og må ikke kopieres uden særlig tilladelse.</p>
 </div>",
-        "id": "e2a3ae5c",
-      },
+              "id": "e2a3ae5c",
+              "origin": "infomedia",
+            },
+          ],
+        },
+      ],
+      "title": "NATO bruger hvid fosfor i stort omfang mod Taleban",
     },
   },
 }
@@ -487,34 +493,6 @@ Array [
 `;
 
 exports[`API test cases Query complexity validation - no errors 1`] = `Array []`;
-
-exports[`API test cases Work -> articleContent: infomedia article returns content 1`] = `
-Object {
-  "data": Object {
-    "work": Object {
-      "manifestations": Array [
-        Object {
-          "articleContent": Object {
-            "html": "<div class=\\"infomedia_HeadLine\\">Afghanistan: NATO bruger hvid fosfor i stort omfang mod Taleban</div>
-<div class=\\"infomedia_SubHeadLine\\">Afghanistan: NATO bruger hvid fosfor i stort omfang mod Taleban</div>
-<div class=\\"infomedia_ByLine\\">Charlotte Aagaard, Anton Geist, Sebastian Gjerding, Emil Rottbøll, ,, ,  Og</div>
-<div class=\\"infomedia_DateLine\\">19. April 2011</div>
-<div class=\\"infomedia_paper\\">Information</div>
-<div class=\\"infomedia_hedline\\">NATO-koalitionen skyder med hvid fosfor i Afghanistan i langt større omfang, end det hidtil har været kendt. Flere efterretningsrapporter tyder på, at det napalmlignende stof bruges ulovligt som angrebsvåben. Også danske styrker har brugt hvid fosfor i beboede områder</div>
-<div class=\\"infomedia_text\\"><p id=\\"p1\\">Nye lækkede efterretningsrapporter viser et overraskende stort forbrug af hvid fosfor i krigen mod Taleban.</p><p id=\\"p2\\">De knap 15.000 efterretningsrapporter fra koalitionen i Afghanistan, som Information er i besiddelse af, viser eksempler på, at NATO-koalitionens styrker ( ISAF) har skudt 20, 30 og 50 runder af det napalmlignende stof mod ét enkelt oprørsmål.</p><p id=\\"p3\\">Normalt bruges hvid fosfor til at oplyse et krigsområde om natten, udlægge røgslør eller markere et bombemål.</p><p id=\\"p4\\">Men der er adskillige efterretningsrapporter, som tyder på, at hvid fosfor anvendes som angrebsvåben mod Taleban og deres allierede.</p><p id=\\"p5\\">Ifølge FN's Våbenkonvention er bomber med hvid fosfor ulovlige at bruge i krig, når det sker i »tætbebyggede områder«, eller hvis der er risiko for at ramme civile.</p><p id=\\"p6\\">Hvid fosfor som angreb I en af de lækkede rapporter fremgår det, at amerikanske styrker 19. juni 2008 i det østlige Afghanistan har fået øje på en fjendtlig oprørsstilling mellem kl. 9.59 og 12.22 afghansk tid.</p><p id=\\"p7\\">»Som svar affyrede Task Force Eagle 30 gange 120 mm hvid fosfor på denne koordinat og smed to GBU 31 ( bomber) i nærheden af samme koordinat,« hedder det i ISAF-rapport # 06-862. ISAF bekræfter brugen af fosfor som angrebsvåben, men afviser, at det bruges ulovligt.</p><p id=\\"p8\\">Den omfattende brug af hvid fosfor bekymrer menneskerettighedsorganisationer, der mener, at det er problematisk i en krig, der ofte foregår i beboede områder som den Grønne Zone, hvor de danske soldater er udstationeret.</p><p id=\\"p9\\">Peter Vedel Kessing, seniorforsker og folkeretsekspert ved Institut for Menneskerettigheder, mener, at det bør undgås: »I det omfang, hvid fosfor anvendes direkte mod kombattanter i Afghanistan, kan der efter min vurdering være tale om unødvendig og overflødig skadevirkning i forhold til de opnåede militære mål.« De nye dokumenter omfatter også eksempler på, at danske styrker har anvendt hvid fosfor i beboede områder.</p><p id=\\"p10\\">Militærjurist Rolf Verge fra Hærens Operative Kommando bekræfter, at de danske styrker anvender hvid fosfor, men han forsikrer, at der udelukkende er tale om lovlige formål.</p><p id=\\"p11\\">CAA@INFORMATION.DK</p></div>
-<div class=\\"infomedia_logo\\">
-<img src=\\"infomedia_logo.gif\\" alt=\\"logo\\"/>
-<p>Alt materiale i Infomedia er omfattet af lov om ophavsret og må ikke kopieres uden særlig tilladelse.</p>
-</div>",
-            "id": "e2a3ae5c",
-          },
-        },
-      ],
-      "title": "NATO bruger hvid fosfor i stort omfang mod Taleban",
-    },
-  },
-}
-`;
 
 exports[`API test cases Work -> review: infomedia review returns content 1`] = `
 Object {

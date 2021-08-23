@@ -13,12 +13,7 @@ export const typeDef = `
       title: String!
       details: String!
     }
-    type OnlineAccess {
-      url: String!
-      note: String!
-    }
     type WorkManifestation {
-      articleContent: InfomediaArticleContent
       content: [String!]
       cover: Cover! 
       creators: [Creator!]!
@@ -35,7 +30,7 @@ export const typeDef = `
       language: [String!]!
       materialType: String!
       notes: [String!]!
-      onlineAccess: [OnlineAccess!]
+      onlineAccess: [OnlineAccess!]!
       originals: [String!]!
       originalTitle: String
       physicalDescription: String!
@@ -64,19 +59,6 @@ export const typeDef = `
  */
 export const resolvers = {
   WorkManifestation: {
-    async articleContent(parent, args, context, info) {
-      const isArticle = parent.workTypes.includes("article");
-
-      if (isArticle) {
-        const article = await context.datasources.infomedia.load({
-          pid: parent.id,
-          accessToken: context.accessToken,
-        });
-        return article[0];
-      }
-      return null;
-    },
-
     async content(parent, args, context, info) {
       if (parent.content) {
         return parent.content;
@@ -216,20 +198,40 @@ export const resolvers = {
       );
     },
     async onlineAccess(parent, args, context, info) {
-      if (parent.onlineAccess) {
-        return parent.onlineAccess;
+      const result = [];
+
+      // Check if work is an article
+      const isArticle = parent.workTypes.includes("article");
+
+      if (isArticle) {
+        // Get article (HtmlContent) from infomedia
+        const article = await context.datasources.infomedia.load({
+          pid: parent.id,
+          accessToken: context.accessToken,
+        });
+        if (article && article[0]) {
+          result.push(article[0]);
+        }
       }
+
+      // Get onlineAccess from openformat (UrlReferences)
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-      const onlineAccess = getArray(
-        manifestation,
-        "details.onlineAccess.value"
-      ).map((entry) => ({
-        url: (entry.link && entry.link.$) || "",
-        note: (entry.note && entry.note.$) || "",
-      }));
-      return onlineAccess.length > 0 ? onlineAccess : null;
+
+      const data = getArray(manifestation, "details.onlineAccess.value");
+
+      data.forEach((entry) => {
+        if (entry.link) {
+          result.push({
+            url: (entry.link && entry.link.$) || "",
+            note: (entry.note && entry.note.$) || "",
+          });
+        }
+      });
+
+      // Return array containing both HtmlContent and UrlReferences
+      return result;
     },
     async originals(parent, args, context, info) {
       if (parent.originals) {
