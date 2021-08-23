@@ -209,7 +209,9 @@ export const resolvers = {
           pid: parent.id,
           accessToken: context.accessToken,
         });
-        result.push(article[0]);
+        if (article && article[0]) {
+          result.push(article[0]);
+        }
       }
 
       // Get onlineAccess from openformat (UrlReferences)
