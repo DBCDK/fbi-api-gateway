@@ -3,11 +3,7 @@
  *
  */
 
-export const typeDef = `
-  type Library {
-    branches: [Branch!]
-    name: String
-  }
+export const typeDef = `  
   type Branch{
     agencyName: String
     agencyId: String!
@@ -22,18 +18,7 @@ export const typeDef = `
   }`;
 
 export const resolvers = {
-  Library: {
-    async branches(parent, args, context, info) {
-      return (await context.datasources.library.load(parent)).map((branch) => ({
-        ...branch,
-        language: parent.language || "da",
-      }));
-    },
-    async name(parent, args, context, info) {
-      const branches = await context.datasources.library.load(parent);
-      return branches && branches[0] && branches[0].agencyName;
-    },
-  },
+  // @see root.js for datasource::load
   Branch: {
     agencyName(parent, args, context, info) {
       return parent.agencyName;

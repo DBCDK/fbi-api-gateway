@@ -13,6 +13,5 @@ export async function load({ accessToken }) {
     })
   ).body.data;
 
-  // console.log(JSON.stringify(res));
   return res;
 }

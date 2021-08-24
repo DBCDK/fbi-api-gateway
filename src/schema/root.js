@@ -18,7 +18,7 @@ type Query {
   search(q: String!, limit: PaginationLimit!, offset: Int, facets: [FacetFilter]): SearchResponse!
   suggest(q: String!, worktype: WorkType): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
-  library(agencyid: String, language: LanguageCode): Library
+  branches(agencyid: String, language: LanguageCode): [Branch!]!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
 }
 
@@ -66,12 +66,16 @@ export const resolvers = {
         facets: args.facets,
       };
     },
-    async library(parent, args, context, info) {
-      return {
-        agencyid: args.agencyid,
-        language: args.language,
-        accessToken: context.accessToken,
-      };
+    async branches(parent, args, context, info) {
+      return (
+        await context.datasources.library.load({
+          agencyid: args.agencyid,
+          accessToken: context.accessToken,
+        })
+      ).map((branch) => ({
+        ...branch,
+        language: args.language || "da",
+      }));
     },
     async suggest(parent, args, context, info) {
       return { q: args.q, worktype: args.worktype };
