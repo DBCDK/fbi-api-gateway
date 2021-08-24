@@ -9,6 +9,7 @@ export const typeDef = `
     name: String
   }
   type Branch{
+    agencyName: String
     agencyId: String!
     branchId: String!
     name: String!
@@ -34,6 +35,9 @@ export const resolvers = {
     },
   },
   Branch: {
+    agencyName(parent, args, context, info) {
+      return parent.agencyName;
+    },
     agencyId(parent, args, context, info) {
       return parent.agencyId;
     },

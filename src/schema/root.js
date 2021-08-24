@@ -18,7 +18,7 @@ type Query {
   search(q: String!, limit: PaginationLimit!, offset: Int, facets: [FacetFilter]): SearchResponse!
   suggest(q: String!, worktype: WorkType): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
-  library(agencyid: String!, language: LanguageCode): Library
+  library(agencyid: String, language: LanguageCode): Library
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
 }
 
