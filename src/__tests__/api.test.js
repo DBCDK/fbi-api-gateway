@@ -209,9 +209,16 @@ describe("API test cases", () => {
                       origin
                       note
                     }
-                    ... on HtmlContent {
+                    ... on InfomediaContent {
                       id
+                      headLine
+                      subHeadLine
+                      byLine
+                      dateLine
+                      paper
                       origin
+                      hedLine
+                      text
                       html
                     }
                   }
@@ -253,9 +260,16 @@ describe("API test cases", () => {
                         origin
                         note
                       }
-                      ... on HtmlContent {
+                      ... on InfomediaContent {
                         id
+                        headLine
+                        subHeadLine
+                        byLine
+                        dateLine
+                        paper
                         origin
+                        hedLine
+                        text
                         html
                       }
                     }
@@ -335,7 +349,7 @@ describe("API test cases", () => {
     expect(result).toMatchSnapshot();
   });
 
-  test("Manifestation -> onlineAccess returns HtmlContent from infomedia", async () => {
+  test("Manifestation -> onlineAccess returns InfomediaContent from infomedia", async () => {
     const result = await performTestQuery({
       query: `
         query ($id: String!) {
@@ -343,9 +357,16 @@ describe("API test cases", () => {
             title
             manifestations {
               onlineAccess {
-                ... on HtmlContent {
+                ... on InfomediaContent {
                   id
+                  headLine
+                  subHeadLine
+                  byLine
+                  dateLine
+                  paper
                   origin
+                  hedLine
+                  text
                   html
                 }
               }
