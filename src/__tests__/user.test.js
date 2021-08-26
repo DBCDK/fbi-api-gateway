@@ -41,10 +41,10 @@ test("user - get agency danish", async () => {
                 postalCode
                 mail
                 agency(language: da) {
-                    branches {
+                    
                       openingHours
                       name
-                    }
+                    
                   }
               }
             }
@@ -68,10 +68,10 @@ test("user - get agency english", async () => {
                 postalCode
                 mail
                 agency(language: en) {
-                    branches {
+                    
                       openingHours
                       name
-                    }
+                    
                   }
               }
             }

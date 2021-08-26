@@ -33,8 +33,7 @@ test("library - get branches", async () => {
   const result = await performTestQuery({
     query: `
           query{
-            library(agencyid: "710100"){    
-              branches{
+              branches(agencyid: "710100"){
                 agencyId
                 branchId
                 name
@@ -43,7 +42,6 @@ test("library - get branches", async () => {
                 postalCode
                 city
                 pickupAllowed
-              }
             }
           }
         `,
