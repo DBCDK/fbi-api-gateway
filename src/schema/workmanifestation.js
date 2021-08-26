@@ -214,8 +214,6 @@ export const resolvers = {
           // get details from infomedia article
           const details = getInfomediaDetails(article[0]);
 
-          console.log("details", details);
-
           result.push({ ...article[0], details });
         }
       }
