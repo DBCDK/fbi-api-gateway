@@ -1,5 +1,6 @@
 import request from "superagent";
 import config from "../config";
+import { log } from "dbc-node-logger";
 
 const endpoint = "/libraries";
 
@@ -13,8 +14,8 @@ export async function load({ agencyid, accessToken }) {
   try {
     return (await request.post(url).send(args)).body.data;
   } catch (error) {
-    console.log(error);
-    // if error or not a part of a series (404)
+    log.error("Fetch work failed", { reason: error.message });
+    // some error - return null
     return null;
   }
 }
