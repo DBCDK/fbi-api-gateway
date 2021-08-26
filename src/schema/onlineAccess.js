@@ -16,7 +16,7 @@ export const typeDef = `
     origin: String!,
     note: String!
   }
- union OnlineAccess = UrlReference | HtmlContent
+ union OnlineAccess = UrlReference | InfomediaContent
  `;
 
 /**
@@ -39,7 +39,7 @@ export const resolvers = {
       if (parent.url) {
         return "UrlReference";
       } else {
-        return "HtmlContent";
+        return "InfomediaContent";
       }
     },
   },

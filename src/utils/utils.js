@@ -113,3 +113,37 @@ export function getBaseUrl(url) {
   }
   return url;
 }
+
+/**
+ * Extracts details from a infomedia article
+ *
+ * @param {string} article
+ * @returns {object}
+ */
+export function getInfomediaDetails(article) {
+  const html = article.html;
+
+  // Get all divs in article
+  const div_regex = /<div([\s\S\n]*?)<\/div>/g;
+  const divs = html.match(div_regex);
+
+  const details = {};
+  divs.forEach((div) => {
+    // extract div classNames (used for object keys)
+    const class_regex = /class=\"(.*?)\"/;
+    const className = div.match(class_regex)[1];
+
+    // Strip classNames to proper keynames
+    const name = className.replace("infomedia_", "");
+    const key = name.charAt(0).toLowerCase() + name.slice(1);
+
+    // Strip div tags from content
+    const strip_regex = /<[\/]{0,1}(div)[^><]*>/g;
+    const content = div.replace(strip_regex, "");
+
+    // Set content with new keyname (from className)
+    details[key] = content;
+  });
+
+  return details;
+}

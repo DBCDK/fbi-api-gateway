@@ -3,7 +3,7 @@
  *
  */
 
-import { getArray, matchYear } from "../utils/utils";
+import { getArray, getInfomediaDetails } from "../utils/utils";
 
 /**
  * The WorkManifestation type definition
@@ -204,13 +204,21 @@ export const resolvers = {
       const isArticle = parent.workTypes.includes("article");
 
       if (isArticle) {
-        // Get article (HtmlContent) from infomedia
-        const article = await context.datasources.infomedia.load({
-          pid: parent.id,
-          accessToken: context.accessToken,
-        });
-        if (article && article[0]) {
-          result.push(article[0]);
+        // Get article (InfomediaContent) from infomedia
+        try {
+          const article = await context.datasources.infomedia.load({
+            pid: parent.id,
+            accessToken: context.accessToken,
+          });
+
+          if (article && article[0]) {
+            // get details from infomedia article
+            const details = getInfomediaDetails(article[0]);
+
+            result.push({ ...article[0], details });
+          }
+        } catch (e) {
+          // TODO: handle not logged in
         }
       }
 
@@ -230,7 +238,7 @@ export const resolvers = {
         }
       });
 
-      // Return array containing both HtmlContent and UrlReferences
+      // Return array containing both InfomediaContent and UrlReferences
       return result;
     },
     async originals(parent, args, context, info) {

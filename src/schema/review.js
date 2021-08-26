@@ -16,7 +16,7 @@ type ReviewInfomedia {
   date: String!
   media: String!
   rating: String!
-  content: HtmlContent
+  content: InfomediaContent
 }
 type ReviewLitteratursiden {
   author: String!
