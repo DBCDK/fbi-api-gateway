@@ -39,7 +39,7 @@ export const resolvers = {
       return parent.details.paper || "";
     },
     hedLine(parent, args, context, info) {
-      return parent.details.hedLine || "";
+      return parent.details.hedline || "";
     },
     text(parent, args, context, info) {
       return parent.details.text || "";
