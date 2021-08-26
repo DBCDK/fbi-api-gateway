@@ -205,16 +205,20 @@ export const resolvers = {
 
       if (isArticle) {
         // Get article (InfomediaContent) from infomedia
-        const article = await context.datasources.infomedia.load({
-          pid: parent.id,
-          accessToken: context.accessToken,
-        });
+        try {
+          const article = await context.datasources.infomedia.load({
+            pid: parent.id,
+            accessToken: context.accessToken,
+          });
 
-        if (article && article[0]) {
-          // get details from infomedia article
-          const details = getInfomediaDetails(article[0]);
+          if (article && article[0]) {
+            // get details from infomedia article
+            const details = getInfomediaDetails(article[0]);
 
-          result.push({ ...article[0], details });
+            result.push({ ...article[0], details });
+          }
+        } catch (e) {
+          // TODO: handle not logged in
         }
       }
 
