@@ -13,6 +13,7 @@ export const typeDef = `
      paper: String!,
      text: String!,
      hedLine: String!,
+     logo: String!,
      origin: String!,
      html: String!
  }`;
@@ -42,6 +43,22 @@ export const resolvers = {
     },
     text(parent, args, context, info) {
       return parent.details.text || "";
+    },
+    logo(parent, args, context, info) {
+      const html = parent.details.logo;
+
+      if (html) {
+        const p_regex = /<p>(.*?)<\/p>/g;
+        const p = html && html.match(p_regex)[0];
+
+        // Strip div tags from content
+        const strip_regex = /<[\/]{0,1}(p)[^><]*>/g;
+        const content = p.replace(strip_regex, "");
+
+        return content;
+      }
+
+      return "";
     },
     origin(parent, args, context, info) {
       // We only have infomedia for now

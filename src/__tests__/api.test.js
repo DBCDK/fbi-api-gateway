@@ -218,6 +218,7 @@ describe("API test cases", () => {
                       paper
                       origin
                       hedLine
+                      logo
                       text
                       html
                     }
@@ -269,6 +270,7 @@ describe("API test cases", () => {
                         paper
                         origin
                         hedLine
+                        logo
                         text
                         html
                       }
@@ -366,6 +368,7 @@ describe("API test cases", () => {
                   paper
                   origin
                   hedLine
+                  logo
                   text
                   html
                 }

@@ -124,7 +124,7 @@ export function getInfomediaDetails(article) {
   const html = article.html;
 
   // Get all divs in article
-  const div_regex = /<div+.*<\/div>/g;
+  const div_regex = /<div([\s\S\n]*?)<\/div>/g;
   const divs = html.match(div_regex);
 
   const details = {};
