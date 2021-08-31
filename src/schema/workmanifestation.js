@@ -4,6 +4,7 @@
  */
 
 import { getArray, getInfomediaDetails } from "../utils/utils";
+import dayjs from "dayjs";
 
 /**
  * The WorkManifestation type definition
@@ -17,7 +18,7 @@ export const typeDef = `
       content: [String!]
       cover: Cover! 
       creators: [Creator!]!
-      datePublished: String!
+      datePublished(locale: String, format: String): CustomDateFormat!
       description: String!
       dk5: [DK5!]!
       edition: String!
@@ -116,6 +117,24 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
+
+      // For articles and maybe other stuff we have a date here
+      let date = getArray(manifestation, "details.hostPublication.details").map(
+        (entry) => entry.$
+      )[0];
+      if (date && dayjs(date).isValid()) {
+        return { date, ...args };
+      }
+
+      // Date could be here as well
+      date = getArray(manifestation, "details.articleData.article.volume").map(
+        (entry) => entry.$
+      )[0];
+      if (date && dayjs(date).isValid()) {
+        return { date, ...args };
+      }
+
+      // Or at least we have the year most of the times
       return (
         getArray(manifestation, "details.publication.publicationYear").map(
           (entry) => entry.$
@@ -323,6 +342,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
+
       return (
         getArray(manifestation, "details.title.value").map(
           (entry) => entry.$
