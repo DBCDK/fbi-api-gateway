@@ -20,6 +20,7 @@ export const typeDef = `
   type InfomediaReference {
     infomediaId: String!
     type: String!
+    error: String
   }
  union OnlineAccess = UrlReference | InfomediaContent | InfomediaReference
  `;
@@ -45,6 +46,9 @@ export const resolvers = {
     },
     type(parent, args, context, info) {
       return "infomedia";
+    },
+    error(parent, args, context, info) {
+      return parent.error || null;
     },
   },
   OnlineAccess: {

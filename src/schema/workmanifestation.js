@@ -241,12 +241,17 @@ export const resolvers = {
               result.push({ ...article[0], details });
             }
           } catch (e) {
-            // TODO: handle not logged (Unauthorized) in && no permission (Forbidden)
+            // TODO: is this error handleing enough ?? handle not logged (Unauthorized) in && no permission (Forbidden)
+            result.push({
+              infomediaId: infomediaId,
+              error: e.message,
+            });
           }
+        } else {
+          result.push({
+            infomediaId: infomediaId,
+          });
         }
-        result.push({
-          infomediaId: infomediaId,
-        });
       }
 
       // Return array containing both InfomediaContent and UrlReferences
