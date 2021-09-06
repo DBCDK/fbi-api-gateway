@@ -16,7 +16,12 @@ export const typeDef = `
     origin: String!,
     note: String!
   }
- union OnlineAccess = UrlReference | InfomediaContent
+  
+  type InfomediaReference {
+    infomediaId: String!
+    type: String!
+  }
+ union OnlineAccess = UrlReference | InfomediaContent | InfomediaReference
  `;
 
 /**
@@ -34,10 +39,20 @@ export const resolvers = {
       return parent.note;
     },
   },
+  InfomediaReference: {
+    infomediaId(parent, args, context, info) {
+      return parent.infomediaId;
+    },
+    type(parent, args, context, info) {
+      return "infomedia";
+    },
+  },
   OnlineAccess: {
     __resolveType(parent, args, context, info) {
       if (parent.url) {
         return "UrlReference";
+      } else if (parent.infomediaId) {
+        return "InfomediaReference";
       } else {
         return "InfomediaContent";
       }

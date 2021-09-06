@@ -46,7 +46,6 @@ export const typeDef = `
       usedLanguage: [String],
       physicalDescriptionArticles: String
       volume: String
-      infomediaId: String
     }
   `;
 
@@ -201,28 +200,6 @@ export const resolvers = {
     async onlineAccess(parent, args, context, info) {
       const result = [];
 
-      // Check if work is an article
-      const isArticle = parent.workTypes.includes("article");
-
-      if (isArticle) {
-        // Get article (InfomediaContent) from infomedia
-        try {
-          const article = await context.datasources.infomedia.load({
-            pid: parent.id,
-            accessToken: context.accessToken,
-          });
-
-          if (article && article[0]) {
-            // get details from infomedia article
-            const details = getInfomediaDetails(article[0]);
-
-            result.push({ ...article[0], details });
-          }
-        } catch (e) {
-          // TODO: handle not logged in
-        }
-      }
-
       // Get onlineAccess from openformat (UrlReferences)
       const manifestation = await context.datasources.openformat.load(
         parent.id
@@ -238,6 +215,39 @@ export const resolvers = {
           });
         }
       });
+
+      const infomediaId =
+        (manifestation &&
+          manifestation.details &&
+          manifestation.details.infomediaId &&
+          manifestation.details.infomediaId.$) ||
+        null;
+
+      if (infomediaId) {
+        if (context.accessToken) {
+          // Get article (InfomediaContent) from infomedia
+          try {
+            // @TODO serviceprovider only supports infomedia articles by pid.
+            // @TODO we now have a fileId - use it to get articles like: file=infomediaId
+            const article = await context.datasources.infomedia.load({
+              pid: parent.id,
+              accessToken: context.accessToken,
+            });
+
+            if (article && article[0]) {
+              // get details from infomedia article
+              const details = getInfomediaDetails(article[0]);
+
+              result.push({ ...article[0], details });
+            }
+          } catch (e) {
+            // TODO: handle not logged (Unauthorized) in && no permission (Forbidden)
+          }
+        }
+        result.push({
+          infomediaId: infomediaId,
+        });
+      }
 
       // Return array containing both InfomediaContent and UrlReferences
       return result;
@@ -392,18 +402,6 @@ export const resolvers = {
           manifestation.details &&
           manifestation.details.volume &&
           manifestation.details.volume.$) ||
-        null
-      );
-    },
-    async infomediaId(parent, args, context, info) {
-      const manifestation = await context.datasources.openformat.load(
-        parent.id
-      );
-      return (
-        (manifestation &&
-          manifestation.details &&
-          manifestation.details.infomediaId &&
-          manifestation.details.infomediaId.$) ||
         null
       );
     },
