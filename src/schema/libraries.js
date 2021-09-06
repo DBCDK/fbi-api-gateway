@@ -12,6 +12,7 @@ export const typeDef = `
     openingHours: String
     postalAddress: String
     postalCode: String
+    orderParameters: [String!]!
     orderPolicy(pid:String!): CheckOrderPolicy
     city: String
     pickupAllowed: Boolean!
@@ -47,6 +48,9 @@ export const resolvers = {
         parent.openingHours[parent.language === "da" ? 0 : 1] ||
         parent.openingHours[0]
       );
+    },
+    orderParameters(parent, args, context, info) {
+      return parent.orderParameters;
     },
     async orderPolicy(parent, args, context, info) {
       return await context.datasources.checkorder.load({
