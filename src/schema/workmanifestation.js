@@ -241,7 +241,7 @@ export const resolvers = {
               result.push({ ...article[0], details });
             }
           } catch (e) {
-            // TODO: is this error handleing enough ?? handle not logged (Unauthorized) in && no permission (Forbidden)
+            // TODO: is this error handling enough ?? handle not logged (Unauthorized) in && no permission (Forbidden)
             result.push({
               infomediaId: infomediaId,
               error: e.message,
@@ -254,7 +254,7 @@ export const resolvers = {
         }
       }
 
-      // Return array containing both InfomediaContent and UrlReferences
+      // Return array containing both (InfomediaContent || InfomediaReference) and UrlReferences
       return result;
     },
     async originals(parent, args, context, info) {
