@@ -46,6 +46,7 @@ export const typeDef = `
       usedLanguage: [String],
       physicalDescriptionArticles: String
       volume: String
+      infomediaId: String
     }
   `;
 
@@ -391,6 +392,18 @@ export const resolvers = {
           manifestation.details &&
           manifestation.details.volume &&
           manifestation.details.volume.$) ||
+        null
+      );
+    },
+    async infomediaId(parent, args, context, info) {
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+      return (
+        (manifestation &&
+          manifestation.details &&
+          manifestation.details.infomediaId &&
+          manifestation.details.infomediaId.$) ||
         null
       );
     },

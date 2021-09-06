@@ -247,7 +247,8 @@
       "inLanguage": "{bibdk_language_code}",
       "usedLanguage": "{bibdk_used_language}",
       "physicalDescriptionArticles": "{physicalDescriptionArticles}",
-      "volume": "{volume}"
+      "volume": "{volume}",
+      "infomediaId": "{infomedia_id}"
     }
   }
 }
