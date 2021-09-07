@@ -4,7 +4,14 @@ import { createIndexer } from "../utils/searcher";
 
 const endpoint = "/libraries";
 
-const fields = ["name", "agencyName", "city", "postalCode"];
+const fields = [
+  "name",
+  "agencyName",
+  "agencyId",
+  "branchId",
+  "city",
+  "postalCode",
+];
 
 // Indexer options
 const options = {
