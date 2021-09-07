@@ -29,45 +29,11 @@ export async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
 }
 
-test("library - get branches for agency", async () => {
+test("borchk - do a borrower check", async () => {
   const result = await performTestQuery({
     query: `
           query{
-              branches(agencyid: "710100"){
-                agencyId
-                branchId
-                name
-                openingHours
-                orderParameters
-                postalAddress
-                postalCode
-                city
-                pickupAllowed
-            }
-          }
-        `,
-    variables: {},
-    context: { datasources: createMockedDataLoaders() },
-  });
-  expect(result).toMatchSnapshot();
-});
-
-test("library - get all", async () => {
-  const result = await performTestQuery({
-    query: `
-          query{
-              branches{
-                agencyName
-                agencyId
-                branchId
-                name
-                openingHours
-                orderParameters
-                postalAddress
-                postalCode
-                city
-                pickupAllowed
-            }
+              borchk(libraryCode:"fisk" userId:"hest" userPincode:"hund")
           }
         `,
     variables: {},
