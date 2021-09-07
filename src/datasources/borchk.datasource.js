@@ -35,8 +35,9 @@ export async function load({ libraryCode, userId, userPincode }) {
     ).body.borrowerCheckResponse.requestStatus.$;
   } catch (e) {
     log.error("Request to borchk failed: " + url + " message: " + e.message);
+    throw e;
     // @TODO what to return here - i made this one up
-    return "internal_error";
+    // return "internal_error";
   }
 }
 
