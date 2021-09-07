@@ -248,7 +248,7 @@ export const resolvers = {
         });
       }
 
-      // Return array containing both (InfomediaContent || InfomediaReference) and UrlReferences
+      // Return array containing both InfomediaReference and UrlReferences
       return result;
     },
     async originals(parent, args, context, info) {
