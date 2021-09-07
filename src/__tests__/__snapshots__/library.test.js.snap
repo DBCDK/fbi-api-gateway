@@ -13,6 +13,10 @@ Object {
           "city": "Fladøen S",
           "name": "Øknasten",
           "openingHours": "Åbningstider",
+          "orderParameters": Array [
+            "userId",
+            "name",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Fladøens Filialvej 17",
           "postalCode": "0112",
@@ -24,6 +28,7 @@ Object {
           "city": null,
           "name": "Info",
           "openingHours": null,
+          "orderParameters": Array [],
           "pickupAllowed": false,
           "postalAddress": null,
           "postalCode": null,
@@ -35,6 +40,10 @@ Object {
           "city": null,
           "name": "integrArtesis",
           "openingHours": null,
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+          ],
           "pickupAllowed": true,
           "postalAddress": null,
           "postalCode": null,
@@ -46,6 +55,9 @@ Object {
           "city": "Ballerup",
           "name": "Dummy Bestilmodtager",
           "openingHours": null,
+          "orderParameters": Array [
+            "userId",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Tempovej 7-11",
           "postalCode": "2750",
@@ -57,6 +69,9 @@ Object {
           "city": "Qtestfilialby",
           "name": "Qtestfilial",
           "openingHours": "9-10",
+          "orderParameters": Array [
+            "userId",
+          ],
           "pickupAllowed": false,
           "postalAddress": "Qtestfilialvej 1",
           "postalCode": "0115",
@@ -71,6 +86,11 @@ Object {
 torsdag 12-18
 fredag 10-16
 Den 26 oktober er alle afdelinger lukket p.g.a. Internt kursus",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+          ],
           "pickupAllowed": true,
           "postalAddress": "DBC vej 22",
           "postalCode": "0117",
@@ -83,6 +103,10 @@ Den 26 oktober er alle afdelinger lukket p.g.a. Internt kursus",
           "name": "Q2fjern",
           "openingHours": "mandag-lørdag 10-19
 søndag lukket",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Qfjernvej 2",
           "postalCode": "0116",
@@ -94,6 +118,7 @@ søndag lukket",
           "city": null,
           "name": "FBSDemo-Folk1",
           "openingHours": null,
+          "orderParameters": Array [],
           "pickupAllowed": false,
           "postalAddress": null,
           "postalCode": null,
@@ -105,6 +130,7 @@ søndag lukket",
           "city": null,
           "name": "FBSDemo-Skole1",
           "openingHours": null,
+          "orderParameters": Array [],
           "pickupAllowed": false,
           "postalAddress": null,
           "postalCode": null,
@@ -116,6 +142,7 @@ søndag lukket",
           "city": null,
           "name": "FBSDemo-Folk1",
           "openingHours": null,
+          "orderParameters": Array [],
           "pickupAllowed": false,
           "postalAddress": null,
           "postalCode": null,
@@ -140,6 +167,12 @@ Object {
           "openingHours": "Åbningstider
 Se åbningstider på:
 <a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Krystalgade 15",
           "postalCode": "1172",
@@ -152,6 +185,12 @@ Se åbningstider på:
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Blågårds Plads 5",
           "postalCode": "2200",
@@ -164,6 +203,12 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Krabbesholmvej 3
 ",
@@ -177,6 +222,12 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Dronningensgade 53",
           "postalCode": "1420",
@@ -189,6 +240,12 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Frederikssundsvej 290",
           "postalCode": "2700",
@@ -201,6 +258,12 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Njalsgade 15",
           "postalCode": "2300",
@@ -213,6 +276,12 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Jagtvej 227",
           "postalCode": "2100",
@@ -225,6 +294,12 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Rentemestervej 76",
           "postalCode": "2400",
@@ -237,6 +312,12 @@ bibliotek.kk.dk/biblioteker/",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Nørrebrohallen
 Nørrebrogade 208",
@@ -250,6 +331,12 @@ Nørrebrogade 208",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
+          "orderParameters": Array [
+            "userId",
+            "pincode",
+            "name",
+            "email",
+          ],
           "pickupAllowed": true,
           "postalAddress": "Remisevej 14",
           "postalCode": "2300",

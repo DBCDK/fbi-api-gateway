@@ -20,6 +20,9 @@ export default {
       ttl: process.env.BACKEND_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.BACKEND_PREFIX || "backend-1",
     },
+    borchk: {
+      url: process.env.BORCHK_URL || "https://borchk.addi.dk/2.5/",
+    },
     moreinfo: {
       url: process.env.MOREINFO_URL,
       authenticationUser: process.env.MOREINFO_USER,
