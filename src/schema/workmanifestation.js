@@ -3,7 +3,7 @@
  *
  */
 
-import { getArray, getInfomediaDetails } from "../utils/utils";
+import { getArray } from "../utils/utils";
 import dayjs from "dayjs";
 
 /**
@@ -243,34 +243,9 @@ export const resolvers = {
         null;
 
       if (infomediaId) {
-        if (context.accessToken) {
-          // Get article (InfomediaContent) from infomedia
-          try {
-            // @TODO serviceprovider only supports infomedia articles by pid.
-            // @TODO we now have a fileId - use it to get articles like: file=infomediaId
-            const article = await context.datasources.infomedia.load({
-              pid: parent.id,
-              accessToken: context.accessToken,
-            });
-
-            if (article && article[0]) {
-              // get details from infomedia article
-              const details = getInfomediaDetails(article[0]);
-
-              result.push({ ...article[0], details });
-            }
-          } catch (e) {
-            // TODO: is this error handling enough ?? handle not logged (Unauthorized) in && no permission (Forbidden)
-            result.push({
-              infomediaId: infomediaId,
-              error: e.message,
-            });
-          }
-        } else {
-          result.push({
-            infomediaId: infomediaId,
-          });
-        }
+        result.push({
+          infomediaId: infomediaId,
+        });
       }
 
       // Return array containing both (InfomediaContent || InfomediaReference) and UrlReferences

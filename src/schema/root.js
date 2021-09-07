@@ -21,6 +21,7 @@ type Query {
   branches(agencyid: String, language: LanguageCode): [Branch!]!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
+  infomediaContent(pid: String!): InfomediaContent
 }
 
 type Mutation {
@@ -93,6 +94,12 @@ export const resolvers = {
         libraryCode: args.libraryCode,
         userId: args.userId,
         userPincode: args.userPincode,
+      });
+    },
+    async infomediaContent(parent, args, context, info) {
+      return await context.datasources.infomedia.load({
+        pid: args.pid,
+        accessToken: context.accessToken,
       });
     },
   },

@@ -22,7 +22,7 @@ export const typeDef = `
     type: String!
     error: String
   }
- union OnlineAccess = UrlReference | InfomediaContent | InfomediaReference
+ union OnlineAccess = UrlReference | InfomediaReference
  `;
 
 /**
@@ -57,8 +57,6 @@ export const resolvers = {
         return "UrlReference";
       } else if (parent.infomediaId) {
         return "InfomediaReference";
-      } else {
-        return "InfomediaContent";
       }
     },
   },
