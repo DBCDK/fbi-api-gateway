@@ -17,6 +17,12 @@ const fields = [
 const options = {
   fields, // fields to index for full-text search
   storeFields: fields,
+  processTerm: (term, _fieldName) =>
+    term
+      .toLowerCase()
+      .replace(/æ/g, "ae")
+      .replace(/ø/g, "oe")
+      .replace(/å/g, "aa"),
 };
 
 // Default search options
