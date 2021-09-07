@@ -33,7 +33,9 @@ test("library - get branches for agency", async () => {
   const result = await performTestQuery({
     query: `
           query{
-              branches(agencyid: "710100"){
+            branches(agencyid: "710100"){
+              hitcount
+              result {
                 agencyId
                 branchId
                 name
@@ -42,6 +44,7 @@ test("library - get branches for agency", async () => {
                 postalCode
                 city
                 pickupAllowed
+              }
             }
           }
         `,
@@ -54,8 +57,10 @@ test("library - get branches for agency", async () => {
 test("library - get all", async () => {
   const result = await performTestQuery({
     query: `
-          query{
-              branches{
+        query{
+            branches{
+              hitcount
+              result {
                 agencyName
                 agencyId
                 branchId
@@ -65,10 +70,41 @@ test("library - get all", async () => {
                 postalCode
                 city
                 pickupAllowed
+              }
             }
           }
         `,
     variables: {},
+    context: { datasources: createMockedDataLoaders() },
+  });
+  expect(result).toMatchSnapshot();
+});
+
+test("library - query search", async () => {
+  const result = await performTestQuery({
+    query: `
+      query ($q: String!) {
+            branches(q: $q){
+              hitcount
+              result {
+                agencyName
+                agencyId
+                branchId
+                name
+                openingHours
+                postalAddress
+                postalCode
+                city
+                pickupAllowed
+                highlights {
+                  key
+                  value
+                }
+              }
+            }
+          }
+        `,
+    variables: { q: "køb" },
     context: { datasources: createMockedDataLoaders() },
   });
   expect(result).toMatchSnapshot();

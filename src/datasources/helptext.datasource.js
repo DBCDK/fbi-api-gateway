@@ -96,6 +96,7 @@ const searchOptions = {
   boost: { title: 100 },
   combineWith: "AND",
   prefix: true,
+  limit: 10,
 };
 
 // Create index instance

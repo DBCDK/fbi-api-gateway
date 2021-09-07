@@ -15,7 +15,19 @@ export const typeDef = `
     orderPolicy(pid:String!): CheckOrderPolicy
     city: String
     pickupAllowed: Boolean!
-  }`;
+    highlights: [Highlight!]!
+  }
+  
+  type BranchResult{
+    hitcount: Int!
+    result: [Branch!]!
+  }
+
+  type Highlight{
+    key: String!
+    value: String!
+  }
+  `;
 
 export const resolvers = {
   // @see root.js for datasource::load
@@ -28,6 +40,18 @@ export const resolvers = {
     },
     branchId(parent, args, context, info) {
       return parent.branchId;
+    },
+    highlights(parent, args, context, info) {
+      if (!parent.highlights) {
+        return [];
+      }
+
+      return Object.entries(parent.highlights)
+        .map(([key, value]) => ({
+          key,
+          value,
+        }))
+        .filter((highlight) => highlight.value.includes("<mark>"));
     },
     name(parent, args, context, info) {
       // first item is danish
@@ -56,6 +80,22 @@ export const resolvers = {
     },
     pickupAllowed(parent, args, context, info) {
       return parent.pickupAllowed === "1";
+    },
+  },
+  BranchResult: {
+    hitcount(parent, args, context, info) {
+      return parent.hitcount;
+    },
+    result(parent, args, context, info) {
+      return parent.result;
+    },
+  },
+  Highlight: {
+    key(parent, args, context, info) {
+      return parent.key;
+    },
+    value(parent, args, context, info) {
+      return parent.value;
     },
   },
 };

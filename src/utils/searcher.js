@@ -33,7 +33,7 @@ export function createIndexer({ options }) {
       doIndex(docs);
       const res = _index
         .search(q, extra)
-        .slice(0, 10)
+        .slice(0, (extra && extra.limit) || 9999)
         .map((doc) => {
           // These are the unique matched terms found in the doc
           const matchedTerms = doc.terms;
@@ -46,6 +46,10 @@ export function createIndexer({ options }) {
           // create highlights and trim content
           options.fields.forEach((field) => {
             const text = doc[field];
+            // check if field exist
+            if (!text) {
+              return {};
+            }
             // split by space, and highlight parts
             const split = text.split(/\s+/).map((text) => {
               for (let i = 0; i < matchedTerms.length; i++) {
