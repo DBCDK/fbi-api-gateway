@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`library - get branches for agency 1`] = `
+Object {
+  "data": null,
+  "errors": Array [
+    [GraphQLError: Enum "BorchkRequestStatus" cannot represent value: { borchk: "ok" }],
+  ],
+}
+`;
