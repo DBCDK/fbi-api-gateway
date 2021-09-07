@@ -31,6 +31,7 @@ let branches;
 let branchesMap;
 let lastUpdateMS;
 let fetchingPromise;
+const index = createIndexer({ options });
 const timeToLiveMS = 1000 * 60 * 30;
 
 async function get({ accessToken }) {
@@ -49,31 +50,33 @@ export async function search(props, getFunc) {
   const age = lastUpdateMS ? new Date().getTime() - lastUpdateMS : 0;
 
   if (!branches || age > timeToLiveMS) {
-    // Handle race condition
-    // Avoid fetching branches at mulitple requests at a time
-    if (fetchingPromise) {
-      await fetchingPromise;
-    } else {
-      fetchingPromise = getFunc(props);
-      branches = (await fetchingPromise).map((branch) => ({
-        ...branch,
-        id: branch.branchId,
-        name: branch.branchName.join(" "),
-      }));
+    try {
+      // Handle race condition
+      // Avoid fetching branches at mulitple requests at a time
+      if (fetchingPromise) {
+        await fetchingPromise;
+      } else {
+        fetchingPromise = getFunc(props);
+        branches = (await fetchingPromise).map((branch) => ({
+          ...branch,
+          id: branch.branchId,
+          name: branch.branchName.join(" "),
+        }));
 
-      branchesMap = {};
-      branches.forEach((branch) => (branchesMap[branch.id] = branch));
+        branchesMap = {};
+        branches.forEach((branch) => (branchesMap[branch.id] = branch));
 
-      lastUpdateMS = new Date().getTime();
+        lastUpdateMS = new Date().getTime();
+      }
+    } finally {
+      // Clean up promise
+      fetchingPromise = null;
     }
   }
 
   let result = branches;
 
   if (q) {
-    // Create index instance
-    const index = createIndexer({ options });
-
     // prefix match
     result = index.search(q, branches, searchOptions);
 
