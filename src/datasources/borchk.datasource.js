@@ -2,7 +2,7 @@ import { log } from "dbc-node-logger";
 import request from "superagent";
 import config from "../config";
 
-const { prefix, ttl, url } = config.datasources.borchk;
+const { url } = config.datasources.borchk;
 
 function createRequest(libraryCode, userId, userPincode) {
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -27,7 +27,6 @@ function createRequest(libraryCode, userId, userPincode) {
  * @return {Promise<string|*>}
  */
 export async function load({ libraryCode, userId, userPincode }) {
-  const fisk = createRequest(libraryCode, userId, userPincode);
   try {
     return (
       await request
@@ -49,11 +48,3 @@ export async function load({ libraryCode, userId, userPincode }) {
 /*export async function status(loadFunc) {
   await loadFunc("870970-basis:51877330");
 }*/
-
-export const options = {
-  redis: {
-    prefix,
-    ttl,
-    staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
-  },
-};
