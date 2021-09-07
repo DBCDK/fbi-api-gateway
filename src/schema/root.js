@@ -20,6 +20,7 @@ type Query {
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, language: LanguageCode): [Branch!]!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
+  borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
 }
 
 type Mutation {
@@ -85,6 +86,13 @@ export const resolvers = {
         orderId: args.orderId,
         orderType: args.orderType,
         accessToken: context.accessToken,
+      });
+    },
+    async borchk(parent, args, context, info) {
+      return context.datasources.borchk.load({
+        libraryCode: args.libraryCode,
+        userId: args.userId,
+        userPincode: args.userPincode,
       });
     },
   },
