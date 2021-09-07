@@ -26,12 +26,12 @@ const searchOptions = {
   prefix: true,
 };
 
-// We cache the docs for 5 minutes
+// We cache the docs for 30 minutes
 let branches;
 let branchesMap;
 let lastUpdateMS;
 let fetchingPromise;
-const timeToLiveMS = 1000 * 60 * 5;
+const timeToLiveMS = 1000 * 60 * 30;
 
 async function get({ accessToken }) {
   const url = config.datasources.openplatform.url + endpoint;
