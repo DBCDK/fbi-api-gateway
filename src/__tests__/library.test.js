@@ -81,33 +81,3 @@ test("library - get all", async () => {
   });
   expect(result).toMatchSnapshot();
 });
-
-test("library - query search", async () => {
-  const result = await performTestQuery({
-    query: `
-      query ($q: String!) {
-            branches(q: $q){
-              hitcount
-              result {
-                agencyName
-                agencyId
-                branchId
-                name
-                openingHours
-                postalAddress
-                postalCode
-                city
-                pickupAllowed
-                highlights {
-                  key
-                  value
-                }
-              }
-            }
-          }
-        `,
-    variables: { q: "køb" },
-    context: { datasources: createMockedDataLoaders() },
-  });
-  expect(result).toMatchSnapshot();
-});
