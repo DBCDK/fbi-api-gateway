@@ -5,6 +5,7 @@
 
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
+import { createIndexer } from "../utils/searcher";
 
 /**
  * The root type definitions
@@ -18,7 +19,7 @@ type Query {
   search(q: String!, limit: PaginationLimit!, offset: Int, facets: [FacetFilter]): SearchResponse!
   suggest(q: String!, worktype: WorkType): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, language: LanguageCode): [Branch!]!
+  branches(agencyid: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
 }
@@ -68,15 +69,14 @@ export const resolvers = {
       };
     },
     async branches(parent, args, context, info) {
-      return (
-        await context.datasources.library.load({
-          agencyid: args.agencyid,
-          accessToken: context.accessToken,
-        })
-      ).map((branch) => ({
-        ...branch,
-        language: args.language || "da",
-      }));
+      return await context.datasources.library.load({
+        q: args.q,
+        limit: args.limit,
+        offset: args.offset,
+        language: args.language,
+        agencyid: args.agencyid,
+        accessToken: context.accessToken,
+      });
     },
     async suggest(parent, args, context, info) {
       return { q: args.q, worktype: args.worktype };

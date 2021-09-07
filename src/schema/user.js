@@ -13,7 +13,7 @@ type User {
   postalCode: String
   mail: String
   culrMail: String
-  agency(language: LanguageCode): [Branch]
+  agency(language: LanguageCode): BranchResult!
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
@@ -118,15 +118,11 @@ export const resolvers = {
       const res = await context.datasources.user.load({
         accessToken: context.accessToken,
       });
-      return (
-        await context.datasources.library.load({
-          agencyid: res.agency,
-          accessToken: context.accessToken,
-        })
-      ).map((branch) => ({
-        ...branch,
-        language: args.language || "da",
-      }));
+      return await context.datasources.library.load({
+        agencyid: res.agency,
+        language: parent.language,
+        accessToken: context.accessToken,
+      });
     },
   },
   Loan: {

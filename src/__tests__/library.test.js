@@ -33,7 +33,9 @@ test("library - get branches for agency", async () => {
   const result = await performTestQuery({
     query: `
           query{
-              branches(agencyid: "710100"){
+            branches(agencyid: "710100"){
+              hitcount
+              result {
                 agencyId
                 branchId
                 name
@@ -43,6 +45,7 @@ test("library - get branches for agency", async () => {
                 postalCode
                 city
                 pickupAllowed
+              }
             }
           }
         `,
@@ -55,8 +58,10 @@ test("library - get branches for agency", async () => {
 test("library - get all", async () => {
   const result = await performTestQuery({
     query: `
-          query{
-              branches{
+        query{
+            branches{
+              hitcount
+              result {
                 agencyName
                 agencyId
                 branchId
@@ -67,6 +72,7 @@ test("library - get all", async () => {
                 postalCode
                 city
                 pickupAllowed
+              }
             }
           }
         `,

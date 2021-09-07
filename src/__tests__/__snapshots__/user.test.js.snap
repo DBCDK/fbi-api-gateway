@@ -5,132 +5,28 @@ Object {
   "data": Object {
     "user": Object {
       "address": "Borgmesterskoven 45",
-      "agency": Array [
-        Object {
-          "name": "Hovedbiblioteket, Krystalgade",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Blågårdens Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Brønshøj Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Christianshavns Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Husum Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Islands Brygge Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Øbro Jagtvej Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Biblioteket Rentemestervej",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Nørrebro Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Solvang Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Sundby Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Bibliotekshuset",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Sydhavnens Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Tingbjerg Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Valby Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Kulturstationen Vanløse. Biblioteket",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Vesterbro Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Vigerslev Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Østerbro Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Ørestad Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-        },
-        Object {
-          "name": "Københavns Bibliotekers centrale sortering",
-          "openingHours": "ma-fre: 9-16",
-        },
-      ],
+      "agency": Object {
+        "result": Array [
+          Object {
+            "name": "DBCTestBibliotek",
+            "openingHours": "VIP 4.9: Åbningstider<br>
+mandag<br>
+tirsdag<br>
+onsdag<br>
+torsdag<br>
+fredag<br>
+lørdag",
+          },
+          Object {
+            "name": "DBCtest_2",
+            "openingHours": null,
+          },
+          Object {
+            "name": "DBC-bibilioteksekspressen",
+            "openingHours": null,
+          },
+        ],
+      },
       "mail": null,
       "name": "Freja Damgaard",
       "postalCode": "8660",
@@ -144,132 +40,28 @@ Object {
   "data": Object {
     "user": Object {
       "address": "Borgmesterskoven 45",
-      "agency": Array [
-        Object {
-          "name": "Copenhagen City Public Library",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Blågård",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Brønshøj",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Christianshavn",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Husum",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Islands Brygge",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Jagtvej",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Rentemestervej",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Nørrebro",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Solvang Bibliotek",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Sundby",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Bibliotekshuset",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Sydhavnen",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Tingbjerg",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Valby",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Vanløse",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Vesterbro",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Vigerslev",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Østerbro",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Ørestad Bibliotek",
-          "openingHours": "Opening hours
-See opening hours on:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-        },
-        Object {
-          "name": "Københavns Bibliotekers centrale sortering",
-          "openingHours": "Monday-Friday from 9 am to 4 pm. ",
-        },
-      ],
+      "agency": Object {
+        "result": Array [
+          Object {
+            "name": "DBCTestBibliotek",
+            "openingHours": "VIP 4.9: Åbningstider<br>
+mandag<br>
+tirsdag<br>
+onsdag<br>
+torsdag<br>
+fredag<br>
+lørdag",
+          },
+          Object {
+            "name": "DBCtest_2",
+            "openingHours": null,
+          },
+          Object {
+            "name": "DBC-bibilioteksekspressen",
+            "openingHours": null,
+          },
+        ],
+      },
       "mail": null,
       "name": "Freja Damgaard",
       "postalCode": "8660",
