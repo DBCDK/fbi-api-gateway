@@ -29,11 +29,11 @@ export async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
 }
 
-test("library - get branches for agency", async () => {
+test("borchk - do a borrower check", async () => {
   const result = await performTestQuery({
     query: `
           query{
-              borchk(libraryCode:"fisk" userId:"hund" userPincode:"hest")
+              borchk(libraryCode:"fisk" userId:"hest" userPincode:"hund")
           }
         `,
     variables: {},

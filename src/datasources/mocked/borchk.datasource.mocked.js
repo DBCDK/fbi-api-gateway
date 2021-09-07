@@ -1,7 +1,11 @@
 export function load({ libraryCode, userId, userPincode }) {
   const data = {
-    borchk: "ok",
+    borrowerCheckResponse: {
+      userId: { $: "fisk" },
+      requestStatus: { $: "ok" },
+    },
+    "@namespaces": { bc: "http://oss.dbc.dk/ns/borchk" },
   };
 
-  return data;
+  return data.borrowerCheckResponse.requestStatus.$;
 }
