@@ -2,7 +2,7 @@ export async function load({ workId }) {
   const mock = {
     "work-of:870970-basis:52557240": {
       body: {
-        seriesMembers: [
+        series: [
           "work-of:870970-basis:52557240",
           "work-of:870970-basis:53247768",
           "work-of:870970-basis:53557791",
