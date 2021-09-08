@@ -45,66 +45,78 @@ export function createIndexer({ options }) {
 
           // create highlights and trim content
           options.fields.forEach((field) => {
-            const text = doc[field];
+            const value = doc[field];
             // check if field exist
-            if (!text) {
+            if (!value) {
               return {};
             }
-            // split by space, and highlight parts
-            const split = text.split(/\s+/).map((text) => {
-              for (let i = 0; i < matchedTerms.length; i++) {
-                const match = matchedTerms[i];
-                const replaced = text.replace(
-                  new RegExp(`(${match})`, "i"),
-                  "<mark>$1</mark>"
-                );
-                if (replaced !== text) {
-                  return {
-                    highlight: true,
-                    text: replaced,
-                  };
+
+            // handle multivalued fields
+            const values = Array.isArray(value) ? value : [value];
+            let bestMatchForMultiValuedFields;
+
+            values.forEach((v) => {
+              // split by space, and highlight parts
+              const split = v.split(/\s+/).map((text) => {
+                for (let i = 0; i < matchedTerms.length; i++) {
+                  const match = matchedTerms[i];
+                  const processedText = options.processTerm
+                    ? options.processTerm(text)
+                    : text;
+
+                  if (processedText.includes(match)) {
+                    return {
+                      highlight: true,
+                      text: `<mark>${text}</mark>`,
+                    };
+                  }
+                }
+                return { highlight: false, text };
+              });
+
+              // Find text area with most highlights close together
+              let count = 0;
+              let highestCount = 0;
+              let offset = 0;
+              const max = 36;
+              let atBeginning = false;
+              let atEnd = false;
+              for (let i = 0; i < split.length; i++) {
+                if (split[i].highlight === true) {
+                  count++;
+                }
+                if (split[i - max] && split[i - max].highlight === true) {
+                  count--;
+                }
+                if (count > highestCount) {
+                  highestCount = count;
+                  offset = i - max;
                 }
               }
-              return { highlight: false, text };
+
+              // We found offset, where most occurences are found
+              // try to center the matches
+              offset = Math.floor(offset + max / 2);
+
+              if (offset + max >= split.length - 1) {
+                offset = split.length - max;
+                atEnd = true;
+              }
+              if (offset <= 0) {
+                offset = 0;
+                atBeginning = true;
+              }
+              if (
+                typeof bestMatchForMultiValuedFields === "undefined" ||
+                highestCount > bestMatchForMultiValuedFields
+              ) {
+                doc.highlights[field] = `${atBeginning ? "" : "... "}${split
+                  .map((term) => term.text)
+                  .slice(offset, offset + max)
+                  .join(" ")}${atEnd ? "" : " ..."}`;
+                bestMatchForMultiValuedFields = highestCount;
+              }
             });
-
-            // Find text area with most highlights close together
-            let count = 0;
-            let highestCount = 0;
-            let offset = 0;
-            const max = 36;
-            let atBeginning = false;
-            let atEnd = false;
-            for (let i = 0; i < split.length; i++) {
-              if (split[i].highlight === true) {
-                count++;
-              }
-              if (split[i - max] && split[i - max].highlight === true) {
-                count--;
-              }
-              if (count > highestCount) {
-                highestCount = count;
-                offset = i - max;
-              }
-            }
-
-            // We found offset, where most occurences are found
-            // try to center the matches
-            offset = Math.floor(offset + max / 2);
-
-            if (offset + max >= split.length - 1) {
-              offset = split.length - max;
-              atEnd = true;
-            }
-            if (offset <= 0) {
-              offset = 0;
-              atBeginning = true;
-            }
-
-            doc.highlights[field] = `${atBeginning ? "" : "... "}${split
-              .map((term) => term.text)
-              .slice(offset, offset + max)
-              .join(" ")}${atEnd ? "" : " ..."}`;
           });
 
           return doc;

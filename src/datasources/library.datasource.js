@@ -23,7 +23,8 @@ const options = {
       .replace("næver", "næstved")
       .replace(/æ/g, "ae")
       .replace(/ø/g, "oe")
-      .replace(/å/g, "aa"),
+      .replace(/å/g, "aa")
+      .replace(/[\.|\,]/g, ""),
 };
 
 // Default search options
@@ -67,7 +68,7 @@ export async function search(props, getFunc) {
         branches = (await fetchingPromise).map((branch) => ({
           ...branch,
           id: branch.branchId,
-          name: branch.branchName.join(" "),
+          name: branch.branchName,
         }));
 
         branchesMap = {};
