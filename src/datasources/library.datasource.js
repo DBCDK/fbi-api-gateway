@@ -20,6 +20,7 @@ const options = {
   processTerm: (term, _fieldName) =>
     term
       .toLowerCase()
+      .replace("næver", "næstved")
       .replace(/æ/g, "ae")
       .replace(/ø/g, "oe")
       .replace(/å/g, "aa"),
