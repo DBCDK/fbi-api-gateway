@@ -32,8 +32,8 @@ export const resolvers = {
         workId: parent.workId,
       });
 
-      if (data && data.seriesMembers) {
-        return data.seriesMembers.indexOf(parent.workId) + 1;
+      if (data && data.series) {
+        return data.series.indexOf(parent.workId) + 1;
       }
 
       return null;
