@@ -51,9 +51,9 @@ export const resolvers = {
         workId: parent.workId,
       });
 
-      if (data && data.seriesMembers) {
+      if (data && data.series) {
         const works = await Promise.all(
-          data.seriesMembers.map(
+          data.series.map(
             async (id) => (await context.datasources.workservice.load(id)).work
           )
         );
