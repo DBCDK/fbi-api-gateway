@@ -114,7 +114,7 @@ export const resolvers = {
       });
     },
     pickupAllowed(parent, args, context, info) {
-      return parent.pickupAllowed === "1";
+      return !!parent.pickupAllowed;
     },
   },
   BranchResult: {
