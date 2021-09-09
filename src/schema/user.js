@@ -121,7 +121,6 @@ export const resolvers = {
       return await context.datasources.library.load({
         agencyid: res.agency,
         language: parent.language,
-        accessToken: context.accessToken,
       });
     },
   },

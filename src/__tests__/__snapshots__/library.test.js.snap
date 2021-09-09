@@ -9,76 +9,117 @@ Object {
         Object {
           "agencyId": "000200",
           "agencyName": "Øen",
+          "borrowerCheck": true,
           "branchId": "000201",
           "city": "Fladøen S",
           "name": "Øknasten",
           "openingHours": "Åbningstider",
-          "orderParameters": Array [
-            "userId",
-            "name",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Fladøens Filialvej 17",
           "postalCode": "0112",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "100000",
-          "agencyName": null,
+          "agencyName": "",
+          "borrowerCheck": true,
           "branchId": "100000",
           "city": null,
           "name": "Info",
           "openingHours": null,
-          "orderParameters": Array [],
           "pickupAllowed": false,
           "postalAddress": null,
           "postalCode": null,
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "100200",
-          "agencyName": null,
+          "agencyName": "",
+          "borrowerCheck": true,
           "branchId": "100200",
           "city": null,
           "name": "integrArtesis",
           "openingHours": null,
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-          ],
           "pickupAllowed": true,
           "postalAddress": null,
           "postalCode": null,
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "100400",
           "agencyName": "Dummy Bestilmodtager",
+          "borrowerCheck": true,
           "branchId": "100400",
           "city": "Ballerup",
           "name": "Dummy Bestilmodtager",
           "openingHours": null,
-          "orderParameters": Array [
-            "userId",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Tempovej 7-11",
           "postalCode": "2750",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "100400",
           "agencyName": "Dummy Bestilmodtager",
+          "borrowerCheck": true,
           "branchId": "100401",
           "city": "Qtestfilialby",
           "name": "Qtestfilial",
           "openingHours": "9-10",
-          "orderParameters": Array [
-            "userId",
-          ],
           "pickupAllowed": false,
           "postalAddress": "Qtestfilialvej 1",
           "postalCode": "0115",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "100450",
           "agencyName": "DBC bibliotek",
+          "borrowerCheck": true,
           "branchId": "100450",
           "city": "Q2zx",
           "name": "DBC bibliotek",
@@ -86,66 +127,108 @@ Object {
 torsdag 12-18
 fredag 10-16
 Den 26 oktober er alle afdelinger lukket p.g.a. Internt kursus",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-          ],
           "pickupAllowed": true,
           "postalAddress": "DBC vej 22",
           "postalCode": "0117",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "100451",
           "agencyName": "Q2fjern-Væsen",
+          "borrowerCheck": true,
           "branchId": "100451",
           "city": "Q2zx",
           "name": "Q2fjern",
           "openingHours": "mandag-lørdag 10-19
 søndag lukket",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Qfjernvej 2",
           "postalCode": "0116",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "131300",
           "agencyName": "FBSDemo-Folk1",
+          "borrowerCheck": true,
           "branchId": "131300",
           "city": null,
           "name": "FBSDemo-Folk1",
           "openingHours": null,
-          "orderParameters": Array [],
           "pickupAllowed": false,
           "postalAddress": null,
           "postalCode": null,
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "133300",
           "agencyName": "FBSDemo-Skole1",
+          "borrowerCheck": true,
           "branchId": "133300",
           "city": null,
           "name": "FBSDemo-Skole1",
           "openingHours": null,
-          "orderParameters": Array [],
           "pickupAllowed": false,
           "postalAddress": null,
           "postalCode": null,
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "135300",
           "agencyName": "FBSDemo-Folk1",
+          "borrowerCheck": true,
           "branchId": "135300",
           "city": null,
           "name": "FBSDemo-Folk1",
           "openingHours": null,
-          "orderParameters": Array [],
           "pickupAllowed": false,
           "postalAddress": null,
           "postalCode": null,
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
       ],
     },
@@ -161,185 +244,235 @@ Object {
       "result": Array [
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710100",
           "city": "København K",
           "name": "Hovedbiblioteket, Krystalgade",
           "openingHours": "Åbningstider
 Se åbningstider på:
 <a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Krystalgade 15",
           "postalCode": "1172",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710104",
           "city": "København N",
           "name": "Blågårdens Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Blågårds Plads 5",
           "postalCode": "2200",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710105",
           "city": "Brønshøj",
           "name": "Brønshøj Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Krabbesholmvej 3
 ",
           "postalCode": "2700",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710106",
           "city": "København K",
           "name": "Christianshavns Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Dronningensgade 53",
           "postalCode": "1420",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710107",
           "city": "Brønshøj",
           "name": "Husum Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Frederikssundsvej 290",
           "postalCode": "2700",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710108",
           "city": "København S",
           "name": "Islands Brygge Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Njalsgade 15",
           "postalCode": "2300",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710109",
           "city": "København Ø",
           "name": "Øbro Jagtvej Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Jagtvej 227",
           "postalCode": "2100",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710110",
           "city": "København NV",
           "name": "Biblioteket Rentemestervej",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Rentemestervej 76",
           "postalCode": "2400",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710111",
           "city": "København N",
           "name": "Nørrebro Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Nørrebrohallen
 Nørrebrogade 208",
           "postalCode": "2200",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
         Object {
           "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710112",
           "city": "København S",
           "name": "Solvang Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
-          "orderParameters": Array [
-            "userId",
-            "pincode",
-            "name",
-            "email",
-          ],
           "pickupAllowed": true,
           "postalAddress": "Remisevej 14",
           "postalCode": "2300",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
         },
       ],
     },

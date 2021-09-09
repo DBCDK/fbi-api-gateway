@@ -19,7 +19,7 @@ type Query {
   search(q: String!, limit: PaginationLimit!, offset: Int, facets: [FacetFilter]): SearchResponse!
   suggest(q: String!, worktype: WorkType): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
 }
@@ -75,7 +75,7 @@ export const resolvers = {
         offset: args.offset,
         language: args.language,
         agencyid: args.agencyid,
-        accessToken: context.accessToken,
+        branchId: args.branchId,
       });
     },
     async suggest(parent, args, context, info) {

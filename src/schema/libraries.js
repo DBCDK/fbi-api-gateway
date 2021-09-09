@@ -4,7 +4,13 @@
  */
 
 export const typeDef = `  
+  type UserParameter {
+    userParameterType: String!
+    parameterRequired: Boolean!
+  }
   type Branch{
+    """Whether this branch's agency supports borrowerCheck"""
+    borrowerCheck: Boolean!
     agencyName: String
     agencyId: String!
     branchId: String!
@@ -12,7 +18,7 @@ export const typeDef = `
     openingHours: String
     postalAddress: String
     postalCode: String
-    orderParameters: [String!]!
+    userParameters: [UserParameter!]!
     orderPolicy(pid:String!): CheckOrderPolicy
     city: String
     pickupAllowed: Boolean!
@@ -33,11 +39,30 @@ export const typeDef = `
 export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
+    async borrowerCheck(parent, args, context, info) {
+      // returns true if login.bib.dk is supported
+      if (!parent.agencyId) {
+        return false;
+      }
+      const res = await context.datasources.vipcore_UserOrderParameters.load(
+        parent.agencyId
+      );
+      if (
+        res.agencyParameters &&
+        res.agencyParameters.borrowerCheckParameters
+      ) {
+        return !!res.agencyParameters.borrowerCheckParameters.find(
+          ({ borrowerCheckSystem, borrowerCheck }) =>
+            borrowerCheckSystem === "login.bib.dk" && borrowerCheck
+        );
+      }
+      return false;
+    },
     agencyName(parent, args, context, info) {
-      return parent.agencyName;
+      return parent.agencyName || "";
     },
     agencyId(parent, args, context, info) {
-      return parent.agencyId;
+      return parent.agencyId || "";
     },
     branchId(parent, args, context, info) {
       return parent.branchId;
@@ -73,8 +98,14 @@ export const resolvers = {
         parent.openingHours[0]
       );
     },
-    orderParameters(parent, args, context, info) {
-      return parent.orderParameters;
+    async userParameters(parent, args, context, info) {
+      if (!parent.agencyId) {
+        return [];
+      }
+      const res = await context.datasources.vipcore_UserOrderParameters.load(
+        parent.agencyId
+      );
+      return res.userParameter || [];
     },
     async orderPolicy(parent, args, context, info) {
       return await context.datasources.checkorder.load({

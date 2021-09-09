@@ -36,11 +36,15 @@ test("library - get branches for agency", async () => {
             branches(agencyid: "710100"){
               hitcount
               result {
+                borrowerCheck
                 agencyId
                 branchId
                 name
                 openingHours
-                orderParameters
+                userParameters {
+                  userParameterType
+                  parameterRequired
+                }
                 postalAddress
                 postalCode
                 city
@@ -62,12 +66,16 @@ test("library - get all", async () => {
             branches{
               hitcount
               result {
+                borrowerCheck
                 agencyName
                 agencyId
                 branchId
                 name
                 openingHours
-                orderParameters
+                userParameters {
+                  userParameterType
+                  parameterRequired
+                }
                 postalAddress
                 postalCode
                 city

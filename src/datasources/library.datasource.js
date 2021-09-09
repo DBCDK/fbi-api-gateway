@@ -1,8 +1,16 @@
+/**
+ * @file Make branches searchable using a tiny js inmemory search engine
+ *
+ * Note, this was implemented before changing to vip-core.
+ * Some day we may use the findlibrary operation to do this, but for now
+ * it does not support highlighting and "one field search"
+ *
+ */
 import request from "superagent";
 import config from "../config";
 import { createIndexer } from "../utils/searcher";
 
-const endpoint = "/libraries";
+const endpoint = "/findlibrary/all?trackingId=betabib";
 
 const fields = [
   "name",
@@ -42,18 +50,38 @@ let fetchingPromise;
 const index = createIndexer({ options });
 const timeToLiveMS = 1000 * 60 * 30;
 
-async function get({ accessToken }) {
-  const url = config.datasources.openplatform.url + endpoint;
+async function get() {
+  const url = config.datasources.vipcore.url + endpoint;
+  let result = (await request.get(url)).body.pickupAgency;
 
-  let args = { access_token: accessToken };
-
-  const result = (await request.post(url).send(args)).body.data;
-
+  // Map to format supported by minisearch
+  result = result.map((branch) => {
+    return {
+      ...branch,
+      branchName:
+        branch.branchName && branch.branchName.map((entry) => entry.value),
+      branchShortName:
+        branch.branchShortName &&
+        branch.branchShortName.map((entry) => entry.value),
+      openingHours:
+        branch.openingHours && branch.openingHours.map((entry) => entry.value),
+      illOrderReceiptText:
+        branch.illOrderReceiptText &&
+        branch.illOrderReceiptText.map((entry) => entry.value),
+    };
+  });
   return result;
 }
 
 export async function search(props, getFunc) {
-  const { q, limit = 10, offset = 0, agencyid, language = "da" } = props;
+  const {
+    q,
+    limit = 10,
+    offset = 0,
+    agencyid,
+    language = "da",
+    branchId,
+  } = props;
 
   const age = lastUpdateMS ? new Date().getTime() - lastUpdateMS : 0;
 
@@ -108,7 +136,9 @@ export async function search(props, getFunc) {
     const stripped = agencyid.replace(/\D/g, "");
     merged = merged.filter((branch) => branch.agencyId === stripped);
   }
-
+  if (branchId) {
+    merged = merged.filter((branch) => branch.branchId === branchId);
+  }
   return {
     hitcount: merged.length,
     result: merged

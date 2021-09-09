@@ -75,5 +75,12 @@ export default {
       prefix: process.env.OPENPLATFORM_PREFIX || "openplatform-1",
       ttl: process.env.OPENFORMAT_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
     },
+    vipcore: {
+      url:
+        process.env.VIP_CORE_URL ||
+        "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api",
+      prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
+      ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+    },
   },
 };
