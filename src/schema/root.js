@@ -22,6 +22,7 @@ type Query {
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
+  infomediaContent(pid: String!): [InfomediaContent]
 }
 
 type Mutation {
@@ -35,11 +36,7 @@ type Mutation {
 export const resolvers = {
   Query: {
     async manifestation(parent, args, context, info) {
-      // Fetch work to get workTypes (used by the articleContent)
-      const id = `work-of:${args.pid}`;
-      const { work } = await context.datasources.workservice.load(id);
-
-      return { id: args.pid, workTypes: work.workTypes };
+      return { id: args.pid };
     },
     monitor(parent, args, context, info) {
       try {
@@ -93,6 +90,12 @@ export const resolvers = {
         libraryCode: args.libraryCode,
         userId: args.userId,
         userPincode: args.userPincode,
+      });
+    },
+    async infomediaContent(parent, args, context, info) {
+      return await context.datasources.infomedia.load({
+        pid: args.pid,
+        accessToken: context.accessToken,
       });
     },
   },

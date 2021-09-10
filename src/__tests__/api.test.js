@@ -209,18 +209,9 @@ describe("API test cases", () => {
                       origin
                       note
                     }
-                    ... on InfomediaContent {
-                      id
-                      headLine
-                      subHeadLine
-                      byLine
-                      dateLine
-                      paper
-                      origin
-                      hedLine
-                      logo
-                      text
-                      html
+                    ... on InfomediaReference {
+                      type
+                      infomediaId
                     }
                   }
                   originals
@@ -261,18 +252,9 @@ describe("API test cases", () => {
                         origin
                         note
                       }
-                      ... on InfomediaContent {
-                        id
-                        headLine
-                        subHeadLine
-                        byLine
-                        dateLine
-                        paper
-                        origin
-                        hedLine
-                        logo
-                        text
-                        html
+                      ... on InfomediaReference {
+                        type
+                        infomediaId
                       }
                     }
                     originals
@@ -348,39 +330,6 @@ describe("API test cases", () => {
         datasources: createMockedDataLoaders(),
       },
     });
-    expect(result).toMatchSnapshot();
-  });
-
-  test("Manifestation -> onlineAccess returns InfomediaContent from infomedia", async () => {
-    const result = await performTestQuery({
-      query: `
-        query ($id: String!) {
-          work(id: $id) {
-            title
-            manifestations {
-              onlineAccess {
-                ... on InfomediaContent {
-                  id
-                  headLine
-                  subHeadLine
-                  byLine
-                  dateLine
-                  paper
-                  origin
-                  hedLine
-                  logo
-                  text
-                  html
-                }
-              }
-            }
-          }
-        }
-        `,
-      variables: { id: "work-of:870971-avis:34591016" },
-      context: { datasources: createMockedDataLoaders() },
-    });
-
     expect(result).toMatchSnapshot();
   });
 

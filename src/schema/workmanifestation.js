@@ -3,7 +3,7 @@
  *
  */
 
-import { getArray, getInfomediaDetails } from "../utils/utils";
+import { getArray } from "../utils/utils";
 import dayjs from "dayjs";
 
 /**
@@ -219,33 +219,10 @@ export const resolvers = {
     async onlineAccess(parent, args, context, info) {
       const result = [];
 
-      // Check if work is an article
-      const isArticle = parent.workTypes.includes("article");
-
-      if (isArticle) {
-        // Get article (InfomediaContent) from infomedia
-        try {
-          const article = await context.datasources.infomedia.load({
-            pid: parent.id,
-            accessToken: context.accessToken,
-          });
-
-          if (article && article[0]) {
-            // get details from infomedia article
-            const details = getInfomediaDetails(article[0]);
-
-            result.push({ ...article[0], details });
-          }
-        } catch (e) {
-          // TODO: handle not logged in
-        }
-      }
-
       // Get onlineAccess from openformat (UrlReferences)
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-
       const data = getArray(manifestation, "details.onlineAccess.value");
 
       data.forEach((entry) => {
@@ -257,7 +234,26 @@ export const resolvers = {
         }
       });
 
-      // Return array containing both InfomediaContent and UrlReferences
+      const infomedia =
+        (manifestation &&
+          manifestation.details &&
+          manifestation.details.infomedia &&
+          manifestation.details.infomedia.id) ||
+        null;
+
+      if (infomedia) {
+        infomedia.forEach((id) => {
+          if (id.$) {
+            result.push({
+              type: "infomedia",
+              infomediaId: id.$ || "",
+              pid: manifestation.admindata.pid.$,
+            });
+          }
+        });
+      }
+
+      // Return array containing both InfomediaReference and UrlReferences
       return result;
     },
     async originals(parent, args, context, info) {
