@@ -223,7 +223,6 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-
       const data = getArray(manifestation, "details.onlineAccess.value");
 
       data.forEach((entry) => {
@@ -235,16 +234,22 @@ export const resolvers = {
         }
       });
 
-      const infomediaId =
+      const infomedia =
         (manifestation &&
           manifestation.details &&
-          manifestation.details.infomediaId &&
-          manifestation.details.infomediaId.$) ||
+          manifestation.details.infomedia &&
+          manifestation.details.infomedia.id) ||
         null;
 
-      if (infomediaId) {
-        result.push({
-          infomediaId: infomediaId,
+      if (infomedia) {
+        infomedia.forEach((id) => {
+          if (id.$) {
+            result.push({
+              type: "infomedia",
+              infomediaId: id.$ || "",
+              pid: manifestation.admindata.pid.$,
+            });
+          }
         });
       }
 

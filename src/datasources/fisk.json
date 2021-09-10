@@ -213,7 +213,7 @@
       ],
       "title": [
         {
-          "value": "{title}"
+          "value": "{titleBrief}"
         }
       ],
       "titleFull": [
@@ -247,8 +247,7 @@
       "inLanguage": "{bibdk_language_code}",
       "usedLanguage": "{bibdk_used_language}",
       "physicalDescriptionArticles": "{physicalDescriptionArticles}",
-      "volume": "{volume}",
-      "infomedia": [{"id":"{infomedia_id}"}]
+      "volume": "{volume}"
     }
   }
 }

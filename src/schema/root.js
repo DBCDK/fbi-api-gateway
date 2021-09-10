@@ -21,7 +21,7 @@ type Query {
   branches(agencyid: String, language: LanguageCode): [Branch!]!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
-  infomediaContent(pid: String!): InfomediaContent
+  infomediaContent(pid: String!): [InfomediaContent]
 }
 
 type Mutation {
@@ -35,11 +35,7 @@ type Mutation {
 export const resolvers = {
   Query: {
     async manifestation(parent, args, context, info) {
-      // Fetch work to get workTypes (used by the articleContent)
-      const id = `work-of:${args.pid}`;
-      const { work } = await context.datasources.workservice.load(id);
-
-      return { id: args.pid, workTypes: work.workTypes };
+      return { id: args.pid };
     },
     monitor(parent, args, context, info) {
       try {

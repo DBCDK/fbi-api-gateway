@@ -1257,6 +1257,16 @@ export function load(pid) {
         inLanguage: {
           $: "da",
         },
+        infomedia: {
+          id: [
+            {
+              $: "e2a3ae5c",
+            },
+            {
+              $: "e2a3ae63",
+            },
+          ],
+        },
       },
     },
     "870976-anmeld:129549769": {

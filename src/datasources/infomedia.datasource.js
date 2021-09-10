@@ -9,21 +9,21 @@ export async function load({ pid, accessToken }) {
   const url = config.datasources.openplatform.url + endpoint;
   const result = [];
   try {
-    const article = (
+    const articles = (
       await request.post(url).send({
         access_token: accessToken,
         pid: pid,
       })
     ).body.data;
 
-    //console.log(article, "ARTICLE");
-    if (article && article[0]) {
-      // get details from infomedia article
-      const details = getInfomediaDetails(article[0]);
-      result.push({ ...article[0], details });
+    if (articles && articles[0]) {
+      articles.forEach((article) => {
+        // get details from infomedia article
+        let details = getInfomediaDetails(article);
+        result.push({ ...article, details });
+      });
     }
-
-    return result[0];
+    return result;
   } catch (e) {
     log.error("Request to infomedia failed: " + url + " message: " + e.message);
     throw e;

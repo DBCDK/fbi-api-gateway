@@ -1,0 +1,133 @@
+<ting:container xmlns:ting="http://www.dbc.dk/ting" xmlns:ac="http://biblstandard.dk/ac/namespace/"
+                xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/"
+                xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/"
+                xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/"
+                xmlns:docbook="http://docbook.org/ns/docbook" xmlns:oss="http://oss.dbc.dk/ns/osstypes"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <dkabm:record>
+        <ac:identifier>38597752|870971</ac:identifier>
+        <ac:source>Anmeldelser</ac:source>
+        <dc:title>Anmeldelse af: 1984</dc:title>
+        <dc:title xsi:type="dkdcplus:full">Anmeldelse af: 1984</dc:title>
+        <dc:creator xsi:type="dkdcplus:rev">Christian Jensen (f. 1972)</dc:creator>
+        <dc:creator xsi:type="oss:sort">Jensen, Christian</dc:creator>
+        <dc:subject>Anmeldelse</dc:subject>
+        <dcterms:abstract>Vurdering: 5/6</dcterms:abstract>
+        <dcterms:audience>gymnasieniveau</dcterms:audience>
+        <dcterms:audience>alment niveau</dcterms:audience>
+        <dcterms:audience>voksenmaterialer</dcterms:audience>
+        <dc:date>2021</dc:date>
+        <dc:type xsi:type="dkdcplus:BibDK-Type">Anmeldelse</dc:type>
+        <dcterms:extent>Sektion 2, s. 1</dcterms:extent>
+        <dc:language xsi:type="dcterms:ISO639-2">dan</dc:language>
+        <dc:language>Dansk</dc:language>
+        <dcterms:isPartOf>Politiken, 2021-01-07</dcterms:isPartOf>
+        <dcterms:isPartOf xsi:type="dkdcplus:ISSN">0907-1814</dcterms:isPartOf>
+    </dkabm:record>
+    <marcx:collection xmlns:marcx="info:lc/xmlns/marcxchange-v1">
+        <marcx:record format="danMARC2" type="Bibliographic">
+            <marcx:leader>00000naai 22000000 4500</marcx:leader>
+            <marcx:datafield ind1="0" ind2="0" tag="001">
+                <marcx:subfield code="a">38597752</marcx:subfield>
+                <marcx:subfield code="b">870971</marcx:subfield>
+                <marcx:subfield code="c">20210107083739</marcx:subfield>
+                <marcx:subfield code="d">20210107</marcx:subfield>
+                <marcx:subfield code="f">a</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="004">
+                <marcx:subfield code="r">n</marcx:subfield>
+                <marcx:subfield code="a">i</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="008">
+                <marcx:subfield code="t">a</marcx:subfield>
+                <marcx:subfield code="u">f</marcx:subfield>
+                <marcx:subfield code="a">2021</marcx:subfield>
+                <marcx:subfield code="b">dk</marcx:subfield>
+                <marcx:subfield code="d">s</marcx:subfield>
+                <marcx:subfield code="l">dan</marcx:subfield>
+                <marcx:subfield code="n">b</marcx:subfield>
+                <marcx:subfield code="r">an</marcx:subfield>
+                <marcx:subfield code="x">03</marcx:subfield>
+                <marcx:subfield code="x">06</marcx:subfield>
+                <marcx:subfield code="v">0</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="009">
+                <marcx:subfield code="a">a</marcx:subfield>
+                <marcx:subfield code="g">xe</marcx:subfield>
+                <marcx:subfield code="g">xx</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="014">
+                <marcx:subfield code="a">48750923</marcx:subfield>
+                <marcx:subfield code="x">ANM</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="016">
+                <marcx:subfield code="a">03243850</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="032">
+                <marcx:subfield code="a">DAN202102</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="245">
+                <marcx:subfield code="a">[Anmeldelse]</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="300">
+                <marcx:subfield code="a">Sektion 2, s. 1</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="504">
+                <marcx:subfield code="a">Vurdering: 5/6</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="557">
+                <marcx:subfield code="a">Politiken</marcx:subfield>
+                <marcx:subfield code="j">2021</marcx:subfield>
+                <marcx:subfield code="z">0907-1814</marcx:subfield>
+                <marcx:subfield code="V">2021-01-07</marcx:subfield>
+                <marcx:subfield code="v">2021-01-07</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="700">
+                <marcx:subfield code="5">870979</marcx:subfield>
+                <marcx:subfield code="6">68494532</marcx:subfield>
+                <marcx:subfield code="a">Jensen</marcx:subfield>
+                <marcx:subfield code="h">Christian</marcx:subfield>
+                <marcx:subfield code="c">f. 1972</marcx:subfield>
+                <marcx:subfield code="&amp;">ANM</marcx:subfield>
+                <marcx:subfield code="4">rev</marcx:subfield>
+            </marcx:datafield>
+            <marcx:datafield ind1="0" ind2="0" tag="996">
+                <marcx:subfield code="a">DBC</marcx:subfield>
+            </marcx:datafield>
+        </marcx:record>
+    </marcx:collection>
+    <ln:links xmlns:ln="http://oss.dbc.dk/ns/links">
+        <ln:link>
+            <ln:access>login</ln:access>
+            <ln:accessType>rest</ln:accessType>
+            <ln:linkTo>webservice</ln:linkTo>
+            <ln:relationType>dbcaddi:hasOnlineAccess</ln:relationType>
+            <ln:url>[useraccessinfomedia]?action=getArticle&amp;faust=38597752&amp;infomediaId=e80fc9f3&amp;libraryCode=[libraryCode]&amp;userId=[userId]&amp;userPinCode=[userPinCode]</ln:url>
+            <ln:collectionIdentifier>870971-anmeld</ln:collectionIdentifier>
+        </ln:link>
+        <ln:link>
+            <ln:access>onsite</ln:access>
+            <ln:accessType>rest</ln:accessType>
+            <ln:linkTo>webservice</ln:linkTo>
+            <ln:relationType>dbcaddi:hasOnlineAccess</ln:relationType>
+            <ln:url>[useraccessinfomedia]?action=getArticle&amp;faust=38597752&amp;infomediaId=e80fc9f3&amp;libraryCode=[libraryCode]&amp;userId=[userId]&amp;userPinCode=[userPinCode]</ln:url>
+            <ln:collectionIdentifier>870971-anmeld</ln:collectionIdentifier>
+        </ln:link>
+    </ln:links>
+    <adminData>
+        <recordStatus>active</recordStatus>
+        <creationDate>2021-01-07</creationDate>
+        <libraryType>none</libraryType>
+        <indexingAlias>review</indexingAlias>
+        <accessType>physical</accessType>
+        <accessType>online</accessType>
+        <workType>review</workType>
+        <collectionIdentifier>870971-anmeld</collectionIdentifier>
+        <reviewedCreator>Orwell, George</reviewedCreator>
+        <reviewedTitle>1984</reviewedTitle>
+        <reviewedPublisher>Lindhardt og Ringhof</reviewedPublisher>
+        <reviewedIdentifier>9788711985328</reviewedIdentifier>
+        <reviewedType>Bog</reviewedType>
+        <reviewedWorkType>literature</reviewedWorkType>
+    </adminData>
+</ting:container>
