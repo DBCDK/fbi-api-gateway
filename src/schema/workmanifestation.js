@@ -234,7 +234,7 @@ export const resolvers = {
         }
       });
 
-      const infomedia =
+      let infomedia =
         (manifestation &&
           manifestation.details &&
           manifestation.details.infomedia &&
@@ -242,6 +242,9 @@ export const resolvers = {
         null;
 
       if (infomedia) {
+        if (!Array.isArray(infomedia)) {
+          infomedia = [infomedia];
+        }
         infomedia.forEach((id) => {
           if (id.$) {
             result.push({
