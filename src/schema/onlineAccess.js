@@ -44,9 +44,6 @@ export const resolvers = {
     infomediaId(parent, args, context, info) {
       return parent.infomediaId;
     },
-    type(parent, args, context, info) {
-      return "infomedia";
-    },
     error(parent, args, context, info) {
       return parent.error || null;
     },

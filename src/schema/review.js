@@ -113,17 +113,9 @@ export const resolvers = {
     reference(parent, args, context, info) {
       const result = [];
 
-      let infomedia =
-        (parent &&
-          parent.details &&
-          parent.details.infomedia &&
-          parent.details.infomedia.id) ||
-        null;
+      let infomedia = getArray(parent, "details.infomedia.id");
 
       if (infomedia) {
-        if (!Array.isArray(infomedia)) {
-          infomedia = [infomedia];
-        }
         infomedia.forEach((id) => {
           if (id.$) {
             result.push({
