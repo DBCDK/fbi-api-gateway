@@ -16,7 +16,7 @@ type ReviewInfomedia {
   date: String!
   media: String!
   rating: String!
-  content: InfomediaContent
+  reference: [InfomediaReference]
 }
 type ReviewLitteratursiden {
   author: String!
@@ -110,17 +110,31 @@ export const resolvers = {
         ""
       );
     },
-    async content(parent, args, context, info) {
-      if (parent.admindata && parent.admindata.pid) {
-        const pid = parent.admindata.pid.$;
+    reference(parent, args, context, info) {
+      const result = [];
 
-        const article = await context.datasources.infomedia.load({
-          pid,
-          accessToken: context.accessToken,
+      let infomedia =
+        (parent &&
+          parent.details &&
+          parent.details.infomedia &&
+          parent.details.infomedia.id) ||
+        null;
+
+      if (infomedia) {
+        if (!Array.isArray(infomedia)) {
+          infomedia = [infomedia];
+        }
+        infomedia.forEach((id) => {
+          if (id.$) {
+            result.push({
+              type: "infomedia",
+              infomediaId: id.$ || "",
+              pid: parent.admindata.pid.$,
+            });
+          }
         });
-
-        return article[0];
       }
+      return result.length > 0 ? result : null;
     },
   },
   ReviewLitteratursiden: {

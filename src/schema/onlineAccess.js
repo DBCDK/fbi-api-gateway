@@ -19,7 +19,6 @@ export const typeDef = `
   
   type InfomediaReference {
     infomediaId: String!
-    type: String!
     pid: String!
     error: String
   }
