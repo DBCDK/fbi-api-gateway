@@ -83,11 +83,9 @@ Object {
       "onlineAccess": Array [
         Object {
           "infomediaId": "e2a3ae5c",
-          "type": "infomedia",
         },
         Object {
           "infomediaId": "e2a3ae63",
-          "type": "infomedia",
         },
       ],
       "pid": "870971-anmeld:47413281",

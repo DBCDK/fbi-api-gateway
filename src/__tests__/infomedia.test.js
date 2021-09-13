@@ -67,7 +67,6 @@ test("Manifestation -> onlineAccess returns InfomediaReference", async () => {
             pid
             onlineAccess {
                 ... on InfomediaReference {
-                  type
                   infomediaId
                   
                 }
