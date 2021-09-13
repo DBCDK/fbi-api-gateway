@@ -210,7 +210,6 @@ describe("API test cases", () => {
                       note
                     }
                     ... on InfomediaReference {
-                      type
                       infomediaId
                     }
                   }
@@ -253,7 +252,6 @@ describe("API test cases", () => {
                         note
                       }
                       ... on InfomediaReference {
-                        type
                         infomediaId
                       }
                     }
@@ -273,9 +271,8 @@ describe("API test cases", () => {
                     date
                     media
                     rating
-                    content {
-                      id
-                      html
+                    reference {
+                      infomediaId
                     }
                   }
                   ... on ReviewLitteratursiden {
@@ -345,9 +342,9 @@ describe("API test cases", () => {
                   date
                   media
                   rating
-                  content {
-                    id
-                    html
+                  reference {
+                    pid
+                    infomediaId
                   }
                 }
               }

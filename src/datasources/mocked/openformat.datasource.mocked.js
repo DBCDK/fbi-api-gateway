@@ -1021,6 +1021,13 @@ export function load(pid) {
         inLanguage: {
           $: "da",
         },
+        infomedia: {
+          id: [
+            {
+              $: "e7705cc7",
+            },
+          ],
+        },
       },
     },
     "870971-anmeld:47403898": {
@@ -1138,6 +1145,13 @@ export function load(pid) {
         tracks: [null, null],
         inLanguage: {
           $: "da",
+        },
+        infomedia: {
+          id: [
+            {
+              $: "e7705deb",
+            },
+          ],
         },
       },
     },
