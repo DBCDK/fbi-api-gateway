@@ -55,13 +55,31 @@ promExporterApp.listen(9599, () => {
   });
 
   // set up context per request
-  app.use((req, res, next) => {
+  app.use(async (req, res, next) => {
+    req.datasources = createDataLoaders();
+
     // Get bearer token from authorization header
     req.accessToken =
       req.headers.authorization &&
       req.headers.authorization.replace(/bearer /i, "");
 
-    req.datasources = createDataLoaders();
+    // Bearer token is required
+    if (!req.accessToken) {
+      return res.status(401).send({ error: "Unauthorized" });
+    }
+
+    // And bearer token must be valid
+    try {
+      req.smaug = await req.datasources.smaug.load({
+        accessToken: req.accessToken,
+      });
+    } catch (e) {
+      if (e.response && e.response.statusCode === 404) {
+        return res.status(401).send({ error: "Unauthorized" });
+      }
+      log.error("Error fetching from smaug", { response: e });
+      return res.status(500).send({ error: "Internal server error" });
+    }
 
     next();
   });

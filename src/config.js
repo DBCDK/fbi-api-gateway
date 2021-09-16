@@ -82,5 +82,8 @@ export default {
       prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
     },
+    smaug: {
+      url: process.env.SMAUG_URL || "https://auth-config.dbc.dk",
+    },
   },
 };
