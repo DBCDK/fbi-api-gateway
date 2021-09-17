@@ -7,6 +7,7 @@ import schema from "./schemaLoader";
 import express from "express";
 import cors from "cors";
 import { graphqlHTTP } from "express-graphql";
+import { parse, getOperationAST } from "graphql";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration, count } from "./utils/monitor";
@@ -54,6 +55,18 @@ promExporterApp.listen(9599, () => {
     next();
   });
 
+  /**
+   * Check if operation is introspection
+   * @param {*} operation
+   * @returns
+   */
+  function isIntrospectionQuery(operation) {
+    return operation.selectionSet.selections.every((selection) => {
+      const fieldName = selection.name.value;
+      return fieldName.startsWith("__");
+    });
+  }
+
   let resolvedSchema;
   (async () => {
     try {
@@ -66,59 +79,67 @@ promExporterApp.listen(9599, () => {
   // Setup route handler for GraphQL
   app.use(
     "/graphql",
-    // set up context per request
-    async (req, res, next) => {
-      if (req.method === "GET") {
-        // show graphiql
-        return next();
-      }
-      req.datasources = createDataLoaders();
+    graphqlHTTP(async (request, response, graphQLParams) => {
+      // Create dataloaders and add to request
+      request.datasources = createDataLoaders();
 
       // Get bearer token from authorization header
-      req.accessToken =
-        req.headers.authorization &&
-        req.headers.authorization.replace(/bearer /i, "");
+      request.accessToken =
+        request.headers.authorization &&
+        request.headers.authorization.replace(/bearer /i, "");
 
-      // Bearer token is required
-      if (!req.accessToken) {
-        return res.status(401).send({ error: "Unauthorized" });
-      }
-
-      // And bearer token must be valid
+      // Fetch smaug configuration
       try {
-        req.smaug = await req.datasources.smaug.load({
-          accessToken: req.accessToken,
-        });
+        request.smaug =
+          request.accessToken &&
+          (await request.datasources.smaug.load({
+            accessToken: request.accessToken,
+          }));
       } catch (e) {
-        if (e.response && e.response.statusCode === 404) {
-          return res.status(401).send({ error: "Unauthorized" });
+        if (e.response && e.response.statusCode !== 404) {
+          log.error("Error fetching from smaug", { response: e });
+          throw "Internal server error";
         }
-        log.error("Error fetching from smaug", { response: e });
-        return res.status(500).send({ error: "Internal server error" });
       }
 
-      next();
-    },
-    graphqlHTTP(async (request, response, graphQLParams) => ({
-      schema: resolvedSchema,
-      graphiql: { headerEditorEnabled: true, shouldPersistHeaders: true },
-      extensions: ({ document, context, result }) => {
-        if (document && document.definitions && !result.errors) {
-          count("query_success");
-        } else {
-          count("query_error");
-          result.errors.forEach((error) => {
-            log.error(error.message, error);
-          });
-        }
-      },
-      validationRules: [
-        validateComplexity({
-          query: graphQLParams.query,
-          variables: graphQLParams.variables,
-        }),
-      ],
-    }))
+      return {
+        schema: resolvedSchema,
+        graphiql: { headerEditorEnabled: true, shouldPersistHeaders: true },
+        extensions: ({ document, context, result }) => {
+          if (document && document.definitions && !result.errors) {
+            count("query_success");
+          } else {
+            count("query_error");
+            result.errors.forEach((error) => {
+              log.error(error.message, error);
+            });
+          }
+        },
+        validationRules: [
+          function authenticate() {
+            if (request.method === "GET") {
+              throw "Unauthorized";
+            }
+
+            const document = parse(graphQLParams.query);
+            const ast = getOperationAST(document);
+
+            // If this is not the introspection query,
+            // a valid token is required
+            if (!isIntrospectionQuery(ast) && !request.smaug) {
+              throw "Unauthorized";
+            }
+
+            // All ok
+            return { Field() {} };
+          },
+          validateComplexity({
+            query: graphQLParams.query,
+            variables: graphQLParams.variables,
+          }),
+        ],
+      };
+    })
   );
 
   // Setup route handler for howru
