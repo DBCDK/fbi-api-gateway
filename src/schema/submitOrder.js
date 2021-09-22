@@ -17,18 +17,26 @@ export const typeDef = `
       NON_RETURNABLE_COPY,
       NORMAL,
       STACK_RETRIEVAL
-   }   
+   }
+   input SubmitOrderUserParameters {
+      cpr: String,
+      userId: String,
+      barcode: String,
+      cardno: String,
+      customId: String,
+      userDateOfBirth: String,
+      userName: String!,
+      userAddress: String,
+      userMail: String,
+      userTelephone: String
+   }
    input SubmitOrderInput{
     orderType: OrderType,
-    pids: [
-      String!,
-    ]!,
-    pickUpBranch: String,
-    name: String,
-    address: String,
-    email: String,
-    phone: String,
+    pids: [String!]!,
+    pickUpBranch: String!,
+    exactEdition: Boolean
     expires: String
+    userParameters: SubmitOrderUserParameters!
   } `;
 
 /**

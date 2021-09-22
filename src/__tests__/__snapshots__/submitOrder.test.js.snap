@@ -1,13 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`submitorder 1`] = `
+exports[`submitorder fails when user is not authenticated, and no userId provided 1`] = `
+Object {
+  "data": Object {
+    "submitOrder": null,
+  },
+  "errors": Array [
+    [GraphQLError: User must be authenticated via the pickUpBranch, or provide userId manually],
+  ],
+}
+`;
+
+exports[`submitorder succedes when user is authenticated, and no userId provided 1`] = `
 Object {
   "data": Object {
     "submitOrder": Object {
-      "deleted": null,
-      "orderId": null,
-      "orsId": "1040184487",
-      "status": "ok",
+      "orderId": "1041254137",
+      "status": "not_owned_ILL_loc",
+    },
+  },
+}
+`;
+
+exports[`submitorder succedes when user is not authenticated, but userId provided 1`] = `
+Object {
+  "data": Object {
+    "submitOrder": Object {
+      "orderId": "1041254137",
+      "status": "not_owned_ILL_loc",
     },
   },
 }

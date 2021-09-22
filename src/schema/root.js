@@ -121,10 +121,18 @@ export const resolvers = {
       return "OK";
     },
     async submitOrder(parent, args, context, info) {
-      return await context.datasources.submitOrder.load({
-        input: args.input,
+      const input = {
+        ...args.input,
         accessToken: context.accessToken,
-      });
+        smaug: context.smaug,
+        branch: (
+          await context.datasources.library.load({
+            branchId: args.input.pickUpBranch,
+          })
+        ).result[0],
+      };
+
+      return await context.datasources.submitOrder.load(input);
     },
   },
 };

@@ -27,6 +27,9 @@ promExporterApp.listen(9599, () => {
 (async () => {
   app.use(cors());
 
+  // trust ip-addresses from X-Forwarded-By header, and log requests
+  app.enable("trust proxy");
+
   // Middleware for replacing certain characters in response body.
   // This is a quick fix, and may be removed again if it is solved elsewhere.
   app.use(function (req, res, next) {
@@ -95,6 +98,9 @@ promExporterApp.listen(9599, () => {
           (await request.datasources.smaug.load({
             accessToken: request.accessToken,
           }));
+        request.smaug.app.ips = (request.ips.length && request.ips) || [
+          request.ip,
+        ];
       } catch (e) {
         if (e.response && e.response.statusCode !== 404) {
           log.error("Error fetching from smaug", { response: e });

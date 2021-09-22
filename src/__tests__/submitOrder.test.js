@@ -1,23 +1,5 @@
 /**
- * @file This file contains tests for the GraphQL API
- *
- * We want to ensure:
- *  - That fields can be retrieved as expected. If a type is changed, these tests should
- *    generally still work. Changes should be backwards compatible.
- *  - Error handling works.
- *  - Proper handling of insane/complex queries. For instance, highly nested queries
- *    that results in explosion of requests to underlying services.
- *
- * Error handling:
- *  - User errors. Query syntax errors, Queries that do not adhere to the schema, missing variables etc.
- *  - Datasource errors. Data from datasource with wrong format. Data not found.
- *    If we don't validate, these will probably lead to resolver errors.
- *  - Resolver errors. Bugs in resolvers, datasource errors may lead to resolver errors.
- *    We should have these logged, to be able to identify whether its a resolver bug or datasource bug
- *  - Network errors.
- *
- * It should be possible for users of the API to discern from the respone what type of error
- * they are getting. THIS IS STILL WORK IN PROGRESS
+ * @file This file contains tests for submitOrder
  *
  */
 
@@ -29,22 +11,90 @@ export async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
 }
 
-/**
- * testing happy path
- */
-test("submitorder", async () => {
+test("submitorder fails when user is not authenticated, and no userId provided", async () => {
   const result = await performTestQuery({
     query: `
           mutation{
-            submitOrder (input: { pickUpBranch:"790900", pids:["870970-basis:27925715"], name:"pjo-test"}){
+            submitOrder(
+              input: {
+                pids: ["870970-basis:25574486"],
+                pickUpBranch: "715100",
+                userParameters: {
+                  userAddress: "test",
+                  userName: "Test Testesen",
+                  userMail: "test@test.dk"
+                }
+              }) {
               status
               orsId
-              orderId
-              deleted
-          }
-        }`,
+            }
+          }`,
     variables: {},
-    context: { datasources: createMockedDataLoaders() },
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "some-access-token",
+      smaug: { user: {}, app: { id: "app-name", ips: ["1.1.1.1"] } },
+    },
+  });
+  expect(result).toMatchSnapshot();
+});
+
+test("submitorder succedes when user is authenticated, and no userId provided", async () => {
+  const result = await performTestQuery({
+    query: `
+          mutation{
+            submitOrder(
+              input: {
+                pids: ["870970-basis:25574486"],
+                pickUpBranch: "715100",
+                userParameters: {
+                  userAddress: "test",
+                  userName: "Test Testesen",
+                  userMail: "test@test.dk"
+                }
+              }) {
+              status
+              orderId
+            }
+          }`,
+    variables: {},
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "some-access-token",
+      smaug: {
+        user: { id: "123", agency: "715100" },
+        app: { id: "app-name", ips: ["1.1.1.1"] },
+      },
+    },
+  });
+  expect(result).toMatchSnapshot();
+});
+
+test("submitorder succedes when user is not authenticated, but userId provided", async () => {
+  const result = await performTestQuery({
+    query: `
+          mutation{
+            submitOrder(
+              input: {
+                pids: ["870970-basis:25574486"],
+                pickUpBranch: "715100",
+                userParameters: {
+                  userId: "123",
+                  userAddress: "test",
+                  userName: "Test Testesen",
+                  userMail: "test@test.dk"
+                }
+              }) {
+              status
+              orderId
+            }
+          }`,
+    variables: {},
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "some-access-token",
+      smaug: { user: {}, app: { id: "app-name", ips: ["1.1.1.1"] } },
+    },
   });
   expect(result).toMatchSnapshot();
 });

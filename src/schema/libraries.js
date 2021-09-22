@@ -3,10 +3,25 @@
  *
  */
 
+import { orderBy, sortedUniqBy, uniqBy } from "lodash";
+
 export const typeDef = `  
+  enum VipUserParameter {
+    cpr
+    userId
+    barcode
+    cardno
+    customId
+    userDateOfBirth
+    userName
+    userAddress
+    userMail
+    userTelephone
+  }
   type UserParameter {
-    userParameterType: String!
+    userParameterType: VipUserParameter!
     parameterRequired: Boolean!
+    description: String
   }
   type Branch{
     """Whether this branch's agency supports borrowerCheck"""
@@ -99,14 +114,89 @@ export const resolvers = {
         parent.openingHours[0]
       );
     },
+    /**
+     * This resolver fetches user parameters from vip-core
+     * These parameters describe what user info needs to be sent to openorder
+     * for a specific agency. Unfortunately, we have to do some work (with regards
+     * to the userIdType) to make the response easy to use for frontends, and
+     * make it easier to submit orders (openorder).
+     *
+     */
     async userParameters(parent, args, context, info) {
       if (!parent.agencyId) {
         return [];
       }
+
+      // Fetch from vip-core
       const res = await context.datasources.vipcore_UserOrderParameters.load(
         parent.agencyId
       );
-      return res.userParameter || [];
+      const userParameters = res.userParameter || [];
+
+      // These parameters are special as they describe what goes in the userId
+      const userIdTypes = ["cpr", "barcode", "cardno", "customId"];
+
+      // Find the userId type, exactly one will be used
+      const userIdType = userParameters.find((parameter) =>
+        userIdTypes.includes(parameter.userParameterType)
+      ) || { userParameterType: "userId" };
+
+      // We force some parameters to be required (for bibdk)
+      let result = [
+        { ...userIdType, parameterRequired: true },
+        {
+          userParameterType: "userName",
+          parameterRequired: true,
+        },
+        {
+          userParameterType: "userMail",
+          parameterRequired: true,
+        },
+      ];
+
+      // The preferred order of parameters
+      const order = {
+        cpr: 0,
+        userId: 1,
+        barcode: 2,
+        cardno: 3,
+        customId: 4,
+        userName: 6,
+        userDateOfBirth: 7,
+        userAddress: 8,
+        userMail: 9,
+        userTelephone: 10,
+      };
+
+      // These are the forced parameters, and should not be repeated
+      const duplicates = [...userIdTypes, "userId", "userName", "userMail"];
+
+      // Combine forced parameters with the rest and set order property
+      result = [
+        ...result,
+        ...userParameters.filter(
+          (parameter) =>
+            Object.keys(order).includes(parameter.userParameterType) &&
+            !duplicates.includes(parameter.userParameterType)
+        ),
+      ].map((parameter) => {
+        // in rare cases there is a description available
+        // and it may be available in danish or english
+        let description =
+          res[`${parameter.userParameterType}Txt`] &&
+          (res[`${parameter.userParameterType}Txt`].find((description) =>
+            description.language.includes(parent.language)
+          ) ||
+            res[`${parameter.userParameterType}Txt`][0]);
+        return {
+          ...parameter,
+          description: description && description.value,
+          order: order[parameter.userParameterType],
+        };
+      });
+
+      // Order result and return
+      return orderBy(result, "order");
     },
     async orderPolicy(parent, args, context, info) {
       return await context.datasources.checkorder.load({
