@@ -16,7 +16,7 @@ export const typeDef = `
     }
     type WorkManifestation {
       content: [String!]
-      cover: Cover! 
+      cover: Cover!       
       creators: [Creator!]!
       datePublished(locale: String, format: String): CustomDateFormat!
       description: String!
@@ -78,7 +78,7 @@ export const resolvers = {
     },
     cover(parent, args, context, info) {
       // Fetch cover, and pass it to Cover resolver
-      return context.datasources.moreinfo.load(parent.id);
+      return context.datasources.moreinfoCovers.load(parent.id);
     },
     async description(parent, args, context, info) {
       if (parent.description) {
@@ -256,7 +256,28 @@ export const resolvers = {
         });
       }
 
-      // Return array containing both InfomediaReference and UrlReferences
+      let webarchive =
+        (manifestation &&
+          manifestation.details &&
+          manifestation.details.webarchive &&
+          manifestation.details.webarchive.$) ||
+        null;
+      if (webarchive) {
+        const archives = await context.datasources.moreinfoWebarchive.load(
+          manifestation.admindata.pid.$
+        );
+        archives.forEach((archive) => {
+          if (archive.url) {
+            result.push({
+              type: "webArchive",
+              url: archive.url,
+              pid: manifestation.admindata.pid.$,
+            });
+          }
+        });
+      }
+
+      // Return array containing both InfomediaReference, UrlReferences AND webArchive
       return result;
     },
     async originals(parent, args, context, info) {

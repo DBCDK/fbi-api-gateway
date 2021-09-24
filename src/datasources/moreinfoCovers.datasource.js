@@ -25,6 +25,7 @@ function createRequest(pid) {
 </mi:moreInfoRequest>`;
 }
 
+// @TODO - handle net archive also - moreInfoResponse.identifierInformation.netArchive
 export async function load(pid) {
   try {
     const images = (
@@ -32,18 +33,18 @@ export async function load(pid) {
     ).body.moreInfoResponse.identifierInformation
       .map((entry) => entry.coverImage)
       .filter((entry) => entry);
-  
+
     const res = {};
     images.forEach((entry) => {
       entry.forEach((cover) => {
         res[cover["@imageSize"].$] = cover.$;
       });
     });
-  
+
     return res;
-  } catch(e) {
+  } catch (e) {
     log.error(`Request to moreinfo failed for pid ${pid}`);
-    return {}
+    return {};
   }
 }
 
