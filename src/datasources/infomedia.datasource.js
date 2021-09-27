@@ -31,3 +31,12 @@ export async function load({ pid, accessToken }) {
     // return "internal_error";
   }
 }
+
+// cache for an hour
+export const options = {
+  redis: {
+    prefix: "infomedia-1",
+    ttl: 60 * 60,
+    staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
+  },
+};

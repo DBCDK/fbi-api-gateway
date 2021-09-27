@@ -30,6 +30,7 @@ export const typeDef = `
   type MaterialType {
     materialType: String!
     cover: Cover!
+    
     manifestations: [WorkManifestation!]!
   }
   type Work {
@@ -60,7 +61,7 @@ export const resolvers = {
     async cover(parent, args, context, info) {
       const covers = await Promise.all(
         parent.manifestations.map((manifestation) => {
-          return context.datasources.moreinfo.load(manifestation.id);
+          return context.datasources.moreinfoCovers.load(manifestation.id);
         })
       );
       // Find a valid cover.
@@ -73,9 +74,10 @@ export const resolvers = {
       const records = flattenRecords(parent);
       const covers = await Promise.all(
         records.map((record) => {
-          return context.datasources.moreinfo.load(record.id);
+          return context.datasources.moreinfoCovers.load(record.id);
         })
       );
+
       // Find a valid cover.
       // TODO how to determine which cover to select
       const cover = covers.find((entry) => entry.detail);

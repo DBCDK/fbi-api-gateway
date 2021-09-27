@@ -1,14 +1,13 @@
 /**
- * @file Review type definition and resolvers
+ * @file online access definition and resolvers
  *
  */
 
 import { getBaseUrl } from "../utils/utils";
 
 /**
- * The Review type definitions
- * Review is a union type, and may be ReviewInfomedia,
- * ReviewLitteratursiden or ReviewMatVurd
+ * The online access definitions
+ * online access is a union type, and may be an url- or infomedia-reference
  */
 export const typeDef = `
  type UrlReference {
@@ -22,7 +21,13 @@ export const typeDef = `
     pid: String!
     error: String
   }
- union OnlineAccess = UrlReference | InfomediaReference
+  
+  type WebArchive {
+    type: String!
+    url: String!
+    pid: String!
+  }
+ union OnlineAccess = UrlReference | InfomediaReference | WebArchive
  `;
 
 /**
@@ -48,9 +53,22 @@ export const resolvers = {
       return parent.error || null;
     },
   },
+  WebArchive: {
+    type(parent, args, context, info) {
+      return parent.type;
+    },
+    url(parent, args, context, info) {
+      return parent.url;
+    },
+    pid(parent, args, context, info) {
+      return parent.pid;
+    },
+  },
   OnlineAccess: {
     __resolveType(parent, args, context, info) {
-      if (parent.url) {
+      if (parent.type === "webArchive") {
+        return "WebArchive";
+      } else if (parent.url) {
         return "UrlReference";
       } else if (parent.infomediaId) {
         return "InfomediaReference";

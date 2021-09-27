@@ -15,7 +15,8 @@ type Cover {
   detail_500: String
   thumbnail: String
   detail: String
-}`;
+}
+`;
 
 /**
  * Resolvers for the Cover type
