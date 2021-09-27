@@ -224,7 +224,6 @@ export const resolvers = {
         parent.id
       );
       const data = getArray(manifestation, "details.onlineAccess.value");
-
       data.forEach((entry) => {
         if (entry.link) {
           result.push({
@@ -277,7 +276,25 @@ export const resolvers = {
         });
       }
 
-      // Return array containing both InfomediaReference, UrlReferences AND webArchive
+      const articleIssn = getArray(
+        manifestation,
+        "details.articleIssn.value"
+      ).map((entry) => entry.$)[0];
+
+      if (articleIssn) {
+        const journals = await context.datasources.statsbiblioteketJournals.load(
+          ""
+        );
+        const issn = articleIssn.replace(/\D/g, "");
+        const hasJournal = journals[issn];
+        if (hasJournal) {
+          result.push({
+            issn,
+          });
+        }
+      }
+
+      // Return array containing both InfomediaReference, UrlReferences, webArchive and DigitalCopy
       return result;
     },
     async originals(parent, args, context, info) {

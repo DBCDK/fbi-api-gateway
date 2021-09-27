@@ -27,7 +27,11 @@ export const typeDef = `
     url: String!
     pid: String!
   }
- union OnlineAccess = UrlReference | InfomediaReference | WebArchive
+
+  type DigitalCopy {
+    issn: String!
+  }
+ union OnlineAccess = UrlReference | InfomediaReference | WebArchive | DigitalCopy
  `;
 
 /**
@@ -70,6 +74,8 @@ export const resolvers = {
         return "WebArchive";
       } else if (parent.url) {
         return "UrlReference";
+      } else if (parent.issn) {
+        return "DigitalCopy";
       } else if (parent.infomediaId) {
         return "InfomediaReference";
       }

@@ -88,5 +88,10 @@ export default {
     smaug: {
       url: process.env.SMAUG_URL || "https://auth-config.dbc.dk",
     },
+    statsbiblioteket: {
+      url:
+        process.env.STATSBIBLIOTEKET_URL ||
+        "https://webservice.statsbiblioteket.dk",
+    },
   },
 };

@@ -39,6 +39,7 @@ export const typeDef = `
     pickupAllowed: Boolean!
     highlights: [Highlight!]!
     infomediaAccess: Boolean!
+    digitalCopyAccess: Boolean!
   }
   
   type BranchResult{
@@ -217,6 +218,12 @@ export const resolvers = {
       );
 
       return !!inResponse;
+    },
+    async digitalCopyAccess(parent, args, context, info) {
+      const subscriptions = await context.datasources.statsbiblioteketSubscribers.load(
+        ""
+      );
+      return !!subscriptions[parent.agencyId];
     },
   },
   BranchResult: {

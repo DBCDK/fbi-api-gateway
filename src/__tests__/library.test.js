@@ -49,6 +49,7 @@ test("library - get branches for agency", async () => {
                 postalCode
                 city
                 pickupAllowed
+                digitalCopyAccess
               }
             }
           }
@@ -80,6 +81,7 @@ test("library - get all", async () => {
                 postalCode
                 city
                 pickupAllowed
+                digitalCopyAccess
               }
             }
           }

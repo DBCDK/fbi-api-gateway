@@ -13,10 +13,13 @@ export const options {
     prefix: 'cache-key-prefix',
     ttl: 60 * 60 * 24
     staleWhileRevalidate: 60 * 60 * 24 * 30 // optional
+    inMemory: true // optional
   }
 }
 ```
 If staleWhileRevalidate is set, a cached value exceeding ttl will be returned to the user, and the value will be refreshed in the background. If cached value exceeds staleWhileRevalidate the value is refreshed before returning to the user.
+
+If inMemory is set to true, an additional cache layer in local memory is used. If key is not found locally, it will check redis.
 
 Add howru check to datasource by exporting a function named status. Checks are executed when visiting http:localhost:3000/howru.
 

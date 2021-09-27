@@ -51,9 +51,7 @@ export const datasources = getFilesRecursive("./src/datasources")
     // Check if Redis is configured for this datasource
     if (options && options.redis && options.redis.prefix && options.redis.ttl) {
       monitoredBatchLoader = withRedis(monitoredBatchLoader, {
-        prefix: options.redis.prefix,
-        ttl: options.redis.ttl,
-        staleWhileRevalidate: options.redis.staleWhileRevalidate,
+        ...options.redis,
       });
     }
 

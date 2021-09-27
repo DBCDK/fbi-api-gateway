@@ -9,6 +9,8 @@ let redis;
 // Variable indicating if we are connected
 let isConnected = false;
 
+const localStore = {};
+
 /**
  * Connect to a Redis server and create event handlers
  *
@@ -46,7 +48,7 @@ function connectRedis({ host, port, prefix }) {
     });
   });
 
-  redis.on("error", function () {
+  redis.on("error", function (error) {
     if (!isConnected) {
       return;
     }
@@ -63,9 +65,19 @@ function connectRedis({ host, port, prefix }) {
  */
 const get = monitor(
   { name: "REQUEST_redis_get", help: "Redis get request" },
-  async (key) => {
+  async (key, inMemory) => {
     try {
-      return JSON.parse(await redis.get(key));
+      let parsed;
+      if (inMemory && localStore[key]) {
+        parsed = localStore[key];
+      } else {
+        parsed = JSON.parse(await redis.get(key));
+        if (inMemory) {
+          localStore[key] = parsed;
+        }
+      }
+
+      return parsed;
     } catch (e) {
       log.error(`Redis get failed`, {
         key,
@@ -80,14 +92,13 @@ const get = monitor(
  */
 const set = monitor(
   { name: "REQUEST_redis_set", help: "Redis set request" },
-  async (key, seconds, val) => {
+  async (key, seconds, val, inMemory) => {
     try {
-      await redis.set(
-        key,
-        JSON.stringify({ _redis_stored: Date.now(), val }),
-        "ex",
-        seconds
-      );
+      const obj = { _redis_stored: Date.now(), val };
+      if (inMemory) {
+        localStore[key] = obj;
+      }
+      await redis.set(key, JSON.stringify(obj), "ex", seconds);
     } catch (e) {
       log.error(`Redis setex failed`, {
         key,
@@ -105,11 +116,11 @@ const set = monitor(
  *
  * @param {string} keys The keys to fetch
  */
-async function mget(keys) {
+async function mget(keys, inMemory) {
   if (!isConnected) {
     return keys.map(() => null);
   }
-  return Promise.all(keys.map(get));
+  return Promise.all(keys.map((key) => get(key, inMemory)));
 }
 
 /**
@@ -121,11 +132,12 @@ async function mget(keys) {
  * @param {number} seconds Time to live in seconds
  * @param {Object} val The value to store
  */
-async function setex(key, seconds, val) {
+async function setex(key, seconds, val, inMemory) {
   if (!isConnected) {
     return;
   }
-  await set(key, seconds, val);
+
+  await set(key, seconds, val, inMemory);
 }
 
 function createPrefixedKey(prefix, key) {
@@ -157,6 +169,7 @@ export function withRedis(
     staleWhileRevalidate,
     setexFunc = setex,
     mgetFunc = mget,
+    inMemory = false,
   }
 ) {
   /**
@@ -175,7 +188,7 @@ export function withRedis(
     const prefixedKeys = keys.map((key) => createPrefixedKey(prefix, key));
 
     // Get values of all prefixed keys from Redis
-    const cachedValues = await mgetFunc(prefixedKeys);
+    const cachedValues = await mgetFunc(prefixedKeys, inMemory);
 
     // If some values were not found in Redis,
     // they are added to missing keys array
@@ -202,7 +215,8 @@ export function withRedis(
           return setexFunc(
             createPrefixedKey(prefix, key),
             staleWhileRevalidate || ttl,
-            values[idx]
+            values[idx],
+            inMemory
           );
         }
       });
@@ -217,7 +231,8 @@ export function withRedis(
             return setexFunc(
               createPrefixedKey(prefix, key),
               staleWhileRevalidate || ttl,
-              refreshedValues[idx]
+              refreshedValues[idx],
+              inMemory
             );
           }
         });
