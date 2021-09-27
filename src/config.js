@@ -32,7 +32,7 @@ export default {
       authenticationGroup: process.env.MOREINFO_GROUP,
       authenticationPassword: process.env.MOREINFO_PASSWORD,
       ttl: process.env.MOREINFO_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
-      prefix: process.env.MOREINFO_PREFIX || "moreinfo-1",
+      prefix: process.env.MOREINFO_PREFIX || "moreinfo-2",
     },
     openorder: {
       url: process.env.OPENORDER_URL,
