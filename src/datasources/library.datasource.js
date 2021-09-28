@@ -37,7 +37,7 @@ const options = {
 
 // Default search options
 const searchOptions = {
-  boost: { name: 10000, agencyName: 7500, city: 250 },
+  boost: { name: 5000, agencyName: 10000, city: 250 },
   combineWith: "AND",
   prefix: true,
 };
