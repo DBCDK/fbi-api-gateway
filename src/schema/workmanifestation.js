@@ -39,7 +39,7 @@ export const typeDef = `
       publisher: [String!]!
       shelf: String
       title: String
-      recommendations(limit: Int): [Recommendation!]!
+      recommendations(limit: Int): [Recommendation]!
       availability: Availability
       checkorder(pickupBranch: String!): CheckOrderPolicy
       admin: AdminData
@@ -265,6 +265,7 @@ export const resolvers = {
         const archives = await context.datasources.moreinfoWebarchive.load(
           manifestation.admindata.pid.$
         );
+
         archives.forEach((archive) => {
           if (archive.url) {
             result.push({
@@ -358,7 +359,11 @@ export const resolvers = {
         pid: parent.id,
         limit: args.limit,
       });
-      return recommendations.response;
+      if (recommendations) {
+        return recommendations.response || [];
+      } else {
+        return [];
+      }
     },
     async shelf(parent, args, context, info) {
       if (parent.shelf) {
