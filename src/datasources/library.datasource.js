@@ -6,6 +6,7 @@
  * it does not support highlighting and "one field search"
  *
  */
+import { orderBy } from "lodash";
 import request from "superagent";
 import config from "../config";
 import { createIndexer } from "../utils/searcher";
@@ -37,7 +38,7 @@ const options = {
 
 // Default search options
 const searchOptions = {
-  boost: { name: 5000, agencyName: 10000, city: 250 },
+  boost: { agencyName: 10000 },
   combineWith: "AND",
   prefix: true,
 };
@@ -139,6 +140,12 @@ export async function search(props, getFunc) {
   if (branchId) {
     merged = merged.filter((branch) => branch.branchId === branchId);
   }
+  merged = orderBy(merged, ["score", "branchId"], ["desc", "asc"]);
+  merged = [
+    ...merged.filter((branch) => branch.pickupAllowed),
+    ...merged.filter((branch) => !branch.pickupAllowed),
+  ];
+
   return {
     hitcount: merged.length,
     result: merged
