@@ -1,10 +1,13 @@
 import request from "superagent";
 import config from "../config";
 
+require("superagent-proxy")(request);
+
 export async function load() {
   const res = (
     await request
       .get(`${config.datasources.statsbiblioteket.url}/copydanws/subscribers`)
+      .proxy("http://dmzproxy.dbc.dk:3128")
       .set("Accept", "application/json")
   ).body;
 
