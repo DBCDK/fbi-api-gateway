@@ -4,12 +4,23 @@ import config from "../config";
 require("superagent-proxy")(request);
 
 export async function load() {
-  const res = (
-    await request
-      .get(`${config.datasources.statsbiblioteket.url}/copydanws/subscribers`)
-      .proxy("http://dmzproxy.dbc.dk:3128")
-      .set("Accept", "application/json")
-  ).body;
+  const proxy = config.dmzproxy.url;
+  const res = proxy
+    ? (
+        await request
+          .get(
+            `${config.datasources.statsbiblioteket.url}/copydanws/subscribers`
+          )
+          .set("Accept", "application/json")
+      ).body
+    : (
+        await request
+          .get(
+            `${config.datasources.statsbiblioteket.url}/copydanws/subscribers`
+          )
+          .proxy(proxy)
+          .set("Accept", "application/json")
+      ).body;
 
   const subscriberMap = res.subscribers.subscriber.reduce((map, subscriber) => {
     map[subscriber.isil.replace(/\D/g, "")] = 1;

@@ -8,6 +8,9 @@ export default {
       ? parseInt(process.env.MAX_QUERY_COMPLEXITY, 10)
       : 100000,
   },
+  dmzproxy: {
+    url: process.env.PROXY_URL || null,
+  },
   datasources: {
     openformat: {
       url:
