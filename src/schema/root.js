@@ -5,7 +5,6 @@
 
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
-import { createIndexer } from "../utils/searcher";
 
 /**
  * The root type definitions
@@ -23,11 +22,13 @@ type Query {
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomediaContent(pid: String!): [InfomediaContent]
+  session: Session
 }
 
 type Mutation {
   data_collect(input: DataCollectInput!): String!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
+  submitSession(input: SessionInput!): String!
 }`;
 
 /**
@@ -98,6 +99,11 @@ export const resolvers = {
         accessToken: context.accessToken,
       });
     },
+    async session(parent, args, context, info) {
+      return await context.datasources.session.load({
+        accessToken: context.accessToken,
+      });
+    },
   },
   Mutation: {
     data_collect(parent, args, context, info) {
@@ -133,6 +139,13 @@ export const resolvers = {
       };
 
       return await context.datasources.submitOrder.load(input);
+    },
+    async submitSession(parent, args, context, info) {
+      await context.datasources.submitSession.load({
+        accessToken: context.accessToken,
+        session: args.input,
+      });
+      return "OK";
     },
   },
 };

@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Session retrieve - no session 1`] = `
+Object {
+  "data": Object {
+    "session": null,
+  },
+}
+`;
+
+exports[`Session retrieve 1`] = `
+Object {
+  "data": Object {
+    "session": Object {
+      "pickupBranch": "790900",
+      "userParameters": Object {
+        "barcode": "some-barcode",
+        "cardno": "some-cardno",
+        "cpr": "some-cpr",
+        "customId": "some-customid",
+        "userAddress": "some-address",
+        "userDateOfBirth": "10-10-2021",
+        "userId": "some-userid",
+        "userMail": "some@mail.dk",
+        "userName": "Ost Ostesen",
+        "userTelephone": "123123123",
+      },
+    },
+  },
+}
+`;
+
+exports[`Session submit 1`] = `
+Object {
+  "data": Object {
+    "submitSession": "OK",
+  },
+}
+`;

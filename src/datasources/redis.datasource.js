@@ -63,7 +63,7 @@ function connectRedis({ host, port, prefix }) {
 /**
  * A monitored redis get operation
  */
-const get = monitor(
+export const get = monitor(
   { name: "REQUEST_redis_get", help: "Redis get request" },
   async (key, inMemory) => {
     try {
@@ -90,7 +90,7 @@ const get = monitor(
 /**
  * A monitored redis set operation
  */
-const set = monitor(
+export const set = monitor(
   { name: "REQUEST_redis_set", help: "Redis set request" },
   async (key, seconds, val, inMemory) => {
     try {
