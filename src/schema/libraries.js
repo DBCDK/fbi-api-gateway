@@ -40,6 +40,7 @@ export const typeDef = `
     highlights: [Highlight!]!
     infomediaAccess: Boolean!
     digitalCopyAccess: Boolean!
+    userStatusUrl: String
   }
   
   type BranchResult{
@@ -114,6 +115,9 @@ export const resolvers = {
         parent.openingHours[parent.language === "da" ? 0 : 1] ||
         parent.openingHours[0]
       );
+    },
+    userStatusUrl(parent, args, context, info) {
+      return parent.userStatusUrl || "";
     },
     /**
      * This resolver fetches user parameters from vip-core
