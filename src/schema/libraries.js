@@ -189,8 +189,10 @@ export const resolvers = {
         // and it may be available in danish or english
         let description =
           res[`${parameter.userParameterType}Txt`] &&
-          (res[`${parameter.userParameterType}Txt`].find((description) =>
-            description.language.includes(parent.language)
+          (res[`${parameter.userParameterType}Txt`].find(
+            (description) =>
+              description.language &&
+              description.language.includes(parent.language)
           ) ||
             res[`${parameter.userParameterType}Txt`][0]);
         return {
