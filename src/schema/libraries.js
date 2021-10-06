@@ -245,7 +245,11 @@ export const resolvers = {
       return parent.result;
     },
     agencyUrl(parent, args, context, info) {
-      return parent.result[0].branchWebsiteUrl;
+      return parent.result[0].userStatusUrl
+        ? parent.result[0].userStatusUrl
+        : parent.result[0].branchWebsiteUrl
+        ? parent.result[0].branchWebsiteUrl
+        : "";
     },
   },
   Highlight: {
