@@ -88,6 +88,13 @@ export default {
       prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
     },
+    idp: {
+      url:
+        process.env.IDP_URL ||
+        "http://idpservice.iscrum-prod.svc.cloud.dbc.dk/api/v1",
+      prefix: process.env.IDP_PREFIX || "IDP-1",
+      ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 10,
+    },
     smaug: {
       url: process.env.SMAUG_URL || "https://auth-config.dbc.dk",
     },

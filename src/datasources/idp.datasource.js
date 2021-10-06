@@ -4,14 +4,15 @@
 
 import request from "superagent";
 import { log } from "dbc-node-logger";
+import config from "../config";
+
+const { url, ttl } = config.datasources.idp;
 
 export async function load({ agencyId }) {
   try {
-    const response = await request
-      //.post("http://recompass-work-1-2.mi-prod.svc.cloud.dbc.dk/recompass-work")
-      .get(
-        "http://idpservice.iscrum-staging.svc.cloud.dbc.dk:8080/api/v1/queries/subscribersbyproductname/INFOMEDIA"
-      );
+    const response = await request.get(
+      `${url}//queries/subscribersbyproductname/INFOMEDIA`
+    );
     return response.body.organisations;
   } catch (e) {
     log.error("Request to idp failed." + " Message: " + e.message);
@@ -24,6 +25,6 @@ export async function load({ agencyId }) {
 export const options = {
   redis: {
     prefix: "idp-1",
-    ttl: 60,
+    ttl: ttl,
   },
 };

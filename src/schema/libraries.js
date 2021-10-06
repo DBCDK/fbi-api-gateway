@@ -46,6 +46,7 @@ export const typeDef = `
   type BranchResult{
     hitcount: Int!
     result: [Branch!]!
+    agencyUrl: String
   }
 
   type Highlight{
@@ -117,7 +118,11 @@ export const resolvers = {
       );
     },
     userStatusUrl(parent, args, context, info) {
-      return parent.userStatusUrl || "";
+      return parent.userStatusUrl
+        ? parent.userStatusUrl
+        : parent.branchWebsiteUrl
+        ? parent.branchWebsiteUrl
+        : "";
     },
     /**
      * This resolver fetches user parameters from vip-core
@@ -238,6 +243,9 @@ export const resolvers = {
     },
     result(parent, args, context, info) {
       return parent.result;
+    },
+    agencyUrl(parent, args, context, info) {
+      return parent.result[0].branchWebsiteUrl;
     },
   },
   Highlight: {
