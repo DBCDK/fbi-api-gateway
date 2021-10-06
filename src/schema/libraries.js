@@ -118,11 +118,7 @@ export const resolvers = {
       );
     },
     userStatusUrl(parent, args, context, info) {
-      return parent.userStatusUrl
-        ? parent.userStatusUrl
-        : parent.branchWebsiteUrl
-        ? parent.branchWebsiteUrl
-        : "";
+      return parent.userStatusUrl || parent.branchWebsiteUrl || "";
     },
     /**
      * This resolver fetches user parameters from vip-core
@@ -245,11 +241,11 @@ export const resolvers = {
       return parent.result;
     },
     agencyUrl(parent, args, context, info) {
-      return parent.result[0].userStatusUrl
-        ? parent.result[0].userStatusUrl
-        : parent.result[0].branchWebsiteUrl
-        ? parent.result[0].branchWebsiteUrl
-        : "";
+      return (
+        parent.result[0].userStatusUrl ||
+        parent.result[0].branchWebsiteUrl ||
+        ""
+      );
     },
   },
   Highlight: {
