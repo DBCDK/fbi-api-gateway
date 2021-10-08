@@ -6,8 +6,7 @@
 /**
  * The Session type definition
  */
-export const typeDef = `
-type UserParameters {
+const userParameters = `
   cpr: String,
   userId: String,
   barcode: String,
@@ -17,14 +16,21 @@ type UserParameters {
   userName: String,
   userAddress: String,
   userMail: String,
-  userTelephone: String
+  userTelephone: String`;
+
+export const typeDef = `
+type SessionUserParameters {
+  ${userParameters}
+}
+input SessionUserParametersInput {
+  ${userParameters}
 }
 type Session {
-  userParameters: UserParameters
+  userParameters: SessionUserParameters
   pickupBranch: String
 }
 input SessionInput {
-  userParameters: SubmitOrderUserParameters
+  userParameters: SessionUserParametersInput
   pickupBranch: String
 }`;
 
