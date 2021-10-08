@@ -123,7 +123,8 @@
       ],
       "onlineAccess": [
         {
-          "value": "{online_access}"
+          "value": "{online_access}",
+          "accessUrlDisplay": "{bibdk_access_url_display}"
         }
       ],
       "originals": [

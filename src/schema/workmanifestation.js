@@ -223,12 +223,17 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
+      const accessType = getArray(
+        manifestation,
+        "details.onlineAccess.accessUrlDisplay.$"
+      );
       const data = getArray(manifestation, "details.onlineAccess.value");
       data.forEach((entry) => {
         if (entry.link) {
           result.push({
             url: (entry.link && entry.link.$) || "",
             note: (entry.note && entry.note.$) || "",
+            accessType: (accessType && accessType[0]) || "",
           });
         }
       });
