@@ -14,6 +14,7 @@ export const typeDef = `
     url: String!
     origin: String!,
     note: String!
+    accessType: String
   }
   
   type InfomediaReference {
