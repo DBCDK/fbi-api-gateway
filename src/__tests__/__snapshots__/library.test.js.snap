@@ -23,14 +23,6 @@ Object {
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -50,14 +42,6 @@ Object {
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -76,14 +60,6 @@ Object {
             Object {
               "parameterRequired": true,
               "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
             },
           ],
         },
@@ -107,14 +83,6 @@ Den 26 oktober er alle afdelinger lukket p.g.a. Internt kursus",
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -135,14 +103,6 @@ søndag lukket",
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -162,14 +122,6 @@ Lørdage 9-14.",
             Object {
               "parameterRequired": true,
               "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
             },
           ],
         },
@@ -192,14 +144,6 @@ onsdag og torsdag: 10.00 - 16.00
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -221,14 +165,6 @@ tirsdag og onsdag: 10.00 - 16.00
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -248,14 +184,6 @@ tirsdag og onsdag: 10.00 - 16.00
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -274,14 +202,6 @@ tirsdag og onsdag: 10.00 - 16.00
             Object {
               "parameterRequired": true,
               "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
             },
           ],
         },
@@ -315,14 +235,6 @@ Se åbningstider på:
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -342,14 +254,6 @@ bibliotek.kk.dk/biblioteker/",
             Object {
               "parameterRequired": true,
               "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
             },
           ],
         },
@@ -372,14 +276,6 @@ bibliotek.kk.dk/biblioteker/",
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -399,14 +295,6 @@ bibliotek.kk.dk/biblioteker/",
             Object {
               "parameterRequired": true,
               "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
             },
           ],
         },
@@ -428,14 +316,6 @@ bibliotek.kk.dk/biblioteker/",
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -455,14 +335,6 @@ bibliotek.kk.dk/biblioteker/",
             Object {
               "parameterRequired": true,
               "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
             },
           ],
         },
@@ -484,14 +356,6 @@ bibliotek.kk.dk/biblioteker/",
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -511,14 +375,6 @@ bibliotek.kk.dk/biblioteker/",
             Object {
               "parameterRequired": true,
               "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
             },
           ],
         },
@@ -541,14 +397,6 @@ Nørrebrogade 208",
               "parameterRequired": true,
               "userParameterType": "userId",
             },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
-            },
           ],
         },
         Object {
@@ -568,14 +416,6 @@ bibliotek.kk.dk/biblioteker/",
             Object {
               "parameterRequired": true,
               "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userName",
-            },
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userMail",
             },
           ],
         },

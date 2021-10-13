@@ -148,17 +148,7 @@ export const resolvers = {
       ) || { userParameterType: "userId" };
 
       // We force some parameters to be required (for bibdk)
-      let result = [
-        { ...userIdType, parameterRequired: true },
-        {
-          userParameterType: "userName",
-          parameterRequired: true,
-        },
-        {
-          userParameterType: "userMail",
-          parameterRequired: true,
-        },
-      ];
+      let result = [{ ...userIdType, parameterRequired: true }];
 
       // The preferred order of parameters
       const order = {
