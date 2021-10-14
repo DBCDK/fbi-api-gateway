@@ -25,7 +25,7 @@ export const typeDef = `
       cardno: String,
       customId: String,
       userDateOfBirth: String,
-      userName: String!,
+      userName: String,
       userAddress: String,
       userMail: String,
       userTelephone: String
