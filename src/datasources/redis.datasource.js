@@ -110,6 +110,22 @@ export const set = monitor(
 );
 
 /**
+ * A monitored redis delete operation
+ */
+export const del = monitor(
+  { name: "REQUEST_redis_del", help: "Redis del (delete) request" },
+  async (key) => {
+    try {
+      await redis.del(key);
+    } catch (e) {
+      log.error(`Redis delete failed`, {
+        key,
+      });
+    }
+  }
+);
+
+/**
  * mget does not work when Redis is running in a cluster
  * and keys are on different nodes.
  * Therefore, we must call get per key.

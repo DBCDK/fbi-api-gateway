@@ -29,6 +29,7 @@ type Mutation {
   data_collect(input: DataCollectInput!): String!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
+  deleteSession: String!
 }`;
 
 /**
@@ -144,6 +145,12 @@ export const resolvers = {
       await context.datasources.submitSession.load({
         accessToken: context.accessToken,
         session: args.input,
+      });
+      return "OK";
+    },
+    async deleteSession(parent, args, context, info) {
+      await context.datasources.deleteSession.load({
+        accessToken: context.accessToken,
       });
       return "OK";
     },
