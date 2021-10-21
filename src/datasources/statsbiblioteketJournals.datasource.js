@@ -44,7 +44,7 @@ export async function load() {
 
 export const options = {
   redis: {
-    prefix: "statsbiblioteketJournals4",
+    prefix: "statsbiblioteketJournals11",
     ttl: 60 * 60,
     staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
     inMemory: true,
