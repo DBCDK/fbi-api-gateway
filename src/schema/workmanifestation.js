@@ -282,7 +282,6 @@ export const resolvers = {
         });
       }
 
-      /*
       const articleIssn = getArray(
         manifestation,
         "details.articleIssn.value"
@@ -300,7 +299,6 @@ export const resolvers = {
           });
         }
       }
-      */
 
       // Return array containing both InfomediaReference, UrlReferences, webArchive and DigitalCopy
       return result;
