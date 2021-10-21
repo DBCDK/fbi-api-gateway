@@ -293,6 +293,8 @@ export const resolvers = {
           ""
         );
 
+        console.log(journals, "TUDSE");
+
         const issn = articleIssn.replace(/\D/g, "");
         const hasJournal = journals[issn];
         if (hasJournal) {
