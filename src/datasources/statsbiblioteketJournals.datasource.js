@@ -6,8 +6,6 @@ require("superagent-proxy")(request);
 
 export async function load() {
   const proxy = config.dmzproxy.url;
-  log.error("Fisk");
-
   try {
     const res = proxy
       ? (
@@ -26,6 +24,7 @@ export async function load() {
             .set("Accept", "application/json")
         ).body;
 
+    console.log("ZEBRA", res);
     const journalsMap = res.journals.journal.reduce((map, journal) => {
       map[journal.issn] = 1;
       return map;

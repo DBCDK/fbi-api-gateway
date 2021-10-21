@@ -282,8 +282,6 @@ export const resolvers = {
         });
       }
 
-      console.log("HEST");
-
       const articleIssn = getArray(
         manifestation,
         "details.articleIssn.value"
@@ -294,6 +292,9 @@ export const resolvers = {
         const journals = await context.datasources.statsbiblioteketJournals.load(
           ""
         );
+
+        console.log(journals, "TUDSE");
+
         const issn = articleIssn.replace(/\D/g, "");
         const hasJournal = journals[issn];
         if (hasJournal) {
