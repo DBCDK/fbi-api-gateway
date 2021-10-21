@@ -288,15 +288,12 @@ export const resolvers = {
       ).map((entry) => entry.$)[0];
 
       if (articleIssn) {
-        console.log(articleIssn, "FISK");
         const journals = await context.datasources.statsbiblioteketJournals.load(
           ""
         );
 
-        console.log(journals, "TUDSE");
-
         const issn = articleIssn.replace(/\D/g, "");
-        const hasJournal = journals[issn];
+        const hasJournal = journals && journals[issn];
         if (hasJournal) {
           result.push({
             issn,
