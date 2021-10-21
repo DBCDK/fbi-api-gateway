@@ -282,12 +282,15 @@ export const resolvers = {
         });
       }
 
+      console.log("HEST");
+
       const articleIssn = getArray(
         manifestation,
         "details.articleIssn.value"
       ).map((entry) => entry.$)[0];
 
       if (articleIssn) {
+        console.log(articleIssn, "FISK");
         const journals = await context.datasources.statsbiblioteketJournals.load(
           ""
         );
