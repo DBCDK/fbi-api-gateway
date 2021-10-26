@@ -584,26 +584,34 @@ export function load(pid) {
         materialType: {
           $: "Lydbog (cd)",
         },
-        onlineAccess: {
-          value: [
-            {
+        onlineAccess: [
+          {
+            value: {
               link: {
-                $: "https://ereolen.dk/ting/object/870970-basis:51796527",
+                $: "https://ereolen.dk/ting/object/870970-basis:52552478",
               },
               note: {
                 $: "Adgang til lån hos eReolen.dk",
               },
             },
-            {
+            accessUrlDisplay: {
+              $: "urlEreolen",
+            },
+          },
+          {
+            value: {
               link: {
-                $: "https://ereolengo.dk/ting/object/870970-basis:51796527",
+                $: "https://ereolengo.dk/ting/object/870970-basis:52552478",
               },
               note: {
-                $: "Adgang til titlen på eReolen Go",
+                $: "Adgang til titlen på5 eReolen Go",
               },
             },
-          ],
-        },
+            accessUrlDisplay: {
+              $: "urlEreolen",
+            },
+          },
+        ],
         originals: {
           value: [
             {
