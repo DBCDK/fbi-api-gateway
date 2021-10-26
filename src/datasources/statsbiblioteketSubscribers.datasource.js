@@ -5,6 +5,9 @@ require("superagent-proxy")(request);
 
 export async function load() {
   const proxy = config.dmzproxy.url;
+
+  console.log(proxy, "PROXY");
+
   const res = proxy
     ? (
         await request
@@ -27,12 +30,13 @@ export async function load() {
     return map;
   }, {});
 
+  console.log(subscriberMap, "MAP");
   return subscriberMap;
 }
 
 export const options = {
   redis: {
-    prefix: "statsbiblioteketSubs",
+    prefix: "statsbiblioteketSubs2",
     ttl: 60 * 60,
     staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
     inMemory: true,
