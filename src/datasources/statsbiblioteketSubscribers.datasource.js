@@ -6,8 +6,6 @@ require("superagent-proxy")(request);
 export async function load() {
   const proxy = config.dmzproxy.url;
 
-  console.log(proxy, "PROXY");
-
   const res = proxy
     ? (
         await request
@@ -30,7 +28,6 @@ export async function load() {
     return map;
   }, {});
 
-  console.log(subscriberMap, "MAP");
   return subscriberMap;
 }
 
