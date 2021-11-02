@@ -15,6 +15,7 @@ type Query {
   monitor(name: String!): String!
   user: User!
   work(id: String!): Work
+  works(id: [String!]!): [Work]!
   search(q: String!, limit: PaginationLimit!, offset: Int, facets: [FacetFilter]): SearchResponse!
   suggest(q: String!, worktype: WorkType): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
@@ -39,6 +40,18 @@ export const resolvers = {
   Query: {
     async manifestation(parent, args, context, info) {
       return { id: args.pid };
+    },
+    async works(parent, args, context, info) {
+      return Promise.all(
+        args.id.map(async (id) => {
+          try {
+            const { work } = await context.datasources.workservice.load(id);
+            return { ...work, id };
+          } catch (e) {
+            return null;
+          }
+        })
+      );
     },
     monitor(parent, args, context, info) {
       try {
