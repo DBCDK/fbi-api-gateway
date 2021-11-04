@@ -1,5 +1,5 @@
 /**
- * The SuggestResponse and SuggestRow type definition
+ * Localizations + HoldingsItem type definitions
  */
 export const typeDef = `
 type Localizations {
