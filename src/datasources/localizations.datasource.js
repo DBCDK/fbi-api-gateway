@@ -23,11 +23,20 @@ function constructSoap(pid) {
 
 function parseResponse(text) {
   const obj = JSON.parse(text);
-  console.log(JSON.stringify(obj, null, 4), "JSONOBJECT");
 
   const count = obj.localisationsResponse.localisations[0].agency.length;
-  console.log(count, "COUNT");
-  return text;
+  const holdingItems = obj.localisationsResponse.localisations[0].agency.map(
+    (item) => {
+      const holdingsItem = {};
+      for (const [key, value] of Object.entries(item)) {
+        holdingsItem[key] = value.$;
+      }
+      return holdingsItem;
+    }
+  );
+  const ret = { count: count, holdingItems: holdingItems };
+  console.log(ret, "RET");
+  return ret;
 }
 
 export async function load({ pid }) {
