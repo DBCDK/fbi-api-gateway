@@ -24,7 +24,7 @@ type Query {
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomediaContent(pid: String!): [InfomediaContent]
   session: Session
-  localizations(pid:String): String
+  localizations(pid:String): Localizations
 }
 
 type Mutation {

@@ -35,7 +35,6 @@ function parseResponse(text) {
     }
   );
   const ret = { count: count, holdingItems: holdingItems };
-  console.log(ret, "RET");
   return ret;
 }
 
