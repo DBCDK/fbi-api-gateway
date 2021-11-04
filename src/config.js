@@ -29,6 +29,13 @@ export default {
     borchk: {
       url: process.env.BORCHK_URL || "https://borchk.addi.dk/2.5/",
     },
+    holdingstatus: {
+      url:
+        process.env.HOLDINGSTATUS_URL ||
+        "https://openholdingstatus.addi.dk/3.1/",
+      ttl: process.env.HOLDINGSTATUS_TIME_TO_LIVE_SECONDS || 5,
+      prefix: process.env.HOLDINGSTATUS_PREFIX || "holdingstatus-1",
+    },
     moreinfo: {
       url: process.env.MOREINFO_URL,
       authenticationUser: process.env.MOREINFO_USER,

@@ -24,6 +24,7 @@ type Query {
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomediaContent(pid: String!): [InfomediaContent]
   session: Session
+  localizations(pid:String): String
 }
 
 type Mutation {
@@ -116,6 +117,11 @@ export const resolvers = {
     async session(parent, args, context, info) {
       return await context.datasources.session.load({
         accessToken: context.accessToken,
+      });
+    },
+    async localizations(parent, args, context, info) {
+      return await context.datasources.localizations.load({
+        pid: args.pid,
       });
     },
   },
