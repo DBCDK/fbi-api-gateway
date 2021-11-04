@@ -49,12 +49,10 @@ export async function load({ pid }) {
   return parseResponse(res.text);
 }
 
-/* - no caching for now
 export const options = {
   redis: {
     prefix,
     ttl,
-    staleWhileRevalidate: 60 * 60 * 24 * 7, // 7 days
+    staleWhileRevalidate: 60 * 60, // 1 hour
   },
 };
-*/
