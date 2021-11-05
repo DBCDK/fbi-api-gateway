@@ -30,6 +30,7 @@ export const typeDef = `
   type MaterialType {
     materialType: String!
     cover: Cover!
+    localizations: Localizations
     
     manifestations: [WorkManifestation!]!
   }
@@ -67,6 +68,18 @@ export const resolvers = {
       // Find a valid cover.
       const cover = covers.find((entry) => entry.detail);
       return cover || {};
+    },
+
+    async localizations(parent, args, context, info) {
+      // collect pids from manifestations
+      const pids = parent.manifestations.map(
+        (manifestation) => manifestation.id
+      );
+      // get localizations
+      const locs = await context.datasources.localizations.load({
+        pids,
+      });
+      return locs;
     },
   },
   Work: {
