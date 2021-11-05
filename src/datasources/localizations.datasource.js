@@ -10,8 +10,6 @@ const { url, ttl, prefix } = config.datasources.holdingstatus;
  */
 function constructSoap(pids) {
   const soappids = pids.map((pid) => `<ns1:pid>${pid}</ns1:pid>`).join("");
-
-  console.log(soappids, "SOAPPOD");
   let soap = `<?xml version="1.0" encoding="UTF-8"?>
   <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/openholdingstatus"><SOAP-ENV:Body>
     <ns1:localisationsRequest>

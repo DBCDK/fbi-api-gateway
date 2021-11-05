@@ -3,10 +3,10 @@
  */
 export const typeDef = `
 type Localizations {
-  count: Int
-  HoldingItems: [HoldingsItem]
+  count: Int!
+  HoldingItems: [holdingsItem]
 }
-type HoldingsItem {
+type holdingsItem {
   localizationPid: String
   agencyId: String
   codes: String
@@ -22,7 +22,7 @@ export const resolvers = {
       return parent.holdingItems;
     },
   },
-  HoldingsItem: {
+  holdingsItem: {
     localizationPid(parent, args, context, info) {
       return parent.localisationPid;
     },
