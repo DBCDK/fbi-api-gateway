@@ -26,7 +26,8 @@ function constructSoap(pids) {
 
 function parseResponse(text) {
   const obj = JSON.parse(text);
-  const count =
+
+  let count =
     (obj.localisationsResponse &&
       obj.localisationsResponse.localisations[0] &&
       obj.localisationsResponse.localisations[0].agency &&
@@ -34,16 +35,32 @@ function parseResponse(text) {
     0;
 
   if (count > 0) {
-    const holdingItems = obj.localisationsResponse.localisations[0].agency.map(
-      (item) => {
-        const holdingsItem = {};
-        for (const [key, value] of Object.entries(item)) {
-          holdingsItem[key] = value.$;
-        }
-        return holdingsItem;
+    const allagencies = obj.localisationsResponse.localisations[0].agency;
+    const agencyMap = [];
+
+    // agency may have more than one holding - make an agency unique with a
+    // holding array
+    for (const [key, value] of Object.entries(allagencies)) {
+      const holding = {
+        localizationPid:
+          (value.localisationPid && value.localisationPid.$) || "",
+        codes: (value.codes && value.codes.$) || "",
+        localIdentifier:
+          (value.localIdentifier && value.localIdentifier.$) || "",
+      };
+      // check if agency is already in map
+      const index = agencyMap.findIndex(
+        (agency) => agency.agencyId === value.agencyId.$
+      );
+      if (index > -1) {
+        // already in map - push holding
+        agencyMap[index].holdingItems.push(holding);
+      } else {
+        // new in map - push initial object
+        agencyMap.push({ agencyId: value.agencyId.$, holdingItems: [holding] });
       }
-    );
-    return { count: count, holdingItems: holdingItems };
+    }
+    return { count: agencyMap.length, agencies: agencyMap };
   } else {
     return { count: count };
   }
