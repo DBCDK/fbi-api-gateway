@@ -21,11 +21,15 @@ function constructSoap(pids) {
     </ns1:localisationsRequest>
   </SOAP-ENV:Body></SOAP-ENV:Envelope>`;
 
+  console.log(soap, "SOAP");
+
   return soap;
 }
 
-function parseResponse(text) {
+export function parseResponse(text) {
   const obj = JSON.parse(text);
+
+  console.log("PARSE");
 
   let count =
     (obj.localisationsResponse &&

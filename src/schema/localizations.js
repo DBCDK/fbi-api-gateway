@@ -3,7 +3,7 @@
  */
 export const typeDef = `
 type Localizations {
-  count: Int!
+  count: Int
   agencies: [holdingAgency]
 }
 type holdingAgency{
