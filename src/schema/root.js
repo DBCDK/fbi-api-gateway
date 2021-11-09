@@ -24,6 +24,7 @@ type Query {
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomediaContent(pid: String!): [InfomediaContent]
   session: Session
+  howru:String
 }
 
 type Mutation {
@@ -38,6 +39,9 @@ type Mutation {
  */
 export const resolvers = {
   Query: {
+    howru(parent, args, context, info) {
+      return "gr8";
+    },
     async manifestation(parent, args, context, info) {
       return { id: args.pid };
     },
