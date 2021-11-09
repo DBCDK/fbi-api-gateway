@@ -41,7 +41,6 @@ export const typeDef = `
     infomediaAccess: Boolean!
     digitalCopyAccess: Boolean!
     userStatusUrl: String
-    holdingStatus(localIds:[String]): detailedHoldings
   }
   
   type BranchResult{
@@ -222,12 +221,6 @@ export const resolvers = {
         ""
       );
       return !!subscriptions[parent.agencyId];
-    },
-    async holdingStatus(parent, args, context, info) {
-      return await context.datasources.detailedholdings.load({
-        localIds: args.localIds,
-        branch: parent.branchId,
-      });
     },
   },
   BranchResult: {
