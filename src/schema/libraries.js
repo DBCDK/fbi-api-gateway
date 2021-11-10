@@ -41,6 +41,7 @@ export const typeDef = `
     infomediaAccess: Boolean!
     digitalCopyAccess: Boolean!
     userStatusUrl: String
+    holdingStatus(pids:[String]): detailedHoldings
   }
   
   type BranchResult{
@@ -221,6 +222,29 @@ export const resolvers = {
         ""
       );
       return !!subscriptions[parent.agencyId];
+    },
+    async holdingStatus(parent, args, context, info) {
+      const localizations = await context.datasources.localizations.load({
+        pids: args.pids,
+      });
+
+      //console.log(JSON.stringify(localizations, null, 4), "LOKS");
+      const localHoldings = localizations.agencies.find(
+        (lok) => lok.agencyId === parent.agencyId
+      );
+
+      const localids =
+        localHoldings &&
+        localHoldings.holdingItems.map((item) => item.localIdentifier);
+
+      if (!localids) {
+        return null;
+      }
+
+      return await context.datasources.detailedholdings.load({
+        localIds: localids,
+        branch: parent.branchId,
+      });
     },
   },
   BranchResult: {

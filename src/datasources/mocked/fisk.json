@@ -1,0 +1,599 @@
+{
+  "trackingId": "0455b895-e282-4b9a-a4e0-e6674ae3ee93",
+  "work": {
+    "creators": [
+      {
+        "type": "aut",
+        "value": "F. Scott Fitzgerald"
+      }
+    ],
+    "description": "Den formidabelt rige og mystiske Gatsby's forsøg på at købe sin elskedes kærlighed, afslører både rigdommens magt og afmagt, samtidig med at bogen skildrer den hektiske jazzalder i 1920'rnes USA",
+    "fullTitle": "Den store Gatsby",
+    "groups": [
+      {
+        "records": [
+          {
+            "id": "870970-basis:01362984",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "800010-katalog:99122990329905763",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "800010-katalog:99122658105305763",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "800010-katalog:99121992748605763",
+            "types": [
+              "Bog"
+            ]
+          }
+        ],
+        "relations": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          24
+        ]
+      },
+      {
+        "records": [
+          {
+            "id": "870970-basis:01362976",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "800010-katalog:99121992686705763",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "800010-katalog:99122884103505763",
+            "types": [
+              "Bog"
+            ]
+          }
+        ],
+        "relations": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ]
+      },
+      {
+        "records": [
+          {
+            "id": "800010-katalog:99122990358105763",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "800010-katalog:99122758687705763",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "870970-basis:01568574",
+            "types": [
+              "Bog"
+            ]
+          }
+        ],
+        "relations": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          24
+        ]
+      },
+      {
+        "records": [
+          {
+            "id": "800010-katalog:99122797570705763",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "870970-basis:04118073",
+            "types": [
+              "Bog"
+            ]
+          }
+        ],
+        "relations": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          24
+        ]
+      },
+      {
+        "records": [
+          {
+            "id": "874310-katalog:DBB0104096",
+            "types": [
+              "Punktskrift"
+            ]
+          }
+        ],
+        "relations": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          24
+        ]
+      },
+      {
+        "records": [
+          {
+            "id": "870970-basis:25605314",
+            "types": [
+              "Diskette"
+            ]
+          }
+        ],
+        "relations": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          24
+        ]
+      },
+      {
+        "records": [
+          {
+            "id": "800010-katalog:99122679672605763",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "870970-basis:22137298",
+            "types": [
+              "Bog"
+            ]
+          }
+        ],
+        "relations": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          24
+        ]
+      },
+      {
+        "records": [
+          {
+            "id": "870970-basis:52946492",
+            "types": [
+              "Lydbog (net)"
+            ]
+          }
+        ],
+        "relations": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          24
+        ]
+      },
+      {
+        "records": [
+          {
+            "id": "800010-katalog:99122167276005763",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "800010-katalog:99122473022805763",
+            "types": [
+              "Bog"
+            ]
+          },
+          {
+            "id": "800010-katalog:99121916951405763",
+            "types": [
+              "Bog"
+            ]
+          }
+        ],
+        "relations": []
+      }
+    ],
+    "relations": [
+      {
+        "id": "800010-katalog:99122080319205763",
+        "type": "adaptation-of",
+        "types": [
+          "Dvd"
+        ]
+      },
+      {
+        "id": "800010-katalog:99122323980105763",
+        "type": "adaptation-of",
+        "types": [
+          "Dvd"
+        ]
+      },
+      {
+        "id": "800010-katalog:99122750063305763",
+        "type": "adaptation-of",
+        "types": [
+          "Dvd"
+        ]
+      },
+      {
+        "id": "800010-katalog:99122750205905763",
+        "type": "adaptation-of",
+        "types": [
+          "Blu-ray"
+        ]
+      },
+      {
+        "id": "800010-katalog:99122888455305763",
+        "type": "adaptation-of",
+        "types": [
+          "Dvd"
+        ]
+      },
+      {
+        "id": "800010-katalog:99122920937905763",
+        "type": "adaptation-of",
+        "types": [
+          "Blu-ray"
+        ]
+      },
+      {
+        "id": "870970-basis:29931186",
+        "type": "adaptation-of",
+        "types": [
+          "Blu-ray"
+        ]
+      },
+      {
+        "id": "870970-basis:29973326",
+        "type": "adaptation-of",
+        "types": [
+          "Dvd"
+        ]
+      },
+      {
+        "id": "870970-basis:50713962",
+        "type": "adaptation-of",
+        "types": [
+          "Blu-ray"
+        ]
+      },
+      {
+        "id": "870970-basis:50713989",
+        "type": "adaptation-of",
+        "types": [
+          "Blu-ray 3D"
+        ]
+      },
+      {
+        "id": "870970-basis:50729192",
+        "type": "adaptation-of",
+        "types": [
+          "Blu-ray 3D"
+        ]
+      },
+      {
+        "id": "870970-basis:50748960",
+        "type": "adaptation-of",
+        "types": [
+          "Blu-ray"
+        ]
+      },
+      {
+        "id": "870970-basis:50748979",
+        "type": "adaptation-of",
+        "types": [
+          "Dvd"
+        ]
+      },
+      {
+        "id": "870970-basis:51036026",
+        "type": "adaptation-of",
+        "types": [
+          "Dvd"
+        ]
+      },
+      {
+        "id": "870970-basis:52809894",
+        "type": "adaptation-of",
+        "types": [
+          "Blu-ray 4K"
+        ]
+      },
+      {
+        "id": "870971-forfweb:33629702",
+        "type": "creator-description",
+        "types": [
+          "Artikel"
+        ]
+      },
+      {
+        "id": "870978-anmeld:11283519",
+        "type": "review",
+        "types": [
+          "Anmeldelse"
+        ]
+      },
+      {
+        "id": "870978-anmeld:11283527",
+        "type": "review",
+        "types": [
+          "Anmeldelse"
+        ]
+      },
+      {
+        "id": "870978-anmeld:11283535",
+        "type": "review",
+        "types": [
+          "Anmeldelse"
+        ]
+      },
+      {
+        "id": "870978-anmeld:11292755",
+        "type": "review",
+        "types": [
+          "Anmeldelse"
+        ]
+      },
+      {
+        "id": "870978-anmeld:11292763",
+        "type": "review",
+        "types": [
+          "Anmeldelse"
+        ]
+      },
+      {
+        "id": "870978-anmeld:59770144",
+        "type": "review",
+        "types": [
+          "Anmeldelse"
+        ]
+      },
+      {
+        "id": "870978-anmeld:59770152",
+        "type": "review",
+        "types": [
+          "Anmeldelse"
+        ]
+      },
+      {
+        "id": "870978-anmeld:59770160",
+        "type": "review",
+        "types": [
+          "Anmeldelse"
+        ]
+      },
+      {
+        "id": "876040-katalog:50748979",
+        "type": "adaptation-of",
+        "types": [
+          "Dvd"
+        ]
+      }
+    ],
+    "series": {
+      "title": "Søren Gyldendals klassikere"
+    },
+    "subjects": [
+      {
+        "type": "not_specified",
+        "value": "hiul"
+      },
+      {
+        "type": "DK5",
+        "value": "83.8"
+      },
+      {
+        "type": "DBCS",
+        "value": "1920-1929"
+      },
+      {
+        "type": "DK5-Text",
+        "value": "Dansk skønlitteratur"
+      },
+      {
+        "type": "not_specified",
+        "value": "The Great Gatsby (US, Jack Clayton, 1974)"
+      },
+      {
+        "type": "DBCS",
+        "value": "USA"
+      },
+      {
+        "type": "not_specified",
+        "value": "hist"
+      },
+      {
+        "type": "not_specified",
+        "value": "The Great Gatsby (US, Elliot Nugent, 1949)"
+      },
+      {
+        "type": "DK5",
+        "value": "sk"
+      },
+      {
+        "type": "DBCS",
+        "value": "mænd"
+      },
+      {
+        "type": "not_specified",
+        "value": "mand"
+      },
+      {
+        "type": "DK5",
+        "value": "86"
+      },
+      {
+        "type": "not_specified",
+        "value": "The Great Gatsby (AU, Baz Luhrmann, 2013)"
+      },
+      {
+        "type": "DK5-Text",
+        "value": "Skønlitteratur"
+      },
+      {
+        "type": "DBCS",
+        "value": "rigdom"
+      },
+      {
+        "type": "not_specified",
+        "value": "The Great Gatsby (US, Herbert Brenon, 1926)"
+      },
+      {
+        "type": "DBCO",
+        "value": "romaner"
+      },
+      {
+        "type": "DK5-Text",
+        "value": "Engelsk skønlitteratur"
+      },
+      {
+        "type": "not_specified",
+        "value": "1945"
+      },
+      {
+        "type": "dcterms:LCSH",
+        "value": "Mandeskildringer"
+      }
+    ],
+    "title": "Den store Gatsby",
+    "workId": "work-of:870970-basis:01362984",
+    "workTypes": [
+      "literature"
+    ]
+  }
+}

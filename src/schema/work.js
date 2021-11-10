@@ -75,6 +75,7 @@ export const resolvers = {
       const pids = parent.manifestations.map(
         (manifestation) => manifestation.id
       );
+
       // get localizations
       const locs = await context.datasources.localizations.load({
         pids,

@@ -1,0 +1,26 @@
+{
+  "holdingsResponse": {
+    "responder": [
+      {
+        "localHoldingsId": {
+          "$": "99122473022805763"
+        },
+        "willLend": {
+          "$": "true"
+        },
+        "expectedDelivery": {
+          "$": "2021-11-08"
+        },
+        "bibliographicRecordId": {
+          "$": "99122473022805763"
+        },
+        "responderId": {
+          "$": "800022"
+        }
+      }
+    ]
+  },
+  "@namespaces": {
+    "ohs": "http:\/\/oss.dbc.dk\/ns\/openholdingstatus"
+  }
+}
