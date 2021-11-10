@@ -62,7 +62,7 @@ pipeline {
 			}
 			steps {
 				dir("deploy") {
-					git(url: "gitlab@gitlab.dbc.dk:frontend/buggi-configuration.git", credentialsId: "gitlab-svi", branch: "staging") // TODO Change gitlab-svi to frontend credentials
+					git(url: "gitlab@gitlab.dbc.dk:frontend/buggi-configuration.git", credentialsId: "gitlab-isworker", branch: "staging")
 					sh """#!/usr/bin/env bash
 						set -xe
 						rm -rf auto-committer-env
