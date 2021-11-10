@@ -16,7 +16,7 @@ type Query {
   user: User!
   work(id: String!): Work
   works(id: [String!]!): [Work]!
-  search(q: String!, limit: PaginationLimit!, offset: Int, facets: [FacetFilter]): SearchResponse!
+  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   suggest(q: String!, worktype: WorkType): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
@@ -77,12 +77,7 @@ export const resolvers = {
       return { ...work, id: args.id };
     },
     async search(parent, args, context, info) {
-      return {
-        q: args.q,
-        limit: args.limit,
-        offset: args.offset,
-        facets: args.facets,
-      };
+      return args;
     },
     async branches(parent, args, context, info) {
       return await context.datasources.library.load({

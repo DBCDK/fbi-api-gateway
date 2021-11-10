@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`search - with all filters and facets 1`] = `
+Object {
+  "data": Object {
+    "search": Object {
+      "facets": Array [
+        Object {
+          "name": "workType",
+          "values": Array [
+            Object {
+              "count": 2119328,
+              "term": "article",
+            },
+          ],
+        },
+        Object {
+          "name": "language",
+          "values": Array [
+            Object {
+              "count": 2252441,
+              "term": "dan",
+            },
+          ],
+        },
+        Object {
+          "name": "materialType",
+          "values": Array [
+            Object {
+              "count": 1148775,
+              "term": "tidsskriftsartikel",
+            },
+          ],
+        },
+        Object {
+          "name": "fictiveCharacter",
+          "values": Array [
+            Object {
+              "count": 413,
+              "term": "Batman",
+            },
+          ],
+        },
+        Object {
+          "name": "genre",
+          "values": Array [
+            Object {
+              "count": 47372,
+              "term": "rock",
+            },
+          ],
+        },
+        Object {
+          "name": "audience",
+          "values": Array [
+            Object {
+              "count": 3253857,
+              "term": "voksenmaterialer",
+            },
+          ],
+        },
+        Object {
+          "name": "accessType",
+          "values": Array [
+            Object {
+              "count": 3255553,
+              "term": "physical",
+            },
+          ],
+        },
+        Object {
+          "name": "fictionNonfiction",
+          "values": Array [
+            Object {
+              "count": 2399695,
+              "term": "nonfiktion",
+            },
+          ],
+        },
+        Object {
+          "name": "subject",
+          "values": Array [
+            Object {
+              "count": 105800,
+              "term": "historie",
+            },
+          ],
+        },
+        Object {
+          "name": "creator",
+          "values": Array [
+            Object {
+              "count": 6209,
+              "term": "Association for Computing Machinery-Digital Library",
+            },
+          ],
+        },
+      ],
+      "hitcount": 1,
+      "works": Array [
+        Object {
+          "id": "work-of:870970-basis:53557791",
+        },
+      ],
+    },
+  },
+}
+`;
