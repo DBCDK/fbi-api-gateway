@@ -80,8 +80,8 @@ export default {
     simplesearch: {
       url:
         process.env.SIMPLESEARCH_URL ||
-        "http://simple-search-bibdk-1-0.user-nots.svc.cloud.dbc.dk/search",
-      prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-2",
+        "http://simple-search-bibdk-1-0.mi-prod.svc.cloud.dbc.dk/search",
+      prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-6",
     },
     facets: {
       url:
