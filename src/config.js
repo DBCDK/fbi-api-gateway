@@ -86,7 +86,7 @@ export default {
     facets: {
       url:
         process.env.FACETS_URL ||
-        "http://simple-search-bibdk-1-0.user-nots.svc.cloud.dbc.dk/facets",
+        "http://simple-search-bibdk-1-0.mi-prod.svc.cloud.dbc.dk/facets",
       prefix: process.env.FACETS_PREFIX || "facets-1",
     },
     openplatform: {
