@@ -11,7 +11,7 @@ const { url, prefix } = config.datasources.holdingstatus;
 function constructSoap(localIds, agencyId) {
   const lookupRecords = localIds
     .map(
-      (localId, agency) =>
+      (localId) =>
         `<open:lookupRecord>
             <open:responderId>${agencyId}</open:responderId>
             <open:bibliographicRecordId>${localId}</open:bibliographicRecordId>
