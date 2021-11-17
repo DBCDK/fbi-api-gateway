@@ -41,8 +41,6 @@ export const typeDef = `
     infomediaAccess: Boolean!
     digitalCopyAccess: Boolean!
     userStatusUrl: String
-    detailedHolding: String
-    
   }
   
   type BranchResult{
@@ -60,9 +58,6 @@ export const typeDef = `
 export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
-    async detailedHolding(parent, args, context, info) {
-      return "fisk";
-    },
     async borrowerCheck(parent, args, context, info) {
       // returns true if login.bib.dk is supported
       if (!parent.agencyId) {
