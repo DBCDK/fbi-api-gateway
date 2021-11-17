@@ -40,7 +40,7 @@ function parseResponse(text, agencyId) {
     // red lamp - @TODO set message and lamp
     const localholding = [
       {
-        localholdingsId: "fisk",
+        localholdingsId: "none",
         willLend: "false",
         expectedDelivery: "never",
       },
