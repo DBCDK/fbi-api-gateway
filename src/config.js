@@ -12,6 +12,13 @@ export default {
     url: process.env.PROXY_URL || null,
   },
   datasources: {
+    holdingsitems: {
+      url:
+        process.env.BACKEND_URL ||
+        "http://bibdk-backend-www-master.frontend-prod.svc.cloud.dbc.dk/graphql",
+      ttl: process.env.BACKEND_TIME_TO_LIVE_SECONDS || 5,
+      prefix: process.env.BACKEND_PREFIX || "holdingsitems-1",
+    },
     openformat: {
       url:
         process.env.OPENFORMAT_URL ||

@@ -1,21 +1,19 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, ttl, prefix } = config.datasources.holdingstatus;
+const { url, prefix } = config.datasources.holdingstatus;
 
 /**
  * Constructs soap request to perform holdings request
  * @param {array} parameters
  * @returns {string} soap request string
  */
-function constructSoap(localIds, branch) {
-  console.log(localIds, "SOURCE");
-
+function constructSoap(localIds, agencyId) {
   const lookupRecords = localIds
     .map(
       (localId, agency) =>
         `<open:lookupRecord>
-            <open:responderId>${branch}</open:responderId>
+            <open:responderId>${agencyId}</open:responderId>
             <open:bibliographicRecordId>${localId}</open:bibliographicRecordId>
          </open:lookupRecord>`
     )
@@ -32,42 +30,11 @@ function constructSoap(localIds, branch) {
 </soapenv:Envelope>
 `;
 
-  console.log(soap, "SOAP");
   return soap;
 }
 
-function parseResponse(text, branch) {
-  /*const obj = {
-    holdingsResponse: {
-      responder: [
-        {
-          localHoldingsId: {
-            $: "99122473022805763",
-          },
-          willLend: {
-            $: "true",
-          },
-          expectedDelivery: {
-            $: "2021-11-08",
-          },
-          bibliographicRecordId: {
-            $: "99122473022805763",
-          },
-          responderId: {
-            $: "800022",
-          },
-        },
-      ],
-    },
-    "@namespaces": {
-      ohs: "http://oss.dbc.dk/ns/openholdingstatus",
-    },
-  };*/
-
+function parseResponse(text, agencyId) {
   const obj = JSON.parse(text);
-
-  console.log(JSON.stringify(obj, null, 4));
-
   // catch errors
   if (obj.holdingsResponse.error) {
     // red lamp - @TODO set message and lamp
@@ -94,24 +61,13 @@ function parseResponse(text, branch) {
 
   return {
     count: responders.length,
-    branchId: branch,
+    branchId: agencyId,
     holdingstatus: localholdings,
   };
-
-  //const obj = JSON.parse(text);
-
-  // do we have a good answer (a responder)
-  const responder = obj.holdingsResponse.responder;
-  // do we have an error
-  const error = obj.holdingsResponse.error;
-  // happy path  - we have one or more responder(s)
-  if (responder) {
-    return;
-  }
 }
 
-export async function load({ localIds, branch }) {
-  const soap = constructSoap(localIds, branch);
+export async function load({ localIds, agencyId }) {
+  const soap = constructSoap(localIds, agencyId);
 
   try {
     const res = await request
@@ -119,18 +75,16 @@ export async function load({ localIds, branch }) {
       .set("Content-Type", "text/xml")
       .send(soap);
 
-    return parseResponse(res.text, branch);
+    return parseResponse(res.text, agencyId);
   } catch (e) {
     console.log("ERROR");
     console.log(e);
   }
 }
 
-/*
 export const options = {
   redis: {
     prefix,
-    ttl,
-    staleWhileRevalidate: 60 * 60, // 1 hour
+    ttl: 60 * 15, // cache for 15 minutes
   },
-};*/
+};

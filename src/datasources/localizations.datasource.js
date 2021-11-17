@@ -1,7 +1,7 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, ttl, prefix } = config.datasources.holdingstatus;
+const { url, prefix } = config.datasources.holdingstatus;
 
 /**
  * Constructs soap request to perform holdings request
@@ -80,7 +80,6 @@ export async function load({ pids }) {
 export const options = {
   redis: {
     prefix,
-    ttl,
-    staleWhileRevalidate: 60 * 60, // 1 hour
+    ttl: 60 * 15, // cache for 15 minutes
   },
 };
