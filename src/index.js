@@ -148,7 +148,11 @@ promExporterApp.listen(9599, () => {
     })
   );
 
-  // Setup route handler for howru
+  // route handler for livelinessprobe
+  app.get("/", function (req, res) {
+    res.send("hello world");
+  });
+  // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
 
   server = app.listen(config.port, () => {
