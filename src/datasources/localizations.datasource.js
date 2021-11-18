@@ -67,6 +67,8 @@ export function parseResponse(text) {
 }
 
 export async function load({ pids }) {
+  console.log(pids, "PIDS");
+
   const soap = constructSoap(pids);
 
   const res = await request
@@ -77,9 +79,11 @@ export async function load({ pids }) {
   return parseResponse(res.text);
 }
 
+/*
 export const options = {
   redis: {
     prefix,
     ttl: 60 * 15, // cache for 15 minutes
   },
 };
+*/

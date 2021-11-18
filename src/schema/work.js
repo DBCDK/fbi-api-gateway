@@ -31,7 +31,6 @@ export const typeDef = `
     materialType: String!
     cover: Cover!
     localizations: Localizations
-    
     manifestations: [WorkManifestation!]!
   }
   type Work {

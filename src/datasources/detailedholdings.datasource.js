@@ -30,6 +30,7 @@ function constructSoap(localIds, agencyId) {
 </soapenv:Envelope>
 `;
 
+  console.log(soap, "SAOP");
   return soap;
 }
 
