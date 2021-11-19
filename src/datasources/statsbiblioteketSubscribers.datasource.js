@@ -12,6 +12,7 @@ export async function load() {
           .get(
             `${config.datasources.statsbiblioteket.url}/copydanws/subscribers`
           )
+          .proxy(proxy)
           .set("Accept", "application/json")
       ).body
     : (
@@ -19,7 +20,6 @@ export async function load() {
           .get(
             `${config.datasources.statsbiblioteket.url}/copydanws/subscribers`
           )
-          .proxy(proxy)
           .set("Accept", "application/json")
       ).body;
 
