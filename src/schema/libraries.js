@@ -258,7 +258,7 @@ export const resolvers = {
       if (!localids) {
         // there are no localizations - no library has the material - eg. digital
         // ressource - make an answer for detailedHoldings to handle.
-        return null;
+        return { holdingstatus: [], holdingsitems: null };
       }
       // get detailed holdings from openholdingsstatus.
       const detailedHoldings = await context.datasources.detailedholdings.load({

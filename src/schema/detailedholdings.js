@@ -42,23 +42,29 @@ export const resolvers = {
     },
     lamp(parent, args, context, info) {
       let statusobject = { message: "unknown_status", color: "none" };
-
-      if (!parent.holdingstatus) {
+      // holdingstatus can be null - we have no idea why - maybe an error?
+      // maybe library doesn't support - what de we know
+      if (parent.holdingsitems === null) {
         return statusobject;
       }
+      // branch has no holding
+      if (parent.holdingstatus.length < 1) {
+        return { message: "no_holdings", color: "red" };
+      }
+      // branch has holding - check status
       // if we find a 'green' lamp all is good
       // yellow is second best
       parent.holdingstatus.every((hold) => {
-        console.log(hold, "HOLD");
         if (hold.status === "OnShelf") {
-          console.log("GRREN");
-
           statusobject = { message: "at_home", color: "green" };
           // break every loop
           return false;
         }
         if (hold.status === "OnLoan") {
-          statusobject = { message: hold.expectedDelivery, color: "yellow" };
+          statusobject = {
+            message: hold.expectedDelivery || "",
+            color: "yellow",
+          };
         }
         if (hold.status === "NotForLoan") {
           // we will rather return yellow than red
