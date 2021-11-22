@@ -138,6 +138,7 @@ export const resolvers = {
       const res = await context.datasources.vipcore_UserOrderParameters.load(
         parent.agencyId
       );
+
       const userParameters = res.userParameter || [];
 
       // These parameters are special as they describe what goes in the userId
@@ -166,7 +167,7 @@ export const resolvers = {
       };
 
       // These are the forced parameters, and should not be repeated
-      const duplicates = [...userIdTypes, "userId", "userName", "userMail"];
+      const duplicates = [...userIdTypes, "userId"];
 
       // Combine forced parameters with the rest and set order property
       result = [
