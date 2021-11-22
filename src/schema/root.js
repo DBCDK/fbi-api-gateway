@@ -94,9 +94,35 @@ export const resolvers = {
         holdingsitems = null;
       }
 
+      console.log(JSON.stringify(holdingsitems, null, 4), "ITEMS");
+
       // filter out holdingsitems present at this library.
       //  + merge holdingitems with detailedHoldings.holdingstatus
       const mergedholdings = [];
+
+      console.log(holdingsitems, "ITEMS");
+      holdingsitems &&
+        holdingsitems.forEach((item) => {
+          console.log(item.holdingsitems.length, "LENGTH");
+          detailedHoldings.holdingstatus.forEach((detail) => {
+            const locals = item.holdingsitems.filter(
+              (item) => item.bibliographicRecordId === detail.localHoldingsId
+            );
+
+            console.log(locals, "LOCAL");
+            if (locals) {
+              locals.forEach((local) => {
+                const merged = {
+                  ...detail,
+                  ...local,
+                };
+                mergedholdings.push(merged);
+              });
+            }
+          });
+        });
+
+      /*
       holdingsitems &&
         detailedHoldings.holdingstatus.forEach((detail) => {
           holdingsitems.forEach((item) => {
@@ -111,7 +137,7 @@ export const resolvers = {
               mergedholdings.push(merged);
             }
           });
-        });
+        });*/
       // replace detailHoldings.holdingstatus with the merged holdings
       detailedHoldings.holdingstatus = mergedholdings;
       /** END HOLDING ITEMS **/

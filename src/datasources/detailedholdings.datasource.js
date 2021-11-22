@@ -9,6 +9,8 @@ const { url, prefix } = config.datasources.holdingstatus;
  * @returns {string} soap request string
  */
 function constructSoap(localIds, agencyId) {
+  console.log(localIds, "LOCALIDS");
+
   const lookupRecords = localIds
     .map(
       (localId) =>

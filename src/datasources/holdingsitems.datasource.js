@@ -28,6 +28,6 @@ export async function load({ accessToken, agencyId, pids }) {
 export const options = {
   redis: {
     prefix: "holdingsitems-1",
-    ttl: 60 * 15, // cache for 15 minutes
+    ttl: 60 * 60, // cache for 15 minutes
   },
 };

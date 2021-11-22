@@ -41,7 +41,7 @@ export const typeDef = `
     infomediaAccess: Boolean!
     digitalCopyAccess: Boolean!
     userStatusUrl: String
-    holdingStatus(pids:[String]): Status
+    holdingStatus(pids:[String]): DetailedHoldings
   }
   
   type BranchResult{
@@ -243,28 +243,27 @@ export const resolvers = {
       const localizations = await context.datasources.localizations.load({
         pids: args.pids,
       });
+
+      // find local holdings for this agency - we use Array.find - there is only one
       const localHoldings =
         localizations.agencies &&
         localizations.agencies.find((lok) => lok.agencyId === parent.agencyId);
 
       const localids =
         localHoldings &&
+        localHoldings.holdingItems &&
         localHoldings.holdingItems.map((item) => item.localIdentifier);
 
       if (!localids) {
         // there are no localizations - no library has the material - eg. digital
         // ressource - make an answer for detailedHoldings to handle.
-        return { count: "0" };
+        return null;
       }
       // get detailed holdings from openholdingsstatus.
       const detailedHoldings = await context.datasources.detailedholdings.load({
         localIds: localids,
         agencyId: parent.agencyId,
       });
-
-      const localDetails = detailedHoldings.holdingstatus;
-
-      console.log(detailedHoldings, "DETAILED");
 
       // NOTICE .. if we are not allowed to use itemholdings -> remove next block
       // of code
@@ -281,40 +280,32 @@ export const resolvers = {
         holdingsitems = null;
       }
 
-      // filter out holdingsitems present at this library.
-      //  + merge holdingitems with detailedHoldings.holdingstatus
       const mergedholdings = [];
       holdingsitems &&
         detailedHoldings.holdingstatus.forEach((detail) => {
           holdingsitems.forEach((item) => {
-            const local = item.holdingsitems.find(
+            const locals = item.holdingsitems.filter(
               (item) => item.bibliographicRecordId === detail.localHoldingsId
             );
-            if (local) {
-              const merged = {
-                ...detail,
-                ...local,
-              };
-              mergedholdings.push(merged);
+            if (locals) {
+              locals.forEach((local) => {
+                const merged = {
+                  ...detail,
+                  ...local,
+                };
+                mergedholdings.push(merged);
+              });
             }
           });
         });
 
-      // replace detailHoldings.holdingstatus with the merged holdings
-      detailedHoldings.holdingstatus = mergedholdings;
       /** END HOLDING ITEMS **/
-      const branchHolding = mergedholdings.find(
+      const branchHolding = mergedholdings.filter(
         (hold) => hold.branchId === parent.branchId
       );
-      if (branchHolding) {
-        return branchHolding;
-      } else {
-        return localDetails[0];
-        const fisk = localizations.agencies.find(
-          (loc) => loc.agencyId === parent.agencyId
-        );
-        return fisk.holdingItems[0];
-      }
+
+      // replace detailHoldings.holdingstatus with the merged holdings
+      detailedHoldings.holdingstatus = branchHolding;
       return detailedHoldings;
     },
   },

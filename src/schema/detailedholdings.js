@@ -2,10 +2,15 @@
  * Localizations + HoldingsItem type definitions
  */
 export const typeDef = `
+type Lamp{
+  color:String
+  message: String
+}
 type DetailedHoldings {
   count: Int!
   branchId: String
-  holdingStatus: [Status]
+  holdingItems: [Status]
+  lamp: Lamp
 }
 type Status{
   branch: String
@@ -27,13 +32,45 @@ type Status{
 export const resolvers = {
   DetailedHoldings: {
     count(parent, args, context, info) {
-      return parent.count;
+      return parent.holdingstatus.length || 0;
     },
     branchId(parent, args, context, info) {
       return parent.branchId;
     },
-    holdingStatus(parent, args, context, info) {
+    holdingItems(parent, args, context, info) {
       return parent.holdingstatus;
+    },
+    lamp(parent, args, context, info) {
+      let statusobject = { message: "unknown_status", color: "none" };
+
+      if (!parent.holdingstatus) {
+        return statusobject;
+      }
+      // if we find a 'green' lamp all is good
+      // yellow is second best
+      parent.holdingstatus.every((hold) => {
+        console.log(hold, "HOLD");
+        if (hold.status === "OnShelf") {
+          console.log("GRREN");
+
+          statusobject = { message: "at_home", color: "green" };
+          // break every loop
+          return false;
+        }
+        if (hold.status === "OnLoan") {
+          statusobject = { message: hold.expectedDelivery, color: "yellow" };
+        }
+        if (hold.status === "NotForLoan") {
+          // we will rather return yellow than red
+          if (statusobject.color !== "yellow") {
+            statusobject = { message: "not_for_loan", color: "red" };
+          }
+        }
+        // continue every loop
+        return true;
+      });
+
+      return statusobject;
     },
   },
   Status: {
