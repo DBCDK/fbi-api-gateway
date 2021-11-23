@@ -42,6 +42,7 @@ export const typeDef = `
     digitalCopyAccess: Boolean!
     userStatusUrl: String
     holdingStatus(pids:[String]): DetailedHoldings
+    branchWebsiteUrl: String
   }
   
   type BranchResult{
@@ -120,6 +121,10 @@ export const resolvers = {
     },
     userStatusUrl(parent, args, context, info) {
       return parent.userStatusUrl || parent.branchWebsiteUrl || "";
+    },
+
+    branchWebsiteUrl(parent, args, context, info) {
+      return parent.branchWebsiteUrl;
     },
     /**
      * This resolver fetches user parameters from vip-core
