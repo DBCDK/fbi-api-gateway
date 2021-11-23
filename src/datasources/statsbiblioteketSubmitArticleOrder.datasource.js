@@ -3,6 +3,7 @@ import request from "superagent";
 import config from "../config";
 
 const { url, user, password } = config.datasources.statsbiblioteket;
+const proxy = config.dmzproxy.url;
 
 function createRequestString({
   pid,
@@ -46,10 +47,16 @@ export async function load({
   });
   const endpoint = `${url}/elba-webservices/services/placecopyrequest`;
 
-  const res = await request
-    .post(endpoint)
-    .set("Content-Type", "application/xml")
-    .send(requestString);
+  const res = proxy
+    ? request
+        .post(endpoint)
+        .proxy(proxy)
+        .set("Content-Type", "application/xml")
+        .send(requestString)
+    : request
+        .post(endpoint)
+        .set("Content-Type", "application/xml")
+        .send(requestString);
 
   return res;
 }
