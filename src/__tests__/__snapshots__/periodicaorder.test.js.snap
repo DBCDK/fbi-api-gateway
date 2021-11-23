@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PeriodicaArticleOrder, agency not subscribed should give error 1`] = `
+Object {
+  "data": Object {
+    "submitPeriodicaArticleOrder": Object {
+      "status": "ERROR_AGENCY_NOT_SUBSCRIBED",
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, manifestation not part of statsbibliotek journal should give error 1`] = `
+Object {
+  "data": Object {
+    "submitPeriodicaArticleOrder": Object {
+      "status": "ERROR_PID_NOT_RESERVABLE",
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, order success 1`] = `
+Object {
+  "data": Object {
+    "submitPeriodicaArticleOrder": Object {
+      "status": "OK",
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, order when agency has no borrowerCheck 1`] = `
+Object {
+  "data": Object {
+    "submitPeriodicaArticleOrder": Object {
+      "status": "OK",
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, unauthorized user should give error 1`] = `
+Object {
+  "data": Object {
+    "submitPeriodicaArticleOrder": Object {
+      "status": "ERROR_UNAUTHORIZED_USER",
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, unknown pickupBranch should give error 1`] = `
+Object {
+  "data": Object {
+    "submitPeriodicaArticleOrder": Object {
+      "status": "ERROR_INVALID_PICKUP_BRANCH",
+    },
+  },
+}
+`;

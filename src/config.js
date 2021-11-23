@@ -114,7 +114,9 @@ export default {
     statsbiblioteket: {
       url:
         process.env.STATSBIBLIOTEKET_URL ||
-        "https://webservice.statsbiblioteket.dk",
+        "http://webservice.statsbiblioteket.dk",
+      user: process.env.STATSBIBLIOTEKET_USER,
+      password: process.env.STATSBIBLIOTEKET_PASSWORD,
     },
   },
 };

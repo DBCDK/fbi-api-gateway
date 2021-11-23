@@ -5,6 +5,7 @@
 
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
+import { resolveBorrowerCheck, resolveOnlineAccess } from "../utils/utils";
 
 /**
  * The root type definitions
@@ -30,6 +31,7 @@ type Query {
 
 type Mutation {
   data_collect(input: DataCollectInput!): String!
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!): PeriodicaArticleOrderResponse!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
@@ -221,6 +223,102 @@ export const resolvers = {
       log.info("data", { type: "data", message: JSON.stringify(data) });
 
       return "OK";
+    },
+    async submitPeriodicaArticleOrder(parent, args, context, info) {
+      let { pid, pickUpBranch, userName, userMail } = args.input;
+
+      // Fetch and check existence of branch
+      const branch = (
+        await context.datasources.library.load({
+          branchId: args.input.pickUpBranch,
+        })
+      ).result[0];
+
+      if (!branch) {
+        return {
+          status: "ERROR_INVALID_PICKUP_BRANCH",
+        };
+      }
+
+      const hasBorrowerCheck = await resolveBorrowerCheck(
+        branch.agencyId,
+        context
+      );
+
+      // If branch has borrowerCheck, we require the user to be authenticated via that agency
+      if (hasBorrowerCheck) {
+        if (!context.smaug || !context.smaug.user || !context.smaug.user.id) {
+          return {
+            status: "ERROR_UNAUTHORIZED_USER",
+          };
+        }
+        const agencyId = context.smaug.user.agency;
+        if (branch.agencyId !== agencyId) {
+          return {
+            status: "ERROR_INVALID_PICKUP_BRANCH",
+          };
+        }
+
+        // We need users name and email
+        const user = await context.datasources.user.load({
+          accessToken: context.accessToken,
+        });
+        userName = user.name ? user.name : userMail;
+        userMail = user.mail ? user.mail : userMail;
+      }
+
+      if (!userName || !userMail) {
+        return {
+          status: "ERROR_UNAUTHORIZED_USER",
+        };
+      }
+
+      // Agency must be subscribed
+      const subscriptions = await context.datasources.statsbiblioteketSubscribers.load(
+        ""
+      );
+      if (!subscriptions[branch.agencyId]) {
+        return {
+          status: "ERROR_AGENCY_NOT_SUBSCRIBED",
+        };
+      }
+
+      // Pid must be a manifestation with a valid issn (valid journal)
+      let issn;
+      try {
+        const onlineAccess = await resolveOnlineAccess(args.input.pid, context);
+        issn = onlineAccess.find((entry) => entry.issn);
+      } catch (e) {
+        return {
+          status: "ERROR_PID_NOT_RESERVABLE",
+        };
+      }
+      if (!issn) {
+        return {
+          status: "ERROR_PID_NOT_RESERVABLE",
+        };
+      }
+
+      // Then send order
+      try {
+        await context.datasources.statsbiblioteketSubmitArticleOrder.load({
+          pid,
+          pickUpBranch,
+          userName,
+          userMail,
+          agencyId: branch.agencyId,
+        });
+        log.info("Periodica article order succes", {
+          args,
+          accessToken: context.accessToken,
+        });
+        return { status: "OK" };
+      } catch (e) {
+        log.error("Periodica article order failed", e);
+        return {
+          status: "ERROR_PID_NOT_RESERVABLE",
+        };
+      }
     },
     async submitOrder(parent, args, context, info) {
       const input = {

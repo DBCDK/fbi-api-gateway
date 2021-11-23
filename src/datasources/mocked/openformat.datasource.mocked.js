@@ -1,5 +1,85 @@
 export function load(pid) {
   const data = {
+    "870971-avis:34591016": {
+      admindata: {
+        pid: { $: "870971-tsart:33261853" },
+        creationDate: { $: "2008-09-05" },
+        requestButton: { $: "true" },
+      },
+      details: {
+        articleData: {
+          article: {
+            year: { $: "2008" },
+            volume: { $: "2008, nr. 13" },
+            pages: { $: "S. 70-73" },
+            author: { $: "Hallbæck-Andersen, Charlotte" },
+            title: {
+              $:
+                "Bo bedre på din krops betingelser: 8 indretningstips, der gør din bolig og dig meget sundere",
+            },
+          },
+        },
+        articleIssn: { value: { $: "0902-1620" } },
+        catalogcode: { value: { $: "ABU200837 DAR200837" } },
+        creators: {
+          value: {
+            searchCode: { $: "phrase.creator" },
+            searchString: { $: "Charlotte Hallbæck-Andersen" },
+            name: { $: "Charlotte Hallbæck-Andersen" },
+          },
+        },
+        dk5: {
+          searchCode: { $: "dkcclphrase.ldk" },
+          searchString: { $: "64.5" },
+          value: { $: "64.5" },
+        },
+        hostPublication: {
+          value: { $: "I: I form, 2008, nr. 13, 2008" },
+          title: { $: "I form" },
+          details: { $: "2008, nr. 13" },
+        },
+        isText: { value: { $: "a" } },
+        language: { $: "Dansk" },
+        level: { value: { $: "Gymnasieniveau ; Alment niveau" } },
+        materialType: { $: "Tidsskriftsartikel" },
+        pagination: { value: { $: "S. 70-73" } },
+        publication: {
+          publicationYear: { $: "2008" },
+          format: { $: "S. 70-73, illustreret" },
+        },
+        subject: [
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "sundhed" },
+            value: { $: "sundhed" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "boliger" },
+            value: { $: "boliger" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "indretning" },
+            value: { $: "indretning" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "boligindretning" },
+            value: { $: "boligindretning" },
+          },
+        ],
+        title: {
+          value: {
+            $:
+              "Bo bedre på din krops betingelser : 8 indretningstips, der gør din bolig og dig meget sundere",
+          },
+        },
+        tracks: [null, null],
+        inLanguage: { $: "da" },
+        physicalDescriptionArticles: { $: "S. 70-73, illustreret" },
+      },
+    },
     "870971-anmeld:37860409": {
       admindata: {
         pid: { $: "870971-anmeld:37969532" },

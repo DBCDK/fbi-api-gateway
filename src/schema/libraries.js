@@ -4,6 +4,7 @@
  */
 
 import { orderBy, sortedUniqBy, uniqBy } from "lodash";
+import { resolveBorrowerCheck } from "../utils/utils";
 
 export const typeDef = `  
   enum VipUserParameter {
@@ -61,23 +62,7 @@ export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
     async borrowerCheck(parent, args, context, info) {
-      // returns true if login.bib.dk is supported
-      if (!parent.agencyId) {
-        return false;
-      }
-      const res = await context.datasources.vipcore_UserOrderParameters.load(
-        parent.agencyId
-      );
-      if (
-        res.agencyParameters &&
-        res.agencyParameters.borrowerCheckParameters
-      ) {
-        return !!res.agencyParameters.borrowerCheckParameters.find(
-          ({ borrowerCheckSystem, borrowerCheck }) =>
-            borrowerCheckSystem === "login.bib.dk" && borrowerCheck
-        );
-      }
-      return false;
+      return await resolveBorrowerCheck(parent.agencyId, context);
     },
     agencyName(parent, args, context, info) {
       return parent.agencyName || "";

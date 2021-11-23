@@ -6,6 +6,7 @@ const data = {
     postalCode: "8660",
     ddbcmsapi: "https://cmscontent.dbc.dk/",
     agency: "790900",
+    mail: "test@dbc.dk",
   },
 };
 export function load({ accessToken }) {

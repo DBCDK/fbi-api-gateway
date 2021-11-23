@@ -147,3 +147,102 @@ export function getInfomediaDetails(article) {
 
   return details;
 }
+
+export async function resolveBorrowerCheck(agencyId, context) {
+  // returns true if login.bib.dk is supported
+  if (!agencyId) {
+    return false;
+  }
+  const res = await context.datasources.vipcore_UserOrderParameters.load(
+    agencyId
+  );
+  if (res.agencyParameters && res.agencyParameters.borrowerCheckParameters) {
+    return !!res.agencyParameters.borrowerCheckParameters.find(
+      ({ borrowerCheckSystem, borrowerCheck }) =>
+        borrowerCheckSystem === "login.bib.dk" && borrowerCheck
+    );
+  }
+  return false;
+}
+export async function resolveOnlineAccess(pid, context) {
+  const result = [];
+
+  // Get onlineAccess from openformat (UrlReferences)
+  const manifestation = await context.datasources.openformat.load(pid);
+
+  const data = getArray(manifestation, "details.onlineAccess");
+  data.forEach((entry) => {
+    if (entry.value) {
+      result.push({
+        url: (entry.value.link && entry.value.link.$) || "",
+        note: (entry.value.note && entry.value.note.$) || "",
+        accessType: (entry.accessUrlDisplay && entry.accessUrlDisplay.$) || "",
+      });
+    }
+  });
+
+  let infomedia =
+    (manifestation &&
+      manifestation.details &&
+      manifestation.details.infomedia &&
+      manifestation.details.infomedia.id) ||
+    null;
+
+  if (infomedia) {
+    if (!Array.isArray(infomedia)) {
+      infomedia = [infomedia];
+    }
+    infomedia.forEach((id) => {
+      if (id.$) {
+        result.push({
+          type: "infomedia",
+          infomediaId: id.$ || "",
+          pid: manifestation.admindata.pid.$,
+        });
+      }
+    });
+  }
+
+  let webarchive =
+    (manifestation &&
+      manifestation.details &&
+      manifestation.details.webarchive &&
+      manifestation.details.webarchive.$) ||
+    null;
+  if (webarchive) {
+    const archives = await context.datasources.moreinfoWebarchive.load(
+      manifestation.admindata.pid.$
+    );
+
+    archives.forEach((archive) => {
+      if (archive.url) {
+        result.push({
+          type: "webArchive",
+          url: archive.url,
+          pid: manifestation.admindata.pid.$,
+        });
+      }
+    });
+  }
+
+  const articleIssn = getArray(manifestation, "details.articleIssn.value").map(
+    (entry) => entry.$
+  )[0];
+
+  if (articleIssn) {
+    const journals = await context.datasources.statsbiblioteketJournals.load(
+      ""
+    );
+
+    const issn = articleIssn.replace(/\D/g, "");
+    const hasJournal = journals && journals[issn];
+    if (hasJournal) {
+      result.push({
+        issn,
+      });
+    }
+  }
+
+  // Return array containing both InfomediaReference, UrlReferences, webArchive and DigitalCopy
+  return result;
+}
