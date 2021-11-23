@@ -49,7 +49,7 @@ export const resolvers = {
       }
       // branch has no holding
       if (parent.holdingstatus.length < 1) {
-        return { message: "no_holdings", color: "red" };
+        return { message: "no_holdings", color: "white" };
       }
       // branch has holding - check status
       // if we find a 'green' lamp all is good
