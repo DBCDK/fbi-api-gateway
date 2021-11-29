@@ -8,7 +8,7 @@ import { getArray } from "../utils/utils";
 /**
  * The Review type definitions
  * Review is a union type, and may be ReviewInfomedia,
- * ReviewLitteratursiden or ReviewMatVurd
+ * ReviewExternalMedia or ReviewMatVurd
  */
 export const typeDef = `
 type ReviewInfomedia {
@@ -18,7 +18,7 @@ type ReviewInfomedia {
   rating: String!
   reference: [InfomediaReference]
 }
-type ReviewLitteratursiden {
+type ReviewExternalMedia {
   author: String!
   date: String!
   url: String!
@@ -39,7 +39,7 @@ type TextWithWork {
   "The work the text is refering to. When work is null, the text does not refer to a work."
   work: Work
 }
-union Review = ReviewInfomedia | ReviewLitteratursiden | ReviewMatVurd
+union Review = ReviewInfomedia | ReviewExternalMedia | ReviewMatVurd
 `;
 
 /**
@@ -73,6 +73,8 @@ export function resolveDate(parent) {
  * @param {object} parent
  */
 function resolveMedia(parent) {
+  console.log("############### parent", parent);
+
   return (
     getArray(parent, "details.hostPublication.title").map(
       (entry) => entry.$
@@ -129,7 +131,7 @@ export const resolvers = {
       return result.length > 0 ? result : null;
     },
   },
-  ReviewLitteratursiden: {
+  ReviewExternalMedia: {
     author: resolveAuthor,
     date: resolveDate,
     url(parent, args, context, info) {
@@ -176,12 +178,10 @@ export const resolvers = {
     __resolveType(parent, args, context, info) {
       if (parent.details && parent.details.fulltextmatvurd) {
         return "ReviewMatVurd";
-      } else if (
-        resolveMedia(parent).toLowerCase().includes("litteratursiden")
-      ) {
-        return "ReviewLitteratursiden";
-      } else {
+      } else if (parent.details && parent.details.infomedia) {
         return "ReviewInfomedia";
+      } else {
+        return "ReviewExternalMedia";
       }
     },
   },

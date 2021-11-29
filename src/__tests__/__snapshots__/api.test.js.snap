@@ -370,7 +370,7 @@ Object {
       ],
       "reviews": Array [
         Object {
-          "__typename": "ReviewLitteratursiden",
+          "__typename": "ReviewExternalMedia",
           "author": "Marianne Träff",
           "date": "2018-08-21",
           "url": "https://litteratursiden.dk/boeger/fortiden-er-ikke-hvad-den-har-vaeret",
@@ -512,7 +512,7 @@ Object {
           ],
         },
         Object {
-          "__typename": "ReviewLitteratursiden",
+          "__typename": "ReviewExternalMedia",
         },
         Object {
           "__typename": "ReviewMatVurd",

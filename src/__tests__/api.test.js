@@ -275,7 +275,7 @@ describe("API test cases", () => {
                       infomediaId
                     }
                   }
-                  ... on ReviewLitteratursiden {
+                  ... on ReviewExternalMedia {
                     author
                     date
                     url
