@@ -8,7 +8,7 @@ import { getArray } from "../utils/utils";
 /**
  * The Review type definitions
  * Review is a union type, and may be ReviewInfomedia,
- * ReviewLitteratursiden or ReviewMatVurd
+ * ReviewExternalMedia or ReviewMatVurd
  */
 export const typeDef = `
 type ReviewInfomedia {
@@ -18,9 +18,10 @@ type ReviewInfomedia {
   rating: String!
   reference: [InfomediaReference]
 }
-type ReviewLitteratursiden {
+type ReviewExternalMedia {
   author: String!
   date: String!
+  media: String!
   url: String!
 }
 type ReviewMatVurd {
@@ -39,7 +40,7 @@ type TextWithWork {
   "The work the text is refering to. When work is null, the text does not refer to a work."
   work: Work
 }
-union Review = ReviewInfomedia | ReviewLitteratursiden | ReviewMatVurd
+union Review = ReviewInfomedia | ReviewExternalMedia | ReviewMatVurd
 `;
 
 /**
@@ -129,9 +130,10 @@ export const resolvers = {
       return result.length > 0 ? result : null;
     },
   },
-  ReviewLitteratursiden: {
+  ReviewExternalMedia: {
     author: resolveAuthor,
     date: resolveDate,
+    media: resolveMedia,
     url(parent, args, context, info) {
       return (
         getArray(parent, "details.onlineAccess.value.link").map(
@@ -176,12 +178,10 @@ export const resolvers = {
     __resolveType(parent, args, context, info) {
       if (parent.details && parent.details.fulltextmatvurd) {
         return "ReviewMatVurd";
-      } else if (
-        resolveMedia(parent).toLowerCase().includes("litteratursiden")
-      ) {
-        return "ReviewLitteratursiden";
-      } else {
+      } else if (parent.details && parent.details.infomedia) {
         return "ReviewInfomedia";
+      } else {
+        return "ReviewExternalMedia";
       }
     },
   },
