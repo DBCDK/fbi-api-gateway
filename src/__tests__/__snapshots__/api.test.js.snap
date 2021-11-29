@@ -373,6 +373,7 @@ Object {
           "__typename": "ReviewExternalMedia",
           "author": "Marianne Träff",
           "date": "2018-08-21",
+          "media": "Litteratursiden.dk online",
           "url": "https://litteratursiden.dk/boeger/fortiden-er-ikke-hvad-den-har-vaeret",
         },
         Object {

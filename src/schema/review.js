@@ -21,6 +21,7 @@ type ReviewInfomedia {
 type ReviewExternalMedia {
   author: String!
   date: String!
+  media: String!
   url: String!
 }
 type ReviewMatVurd {
@@ -73,8 +74,6 @@ export function resolveDate(parent) {
  * @param {object} parent
  */
 function resolveMedia(parent) {
-  console.log("############### parent", parent);
-
   return (
     getArray(parent, "details.hostPublication.title").map(
       (entry) => entry.$
@@ -134,6 +133,7 @@ export const resolvers = {
   ReviewExternalMedia: {
     author: resolveAuthor,
     date: resolveDate,
+    media: resolveMedia,
     url(parent, args, context, info) {
       return (
         getArray(parent, "details.onlineAccess.value.link").map(

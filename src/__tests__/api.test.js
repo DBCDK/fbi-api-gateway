@@ -278,6 +278,7 @@ describe("API test cases", () => {
                   ... on ReviewExternalMedia {
                     author
                     date
+                    media
                     url
                   }
                   ... on ReviewMatVurd {
