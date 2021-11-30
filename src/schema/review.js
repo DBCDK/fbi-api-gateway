@@ -22,6 +22,7 @@ type ReviewExternalMedia {
   author: String!
   date: String!
   media: String!
+  rating: String!
   url: String!
 }
 type ReviewMatVurd {
@@ -82,6 +83,16 @@ function resolveMedia(parent) {
 }
 
 /**
+ * Resolver for media
+ * @param {object} parent
+ */
+function resolveRating(parent) {
+  return (
+    getArray(parent, "details.reviewRatings").map((entry) => entry.$)[0] || ""
+  );
+}
+
+/**
  * Resolvers for the Review type
  */
 export const resolvers = {
@@ -105,12 +116,7 @@ export const resolvers = {
     author: resolveAuthor,
     date: resolveDate,
     media: resolveMedia,
-    rating(parent, args, context, info) {
-      return (
-        getArray(parent, "details.reviewRatings").map((entry) => entry.$)[0] ||
-        ""
-      );
-    },
+    rating: resolveRating,
     reference(parent, args, context, info) {
       const result = [];
 
@@ -134,6 +140,7 @@ export const resolvers = {
     author: resolveAuthor,
     date: resolveDate,
     media: resolveMedia,
+    rating: resolveRating,
     url(parent, args, context, info) {
       return (
         getArray(parent, "details.onlineAccess.value.link").map(
