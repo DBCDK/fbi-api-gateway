@@ -154,6 +154,14 @@ export async function processRequest(input, postSoapFunc) {
     ["needBeforeDate", createNeedBeforeDate()],
     ["orderSystem", input.smaug.orderSystem],
     ["pickUpAgencyId", input.pickUpBranch],
+    ["author", input.author],
+    ["authorOfComponent", input.authorOfComponent],
+    ["pagination", input.pagination],
+    ["publicationDate", input.publicationDate],
+    ["publicationDateOfComponent", input.publicationDateOfComponent],
+    ["title", input.title],
+    ["titleOfComponent", input.titleOfComponent],
+    ["volume", input.volume],
     ...input.pids.map((pid) => ["pid", pid]),
     ["serviceRequester", serviceRequester],
     ["userId", userId[1]],
@@ -161,7 +169,9 @@ export async function processRequest(input, postSoapFunc) {
     ...userParameters,
     ["verificationReferenceSource", "dbcdatawell"],
     ["outputType", "json"],
-  ].map(([key, val]) => ({ key, val, order: paramOrder[key] }));
+  ]
+    .filter(([key, val]) => !!val)
+    .map(([key, val]) => ({ key, val, order: paramOrder[key] }));
 
   parameters = orderBy(parameters, "order");
 

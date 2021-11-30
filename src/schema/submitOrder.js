@@ -37,6 +37,14 @@ export const typeDef = `
     exactEdition: Boolean
     expires: String
     userParameters: SubmitOrderUserParameters!
+    author: String
+    authorOfComponent: String
+    pagination: String
+    publicationDate: String
+    publicationDateOfComponent: String
+    title: String
+    titleOfComponent: String
+    volume: String
   } `;
 
 /**
