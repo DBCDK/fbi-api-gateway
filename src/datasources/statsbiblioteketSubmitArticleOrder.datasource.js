@@ -11,6 +11,11 @@ function createRequestString({
   userName,
   userMail,
   agencyId,
+  publicationDateOfComponent,
+  volume,
+  authorOfComponent,
+  titleOfComponent,
+  pagination,
 }) {
   return `<?xml version="1.0"?>
   <placeCopyRequest xmlns="http://statsbiblioteket.dk/xws/elba-placecopyrequest-schema">
@@ -21,7 +26,27 @@ function createRequestString({
     <pickupAgencyId>${pickUpBranch}</pickupAgencyId>
     <userName>${userName}</userName>
     <userMail>${userMail}</userMail>
-  </placeCopyRequest>`;
+    ${
+      authorOfComponent
+        ? `<authorOfComponent>${authorOfComponent}</authorOfComponent>`
+        : ""
+    }
+    ${
+      titleOfComponent
+        ? `<titleOfComponent>${titleOfComponent}</titleOfComponent>`
+        : ""
+    }
+    ${
+      publicationDateOfComponent
+        ? `<publicationDateOfComponent>${publicationDateOfComponent}</publicationDateOfComponent>`
+        : ""
+    }
+    ${volume ? `<volumeOfComponent>${volume}</volumeOfComponent>` : ""}
+    ${pagination ? `<pagesOfComponent>${pagination}</pagesOfComponent>` : ""}
+  </placeCopyRequest>`
+    .split(/\r?\n/)
+    .filter((line) => !!line.trim())
+    .join("\n");
 }
 
 /**
@@ -37,6 +62,11 @@ export async function load({
   userName,
   userMail,
   agencyId,
+  publicationDateOfComponent,
+  volume,
+  authorOfComponent,
+  titleOfComponent,
+  pagination,
 }) {
   const requestString = createRequestString({
     pid,
@@ -44,6 +74,11 @@ export async function load({
     userName,
     userMail,
     agencyId,
+    publicationDateOfComponent,
+    volume,
+    authorOfComponent,
+    titleOfComponent,
+    pagination,
   });
   const endpoint = `${url}/elba-webservices/services/placecopyrequest`;
 

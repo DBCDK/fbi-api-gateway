@@ -93,6 +93,11 @@ test("PeriodicaArticleOrder, order success", async () => {
       input: {
         pid: "870971-avis:34591016",
         pickUpBranch: "715100",
+        authorOfComponent: "some author",
+        publicationDateOfComponent: "1972",
+        volume: "8",
+        titleOfComponent: "some-title",
+        pagination: "100-145",
       },
     },
     context: {

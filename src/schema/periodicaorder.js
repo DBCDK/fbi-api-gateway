@@ -5,13 +5,18 @@
 
 export const typeDef = `
  input PeriodicaArticleOrder {
-   """
-   The pid of an article (Not the periodica)
-   """
-   pid: String! 
-   pickUpBranch: String!
-   userName: String
-   userMail: String
+    """
+    The pid of an article or periodica
+    """
+    pid: String!
+    pickUpBranch: String!
+    userName: String
+    userMail: String
+    publicationDateOfComponent: String
+    volume: String
+    authorOfComponent: String
+    titleOfComponent: String
+    pagination: String
  }
  enum PeriodicaArticleOrderStatus {
    OK

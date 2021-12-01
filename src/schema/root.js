@@ -225,7 +225,7 @@ export const resolvers = {
       return "OK";
     },
     async submitPeriodicaArticleOrder(parent, args, context, info) {
-      let { pid, pickUpBranch, userName, userMail } = args.input;
+      let { userName, userMail } = args.input;
 
       // Fetch and check existence of branch
       const branch = (
@@ -302,10 +302,7 @@ export const resolvers = {
       // Then send order
       try {
         await context.datasources.statsbiblioteketSubmitArticleOrder.load({
-          pid,
-          pickUpBranch,
-          userName,
-          userMail,
+          ...args.input,
           agencyId: branch.agencyId,
         });
         log.info("Periodica article order succes", {
