@@ -225,9 +225,11 @@ export async function resolveOnlineAccess(pid, context) {
     });
   }
 
-  const articleIssn = getArray(manifestation, "details.articleIssn.value").map(
-    (entry) => entry.$
-  )[0];
+  const articleIssn =
+    getArray(manifestation, "details.articleIssn.value").map(
+      (entry) => entry.$
+    )[0] ||
+    getArray(manifestation, "details.issn.value").map((entry) => entry.$)[0];
 
   if (articleIssn) {
     const journals = await context.datasources.statsbiblioteketJournals.load(
