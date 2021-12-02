@@ -27,7 +27,7 @@ type Query {
   session: Session
   howru:String
   holdingStatus(agencyId:String, pids:[String]): DetailedHoldings
-  localizations(pids:[String]):Localizations
+  localizations(pids:[String!]!):Localizations
 }
 
 type Mutation {
