@@ -27,6 +27,7 @@ type Query {
   session: Session
   howru:String
   holdingStatus(agencyId:String, pids:[String]): DetailedHoldings
+  localizations(pids:[String!]!):Localizations
 }
 
 type Mutation {
@@ -42,6 +43,13 @@ type Mutation {
  */
 export const resolvers = {
   Query: {
+    async localizations(parent, args, context, info) {
+      // get localizations from openholdingstatus
+      const localizations = await context.datasources.localizations.load({
+        pids: args.pids,
+      });
+      return localizations;
+    },
     /**
      * Holding status does a number of calls to external services.
      * localisationRequest (openHoldingStatus - see localizations.datasource.js) : to get localizations (agencies where material is located)

@@ -68,7 +68,6 @@ export function parseResponse(text) {
 
 export async function load({ pids }) {
   const soap = constructSoap(pids);
-
   const res = await request
     .post(url)
     .set("Content-Type", "text/xml")
