@@ -17,7 +17,7 @@ export default function monitor({ name, help }, func) {
   const hist = new client.Histogram({
     name,
     help,
-    buckets: [0.1, 0.5, 1, 2, 5],
+    buckets: [0.1, 0.5, 2, 10, 30],
   });
 
   // Return the wrapped function

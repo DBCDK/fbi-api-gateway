@@ -1,3 +1,5 @@
+import translations from "../utils/translations.json";
+
 /**
  * define a searchquery
  * basically a search query is a searchstring and some filters (facets)
@@ -85,6 +87,11 @@ A facet value consists of a term and a count.
 """
 type FacetValue {
   """
+  Use the key when applying filters
+  """
+  key: String!
+
+  """
   A value of a facet field
   """
   term: String!
@@ -102,7 +109,7 @@ type FacetResult {
   """
   The name of the facet.
   """
-  name: FacetField!
+  name: String!
 
   """
   The values of thie facet result
@@ -130,14 +137,25 @@ type SearchResponse {
   """
   facets(facets: [FacetField!]!): [FacetResult!]!
 }
-
-
 `;
 
 export const resolvers = {
+  FacetValue: {
+    key(parent, args, context) {
+      return parent.term;
+    },
+    term(parent, args, context) {
+      // We only use danish translations for now
+      return (
+        translations.facets[parent.facetName]?.[parent.term]?.da || parent.term
+      );
+    },
+  },
   FacetResult: {
     values(parent, args, context) {
-      return parent.values.slice(0, args.limit);
+      return parent.values
+        .slice(0, args.limit)
+        .map((value) => ({ ...value, facetName: parent.name }));
     },
   },
   SearchResponse: {

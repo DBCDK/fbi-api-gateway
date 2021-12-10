@@ -4,7 +4,7 @@
   "description": "API for the future bibliotek.dk",
   "main": "src/index.js",
   "scripts": {
-    "dev": ". ./env.env && nodemon -r esm ./src/index.js",
+    "dev": ". ./env.env && nodemon -r esm-wallaby ./src/index.js",
     "test": "jest",
     "prettier": "prettier --write 'src/**/*.js'"
   },
@@ -16,7 +16,7 @@
     "dataloader": "^2.0.0",
     "dayjs": "^1.10.6",
     "dbc-node-logger": "^2.0.9",
-    "esm": "^3.2.25",
+    "esm-wallaby": "^3.2.25",
     "express": "^4.17.1",
     "express-graphql": "^0.12.0",
     "graphql": "^15.0.0",

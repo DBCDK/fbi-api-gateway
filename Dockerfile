@@ -19,4 +19,6 @@ FROM $NODE_BASEIMAGE AS release
 WORKDIR /home/node/app
 COPY --chown=node:node --from=build /home/node/app/ ./
 USER node
-CMD ["node", "-r", "esm", "./src/index.js"]
+
+# We use wallaby fork of esm to make optional chaining work
+CMD ["node", "-r", "esm-wallaby", "./src/index.js"]

@@ -10,7 +10,7 @@ Object {
           "values": Array [
             Object {
               "count": 2119328,
-              "term": "article",
+              "term": "Artikler",
             },
           ],
         },
@@ -19,7 +19,7 @@ Object {
           "values": Array [
             Object {
               "count": 2252441,
-              "term": "dan",
+              "term": "Dansk",
             },
           ],
         },
@@ -64,7 +64,7 @@ Object {
           "values": Array [
             Object {
               "count": 3255553,
-              "term": "physical",
+              "term": "fysiske",
             },
           ],
         },
