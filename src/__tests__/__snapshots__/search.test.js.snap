@@ -64,7 +64,7 @@ Object {
           "values": Array [
             Object {
               "count": 3255553,
-              "term": "fysiske",
+              "term": "Fysisk",
             },
           ],
         },
@@ -73,7 +73,7 @@ Object {
           "values": Array [
             Object {
               "count": 2399695,
-              "term": "nonfiktion",
+              "term": "Faglitteratur",
             },
           ],
         },
