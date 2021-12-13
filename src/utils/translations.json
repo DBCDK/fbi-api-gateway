@@ -2,10 +2,18 @@
   "facets": {
     "accessType": {
       "physical": {
-        "da": "fysiske"
+        "da": "Fysisk"
       },
       "online": {
-        "da": "online"
+        "da": "Digital"
+      }
+    },
+    "fictionNonfiction": {
+      "fiktion": {
+        "da": "Skønlitteratur"
+      },
+      "nonfiktion": {
+        "da": "Faglitteratur"
       }
     },
     "language": {
