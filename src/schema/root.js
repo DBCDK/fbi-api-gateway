@@ -220,7 +220,7 @@ export const resolvers = {
       }
 
       // Convert keys, replace _ to -
-      const data = {};
+      const data = { ip: context.smaug.app.ips[0] };
       Object.entries(inputObjects[0]).forEach(([key, val]) => {
         data[key.replace(/_/g, "-")] = val;
       });

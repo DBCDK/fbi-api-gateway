@@ -113,7 +113,7 @@ describe("API test cases", () => {
           },
         },
       },
-      context: {},
+      context: { smaug: { app: { ips: ["some-ip"] } } },
     });
     expect(result).toEqual({
       data: {
@@ -124,6 +124,7 @@ describe("API test cases", () => {
     expect(JSON.parse(spy.console.mock.calls[0][0])).toMatchObject({
       type: "data",
       message: JSON.stringify({
+        ip: "some-ip",
         "search-query": "harry",
         "search-query-hit": 7,
         "search-query-work": "some-work-id",
