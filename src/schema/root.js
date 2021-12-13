@@ -176,27 +176,24 @@ export const resolvers = {
 
         // Reverse translate facet terms
         Object.entries(args.filters).forEach(([filter, values]) => {
-          // Check if we have translations for this specific filter/facet
-          if (translations.facets[filter]) {
-            filters[filter] = [];
+          filters[filter] = [];
 
-            // Get entries for the filter/facet in an array
-            const filterTranslations = Object.entries(
-              translations.facets[filter]
+          // Get entries for the filter/facet in an array
+          const filterTranslations =
+            translations.facets[filter] &&
+            Object.entries(translations.facets[filter]);
+
+          // Loop through each of the provided filters
+          values.forEach((value) => {
+            // Find a translation for a given value, (could be 'Dansk')
+            const found = filterTranslations?.find(
+              ([key, translation]) => translation.da === value
             );
 
-            // Loop through each of the provided filters
-            values.forEach((value) => {
-              // Find a translation for a given value, (could be 'Dansk')
-              const found = filterTranslations.find(
-                ([key, translation]) => translation.da === value
-              );
-
-              // Push the key for the filter (could be 'dan' if filter was 'Dansk')
-              // or if we do not have a translation, use the provided value
-              filters[filter].push(found ? found[0] : value);
-            });
-          }
+            // Push the key for the filter (could be 'dan' if filter was 'Dansk')
+            // or if we do not have a translation, use the provided value
+            filters[filter].push(found ? found[0] : value);
+          });
         });
         return { ...args, filters };
       }
