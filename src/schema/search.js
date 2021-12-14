@@ -40,15 +40,6 @@ input SearchQuery {
 }
 
 
-"""
-The supported values for the access 
-"""
-enum AccessType {
-  physical
-  online
-  none
-}
-
 
 """
 The supported facet fields
@@ -70,7 +61,7 @@ enum FacetField {
 Search Filters
 """
 input SearchFilters {
-  accessType: [AccessType!]
+  accessType: [String!]
   audience: [String!]
   creator: [String!]
   fictionNonfiction: [String!]
@@ -79,7 +70,7 @@ input SearchFilters {
   language: [String!]
   materialType: [String!]
   subject: [String!]
-  workType: [WorkType!]
+  workType: [String!]
 }
 
 """
