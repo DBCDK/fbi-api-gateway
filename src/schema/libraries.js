@@ -274,9 +274,13 @@ export const resolvers = {
       const mergedholdings = [];
       holdingsitems &&
         detailedHoldings.holdingstatus.forEach((detail) => {
+          // A localHoldingsId may look like this "09056769_(number)June (318)_(volume)_(year)2006"
+          // We need the faust in order to compare with bibliographicRecordId
+          const localHoldingsId = detail.localHoldingsId?.split("_")?.[0];
+
           holdingsitems.forEach((item) => {
             const locals = item.holdingsitems.filter(
-              (item) => item.bibliographicRecordId === detail.localHoldingsId
+              (item) => item.bibliographicRecordId === localHoldingsId
             );
             if (locals) {
               locals.forEach((local) => {
@@ -296,8 +300,7 @@ export const resolvers = {
       );
 
       // replace detailHoldings.holdingstatus with the merged holdings
-      detailedHoldings.holdingstatus = branchHolding;
-      return detailedHoldings;
+      return { ...detailedHoldings, holdingstatus: branchHolding };
     },
   },
   BranchResult: {
