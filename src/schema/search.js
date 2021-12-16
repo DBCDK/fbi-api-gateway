@@ -90,7 +90,7 @@ type FacetValue {
   """
   The count of the term for a facet field
   """
-  count: Int!
+  count: Int
 }
 
 """
@@ -182,7 +182,23 @@ export const resolvers = {
         ...args,
       });
 
-      return res;
+      const response = [];
+
+      args.facets.forEach((key) => {
+        const values = parent.filters[key];
+        const facet = res.find((obj) => obj.name === key);
+        const copy = { ...facet, values: [] };
+        values.forEach((value) => {
+          if (!facet.values.find((obj) => obj.term === value)) {
+            copy.values.push({ term: value, count: null });
+          }
+        });
+        copy.values = [...copy.values, ...facet.values];
+
+        response.push(copy);
+      });
+
+      return response;
     },
   },
 };
