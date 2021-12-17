@@ -189,11 +189,29 @@ export const resolvers = {
         const facet = res.find((obj) => obj.name === key);
         const copy = { ...facet, values: [] };
         values.forEach((value) => {
-          if (!facet.values.find((obj) => obj.term === value)) {
-            copy.values.push({ term: value, count: null });
-          }
+          // get selected term props
+          const selected = facet.values.find((obj) => obj.term === value);
+          // Push to copy values
+          // If the selected value is missing a count (because it does not exist in the retrun data (res)) count will be set null
+          copy.values.push({ term: value, count: selected?.count || null });
         });
-        copy.values = [...copy.values, ...facet.values];
+
+        // Remove duplicates
+        const trimmed = facet.values.filter((v) => !values.includes(v.term));
+
+        // sort the selected terms
+        copy.values.sort((a, b) => {
+          return (
+            // sort null values first
+            -(!a.count - !b.count) ||
+            // sort by count DESC
+            -(a.count > b.count) ||
+            +(a.count < b.count)
+          );
+        });
+
+        // merge selected + new terms (selected will come first in the sorted order (null's first, then by highest count))
+        copy.values = [...copy.values, ...trimmed];
 
         response.push(copy);
       });
