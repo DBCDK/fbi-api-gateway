@@ -27,15 +27,6 @@ export const resolvers = {
         return parent.series.instalment;
       }
 
-      // If not, return from series-service index
-      const data = await context.datasources.series.load({
-        workId: parent.workId,
-      });
-
-      if (data && data.series) {
-        return data.series.indexOf(parent.workId) + 1;
-      }
-
       return null;
     },
     title(parent, args, context, info) {
