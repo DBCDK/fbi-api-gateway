@@ -192,11 +192,11 @@ export const resolvers = {
           // get selected term props
           const selected = facet.values.find((obj) => obj.term === value);
           // Push to copy values
-          // If the selected value is missing a count (because it does not exist in the retrun data (res)) count will be set null
+          // If the selected value is missing a count (because it does not exist in the return data (res)) count will be set to null
           copy.values.push({ term: value, count: selected?.count || null });
         });
 
-        // Remove duplicates
+        // Remove values from res that has already been added in copy.values
         const trimmed = facet.values.filter((v) => !values.includes(v.term));
 
         // sort the selected terms
@@ -210,7 +210,7 @@ export const resolvers = {
           );
         });
 
-        // merge selected + new terms (selected will come first in the sorted order (null's first, then by highest count))
+        // Merge selected + new terms (selected will come first in the sorted order (null's first, then by count DESC))
         copy.values = [...copy.values, ...trimmed];
 
         response.push(copy);
