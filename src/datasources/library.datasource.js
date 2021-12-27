@@ -43,6 +43,10 @@ const searchOptions = {
   prefix: true,
 };
 
+// exclude branches - set this to false if you do NOT want to filter
+// out branches
+const excludeBranches = config.datasources.vipcore.excludeBranches;
+
 // We cache the docs for 30 minutes
 let branches;
 let branchesMap;
@@ -82,6 +86,8 @@ export async function search(props, getFunc) {
     agencyid,
     language = "da",
     branchId,
+    digitalAccessSubscriptions,
+    infomediaSubscriptions,
   } = props;
 
   const age = lastUpdateMS ? new Date().getTime() - lastUpdateMS : 0;
@@ -99,6 +105,16 @@ export async function search(props, getFunc) {
           id: branch.branchId,
           name: branch.branchName,
         }));
+
+        if (excludeBranches) {
+          branches = branches.filter(function (item) {
+            return (
+              digitalAccessSubscriptions[item.agencyId] ||
+              infomediaSubscriptions[item.agencyId] ||
+              item.pickupAllowed
+            );
+          });
+        }
 
         branchesMap = {};
         branches.forEach((branch) => (branchesMap[branch.id] = branch));

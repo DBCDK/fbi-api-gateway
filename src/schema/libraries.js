@@ -198,15 +198,9 @@ export const resolvers = {
       return !!parent.pickupAllowed;
     },
     async infomediaAccess(parent, args, context, info) {
-      const response = await context.datasources.idp.load({
-        pickupBranch: parent.agencyId,
-      });
+      const response = await context.datasources.idp.load("");
 
-      let inResponse = response.find(
-        (agency) => agency.agencyId === parent.agencyId
-      );
-
-      return !!inResponse;
+      return !!response[parent.agencyId];
     },
     async digitalCopyAccess(parent, args, context, info) {
       const subscriptions = await context.datasources.statsbiblioteketSubscribers.load(

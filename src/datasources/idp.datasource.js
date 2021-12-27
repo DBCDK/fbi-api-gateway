@@ -6,14 +6,19 @@ import request from "superagent";
 import { log } from "dbc-node-logger";
 import config from "../config";
 
-const { url, ttl } = config.datasources.idp;
+const { url, ttl, prefix } = config.datasources.idp;
 
-export async function load({ agencyId }) {
+export async function load() {
   try {
     const response = await request.get(
-      `${url}//queries/subscribersbyproductname/INFOMEDIA`
+      `${url}/queries/subscribersbyproductname/INFOMEDIA`
     );
-    return response.body.organisations;
+
+    const agencyMap = {};
+    response.body.organisations.forEach(
+      ({ agencyId }) => (agencyMap[agencyId] = 1)
+    );
+    return agencyMap;
   } catch (e) {
     log.error("Request to idp failed." + " Message: " + e.message);
 
@@ -24,7 +29,8 @@ export async function load({ agencyId }) {
 
 export const options = {
   redis: {
-    prefix: "idp-1",
-    ttl: ttl,
+    prefix,
+    ttl,
+    inMemory: true,
   },
 };

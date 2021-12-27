@@ -201,6 +201,10 @@ export const resolvers = {
       return args;
     },
     async branches(parent, args, context, info) {
+      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
+        ""
+      );
+      const infomediaSubscriptions = await context.datasources.idp.load("");
       return await context.datasources.library.load({
         q: args.q,
         limit: args.limit,
@@ -208,6 +212,8 @@ export const resolvers = {
         language: args.language,
         agencyid: args.agencyid,
         branchId: args.branchId,
+        digitalAccessSubscriptions,
+        infomediaSubscriptions,
       });
     },
     async suggest(parent, args, context, info) {

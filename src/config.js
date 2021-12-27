@@ -95,6 +95,9 @@ export default {
       ttl: process.env.OPENFORMAT_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
     },
     vipcore: {
+      excludeBranches:
+        process.env.VIP_EXCLUDE_BRANCHES === "true" ||
+        process.env.VIP_EXCLUDE_BRANCHES == "1",
       url:
         process.env.VIP_CORE_URL ||
         "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api",
@@ -105,7 +108,7 @@ export default {
       url:
         process.env.IDP_URL ||
         "http://idpservice.iscrum-prod.svc.cloud.dbc.dk/api/v1",
-      prefix: process.env.IDP_PREFIX || "IDP-1",
+      prefix: process.env.IDP_PREFIX || "IDP-2",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 10,
     },
     smaug: {
