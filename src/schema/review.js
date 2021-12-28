@@ -24,6 +24,7 @@ type ReviewExternalMedia {
   media: String!
   rating: String!
   url: String!
+  alternateUrl: String
 }
 type ReviewMatVurd {
   author: String!
@@ -147,6 +148,15 @@ export const resolvers = {
           (entry) => entry.$
         )[0] || ""
       );
+    },
+    async alternateUrl(parent, args, context, info) {
+      const webarchive = parent?.details?.webarchive?.$;
+      if (webarchive) {
+        const archives = await context.datasources.moreinfoWebarchive.load(
+          parent.admindata.pid.$
+        );
+        return archives?.[0]?.url;
+      }
     },
   },
   ReviewMatVurd: {
