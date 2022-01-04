@@ -45,6 +45,7 @@ export const typeDef = `
     holdingStatus(pids:[String]): DetailedHoldings
     branchWebsiteUrl: String
     branchCatalogueUrl: String
+    lookupUrl: String
   }
   
   type BranchResult{
@@ -115,6 +116,9 @@ export const resolvers = {
 
     branchCatalogueUrl(parent, args, context, info) {
       return parent.branchCatalogueUrl || "";
+    },
+    lookupUrl(parent, args, context, info) {
+      return parent.lookupUrl || "";
     },
     /**
      * This resolver fetches user parameters from vip-core

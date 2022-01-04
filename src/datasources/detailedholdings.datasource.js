@@ -49,7 +49,7 @@ function parseResponse(text, agencyId) {
     }
   }
 
-  const responders = obj.holdingsResponse.responder;
+  const responders = obj.holdingsResponse.responder || [];
   for (const [key, value] of Object.entries(responders)) {
     localholdings.push({
       localHoldingsId: (value.localHoldingsId && value.localHoldingsId.$) || "",

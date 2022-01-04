@@ -49,39 +49,38 @@ export const resolvers = {
     },
     expectedDelivery(parent, args, context, info) {
       // return newest delivery date
-      console.log(parent.holdingstatus, "HOLDINGSTATUS");
       return new Date().toJSON().slice(0, 10).replace(/-/g, "/");
     },
     lamp(parent, args, context, info) {
       let statusobject = { message: "no_loc_no_holding", color: "none" };
       //check if there are any localizations at all
-      if (parent.agencyHoldings === null) {
+      if (parent.holdingsitems === null && parent.holdingstatus.length < 1) {
         // no localizations - we can do nothing
         return statusobject;
       }
       // branch has no holding - there are localizations in agency
       if (parent.holdingstatus.length < 1) {
-        return { message: "loc_no_holding", color: "green" };
+        return { message: "loc_no_holding", color: "yellow" };
       }
       // branch has holding - check status
       // if we find a 'green' lamp all is good
       // yellow is second best
       parent.holdingstatus.every((hold) => {
         if (hold.status === "OnShelf") {
-          statusobject = { message: "at_home", color: "green" };
+          statusobject = { message: "loc_holding", color: "green" };
           // break every loop
           return false;
         }
         if (hold.status === "OnLoan") {
           statusobject = {
-            message: hold.expectedDelivery || "",
+            message: "loc_no_hold_expect",
             color: "yellow",
           };
         }
         if (hold.status === "NotForLoan") {
           // we will rather return yellow than red
           if (statusobject.color !== "yellow") {
-            statusobject = { message: "not_for_loan", color: "red" };
+            statusobject = { message: "loc_hold_no_loan", color: "red" };
           }
         }
         // continue every loop
