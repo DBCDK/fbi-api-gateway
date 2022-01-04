@@ -47,6 +47,7 @@ export function parseResponse(text) {
         codes: (value.codes && value.codes.$) || "",
         localIdentifier:
           (value.localIdentifier && value.localIdentifier.$) || "",
+        agencyId: (value.agencyId && value.agencyId.$) || "",
       };
       // check if agency is already in map
       const index = agencyMap.findIndex(

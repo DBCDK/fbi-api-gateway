@@ -14,7 +14,7 @@ function constructSoap(localIds, agencyId) {
       (localId) =>
         `<open:lookupRecord>
             <open:responderId>${agencyId}</open:responderId>
-            <open:bibliographicRecordId>${localId}</open:bibliographicRecordId>
+            <open:bibliographicRecordId>${localId.localIdentifier}</open:bibliographicRecordId>
          </open:lookupRecord>`
     )
     .join("");
@@ -35,21 +35,21 @@ function constructSoap(localIds, agencyId) {
 
 function parseResponse(text, agencyId) {
   const obj = JSON.parse(text);
+  const localholdings = [];
   // catch errors
   if (obj.holdingsResponse.error) {
     // red lamp - @TODO set message and lamp
-    const localholding = [
-      {
-        localholdingsId: "none",
+    const errors = obj.holdingsResponse.error;
+    for (const [key, value] of Object.entries(errors)) {
+      localholdings.push({
+        localholdingsId: value.bibliographicRecordId.$ || "none",
         willLend: "false",
         expectedDelivery: "never",
-      },
-    ];
-    return { count: 0, branchId: branch, holdingstatus: localholding };
+      });
+    }
   }
 
   const responders = obj.holdingsResponse.responder;
-  const localholdings = [];
   for (const [key, value] of Object.entries(responders)) {
     localholdings.push({
       localHoldingsId: (value.localHoldingsId && value.localHoldingsId.$) || "",
@@ -77,7 +77,6 @@ export async function load({ localIds, agencyId }) {
 
     return parseResponse(res.text, agencyId);
   } catch (e) {
-    console.log("ERROR");
     console.log(e);
   }
 }

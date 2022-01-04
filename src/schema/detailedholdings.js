@@ -9,8 +9,15 @@ type Lamp{
 type DetailedHoldings {
   count: Int!
   branchId: String
+  expectedDelivery: String
+  agencyHoldings: [AgencyHolding]
   holdingItems: [Status]
   lamp: Lamp
+}
+type AgencyHolding{
+  localisationPid: String
+  localIdentifier: String
+  agencyId: String
 }
 type Status{
   branch: String
@@ -40,16 +47,21 @@ export const resolvers = {
     holdingItems(parent, args, context, info) {
       return parent.holdingstatus;
     },
+    expectedDelivery(parent, args, context, info) {
+      // return newest delivery date
+      console.log(parent.holdingstatus, "HOLDINGSTATUS");
+      return new Date().toJSON().slice(0, 10).replace(/-/g, "/");
+    },
     lamp(parent, args, context, info) {
-      let statusobject = { message: "unknown_status", color: "none" };
-      // holdingstatus can be null - we have no idea why - maybe an error?
-      // maybe library doesn't support - what de we know
-      if (parent.holdingsitems === null) {
+      let statusobject = { message: "no_loc_no_holding", color: "none" };
+      //check if there are any localizations at all
+      if (parent.agencyHoldings === null) {
+        // no localizations - we can do nothing
         return statusobject;
       }
-      // branch has no holding
+      // branch has no holding - there are localizations in agency
       if (parent.holdingstatus.length < 1) {
-        return { message: "no_holdings", color: "white" };
+        return { message: "loc_no_holding", color: "green" };
       }
       // branch has holding - check status
       // if we find a 'green' lamp all is good
@@ -77,6 +89,20 @@ export const resolvers = {
       });
 
       return statusobject;
+    },
+    agencyHoldings(parent, args, context, info) {
+      return parent.agencyHoldings;
+    },
+  },
+  AgencyHolding: {
+    localisationPid(parent, args, context, info) {
+      return parent.localisationPid;
+    },
+    localIdentifier(parent, args, context, info) {
+      return parent.localIdentifier;
+    },
+    agencyId(parent, args, context, info) {
+      return parent.agency;
     },
   },
   Status: {

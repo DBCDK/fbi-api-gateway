@@ -71,6 +71,7 @@ export const resolvers = {
       const localizations = await context.datasources.localizations.load({
         pids: args.pids,
       });
+
       const localHoldings =
         localizations.agencies &&
         localizations.agencies.find((lok) => lok.agencyId === args.agencyId);

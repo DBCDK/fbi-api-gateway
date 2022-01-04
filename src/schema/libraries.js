@@ -44,6 +44,7 @@ export const typeDef = `
     userStatusUrl: String
     holdingStatus(pids:[String]): DetailedHoldings
     branchWebsiteUrl: String
+    branchCatalogueUrl: String
   }
   
   type BranchResult{
@@ -110,6 +111,10 @@ export const resolvers = {
 
     branchWebsiteUrl(parent, args, context, info) {
       return parent.branchWebsiteUrl;
+    },
+
+    branchCatalogueUrl(parent, args, context, info) {
+      return parent.branchCatalogueUrl || "";
     },
     /**
      * This resolver fetches user parameters from vip-core
@@ -230,15 +235,26 @@ export const resolvers = {
       });
 
       // find local holdings for this agency - we use Array.find - there is only one
-      const localHoldings =
+      // most branches has holdings on agency level
+      const agencyHoldings =
         localizations.agencies &&
         localizations.agencies.find((lok) => lok.agencyId === parent.agencyId);
+      // some libraries has their own 'agency' - like universities - so here we search
+      // on branchId
+      const uniHoldings =
+        localizations.agencies &&
+        localizations.agencies.find((lok) => lok.agencyId === parent.branchId);
+      // combine agencyHoldings and uniHoldings
+      const localHoldings = { ...uniHoldings, ...agencyHoldings };
 
       const localids =
         localHoldings &&
         localHoldings.holdingItems &&
-        localHoldings.holdingItems.map((item) => item.localIdentifier);
-
+        localHoldings.holdingItems.map((item) => ({
+          localIdentifier: item.localIdentifier,
+          localisationPid: item.localizationPid,
+          agency: item.agencyId,
+        }));
       if (!localids) {
         // there are no localizations - no library has the material - eg. digital
         // ressource - make an answer for detailedHoldings to handle.
@@ -294,7 +310,11 @@ export const resolvers = {
       );
 
       // replace detailHoldings.holdingstatus with the merged holdings
-      return { ...detailedHoldings, holdingstatus: branchHolding };
+      return {
+        ...detailedHoldings,
+        holdingstatus: branchHolding,
+        agencyHoldings: localids,
+      };
     },
   },
   BranchResult: {
