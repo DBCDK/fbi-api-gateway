@@ -236,7 +236,7 @@ export async function resolveOnlineAccess(pid, context) {
       ""
     );
 
-    const issn = articleIssn.replace(/\D/g, "");
+    const issn = articleIssn.replace(/[^a-z\d]/gi, "");
     const hasJournal = journals && journals[issn];
     if (hasJournal) {
       result.push({
