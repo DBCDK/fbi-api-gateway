@@ -118,10 +118,16 @@ export const resolvers = {
       const res = await context.datasources.user.load({
         accessToken: context.accessToken,
       });
+      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
+        ""
+      );
+      const infomediaSubscriptions = await context.datasources.idp.load("");
       return await context.datasources.library.load({
         agencyid: res.agency,
         language: parent.language,
         limit: 100,
+        digitalAccessSubscriptions,
+        infomediaSubscriptions,
       });
     },
   },

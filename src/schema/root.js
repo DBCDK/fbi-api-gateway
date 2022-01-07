@@ -271,9 +271,15 @@ export const resolvers = {
       let { userName, userMail } = args.input;
 
       // Fetch and check existence of branch
+      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
+        ""
+      );
+      const infomediaSubscriptions = await context.datasources.idp.load("");
       const branch = (
         await context.datasources.library.load({
           branchId: args.input.pickUpBranch,
+          digitalAccessSubscriptions,
+          infomediaSubscriptions,
         })
       ).result[0];
 
@@ -361,6 +367,10 @@ export const resolvers = {
       }
     },
     async submitOrder(parent, args, context, info) {
+      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
+        ""
+      );
+      const infomediaSubscriptions = await context.datasources.idp.load("");
       const input = {
         ...args.input,
         accessToken: context.accessToken,
@@ -368,6 +378,8 @@ export const resolvers = {
         branch: (
           await context.datasources.library.load({
             branchId: args.input.pickUpBranch,
+            digitalAccessSubscriptions,
+            infomediaSubscriptions,
           })
         ).result[0],
       };
