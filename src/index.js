@@ -117,7 +117,10 @@ promExporterApp.listen(9599, () => {
           } else {
             count("query_error");
             result.errors.forEach((error) => {
-              log.error(error.message, error);
+              log.error(error.message, {
+                error: String(error.originalError),
+                stacktrace: error.originalError?.stack,
+              });
             });
           }
         },
