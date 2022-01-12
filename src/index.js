@@ -13,6 +13,7 @@ import howruHandler from "./howru";
 import { metrics, observeDuration, count } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
+import { wrapResolvers } from "./utils/wrapResolvers";
 
 const app = express();
 let server;
@@ -74,11 +75,27 @@ promExporterApp.listen(9599, () => {
   (async () => {
     try {
       resolvedSchema = await schema();
+
+      // We wrap every resolver with a function that log errors
+      wrapResolvers(resolvedSchema, (resolveFn) => {
+        async function errorLogger(...args) {
+          const result = await resolveFn(...args);
+          if (result instanceof Error) {
+            log.error(result.message, {
+              error: String(result),
+              stacktrace: result.stack,
+            });
+          }
+          return result;
+        }
+        return errorLogger;
+      });
     } catch (e) {
       log.error("Could not create schema, shutting down", e);
       process.exit(1);
     }
   })();
+
   // Setup route handler for GraphQL
   app.use(
     "/graphql",
@@ -117,10 +134,7 @@ promExporterApp.listen(9599, () => {
           } else {
             count("query_error");
             result.errors.forEach((error) => {
-              log.error(error.message, {
-                error: String(error.originalError),
-                stacktrace: error.originalError?.stack,
-              });
+              log.error(error.message);
             });
           }
         },

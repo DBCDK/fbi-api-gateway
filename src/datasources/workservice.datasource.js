@@ -36,9 +36,9 @@ export async function batchLoader(keys, loadFunc) {
         // se we don't fail entire Promise.all
         // DataLoader will make sure its thrown in a resolver
         if (e.status !== 404) {
-          log.error("Fetch work failed", { id: key, reason: e.message });
+          return e;
         }
-        return e;
+        return null;
       }
     })
   );

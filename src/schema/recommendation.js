@@ -16,7 +16,7 @@ export const resolvers = {
     },
     async work(parent, args, context, info) {
       const res = await context.datasources.workservice.load(parent.work);
-      return { ...res, id: args.id };
+      return res?.work;
     },
   },
 };

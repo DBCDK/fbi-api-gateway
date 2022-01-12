@@ -45,12 +45,7 @@ export const resolvers = {
       if (data && data.series) {
         const works = await Promise.all(
           data.series.map(async (id) => {
-            try {
-              return (await context.datasources.workservice.load(id)).work;
-            } catch (e) {
-              // No access to this work
-              return null;
-            }
+            return (await context.datasources.workservice.load(id))?.work;
           })
         );
 

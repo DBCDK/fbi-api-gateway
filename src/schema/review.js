@@ -105,8 +105,7 @@ export const resolvers = {
       try {
         if (parent.faust && parent.faust.$) {
           const id = `work-of:870970-basis:${parent.faust.$}`;
-          const { work } = await context.datasources.workservice.load(id);
-          return { ...work, id };
+          return (await context.datasources.workservice.load(id))?.work;
         }
       } catch (e) {
         return null;

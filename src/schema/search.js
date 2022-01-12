@@ -165,12 +165,7 @@ export const resolvers = {
 
       const expanded = await Promise.all(
         res.result.map(async ({ workid }) => {
-          try {
-            const { work } = await context.datasources.workservice.load(workid);
-            return { ...work, id: workid };
-          } catch (e) {
-            return null;
-          }
+          return (await context.datasources.workservice.load(workid))?.work;
         })
       );
 

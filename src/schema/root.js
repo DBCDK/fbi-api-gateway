@@ -111,7 +111,6 @@ export const resolvers = {
       const mergedholdings = [];
       holdingsitems &&
         holdingsitems.forEach((item) => {
-          console.log(item.holdingsitems.length, "LENGTH");
           detailedHoldings.holdingstatus.forEach((detail) => {
             const locals = item.holdingsitems.filter(
               (item) => item.bibliographicRecordId === detail.localHoldingsId
@@ -143,12 +142,7 @@ export const resolvers = {
     async works(parent, args, context, info) {
       return Promise.all(
         args.id.map(async (id) => {
-          try {
-            const { work } = await context.datasources.workservice.load(id);
-            return { ...work, id };
-          } catch (e) {
-            return null;
-          }
+          return (await context.datasources.workservice.load(id))?.work;
         })
       );
     },
@@ -168,8 +162,8 @@ export const resolvers = {
       return { ...args };
     },
     async work(parent, args, context, info) {
-      const { work } = await context.datasources.workservice.load(args.id);
-      return { ...work, id: args.id };
+      const res = await context.datasources.workservice.load(args.id);
+      return res?.work;
     },
     async search(parent, args, context, info) {
       if (args.filters) {

@@ -48,7 +48,7 @@ export const resolvers = {
         }
         return {
           __resolveType: "Work",
-          ...(await context.datasources.workservice.load(`${row.work}`)).work,
+          ...(await context.datasources.workservice.load(`${row.work}`))?.work,
         };
       });
     },

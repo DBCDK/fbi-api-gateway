@@ -43,7 +43,13 @@ export async function load(pid) {
 
     return res;
   } catch (e) {
-    log.error(`Request to moreinfo failed for pid ${pid}`);
+    if (e.status !== 404) {
+      log.error(`Request to moreinfo failed for pid ${pid}`, {
+        error: String(e),
+        stacktrace: e.stack,
+      });
+    }
+
     return {};
   }
 }
