@@ -24,6 +24,7 @@ export function getArray(obj, path) {
 }
 
 const regex = /\d{4}/g;
+
 export function matchYear(str) {
   return str.match(regex);
 }
@@ -164,6 +165,7 @@ export async function resolveBorrowerCheck(agencyId, context) {
   }
   return false;
 }
+
 export async function resolveOnlineAccess(pid, context) {
   const result = [];
 
@@ -246,5 +248,31 @@ export async function resolveOnlineAccess(pid, context) {
   }
 
   // Return array containing both InfomediaReference, UrlReferences, webArchive and DigitalCopy
-  return result;
+  return _sortOnlineAccess(result);
+}
+
+/**
+ * Handle special cases - for now we want filmstriben/fjernleje BEFORE filmstriben/biblioteket AND
+ * we want dansk film institut (dfi) to come last - it is not a 'real' url but a link to a description
+ * @param onlineAccess
+ * @return {*}
+ * @private
+ */
+function _sortOnlineAccess(onlineAccess) {
+  const specialSort = (a, b) => {
+    // fjernleje should be on top
+    if (b.url && b.url.indexOf("filmstriben.dk/fjernleje") !== -1) {
+      return 1;
+    } else if (a.url && a.url.indexOf("filmstriben.dk/fjernleje") !== -1) {
+      return -1;
+      // dfi is not a 'real' online url - sort low
+    } else if (b.url && b.url.indexOf("dfi.dk") !== -1) {
+      return -1;
+    } else if (a.url && a.url.indexOf("dfi.dk") !== -1) {
+      return 1;
+    }
+    return 0;
+  };
+
+  return onlineAccess.sort(specialSort);
 }
