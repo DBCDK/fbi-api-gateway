@@ -13,7 +13,7 @@ export async function load({ q, filters, limit = 10, offset = 0 }) {
   const statics = {
     "access-token": "479317f0-3f91-11eb-9ba0-4c1d96c9239f",
     options: { "include-phonetic-creator": false },
-    debug: true,
+    debug: false,
   };
   // merge variables and statics
   const query = {

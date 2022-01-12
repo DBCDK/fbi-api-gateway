@@ -12,7 +12,7 @@ export async function load({ q, filters, facets = [] }) {
   // static parameters for the search
   const statics = {
     "access-token": "479317f0-3f91-11eb-9ba0-4c1d96c9239f",
-    debug: true,
+    debug: false,
   };
 
   // merge variables and statics

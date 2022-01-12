@@ -180,7 +180,7 @@ export const resolvers = {
       const response = [];
 
       args.facets.forEach((key) => {
-        const values = parent.filters[key] || [];
+        const values = parent?.filters?.[key] || [];
         const facet = res.find((obj) => obj.name === key);
         const copy = { ...facet, values: [] };
         values.forEach((value) => {
