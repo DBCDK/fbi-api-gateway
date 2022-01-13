@@ -48,6 +48,10 @@ export async function load(pid) {
         error: String(e),
         stacktrace: e.stack,
       });
+      return {
+        ok: false,
+        message: String(e),
+      };
     }
 
     return {};
@@ -60,7 +64,10 @@ export async function load(pid) {
  * @throws Will throw error if service is down
  */
 export async function status(loadFunc) {
-  await loadFunc("870970-basis:51877330");
+  const test = await loadFunc("870970-basis:51877330");
+  if (!test.ok) {
+    throw { message: test.message };
+  }
 }
 
 export const options = {
