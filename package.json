@@ -15,7 +15,7 @@
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
     "dayjs": "^1.10.6",
-    "dbc-node-logger": "^2.0.9",
+    "dbc-node-logger": "^2.0.10",
     "esm-wallaby": "^3.2.25",
     "express": "^4.17.1",
     "express-graphql": "^0.12.0",

@@ -257,7 +257,7 @@ export const resolvers = {
       // We log the object, setting 'type: "data"' on the root level
       // of the log entry. In this way the data will be collected
       // by the AI data collector
-      log.info("data", { type: "data", message: JSON.stringify(data) });
+      log.info(JSON.stringify(data), { type: "data" });
 
       return "OK";
     },
