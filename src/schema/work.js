@@ -70,14 +70,23 @@ export const resolvers = {
     },
 
     async localizations(parent, args, context, info) {
-      // collect pids from manifestations
-      const pids = parent.manifestations.map(
-        (manifestation) => manifestation.id
+      // @TODO - check hostpublicationpid ..
+      // @TODO should we do this for articles only ??
+      // @TODO or acutally we should not do this at all but get it from workservice
+      const allmanifestaions = await Promise.all(
+        parent.manifestations.map((manifestation) => {
+          return context.datasources.openformat.load(manifestation.id);
+        })
       );
 
-      // get localizations
+      const pids = allmanifestaions.map((manifestation) =>
+        manifestation?.details?.hostPublicationPid?.$
+          ? manifestation?.details?.hostPublicationPid?.$
+          : manifestation.admindata.pid.$
+      );
+
       const locs = await context.datasources.localizations.load({
-        pids,
+        pids: pids,
       });
       return locs;
     },

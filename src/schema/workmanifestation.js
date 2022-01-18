@@ -27,6 +27,7 @@ export const typeDef = `
       Where this manifestation is published. For instance, in which magazine an article is published.
       """
       hostPublication: HostPublication
+      hostPublicationPid: String
       isbn: String
       language: [String!]!
       materialType: String!
@@ -274,6 +275,19 @@ export const resolvers = {
           details: (entry.details && entry.details.$) || "",
         })
       )[0];
+    },
+    async hostPublicationPid(parent, args, context, info) {
+      const manifestation = await context.datasources.openformat.load(
+        parent.id
+      );
+
+      return (
+        (manifestation &&
+          manifestation.details &&
+          manifestation.details.hostPublicationPid &&
+          manifestation.details.hostPublicationPid.$) ||
+        ""
+      );
     },
     async recommendations(parent, args, context, info) {
       const recommendations = await context.datasources.recommendations.load({
