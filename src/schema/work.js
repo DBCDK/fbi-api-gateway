@@ -79,10 +79,10 @@ export const resolvers = {
         })
       );
 
-      const pids = allmanifestaions.map((manifestation) =>
-        manifestation?.details?.hostPublicationPid?.$
-          ? manifestation?.details?.hostPublicationPid?.$
-          : manifestation.admindata.pid.$
+      const pids = allmanifestaions.map(
+        (manifestation) =>
+          manifestation?.details?.hostPublicationPid?.$ ||
+          manifestation.admindata.pid.$
       );
 
       const locs = await context.datasources.localizations.load({
