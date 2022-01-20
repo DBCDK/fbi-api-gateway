@@ -29,6 +29,8 @@ type Query {
   howru:String
   holdingStatus(agencyId:String, pids:[String]): DetailedHoldings
   localizations(pids:[String!]!):Localizations
+  refWorks(pid:String!):String!
+  ris(pid:String!):String!
 }
 
 type Mutation {
@@ -44,6 +46,21 @@ type Mutation {
  */
 export const resolvers = {
   Query: {
+    async ris(parent, args, context, info) {
+      console.log("RIS!!");
+      const ris = await context.datasources.ris.load({
+        pid: args.pid,
+      });
+      return ris;
+    },
+    async refWorks(parent, args, context, info) {
+      console.log("REFWORKS!!");
+      const ref = await context.datasources.refworks.load({
+        pid: args.pid,
+        customDisplay: "refWorks",
+      });
+      return ref;
+    },
     async localizations(parent, args, context, info) {
       // get localizations from openholdingstatus
       const localizations = await context.datasources.localizations.load({
