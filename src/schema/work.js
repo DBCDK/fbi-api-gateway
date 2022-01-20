@@ -73,13 +73,13 @@ export const resolvers = {
       // @TODO - check hostpublicationpid ..
       // @TODO should we do this for articles only ??
       // @TODO or acutally we should not do this at all but get it from workservice
-      const allmanifestaions = await Promise.all(
+      const allmanifestations = await Promise.all(
         parent.manifestations.map((manifestation) => {
           return context.datasources.openformat.load(manifestation.id);
         })
       );
 
-      const pids = allmanifestaions.map(
+      const pids = allmanifestations.map(
         (manifestation) =>
           manifestation?.details?.hostPublicationPid?.$ ||
           manifestation.admindata.pid.$
