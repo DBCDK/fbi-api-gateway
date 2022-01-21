@@ -65,7 +65,7 @@ export async function load(pid) {
  */
 export async function status(loadFunc) {
   const test = await loadFunc("870970-basis:51877330");
-  if (!test.ok) {
+  if (test.ok === false) {
     throw { message: test.message };
   }
 }
