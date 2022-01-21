@@ -67,8 +67,24 @@ export function parseResponse(text) {
   }
 }
 
+function checkpids(pids) {
+  const prepend = "870970-basis:";
+  const fullPids = [];
+  pids.forEach((pid) => {
+    if (pid.indexOf(":") === -1) {
+      // prepend with 870970-basis
+      fullPids.push(prepend + pid);
+    } else {
+      fullPids.push(pid);
+    }
+  });
+  return fullPids;
+}
+
 export async function load({ pids }) {
-  const soap = constructSoap(pids);
+  const realpids = checkpids(pids);
+
+  const soap = constructSoap(realpids);
   const res = await request
     .post(url)
     .set("Content-Type", "text/xml")

@@ -45,9 +45,21 @@ type Mutation {
 export const resolvers = {
   Query: {
     async localizations(parent, args, context, info) {
+      const allmanifestations = await Promise.all(
+        args.pids.map((pid) => {
+          return context.datasources.openformat.load(pid);
+        })
+      );
+
+      const pids = allmanifestations.map(
+        (manifestation) =>
+          manifestation?.details?.hostPublicationPid?.$ ||
+          manifestation.admindata.pid.$
+      );
+
       // get localizations from openholdingstatus
       const localizations = await context.datasources.localizations.load({
-        pids: args.pids,
+        pids: pids,
       });
       return localizations;
     },
