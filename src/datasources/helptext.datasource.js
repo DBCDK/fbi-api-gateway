@@ -58,7 +58,8 @@ async function get() {
       // Parse them, strip html tags
       const docs = res.body.data.nodeQuery.entities
         .filter(
-          (text) => !!text && text.langcode.value === toDrupalLanguage[langcode]
+          (text) =>
+            !!text && text?.langcode?.value === toDrupalLanguage[langcode]
         )
         .map((text) => ({
           id: text.nid,
