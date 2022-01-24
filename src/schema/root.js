@@ -55,7 +55,6 @@ export const resolvers = {
     async refWorks(parent, args, context, info) {
       const ref = await context.datasources.refworks.load({
         pid: args.pid,
-        customDisplay: "refWorks",
       });
       return ref;
     },
