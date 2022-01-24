@@ -29,6 +29,8 @@ type Query {
   howru:String
   holdingStatus(agencyId:String, pids:[String]): DetailedHoldings
   localizations(pids:[String!]!):Localizations
+  refWorks(pid:String!):String!
+  ris(pid:String!):String!
 }
 
 type Mutation {
@@ -44,6 +46,18 @@ type Mutation {
  */
 export const resolvers = {
   Query: {
+    async ris(parent, args, context, info) {
+      const ris = await context.datasources.ris.load({
+        pid: args.pid,
+      });
+      return ris;
+    },
+    async refWorks(parent, args, context, info) {
+      const ref = await context.datasources.refworks.load({
+        pid: args.pid,
+      });
+      return ref;
+    },
     async localizations(parent, args, context, info) {
       const allmanifestations = await Promise.all(
         args.pids.map((pid) => {
