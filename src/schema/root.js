@@ -47,14 +47,12 @@ type Mutation {
 export const resolvers = {
   Query: {
     async ris(parent, args, context, info) {
-      console.log("RIS!!");
       const ris = await context.datasources.ris.load({
         pid: args.pid,
       });
       return ris;
     },
     async refWorks(parent, args, context, info) {
-      console.log("REFWORKS!!");
       const ref = await context.datasources.refworks.load({
         pid: args.pid,
         customDisplay: "refWorks",
