@@ -4,14 +4,18 @@
  * so we make optional field per input type we want to support
  */
 export const typeDef = `
+  input DataCollectSearchRequest {
+    q: SearchQuery!
+    filters: SearchFilters
+  }
   input DataCollectSearchWorkInput {
-    search_query: String!
     search_query_hit: Int!
     search_query_work: String!
+    search_request: DataCollectSearchRequest!
     session_id: String!
   }
   input DataCollectSearchInput {
-    search_query: String!
+    search_request: DataCollectSearchRequest!
     session_id: String!
   }
   input DataCollectExampleInput {

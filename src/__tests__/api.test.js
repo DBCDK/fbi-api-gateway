@@ -106,9 +106,9 @@ describe("API test cases", () => {
       variables: {
         input: {
           search_work: {
-            search_query: "harry",
             search_query_hit: 7,
             search_query_work: "some-work-id",
+            search_request: { q: { all: "harry" } },
             session_id: "some-session-id",
           },
         },
@@ -125,9 +125,9 @@ describe("API test cases", () => {
       type: "data",
       message: JSON.stringify({
         ip: "some-ip",
-        "search-query": "harry",
         "search-query-hit": 7,
         "search-query-work": "some-work-id",
+        "search-request": { q: { all: "harry" } },
         "session-id": "some-session-id",
       }),
     });
@@ -142,7 +142,7 @@ describe("API test cases", () => {
       variables: {
         input: {
           search_work: {
-            search_query: "harry",
+            search_request: { q: { all: "harry" } },
             search_query_hit: 7,
             search_query_work: "some-work-id",
             session_id: "some-session-id",

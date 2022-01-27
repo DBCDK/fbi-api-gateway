@@ -280,6 +280,19 @@ export const resolvers = {
         data[key.replace(/_/g, "-")] = val;
       });
 
+      // Remove keys where value is empty array
+      if (data?.["search-request"]?.filters) {
+        const filters = {};
+        Object.entries(data["search-request"].filters).forEach(
+          ([key, value]) => {
+            if (value?.length > 0) {
+              filters[key] = value;
+            }
+          }
+        );
+        data["search-request"].filters = filters;
+      }
+
       // We log the object, setting 'type: "data"' on the root level
       // of the log entry. In this way the data will be collected
       // by the AI data collector
