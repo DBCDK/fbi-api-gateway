@@ -14,6 +14,7 @@ import { metrics, observeDuration, count } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
 import { wrapResolvers } from "./utils/wrapResolvers";
+import { uuid } from "uuidv4";
 
 const app = express();
 let server;
@@ -88,6 +89,7 @@ promExporterApp.listen(9599, () => {
           }
           return result;
         }
+
         return errorLogger;
       });
     } catch (e) {
@@ -101,7 +103,7 @@ promExporterApp.listen(9599, () => {
     "/graphql",
     graphqlHTTP(async (request, response, graphQLParams) => {
       // Create dataloaders and add to request
-      request.datasources = createDataLoaders();
+      request.datasources = createDataLoaders(uuid());
 
       // Get bearer token from authorization header
       request.accessToken =
@@ -181,12 +183,14 @@ const signals = {
   SIGINT: 2,
   SIGTERM: 15,
 };
+
 function shutdown(signal, value) {
   server.close(function () {
     log.info(`server stopped by ${signal}`);
     process.exit(128 + value);
   });
 }
+
 Object.keys(signals).forEach(function (signal) {
   process.on(signal, function () {
     shutdown(signal, signals[signal]);

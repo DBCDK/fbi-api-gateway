@@ -4,6 +4,10 @@ import { withRedis } from "./datasources/redis.datasource";
 import monitor from "./utils/monitor";
 import { getFilesRecursive } from "./utils/utils";
 
+DataLoader.prototype.trackMe = function (uuid, name, time) {
+  log.trace("TRACKING", { uuid: uuid, name: name, time: time });
+};
+
 // Find all datasources in src/datasources
 export const datasources = getFilesRecursive("./src/datasources")
   .map((file) => {
@@ -85,9 +89,14 @@ log.info(`found ${datasources.length} datasources`, {
  * @param {*} key The key to load
  * @returns {*}
  */
-async function wrapLoader(loader, key) {
+async function wrapLoader(loader, key, name, uuid) {
   try {
-    return await loader.load(key);
+    const start = new Date().getTime();
+    const result = await loader.load(key);
+    const end = new Date().getTime();
+    const time = end - start;
+    loader.trackMe(uuid, name, time);
+    return result;
   } catch (err) {
     if (err instanceof Error && err.stack) {
       const currentStack = { stack: "" };
@@ -104,16 +113,16 @@ async function wrapLoader(loader, key) {
  * @param {object} loader a dataloader object
  * @returns {object}
  */
-function createWrapLoader(loader) {
+function createWrapLoader(loader, name, uuid) {
   return {
-    load: (key) => wrapLoader(loader, key),
+    load: (key) => wrapLoader(loader, key, name, uuid),
   };
 }
 
 /**
  * Will instantiate dataloaders from datasources
  */
-export default function createDataLoaders() {
+export default function createDataLoaders(uuid) {
   const result = {};
   datasources.forEach((datasource) => {
     result[datasource.name] = createWrapLoader(
@@ -122,7 +131,9 @@ export default function createDataLoaders() {
         // to make it useful as a cache key
         cacheKeyFn: (key) =>
           typeof key === "object" ? JSON.stringify(key) : key,
-      })
+      }),
+      datasource.name,
+      uuid
     );
   });
   return result;
