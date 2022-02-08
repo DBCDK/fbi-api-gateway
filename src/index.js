@@ -44,16 +44,21 @@ promExporterApp.listen(9599, () => {
     };
     next();
   });
-
   // Middleware that monitors performance of those GraphQL queries
   // which specify a monitor name.
   app.use(async (req, res, next) => {
     const start = process.hrtime();
     res.once("finish", () => {
+      const elapsed = process.hrtime(start);
+      const seconds = elapsed[0] + elapsed[1] / 1e9;
+      // detailed logging for SLA
+      log.info("TRACK", {
+        uuid: req.datasources.trackingObject.uuid,
+        ...req.datasources.trackingObject?.trackObject,
+        total: seconds,
+      });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
-        const elapsed = process.hrtime(start);
-        const seconds = elapsed[0] + elapsed[1] / 1e9;
         observeDuration(req.monitorName, seconds);
       }
     });

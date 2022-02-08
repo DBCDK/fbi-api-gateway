@@ -4,8 +4,22 @@ import { withRedis } from "./datasources/redis.datasource";
 import monitor from "./utils/monitor";
 import { getFilesRecursive } from "./utils/utils";
 
-DataLoader.prototype.trackMe = function (uuid, name, time) {
-  log.trace("TRACKING", { uuid: uuid, name: name, time: time });
+export const trackMe = () => {
+  return {
+    start: function (uuid) {
+      this.uuid = uuid;
+      return this;
+    },
+    track: function (name, time, count) {
+      if (!this.trackObject[name]) {
+        this.trackObject[name] = { count: 0, time: 0 };
+      }
+      this.trackObject[name].count = count;
+      this.trackObject[name].time = this.trackObject[name].time + time;
+    },
+    uuid: null,
+    trackObject: {},
+  };
 };
 
 // Find all datasources in src/datasources
@@ -89,13 +103,10 @@ log.info(`found ${datasources.length} datasources`, {
  * @param {*} key The key to load
  * @returns {*}
  */
-async function wrapLoader(loader, key, name, uuid) {
+async function wrapLoader(loader, key) {
   try {
-    const start = new Date().getTime();
     const result = await loader.load(key);
-    const end = new Date().getTime();
-    const time = end - start;
-    loader.trackMe(uuid, name, time);
+
     return result;
   } catch (err) {
     if (err instanceof Error && err.stack) {
@@ -113,29 +124,50 @@ async function wrapLoader(loader, key, name, uuid) {
  * @param {object} loader a dataloader object
  * @returns {object}
  */
-function createWrapLoader(loader, name, uuid) {
+function createWrapLoader(loader) {
   return {
-    load: (key) => wrapLoader(loader, key, name, uuid),
+    load: (key) => wrapLoader(loader, key),
   };
 }
+
+const withTrackLoader = (batchloader, name, track) => {
+  // Return the wrapped function
+  return async function (...args) {
+    // Start time
+    const start = new Date().getTime();
+    try {
+      return await batchloader(...args);
+    } finally {
+      // end time
+      const numberOfCalls = { ...args };
+      // a datasource is called once for each argument in list
+      const count = numberOfCalls[0].length;
+      const end = new Date().getTime();
+      track.track(name, end - start, count);
+    }
+  };
+};
 
 /**
  * Will instantiate dataloaders from datasources
  */
 export default function createDataLoaders(uuid) {
   const result = {};
+  const track = trackMe().start(uuid);
   datasources.forEach((datasource) => {
     result[datasource.name] = createWrapLoader(
-      new DataLoader(datasource.batchLoader, {
-        // If key is an object, we stringify
-        // to make it useful as a cache key
-        cacheKeyFn: (key) =>
-          typeof key === "object" ? JSON.stringify(key) : key,
-      }),
-      datasource.name,
-      uuid
+      new DataLoader(
+        withTrackLoader(datasource.batchLoader, datasource.name, track),
+        {
+          // If key is an object, we stringify
+          // to make it useful as a cache key
+          cacheKeyFn: (key) =>
+            typeof key === "object" ? JSON.stringify(key) : key,
+        }
+      )
     );
   });
+  result.trackingObject = track;
   return result;
 }
 
