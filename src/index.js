@@ -53,6 +53,7 @@ promExporterApp.listen(9599, () => {
       const seconds = elapsed[0] + elapsed[1] / 1e9;
       // detailed logging for SLA
       log.info("TRACK", {
+        clientId: req?.smaug?.app?.clientId,
         uuid: req.datasources.trackingObject.uuid,
         ...req.datasources.trackingObject?.trackObject,
         total: seconds,
