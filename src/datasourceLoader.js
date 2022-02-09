@@ -134,7 +134,7 @@ const withTrackLoader = (batchloader, name, track) => {
   // Return the wrapped function
   return async function (...args) {
     // Start time
-    const start = new Date().getTime() / 1000;
+    const start = new Date().getTime();
     try {
       return await batchloader(...args);
     } finally {
@@ -142,7 +142,7 @@ const withTrackLoader = (batchloader, name, track) => {
       const numberOfCalls = { ...args };
       // a datasource is called once for each argument in list
       const count = numberOfCalls[0].length;
-      const end = new Date().getTime() / 1000;
+      const end = new Date().getTime();
       track.track(name, end - start, count);
     }
   };
