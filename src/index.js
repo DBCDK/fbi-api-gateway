@@ -54,8 +54,8 @@ promExporterApp.listen(9599, () => {
       // detailed logging for SLA
       log.info("TRACK", {
         clientId: req?.smaug?.app?.clientId,
-        uuid: req.datasources.trackingObject.uuid,
-        ...req.datasources.trackingObject?.trackObject,
+        uuid: req?.datasources?.trackingObject.uuid,
+        ...req?.datasources?.trackingObject?.trackObject,
         total: seconds,
       });
       // monitorName is added to context/req in the monitor resolver
