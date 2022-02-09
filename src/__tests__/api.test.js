@@ -24,9 +24,11 @@
 import { graphql } from "graphql";
 import { validate } from "graphql/validation";
 import { parse } from "graphql/language";
-import { internalSchema } from "../schemaLoader";
+import { getExecutableSchema } from "../schemaLoader";
 import validateComplexity from "../utils/complexity";
 import { createMockedDataLoaders } from "../datasourceLoader";
+
+let internalSchema;
 
 export async function performTestQuery({ query, variables, context }) {
   return graphql(internalSchema, query, null, context, variables);
@@ -35,7 +37,13 @@ export async function performTestQuery({ query, variables, context }) {
 describe("API test cases", () => {
   let spy = {};
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    if (!internalSchema) {
+      internalSchema = await getExecutableSchema({
+        loadExternal: false,
+        clientPermissions: { admin: true },
+      });
+    }
     spy.console = jest.spyOn(console, "log").mockImplementation(() => {});
   });
   afterEach(() => {

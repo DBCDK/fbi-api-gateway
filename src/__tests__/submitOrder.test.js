@@ -3,13 +3,8 @@
  *
  */
 
-import { graphql } from "graphql";
-import { internalSchema } from "../schemaLoader";
 import { createMockedDataLoaders } from "../datasourceLoader";
-
-export async function performTestQuery({ query, variables, context }) {
-  return graphql(internalSchema, query, null, context, variables);
-}
+import { performTestQuery } from "../utils/utils";
 
 test("submitorder fails when user is not authenticated, and no userId provided", async () => {
   const result = await performTestQuery({

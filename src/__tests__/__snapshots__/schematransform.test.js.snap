@@ -1,0 +1,590 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`default schema transform 1`] = `
+"type AdminData {
+  creationDate: String
+  requestButton: Boolean
+}
+
+type Creator {
+  functionCode: String!
+  functionSingular: String!
+  functionPlural: String!
+  name: String!
+  type: String!
+  description: String!
+  imageUrl: String
+}
+
+type DK5 {
+  searchCode: String!
+  searchString: String!
+  value: String!
+}
+
+type InfomediaContent {
+  id: String!
+  headLine: String!
+  subHeadLine: String!
+  byLine: String!
+  dateLine: String!
+  paper: String!
+  text: String!
+  hedLine: String!
+  logo: String!
+  origin: String!
+  html: String!
+}
+
+type Localizations {
+  count: Int
+  agencies: [holdingAgency]
+}
+
+type holdingAgency {
+  agencyId: String
+  holdingItems: [holdingsItem]
+}
+
+type holdingsItem {
+  localizationPid: String
+  codes: String
+  localIdentifier: String
+}
+
+type UrlReference {
+  url: String!
+  origin: String!
+  note: String!
+  accessType: String
+}
+
+type InfomediaReference {
+  infomediaId: String!
+  pid: String!
+  error: String
+}
+
+type WebArchive {
+  type: String!
+  url: String!
+  pid: String!
+}
+
+type DigitalCopy {
+  issn: String!
+}
+
+union OnlineAccess = UrlReference | InfomediaReference | WebArchive | DigitalCopy
+
+type Recommendation {
+  work: Work!
+  manifestation: WorkManifestation!
+  reader: String
+  value: Float
+}
+
+type ReviewInfomedia {
+  author: String!
+  date: String!
+  media: String!
+  rating: String!
+  reference: [InfomediaReference]
+}
+
+type ReviewExternalMedia {
+  author: String!
+  date: String!
+  media: String!
+  rating: String!
+  url: String!
+  alternateUrl: String
+}
+
+type ReviewMatVurd {
+  author: String!
+  date: String!
+  all: [TextWithWork!]!
+  about: [TextWithWork!]!
+  description: [TextWithWork!]!
+  evaluation: [TextWithWork!]!
+  other: [TextWithWork!]!
+}
+
+type TextWithWork {
+  name: String!
+
+  \\"\\"\\"A piece of text mentioning a work at the end.\\"\\"\\"
+  text: String!
+
+  \\"\\"\\"
+  The work the text is refering to. When work is null, the text does not refer to a work.
+  \\"\\"\\"
+  work: Work
+}
+
+union Review = ReviewInfomedia | ReviewExternalMedia | ReviewMatVurd
+
+type Query {
+  manifestation(pid: String!): WorkManifestation!
+  work(id: String!): Work
+  works(id: [String!]!): [Work]!
+  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
+  suggest(q: String!, worktype: WorkType): SuggestResponse!
+  infomediaContent(pid: String!): [InfomediaContent]
+  refWorks(pid: String!): String!
+  ris(pid: String!): String!
+}
+
+\\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
+scalar PaginationLimit
+
+\\"\\"\\"
+Using dayjs to format dates and support localization. https://day.js.org/docs/en/display/format
+\\"\\"\\"
+scalar CustomDateFormat
+
+\\"\\"\\"The supported fields to query\\"\\"\\"
+input SearchQuery {
+  \\"\\"\\"
+  Search for title, creator, subject or a combination.
+  This is typically used where a single search box is desired.
+  \\"\\"\\"
+  all: String
+
+  \\"\\"\\"Search for creator\\"\\"\\"
+  creator: String
+
+  \\"\\"\\"Search for specific subject\\"\\"\\"
+  subject: String
+
+  \\"\\"\\"Search for specific title\\"\\"\\"
+  title: String
+}
+
+\\"\\"\\"The supported facet fields\\"\\"\\"
+enum FacetField {
+  workType
+  language
+  materialType
+  fictiveCharacter
+  genre
+  audience
+  accessType
+  fictionNonfiction
+  subject
+  creator
+}
+
+\\"\\"\\"Search Filters\\"\\"\\"
+input SearchFilters {
+  accessType: [String!]
+  audience: [String!]
+  creator: [String!]
+  fictionNonfiction: [String!]
+  fictiveCharacter: [String!]
+  genre: [String!]
+  language: [String!]
+  materialType: [String!]
+  subject: [String!]
+  workType: [String!]
+}
+
+\\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
+type FacetValue {
+  \\"\\"\\"Use the key when applying filters\\"\\"\\"
+  key: String!
+
+  \\"\\"\\"A value of a facet field\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"The count of the term for a facet field\\"\\"\\"
+  count: Int
+}
+
+\\"\\"\\"The result for a specific facet\\"\\"\\"
+type FacetResult {
+  \\"\\"\\"The name of the facet.\\"\\"\\"
+  name: String!
+
+  \\"\\"\\"The values of thie facet result\\"\\"\\"
+  values(limit: Int!): [FacetValue!]!
+}
+
+\\"\\"\\"The simple search response\\"\\"\\"
+type SearchResponse {
+  \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"
+  The works matching the given search query. Use offset and limit for pagination.
+  \\"\\"\\"
+  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+
+  \\"\\"\\"
+  Make sure only to fetch this when needed
+  This may take seconds to complete
+  \\"\\"\\"
+  facets(facets: [FacetField!]!): [FacetResult!]!
+}
+
+type Series {
+  part: String
+  title: String
+  works: [Work!]!
+}
+
+type Subject {
+  type: String
+  value: String!
+}
+
+union SuggestRow = Creator | Subject | Work
+
+type SuggestResponse {
+  result: [SuggestRow!]!
+}
+
+enum WorkType {
+  analysis
+  article
+  bookdescription
+  game
+  literature
+  map
+  movie
+  music
+  none
+  periodica
+  portrait
+  review
+  sheetmusic
+  track
+}
+
+type MaterialType {
+  materialType: String!
+  localizations: Localizations
+  manifestations: [WorkManifestation!]!
+}
+
+type Work {
+  title: String
+  fullTitle: String
+  description: String
+  creators: [Creator!]!
+  id: String!
+  manifestations: [WorkManifestation!]!
+  materialTypes: [MaterialType!]!
+  path: [String!]!
+  reviews: [Review!]!
+  series: Series
+  subjects: [Subject!]!
+  workTypes: [WorkType!]!
+}
+
+type HostPublication {
+  title: String!
+  details: String!
+}
+
+type WorkManifestation {
+  content: [String!]
+  creators: [Creator!]!
+  datePublished(locale: String, format: String): CustomDateFormat!
+  description: String!
+  dk5: [DK5!]!
+  edition: String!
+  fullTitle: String!
+
+  \\"\\"\\"
+  Where this manifestation is published. For instance, in which magazine an article is published.
+  \\"\\"\\"
+  hostPublication: HostPublication
+  hostPublicationPid: String
+  isbn: String
+  language: [String!]!
+  materialType: String!
+  notes: [String!]!
+  onlineAccess: [OnlineAccess!]!
+  originals: [String!]!
+  originalTitle: String
+  physicalDescription: String!
+  pid: String!
+  publisher: [String!]!
+  shelf: String
+  title: String
+  recommendations(limit: Int): [Recommendation]!
+  admin: AdminData
+  inLanguage: String
+  usedLanguage: [String]
+  physicalDescriptionArticles: String
+  volume: String
+}
+"
+`;
+
+exports[`limited access to root fields 1`] = `
+"type HelpRow {
+  nid: Int!
+  group: String!
+  orgTitle: String!
+  title: String!
+  body: String!
+}
+
+type HelpResponse {
+  result: [HelpRow!]!
+}
+
+enum LanguageCode {
+  da
+  en
+}
+
+type Query {
+  help(q: String!, language: LanguageCode): HelpResponse
+}
+"
+`;
+
+exports[`remove all fields by type 1`] = `
+"type AdminData {
+  creationDate: String
+  requestButton: Boolean
+}
+
+type Availability {
+  willLend: Boolean
+  expectedDelivery: String
+  orderPossible: Boolean
+  orderPossibleReason: String
+}
+
+enum OrderPossibleReason {
+  OWNED_ACCEPTED
+  NOT_OWNED_ILL_LOC
+  OWNED_WRONG_MEDIUMTYPE
+  NOT_OWNED_WRONG_ILL_MEDIUMTYPE
+  NOT_OWNED_NO_ILL_LOC
+  OWNED_OWN_CATALOGUE
+  NOT_OWNED_ACCEPTED_BY_CONSORTIA
+}
+
+type CheckOrderPolicy {
+  lookUpUrl: String
+  orderPossible: Boolean
+  orderPossibleReason: OrderPossibleReason
+}
+
+type Creator {
+  functionCode: String!
+  functionSingular: String!
+  functionPlural: String!
+  name: String!
+  type: String!
+  description: String!
+  imageUrl: String
+}
+
+type DK5 {
+  searchCode: String!
+  searchString: String!
+  value: String!
+}
+
+type Localizations {
+  count: Int
+  agencies: [holdingAgency]
+}
+
+type holdingAgency {
+  agencyId: String
+  holdingItems: [holdingsItem]
+}
+
+type holdingsItem {
+  localizationPid: String
+  codes: String
+  localIdentifier: String
+}
+
+type UrlReference {
+  url: String!
+  origin: String!
+  note: String!
+  accessType: String
+}
+
+type InfomediaReference {
+  infomediaId: String!
+  pid: String!
+  error: String
+}
+
+type WebArchive {
+  type: String!
+  url: String!
+  pid: String!
+}
+
+type DigitalCopy {
+  issn: String!
+}
+
+union OnlineAccess = UrlReference | InfomediaReference | WebArchive | DigitalCopy
+
+type Recommendation {
+  work: Work!
+  manifestation: WorkManifestation!
+  reader: String
+  value: Float
+}
+
+type ReviewInfomedia {
+  author: String!
+  date: String!
+  media: String!
+  rating: String!
+  reference: [InfomediaReference]
+}
+
+type ReviewExternalMedia {
+  author: String!
+  date: String!
+  media: String!
+  rating: String!
+  url: String!
+  alternateUrl: String
+}
+
+type ReviewMatVurd {
+  author: String!
+  date: String!
+  all: [TextWithWork!]!
+  about: [TextWithWork!]!
+  description: [TextWithWork!]!
+  evaluation: [TextWithWork!]!
+  other: [TextWithWork!]!
+}
+
+type TextWithWork {
+  name: String!
+
+  \\"\\"\\"A piece of text mentioning a work at the end.\\"\\"\\"
+  text: String!
+
+  \\"\\"\\"
+  The work the text is refering to. When work is null, the text does not refer to a work.
+  \\"\\"\\"
+  work: Work
+}
+
+union Review = ReviewInfomedia | ReviewExternalMedia | ReviewMatVurd
+
+type Query {
+  manifestation(pid: String!): WorkManifestation!
+}
+
+\\"\\"\\"
+Using dayjs to format dates and support localization. https://day.js.org/docs/en/display/format
+\\"\\"\\"
+scalar CustomDateFormat
+
+type SEO {
+  title: String!
+  description: String!
+}
+
+type Series {
+  part: String
+  title: String
+  works: [Work!]!
+}
+
+type Subject {
+  type: String
+  value: String!
+}
+
+enum WorkType {
+  analysis
+  article
+  bookdescription
+  game
+  literature
+  map
+  movie
+  music
+  none
+  periodica
+  portrait
+  review
+  sheetmusic
+  track
+}
+
+type MaterialType {
+  materialType: String!
+  localizations: Localizations
+  manifestations: [WorkManifestation!]!
+}
+
+type Work {
+  title: String
+  fullTitle: String
+  description: String
+  creators: [Creator!]!
+  id: String!
+  manifestations: [WorkManifestation!]!
+  materialTypes: [MaterialType!]!
+  path: [String!]!
+  reviews: [Review!]!
+  series: Series
+  seo: SEO!
+  subjects: [Subject!]!
+  workTypes: [WorkType!]!
+}
+
+type HostPublication {
+  title: String!
+  details: String!
+}
+
+type WorkManifestation {
+  content: [String!]
+  creators: [Creator!]!
+  datePublished(locale: String, format: String): CustomDateFormat!
+  description: String!
+  dk5: [DK5!]!
+  edition: String!
+  fullTitle: String!
+
+  \\"\\"\\"
+  Where this manifestation is published. For instance, in which magazine an article is published.
+  \\"\\"\\"
+  hostPublication: HostPublication
+  hostPublicationPid: String
+  isbn: String
+  language: [String!]!
+  materialType: String!
+  notes: [String!]!
+  onlineAccess: [OnlineAccess!]!
+  originals: [String!]!
+  originalTitle: String
+  physicalDescription: String!
+  pid: String!
+  publisher: [String!]!
+  shelf: String
+  title: String
+  recommendations(limit: Int): [Recommendation]!
+  availability: Availability
+  checkorder(pickupBranch: String!): CheckOrderPolicy
+  admin: AdminData
+  inLanguage: String
+  usedLanguage: [String]
+  physicalDescriptionArticles: String
+  volume: String
+}
+"
+`;

@@ -1,14 +1,8 @@
 /**
  * @file This file contains tests for the search operation
  */
-
-import { graphql } from "graphql";
-import { internalSchema } from "../schemaLoader";
 import { createMockedDataLoaders } from "../datasourceLoader";
-
-export async function performTestQuery({ query, variables, context }) {
-  return graphql(internalSchema, query, null, context, variables);
-}
+import { performTestQuery } from "../utils/utils";
 
 test("search - with all filters and facets", async () => {
   const result = await performTestQuery({

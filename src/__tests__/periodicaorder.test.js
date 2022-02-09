@@ -1,10 +1,5 @@
-import { graphql } from "graphql";
-import { internalSchema } from "../schemaLoader";
 import { createMockedDataLoaders } from "../datasourceLoader";
-
-export async function performTestQuery({ query, variables, context }) {
-  return graphql(internalSchema, query, null, context, variables);
-}
+import { performTestQuery } from "../utils/utils";
 
 const query = `
 mutation($input: PeriodicaArticleOrder!) {

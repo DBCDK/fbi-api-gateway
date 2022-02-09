@@ -12,6 +12,10 @@
   "license": "GNU",
   "dependencies": {
     "@dbcdk/dbc-audittrail-logger": "^1.0.1-1",
+    "@graphql-tools/merge": "^8.2.1",
+    "@graphql-tools/schema": "^8.3.1",
+    "@graphql-tools/utils": "^8.6.1",
+    "@graphql-tools/wrap": "^8.3.3",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
     "dayjs": "^1.10.6",
@@ -22,7 +26,6 @@
     "graphql": "^15.0.0",
     "graphql-query-complexity": "^0.8.0",
     "graphql-scalars": "^1.9.1",
-    "graphql-tools": "^5.0.0",
     "ioredis": "^4.17.3",
     "lodash": "^4.17.19",
     "minisearch": "^3.0.2",

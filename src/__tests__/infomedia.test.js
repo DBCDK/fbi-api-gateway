@@ -1,12 +1,5 @@
-import { graphql } from "graphql";
-import { validate } from "graphql/validation";
-import { parse } from "graphql/language";
-import { internalSchema } from "../schemaLoader";
 import { createMockedDataLoaders } from "../datasourceLoader";
-
-export async function performTestQuery({ query, variables, context }) {
-  return graphql(internalSchema, query, null, context, variables);
-}
+import { performTestQuery } from "../utils/utils";
 
 test("InfomediaContent, 2 articles", async () => {
   const result = await performTestQuery({

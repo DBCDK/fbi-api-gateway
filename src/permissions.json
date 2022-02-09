@@ -1,0 +1,16 @@
+{
+  "default": {
+    "allowRootFields": [
+      "manifestation",
+      "search",
+      "work",
+      "works",
+      "search",
+      "suggest",
+      "infomediaContent",
+      "refWorks",
+      "ris"
+    ],
+    "denyTypes": ["Cover", "CheckOrderPolicy", "Availability", "SEO"]
+  }
+}

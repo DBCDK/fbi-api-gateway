@@ -1,6 +1,24 @@
+import { graphql } from "graphql";
+import { getExecutableSchema } from "../schemaLoader";
 import { get, uniq } from "lodash";
-import fs from "fs";
-import path from "path";
+
+export async function performTestQuery({
+  query,
+  variables,
+  context,
+  clientPermissions = { admin: true },
+}) {
+  return graphql(
+    await getExecutableSchema({
+      loadExternal: false,
+      clientPermissions,
+    }),
+    query,
+    null,
+    context,
+    variables
+  );
+}
 
 /**
  * Gets array at a path in some object
@@ -78,20 +96,22 @@ export function getPageDescription({ title, creators, materialTypes }) {
  */
 export function getFilesRecursive(dir, result = []) {
   // list files in directory and loop through
-  fs.readdirSync(dir).forEach((file) => {
-    // builds full path of file
-    const fPath = path.resolve(dir, file);
+  require("fs")
+    .readdirSync(dir)
+    .forEach((file) => {
+      // builds full path of file
+      const fPath = require("path").resolve(dir, file);
 
-    // prepare stats obj
-    const fileStats = { file, path: fPath };
+      // prepare stats obj
+      const fileStats = { file, path: fPath };
 
-    // if its a folder, we get files from that
-    if (fs.statSync(fPath).isDirectory()) {
-      return getFilesRecursive(fPath, result);
-    }
+      // if its a folder, we get files from that
+      if (require("fs").statSync(fPath).isDirectory()) {
+        return getFilesRecursive(fPath, result);
+      }
 
-    result.push(fileStats);
-  });
+      result.push(fileStats);
+    });
   return result;
 }
 

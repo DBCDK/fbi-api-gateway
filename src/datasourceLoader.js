@@ -23,7 +23,7 @@ export const trackMe = () => {
 };
 
 // Find all datasources in src/datasources
-export const datasources = getFilesRecursive("./src/datasources")
+export const datasources = getFilesRecursive(`${__dirname}/datasources`)
   .map((file) => {
     if (!file.path.endsWith(".datasource.js")) {
       return;

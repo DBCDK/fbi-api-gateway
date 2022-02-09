@@ -1,23 +1,25 @@
 import request from "superagent";
-import { introspectSchema, makeRemoteExecutableSchema } from "graphql-tools";
+import { introspectSchema, wrapSchema, RenameTypes } from "@graphql-tools/wrap";
 import { print } from "graphql";
 import config from "../../config";
 
-const fetcher = async ({ query: queryDocument, variables, operationName }) => {
-  const query = print(queryDocument);
+const executor = async ({ document, variables }) => {
+  const query = print(document);
   const url = config.datasources.backend.url;
-  const fetchResult = await request
-    .post(url)
-    .send({ query, variables, operationName });
+  const fetchResult = await request.post(url).send({ query, variables });
   return await fetchResult.body;
 };
 
-export default async () => {
-  const schema = await introspectSchema(fetcher);
+// Avoid naming conflicts with internal schema
+const typeNameMap = {
+  User: "DrupalUser",
+};
 
-  const executableSchema = makeRemoteExecutableSchema({
-    schema,
-    fetcher,
+export default async () => {
+  const executableSchema = wrapSchema({
+    schema: await introspectSchema(executor),
+    executor,
+    transforms: [new RenameTypes((name) => typeNameMap[name] || name)],
   });
 
   return executableSchema;

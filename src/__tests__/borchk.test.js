@@ -21,13 +21,8 @@
  *
  */
 
-import { graphql } from "graphql";
-import { internalSchema } from "../schemaLoader";
 import { createMockedDataLoaders } from "../datasourceLoader";
-
-export async function performTestQuery({ query, variables, context }) {
-  return graphql(internalSchema, query, null, context, variables);
-}
+import { performTestQuery } from "../utils/utils";
 
 test("borchk - do a borrower check", async () => {
   const result = await performTestQuery({
