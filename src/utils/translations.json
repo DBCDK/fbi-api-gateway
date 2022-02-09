@@ -568,6 +568,14 @@
         "da": "Analyser",
         "en": "Analysis"
       }
+    },
+    "materialType": {
+      "ebog": {
+        "da": "e-bog"
+      },
+      "Ebog": {
+        "da": "E-bog"
+      }
     }
   }
 }

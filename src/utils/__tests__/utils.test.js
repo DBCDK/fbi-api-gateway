@@ -8,13 +8,13 @@ describe("Utils", () => {
       creators: [{ name: "En Forfatter" }],
       materialTypes: [
         { materialType: "Bog" },
-        { materialType: "eBog" },
+        { materialType: "e-Bog" },
         { materialType: "lydBog" },
       ],
     };
     const actual = getPageDescription(work);
     const expected =
-      "Lån en Bogtitel af En Forfatter som bog, ebog eller lydbog. Bestil, reserver, lån fra alle danmarks biblioteker. Afhent på dit lokale bibliotek eller find online.";
+      "Lån en Bogtitel af En Forfatter som bog, e-bog eller lydbog. Bestil, reserver, lån fra alle danmarks biblioteker. Afhent på dit lokale bibliotek eller find online.";
     expect(actual).toEqual(expected);
   });
 

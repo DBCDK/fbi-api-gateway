@@ -4,6 +4,7 @@
  */
 
 import { getArray, resolveOnlineAccess } from "../utils/utils";
+import translations from "../utils/translations.json";
 import dayjs from "dayjs";
 
 /**
@@ -200,11 +201,12 @@ export const resolvers = {
         parent.id
       );
 
-      return (
+      const materialType =
         getArray(manifestation, "details.materialType").map(
           (entry) => entry.$
-        )[0] || ""
-      );
+        )[0] || "";
+
+      return translations.facets.materialType[materialType]?.da || materialType;
     },
     async notes(parent, args, context, info) {
       if (parent.notes) {

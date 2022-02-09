@@ -54,7 +54,7 @@ export function matchYear(str) {
  */
 export function getPageDescription({ title, creators, materialTypes }) {
   const creator = creators[0] && creators[0].name;
-  const allowedTypes = ["lydbog", "ebog", "bog"];
+  const allowedTypes = ["lydbog", "e-bog", "bog"];
   const types = uniq(
     materialTypes
       .map((entry) => {

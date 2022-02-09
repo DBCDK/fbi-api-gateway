@@ -6,6 +6,7 @@
 import { sortBy, orderBy, uniqBy } from "lodash";
 import { resolveAuthor, resolveDate } from "./review";
 import { getPageDescription } from "../utils/utils";
+import translations from "../utils/translations.json";
 
 /**
  * The Work type definition
@@ -208,7 +209,9 @@ function flattenRecords(work) {
   primaryRecords.forEach((record) => {
     records.push({
       ...record,
-      materialType: record.types.join(" / "),
+      materialType: record.types
+        .map((type) => translations.facets.materialType[type]?.da || type)
+        .join(" / "),
       workTypes: work.workTypes,
     });
   });

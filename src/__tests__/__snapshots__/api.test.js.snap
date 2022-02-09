@@ -167,7 +167,7 @@ Object {
           "language": Array [
             "Dansk",
           ],
-          "materialType": "Ebog / Bog",
+          "materialType": "E-bog / Bog",
           "notes": Array [],
           "onlineAccess": Array [
             Object {
@@ -332,7 +332,7 @@ Object {
               "language": Array [
                 "Dansk",
               ],
-              "materialType": "Ebog / Bog",
+              "materialType": "E-bog / Bog",
               "notes": Array [],
               "onlineAccess": Array [
                 Object {
@@ -359,7 +359,7 @@ Object {
               "shelf": "skønlitteratur",
             },
           ],
-          "materialType": "Ebog / Bog",
+          "materialType": "E-bog / Bog",
         },
       ],
       "path": Array [
@@ -429,7 +429,7 @@ Object {
         },
       ],
       "seo": Object {
-        "description": "Lån min kamp som bog eller ebog. Bestil, reserver, lån fra alle danmarks biblioteker. Afhent på dit lokale bibliotek eller find online.",
+        "description": "Lån min kamp som bog eller e-bog. Bestil, reserver, lån fra alle danmarks biblioteker. Afhent på dit lokale bibliotek eller find online.",
         "title": "min kamp af karl ove knausgård",
       },
       "series": null,
