@@ -5,6 +5,9 @@
 import { log } from "dbc-node-logger";
 import { getExecutableSchema } from "./schemaLoader";
 import express from "express";
+
+import { createProxyMiddleware } from "http-proxy-middleware";
+
 import cors from "cors";
 import { graphqlHTTP } from "express-graphql";
 import { parse, getOperationAST } from "graphql";
@@ -18,6 +21,12 @@ import { uuid } from "uuidv4";
 
 const app = express();
 let server;
+
+const proxy = createProxyMiddleware("http://localhost:3001", {
+  changeOrigin: true,
+  ws: true,
+  logLevel: "debug",
+});
 
 const promExporterApp = express();
 // Setup route handler for metrics
@@ -111,7 +120,7 @@ promExporterApp.listen(9599, () => {
         schema: await getExecutableSchema({
           clientPermissions: request?.smaug?.gateway,
         }),
-        graphiql: { headerEditorEnabled: true, shouldPersistHeaders: true },
+        // graphiql: { headerEditorEnabled: true, shouldPersistHeaders: true },
         extensions: ({ document, context, result }) => {
           if (document && document.definitions && !result.errors) {
             count("query_success");
@@ -150,11 +159,13 @@ promExporterApp.listen(9599, () => {
   );
 
   // route handler for livelinessprobe
-  app.get("/", function (req, res) {
-    res.send("hello world");
-  });
+  // app.get("/", function (req, res) {
+  //   res.send("hello world");
+  // });
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
+
+  app.use(proxy);
 
   server = app.listen(config.port, () => {
     log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);
