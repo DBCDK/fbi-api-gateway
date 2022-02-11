@@ -1,0 +1,10 @@
+.label {
+  display: block;
+}
+
+.skeleton {
+  /* fallback */
+  max-width: 200px;
+
+  max-width: min-content;
+}

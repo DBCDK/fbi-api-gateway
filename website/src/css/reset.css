@@ -1,0 +1,76 @@
+/*
+* Stylesheet for overwriting predefined styles and/or wide hitting behavior
+*
+*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+
+  /* Remove blue highlight on touch devices */
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
+
+html {
+  overflow-y: scroll;
+  height: 100%;
+}
+
+body {
+  font-size: 14px;
+  font-family: var(--font-regular);
+  color: var(--text-dark);
+
+  /* Scroll lock styles */
+  height: auto;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+}
+
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+input,
+textarea {
+  /* Removes input shadow in safari*/
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+textarea {
+  resize: none;
+}
+
+button {
+  border: 0;
+}
+
+a,
+a:hover {
+  color: var(--accent);
+}
+
+/* ios disabled fields should look like normal */
+input:disabled,
+textarea:disabled,
+input:disabled::placeholder,
+textarea:disabled::placeholder {
+  -webkit-text-fill-color: var(--text-dark);
+  opacity: 1;
+}

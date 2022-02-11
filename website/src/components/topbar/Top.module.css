@@ -1,0 +1,13 @@
+.top {
+  background-color: var(--primary);
+  padding: var(--pt1) var(--pt2);
+}
+
+.logo-wrap {
+  display: flex;
+}
+
+.logo {
+  color: var(--white);
+  align-self: center;
+}

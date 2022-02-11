@@ -1,0 +1,45 @@
+.title {
+  font-family: var(--font-regular);
+
+  /* Bootstrap default override */
+  margin: 0;
+}
+
+.title1 {
+  font-size: 20px;
+}
+
+.title2 {
+  font-size: 24px;
+}
+
+.title3 {
+  font-size: 32px;
+}
+
+.title4 {
+  font-size: 20px;
+  font-family: var(--font-bold);
+}
+
+.title5 {
+  font-size: 24px;
+  font-family: var(--font-bold);
+}
+
+.title6 {
+  font-size: 32px;
+  font-family: var(--font-bold);
+}
+
+/* Small devices */
+@media (min-width: 576px) {
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+}

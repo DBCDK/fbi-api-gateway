@@ -1,0 +1,39 @@
+/**
+* Stylesheet for global reusable styles
+*
+*/
+
+@import "./graphiql.css";
+@import "./colors.css";
+@import "./fonts.css";
+@import "./spacing.css";
+@import "./reset.css";
+
+:root {
+  --bounce-effect: cubic-bezier(0.38, 1.95, 0.4, 0.4);
+  --shadow-effect: 0px 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.relative {
+  position: relative;
+}
+
+/* content wrapper */
+.container {
+  height: 100%;
+}
+
+/* Align items center in review slider */
+.alignCenter {
+  align-items: center;
+}
+
+@media screen and (min-width: 1400px) {
+  .container,
+  .container-fluid {
+    max-width: 1400px;
+
+    /* override grid spacing prop margin */
+    margin: auto;
+  }
+}

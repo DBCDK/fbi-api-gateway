@@ -1,0 +1,42 @@
+.input {
+  width: 100%;
+  max-width: 400px;
+  height: var(--pt5);
+  padding: 0 var(--pt2);
+
+  /* changes on focus */
+  border: 2px solid transparent;
+  transition-duration: 0.3s;
+
+  /* half height */
+  border-radius: calc(var(--pt5) / 2);
+
+  /* default text */
+  font-size: 16px;
+  font-family: var(--font-regular);
+}
+
+.input:focus-visible {
+  border: 2px solid var(--accent);
+}
+
+.input.valid {
+}
+
+.input.error {
+  border: 1px solid var(--error);
+  outline: 1px solid var(--error);
+}
+
+.input.readOnly {
+  background-color: var(--divider);
+  color: var(--text-light);
+  -webkit-text-fill-color: var(--text-light);
+  cursor: not-allowed;
+}
+
+.input:disabled,
+.input:read-only {
+  color: var(--text);
+  -webkit-text-fill-color: var(--text);
+}

@@ -1,0 +1,35 @@
+/**
+* Colors 
+*
+* https://mycolor.space/?hex=%23009688&sub=1
+*
+* https://www.materialpalette.com/teal/amber
+*
+*/
+
+:root {
+  /* Scheme */
+  --primary: #009688;
+  --primary-light: #b2dfdb;
+  --primary-dark: #00796b;
+
+  --accent: #ffc107;
+
+  /* text */
+  --text-dark: #212121;
+  --text-light: #757575;
+
+  /* contrasts */
+  --white: #ffffff;
+  --divider: #bdbdbd;
+
+  /* Alerts */
+  --error: #f44336;
+  --error-dark: #d32f2f;
+  --warning: #ffeb3b;
+  --warning-dark: #fbc02d;
+  --info: #2196f3;
+  --info-dark: #1976d2;
+  --success: #4caf50;
+  --success-dark: #388e3c;
+}
