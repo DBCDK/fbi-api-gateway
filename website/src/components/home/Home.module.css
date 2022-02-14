@@ -1,0 +1,15 @@
+.container {
+  margin: auto;
+
+  max-width: 800px;
+  padding: var(--pt4) 0;
+}
+
+.content > div {
+  padding-top: var(--pt4);
+}
+
+.content > div > .title,
+.content > div > .text {
+  padding-top: var(--pt2);
+}

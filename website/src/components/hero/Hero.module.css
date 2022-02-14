@@ -1,0 +1,42 @@
+.hero {
+  padding: var(--pt5) 0;
+  background: rgb(255, 200, 221);
+  /* background: linear-gradient(
+    45deg,
+    rgba(255, 200, 221, 1) 25%,
+    rgba(189, 224, 254, 1) 75%
+  ); */
+
+  background: rgb(255, 175, 204);
+  background: linear-gradient(
+    45deg,
+    rgba(255, 175, 204, 1) 25%,
+    rgba(162, 210, 255, 1) 75%
+  );
+
+  /* background-image: linear-gradient(
+    to right,
+    #ffafcc,
+    #efb6e5,
+    #d7c0f6,
+    #bbc9ff,
+    #a2d2ff
+  ); */
+}
+
+.hero .row:first-of-type > div {
+  padding: 0;
+  padding-bottom: var(--pt2);
+}
+
+.hero .row > div {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--pt2);
+}
+
+.title,
+.text {
+  color: var(--white);
+  align-self: center;
+}

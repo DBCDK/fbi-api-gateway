@@ -5,6 +5,11 @@
 *
 * https://www.materialpalette.com/teal/amber
 *
+
+https://mycolor.space/gradient?ori=to+right&hex=%23FFAFCC&hex2=%23A2D2FF&sub=1
+
+background: rgb(255,175,204);
+background: linear-gradient(45deg, rgba(255,175,204,1) 25%, rgba(162,210,255,1) 75%);
 */
 
 :root {
@@ -13,7 +18,9 @@
   --primary-light: #b2dfdb;
   --primary-dark: #00796b;
 
-  --accent: #ffc107;
+  /* --accent: #ffc107; */
+  --accent: #cdb4db;
+  /* --accent: #6750a4; */
 
   /* text */
   --text-dark: #212121;
@@ -21,7 +28,8 @@
 
   /* contrasts */
   --white: #ffffff;
-  --divider: #bdbdbd;
+  --divider: #ecf0f1;
+  /* --divider: #bdbdbd; */
 
   /* Alerts */
   --error: #f44336;

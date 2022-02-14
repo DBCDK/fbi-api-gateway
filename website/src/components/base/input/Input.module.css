@@ -1,7 +1,7 @@
 .input {
   width: 100%;
   max-width: 400px;
-  height: var(--pt5);
+  height: var(--pt6);
   padding: 0 var(--pt2);
 
   /* changes on focus */
@@ -9,15 +9,16 @@
   transition-duration: 0.3s;
 
   /* half height */
-  border-radius: calc(var(--pt5) / 2);
+  border-radius: calc(var(--pt6) / 2);
 
   /* default text */
   font-size: 16px;
   font-family: var(--font-regular);
+  background-color: white;
 }
 
 .input:focus-visible {
-  border: 2px solid var(--accent);
+  border: 2px solid var(--text-dark);
 }
 
 .input.valid {

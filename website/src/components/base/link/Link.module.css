@@ -1,0 +1,53 @@
+.link {
+  color: var(--mine-shaft);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.border {
+  position: relative;
+  text-decoration: none;
+  /* !Dangerous: Prevent multiline */
+  white-space: nowrap;
+  display: inline-block;
+}
+
+/* real focus */
+.border:focus-visible {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.link.border:focus-visible > div > hr:last-child {
+  display: none;
+}
+
+.link.border:focus-visible > div > hr {
+  transform: scale(1);
+}
+
+/* disabled */
+
+.link.disabled {
+  color: var(--gray);
+  cursor: default;
+  pointer-events: none;
+}
+
+.link.disabled > div hr {
+  transform: scale(0);
+}
+
+/* Real-hover */
+@media (hover: hover) {
+  .border:hover:not(.disabled) {
+    color: var(--blue);
+    text-decoration: none;
+  }
+  .link.border:hover:not(.disabled) > div > hr:last-child {
+    display: none;
+  }
+  .link.border:hover:not(.disabled) > div > hr {
+    transform: scale(1);
+  }
+}

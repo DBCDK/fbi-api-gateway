@@ -11,3 +11,14 @@
   color: var(--white);
   align-self: center;
 }
+
+/* index */
+
+.top.index {
+  background-color: var(--white);
+}
+
+.top.index .logo {
+  color: var(--text);
+  align-self: center;
+}
