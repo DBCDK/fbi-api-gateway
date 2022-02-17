@@ -9,9 +9,9 @@
 
   background: rgb(255, 175, 204);
   background: linear-gradient(
-    45deg,
-    rgba(255, 175, 204, 1) 25%,
-    rgba(162, 210, 255, 1) 75%
+    25deg,
+    rgba(162, 210, 255, 1) 25%,
+    rgba(255, 175, 204, 1) 75%
   );
 
   /* background-image: linear-gradient(
@@ -33,6 +33,12 @@
   display: flex;
   justify-content: center;
   padding-top: var(--pt2);
+}
+
+.hero form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .title,

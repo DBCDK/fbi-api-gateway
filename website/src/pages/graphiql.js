@@ -1,13 +1,12 @@
 import nookies from "nookies";
 
+import Top from "@/components/topbar";
 import GraphiQL from "@/components/graphiql";
 
 export default function Page({ token }) {
-  console.log("token", { token });
-  // Parse
-
   return (
     <div style={{ height: "100vh" }}>
+      <Top />
       <GraphiQL
         fetcher={async (graphQLParams) => {
           const data = await fetch("http://localhost:3000/graphql", {
@@ -32,16 +31,5 @@ export async function getServerSideProps(ctx) {
   // parse
   const cookies = nookies.get(ctx);
 
-  console.log("cookies", { cookies });
-
-  // Destroy
-  // nookies.destroy(ctx, 'cookieName')
-
   return { props: { token: cookies.token } };
 }
-
-// Page.getInitialProps = (ctx) => {
-//   console.log("################# hest", { ctx });
-//   const cookies = nookies.get(ctx, )
-//   return cookies;
-// };

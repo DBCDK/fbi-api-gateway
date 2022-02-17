@@ -1,0 +1,48 @@
+.wrap {
+  position: relative;
+  width: 400px;
+  overflow: hidden;
+  border-radius: calc(var(--pt6) / 2);
+  border: 2px solid transparent;
+}
+
+.wrap.inActive.value:hover .clear {
+  transform: translateX(0);
+}
+
+.wrap.inActive.value:hover .input {
+  padding-right: var(--pt7);
+}
+
+.wrap:focus-within {
+  border: 2px solid var(--text-dark);
+}
+
+.wrap.inActive.value.locked .input {
+  background-color: var(--divider);
+  cursor: pointer;
+}
+
+.wrap input {
+  border: none !important;
+}
+
+.clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  transform: translateX(100%);
+
+  padding: 0;
+  min-width: var(--pt6) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.clear.focus-visible,
+.clear:hover {
+  background-color: #f48ba9 !important;
+  color: white;
+}

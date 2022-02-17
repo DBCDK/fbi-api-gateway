@@ -109,13 +109,13 @@
 */
 
 .button.primary:focus-visible {
-  background-color: var(--mine-shaft);
+  background-color: var(--text-dark);
   color: var(--white);
   outline: none;
 }
 
 .button.secondary:focus-visible {
-  background-color: var(--text);
+  background-color: var(--text-dark);
   color: var(--white);
 }
 
@@ -125,11 +125,12 @@
 */
 
 .button.disabled {
+  background-color: var(--divider) !important;
   pointer-events: none;
   cursor: default;
 }
 
 .button.disabled,
 .button.disabled:hover {
-  color: var(--mine-shaft);
+  color: var(--text-light);
 }

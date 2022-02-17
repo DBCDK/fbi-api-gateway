@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { Container, Row, Col } from "react-bootstrap";
 
 import Title from "@/components/base/title";
-import Text from "@/components/base/text";
+import Link from "@/components/base/link";
 import Input from "@/components/base/input";
 
 import styles from "./Top.module.css";
@@ -18,7 +18,9 @@ export default function Top() {
       <Container>
         <Row>
           <Col className={styles["logo-wrap"]}>
-            <Title className={styles.logo}>DBC Gateway 🥳</Title>
+            <Link href="/">
+              <Title className={styles.logo}>DBC Gateway 🥳</Title>
+            </Link>
           </Col>
           <Col>{!isIndex && <Input placeholder="... Drop token here" />}</Col>
         </Row>

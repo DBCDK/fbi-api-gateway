@@ -1,10 +1,13 @@
-import { useState } from "react";
-import nookies from "nookies";
+import { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { router } from "next/router";
+
+import { useRouter } from "next/router";
+
+import useToken from "@/hooks/useToken";
+import usePrevious from "@/hooks/usePrevious";
 
 import Title from "@/components/base/title";
-import Link from "@/components/base/link";
+import Token from "@/components/token";
 import Button from "@/components/base/button";
 import Text from "@/components/base/text";
 import Input from "@/components/base/input";
@@ -13,8 +16,21 @@ import Label from "@/components/base/label";
 import styles from "./Hero.module.css";
 
 export default function Hero({ className = "" }) {
-  // const router = useRouter();
-  const [token, setToken] = useState(null);
+  const router = useRouter();
+  const { token, isValidating } = useToken();
+
+  // Submit has been called => redirect if everything is ok
+  const [submit, setSubmit] = useState(false);
+  const [value, setValue] = useState("");
+
+  // redirect
+  useEffect(() => {
+    if (token && !isValidating && submit) {
+      router.push({
+        pathname: "/graphiql",
+      });
+    }
+  }, [submit]);
 
   return (
     <section className={`${styles.hero} ${className}`}>
@@ -31,28 +47,30 @@ export default function Hero({ className = "" }) {
 
         <Row className={styles.row}>
           <Col>
-            <Input
-              id="token-input"
-              onBlur={(e) => setToken(e.target.value)}
-              placeholder="Drop token here ..."
+            <Token
+              id="token-input-form"
+              onChange={(value) => {
+                setValue(value);
+                console.log("Hero onChange", { value });
+              }}
+              onSubmit={(value) => {
+                console.log("Hero onSubmit", { value });
+                // setSubmit(true);
+              }}
             />
           </Col>
         </Row>
 
         <Row className={styles.row}>
           <Col>
-            <Link href="/graphiql">
-              <Button
-                onClick={() => {
-                  nookies.set({}, "token", token, {
-                    maxAge: 30 * 24 * 60 * 60,
-                    path: "/",
-                  });
-                }}
-              >
-                Go!
-              </Button>
-            </Link>
+            <Button
+              type="submit"
+              disabled={value === ""}
+              form="token-input-form"
+              secondary
+            >
+              Go!
+            </Button>
           </Col>
         </Row>
       </Container>

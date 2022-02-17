@@ -2,10 +2,6 @@ import PropTypes from "prop-types";
 
 import styles from "./Button.module.css";
 
-function handleOnButtonClick() {
-  alert("Button clicked!");
-}
-
 /**
  * The Component function
  *
@@ -15,20 +11,27 @@ function handleOnButtonClick() {
  * @returns {component}
  */
 function Button({
+  type = "button",
   children = "im a button",
   className = "",
-  type = "secondary",
   size = "medium",
   onClick = null,
   disabled = false,
   tabIndex = "0",
+  // primary = true,
+  secondary = false,
+  ...props
 }) {
   const disabledStyle = disabled ? styles.disabled : "";
 
+  const style = secondary ? "secondary" : "primary";
+
   return (
     <button
-      className={`${styles.button} ${className} ${styles[size]} ${styles[type]} ${disabledStyle}`}
-      onClick={(e) => (onClick ? onClick(e) : handleOnButtonClick(e))}
+      {...props}
+      type={type}
+      className={`${styles.button} ${styles[size]} ${styles[style]} ${className} ${disabledStyle}`}
+      onClick={(e) => onClick && onClick(e)}
       aria-disabled={disabled}
       disabled={disabled}
       tabIndex={tabIndex}
@@ -54,7 +57,8 @@ export default function Container(props) {
 Container.propTypes = {
   children: PropTypes.any,
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  type: PropTypes.oneOf(["primary", "secondary"]),
+  primary: PropTypes.bool,
+  secondary: PropTypes.bool,
   size: PropTypes.oneOf(["large", "medium", "small"]),
   disabled: PropTypes.bool,
   skeleton: PropTypes.bool,

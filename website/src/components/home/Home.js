@@ -16,7 +16,7 @@ export default function Home() {
       <Container as="section" className={styles.container} fluid>
         <Row className={styles.welcome}>
           <Col>
-            <Text className={styles.text}>Welcome to the</Text>
+            <Text className={styles.text}>You have found the</Text>
             <Title tag="h1" type="title6" className={styles.title}>
               DBC Gateway documentation page
             </Title>

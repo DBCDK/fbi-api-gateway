@@ -1,16 +1,21 @@
 /**
- * Hook for q search param sync across components 🤯
+ * Hook for token handling across components 🤯
  *
- * OBS! useQ hook is SWR connected and will trigger an update
+ * OBS! useToken hook is SWR connected and will trigger an update
  * on connected components.
  */
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 
-import useHistory from "@/hooks/useHistory";
+import getConfig from "next/config";
+import nookies from "nookies";
+import fetch from "isomorphic-unfetch";
 
 import useSWR from "swr";
+
+const APP_URL =
+  getConfig()?.publicRuntimeConfig?.app?.url || "http://localhost:3000";
 
 /**
  *
@@ -19,45 +24,40 @@ import useSWR from "swr";
  *
  */
 
-// Global state
-let locale = {};
-
-// Global useQ hook initialization
-let initialized = false;
-
 // Custom fetcher
-const fetcher = () => locale;
+const fetcher = async (url, token) => {
+  if (!token || token === "") {
+    return {};
+  }
+  const response = await fetch(`${APP_URL}${url}`, {
+    method: "GET",
+  });
+  if (response.status !== 200) {
+    return {};
+  }
+  const configuration = await response.json();
+
+  return { token, configuration };
+};
 
 /**
- * useQ hook
+ * useToken hook
  *
  * @returns {object}
  *
- * q
- * setQ
- * clearQ
- * setQuery
- * getQuery
- * hasQuery
- * types
+ * token
+ * configuration
+ * setToken
  *
  */
 
 function useToken() {
-  // SWR
-  const { data: _token, mutate: _setToken } = useSWR("token", fetcher, {
-    initialData: {},
-  });
-
-  /**
-   * Get token from history
-   *
-   * @returns {string}
-   *
-   */
-  export const getToken = () => {
-    localStorage.getItem();
-  };
+  // cookie token
+  const token = nookies.get().token;
+  // SWR key
+  const url = `/api/smaug?token=${token}`;
+  // SWR hook
+  const { data, isValidating, mutate } = useSWR([url, token], fetcher);
 
   /**
    * Set new token
@@ -67,12 +67,31 @@ function useToken() {
    * @returns {object}
    *
    */
-  export const setToken = (token) => {};
+  const setToken = (token) => {
+    if (token && token !== "") {
+      nookies.set({}, "token", token, {
+        maxAge: 30 * 24 * 60 * 60,
+        path: "/",
+      });
+      mutate(token);
+    }
+  };
+
+  const clearToken = () => {
+    if (token) {
+      nookies.destroy({}, "token");
+      mutate();
+    }
+  };
 
   return {
-    token: getToken(),
+    token: data?.token,
+    configuration: data?.configuration,
+    isValidating,
+    // func
     setToken,
+    clearToken,
   };
 }
 
-export default useQ;
+export default useToken;

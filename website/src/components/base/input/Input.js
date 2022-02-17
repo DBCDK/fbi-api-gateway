@@ -27,6 +27,7 @@ function Input({
   onBlur,
   dataCy = "input",
   readOnly = false,
+  elRef = null,
   required,
   "aria-labelledby": ariaLabelledby,
   "aria-label": ariaLabel,
@@ -42,10 +43,13 @@ function Input({
   const readOnlyClass = readOnly || disabled ? styles.readOnly : "";
   const invalidClass = !readOnlyClass && invalid ? styles.error : "";
 
+  console.log("input", { value, val });
+
   return (
     <input
       {...props}
       id={id}
+      ref={elRef}
       className={`${styles.input} ${readOnlyClass} ${invalidClass} ${className}`}
       type={type}
       value={val}
@@ -69,6 +73,7 @@ function Input({
 // PropTypes for component
 Input.propTypes = {
   id: PropTypes.string,
+  elRef: PropTypes.object,
   type: PropTypes.string,
   tabIndex: PropTypes.string,
   className: PropTypes.string,

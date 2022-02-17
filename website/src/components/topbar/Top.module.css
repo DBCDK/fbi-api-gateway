@@ -1,5 +1,10 @@
 .top {
-  background-color: var(--primary);
+  background: rgb(255, 175, 204);
+  background: linear-gradient(
+    25deg,
+    rgba(162, 210, 255, 1) 25%,
+    rgba(255, 175, 204, 1) 75%
+  );
   padding: var(--pt1) var(--pt2);
 }
 
@@ -15,7 +20,7 @@
 /* index */
 
 .top.index {
-  background-color: var(--white);
+  background: var(--white);
 }
 
 .top.index .logo {
