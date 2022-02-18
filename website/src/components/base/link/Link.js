@@ -22,11 +22,13 @@ export default function Link({
   tag = "a",
   disabled = false,
   scroll = true,
+  keepActive = false,
 }) {
   const Tag = tag;
   // Maybe wrap with an a-tag
   if (a) {
     const disabledClass = disabled ? styles.disabled : "";
+    const keepActiveClass = keepActive ? styles.keepActive : "";
 
     children = (
       <Tag
@@ -39,7 +41,7 @@ export default function Link({
             onClick(e);
           }
         }}
-        className={`${styles.link} ${disabledClass} ${className}`}
+        className={`${styles.link} ${keepActiveClass} ${disabledClass} ${className}`}
         tabIndex={disabled ? "-1" : tabIndex}
       >
         {children}

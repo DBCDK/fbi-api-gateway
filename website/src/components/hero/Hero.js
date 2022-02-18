@@ -4,13 +4,10 @@ import { Container, Row, Col } from "react-bootstrap";
 import { useRouter } from "next/router";
 
 import useToken from "@/hooks/useToken";
-import usePrevious from "@/hooks/usePrevious";
 
 import Title from "@/components/base/title";
 import Token from "@/components/token";
 import Button from "@/components/base/button";
-import Text from "@/components/base/text";
-import Input from "@/components/base/input";
 import Label from "@/components/base/label";
 
 import styles from "./Hero.module.css";
@@ -21,16 +18,16 @@ export default function Hero({ className = "" }) {
 
   // Submit has been called => redirect if everything is ok
   const [submit, setSubmit] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState();
 
   // redirect
   useEffect(() => {
     if (token && !isValidating && submit) {
       router.push({
-        pathname: "/graphiql",
+        pathname: "/documentation",
       });
     }
-  }, [submit]);
+  }, [submit, token]);
 
   return (
     <section className={`${styles.hero} ${className}`}>
@@ -49,14 +46,8 @@ export default function Hero({ className = "" }) {
           <Col>
             <Token
               id="token-input-form"
-              onChange={(value) => {
-                setValue(value);
-                console.log("Hero onChange", { value });
-              }}
-              onSubmit={(value) => {
-                console.log("Hero onSubmit", { value });
-                // setSubmit(true);
-              }}
+              onChange={(value) => setValue(value)}
+              onSubmit={() => setSubmit(true)}
             />
           </Col>
         </Row>

@@ -1,31 +1,77 @@
+.form {
+  width: 400px;
+}
+
+/* wrap */
+
 .wrap {
   position: relative;
   width: 400px;
+  height: var(--pt6);
   overflow: hidden;
+
   border-radius: calc(var(--pt6) / 2);
-  border: 2px solid transparent;
+
+  background-color: var(--white);
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.wrap.inActive.value {
+  background-color: var(--divider);
+  cursor: pointer;
 }
 
 .wrap.inActive.value:hover .clear {
   transform: translateX(0);
 }
 
+.wrap:focus-within {
+  outline: 2px solid var(--text-dark);
+}
+
 .wrap.inActive.value:hover .input {
   padding-right: var(--pt7);
 }
 
-.wrap:focus-within {
-  border: 2px solid var(--text-dark);
+.wrap:focus-within .input {
+  cursor: unset !important;
+  flex-shrink: 0;
 }
 
-.wrap.inActive.value.locked .input {
-  background-color: var(--divider);
+.wrap.inActive.value.display .input {
+  padding: 0 var(--pt2);
   cursor: pointer;
 }
 
-.wrap input {
-  border: none !important;
+/* input */
+
+.input {
+  width: 100%;
+  height: var(--pt6);
+  padding: 0 var(--pt3);
+  border: none;
+  transition-duration: 0.25s;
+
+  /* half height */
+  border-radius: calc(var(--pt6) / 2);
+
+  /* default text */
+  font-size: 16px;
+  font-family: var(--font-regular);
+  /* background-color: transparent; */
+  flex-shrink: 1;
 }
+
+/* display */
+
+.display p {
+  padding: 0 var(--pt2) 0 var(--pt3);
+}
+
+/* clear button */
 
 .clear {
   position: absolute;
@@ -33,6 +79,8 @@
   right: 0;
 
   transform: translateX(100%);
+  border: 2px solid var(--white);
+  background-color: var(--divider) !important;
 
   padding: 0;
   min-width: var(--pt6) !important;
@@ -41,8 +89,13 @@
   align-items: center;
 }
 
-.clear.focus-visible,
+.clear:focus-visible,
 .clear:hover {
   background-color: #f48ba9 !important;
   color: white;
+}
+
+.clear:focus-visible {
+  transform: translateX(0);
+  background-color: var(--text-dark) !important;
 }

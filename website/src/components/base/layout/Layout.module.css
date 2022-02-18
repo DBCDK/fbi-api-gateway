@@ -1,0 +1,11 @@
+.container {
+  margin: auto;
+  max-width: 992px;
+  padding: var(--pt4) var(--pt2);
+}
+
+@media screen and (min-width: calc(992px - var(--pt2))) {
+  .container {
+    padding: var(--pt4) 0;
+  }
+}

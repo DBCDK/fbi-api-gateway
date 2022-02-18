@@ -1,20 +1,37 @@
 .top {
+  padding: var(--pt1) var(--pt2);
   background: rgb(255, 175, 204);
   background: linear-gradient(
-    25deg,
+    45deg,
     rgba(162, 210, 255, 1) 25%,
     rgba(255, 175, 204, 1) 75%
   );
-  padding: var(--pt1) var(--pt2);
 }
 
-.logo-wrap {
-  display: flex;
+.token {
+  margin-left: auto;
 }
 
 .logo {
-  color: var(--white);
+  height: var(--pt6);
+  display: flex;
+}
+
+.logo > span {
   align-self: center;
+}
+
+.links {
+  display: flex;
+  align-self: center;
+}
+
+.links .link {
+  padding: 0 var(--pt4) 0 var(--pt1);
+}
+
+.links .link:last-child {
+  padding: 0;
 }
 
 /* index */
@@ -25,5 +42,4 @@
 
 .top.index .logo {
   color: var(--text);
-  align-self: center;
 }

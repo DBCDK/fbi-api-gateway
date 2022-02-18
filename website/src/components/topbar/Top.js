@@ -1,28 +1,45 @@
 import { useRouter } from "next/router";
 import { Container, Row, Col } from "react-bootstrap";
 
+import useToken from "@/hooks/useToken";
+
 import Title from "@/components/base/title";
+import Text from "@/components/base/text";
 import Link from "@/components/base/link";
-import Input from "@/components/base/input";
+import Token from "@/components/token";
 
 import styles from "./Top.module.css";
 
 export default function Top() {
   const router = useRouter();
+  const { token } = useToken();
+
   const isIndex = router.asPath === "/";
 
   const indexStyles = isIndex ? styles.index : "";
 
   return (
     <header className={`${styles.top} ${indexStyles}`}>
-      <Container>
+      <Container fluid>
         <Row>
-          <Col className={styles["logo-wrap"]}>
-            <Link href="/">
-              <Title className={styles.logo}>DBC Gateway 🥳</Title>
-            </Link>
+          <Col>
+            <Title className={styles.logo}>
+              <span>
+                <Link href="/">DBC Gateway</Link> 🥳
+              </span>
+            </Title>
           </Col>
-          <Col>{!isIndex && <Input placeholder="... Drop token here" />}</Col>
+          <Col>{!isIndex && <Token className={styles.token} />}</Col>
+          {token && (
+            <Col className={styles.links}>
+              <Text type="text3" className={styles.link}>
+                <Link href="/graphiql">GraphiQl</Link>
+              </Text>
+              <Text type="text3" className={styles.link}>
+                <Link href="/">Voyager</Link>
+              </Text>
+            </Col>
+          )}
         </Row>
       </Container>
     </header>

@@ -2,13 +2,12 @@ import { useEffect, useState, useRef } from "react";
 
 import useToken from "@/hooks/useToken";
 
-import Input from "@/components/base/input";
 import Button from "@/components/base/button";
 import Text from "@/components/base/text";
 
 import styles from "./Token.module.css";
 
-export default function Token({ id, onSubmit, onChange }) {
+export default function Token({ id, className = "", onSubmit, onChange }) {
   // useToken custom hook
   const {
     token,
@@ -21,37 +20,21 @@ export default function Token({ id, onSubmit, onChange }) {
   // internal state
   const [state, setState] = useState({
     value: "",
-    display: "",
+    display: false,
     focus: false,
   });
 
   // update token input value if changed after render (swr update)
   useEffect(() => {
-    if (token && !isValidating) {
-      const display = configuration?.displayName;
-      setState({
-        ...state,
-        value: token,
-        valid: !!token,
-        display: display ? `${display}: ${token}` : token,
-      });
-    }
-  }, [isValidating]);
+    setState({
+      ...state,
+      value: token || "",
+      display: configuration?.displayName || false,
+    });
 
-  // Make input switch between token and configuration: displayName
-  useEffect(() => {
-    if (token) {
-      const display = configuration?.displayName;
-      setState({
-        ...state,
-        display: !state.focus && display ? `${display}: ${token}` : token,
-      });
-
-      setTimeout(() => inputRef?.current?.focus(), 100);
-    }
-  }, [state.focus]);
-
-  console.log("state", { state });
+    // upddate callback with new value
+    onChange?.(token);
+  }, [token]);
 
   // ref
   const inputRef = useRef(null);
@@ -61,31 +44,44 @@ export default function Token({ id, onSubmit, onChange }) {
   const hasValue = !!(state.value && state.value !== "");
   const isToken = state.value === token;
 
-  // class'
+  const hasDisplay = !!(state.display && hasValue && (isToken || isValidating));
+
+  // custom class'
   const focusState = hasFocus ? styles.active : styles.inActive;
   const valueState = hasValue ? styles.value : styles.empty;
-  const lockState = hasValue && isToken ? styles.locked : "";
+  const displayState = hasDisplay ? styles.display : "";
 
   return (
     <form
       id={id}
+      onClick={() => {
+        inputRef?.current?.focus();
+        state.value && hasDisplay && inputRef?.current?.select();
+        setState({ ...state, focus: true });
+      }}
+      className={`${styles.form} ${className}`}
       onSubmit={(e) => {
         e.preventDefault();
         state.value && setToken(state.value);
         onSubmit?.(state.value);
+        inputRef?.current?.blur();
       }}
     >
       <div
-        className={`${styles.wrap} ${valueState} ${focusState} ${lockState}`}
+        className={`${styles.wrap} ${valueState} ${displayState} ${focusState}`}
       >
-        <Input
-          elRef={inputRef}
+        {hasDisplay && (
+          <Text type="text3" className={styles.display}>
+            {state.display}
+          </Text>
+        )}
+        <input
+          aria-label="inputfield for access token"
+          ref={inputRef}
           id="token-input"
           className={styles.input}
-          value={state.display}
+          value={state.value}
           placeholder="Drop token here ..."
-          readOnly={!hasFocus && hasValue && isToken}
-          onDoubleClick={() => setState({ ...state, focus: true })}
           onBlur={() => setState({ ...state, focus: false })}
           onChange={(e) => {
             const value = e.target.value;
@@ -96,11 +92,13 @@ export default function Token({ id, onSubmit, onChange }) {
 
         <Button
           className={styles.clear}
-          onClick={() => {
+          onClick={(e) => {
+            // Prevent firering onClick event on form
+            e.stopPropagation();
             clearToken();
             setState({
               value: "",
-              display: "",
+              display: false,
               focus: false,
             });
             setTimeout(() => inputRef?.current?.focus(), 100);

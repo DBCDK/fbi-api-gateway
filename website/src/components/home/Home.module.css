@@ -1,11 +1,10 @@
 .container {
-  margin: auto;
-
-  max-width: 800px;
-  padding: var(--pt4) 0;
+  padding-top: var(--pt8);
+  padding-bottom: var(--pt8);
 }
 
 .content > div {
+  max-width: 600px;
   padding-top: var(--pt4);
 }
 

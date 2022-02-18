@@ -1,8 +1,10 @@
 import { Container, Row, Col } from "react-bootstrap";
+import Layout from "@/components/base/layout";
 
 import Top from "@/components/topbar";
 import Hero from "@/components/hero";
 
+import Link from "@/components/base/link";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 
@@ -13,10 +15,10 @@ export default function Home() {
     <>
       <Top />
       <Hero />
-      <Container as="section" className={styles.container} fluid>
-        <Row className={styles.welcome}>
+      <Layout className={styles.container}>
+        <Row>
           <Col>
-            <Text className={styles.text}>You have found the</Text>
+            <Text className={styles.text}>Hello! You have found the</Text>
             <Title tag="h1" type="title6" className={styles.title}>
               DBC Gateway documentation page
             </Title>
@@ -71,12 +73,15 @@ export default function Home() {
         <Row className={styles.content}>
           <Col>
             <Text type="text3">DBC DIGITAL</Text>
+
             <Text type="text2" className={styles.email}>
-              dbc@dbc.dk
+              <Link onClick={(e) => e.preventDefault()} keepActive>
+                dbc@dbc.dk
+              </Link>
             </Text>
           </Col>
         </Row>
-      </Container>
+      </Layout>
     </>
   );
 }

@@ -1,7 +1,37 @@
 import React from "react";
-import GraphiQL from "graphiql";
+import _GraphiQL from "graphiql";
 
-export default class GraphiQLFix extends GraphiQL {
+import useToken from "@/hooks/useToken";
+
+import Top from "@/components/topbar";
+
+export default function GraphiQL() {
+  const { token } = useToken();
+
+  return (
+    <div style={{ height: "100vh" }}>
+      <Top />
+      <GraphiQLFix
+        fetcher={async (graphQLParams) => {
+          const data = await fetch("http://localhost:3000/graphql", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `bearer ${token}`,
+              //   Authorization: "bearer c03be2f3a435458389934fe0814bfdce8f1c21d2",
+            },
+            body: JSON.stringify(graphQLParams),
+            credentials: "same-origin",
+          });
+          return data.json().catch(() => data.text());
+        }}
+      />
+    </div>
+  );
+}
+
+class GraphiQLFix extends _GraphiQL {
   componentDidUpdate(...args) {
     const editor = this.getQueryEditor();
     if (editor && this.state.schema) {
