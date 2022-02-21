@@ -9,7 +9,7 @@
   color: var(--primary-dark);
 }
 
-.link.keepActive:before {
+.link.keepActive:not(:focus-visible):before {
   content: "\a0";
   display: block;
   padding: 2px 0;
@@ -24,7 +24,7 @@
 
 /* disabled */
 .link.disabled {
-  color: var(--gray);
+  color: var(--text-light);
   cursor: default;
   pointer-events: none;
 }

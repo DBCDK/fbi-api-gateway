@@ -72,9 +72,9 @@ export default function Home() {
 
         <Row className={styles.content}>
           <Col>
-            <Text type="text3">DBC DIGITAL</Text>
+            <Text type="text5">DBC DIGITAL</Text>
 
-            <Text type="text2" className={styles.email}>
+            <Text type="text3" className={styles.email}>
               <Link onClick={(e) => e.preventDefault()} keepActive>
                 dbc@dbc.dk
               </Link>

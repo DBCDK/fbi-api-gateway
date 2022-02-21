@@ -7,7 +7,13 @@ import Text from "@/components/base/text";
 
 import styles from "./Token.module.css";
 
-export default function Token({ id, className = "", onSubmit, onChange }) {
+export default function Token({
+  id,
+  className = "",
+  onSubmit,
+  onChange,
+  compact,
+}) {
   // useToken custom hook
   const {
     token,
@@ -47,6 +53,7 @@ export default function Token({ id, className = "", onSubmit, onChange }) {
   const hasDisplay = !!(state.display && hasValue && (isToken || isValidating));
 
   // custom class'
+  const compactSize = compact ? styles.compact : "";
   const focusState = hasFocus ? styles.active : styles.inActive;
   const valueState = hasValue ? styles.value : styles.empty;
   const displayState = hasDisplay ? styles.display : "";
@@ -59,7 +66,7 @@ export default function Token({ id, className = "", onSubmit, onChange }) {
         state.value && hasDisplay && inputRef?.current?.select();
         setState({ ...state, focus: true });
       }}
-      className={`${styles.form} ${className}`}
+      className={`${styles.form} ${compactSize} ${className}`}
       onSubmit={(e) => {
         e.preventDefault();
         state.value && setToken(state.value);
@@ -71,7 +78,7 @@ export default function Token({ id, className = "", onSubmit, onChange }) {
         className={`${styles.wrap} ${valueState} ${displayState} ${focusState}`}
       >
         {hasDisplay && (
-          <Text type="text3" className={styles.display}>
+          <Text type="text5" className={styles.display}>
             {state.display}
           </Text>
         )}

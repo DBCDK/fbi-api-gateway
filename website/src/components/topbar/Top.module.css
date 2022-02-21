@@ -12,9 +12,13 @@
   flex-grow: 99;
 }
 
+.middle {
+  display: flex;
+}
+
 .token {
-  margin-left: auto;
-  transform: scale(0.85);
+  align-self: center;
+  /* transform: scale(0.85); */
 }
 
 .logo {
@@ -36,7 +40,7 @@
 }
 
 .links .link {
-  padding: 0 var(--pt4) 0 var(--pt1);
+  padding: 0 var(--pt4) 0 0;
 }
 
 .links .link:last-child {
@@ -60,4 +64,10 @@
 .top.index .logo a:hover,
 .top.index .links .link a:hover {
   color: var(--primary-dark);
+}
+
+@media screen and (max-width: 992px) {
+  .links {
+    display: none;
+  }
 }

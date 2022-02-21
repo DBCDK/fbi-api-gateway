@@ -15,6 +15,7 @@ export default function Top() {
   const { token } = useToken();
 
   const isIndex = router.asPath === "/";
+  const isDocumentation = router.asPath === "/documentation";
 
   const indexStyles = isIndex ? styles.index : "";
 
@@ -29,23 +30,31 @@ export default function Top() {
               </span>
             </Title>
           </Col>
-          <Col>{!isIndex && <Token className={styles.token} />}</Col>
-          {token && (
-            <Col className={styles.links}>
-              <Text type="text3" className={styles.link}>
-                <Link href="/documentation">Documentation</Link>
-              </Text>
-              <Text type="text3" className={styles.link}>
-                <Link href="/graphiql">GraphiQL</Link>
-              </Text>
-              <Text type="text3" className={styles.link}>
-                <Link href="/">Voyager</Link>
-              </Text>
-              <Text type="text3" className={styles.link}>
-                <Link href="/">Extras</Link>
-              </Text>
-            </Col>
-          )}
+          <Col className={styles.middle}>
+            {!isIndex && <Token className={styles.token} compact />}
+          </Col>
+          <Col as="nav" className={styles.links}>
+            <Text type="text5" className={styles.link}>
+              <Link href="/documentation" disabled={!token}>
+                Documentation
+              </Link>
+            </Text>
+            <Text type="text5" className={styles.link}>
+              <Link href="/graphiql" disabled={!token}>
+                GraphiQL
+              </Link>
+            </Text>
+            <Text type="text5" className={styles.link}>
+              <Link href="/" disabled={!token}>
+                Voyager
+              </Link>
+            </Text>
+            <Text type="text5" className={styles.link}>
+              <Link href="/" disabled={!token}>
+                Extras
+              </Link>
+            </Text>
+          </Col>
         </Row>
       </Container>
     </header>

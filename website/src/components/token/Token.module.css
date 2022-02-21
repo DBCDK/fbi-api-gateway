@@ -99,3 +99,32 @@
   transform: translateX(0);
   background-color: var(--text-dark) !important;
 }
+
+/* compact */
+
+.form.compact {
+  /* 44 * 8 = 352 */
+  width: 352px;
+}
+
+.form.compact .wrap {
+  height: var(--pt5);
+  border-radius: calc(var(--pt5) / 2);
+  /* 44 * 8 = 352 */
+  width: 352px;
+}
+
+.form.compact .input {
+  height: var(--pt5);
+  /* half height */
+  border-radius: calc(var(--pt5) / 2);
+  /* text 1 */
+  font-size: 14px;
+
+  padding: 0 var(--pt3);
+}
+
+.form.compact .clear {
+  height: 100%;
+  min-width: var(--pt5) !important;
+}

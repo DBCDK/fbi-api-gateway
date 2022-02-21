@@ -8,19 +8,28 @@
 }
 
 .text1 {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .text2 {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .text3 {
+  font-size: 20px;
+}
+
+.text4 {
+  font-size: 14px;
+  font-family: var(--font-bold);
+}
+
+.text5 {
   font-size: 16px;
   font-family: var(--font-bold);
 }
 
-.text4 {
+.text6 {
   font-size: 20px;
   font-family: var(--font-bold);
 }

@@ -1,7 +1,4 @@
-import { response } from "express";
 import fetch from "isomorphic-unfetch";
-import { keyBy } from "lodash";
-import { listenerCount } from "superagent";
 
 /**
  * Smaug config whitelist

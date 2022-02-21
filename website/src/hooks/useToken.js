@@ -57,7 +57,7 @@ function useToken() {
   // SWR key
   const url = `/api/smaug?token=${token}`;
   // SWR hook
-  const { data, isValidating, mutate } = useSWR([url, token], fetcher);
+  const { data, isValidating, error, mutate } = useSWR([url, token], fetcher);
 
   /**
    * Set new token
@@ -88,7 +88,7 @@ function useToken() {
     token: data?.token,
     configuration: data?.configuration,
     isValidating,
-    // func
+    isLoading: !data && !error,
     setToken,
     clearToken,
   };
