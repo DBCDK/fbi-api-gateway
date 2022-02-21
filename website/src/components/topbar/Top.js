@@ -45,7 +45,7 @@ export default function Top() {
               </Link>
             </Text>
             <Text type="text5" className={styles.link}>
-              <Link href="/" disabled={!token}>
+              <Link href="/voyager" disabled={!token}>
                 Voyager
               </Link>
             </Text>
