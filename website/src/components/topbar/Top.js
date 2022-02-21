@@ -39,7 +39,7 @@ export default function Top() {
                 <Link href="/graphiql">GraphiQL</Link>
               </Text>
               <Text type="text3" className={styles.link}>
-                <Link href="/">Voyager</Link>
+                <Link href="/voyager">Voyager</Link>
               </Text>
               <Text type="text3" className={styles.link}>
                 <Link href="/">Extras</Link>

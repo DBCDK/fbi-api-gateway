@@ -8,6 +8,7 @@
 @import "./fonts.css";
 @import "./spacing.css";
 @import "./reset.css";
+@import "./voyager.css";
 
 :root {
   --bounce-effect: cubic-bezier(0.38, 1.95, 0.4, 0.4);
