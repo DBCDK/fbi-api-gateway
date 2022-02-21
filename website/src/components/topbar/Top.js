@@ -22,7 +22,7 @@ export default function Top() {
     <header className={`${styles.top} ${indexStyles}`}>
       <Container fluid>
         <Row>
-          <Col>
+          <Col className={styles.left}>
             <Title className={styles.logo}>
               <span>
                 <Link href="/">DBC Gateway</Link> 🥳
@@ -33,10 +33,16 @@ export default function Top() {
           {token && (
             <Col className={styles.links}>
               <Text type="text3" className={styles.link}>
-                <Link href="/graphiql">GraphiQl</Link>
+                <Link href="/documentation">Documentation</Link>
+              </Text>
+              <Text type="text3" className={styles.link}>
+                <Link href="/graphiql">GraphiQL</Link>
               </Text>
               <Text type="text3" className={styles.link}>
                 <Link href="/">Voyager</Link>
+              </Text>
+              <Text type="text3" className={styles.link}>
+                <Link href="/">Extras</Link>
               </Text>
             </Col>
           )}

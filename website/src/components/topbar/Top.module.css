@@ -8,13 +8,22 @@
   );
 }
 
+.left {
+  flex-grow: 99;
+}
+
 .token {
   margin-left: auto;
+  transform: scale(0.85);
 }
 
 .logo {
   height: var(--pt6);
   display: flex;
+}
+
+.logo a:hover {
+  color: var(--white);
 }
 
 .logo > span {
@@ -34,6 +43,10 @@
   padding: 0;
 }
 
+.links .link a:hover {
+  color: var(--white);
+}
+
 /* index */
 
 .top.index {
@@ -42,4 +55,9 @@
 
 .top.index .logo {
   color: var(--text);
+}
+
+.top.index .logo a:hover,
+.top.index .links .link a:hover {
+  color: var(--primary-dark);
 }
