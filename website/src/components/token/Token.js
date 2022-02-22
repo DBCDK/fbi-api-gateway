@@ -19,7 +19,7 @@ export default function Token({
     token,
     isValidating,
     setToken,
-    clearToken,
+    removeToken,
     configuration,
   } = useToken();
 
@@ -102,7 +102,7 @@ export default function Token({
           onClick={(e) => {
             // Prevent firering onClick event on form
             e.stopPropagation();
-            clearToken();
+            removeToken();
             setState({
               value: "",
               display: false,
@@ -112,8 +112,8 @@ export default function Token({
           }}
           secondary
         >
-          {/* <Text>✖</Text> */}
-          🗑️
+          <Text>✖</Text>
+          {/* 🗑️ */}
         </Button>
       </div>
     </form>

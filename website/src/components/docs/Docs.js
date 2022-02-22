@@ -1,7 +1,7 @@
 import { Container, Row, Col } from "react-bootstrap";
 import Layout from "@/components/base/layout";
 
-import Top from "@/components/topbar";
+import Header from "@/components/header";
 
 import Link from "@/components/base/link";
 import Title from "@/components/base/title";
@@ -12,7 +12,7 @@ import styles from "./Docs.module.css";
 export default function Docs() {
   return (
     <>
-      <Top />
+      <Header />
       <Layout className={styles.container}>
         <Row>
           <Col>

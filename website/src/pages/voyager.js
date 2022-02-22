@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Top from "@/components/topbar";
+import Header from "@/components/header";
 import Voyager from "@/components/voyager";
 
 export default function Page(props) {
@@ -9,7 +9,7 @@ export default function Page(props) {
         <title>Voyager</title>
       </Head>
       <div style={{ height: "100vh" }}>
-        <Top />
+        <Header />
         <Voyager />
       </div>
     </>

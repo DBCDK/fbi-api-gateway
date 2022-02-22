@@ -66,8 +66,23 @@
   color: var(--primary-dark);
 }
 
+.links .link.more {
+  display: none;
+}
+
 @media screen and (max-width: 992px) {
-  .links {
+  .links .link {
+    display: none;
+  }
+
+  .links .link.more {
+    display: block;
+    padding: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .token {
     display: none;
   }
 }

@@ -5,11 +5,7 @@
  * on connected components.
  */
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/router";
-
 import getConfig from "next/config";
-import nookies from "nookies";
 import fetch from "isomorphic-unfetch";
 
 import useSWR from "swr";
@@ -18,13 +14,17 @@ const APP_URL =
   getConfig()?.publicRuntimeConfig?.app?.url || "http://localhost:3000";
 
 /**
- *
  * Settings
- *
  *
  */
 
-// Custom fetcher
+const TOKEN_KEY = "token";
+const HISTORY_KEY = "history";
+
+/**
+ * Custom fetcher
+ *
+ */
 const fetcher = async (url, token) => {
   if (!token || token === "") {
     return {};
@@ -41,19 +41,87 @@ const fetcher = async (url, token) => {
 };
 
 /**
+ * Set token in sessionStorage
+ *
+ */
+const _setToken = (token) => {
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem(TOKEN_KEY, token);
+  }
+};
+
+/**
+ * Get token from sessionStorage
+ *
+ */
+const _getToken = () => {
+  if (typeof window !== "undefined") {
+    return sessionStorage.getItem(TOKEN_KEY);
+  }
+};
+
+/**
+ * Clear token from sessionStorage
+ *
+ */
+const _removeToken = () => {
+  if (typeof window !== "undefined") {
+    return sessionStorage.removeItem(TOKEN_KEY);
+  }
+};
+
+/**
+ * Set history in localStorage
+ *
+ */
+const _setHistory = (data) => {
+  if (typeof window !== "undefined") {
+    if (data?.token) {
+      const timestamp = Date.now();
+      const history = _getHistory();
+      // remove duplicate
+      const uniq = history.filter((obj) => !(obj.token === data.token));
+      // add to beginning of array
+      uniq.unshift({
+        token: data.token,
+        timestamp,
+      });
+      // slice
+      const sliced = uniq.slice(0, 10);
+      // store
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(sliced));
+    }
+  }
+};
+
+/**
+ * Get history from localStorage
+ *
+ */
+const _getHistory = () => {
+  if (typeof window !== "undefined") {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  }
+};
+
+/**
  * useToken hook
  *
  * @returns {object}
  *
- * token
- * configuration
- * setToken
+ * token {string}
+ * configuration {object}
+ * isValidating {bool}
+ * isLoading {bool}
+ *
+ * setToken {func}
+ * removeToken {func}
  *
  */
 
 function useToken() {
   // cookie token
-  const token = nookies.get().token;
+  const token = _getToken();
   // SWR key
   const url = `/api/smaug?token=${token}`;
   // SWR hook
@@ -69,17 +137,15 @@ function useToken() {
    */
   const setToken = (token) => {
     if (token && token !== "") {
-      nookies.set({}, "token", token, {
-        maxAge: 30 * 24 * 60 * 60,
-        path: "/",
-      });
+      _setToken(token);
       mutate(token);
+      _setHistory(data);
     }
   };
 
-  const clearToken = () => {
+  const removeToken = () => {
     if (token) {
-      nookies.destroy({}, "token");
+      _removeToken();
       mutate();
     }
   };
@@ -90,7 +156,7 @@ function useToken() {
     isValidating,
     isLoading: !data && !error,
     setToken,
-    clearToken,
+    removeToken,
   };
 }
 

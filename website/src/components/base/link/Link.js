@@ -14,7 +14,7 @@ import styles from "./Link.module.css";
 export default function Link({
   children = "Im a hyperlink now!",
   a = true,
-  href,
+  href = null,
   target = "_self",
   onClick = null,
   className = "",

@@ -1,35 +1,28 @@
-import getConfig from "next/config";
-import nookies from "nookies";
-import fetch from "isomorphic-unfetch";
-
-const APP_URL =
-  getConfig()?.publicRuntimeConfig?.app?.url || "http://localhost:3000";
+import Modal from "@/components/modal";
+import Pages from "@/components/modal/pages";
 
 import "@/scss/custom-bootstrap.scss";
 import "@/css/styles.css";
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+function MyApp({ Component, pageProps, router }) {
+  return (
+    <Modal.Provider
+      router={{
+        pathname: router.pathname,
+        query: router.query,
+        push: (obj) => router.push(obj),
+        replace: (obj) => router.replace(obj),
+        go: (index) => window.history.go(index),
+      }}
+    >
+      <Modal.Container>
+        <Modal.Page id="menu" component={Pages.Menu} />
+      </Modal.Container>
+      <div id="layout">
+        <Component {...pageProps} />
+      </div>
+    </Modal.Provider>
+  );
 }
 
 export default MyApp;
-
-// export async function getServerSideProps(ctx) {
-
-//   const cookies = nookies.get(ctx);
-//   const token = cookies.token;
-
-//   if (!token) {
-//     return null;
-//   }
-
-//   if (token) {
-//     const res = await fetch(`${APP_URL}/api/smaug?token=${token}`, {
-//       method: "GET",
-//     });
-
-//     const configuration = await res.json();
-
-//     return { props: { configuration, token } };
-//   }
-// }

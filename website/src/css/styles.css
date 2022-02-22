@@ -8,6 +8,7 @@
 @import "./fonts.css";
 @import "./spacing.css";
 @import "./reset.css";
+@import "./modal.css";
 @import "./voyager.css";
 
 :root {

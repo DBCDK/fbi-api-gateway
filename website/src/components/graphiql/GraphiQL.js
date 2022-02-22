@@ -3,14 +3,14 @@ import _GraphiQL from "graphiql";
 
 import useToken from "@/hooks/useToken";
 
-import Top from "@/components/topbar";
+import Header from "@/components/header";
 
 export default function GraphiQL() {
   const { token } = useToken();
 
   return (
     <div style={{ height: "100vh" }}>
-      <Top />
+      <Header />
       <GraphiQLFix
         fetcher={async (graphQLParams) => {
           const data = await fetch("http://localhost:3000/graphql", {

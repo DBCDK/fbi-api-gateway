@@ -1,0 +1,102 @@
+.menu {
+  background-color: var(--divider);
+  height: 100%;
+
+  /* scroll in modal */
+  overflow-y: auto;
+}
+
+.menu .top {
+  padding: var(--pt6) var(--pt2);
+  margin: 0;
+  position: relative;
+}
+
+.title {
+}
+
+.menu .middle {
+  background-color: var(--primary-dark);
+  padding: var(--pt6) var(--pt2);
+  margin: 0;
+  position: relative;
+}
+
+.token label {
+  padding: 0 0 var(--pt2) 0;
+  color: var(--white);
+}
+
+/* .close {
+  position: absolute;
+  top: var(--pt2);
+  right: var(--pt2);
+
+  background-color: var(--primary-dark) !important;
+
+  border: 2px solid transparent;
+
+  color: var(--white) !important;
+
+  padding: 0;
+  min-width: var(--pt6) !important;
+  max-width: var(--pt6) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.close p {
+  padding: 0;
+}
+
+.close:hover {
+  background-color: var(--text-dark) !important;
+}
+
+.close:focus-visible {
+  border: 2px solid var(--text-dark);
+  color: var(--text-dark) !important;
+  background-color: white !important;
+} */
+
+.token .input,
+.token .input > div {
+  width: 100%;
+}
+
+.menu ul {
+  padding: var(--pt6) var(--pt2);
+  list-style: none;
+  margin: 0;
+}
+
+.menu li {
+  padding: 0;
+}
+
+.menu li a {
+  display: block;
+  padding: var(--pt2);
+}
+
+.menu li:first-child a {
+  padding: 0 var(--pt2) var(--pt2) var(--pt2);
+}
+
+@media (min-width: 576px) {
+  .menu ul {
+    padding: var(--pt6);
+  }
+
+  .menu .top {
+    padding: var(--pt6);
+  }
+}
+
+@media screen and (min-width: 769px) {
+  .token {
+    display: none;
+  }
+}
