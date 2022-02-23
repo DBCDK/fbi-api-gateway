@@ -1,0 +1,62 @@
+.link {
+  color: var(--text-dark);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link.keepActive {
+  color: var(--accent);
+  color: var(--primary-dark);
+}
+
+.link.keepActive:not(:focus-visible):before {
+  content: "\a0";
+  display: block;
+  padding: 2px 0;
+  border-left: 2px solid var(--text-dark);
+  position: absolute;
+  transition-duration: 0.2s;
+
+  transform: translateX(calc(var(--pt2) * -1));
+  opacity: 1;
+  pointer-events: unset;
+}
+
+/* disabled */
+.link.disabled {
+  color: var(--text-light);
+  cursor: default;
+  pointer-events: none;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--text-dark);
+  outline-offset: var(--pt05);
+}
+
+/* Real-hover */
+@media (hover: hover) {
+  .link:hover {
+    /* border-left: 2px solid var(--text-dark); */
+    color: var(--primary-dark);
+  }
+
+  .link:before {
+    content: "\a0";
+    display: block;
+    padding: 1px 0;
+    border-bottom: 2px solid var(--text-dark);
+    border-left: 2px solid var(--text-dark);
+    position: absolute;
+    transform: scaleY(0.75) translateX(var(--pt1));
+    opacity: 0;
+    pointer-events: none;
+    transition-duration: 0.2s;
+  }
+
+  .link:hover:before {
+    transform: scaleY(1) translateX(calc((var(--pt1) + var(--pt05)) * -1));
+    opacity: 1;
+    pointer-events: unset;
+  }
+}

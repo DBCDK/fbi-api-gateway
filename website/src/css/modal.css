@@ -1,0 +1,186 @@
+/* scrollLock on body */
+
+/* Class to prevent user from body-scrolling when a modal is open */
+.lockScroll {
+  height: 100vh;
+}
+
+/* Dimmer */
+
+.modal_dimmer {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 150;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.modal_dimmer::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  will-change: opacity;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0, 0, 0.3, 1);
+}
+
+.modal_dimmer.modal_visible::after {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Modal */
+
+.modal_dialog * {
+  /* Smoothness */
+  -webkit-font-smoothing: antialised;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.modal_dialog {
+  width: calc(100% - var(--pt8));
+  max-width: 576px;
+  height: 100%;
+  background-color: white;
+  position: relative;
+  z-index: 150;
+  box-shadow: -3px 0 5px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+
+  /* animation */
+  transform: translateX(103%);
+  transition: transform 330ms ease-out;
+
+  /* Dialog override */
+  display: block;
+  border: none;
+}
+
+.modal_dialog.modal_closed {
+  /* hide tabbable elements on modal is closed */
+  visibility: hidden;
+}
+
+.modal_dialog.modal_visible {
+  pointer-events: auto;
+  transform: none;
+}
+
+/* container */
+
+.modal_container {
+  width: 300%;
+  transform: translateX(calc((100% / 3) * -1));
+  color: black;
+  height: 100%;
+  position: relative;
+}
+
+.modal_container *:focus-visible {
+  /* outline: 2px solid black !important;
+  outline-offset: 5px; */
+}
+
+/* page */
+.modal_page {
+  width: calc(100% / 3);
+  height: 100%;
+
+  background-color: white;
+
+  /* animation */
+  transition: transform 330ms ease-out;
+
+  /* ensures pages "spawn" position is stacked top-right */
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/* when modal opens */
+.modal_dialog:not(.modal_open) .modal_page.page-current {
+  transition: none;
+}
+
+/* when modal closes */
+.modal_dialog.modal_closing .modal_page.page-after {
+  transition: none;
+  transform: translateX(-100%);
+}
+
+/* default page positions */
+
+.modal_page.page-current {
+  /* center of view (visible) */
+  transform: translateX(-100%);
+  z-index: 1;
+}
+
+.modal_page.page-after {
+  /* right of view (invisible) */
+  transform: translateX(0);
+  z-index: 0;
+}
+
+.modal_page.page-before {
+  /* left of view (invisible) */
+  transform: translateX(-200%);
+  z-index: 0;
+}
+
+/* Shadow has its own div, to cover all elements (inset shadow will not cover images and form elements) */
+.content_shadow {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 99;
+
+  transition: box-shadow 500ms ease-out;
+  will-change: box-shadow;
+
+  -moz-box-shadow: inset 0 -24px 24px -24px rgba(0, 0, 0, 0);
+  -webkit-box-shadow: inset 0 -24px 24px -24px rgba(0, 0, 0, 0);
+  box-shadow: inset 0 -24px 24px -24px rgba(0, 0, 0, 0);
+}
+
+.modal_page.page-shadow .content_shadow {
+  -moz-box-shadow: inset 0 -24px 24px -24px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: inset 0 -24px 24px -24px rgba(0, 0, 0, 0.75);
+  box-shadow: inset 0 -24px 24px -24px rgba(0, 0, 0, 0.75);
+}
+/*  */
+
+.page_content {
+  height: 100%;
+  overflow-y: auto;
+
+  /* animation */
+  transition-duration: 0.5s;
+}
+
+/* .modal_page.page-shadow {
+  -moz-box-shadow: inset 0 -24px 24px -24px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: inset 0 -24px 24px -24px rgba(0, 0, 0, 0.75);
+  box-shadow: inset 0 -24px 24px -24px rgba(0, 0, 0, 0.75);
+} */
+
+/* Set 100% height to user component */
+.page_content > *:first-child {
+  min-height: 100%;
+}

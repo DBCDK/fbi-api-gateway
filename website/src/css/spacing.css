@@ -1,0 +1,23 @@
+/**
+* 8-point grid spacing variables
+*
+*/
+
+:root {
+  --pt05: 4px;
+  --pt1: 8px;
+  --pt2: 16px;
+  --pt3: 24px;
+  --pt4: 32px;
+  --pt5: 40px;
+  --pt6: 48px;
+  --pt7: 56px;
+  --pt8: 64px;
+  --pt9: 72px;
+  --pt10: 80px;
+  --pt11: 88px;
+  --pt12: 96px;
+  --pt13: 104px;
+  --pt14: 112px;
+  --pt15: 120px;
+}

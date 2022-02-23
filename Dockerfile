@@ -13,6 +13,16 @@ RUN npm set progress=false && npm config set depth 0 && \
 # test
 RUN npm test
 
+# install website node packages
+RUN cd website && \
+    npm set progress=false && npm config set depth 0 && \
+    npm install
+
+# build for production
+RUN cd website && \
+    npm run build && \
+    npm prune --production
+
 #
 # ---- Release ----
 FROM $NODE_BASEIMAGE AS release
@@ -21,4 +31,4 @@ COPY --chown=node:node --from=build /home/node/app/ ./
 USER node
 
 # We use wallaby fork of esm to make optional chaining work
-CMD ["node", "-r", "esm-wallaby", "./src/index.js"]
+CMD ["npm", "run", "start"]

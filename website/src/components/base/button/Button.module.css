@@ -1,0 +1,136 @@
+.button {
+  background-color: transparent;
+  font-family: var(--font-mono-regular);
+  transition-duration: 0.35s;
+  display: inline-block;
+
+  /* changes on focus */
+  border: 2px solid transparent;
+  transition-duration: 0.3s;
+  padding: 0 var(--pt2);
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+/* 
+* button Types 
+*
+*/
+
+/* Primary */
+
+.button.primary {
+  background-color: var(--accent);
+  color: var(--white);
+  min-width: var(--pt15);
+}
+
+.button.primary:hover {
+  color: var(--white);
+}
+
+.button.primary.disabled {
+  background-color: var(--concrete);
+  border: 2px solid var(--iron);
+}
+
+/* Secondary */
+
+.button.secondary {
+  background-color: var(--white);
+  color: var(--text-dark);
+  min-width: var(--pt15);
+}
+
+.button.secondary:hover {
+  background-color: var(--text-dark);
+  color: var(--white);
+}
+
+.button.secondary.disabled {
+  background-color: var(--concrete);
+  border: 2px solid var(--iron);
+}
+
+/* 
+* button Sizes 
+*
+*/
+
+/* primary */
+.button.primary.large {
+  font-size: 24px;
+  height: var(--pt7);
+  /* half height */
+  border-radius: calc(var(--pt7) / 2);
+}
+
+.button.primary.medium {
+  font-size: 20px;
+  height: var(--pt6);
+  /* half height */
+  border-radius: calc(var(--pt6) / 2);
+}
+
+.button.primary.small {
+  font-size: 16px;
+  height: var(--pt5);
+  /* half height */
+  border-radius: calc(var(--pt5) / 2);
+}
+
+/* secondary */
+.button.secondary.large {
+  font-size: 24px;
+  height: var(--pt7);
+  /* half height */
+  border-radius: calc(var(--pt7) / 2);
+}
+
+.button.secondary.medium {
+  font-size: 20px;
+  height: var(--pt6);
+  /* half height */
+  border-radius: calc(var(--pt6) / 2);
+}
+
+.button.secondary.small {
+  font-size: 16px;
+  height: var(--pt5);
+  /* half height */
+  border-radius: calc(var(--pt5) / 2);
+}
+
+/* 
+* Focused
+*
+*/
+
+.button.primary:focus-visible {
+  background-color: var(--text-dark);
+  color: var(--white);
+  outline: none;
+}
+
+.button.secondary:focus-visible {
+  background-color: var(--text-dark);
+  color: var(--white);
+}
+
+/* 
+* Disabled 
+*
+*/
+
+.button.disabled {
+  background-color: var(--divider) !important;
+  pointer-events: none;
+  cursor: default;
+}
+
+.button.disabled,
+.button.disabled:hover {
+  color: var(--text-light);
+}

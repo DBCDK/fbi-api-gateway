@@ -1,0 +1,47 @@
+.text {
+  font-family: var(--font-mono-regular);
+  display: block;
+  /* letter-spacing: 0.2px; */
+
+  /* Bootstrap default override */
+  margin: 0;
+}
+
+.text1 {
+  font-size: 14px;
+}
+
+.text2 {
+  font-size: 16px;
+}
+
+.text3 {
+  font-size: 20px;
+}
+
+.text4 {
+  font-size: 14px;
+  font-family: var(--font-mono-semibold);
+}
+
+.text5 {
+  font-size: 16px;
+  font-family: var(--font-mono-semibold);
+}
+
+.text6 {
+  font-size: 20px;
+  font-family: var(--font-mono-semibold);
+}
+
+/* Small devices */
+@media (min-width: 576px) {
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+}

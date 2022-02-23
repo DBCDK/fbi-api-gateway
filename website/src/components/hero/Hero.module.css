@@ -1,0 +1,86 @@
+.hero {
+  padding: var(--pt5) var(--pt4);
+  text-align: center;
+  /* background: linear-gradient(
+    45deg,
+    rgba(255, 200, 221, 1) 25%,
+    rgba(189, 224, 254, 1) 75%
+  ); */
+
+  /* background: linear-gradient(
+    25deg,
+    rgba(162, 210, 255, 1) 25%,
+    rgba(255, 175, 204, 1) 75%
+  ); */
+
+  background: rgb(255, 175, 204);
+  background: linear-gradient(
+    75deg,
+    rgba(162, 210, 255, 1),
+    rgba(255, 175, 204, 1),
+    rgba(162, 210, 255, 1),
+    rgba(255, 175, 204, 1)
+  );
+
+  background-size: 400% 100%;
+  animation: gradient 60s infinite;
+
+  /* background-image: linear-gradient(
+    to right,
+    #ffafcc,
+    #efb6e5,
+    #d7c0f6,
+    #bbc9ff,
+    #a2d2ff
+  ); */
+}
+
+.hero .row:first-of-type > div {
+  padding: 0;
+  padding-bottom: var(--pt2);
+}
+
+.hero .row > div {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--pt2);
+}
+
+.title,
+.text {
+  color: var(--white);
+  align-self: center;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .hero {
+    height: 75vh;
+    background-size: 800% 100%;
+  }
+
+  .hero > div {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+  }
+
+  .hero .row:first-of-type > div {
+    padding-bottom: var(--pt4);
+  }
+
+  .hero .row > div {
+    padding-top: var(--pt4);
+  }
+}

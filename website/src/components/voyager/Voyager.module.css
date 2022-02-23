@@ -1,0 +1,4 @@
+.wrapper {
+  position: relative;
+  height: calc(100vh - var(--pt8));
+}

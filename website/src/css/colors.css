@@ -1,0 +1,77 @@
+/**
+* Colors 
+*
+* https://mycolor.space/?hex=%23009688&sub=1
+*
+* https://www.materialpalette.com/teal/amber
+*
+
+https://mycolor.space/gradient?ori=to+right&hex=%23FFAFCC&hex2=%23A2D2FF&sub=1
+
+background: rgb(255,175,204);
+background: linear-gradient(45deg, rgba(255,175,204,1) 25%, rgba(162,210,255,1) 75%);
+*/
+
+:root {
+  /* Scheme */
+  --primary: #ffafcc;
+  --primary-light: #ffc8dd;
+  --primary-dark: #f48ba9;
+
+  --secondary: #a2d2ff;
+  --secondary-light: #bde0fe;
+  --secondary-dark: #86cbed;
+
+  --accent: #936ed4;
+  --accent-light: #cdb4db;
+
+  /* text */
+  --text-dark: #212121;
+  --text-light: #757575;
+
+  /* contrasts */
+  --white: #ffffff;
+  --divider: #ecf0f1;
+  --divider-dark: #bdbdbd;
+
+  /* Alerts */
+  --error: #f44336;
+  --error-dark: #d32f2f;
+  --warning: #ffeb3b;
+  --warning-dark: #fbc02d;
+  --info: #2196f3;
+  --info-dark: #1976d2;
+  --success: #4caf50;
+  --success-dark: #388e3c;
+}
+
+:root {
+  /* Scheme */
+  /* --primary: #009688;
+  --primary-light: #b2dfdb;
+  --primary-dark: #00796b; */
+
+  /* --accent: #ffc107; */
+  /* --accent: #936ed4; */
+  /* --accent: #cdb4db; */
+  /* --accent: #6750a4; */
+
+  /* text */
+  /* --text-dark: #212121;
+  --text-light: #757575; */
+
+  /* contrasts */
+  /* --white: #ffffff;
+  --divider: #ecf0f1; */
+  /* --divider: #bdbdbd; */
+
+  /* Alerts */
+  /* --error: #f44336;
+  --error-dark: #d32f2f;
+  --warning: #ffeb3b;
+  --warning-dark: #fbc02d;
+  --info: #2196f3;
+  --info-dark: #1976d2;
+  --success: #4caf50;
+  --success-dark: #388e3c; */
+}
