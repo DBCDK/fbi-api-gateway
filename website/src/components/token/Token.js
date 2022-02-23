@@ -39,7 +39,7 @@ export default function Token({
     });
 
     // upddate callback with new value
-    onChange?.(token);
+    token && onChange?.(token);
   }, [token]);
 
   // ref
@@ -69,8 +69,8 @@ export default function Token({
       className={`${styles.form} ${compactSize} ${className}`}
       onSubmit={(e) => {
         e.preventDefault();
-        state.value && setToken(state.value);
-        onSubmit?.(state.value);
+        // state.value && setToken(state.value);
+        // onSubmit?.(state.value);
         inputRef?.current?.blur();
       }}
     >
@@ -89,9 +89,15 @@ export default function Token({
           className={styles.input}
           value={state.value}
           placeholder="Drop token here ..."
-          onBlur={() => setState({ ...state, focus: false })}
+          // autoComplete="off"
+          onBlur={() => {
+            // state.value && setToken(state.value);
+            // onSubmit?.(state.value);
+            setState({ ...state, focus: false });
+          }}
           onChange={(e) => {
             const value = e.target.value;
+            value && setToken(value);
             onChange?.(value);
             setState({ ...state, value });
           }}

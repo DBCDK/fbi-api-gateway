@@ -81,7 +81,7 @@ function Menu({ modal, context }) {
       <hr />
       <Row as="ul">
         <Col xs={12} as="li">
-          <Link onClick={() => {}}>
+          <Link onClick={() => {}} disabled={!token}>
             <Text type="text5" className={styles.link}>
               Download Scheme
             </Text>

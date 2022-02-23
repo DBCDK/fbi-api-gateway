@@ -1,0 +1,58 @@
+/**
+* Stylesheet for all font imports
+*
+*/
+
+@font-face {
+  font-family: "anonymous_proregular";
+  src: url("../../public/fonts/anonymous/anonymouspro-regular-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/anonymous/anonymouspro-regular-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "anonymous_proitalic";
+  src: url("../../public/fonts/anonymous/anonymouspro-italic-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/anonymous/anonymouspro-italic-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "anonymous_probold";
+  src: url("../../public/fonts/anonymous/anonymouspro-bold-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/anonymous/anonymouspro-bold-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "anonymous_probold_italic";
+  src: url("../../public/fonts/anonymous/anonymouspro-bolditalic-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/anonymous/anonymouspro-bolditalic-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  /*
+  *  Fonts
+  *
+  */
+
+  /* 400 */
+  --font-regular: "anonymous_proregular";
+  --font-regular-italic: "anonymous_proitalic";
+  /* 700 */
+  --font-bold: "anonymous_probold";
+  --font-bold-italic: "anonymous_probold_italic";
+}

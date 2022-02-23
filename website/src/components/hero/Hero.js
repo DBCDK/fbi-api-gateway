@@ -17,17 +17,17 @@ export default function Hero({ className = "" }) {
   const { token, isValidating } = useToken();
 
   // Submit has been called => redirect if everything is ok
-  const [submit, setSubmit] = useState(false);
-  const [value, setValue] = useState();
+  // const [submit, setSubmit] = useState(false);
+  // const [value, setValue] = useState("");
 
   // redirect
-  useEffect(() => {
-    if (token && !isValidating && submit) {
-      router.push({
-        pathname: "/documentation",
-      });
-    }
-  }, [submit, token]);
+  // useEffect(() => {
+  //   if (token && !isValidating && submit) {
+  //     router.push({
+  //       pathname: "/documentation",
+  //     });
+  //   }
+  // }, [submit, token]);
 
   return (
     <section className={`${styles.hero} ${className}`}>
@@ -46,8 +46,8 @@ export default function Hero({ className = "" }) {
           <Col>
             <Token
               id="token-input-form"
-              onChange={(value) => setValue(value)}
-              onSubmit={() => setSubmit(true)}
+              // onChange={(value) => setValue(value)}
+              // onSubmit={() => setSubmit(true)}
             />
           </Col>
         </Row>
@@ -56,8 +56,13 @@ export default function Hero({ className = "" }) {
           <Col>
             <Button
               type="submit"
-              disabled={value === ""}
+              disabled={!token}
               form="token-input-form"
+              onClick={() => {
+                router.push({
+                  pathname: "/documentation",
+                });
+              }}
               secondary
             >
               Go!

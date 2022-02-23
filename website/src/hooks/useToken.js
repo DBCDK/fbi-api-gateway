@@ -21,12 +21,17 @@ const APP_URL =
 const TOKEN_KEY = "token";
 const HISTORY_KEY = "history";
 
+const isToken = (token) => {
+  // alpha numeric and more than 32 characters
+  return !!(token && token.match(/^(?=.*[a-zA-Z])(?=.*[0-9]).{32}/));
+};
+
 /**
  * Custom fetcher
  *
  */
 const fetcher = async (url, token) => {
-  if (!token || token === "") {
+  if (!isToken(token)) {
     return {};
   }
   const response = await fetch(`${APP_URL}${url}`, {

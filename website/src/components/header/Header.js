@@ -32,9 +32,7 @@ export default function Header() {
               </span>
             </Title>
           </Col>
-          <Col className={styles.middle}>
-            {!isIndex && <Token className={styles.token} compact />}
-          </Col>
+
           <Col as="nav" className={styles.links}>
             <Text type="text5" className={styles.link}>
               <Link href="/documentation" disabled={!token}>
@@ -55,8 +53,14 @@ export default function Header() {
               <Link onClick={() => modal.push("menu")}>More</Link>
             </Text>
             <Text type="text5" className={`${styles.link} ${styles.download}`}>
-              <Link onClick={() => {}}>Download</Link>
+              <Link disabled={!token} onClick={() => {}}>
+                Download
+              </Link>
             </Text>
+          </Col>
+
+          <Col className={styles.middle}>
+            {!isIndex && <Token className={styles.token} compact />}
           </Col>
         </Row>
       </Container>
