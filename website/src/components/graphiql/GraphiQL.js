@@ -13,7 +13,7 @@ export default function GraphiQL() {
       <Header />
       <GraphiQLFix
         fetcher={async (graphQLParams) => {
-          const data = await fetch("http://localhost:3000/graphql", {
+          const data = await fetch("/graphql", {
             method: "POST",
             headers: {
               Accept: "application/json",
