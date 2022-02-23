@@ -3,41 +3,151 @@
 *
 */
 
+/* 
+* IBM Mono
+*
+*/
+
 @font-face {
-  font-family: "anonymous_proregular";
-  src: url("../../public/fonts/anonymous/anonymouspro-regular-webfont.woff2")
+  font-family: "ibm_plex_monobold";
+  src: url("../../public/fonts/IBMPlexMono/ibmplexmono-bold-webfont.woff2")
       format("woff2"),
-    url("../../public/fonts/anonymous/anonymouspro-regular-webfont.woff")
+    url("../../public/fonts/IBMPlexMono/ibmplexmono-bold-webfont.woff")
       format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "anonymous_proitalic";
-  src: url("../../public/fonts/anonymous/anonymouspro-italic-webfont.woff2")
+  font-family: "ibm_plex_monosemibold";
+  src: url("../../public/fonts/IBMPlexMono/ibmplexmono-semibold-webfont.woff2")
       format("woff2"),
-    url("../../public/fonts/anonymous/anonymouspro-italic-webfont.woff")
+    url("../../public/fonts/IBMPlexMono/ibmplexmono-semibold-webfont.woff")
       format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "anonymous_probold";
-  src: url("../../public/fonts/anonymous/anonymouspro-bold-webfont.woff2")
+  font-family: "ibm_plex_monomedium";
+  src: url("../../public/fonts/IBMPlexMono/ibmplexmono-medium-webfont.woff2")
       format("woff2"),
-    url("../../public/fonts/anonymous/anonymouspro-bold-webfont.woff")
+    url("../../public/fonts/IBMPlexMono/ibmplexmono-medium-webfont.woff")
       format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "anonymous_probold_italic";
-  src: url("../../public/fonts/anonymous/anonymouspro-bolditalic-webfont.woff2")
+  font-family: "ibm_plex_monoregular";
+  src: url("../../public/fonts/IBMPlexMono/ibmplexmono-regular-webfont.woff2")
       format("woff2"),
-    url("../../public/fonts/anonymous/anonymouspro-bolditalic-webfont.woff")
+    url("../../public/fonts/IBMPlexMono/ibmplexmono-regular-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ibm_plex_monolight";
+  src: url("../../public/fonts/IBMPlexMono/ibmplexmono-light-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexMono/ibmplexmono-light-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ibm_plex_monoextralight";
+  src: url("../../public/fonts/IBMPlexMono/ibmplexmono-extralight-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexMono/ibmplexmono-extralight-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ibm_plex_monothin";
+  src: url("../../public/fonts/IBMPlexMono/ibmplexmono-thin-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexMono/ibmplexmono-thin-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 
+* IBM Sans
+*
+*/
+
+@font-face {
+  font-family: "ibm_plex_sansbold";
+  src: url("../../public/fonts/IBMPlexSans/ibmplexsans-bold-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexSans/ibmplexsans-bold-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ibm_plex_sanssemibold";
+  src: url("../../public/fonts/IBMPlexSans/ibmplexsans-semibold-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexSans/ibmplexsans-semibold-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ibm_plex_sansmedium";
+  src: url("../../public/fonts/IBMPlexSans/ibmplexsans-medium-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexSans/ibmplexsans-medium-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ibm_plex_sansregular";
+  src: url("../../public/fonts/IBMPlexSans/ibmplexsans-regular-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexSans/ibmplexsans-regular-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ibm_plex_sanslight";
+  src: url("../../public/fonts/IBMPlexSans/ibmplexsans-light-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexSans/ibmplexsans-light-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ibm_plex_sansextralight";
+  src: url("../../public/fonts/IBMPlexSans/ibmplexsans-extralight-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexSans/ibmplexsans-extralight-webfont.woff")
+      format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ibm_plex_sansthin";
+  src: url("../../public/fonts/IBMPlexSans/ibmplexsans-thin-webfont.woff2")
+      format("woff2"),
+    url("../../public/fonts/IBMPlexSans/ibmplexsans-thin-webfont.woff")
       format("woff");
   font-weight: normal;
   font-style: normal;
@@ -49,10 +159,29 @@
   *
   */
 
-  /* 400 */
-  --font-regular: "anonymous_proregular";
-  --font-regular-italic: "anonymous_proitalic";
-  /* 700 */
-  --font-bold: "anonymous_probold";
-  --font-bold-italic: "anonymous_probold_italic";
+  /* 
+  * IBM Mono
+  *
+  */
+
+  --font-mono-thin: "ibm_plex_monothin";
+  --font-mono-xlight: "ibm_plex_monoextralight";
+  --font-mono-light: "ibm_plex_monolight";
+  --font-mono-regular: "ibm_plex_monoregular";
+  --font-mono-medium: "ibm_plex_monomedium";
+  --font-mono-semibold: "ibm_plex_monosemibold";
+  --font-mono-bold: "ibm_plex_monobold";
+
+  /* 
+  * IBM Sans
+  *
+  */
+
+  --font-sans-thin: "ibm_plex_sansthin";
+  --font-sans-xlight: "ibm_plex_sansextralight";
+  --font-sans-light: "ibm_plex_sanslight";
+  --font-sans-regular: "ibm_plex_sansregular";
+  --font-sans-medium: "ibm_plex_sansmedium";
+  --font-sans-semibold: "ibm_plex_sanssemibold";
+  --font-sans-bold: "ibm_plex_sansbold";
 }

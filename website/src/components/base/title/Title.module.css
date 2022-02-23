@@ -1,5 +1,5 @@
 .title {
-  font-family: var(--font-regular);
+  font-family: var(--font-mono-regular);
 
   /* Bootstrap default override */
   margin: 0;
@@ -19,17 +19,17 @@
 
 .title4 {
   font-size: 20px;
-  font-family: var(--font-bold);
+  font-family: var(--font-mono-semibold);
 }
 
 .title5 {
   font-size: 24px;
-  font-family: var(--font-bold);
+  font-family: var(--font-mono-semibold);
 }
 
 .title6 {
   font-size: 32px;
-  font-family: var(--font-bold);
+  font-family: var(--font-mono-semibold);
 }
 
 /* Small devices */

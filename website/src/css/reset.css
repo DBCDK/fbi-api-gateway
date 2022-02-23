@@ -20,7 +20,7 @@ html {
 
 body {
   font-size: 14px;
-  font-family: var(--font-regular);
+  font-family: var(--font-mono-regular);
   color: var(--text-dark);
 
   /* Scroll lock styles */

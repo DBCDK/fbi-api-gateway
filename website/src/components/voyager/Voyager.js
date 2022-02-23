@@ -26,11 +26,7 @@ export default function Voyager() {
   // else it will make intronspection query for each rerender
   const voyagerRendered = useMemo(
     () =>
-      token ? (
-        <VoyagerComp
-          introspection={introspectionProvider}
-        />
-      ) : null,
+      token ? <VoyagerComp introspection={introspectionProvider} /> : null,
     [token]
   );
 

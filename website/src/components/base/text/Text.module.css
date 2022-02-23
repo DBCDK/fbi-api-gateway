@@ -1,5 +1,5 @@
 .text {
-  font-family: var(--font-regular);
+  font-family: var(--font-mono-regular);
   display: block;
   /* letter-spacing: 0.2px; */
 
@@ -21,17 +21,17 @@
 
 .text4 {
   font-size: 14px;
-  font-family: var(--font-bold);
+  font-family: var(--font-mono-semibold);
 }
 
 .text5 {
   font-size: 16px;
-  font-family: var(--font-bold);
+  font-family: var(--font-mono-semibold);
 }
 
 .text6 {
   font-size: 20px;
-  font-family: var(--font-bold);
+  font-family: var(--font-mono-semibold);
 }
 
 /* Small devices */

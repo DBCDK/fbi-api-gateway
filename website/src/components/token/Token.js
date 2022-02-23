@@ -60,7 +60,7 @@ export default function Token({
 
   return (
     <form
-      id={id}
+      id={`${id}-form`}
       onClick={() => {
         inputRef?.current?.focus();
         state.value && hasDisplay && inputRef?.current?.select();
@@ -85,7 +85,7 @@ export default function Token({
         <input
           aria-label="inputfield for access token"
           ref={inputRef}
-          id="token-input"
+          id={id}
           className={styles.input}
           value={state.value}
           placeholder="Drop token here ..."

@@ -34,18 +34,18 @@ export default function Hero({ className = "" }) {
       <Container>
         <Row className={styles.row}>
           <Col>
-            <Label for="token-input">
-              <Title className={styles.title}>
+            <Title className={styles.title}>
+              <Label for="token-input">
                 Drop your token here to get started
-              </Title>
-            </Label>
+              </Label>
+            </Title>
           </Col>
         </Row>
 
         <Row className={styles.row}>
           <Col>
             <Token
-              id="token-input-form"
+              id="token-input"
               // onChange={(value) => setValue(value)}
               // onSubmit={() => setSubmit(true)}
             />
