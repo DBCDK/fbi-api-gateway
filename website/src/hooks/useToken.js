@@ -5,13 +5,8 @@
  * on connected components.
  */
 
-import getConfig from "next/config";
 import fetch from "isomorphic-unfetch";
-
 import useSWR from "swr";
-
-const APP_URL =
-  getConfig()?.publicRuntimeConfig?.app?.url || "http://localhost:3000";
 
 /**
  * Settings
@@ -34,7 +29,7 @@ const fetcher = async (url, token) => {
   if (!isToken(token)) {
     return {};
   }
-  const response = await fetch(`${APP_URL}${url}`, {
+  const response = await fetch(url, {
     method: "GET",
   });
   if (response.status !== 200) {

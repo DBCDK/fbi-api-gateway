@@ -25,7 +25,7 @@ let server;
 const proxy = createProxyMiddleware("http://localhost:3001", {
   changeOrigin: true,
   ws: true,
-  logLevel: "debug",
+  logLevel: "silent",
 });
 
 const promExporterApp = express();
