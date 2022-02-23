@@ -84,11 +84,7 @@ let _stack = [];
  * @param {string} className.content
  * @returns
  */
-function Container({ children, className = {}, mock = {} }) {
-  if (!children) {
-    return null;
-  }
-
+function Container({ children = [], className = {}, mock = {} }) {
   // If container only has 1 child, children is object
   // We want children to always be handled as an array
   if (!Array.isArray(children)) {

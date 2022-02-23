@@ -83,7 +83,7 @@ function Menu({ modal, context }) {
         <Col xs={12} as="li">
           <Link onClick={() => {}} disabled={!token}>
             <Text type="text5" className={styles.link}>
-              Download Scheme
+              View GraphQL Schema
             </Text>
           </Link>
         </Col>
