@@ -19,7 +19,6 @@ export default function GraphiQL() {
               Accept: "application/json",
               "Content-Type": "application/json",
               Authorization: `bearer ${token}`,
-              //   Authorization: "bearer c03be2f3a435458389934fe0814bfdce8f1c21d2",
             },
             body: JSON.stringify(graphQLParams),
             credentials: "same-origin",
