@@ -65,7 +65,7 @@ promExporterApp.listen(9599, () => {
         clientId: req?.smaug?.app?.clientId,
         uuid: req?.datasources?.trackingObject.uuid,
         datasources: { ...req?.datasources?.trackingObject?.trackObject },
-        total: seconds,
+        total: Math.round(seconds * 1000),
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
