@@ -55,7 +55,7 @@ promExporterApp.listen(9599, () => {
   });
   // Middleware that monitors performance of those GraphQL queries
   // which specify a monitor name.
-  app.use(async (req, res, next) => {
+  app.use("/graphql", async (req, res, next) => {
     const start = process.hrtime();
     res.once("finish", () => {
       const elapsed = process.hrtime(start);
