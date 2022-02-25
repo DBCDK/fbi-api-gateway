@@ -1,0 +1,13 @@
+.button {
+  width: var(--pt6);
+  height: var(--pt6);
+  border-radius: 50%;
+  cursor: pointer;
+
+  background-color: var(--white);
+}
+
+/* remove bootstrap default triangle */
+.button::after {
+  display: none;
+}

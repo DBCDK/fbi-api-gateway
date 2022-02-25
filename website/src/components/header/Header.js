@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
 import { Container, Row, Col } from "react-bootstrap";
 
-import useToken from "@/hooks/useToken";
+import useStorage from "@/hooks/useStorage";
+
 import { useModal } from "@/components/modal";
 
 import Title from "@/components/base/title";
@@ -13,8 +14,10 @@ import styles from "./Header.module.css";
 
 export default function Header() {
   const router = useRouter();
-  const { token } = useToken();
+
   const modal = useModal();
+
+  const { selectedToken } = useStorage();
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
@@ -35,17 +38,17 @@ export default function Header() {
 
           <Col as="nav" className={styles.links}>
             <Text type="text5" className={styles.link}>
-              <Link href="/documentation" disabled={!token}>
+              <Link href="/documentation" disabled={!selectedToken}>
                 Docs
               </Link>
             </Text>
             <Text type="text5" className={styles.link}>
-              <Link href="/graphiql" disabled={!token}>
+              <Link href="/graphiql" disabled={!selectedToken}>
                 GraphiQL
               </Link>
             </Text>
             <Text type="text5" className={styles.link}>
-              <Link href="/voyager" disabled={!token}>
+              <Link href="/voyager" disabled={!selectedToken}>
                 Voyager
               </Link>
             </Text>
@@ -53,7 +56,7 @@ export default function Header() {
               <Link onClick={() => modal.push("menu")}>More</Link>
             </Text>
             <Text type="text5" className={`${styles.link} ${styles.download}`}>
-              <Link disabled={!token} onClick={() => {}}>
+              <Link disabled={!selectedToken} onClick={() => {}}>
                 Download
               </Link>
             </Text>

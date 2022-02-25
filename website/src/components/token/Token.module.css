@@ -65,6 +65,10 @@
   flex-shrink: 1;
 }
 
+.clientId {
+  text-align: left;
+}
+
 /* display */
 
 .display p {

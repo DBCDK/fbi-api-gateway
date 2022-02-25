@@ -52,6 +52,17 @@
   align-self: center;
 }
 
+.history {
+  width: var(--pt6);
+  min-width: unset;
+  margin-left: var(--pt2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--white);
+}
+
 @keyframes gradient {
   0% {
     background-position: 0% 50%;

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 
 import { useRouter } from "next/router";
+import { useModal } from "@/components/modal";
 
-import useToken from "@/hooks/useToken";
+import useStorage from "@/hooks/useStorage";
 
 import Title from "@/components/base/title";
 import Token from "@/components/token";
@@ -13,21 +13,10 @@ import Label from "@/components/base/label";
 import styles from "./Hero.module.css";
 
 export default function Hero({ className = "" }) {
+  const modal = useModal();
   const router = useRouter();
-  const { token, isValidating } = useToken();
 
-  // Submit has been called => redirect if everything is ok
-  // const [submit, setSubmit] = useState(false);
-  // const [value, setValue] = useState("");
-
-  // redirect
-  // useEffect(() => {
-  //   if (token && !isValidating && submit) {
-  //     router.push({
-  //       pathname: "/documentation",
-  //     });
-  //   }
-  // }, [submit, token]);
+  const { selectedToken } = useStorage();
 
   return (
     <section className={`${styles.hero} ${className}`}>
@@ -44,11 +33,14 @@ export default function Hero({ className = "" }) {
 
         <Row className={styles.row}>
           <Col>
-            <Token
-              id="token-input"
-              // onChange={(value) => setValue(value)}
-              // onSubmit={() => setSubmit(true)}
-            />
+            <Token id="token-input" />
+            <Button
+              className={styles.history}
+              onClick={() => modal.push("history")}
+              secondary
+            >
+              🔑
+            </Button>
           </Col>
         </Row>
 
@@ -56,7 +48,7 @@ export default function Hero({ className = "" }) {
           <Col>
             <Button
               type="submit"
-              disabled={!token}
+              disabled={!selectedToken}
               form="token-input-form"
               onClick={() => {
                 router.push({

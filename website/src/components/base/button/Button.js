@@ -61,6 +61,5 @@ Container.propTypes = {
   secondary: PropTypes.bool,
   size: PropTypes.oneOf(["large", "medium", "small"]),
   disabled: PropTypes.bool,
-  skeleton: PropTypes.bool,
   onClick: PropTypes.func,
 };

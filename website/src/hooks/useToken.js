@@ -18,7 +18,7 @@ const HISTORY_KEY = "history";
 
 const isToken = (token) => {
   // alpha numeric and more than 32 characters
-  return !!(token && token.match(/^(?=.*[a-zA-Z])(?=.*[0-9]).{32}/));
+  return !!(token && token.match(/^(?=.*[a-zA-Z])(?=.*[0-9]).{40}/));
 };
 
 /**
@@ -119,13 +119,18 @@ const _getHistory = () => {
  *
  */
 
-function useToken() {
+function useToken(token) {
   // cookie token
-  const token = _getToken();
+  if (!token) {
+    token = _getToken();
+  }
   // SWR key
   const url = `/api/smaug?token=${token}`;
   // SWR hook
-  const { data, isValidating, error, mutate } = useSWR([url, token], fetcher);
+  const { data, isValidating, error, mutate } = useSWR(
+    token && [url, token],
+    fetcher
+  );
 
   /**
    * Set new token
@@ -138,8 +143,8 @@ function useToken() {
   const setToken = (token) => {
     if (token && token !== "") {
       _setToken(token);
-      mutate(token);
       _setHistory(data);
+      mutate();
     }
   };
 
@@ -155,6 +160,8 @@ function useToken() {
     configuration: data?.configuration,
     isValidating,
     isLoading: !data && !error,
+    isToken: isToken(data?.token),
+    history: _getHistory(),
     setToken,
     removeToken,
   };

@@ -1,6 +1,6 @@
 import { Container, Row, Col } from "react-bootstrap";
 
-import useToken from "@/hooks/useToken";
+import useStorage from "@/hooks/useStorage";
 
 import Token from "@/components/token";
 import Title from "@/components/base/title";
@@ -21,7 +21,7 @@ import styles from "./Menu.module.css";
  */
 
 function Menu({ modal, context }) {
-  const { token } = useToken();
+  const { selectedToken } = useStorage();
 
   return (
     <Container className={`${styles.menu}`}>
@@ -49,7 +49,7 @@ function Menu({ modal, context }) {
       </Row>
       <Row as="ul">
         <Col xs={12} as="li">
-          <Link href="/" disabled={!token}>
+          <Link href="/" disabled={!selectedToken}>
             <Text type="text5" className={styles.link}>
               Home
             </Text>
@@ -57,7 +57,7 @@ function Menu({ modal, context }) {
         </Col>
 
         <Col xs={12} as="li">
-          <Link href="/documentation" disabled={!token}>
+          <Link href="/documentation" disabled={!selectedToken}>
             <Text type="text5" className={styles.link}>
               Docs
             </Text>
@@ -65,13 +65,13 @@ function Menu({ modal, context }) {
         </Col>
 
         <Col xs={12} as="li">
-          <Link href="/graphiql" disabled={!token}>
+          <Link href="/graphiql" disabled={!selectedToken}>
             <Text type="text5">GraphiQL</Text>
           </Link>
         </Col>
 
         <Col xs={12} as="li">
-          <Link href="/voyager" disabled={!token}>
+          <Link href="/voyager" disabled={!selectedToken}>
             <Text type="text5" className={styles.link}>
               Voyager
             </Text>
@@ -81,7 +81,7 @@ function Menu({ modal, context }) {
       <hr />
       <Row as="ul">
         <Col xs={12} as="li">
-          <Link onClick={() => {}} disabled={!token}>
+          <Link onClick={() => {}} disabled={!selectedToken}>
             <Text type="text5" className={styles.link}>
               View GraphQL Schema
             </Text>

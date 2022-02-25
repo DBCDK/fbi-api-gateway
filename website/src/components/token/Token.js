@@ -1,6 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 
+import Overlay from "@/components/base/overlay";
 import useToken from "@/hooks/useToken";
+
+import useStorage from "@/hooks/useStorage";
+import useConfiguration from "@/hooks/useConfiguration";
 
 import Button from "@/components/base/button";
 import Text from "@/components/base/text";
@@ -15,13 +19,10 @@ export default function Token({
   compact,
 }) {
   // useToken custom hook
-  const {
-    token,
-    isValidating,
-    setToken,
-    removeToken,
-    configuration,
-  } = useToken();
+  const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
+  const { configuration } = useConfiguration(selectedToken);
+
+  const isValidating = false;
 
   // internal state
   const [state, setState] = useState({
@@ -34,23 +35,27 @@ export default function Token({
   useEffect(() => {
     setState({
       ...state,
-      value: token || "",
-      display: configuration?.displayName || false,
+      value: selectedToken || "",
     });
 
     // upddate callback with new value
-    token && onChange?.(token);
-  }, [token]);
+    selectedToken && onChange?.(selectedToken);
+  }, [selectedToken]);
 
   // ref
   const inputRef = useRef(null);
+  const containerRef = useRef(null);
 
   // states
   const hasFocus = !!state.focus;
   const hasValue = !!(state.value && state.value !== "");
-  const isToken = state.value === token;
+  const isToken = state.value === selectedToken;
 
-  const hasDisplay = !!(state.display && hasValue && (isToken || isValidating));
+  const hasDisplay = !!(
+    configuration?.displayName &&
+    hasValue &&
+    (isToken || isValidating)
+  );
 
   // custom class'
   const compactSize = compact ? styles.compact : "";
@@ -60,6 +65,7 @@ export default function Token({
 
   return (
     <form
+      ref={containerRef}
       id={`${id}-form`}
       onClick={() => {
         inputRef?.current?.focus();
@@ -69,8 +75,7 @@ export default function Token({
       className={`${styles.form} ${compactSize} ${className}`}
       onSubmit={(e) => {
         e.preventDefault();
-        // state.value && setToken(state.value);
-        // onSubmit?.(state.value);
+        onSubmit?.(state.value);
         inputRef?.current?.blur();
       }}
     >
@@ -78,9 +83,9 @@ export default function Token({
         className={`${styles.wrap} ${valueState} ${displayState} ${focusState}`}
       >
         {hasDisplay && (
-          <Text type="text5" className={styles.display}>
-            {state.display}
-          </Text>
+          <div className={styles.display}>
+            <Text type="text4">{configuration?.displayName}</Text>
+          </div>
         )}
         <input
           aria-label="inputfield for access token"
@@ -97,21 +102,19 @@ export default function Token({
           }}
           onChange={(e) => {
             const value = e.target.value;
-            value && setToken(value);
+            value && setSelectedToken(value);
             onChange?.(value);
             setState({ ...state, value });
           }}
         />
-
         <Button
           className={styles.clear}
           onClick={(e) => {
             // Prevent firering onClick event on form
             e.stopPropagation();
-            removeToken();
+            removeSelectedToken();
             setState({
               value: "",
-              display: false,
               focus: false,
             });
             setTimeout(() => inputRef?.current?.focus(), 100);
@@ -122,6 +125,14 @@ export default function Token({
           {/* 🗑️ */}
         </Button>
       </div>
+      <Overlay
+        show={state.value && !selectedToken && !state.focus}
+        container={containerRef}
+      >
+        <Text type="text2">
+          {false ? "😬 This token is expired" : "😬 This is not a valid token"}
+        </Text>
+      </Overlay>
     </form>
   );
 }
