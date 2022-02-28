@@ -26,6 +26,7 @@ function Item(props) {
         <Col xs={12} className={styles.display}>
           <Text type="text5">{displayName}</Text>
         </Col>
+
         <Col xs={12} className={styles.id}>
           <Text type="text4">ClientID</Text>
           <Text type="text1">{clientId}</Text>
@@ -37,7 +38,9 @@ function Item(props) {
           <Text type="text1">{props.token}</Text>
         </Col>
       </Row>
+
       <Row>
+        <hr />
         <Col className={styles.buttons}>
           <Button size="small" secondary>
             Remove
@@ -72,14 +75,7 @@ function History({ modal, context }) {
 
   return (
     <Container className={`${styles.history}`}>
-      {/* <Row className={styles.top}>
-        <Col>
-          <Title type="title4" className={styles.title}>
-            ... History
-          </Title>
-        </Col>
-      </Row> */}
-      <Row className={styles.selected}>
+      {/* <Row className={styles.selected}>
         <Col>
           <Text type="text4" className={styles.link}>
             Current active token
@@ -88,7 +84,7 @@ function History({ modal, context }) {
             {selectedToken}
           </Text>
         </Col>
-      </Row>
+      </Row> */}
       <Row className={styles.keys}>
         <Col>
           <Row>

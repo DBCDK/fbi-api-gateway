@@ -3,6 +3,7 @@
 
   display: flex;
   flex-direction: column;
+  background-color: var(--divider);
 
   /* scroll in modal */
   overflow-y: auto;
@@ -11,28 +12,24 @@
 .history .top,
 .history .selected {
   background-color: var(--divider);
-  padding: var(--pt6);
+  padding: var(--pt4);
   margin: 0;
 }
 
 .history .selected {
   background-color: var(--divider);
-  padding: var(--pt6);
+  padding: var(--pt4);
 }
 
 .history .keys {
-  height: 100%;
-
-  padding: var(--pt6);
+  padding: var(--pt4);
   margin: 0;
-
-  overflow-y: scroll;
 }
 
 /* item */
 
 .item {
-  background-color: var(--divider);
+  background-color: var(--white);
   margin-bottom: var(--pt2);
 }
 
@@ -42,9 +39,13 @@
   padding: var(--pt2) var(--pt2) 0 var(--pt2);
 }
 
-.display {
-  background-color: var(--secondary);
+.token {
   padding: var(--pt2);
+}
+
+.display {
+  background-color: var(--divider);
+  padding: var(--pt1) 0;
 }
 
 .buttons {
