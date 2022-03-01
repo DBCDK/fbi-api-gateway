@@ -273,39 +273,38 @@ export const resolvers = {
       // NOTICE .. if we are not allowed to use itemholdings -> remove next block
       // of code
       /** START HOLDING ITEMS **/
+
+      /** NEW ENDPOINT  **/
       let holdingsitems;
       try {
         // get holdingitems
         holdingsitems = await context.datasources.holdingsitems.load({
-          accessToken: context.accessToken,
-          pids: args.pids,
           agencyId: parent.agencyId,
+          branchId: parent.branchId,
+          pids: args.pids,
         });
       } catch (e) {
         holdingsitems = null;
       }
 
       const mergedholdings = [];
-      holdingsitems &&
+      holdingsitems?.completeItems &&
         detailedHoldings.holdingstatus.forEach((detail) => {
           // A localHoldingsId may look like this "09056769_(number)June (318)_(volume)_(year)2006"
           // We need the faust in order to compare with bibliographicRecordId
           const localHoldingsId = detail.localHoldingsId?.split("_")?.[0];
-
-          holdingsitems.forEach((item) => {
-            const locals = item.holdingsitems.filter(
-              (item) => item.bibliographicRecordId === localHoldingsId
-            );
-            if (locals) {
-              locals.forEach((local) => {
-                const merged = {
-                  ...detail,
-                  ...local,
-                };
-                mergedholdings.push(merged);
-              });
-            }
-          });
+          const locals = holdingsitems?.completeItems?.filter(
+            (item) => item.bibliographicRecordId === localHoldingsId
+          );
+          if (locals) {
+            locals.forEach((local) => {
+              const merged = {
+                ...detail,
+                ...local,
+              };
+              mergedholdings.push(merged);
+            });
+          }
         });
 
       /** END HOLDING ITEMS **/

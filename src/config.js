@@ -36,6 +36,13 @@ export default {
       ttl: process.env.HOLDINGSTATUS_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.HOLDINGSTATUS_PREFIX || "holdingstatus-1",
     },
+    holdingsitems: {
+      url:
+        process.env.HOLDINGSITEMS_URL ||
+        "http://holdings-items-content-service.cisterne.svc.cloud.dbc.dk/api/holdings-by-branch/",
+      ttl: process.env.HOLDINGSITEMS_URL_TIME_TO_LIVE_SECONDS || 5,
+      prefix: process.env.HOLDINGSITEMS_URL_PREFIX || "holdingsitems-1",
+    },
     moreinfo: {
       url: process.env.MOREINFO_URL,
       authenticationUser: process.env.MOREINFO_USER,

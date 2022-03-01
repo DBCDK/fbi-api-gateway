@@ -27,7 +27,6 @@ type Query {
   infomediaContent(pid: String!): [InfomediaContent]
   session: Session
   howru:String
-  holdingStatus(agencyId:String, pids:[String]): DetailedHoldings
   localizations(pids:[String!]!):Localizations
   refWorks(pid:String!):String!
   ris(pid:String!):String!
@@ -77,88 +76,6 @@ export const resolvers = {
       });
       return localizations;
     },
-    /**
-     * Holding status does a number of calls to external services.
-     * localisationRequest (openHoldingStatus - see localizations.datasource.js) : to get localizations (agencies where material is located)
-     * detailedHoldingsRequest (openHoldingStatus - see detailedholdings.datasource.js): to get detail for a localization (can the material
-     *  be borrowed? - is the material home ? when is the expected delivery date ?)
-     * holdingitems (openplatform - see holdingsitems.datasource.js): to get additional information (which branch is the material located at? shelf? etc.)
-     *
-     * It returns a merge af the information gathered (schema/detailedholdings.js)
-     *
-     * @param parent
-     * @param args
-     * @param context
-     * @param info
-     * @return {Promise<{count: string}|*>}
-     */
-    async holdingStatus(parent, args, context, info) {
-      // get localizations from openholdingstatus
-      const localizations = await context.datasources.localizations.load({
-        pids: args.pids,
-      });
-
-      const localHoldings =
-        localizations.agencies &&
-        localizations.agencies.find((lok) => lok.agencyId === args.agencyId);
-
-      const localids =
-        localHoldings &&
-        localHoldings.holdingItems.map((item) => item.localIdentifier);
-
-      if (!localids) {
-        // there are no localizations - no library has the material - eg. digital
-        // ressource - make an answer for detailedHoldings to handle.
-        return { count: "0" };
-      }
-      // get detailed holdings from openholdingsstatus.
-      const detailedHoldings = await context.datasources.detailedholdings.load({
-        localIds: localids,
-        agencyId: args.agencyId,
-      });
-
-      // NOTICE .. if we are not allowed to use itemholdings -> remove next block
-      // of code
-      /** START HOLDING ITEMS **/
-      let holdingsitems;
-      try {
-        // get holdingitems
-        holdingsitems = await context.datasources.holdingsitems.load({
-          accessToken: context.accessToken,
-          pids: args.pids,
-          agencyId: args.agencyId,
-        });
-      } catch (e) {
-        holdingsitems = null;
-      }
-
-      // filter out holdingsitems present at this library.
-      //  + merge holdingitems with detailedHoldings.holdingstatus
-      const mergedholdings = [];
-      holdingsitems &&
-        holdingsitems.forEach((item) => {
-          detailedHoldings.holdingstatus.forEach((detail) => {
-            const locals = item.holdingsitems.filter(
-              (item) => item.bibliographicRecordId === detail.localHoldingsId
-            );
-            if (locals) {
-              locals.forEach((local) => {
-                const merged = {
-                  ...detail,
-                  ...local,
-                };
-                mergedholdings.push(merged);
-              });
-            }
-          });
-        });
-      // replace detailHoldings.holdingstatus with the merged holdings
-      detailedHoldings.holdingstatus = mergedholdings;
-      /** END HOLDING ITEMS **/
-
-      return detailedHoldings;
-    },
-
     howru(parent, args, context, info) {
       return "gr8";
     },
