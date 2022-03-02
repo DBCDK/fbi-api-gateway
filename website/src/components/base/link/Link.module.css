@@ -2,6 +2,9 @@
   color: var(--text-dark);
   text-decoration: none;
   cursor: pointer;
+
+  /* used for the ::before */
+  position: relative;
 }
 
 .link.keepActive {

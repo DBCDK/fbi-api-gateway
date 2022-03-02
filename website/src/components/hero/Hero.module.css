@@ -46,10 +46,18 @@
   padding-top: var(--pt2);
 }
 
+.go {
+  margin-top: var(--pt2);
+}
+
 .title,
 .text {
   color: var(--white);
   align-self: center;
+}
+
+.history {
+  margin-left: var(--pt2);
 }
 
 @keyframes gradient {

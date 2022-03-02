@@ -1,12 +1,12 @@
 .form {
-  width: 400px;
+  width: 450px;
 }
 
 /* wrap */
 
 .wrap {
   position: relative;
-  width: 400px;
+  width: 450px;
   height: var(--pt6);
   overflow: hidden;
 
@@ -65,6 +65,10 @@
   flex-shrink: 1;
 }
 
+.clientId {
+  text-align: left;
+}
+
 /* display */
 
 .display p {
@@ -97,27 +101,28 @@
 
 .clear:focus-visible,
 .clear:hover {
-  background-color: #f48ba9 !important;
-  color: white;
+  background-color: var(--primary-dark) !important;
+  color: var(--text-dark) !important;
 }
 
 .clear:focus-visible {
   transform: translateX(0);
+  color: var(--white) !important;
   background-color: var(--text-dark) !important;
 }
 
 /* compact */
 
 .form.compact {
-  /* 44 * 8 = 352 */
-  width: 352px;
+  /* 40 * 8 = 320 */
+  width: 320px;
 }
 
 .form.compact .wrap {
   height: var(--pt5);
   border-radius: calc(var(--pt5) / 2);
-  /* 44 * 8 = 352 */
-  width: 352px;
+  /* 44 * 8 = 320 */
+  width: 320px;
 }
 
 .form.compact .input {
@@ -138,6 +143,12 @@
 @media screen and (max-width: 576px) {
   .form,
   .form .wrap {
-    width: 352px;
+    width: 320px;
+  }
+
+  .wrap.inActive .clear {
+    transform: translateX(0);
+    background-color: var(--primary-dark) !important;
+    color: var(--text-dark) !important;
   }
 }

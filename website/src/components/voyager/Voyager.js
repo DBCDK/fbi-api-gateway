@@ -1,5 +1,7 @@
 import React, { useMemo } from "react";
-import useToken from "@/hooks/useToken";
+
+import useStorage from "@/hooks/useStorage";
+
 import dynamic from "next/dynamic";
 import styles from "./Voyager.module.css";
 
@@ -10,13 +12,13 @@ const VoyagerComp = dynamic(
 );
 
 export default function Voyager() {
-  const { token } = useToken();
+  const { selectedToken } = useStorage();
   function introspectionProvider(query) {
-    return fetch(window.location.origin + "/graphql", {
+    return fetch("/graphql", {
       method: "post",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${selectedToken}`,
       },
       body: JSON.stringify({ query: query }),
     }).then((response) => response.json());
@@ -26,8 +28,10 @@ export default function Voyager() {
   // else it will make intronspection query for each rerender
   const voyagerRendered = useMemo(
     () =>
-      token ? <VoyagerComp introspection={introspectionProvider} /> : null,
-    [token]
+      selectedToken ? (
+        <VoyagerComp introspection={introspectionProvider} />
+      ) : null,
+    [selectedToken]
   );
 
   return <div className={styles.wrapper}>{voyagerRendered}</div>;

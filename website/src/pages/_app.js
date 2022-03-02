@@ -17,6 +17,7 @@ function MyApp({ Component, pageProps, router }) {
     >
       <Modal.Container>
         <Modal.Page id="menu" component={Pages.Menu} />
+        <Modal.Page id="history" component={Pages.History} />
       </Modal.Container>
       <div id="layout">
         <Component {...pageProps} />

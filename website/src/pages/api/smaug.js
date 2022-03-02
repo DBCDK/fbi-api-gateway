@@ -1,21 +1,15 @@
 import fetch from "isomorphic-unfetch";
 
 /**
- * Smaug config whitelist
- */
-const list = ["displayName", "logoColor"];
-
-/**
  * Extract specific data from whitelist
  */
 const selectData = (data) => {
-  const selected = {};
-  Object.entries(data).forEach(([key, val]) => {
-    if (list.includes(key)) {
-      selected[key] = val;
-    }
-  });
-  return selected;
+  return {
+    displayName: data.displayName,
+    logoColor: data.logoColor,
+    clientId: data.app?.clientId,
+    uniqueId: data.user?.uniqueId,
+  };
 };
 
 /**

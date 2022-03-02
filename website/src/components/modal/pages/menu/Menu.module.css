@@ -6,12 +6,6 @@
   overflow-y: auto;
 }
 
-.menu .top {
-  padding: var(--pt6) var(--pt2);
-  margin: 0;
-  position: relative;
-}
-
 .title {
 }
 
@@ -22,48 +16,34 @@
   position: relative;
 }
 
-.token label {
+.menu .middle > div {
+  padding: 0;
+}
+
+.middle label {
   padding: 0 0 var(--pt2) 0;
   color: var(--white);
 }
 
-/* .close {
-  position: absolute;
-  top: var(--pt2);
-  right: var(--pt2);
-
-  background-color: var(--primary-dark) !important;
-
-  border: 2px solid transparent;
-
-  color: var(--white) !important;
-
-  padding: 0;
-  min-width: var(--pt6) !important;
-  max-width: var(--pt6) !important;
+.token {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
+  padding: 0 var(--pt2);
 }
-
-.close p {
-  padding: 0;
-}
-
-.close:hover {
-  background-color: var(--text-dark) !important;
-}
-
-.close:focus-visible {
-  border: 2px solid var(--text-dark);
-  color: var(--text-dark) !important;
-  background-color: white !important;
-} */
 
 .token .input,
 .token .input > div {
   width: 100%;
+}
+
+.history {
+  width: var(--pt6);
+  min-width: unset;
+  margin-left: var(--pt2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--white);
 }
 
 .menu ul {
@@ -78,25 +58,21 @@
 
 .menu li a {
   display: block;
-  padding: var(--pt2);
+  padding: var(--pt2) 0;
 }
 
 .menu li:first-child a {
-  padding: 0 var(--pt2) var(--pt2) var(--pt2);
+  padding: 0 0 var(--pt2) 0;
 }
 
 @media (min-width: 576px) {
-  .menu ul {
-    padding: var(--pt6);
+  .menu .middle {
+    padding: var(--pt6) var(--pt4);
   }
-
-  .menu .top {
-    padding: var(--pt6);
+  .menu ul {
+    padding: var(--pt4);
   }
 }
 
-@media screen and (min-width: 769px) {
-  .token {
-    display: none;
-  }
+@media screen and (min-width: 993px) {
 }

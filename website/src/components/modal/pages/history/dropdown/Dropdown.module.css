@@ -1,0 +1,22 @@
+.button {
+  width: var(--pt3);
+  height: var(--pt3);
+  border-radius: 50%;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.button span {
+  width: var(--pt05);
+  height: var(--pt05);
+  background-color: var(--text-light);
+}
+
+/* remove bootstrap default triangle */
+.button::after {
+  display: none;
+}

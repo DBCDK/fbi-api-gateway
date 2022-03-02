@@ -1,13 +1,12 @@
 import React from "react";
 import _GraphiQL from "graphiql";
 
-import useToken from "@/hooks/useToken";
+import useStorage from "@/hooks/useStorage";
 
 import Header from "@/components/header";
 
 export default function GraphiQL() {
-  const { token } = useToken();
-
+  const { selectedToken } = useStorage();
   return (
     <div style={{ height: "100vh" }}>
       <Header />
@@ -18,7 +17,7 @@ export default function GraphiQL() {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: `bearer ${token}`,
+              Authorization: `bearer ${selectedToken}`,
             },
             body: JSON.stringify(graphQLParams),
             credentials: "same-origin",
