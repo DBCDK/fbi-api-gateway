@@ -1,36 +1,68 @@
-import Dropdown from "react-bootstrap/Dropdown";
-
+import { useEffect, useState } from "react";
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
+import { useModal } from "@/components/modal";
+
+import { isToken } from "@/components/utils";
 
 import Button from "@/components/base/button";
 
 import styles from "./History.module.css";
 
-const Item = (props) => {
-  const { selectedToken } = useStorage();
-  const { configuration } = useConfiguration(props.token);
+function GetConfiguration({ token, callback }) {
+  const { configuration } = useConfiguration(token);
+  useEffect(() => {
+    if (configuration && Object.keys(configuration).length) {
+      callback?.(true);
+    }
+  }, [configuration]);
+  return null;
+}
+
+export function History({ onClick, compact, disabled, className = "" }) {
+  const compactClass = compact ? styles.compact : "";
 
   return (
-    <Dropdown.Item onClick={() => setToken(token)}>{`${
-      configuration?.displayName
-    }: ${token?.slice(0, 4)}...`}</Dropdown.Item>
+    <Button
+      className={`${styles.history} ${compactClass} ${className}`}
+      disabled={disabled}
+      onClick={onClick}
+      secondary
+    >
+      <span>🔑</span>
+    </Button>
   );
-};
+}
 
-export default function History({ className = "" }) {
-  const { history } = useToken();
+export default function Wrap(props) {
+  const [state, setState] = useState(false);
+  const { history } = useStorage();
+  const modal = useModal();
+
+  const hasValidTokens = !!history?.filter((obj) => isToken(obj.token)).length;
 
   return (
-    <Dropdown className={`${styles.history} ${className}`}>
-      <Dropdown.Toggle className={styles.button} id="dropdown-basic">
-        🔑
-      </Dropdown.Toggle>
-      <Dropdown.Menu>
-        {history?.map((h) => (
-          <Item key={h.token} token={h.token} />
-        ))}
-      </Dropdown.Menu>
-    </Dropdown>
+    <History
+      {...props}
+      disabled={!hasValidTokens}
+      onClick={() => modal.push("history")}
+    />
+  );
+
+  return (
+    <>
+      {history?.map((obj) => (
+        <GetConfiguration
+          callback={(state) => setState(state)}
+          key={obj.token}
+          token={obj.token}
+        />
+      ))}
+      <History
+        {...props}
+        disabled={!state}
+        onClick={() => modal.push("history")}
+      />
+    </>
   );
 }

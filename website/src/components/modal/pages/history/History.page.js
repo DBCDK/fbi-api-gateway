@@ -1,58 +1,114 @@
+import { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import Collapse from "react-bootstrap/Collapse";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 
-import Token from "@/components/token";
-import Title from "@/components/base/title";
+import { dateTimeConverter } from "@/components/utils";
 import Text from "@/components/base/text";
-import Link from "@/components/base/link";
-import Label from "@/components/base/label";
+import Title from "@/components/base/title";
 import Button from "@/components/base/button";
+
+import { isToken } from "@/components/utils";
 
 import styles from "./History.module.css";
 
-function Item(props) {
-  const { setSelectedToken } = useStorage();
-  const { configuration } = useConfiguration(props.token);
+/**
+ * The Component function
+ *
+ * @param {obj} props
+ * See propTypes for specific props and types
+ *
+ * @returns {component}
+ */
+
+function Item({
+  token,
+  timestamp,
+  inUse,
+  configuration,
+  isExpired,
+  isVisible,
+}) {
+  const { setSelectedToken, removeHistoryItem } = useStorage();
+
+  const [open, setOpen] = useState(inUse);
+
+  // update state on modal close
+  useEffect(() => {
+    if (!isVisible) {
+      setTimeout(() => setOpen(inUse), 200);
+    }
+  }, [isVisible]);
+
+  const ExpiredDisplay = "This token is expired 😔";
 
   const displayName = configuration?.displayName;
   const clientId = configuration?.clientId;
   const authenticated = !!configuration?.uniqueId;
+  const date = dateTimeConverter(timestamp);
+
+  const inUseClass = inUse ? styles.inUse : "";
+  const expiredClass = isExpired ? styles.expired : "";
 
   return (
-    <Col xs={12} className={styles.item}>
+    <Col xs={12} className={`${styles.item} ${expiredClass} ${inUseClass}`}>
       <Row>
         <Col xs={12} className={styles.display}>
-          <Text type="text5">{displayName}</Text>
+          <Text type="text5">{isExpired ? ExpiredDisplay : displayName}</Text>
+          <button
+            className={styles.more}
+            onClick={() => setOpen(!open)}
+            aria-controls="example-collapse-text"
+            aria-expanded={open}
+          >
+            <Title type="title5">{open ? "-" : "+"}</Title>
+          </button>
         </Col>
+        <Collapse in={open}>
+          <Row id="example-collapse-text">
+            <Col xs={12} className={styles.date}>
+              <Text type="text4">Submitted at</Text>
+              <Text type="text1">{date}</Text>
+            </Col>
 
-        <Col xs={12} className={styles.id}>
-          <Text type="text4">ClientID</Text>
-          <Text type="text1">{clientId}</Text>
-        </Col>
+            {!isExpired && (
+              <Col xs={12} className={styles.id}>
+                <Text type="text4">ClientID</Text>
+                <Text type="text1">{clientId}</Text>
+              </Col>
+            )}
+          </Row>
+        </Collapse>
         <Col xs={12} className={styles.token}>
           <Text type="text4">
             {authenticated ? "Authenticated" : "Anonymous"} Token
           </Text>
-          <Text type="text1">{props.token}</Text>
+          <Text type="text1">{token}</Text>
         </Col>
       </Row>
 
       <Row>
         <hr />
         <Col className={styles.buttons}>
-          <Button size="small" secondary>
+          <Button
+            size="small"
+            onClick={() => removeHistoryItem(token)}
+            secondary
+          >
             Remove
           </Button>
           <Button
+            className={styles.use}
+            disabled={isExpired}
             size="small"
             onClick={() => {
-              setSelectedToken(props.token);
+              setSelectedToken(token);
             }}
             primary
           >
-            Use
+            {inUse ? "🗸 I'm in use" : "Use"}
           </Button>
         </Col>
       </Row>
@@ -69,28 +125,57 @@ function Item(props) {
  * @returns {component}
  */
 
+function Wrap(props) {
+  const { configuration } = useConfiguration(props.token);
+
+  if (!configuration) {
+    return "loading...";
+  }
+
+  const isExpired = !Object.keys(configuration || {}).length;
+
+  return (
+    <Item {...props} configuration={configuration} isExpired={isExpired} />
+  );
+}
+
+/**
+ * The Component function
+ *
+ * @param {obj} props
+ * See propTypes for specific props and types
+ *
+ * @returns {component}
+ */
+
 function History({ modal, context }) {
   const { history, selectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const [state, setState] = useState(history);
+
+  // update history on modal close
+  useEffect(() => {
+    if (!modal.isVisible) {
+      setState(history);
+    }
+  }, [modal.isVisible]);
 
   return (
     <Container className={`${styles.history}`}>
-      {/* <Row className={styles.selected}>
-        <Col>
-          <Text type="text4" className={styles.link}>
-            Current active token
-          </Text>
-          <Text type="text1" className={styles.link}>
-            {selectedToken}
-          </Text>
-        </Col>
-      </Row> */}
       <Row className={styles.keys}>
         <Col>
           <Row>
-            {history?.map((h) => (
-              <Item key={h.token} {...h} />
-            ))}
+            {state?.map((h) => {
+              if (isToken(h.token)) {
+                return (
+                  <Wrap
+                    key={h.token}
+                    isVisible={modal.isVisible}
+                    inUse={selectedToken === h.token}
+                    {...h}
+                  />
+                );
+              }
+            })}
           </Row>
         </Col>
       </Row>

@@ -9,56 +9,105 @@
   overflow-y: auto;
 }
 
-.history .top,
-.history .selected {
-  background-color: var(--divider);
-  padding: var(--pt4);
+.history .keys,
+.history .top {
+  padding: var(--pt2);
   margin: 0;
 }
 
-.history .selected {
-  background-color: var(--divider);
-  padding: var(--pt4);
-}
-
-.history .keys {
-  padding: var(--pt4);
-  margin: 0;
+.history .top {
+  background-color: var(--white);
 }
 
 /* item */
 
 .item {
   background-color: var(--white);
-  margin-bottom: var(--pt2);
+  margin-bottom: var(--pt3);
+}
+
+.item.expired .display,
+.item.expired .date,
+.item.expired .id,
+.item.expired .token {
+  color: var(--text-light);
 }
 
 .display,
+.date,
 .id,
 .token {
-  padding: var(--pt2) var(--pt2) 0 var(--pt2);
+  padding: var(--pt2) var(--pt2) 0 var(--pt2) !important;
 }
 
 .token {
-  padding: var(--pt2);
+  padding: var(--pt2) !important;
+}
+
+.token p,
+.id p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background-color: var(--divider);
-  padding: var(--pt1) 0;
+  padding: var(--pt1) 0 !important;
 }
 
 .buttons {
-  padding: var(--pt2);
+  padding: var(--pt1);
   display: flex;
   justify-content: flex-end;
 }
 
-.buttons button:last-child {
+.buttons .use {
   margin-left: var(--pt2);
 }
 
+.item.inUse .use {
+  color: var(--text-dark);
+  background-color: var(--primary-dark);
+}
+
+.item.inUse .use:hover,
+.item.inUse .use:focus-visible {
+  background-color: var(--text-dark);
+  color: var(--white);
+}
+
+.item hr {
+  background-color: var(--divider);
+  border: none;
+  height: 1px;
+}
+
+.more {
+  padding: 0 var(--pt2);
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-light);
+  transition: transform 0.2s;
+}
+
+.more:hover {
+  color: var(--text);
+  transform: scale(1.25);
+}
+
+.more:focus-visible {
+  outline: 2px solid var(--text-dark);
+}
+
 @media (min-width: 576px) {
+  .history .keys,
+  .history .top {
+    padding: var(--pt4);
+  }
 }
 
 @media screen and (min-width: 769px) {

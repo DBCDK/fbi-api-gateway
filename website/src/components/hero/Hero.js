@@ -9,6 +9,7 @@ import Title from "@/components/base/title";
 import Token from "@/components/token";
 import Button from "@/components/base/button";
 import Label from "@/components/base/label";
+import History from "@/components/history";
 
 import styles from "./Hero.module.css";
 
@@ -16,7 +17,7 @@ export default function Hero({ className = "" }) {
   const modal = useModal();
   const router = useRouter();
 
-  const { selectedToken } = useStorage();
+  const { selectedToken, history } = useStorage();
 
   return (
     <section className={`${styles.hero} ${className}`}>
@@ -34,19 +35,14 @@ export default function Hero({ className = "" }) {
         <Row className={styles.row}>
           <Col>
             <Token id="token-input" />
-            <Button
-              className={styles.history}
-              onClick={() => modal.push("history")}
-              secondary
-            >
-              🔑
-            </Button>
+            <History className={styles.history} />
           </Col>
         </Row>
 
         <Row className={styles.row}>
           <Col>
             <Button
+              className={styles.go}
               type="submit"
               disabled={!selectedToken}
               form="token-input-form"

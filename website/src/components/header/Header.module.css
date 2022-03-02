@@ -1,11 +1,13 @@
 .top {
   padding: var(--pt1) var(--pt2);
-  background: rgb(255, 175, 204);
+  /* background: rgb(255, 175, 204);
   background: linear-gradient(
     45deg,
     rgba(162, 210, 255, 1) 25%,
     rgba(255, 175, 204, 1) 75%
-  );
+  ); */
+
+  background: var(--primary-dark);
 }
 
 .left {
@@ -14,11 +16,16 @@
 
 .middle {
   display: flex;
+  align-items: center;
 }
 
 .token {
   align-self: center;
   /* transform: scale(0.85); */
+}
+
+.history {
+  margin-left: var(--pt1);
 }
 
 .logo {
@@ -71,6 +78,10 @@
 }
 
 @media screen and (max-width: 992px) {
+  .links {
+    padding: 0;
+  }
+
   .links .link {
     display: none;
   }
@@ -79,10 +90,11 @@
     display: block;
     padding: 0;
   }
-}
 
-@media screen and (max-width: 768px) {
   .token {
     display: none;
   }
+}
+
+@media screen and (max-width: 768px) {
 }

@@ -25,67 +25,66 @@ function Menu({ modal, context }) {
 
   return (
     <Container className={`${styles.menu}`}>
-      <Row className={styles.top}>
-        <Col xs={12}>
-          <Title type="title4" className={styles.title}>
-            ... More
-          </Title>
-          {/* <Button
-            className={styles.close}
-            onClick={(e) => modal.clear()}
-            secondary
-          >
-            <Text>✖</Text>
-          </Button> */}
-        </Col>
-      </Row>
       <Row className={styles.middle}>
-        <Col className={styles.token}>
+        <Col>
           <Label for="token-input">
             <Text type="text5">Gateway token</Text>
           </Label>
-          <Token className={styles.input} />
+          <Row>
+            <Col className={styles.token}>
+              <Token className={styles.input} />
+              {/* <Button
+                className={styles.history}
+                onClick={() => modal.push("history")}
+                secondary
+              >
+                🔑
+              </Button> */}
+            </Col>
+          </Row>
         </Col>
       </Row>
       <Row as="ul">
         <Col xs={12} as="li">
-          <Link href="/" disabled={!selectedToken}>
-            <Text type="text5" className={styles.link}>
+          <Text type="text5" className={styles.link}>
+            <Link href="/" disabled={!selectedToken}>
               Home
-            </Text>
-          </Link>
+            </Link>
+          </Text>
         </Col>
 
         <Col xs={12} as="li">
-          <Link href="/documentation" disabled={!selectedToken}>
-            <Text type="text5" className={styles.link}>
+          <Text type="text5" className={styles.link}>
+            <Link href="/documentation" disabled={!selectedToken}>
               Docs
-            </Text>
-          </Link>
+            </Link>
+          </Text>
         </Col>
 
         <Col xs={12} as="li">
-          <Link href="/graphiql" disabled={!selectedToken}>
-            <Text type="text5">GraphiQL</Text>
-          </Link>
+          <Text type="text5">
+            <Link href="/graphiql" disabled={!selectedToken}>
+              GraphiQL
+            </Link>
+          </Text>
         </Col>
 
         <Col xs={12} as="li">
-          <Link href="/voyager" disabled={!selectedToken}>
-            <Text type="text5" className={styles.link}>
+          <Text type="text5" className={styles.link}>
+            <Link href="/voyager" disabled={!selectedToken}>
               Voyager
-            </Text>
-          </Link>
+            </Link>
+          </Text>
         </Col>
       </Row>
       <hr />
       <Row as="ul">
         <Col xs={12} as="li">
-          <Link onClick={() => {}} disabled={!selectedToken}>
-            <Text type="text5" className={styles.link}>
+          <Text type="text5" className={styles.link}>
+            <Link onClick={() => {}} disabled={!selectedToken}>
               View GraphQL Schema
-            </Text>
-          </Link>
+            </Link>
+          </Text>
         </Col>
       </Row>
     </Container>

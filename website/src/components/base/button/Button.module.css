@@ -23,11 +23,12 @@
 /* Primary */
 
 .button.primary {
-  background-color: var(--accent);
-  color: var(--white);
+  background-color: var(--secondary);
+  color: var(--text-dark);
 }
 
 .button.primary:hover {
+  background-color: var(--text-dark);
   color: var(--white);
 }
 

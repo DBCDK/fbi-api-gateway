@@ -121,8 +121,8 @@ export default function Token({
           }}
           secondary
         >
-          <Text>✖</Text>
-          {/* 🗑️ */}
+          {/* <Text>✖</Text> */}
+          🗑️
         </Button>
       </div>
       <Overlay

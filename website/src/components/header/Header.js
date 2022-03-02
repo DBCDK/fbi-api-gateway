@@ -9,6 +9,7 @@ import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 import Token from "@/components/token";
+import History from "@/components/history";
 
 import styles from "./Header.module.css";
 
@@ -61,10 +62,12 @@ export default function Header() {
               </Link>
             </Text>
           </Col>
-
-          <Col className={styles.middle}>
-            {!isIndex && <Token className={styles.token} compact />}
-          </Col>
+          {!isIndex && (
+            <Col className={styles.middle}>
+              <Token className={styles.token} compact />
+              <History className={styles.history} compact />
+            </Col>
+          )}
         </Row>
       </Container>
     </header>

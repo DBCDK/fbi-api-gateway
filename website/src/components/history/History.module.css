@@ -1,13 +1,18 @@
-.button {
+.history {
   width: var(--pt6);
-  height: var(--pt6);
-  border-radius: 50%;
-  cursor: pointer;
+  min-width: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background-color: var(--white);
 }
 
-/* remove bootstrap default triangle */
-.button::after {
-  display: none;
+.history.compact {
+  width: var(--pt5);
+  max-height: var(--pt5);
+}
+
+.history.compact span {
+  transform: scale(0.75);
 }

@@ -13,6 +13,7 @@ export default function useStorage() {
   const setSelectedToken = (token) => {
     sessionStorage.setItem("selectedToken", token);
     mutateSelectedToken(token, false);
+    setHistory(token);
   };
 
   /**
@@ -26,7 +27,6 @@ export default function useStorage() {
 
   const setHistory = (token) => {
     const timestamp = Date.now();
-    const history = history();
     // remove duplicate
     const uniq = history.filter((obj) => !(obj.token === token));
     // add to beginning of array
@@ -43,11 +43,21 @@ export default function useStorage() {
     mutateHistory(sliced, false);
   };
 
+  const removeHistoryItem = (token) => {
+    const newHistory = history.filter((obj) => !(obj.token === token));
+    // store
+    const stringified = JSON.stringify(newHistory);
+    localStorage.setItem("history", stringified);
+    // mutate
+    mutateHistory(newHistory, false);
+  };
+
   return {
-    history,
     selectedToken,
-    setHistory,
     setSelectedToken,
     removeSelectedToken,
+    history,
+    setHistory,
+    removeHistoryItem,
   };
 }

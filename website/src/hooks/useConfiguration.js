@@ -1,10 +1,7 @@
 import fetch from "isomorphic-unfetch";
 import useSWR from "swr";
 
-const isToken = (token) => {
-  // alpha numeric and more than 32 characters
-  return !!(token && token.match(/^(?=.*[a-zA-Z])(?=.*[0-9]).{40}/));
-};
+import { isToken } from "@/components/utils";
 
 const fetcher = async (url) => {
   const response = await fetch(url, {
@@ -20,7 +17,9 @@ const fetcher = async (url) => {
 export default function useConfiguration(token) {
   const url = `/api/smaug?token=${token}`;
 
-  const { data, error } = useSWR(isToken(token) && url, fetcher);
+  const { data, error } = useSWR(isToken(token) && url, fetcher, {
+    fallback: {},
+  });
 
   return { configuration: data, isLoading: !data && !error } || {};
 }
