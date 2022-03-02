@@ -1,0 +1,21 @@
+.inlinegraphiql :global(.topBarWrap) {
+  display: none;
+}
+.inlinegraphiql :global(.graphiql-container) {
+    height: 300px;
+    /* margin: 40px; */
+    border: 1px lightgray solid;
+}
+.inlinegraphiql :global(.secondary-editor) {
+    /* display: none; */
+}
+.inlinegraphiql :global(.CodeMirror-hints) {
+    z-index: 1000;
+}
+.inlinegraphiql :global(.editorWrap) {
+    overflow-x: visible;
+}
+
+.inlinegraphiql {
+    margin: var(--pt3) 0;
+}

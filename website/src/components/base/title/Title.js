@@ -15,11 +15,15 @@ export const Title = ({
   className = "",
   tag = "h1",
   type = "title4",
+  style,
 }) => {
   const Tag = tag;
 
   return (
-    <Tag className={`${styles.title} ${styles[type]} ${className}`}>
+    <Tag
+      className={`${styles.title} ${styles[type]} ${className}`}
+      style={style}
+    >
       {children}
     </Tag>
   );

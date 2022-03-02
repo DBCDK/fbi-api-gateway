@@ -1,4 +1,5 @@
 import fetch from "isomorphic-unfetch";
+import permissions from "../../../../src/permissions.json";
 
 /**
  * Extract specific data from whitelist
@@ -9,6 +10,7 @@ const selectData = (data) => {
     logoColor: data.logoColor,
     clientId: data.app?.clientId,
     uniqueId: data.user?.uniqueId,
+    permissions: data.gateway ? data.gateway : permissions.default,
   };
 };
 

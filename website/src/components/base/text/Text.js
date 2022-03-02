@@ -13,9 +13,12 @@ function Text({
   children = "lorem ipsum dolor sit amet ...",
   className = "",
   type = "text2",
+  style,
 }) {
   return (
-    <p className={`${styles.text} ${styles[type]} ${className}`}>{children}</p>
+    <p className={`${styles.text} ${styles[type]} ${className}`} style={style}>
+      {children}
+    </p>
   );
 }
 

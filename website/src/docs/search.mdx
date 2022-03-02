@@ -1,0 +1,44 @@
+# Search examples
+
+## Basic search
+blah bla
+<InlineGraphiQL 
+  query={
+    `query ($q: SearchQuery!) {
+      search(q: $q) {
+        hitcount
+        works(offset: 0, limit: 10) {
+          title
+        }
+      }
+    }`
+  } 
+  variables={{q: {all: "harry"}}}
+/>
+
+## Facets
+Blah blah
+<InlineGraphiQL 
+  query={
+    `query ($q: SearchQuery!, $facets: [FacetField!]!) {
+      search(q: $q) {
+        hitcount
+        facets(facets: $facets) {
+          name
+          values(limit: 10) {
+            term
+            count
+          }
+        }
+      }
+    }`
+  } 
+  variables={
+    {
+      q: {
+        all: "harry"
+      },
+      facets: ["language"]
+    }
+  }
+/>
