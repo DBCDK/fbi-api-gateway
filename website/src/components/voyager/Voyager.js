@@ -28,8 +28,10 @@ export default function Voyager() {
   // else it will make intronspection query for each rerender
   const voyagerRendered = useMemo(
     () =>
-      token ? <VoyagerComp introspection={introspectionProvider} /> : null,
-    [token]
+      selectedToken ? (
+        <VoyagerComp introspection={introspectionProvider} />
+      ) : null,
+    [selectedToken]
   );
 
   return <div className={styles.wrapper}>{voyagerRendered}</div>;
