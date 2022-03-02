@@ -34,6 +34,7 @@ function Item({
   const { setSelectedToken, removeHistoryItem } = useStorage();
 
   const [open, setOpen] = useState(inUse);
+  const [removed, setRemoved] = useState(false);
 
   // update state on modal close
   useEffect(() => {
@@ -53,66 +54,71 @@ function Item({
   const expiredClass = isExpired ? styles.expired : "";
 
   return (
-    <Col xs={12} className={`${styles.item} ${expiredClass} ${inUseClass}`}>
-      <Row>
-        <Col xs={12} className={styles.display}>
-          <Text type="text5">{isExpired ? ExpiredDisplay : displayName}</Text>
-          <button
-            className={styles.more}
-            onClick={() => setOpen(!open)}
-            aria-controls="example-collapse-text"
-            aria-expanded={open}
-          >
-            <Title type="title5">{open ? "-" : "+"}</Title>
-          </button>
-        </Col>
-        <Collapse in={open}>
-          <Row id="example-collapse-text">
-            <Col xs={12} className={styles.date}>
-              <Text type="text4">Submitted at</Text>
-              <Text type="text1">{date}</Text>
-            </Col>
-
-            {!isExpired && (
-              <Col xs={12} className={styles.id}>
-                <Text type="text4">ClientID</Text>
-                <Text type="text1">{clientId}</Text>
+    <Collapse in={!removed}>
+      <Col xs={12} className={`${styles.item} ${expiredClass} ${inUseClass}`}>
+        <Row>
+          <Col xs={12} className={styles.display}>
+            <Text type="text5">{isExpired ? ExpiredDisplay : displayName}</Text>
+            <button
+              className={styles.more}
+              onClick={() => setOpen(!open)}
+              aria-controls="example-collapse-text"
+              aria-expanded={open}
+            >
+              <Title type="title5">{open ? "-" : "+"}</Title>
+            </button>
+          </Col>
+          <Collapse in={open}>
+            <Row id="example-collapse-text">
+              <Col xs={12} className={styles.date}>
+                <Text type="text4">Submitted at</Text>
+                <Text type="text1">{date}</Text>
               </Col>
-            )}
-          </Row>
-        </Collapse>
-        <Col xs={12} className={styles.token}>
-          <Text type="text4">
-            {authenticated ? "Authenticated" : "Anonymous"} Token
-          </Text>
-          <Text type="text1">{token}</Text>
-        </Col>
-      </Row>
 
-      <Row>
-        <hr />
-        <Col className={styles.buttons}>
-          <Button
-            size="small"
-            onClick={() => removeHistoryItem(token)}
-            secondary
-          >
-            Remove
-          </Button>
-          <Button
-            className={styles.use}
-            disabled={isExpired}
-            size="small"
-            onClick={() => {
-              setSelectedToken(token);
-            }}
-            primary
-          >
-            {inUse ? "🗸 I'm in use" : "Use"}
-          </Button>
-        </Col>
-      </Row>
-    </Col>
+              {!isExpired && (
+                <Col xs={12} className={styles.id}>
+                  <Text type="text4">ClientID</Text>
+                  <Text type="text1">{clientId}</Text>
+                </Col>
+              )}
+            </Row>
+          </Collapse>
+          <Col xs={12} className={styles.token}>
+            <Text type="text4">
+              {authenticated ? "Authenticated" : "Anonymous"} Token
+            </Text>
+            <Text type="text1">{token}</Text>
+          </Col>
+        </Row>
+
+        <Row>
+          <hr />
+          <Col className={styles.buttons}>
+            <Button
+              size="small"
+              onClick={() => {
+                removeHistoryItem(token);
+                setRemoved(true);
+              }}
+              secondary
+            >
+              Remove
+            </Button>
+            <Button
+              className={styles.use}
+              disabled={isExpired}
+              size="small"
+              onClick={() => {
+                setSelectedToken(token);
+              }}
+              primary
+            >
+              {inUse ? "🗸 I'm in use" : "Use"}
+            </Button>
+          </Col>
+        </Row>
+      </Col>
+    </Collapse>
   );
 }
 
