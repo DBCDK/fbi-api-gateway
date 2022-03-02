@@ -94,7 +94,7 @@ export default function Token({
           className={styles.input}
           value={state.value}
           placeholder="Drop token here ..."
-          // autoComplete="off"
+          autoComplete="off"
           onBlur={() => {
             // state.value && setToken(state.value);
             // onSubmit?.(state.value);
