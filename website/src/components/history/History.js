@@ -30,6 +30,7 @@ export function History({ onClick, compact, disabled, className = "" }) {
       secondary
     >
       <span>🔑</span>
+      {/* <span>🗝️</span> */}
     </Button>
   );
 }

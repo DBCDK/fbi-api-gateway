@@ -113,7 +113,7 @@ function Item({
               }}
               primary
             >
-              {inUse ? "🗸 I'm in use" : "Use"}
+              {inUse ? "I'm in use" : "Use"}
             </Button>
           </Col>
         </Row>
@@ -163,7 +163,7 @@ function History({ modal, context }) {
     if (!modal.isVisible) {
       setState(history);
     }
-  }, [modal.isVisible]);
+  }, [modal.isVisible, history]);
 
   return (
     <Container className={`${styles.history}`}>
