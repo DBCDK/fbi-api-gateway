@@ -20,10 +20,9 @@
 }
 
 /* item */
-
 .item {
   background-color: var(--white);
-  margin-bottom: var(--pt3);
+  margin-bottom: var(--pt2);
 }
 
 .item.expired .display,
@@ -86,20 +85,55 @@
   height: 1px;
 }
 
-.more {
-  padding: 0 var(--pt2);
+.cross {
+  width: var(--pt4);
+  height: var(--pt4);
   text-align: center;
   cursor: pointer;
   color: var(--text-light);
-  transition: transform 0.2s;
+  transition: transform 0.2s, background-color 0.3s;
+  position: relative;
+  border-radius: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.more:hover {
-  color: var(--text);
-  transform: scale(1.25);
+.cross span {
+  display: block;
+  width: 12px;
+  height: 4px;
+  background-color: var(--text-dark);
 }
 
-.more:focus-visible {
+.cross span:first-child {
+  transition: width 0.2s;
+  position: absolute;
+  transform: rotate(90deg);
+}
+
+.cross.less {
+  transform: rotate(90deg);
+}
+
+.cross.less span:last-child {
+  width: 0px;
+}
+
+/* hover */
+
+.cross:hover {
+  background-color: var(--text-dark);
+}
+
+.cross:hover span {
+  background-color: var(--white);
+}
+
+/* focus */
+
+.cross:focus-visible {
   outline: 2px solid var(--text-dark);
 }
 

@@ -83,7 +83,7 @@
   right: 0;
 
   transform: translateX(100%);
-  border: 2px solid var(--white);
+  border: var(--pt05) solid var(--white);
   background-color: var(--divider) !important;
 
   padding: 0;
@@ -102,7 +102,7 @@
 .clear:focus-visible,
 .clear:hover {
   background-color: var(--primary-dark) !important;
-  color: var(--text-dark) !important;
+  color: var(--white) !important;
 }
 
 .clear:focus-visible {

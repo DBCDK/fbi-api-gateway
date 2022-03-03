@@ -1,13 +1,12 @@
 import { Container, Row, Col } from "react-bootstrap";
 
 import useStorage from "@/hooks/useStorage";
+import useConfiguration from "@/hooks/useConfiguration";
 
 import Token from "@/components/token";
-import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 import Label from "@/components/base/label";
-import Button from "@/components/base/button";
 
 import styles from "./Menu.module.css";
 
@@ -22,6 +21,10 @@ import styles from "./Menu.module.css";
 
 function Menu({ modal, context }) {
   const { selectedToken } = useStorage();
+  const { configuration } = useConfiguration(selectedToken);
+
+  const isValidToken =
+    selectedToken && configuration && Object?.keys(configuration).length;
 
   return (
     <Container className={`${styles.menu}`}>
@@ -33,13 +36,6 @@ function Menu({ modal, context }) {
           <Row>
             <Col className={styles.token}>
               <Token className={styles.input} />
-              {/* <Button
-                className={styles.history}
-                onClick={() => modal.push("history")}
-                secondary
-              >
-                🔑
-              </Button> */}
             </Col>
           </Row>
         </Col>
@@ -47,7 +43,7 @@ function Menu({ modal, context }) {
       <Row as="ul">
         <Col xs={12} as="li">
           <Text type="text5" className={styles.link}>
-            <Link href="/" disabled={!selectedToken}>
+            <Link href="/" disabled={!isValidToken}>
               Home
             </Link>
           </Text>
@@ -55,7 +51,7 @@ function Menu({ modal, context }) {
 
         <Col xs={12} as="li">
           <Text type="text5" className={styles.link}>
-            <Link href="/documentation" disabled={!selectedToken}>
+            <Link href="/documentation" disabled={!isValidToken}>
               Docs
             </Link>
           </Text>
@@ -63,7 +59,7 @@ function Menu({ modal, context }) {
 
         <Col xs={12} as="li">
           <Text type="text5">
-            <Link href="/graphiql" disabled={!selectedToken}>
+            <Link href="/graphiql" disabled={!isValidToken}>
               GraphiQL
             </Link>
           </Text>
@@ -71,7 +67,7 @@ function Menu({ modal, context }) {
 
         <Col xs={12} as="li">
           <Text type="text5" className={styles.link}>
-            <Link href="/voyager" disabled={!selectedToken}>
+            <Link href="/voyager" disabled={!isValidToken}>
               Voyager
             </Link>
           </Text>
@@ -81,7 +77,7 @@ function Menu({ modal, context }) {
       <Row as="ul">
         <Col xs={12} as="li">
           <Text type="text5" className={styles.link}>
-            <Link onClick={() => {}} disabled={!selectedToken}>
+            <Link onClick={() => {}} disabled={!isValidToken}>
               View GraphQL Schema
             </Link>
           </Text>

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useModal } from "@/components/modal";
 
 import useStorage from "@/hooks/useStorage";
+import useConfiguration from "@/hooks/useConfiguration";
 
 import Title from "@/components/base/title";
 import Token from "@/components/token";
@@ -17,7 +18,11 @@ export default function Hero({ className = "" }) {
   const modal = useModal();
   const router = useRouter();
 
-  const { selectedToken, history } = useStorage();
+  const { selectedToken } = useStorage();
+  const { configuration } = useConfiguration(selectedToken);
+
+  const inputIsValid =
+    selectedToken && configuration && Object?.keys(configuration).length;
 
   return (
     <section className={`${styles.hero} ${className}`}>
@@ -44,7 +49,7 @@ export default function Hero({ className = "" }) {
             <Button
               className={styles.go}
               type="submit"
-              disabled={!selectedToken}
+              disabled={!inputIsValid}
               form="token-input-form"
               onClick={() => {
                 router.push({
