@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { Container, Row, Col } from "react-bootstrap";
 
 import useStorage from "@/hooks/useStorage";
+import useConfiguration from "@/hooks/useConfiguration";
 
 import { useModal } from "@/components/modal";
 
@@ -19,6 +20,10 @@ export default function Header() {
   const modal = useModal();
 
   const { selectedToken } = useStorage();
+  const { configuration } = useConfiguration(selectedToken);
+
+  const isValidToken =
+    selectedToken && configuration && Object?.keys(configuration).length;
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
@@ -39,17 +44,17 @@ export default function Header() {
 
           <Col as="nav" className={styles.links}>
             <Text type="text5" className={styles.link}>
-              <Link href="/documentation" disabled={!selectedToken}>
+              <Link href="/documentation" disabled={!isValidToken}>
                 Docs
               </Link>
             </Text>
             <Text type="text5" className={styles.link}>
-              <Link href="/graphiql" disabled={!selectedToken}>
+              <Link href="/graphiql" disabled={!isValidToken}>
                 GraphiQL
               </Link>
             </Text>
             <Text type="text5" className={styles.link}>
-              <Link href="/voyager" disabled={!selectedToken}>
+              <Link href="/voyager" disabled={!isValidToken}>
                 Voyager
               </Link>
             </Text>
@@ -57,7 +62,7 @@ export default function Header() {
               <Link onClick={() => modal.push("menu")}>More</Link>
             </Text>
             <Text type="text5" className={`${styles.link} ${styles.download}`}>
-              <Link disabled={!selectedToken} onClick={() => {}}>
+              <Link disabled={!isValidToken} onClick={() => {}}>
                 Download
               </Link>
             </Text>

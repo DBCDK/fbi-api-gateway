@@ -52,6 +52,7 @@ function Item({
 
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = isExpired ? styles.expired : "";
+  const crossClass = open ? styles.less : styles.more;
 
   return (
     <Collapse in={!removed}>
@@ -60,12 +61,14 @@ function Item({
           <Col xs={12} className={styles.display}>
             <Text type="text5">{isExpired ? ExpiredDisplay : displayName}</Text>
             <button
-              className={styles.more}
+              className={`${styles.cross} ${crossClass}`}
               onClick={() => setOpen(!open)}
               aria-controls="example-collapse-text"
               aria-expanded={open}
             >
-              <Title type="title5">{open ? "-" : "+"}</Title>
+              <span />
+              <span />
+              {/* <Title type="title5">{open ? "-" : "+"}</Title> */}
             </button>
           </Col>
           <Collapse in={open}>

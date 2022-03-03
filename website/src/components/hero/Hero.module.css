@@ -1,18 +1,6 @@
 .hero {
-  padding: var(--pt5) var(--pt4);
+  padding: var(--pt8) var(--pt7);
   text-align: center;
-  /* background: linear-gradient(
-    45deg,
-    rgba(255, 200, 221, 1) 25%,
-    rgba(189, 224, 254, 1) 75%
-  ); */
-
-  /* background: linear-gradient(
-    25deg,
-    rgba(162, 210, 255, 1) 25%,
-    rgba(255, 175, 204, 1) 75%
-  ); */
-
   background: rgb(255, 175, 204);
   background: linear-gradient(
     75deg,
@@ -90,5 +78,9 @@
 
   .hero .row > div {
     padding-top: var(--pt4);
+  }
+
+  .history {
+    margin-left: var(--pt1);
   }
 }
