@@ -45,7 +45,7 @@
 }
 
 .history {
-  margin-left: var(--pt2);
+  margin-left: var(--pt1);
 }
 
 @keyframes gradient {
@@ -78,9 +78,5 @@
 
   .hero .row > div {
     padding-top: var(--pt4);
-  }
-
-  .history {
-    margin-left: var(--pt1);
   }
 }

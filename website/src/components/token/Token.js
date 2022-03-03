@@ -22,8 +22,6 @@ export default function Token({
   const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
 
-  const isValidating = false;
-
   // internal state
   const [state, setState] = useState({
     value: "",
@@ -51,11 +49,7 @@ export default function Token({
   const hasValue = !!(state.value && state.value !== "");
   const isToken = state.value === selectedToken;
 
-  const hasDisplay = !!(
-    configuration?.displayName &&
-    hasValue &&
-    (isToken || isValidating)
-  );
+  const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 
   // custom class'
   const compactSize = compact ? styles.compact : "";
