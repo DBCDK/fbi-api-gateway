@@ -1,0 +1,46 @@
+.menu {
+  max-width: 300px;
+  min-width: 250px;
+  top: 50px;
+  position: -webkit-sticky;
+  position: sticky;
+  list-style: none;
+}
+
+.items {
+  margin-top: var(--pt4);
+  flex-direction: column;
+}
+
+.item {
+  position: relative;
+  display: block;
+}
+
+.item.active a {
+  color: var(--primary-dark);
+}
+
+.item a::before {
+  display: none;
+}
+
+.item::before {
+  content: "\a0";
+  display: block;
+  padding: 2px 0;
+  border-left: 2px solid var(--text-dark);
+  position: absolute;
+  pointer-events: none;
+
+  transform: scaleY(0) translateX(calc(var(--pt2) * -1));
+  transition-duration: 0.2s;
+}
+
+.item.active::before {
+  transform: scaleY(1) translateX(calc(var(--pt2) * -1));
+}
+
+.input {
+  border: 2px solid var(--text-dark);
+}

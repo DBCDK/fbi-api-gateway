@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 
 import Overlay from "@/components/base/overlay";
-import useToken from "@/hooks/useToken";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";

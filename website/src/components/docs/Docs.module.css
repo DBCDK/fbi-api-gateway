@@ -1,3 +1,25 @@
-.container {
-  padding-top: var(--pt5);
+.wrap {
+  margin: 0;
+}
+
+.wrap .menu {
+  margin: var(--pt15) 0 0 0;
+  padding: 0 var(--pt4);
+  position: relative;
+}
+
+.wrap .content {
+  flex-grow: 99;
+  max-width: 1000px;
+  padding: 0 0 var(--pt15) 0;
+}
+
+.wrap .content section {
+  padding: var(--pt15) 0 0 0;
+}
+
+@media screen and (min-width: calc(1400px + 64px)) {
+  .wrap .menu {
+    padding: 0;
+  }
 }
