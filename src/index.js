@@ -10,7 +10,7 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 
 import cors from "cors";
 import { graphqlHTTP } from "express-graphql";
-import { parse, getOperationAST } from "graphql";
+import { parse, getOperationAST, print } from "graphql";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration, count } from "./utils/monitor";
@@ -130,6 +130,7 @@ promExporterApp.listen(9599, () => {
               log.error(error.message);
             });
           }
+          log.info("GRAPHQL-QUERY", { graphqlquery: print(document) });
         },
         validationRules: [
           function authenticate() {
