@@ -35,9 +35,9 @@ export async function batchLoader(keys, loadFunc) {
         // We return error instead of throwing,
         // se we don't fail entire Promise.all
         // DataLoader will make sure its thrown in a resolver
-        if (e.status !== 404) {
-          return e;
-        }
+        // if (e.status !== 404) {
+        //   return e;
+        // }
         return null;
       }
     })
