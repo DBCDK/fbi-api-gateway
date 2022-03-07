@@ -31,7 +31,11 @@ export default function Page() {
               describes which data can be retrieved. All calls to DBC Gateway
               are validated and executed against the schema. Learn about the
               GraphQL schema definition language{" "}
-              <a href="https://graphql.org/learn/schema/" target="_blank">
+              <a
+                href="https://graphql.org/learn/schema/"
+                target="_blank"
+                rel="noreferrer"
+              >
                 here
               </a>
               .
