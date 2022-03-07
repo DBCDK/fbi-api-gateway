@@ -62,8 +62,8 @@ export default function Header() {
               <Link onClick={() => modal.push("menu")}>More</Link>
             </Text>
             <Text type="text5" className={`${styles.link} ${styles.download}`}>
-              <Link disabled={!isValidToken} onClick={() => {}}>
-                Download
+              <Link href="/schema" disabled={!isValidToken}>
+                Schema
               </Link>
             </Text>
           </Col>

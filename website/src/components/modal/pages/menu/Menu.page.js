@@ -77,7 +77,7 @@ function Menu({ modal, context }) {
       <Row as="ul">
         <Col xs={12} as="li">
           <Text type="text5" className={styles.link}>
-            <Link onClick={() => {}} disabled={!isValidToken}>
+            <Link href="/schema" disabled={!isValidToken}>
               View GraphQL Schema
             </Link>
           </Text>

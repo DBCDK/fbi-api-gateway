@@ -2,7 +2,7 @@ import fetch from "isomorphic-unfetch";
 import { useMemo } from "react";
 import useSWR from "swr";
 
-import { buildClientSchema, getIntrospectionQuery } from "graphql";
+import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql";
 
 export default function useSchema(token) {
   const url = "/graphql";
@@ -24,7 +24,7 @@ export default function useSchema(token) {
     return await response.json();
   };
 
-  const { data } = useSWR(token && url, fetcher);
+  const { data } = useSWR(token && [url, token], fetcher);
 
   const schema = useMemo(() => {
     if (data?.data) {
@@ -32,8 +32,15 @@ export default function useSchema(token) {
     }
   }, [data]);
 
+  const schemaStr = useMemo(() => {
+    if (schema) {
+      return printSchema(schema);
+    }
+  }, [schema]);
+
   return {
     schema,
+    schemaStr,
     isLoading: !data,
   };
 }
