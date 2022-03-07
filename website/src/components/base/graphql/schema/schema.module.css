@@ -1,0 +1,19 @@
+.schema {
+  white-space: pre-wrap;
+  background: "#f6f8fa";
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 32px;
+}
+.schema :global(.graphql-keyword) {
+  color: #cf222e;
+}
+.schema :global(.graphql-type-name),
+.schema :global(.graphql-enum-name),
+.schema :global(.graphql-input-name) {
+  color: #0550ae;
+}
+
+.schema :global(.graphql-description) {
+  color: #0a3069;
+}
