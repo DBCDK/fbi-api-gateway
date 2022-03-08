@@ -5,13 +5,13 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, prefix } = config.datasources.simplesearch;
+const { url, prefix, token } = config.datasources.simplesearch;
 
 export async function load({ q, filters, limit = 10, offset = 0 }) {
   // get parsed arguments for query
   // static parameters for the search
   const statics = {
-    "access-token": "479317f0-3f91-11eb-9ba0-4c1d96c9239f",
+    "access-token": token,
     options: { "include-phonetic-creator": false },
     debug: false,
   };

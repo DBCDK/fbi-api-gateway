@@ -89,12 +89,14 @@ export default {
         process.env.SIMPLESEARCH_URL ||
         "http://simple-search-bibdk-1-0.mi-prod.svc.cloud.dbc.dk/search",
       prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-6",
+      token: process.env.SIMPLESEARCH_TOKEN,
     },
     facets: {
       url:
         process.env.FACETS_URL ||
         "http://simple-search-bibdk-1-0.mi-prod.svc.cloud.dbc.dk/facets",
       prefix: process.env.FACETS_PREFIX || "facets-1",
+      token: process.env.FACETS_TOKEN,
     },
     openplatform: {
       url: process.env.OPENPLATFORM_URL || "https://openplatform.dbc.dk/v3",
