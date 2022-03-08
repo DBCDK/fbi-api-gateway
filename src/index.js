@@ -64,6 +64,7 @@ promExporterApp.listen(9599, () => {
       log.info("TRACK", {
         clientId: req?.smaug?.app?.clientId,
         uuid: req?.datasources?.trackingObject.uuid,
+        parsedQuery: req.parsedQuery,
         datasources: { ...req?.datasources?.trackingObject?.trackObject },
         total: Math.round(seconds * 1000),
       });
@@ -130,7 +131,7 @@ promExporterApp.listen(9599, () => {
               log.error(error.message);
             });
           }
-          log.info("GRAPHQL-QUERY", { graphqlquery: print(document) });
+          request.parsedQuery = print(document);
         },
         validationRules: [
           function authenticate() {
