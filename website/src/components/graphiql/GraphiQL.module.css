@@ -2,20 +2,35 @@
   display: none;
 }
 .inlinegraphiql :global(.graphiql-container) {
-    height: 300px;
-    /* margin: 40px; */
-    border: 1px lightgray solid;
+  height: 300px;
+  /* margin: 40px; */
+  border: 1px lightgray solid;
 }
 .inlinegraphiql :global(.secondary-editor) {
-    /* display: none; */
+  /* display: none; */
 }
 .inlinegraphiql :global(.CodeMirror-hints) {
-    z-index: 1000;
+  z-index: 1000;
 }
 .inlinegraphiql :global(.editorWrap) {
-    overflow-x: visible;
+  overflow-x: visible;
 }
 
 .inlinegraphiql {
-    margin: var(--pt3) 0;
+  margin: var(--pt5) 0 0 0;
+}
+
+.button {
+  margin: 0 var(--pt2) var(--pt2) 0;
+}
+
+.button.run {
+  background-color: var(--primary-dark);
+}
+
+.curl {
+  margin-top: var(--pt2);
+  max-width: 100%;
+  background-color: var(--divider);
+  border-radius: unset;
 }

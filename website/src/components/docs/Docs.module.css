@@ -18,6 +18,22 @@
   padding: var(--pt15) 0 0 0;
 }
 
+.content section p,
+.content section h1,
+.content section h2 {
+  max-width: 600px;
+}
+
+.content section p {
+  margin: var(--pt2) 0;
+}
+.content section h1 {
+  margin: var(--pt4) 0 var(--pt2) 0;
+}
+.content section h2 {
+  margin: var(--pt2) 0;
+}
+
 @media screen and (min-width: calc(1400px + 64px)) {
   .wrap .menu {
     padding: 0;

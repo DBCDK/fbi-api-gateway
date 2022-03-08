@@ -15,9 +15,9 @@ function scrollTo(id) {
 export function Menu({ docs, active }) {
   return (
     <Row as="ul" className={styles.menu}>
-      <Col xs={12}>
+      {/* <Col xs={12}>
         <Input className={styles.input} />
-      </Col>
+      </Col> */}
       <Col xs={12}>
         <Row as="ul" className={styles.items}>
           {docs?.map((doc, idx) => {
@@ -32,9 +32,9 @@ export function Menu({ docs, active }) {
                 key={doc.name}
                 className={`${styles.item} ${activeClass}`}
               >
-                <Link onClick={() => scrollTo(id)}>
-                  <Text type="text5">{doc.name}</Text>
-                </Link>
+                <Text type="text5">
+                  <Link onClick={() => scrollTo(id)}>{doc.name}</Link>
+                </Text>
               </Col>
             );
           })}
@@ -48,39 +48,38 @@ export default function Wrap(props) {
   const [active, setActive] = useState();
 
   useEffect(() => {
-    setTimeout(() => {
-      const offset = 100;
-      let options = {
-        root: null,
-        rootMargin: "0px",
-        threshold: 1,
-      };
+    const offset = 100;
+    let options = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 1,
+    };
 
-      let callback = (entries, observer) => {
-        entries.forEach((entry) => {
-          // console.log("entry", entry.isIntersecting, entry.target);
-          // Each entry describes an intersection change for one observed
-          // target element:
-          //   entry.boundingClientRect
-          //   entry.intersectionRatio
-          //   entry.intersectionRect
-          //   entry.isIntersecting
-          //   entry.rootBounds
-          //   entry.target
-          //   entry.time
+    let callback = (entries, observer) => {
+      entries.forEach((entry) => {
+        // Each entry describes an intersection change for one observed
+        // target element:
+        //   entry.boundingClientRect
+        //   entry.intersectionRatio
+        //   entry.intersectionRect
+        //   entry.isIntersecting
+        //   entry.rootBounds
+        //   entry.target
+        //   entry.time
 
-          if (window.scrollY > entry.boundingClientRect.top - offset) {
-            const id = entry.target.getAttribute("id");
-            setActive(id);
-          }
-        });
-      };
+        if (window.scrollY > entry.boundingClientRect.top - offset) {
+          const id = entry.target.getAttribute("id");
+          setActive(id);
+        }
+      });
+    };
 
-      let observer = new IntersectionObserver(callback, options);
-      // const targets = Object.entries()
-      const matches = document.querySelectorAll("section[id]");
-      matches.forEach((match) => observer.observe(match));
-    }, 200);
+    let observer = new IntersectionObserver(callback, options);
+    // const targets = Object.entries()
+    const matches = document.querySelectorAll("section[id]");
+    matches.forEach((match) => observer.observe(match));
+
+    return () => observer.disconnect();
   }, []);
 
   return <Menu active={active} {...props} />;

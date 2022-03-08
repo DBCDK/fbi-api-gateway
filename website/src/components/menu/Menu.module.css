@@ -1,14 +1,13 @@
 .menu {
   max-width: 300px;
   min-width: 250px;
-  top: 50px;
-  position: -webkit-sticky;
+  top: 100px;
   position: sticky;
   list-style: none;
 }
 
 .items {
-  margin-top: var(--pt4);
+  margin-top: var(--pt2);
   flex-direction: column;
 }
 

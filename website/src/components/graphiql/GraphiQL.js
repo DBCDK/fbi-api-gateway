@@ -1,8 +1,11 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import _GraphiQL from "graphiql";
 
 import useStorage from "@/hooks/useStorage";
 import useSchema from "@/hooks/useSchema";
+
+import Button from "@/components/base/button";
+import Input from "@/components/base/input";
 
 import Header from "@/components/header";
 
@@ -21,22 +24,49 @@ export function InlineGraphiQL({ query, variables }) {
   const instanceRef = useRef();
   const { schema } = useSchema(selectedToken);
 
+  const [editQuery, setEditQuery] = useState(query);
+  const [editVariables, setEditVariables] = useState(variables);
+
+  const curl = `curl -i -H "Authorization: bearer ${selectedToken}" -H "Content-Type: application/json" -X POST -d '{"query": "${editQuery?.replace(
+    /\s+/g,
+    " "
+  )}", "variables": ${editVariables?.replace?.(/\s+/g, " ")}}' ${
+    window.location.origin
+  }/graphql`;
+
   return (
     <div className={styles.inlinegraphiql}>
-      <button
+      <Button
+        size="small"
+        className={`${styles.button} ${styles.run}`}
         onClick={() => {
           instanceRef.current.handleRunQuery();
         }}
       >
-        RUN QUERY
-      </button>{" "}
-      <button
+        Run 🚀
+      </Button>
+      <Button
+        secondary
+        size="small"
+        className={`${styles.button} ${styles.prettify}`}
         onClick={() => {
           instanceRef.current.handlePrettifyQuery();
         }}
       >
-        PRETTIFY
-      </button>
+        Prettify ✨
+      </Button>
+
+      {/* <Button
+        secondary
+        size="small"
+        className={`${styles.button} ${styles.copy}`}
+        onClick={() => {
+          instanceRef.current.handleCopyQuery();
+        }}
+      >
+        Copy 🗐
+      </Button> */}
+
       {schema && (
         <GraphiQLFix
           schema={schema}
@@ -54,6 +84,8 @@ export function InlineGraphiQL({ query, variables }) {
             return data.json().catch(() => data.text());
           }}
           query={query}
+          onEditQuery={(str) => setEditQuery(str)}
+          onEditVariables={(str) => setEditVariables(str)}
           secondaryEditorOpen={true}
           variableEditorActive={true}
           variables={variables ? JSON.stringify(variables) : ""}
@@ -67,6 +99,12 @@ export function InlineGraphiQL({ query, variables }) {
           storage={noStorage}
         />
       )}
+
+      <Input
+        value={curl}
+        className={styles.curl}
+        onClick={(e) => e.target.select()}
+      />
     </div>
   );
 }

@@ -35,10 +35,7 @@ export default function Docs() {
   const { selectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
 
-  useEffect(() => {
-    const matches = document.querySelectorAll("section[id]");
-    console.log("matches Docs", matches);
-  }, [docs]);
+  const [isReady, setIsReady] = useState(false);
 
   const refs = useRef({});
 
@@ -55,23 +52,37 @@ export default function Docs() {
     return state;
   });
 
+  useEffect(() => {
+    if (isReady) {
+      refs.current = {};
+      setIsReady(false);
+    }
+  }, [selectedToken]);
+
+  function handleIsReady(el) {
+    if (el) {
+      const id = el.getAttribute("id");
+      refs.current[id] = true;
+      if (accessibleDocs.length === Object.keys(refs.current).length) {
+        setIsReady(true);
+      }
+    }
+  }
+
   return (
     <>
       <Header />
       <Container fluid>
         <Row className={styles.wrap}>
           <Col className={styles.menu}>
-            <Menu docs={accessibleDocs} />
+            {isReady && <Menu docs={accessibleDocs} />}
           </Col>
           <Col className={styles.content}>
             {accessibleDocs?.map((doc, idx) => {
               const id = `${doc.name}-${idx}`;
 
-              // Create ref if not already exist
-              refs.current[id] = refs.current[id] ?? createRef();
-
               return (
-                <section key={doc.name} id={id} ref={refs.current[id]}>
+                <section key={doc.name} id={id} ref={handleIsReady}>
                   <MDXRemote {...doc.mdxSource} components={customComponents} />
                 </section>
               );
