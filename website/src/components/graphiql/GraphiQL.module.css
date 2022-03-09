@@ -58,6 +58,11 @@
 
 /* scrollbar */
 
+.inlinegraphiql * {
+  /* firefox */
+  scrollbar-color: var(--primary-dark) transparent;
+}
+
 /* width */
 .inlinegraphiql *::-webkit-scrollbar {
   width: var(--pt1);
