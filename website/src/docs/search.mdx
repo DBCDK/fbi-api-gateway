@@ -1,20 +1,63 @@
-# Search examples
+# Search
 
-## Basic search
+I de følgende eksempler vises, hvordan man kan søge efter bibliografiske værker.
 
-blah bla
+## A Basic Example
+
+En søgning tager en søgestreng som input og giver en liste af værker retur.
+Her er et helt simpelt eksempel hvor der søges på _harry_ og værkets titel ønskes retur.
+Bemærk at harry ligger på **all** i query objektet. Dette er anvendeligt ved fx enbokssøgning,
+hvor man ikke ved om brugeren leder efter en titel, forfatter eller lignende.
 
 <InlineGraphiQL
-  query={`query ($q: SearchQuery!) {
+  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
       search(q: $q) {
-        hitcount
-        works(offset: 0, limit: 10) {
+        works(offset: $offset, limit: $limit) {
           title
         }
       }
     }`}
-  variables={{ q: { all: "harry" } }}
+  variables={{ q: { all: "harry" }, offset: 0, limit: 10 }}
 />
+
+## Pagination
+
+I forrige eksempel vises de første 10 resultater af søgningen. Men ofte vil man have brug for
+at gennemse hele søgeresultatet. Til dette formål kan man få udleveret _hitcount_ der angiver
+søgeresultatets størrelse, samt angive _offset_ og _limit_ for at udvælge hvilken del af resultatet
+man ønsker returneret.
+
+Hvis man ønsker at vise 10 resultater per side sættes limit til 10. Første side vises ved at sætte
+offset til 0, anden side ved at sætte offset til 10 og så fremdeles. Sideantal beregnes med _hitcount/10_.
+
+Eksemplet viser side to søgeresultatet.
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
+      search(q: $q) {
+        hitcount
+        works(offset: $offset, limit: $limit) {
+          title
+        }
+      }
+    }`}
+  variables={{ q: { all: "harry" }, offset: 10, limit: 10 }}
+/>
+
+mange henseender er det ikke nok at vise de 10 første resultater. Hvad hvis vi ønsker at
+at gennemse hele resultatet? Begrænsning på 100 af gangen
+
+hvordan paginering virker
+
+søgning på titel, forfatter, emner eller på alt hvad vi har.
+
+visning af facetter
+
+filtrering på specifikke felter
+
+Noter om performance vedrørende facetter
+
+noget om sprog
 
 ## Facets
 

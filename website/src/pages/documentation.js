@@ -6,7 +6,7 @@ import Docs from "@/components/docs";
 
 const components = {
   h1: ({ children }) => (
-    <Title type="title5" tag="h1">
+    <Title type="title6" tag="h1">
       {children}
     </Title>
   ),

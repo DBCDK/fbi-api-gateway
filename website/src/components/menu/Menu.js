@@ -49,64 +49,62 @@ export function Menu({ docs, active }) {
 
 export default function Wrap(props) {
   const [active, setActive] = useState();
+  const windowSize = useWindowSize();
 
-  const onScroll = throttle(() => handleScroll(), 10);
-  // const onScroll = useMemo(() => throttle(() => handleScroll(), 10), []);
+  const container = props.containerRef.current;
 
   const sections = useMemo(() => {
-    const container = props.containerRef.current;
     const matches = container.querySelectorAll("section[id]");
 
     const obj = {};
     matches.forEach((match) => {
       const top = match.offsetTop;
+      const height = match.offsetHeight;
       const id = match.getAttribute("id");
-      obj[id] = { top };
+      obj[id] = { top, height };
     });
 
     return obj;
-  }, [useWindowSize()]);
-
-  function handleScroll() {
-    const scrollY = window.scrollY;
-    const windowH = window.innerHeight;
-    const documentH = document.body.offsetHeight;
-    const offset = 50;
-
-    const first = Object.keys(sections)[0];
-    const last = Object.keys(sections)[Object.keys(sections).length - 1];
-
-    Object.entries(sections).forEach(([k, v]) => {
-      if (v?.top) {
-        if (k === "search-1") {
-          console.log("handleScroll", scrollY, v.top - offset);
-        }
-
-        console.log("hest", windowH + scrollY, documentH, last);
-
-        if (scrollY === 0) {
-          setActive(first);
-          return;
-        }
-        if (scrollY > v.top - offset) {
-          setActive(k);
-          return;
-        }
-        if (windowH + scrollY >= documentH) {
-          setActive(last);
-          return;
-        }
-      }
-    });
-  }
+  }, [windowSize.height, windowSize.width, container.offsetHeight]);
 
   useEffect(() => {
+    const onScroll = throttle(() => handleScroll(), 10);
+
+    function handleScroll() {
+      const scrollY = window.scrollY;
+      const windowH = window.innerHeight;
+      const documentH = document.body.offsetHeight;
+      const offset = 200;
+
+      const first = Object.keys(sections)[0];
+      const last = Object.keys(sections)[Object.keys(sections).length - 1];
+
+      const hit = Object.keys(sections).find((k) => {
+        return (
+          scrollY + offset > sections[k].top &&
+          scrollY + offset < sections[k].top + sections[k].height
+        );
+      });
+      if (scrollY + offset < sections[first].top - offset) {
+        setActive(first);
+        return;
+      }
+      if (windowH + scrollY + offset >= documentH) {
+        setActive(last);
+        return;
+      }
+      if (hit) {
+        setActive(hit);
+        return;
+      }
+    }
+
+    setTimeout(() => handleScroll(), 100);
+
     window.addEventListener("scroll", onScroll);
     // cleanup on unMount
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  console.log("sections", sections, active);
+  }, [sections]);
 
   return <Menu active={active} {...props} />;
 }

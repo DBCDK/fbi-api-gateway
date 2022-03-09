@@ -61,6 +61,7 @@
 /* width */
 .inlinegraphiql *::-webkit-scrollbar {
   width: var(--pt1);
+  height: var(--pt1);
 }
 
 /* Track */
