@@ -27,12 +27,9 @@ export function InlineGraphiQL({ query, variables }) {
   const [editQuery, setEditQuery] = useState(query);
   const [editVariables, setEditVariables] = useState(variables);
 
-  const curl = `curl -i -H "Authorization: bearer ${selectedToken}" -H "Content-Type: application/json" -X POST -d '{"query": "${editQuery?.replace(
-    /\s+/g,
-    " "
-  )}", "variables": ${editVariables?.replace?.(/\s+/g, " ")}}' ${
-    window.location.origin
-  }/graphql`;
+  const curl_vars = editVariables?.replace?.(/\s+/g, " ");
+  const curl_query = editQuery?.replace(/\s+/g, " ");
+  const curl = `curl -i -H "Authorization: bearer ${selectedToken}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${window.location.origin}/graphql`;
 
   return (
     <div className={styles.inlinegraphiql}>

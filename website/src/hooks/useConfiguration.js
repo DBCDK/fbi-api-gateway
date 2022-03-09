@@ -8,8 +8,6 @@ const fetcher = async (url) => {
     method: "GET",
   });
 
-  console.log("response", url, response);
-
   if (response.status !== 200) {
     return {};
   }

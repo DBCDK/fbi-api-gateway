@@ -32,8 +32,6 @@ export default function Header() {
     return () => observer.disconnect();
   }, [elRef]);
 
-  console.log("isSticky", isSticky, elRef.current);
-
   const { selectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
 

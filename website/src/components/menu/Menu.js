@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { throttle } from "lodash";
 
 import { Row, Col } from "react-bootstrap";
+
+import useWindowSize from "@/hooks/useWindowSize";
 
 import Link from "@/components/base/link";
 import Input from "@/components/base/input";
@@ -47,40 +50,63 @@ export function Menu({ docs, active }) {
 export default function Wrap(props) {
   const [active, setActive] = useState();
 
-  useEffect(() => {
-    const offset = 100;
-    let options = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 1,
-    };
+  const onScroll = throttle(() => handleScroll(), 10);
+  // const onScroll = useMemo(() => throttle(() => handleScroll(), 10), []);
 
-    let callback = (entries, observer) => {
-      entries.forEach((entry) => {
-        // Each entry describes an intersection change for one observed
-        // target element:
-        //   entry.boundingClientRect
-        //   entry.intersectionRatio
-        //   entry.intersectionRect
-        //   entry.isIntersecting
-        //   entry.rootBounds
-        //   entry.target
-        //   entry.time
+  const sections = useMemo(() => {
+    const container = props.containerRef.current;
+    const matches = container.querySelectorAll("section[id]");
 
-        if (window.scrollY > entry.boundingClientRect.top - offset) {
-          const id = entry.target.getAttribute("id");
-          setActive(id);
+    const obj = {};
+    matches.forEach((match) => {
+      const top = match.offsetTop;
+      const id = match.getAttribute("id");
+      obj[id] = { top };
+    });
+
+    return obj;
+  }, [useWindowSize()]);
+
+  function handleScroll() {
+    const scrollY = window.scrollY;
+    const windowH = window.innerHeight;
+    const documentH = document.body.offsetHeight;
+    const offset = 50;
+
+    const first = Object.keys(sections)[0];
+    const last = Object.keys(sections)[Object.keys(sections).length - 1];
+
+    Object.entries(sections).forEach(([k, v]) => {
+      if (v?.top) {
+        if (k === "search-1") {
+          console.log("handleScroll", scrollY, v.top - offset);
         }
-      });
-    };
 
-    let observer = new IntersectionObserver(callback, options);
-    // const targets = Object.entries()
-    const matches = document.querySelectorAll("section[id]");
-    matches.forEach((match) => observer.observe(match));
+        console.log("hest", windowH + scrollY, documentH, last);
 
-    return () => observer.disconnect();
+        if (scrollY === 0) {
+          setActive(first);
+          return;
+        }
+        if (scrollY > v.top - offset) {
+          setActive(k);
+          return;
+        }
+        if (windowH + scrollY >= documentH) {
+          setActive(last);
+          return;
+        }
+      }
+    });
+  }
+
+  useEffect(() => {
+    window.addEventListener("scroll", onScroll);
+    // cleanup on unMount
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  console.log("sections", sections, active);
 
   return <Menu active={active} {...props} />;
 }

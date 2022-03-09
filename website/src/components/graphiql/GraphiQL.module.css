@@ -2,9 +2,10 @@
   display: none;
 }
 .inlinegraphiql :global(.graphiql-container) {
-  height: 300px;
-  /* margin: 40px; */
-  border: 1px lightgray solid;
+  height: 350px;
+  padding: var(--pt3) var(--pt3) var(--pt3) 0;
+  background-color: var(--divider);
+  /* border-radius: var(--pt2); */
 }
 .inlinegraphiql :global(.secondary-editor) {
   /* display: none; */
@@ -14,6 +15,26 @@
 }
 .inlinegraphiql :global(.editorWrap) {
   overflow-x: visible;
+}
+
+.inlinegraphiql :global(.graphiql-container .secondary-editor-title) {
+  background: var(--divider);
+  color: var(--text-dark);
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+}
+
+.inlinegraphiql :global(.CodeMirror-gutters) {
+  border-right: none;
+  background-color: var(--divider);
+}
+.inlinegraphiql
+  :global(.graphiql-container .result-window .CodeMirror-gutters) {
+  background-color: var(--divider);
+}
+
+.inlinegraphiql :global(.graphiql-container .resultWrap) {
+  border-left: none;
 }
 
 .inlinegraphiql {
@@ -33,4 +54,27 @@
   max-width: 100%;
   background-color: var(--divider);
   border-radius: unset;
+}
+
+/* scrollbar */
+
+/* width */
+.inlinegraphiql *::-webkit-scrollbar {
+  width: var(--pt1);
+}
+
+/* Track */
+.inlinegraphiql *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+.inlinegraphiql *::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--pt05);
+}
+
+/* Handle on hover */
+.inlinegraphiql *::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
 }

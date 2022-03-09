@@ -43,8 +43,6 @@ function Input({
   const readOnlyClass = readOnly || disabled ? styles.readOnly : "";
   const invalidClass = !readOnlyClass && invalid ? styles.error : "";
 
-  console.log("input", { value, val });
-
   return (
     <input
       {...props}
