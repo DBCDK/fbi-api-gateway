@@ -1,13 +1,13 @@
 # Search
 
-I de følgende eksempler vises, hvordan man kan søge efter bibliografiske værker.
+The following examples show how to search for bibliographic works.
 
 ## A Basic Example
 
-En søgning tager en søgestreng som input og giver en liste af værker retur.
-Her er et helt simpelt eksempel hvor der søges på _harry_ og værkets titel ønskes retur.
-Bemærk at harry ligger på **all** i query objektet. Dette er anvendeligt ved fx enbokssøgning,
-hvor man ikke ved om brugeren leder efter en titel, forfatter eller lignende.
+A search request takes a query string as input and returns a list of works.
+In this simple example we search for _harry_ and ask for work titles to be returned.
+Note how _all_ in the query object is used to hold the query string. This is
+useful where one does not know if the query matches a title, crator or subject.
 
 <InlineGraphiQL
   query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
@@ -22,15 +22,17 @@ hvor man ikke ved om brugeren leder efter en titel, forfatter eller lignende.
 
 ## Pagination
 
-I forrige eksempel vises de første 10 resultater af søgningen. Men ofte vil man have brug for
-at gennemse hele søgeresultatet. Til dette formål kan man få udleveret _hitcount_ der angiver
-søgeresultatets størrelse, samt angive _offset_ og _limit_ for at udvælge hvilken del af resultatet
-man ønsker returneret.
+In the example above only 10 works are returned, but what if we want to browse the entire search
+result?
 
-Hvis man ønsker at vise 10 resultater per side sættes limit til 10. Første side vises ved at sætte
-offset til 0, anden side ved at sætte offset til 10 og så fremdeles. Sideantal beregnes med _hitcount/10_.
+For this purpose one needs to get the _hitcount_ indicating the total number of works in the result, and
+to send _offset_ and _limit_ which specify some slice of the result to be returned.
 
-Eksemplet viser side to søgeresultatet.
+If one wants to show 10 works per page the limit is set to 10 (the max limit size is 100). The first
+page is selected by setting offset to 0, the second page by setting offset to 10 and so on.
+The total number of pages is calculated by dividing hitcount with limit.
+
+The example below returns the second page of the search result.
 
 <InlineGraphiQL
   query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
@@ -44,32 +46,52 @@ Eksemplet viser side to søgeresultatet.
   variables={{ q: { all: "harry" }, offset: 10, limit: 10 }}
 />
 
-mange henseender er det ikke nok at vise de 10 første resultater. Hvad hvis vi ønsker at
-at gennemse hele resultatet? Begrænsning på 100 af gangen
+## Search For Title, Creator, and Subject
 
-hvordan paginering virker
+When it is known in advance that the search string is a title, creator or a subject,
+it may be specified in the query object _q_. Combinations are possible as well, for instance
+implemented in the UI with multiple input fields.
 
-søgning på titel, forfatter, emner eller på alt hvad vi har.
-
-visning af facetter
-
-filtrering på specifikke felter
-
-Noter om performance vedrørende facetter
-
-noget om sprog
-
-## Facets
-
-Blah blah
+This examples searches for _hopper_ as title, _hesteavl_ as subject, and _carl_ as creator.
 
 <InlineGraphiQL
-  query={`query ($q: SearchQuery!, $facets: [FacetField!]!) {
+  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
+    search(q: $q) {
+      hitcount
+      works(offset: $offset, limit: $limit) {
+        title
+        creators {
+          name
+        }
+        subjects {
+          type
+          value
+        }
+      }
+    }
+  }`}
+  variables={{
+    q: { title: "hopper", subject: "hesteavl", creator: "carl" },
+    offset: 0,
+    limit: 10,
+  }}
+/>
+
+## Faceted Search and Filters
+
+Faceted search seeks to provide an improved overview by clustering the search result into
+categories. This allows for the user to incrementally customize and narrow down the search result.
+
+The following example is a search for _andersen_ where facet categories _language_ and _materialType_
+is returned.
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!) {
       search(q: $q) {
         hitcount
         facets(facets: $facets) {
           name
-          values(limit: 10) {
+          values(limit: $facetLimit) {
             term
             count
           }
@@ -80,21 +102,21 @@ Blah blah
     q: {
       all: "harry",
     },
-    facets: ["language"],
+    facetLimit: 5,
+    facets: ["language", "materialType"],
   }}
 />
 
-## Facets
-
-Blah blah
+Then the term of the facet can be used as a filter. In this example, a language filter
+is applied resulting in an updated facet result.
 
 <InlineGraphiQL
-  query={`query ($q: SearchQuery!, $facets: [FacetField!]!) {
-      search(q: $q) {
+  query={`query ($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFilters!) {
+      search(q: $q, filters: $filters) {
         hitcount
         facets(facets: $facets) {
           name
-          values(limit: 10) {
+          values(limit: $facetLimit) {
             term
             count
           }
@@ -105,31 +127,20 @@ Blah blah
     q: {
       all: "harry",
     },
-    facets: ["language"],
+    filters: { language: ["Svensk"] },
+    facetLimit: 5,
+    facets: ["language", "materialType"],
   }}
 />
 
-## Facets
+If multiple filters are added for the same category, they are OR'ed together.
+For instance, works must be Svensk OR Engelsk. Filters applied across categories
+are AND'ed together. For instance (Svensk OR Engelsk) AND dvd.
 
-Blah blah
+## Facet performance
 
-<InlineGraphiQL
-  query={`query ($q: SearchQuery!, $facets: [FacetField!]!) {
-      search(q: $q) {
-        hitcount
-        facets(facets: $facets) {
-          name
-          values(limit: 10) {
-            term
-            count
-          }
-        }
-      }
-    }`}
-  variables={{
-    q: {
-      all: "harry",
-    },
-    facets: ["language"],
-  }}
-/>
+While it is possible to fetch both facets and works in a single request, it is not recommended.
+Compared to getting the works, facets are more expensive to generate.
+
+Split the search for works and facets into two requests and send them in parallel. Then the works
+can be shown to the user as quickly as possible.

@@ -30,6 +30,10 @@
   align-items: center;
 }
 
+code {
+  /* background: rgb(218, 228, 231); */
+  /* padding: 2px; */
+}
 @media screen and (min-width: 1400px) {
   .container,
   .container-fluid {
@@ -39,3 +43,5 @@
     margin: auto;
   }
 }
+
+
