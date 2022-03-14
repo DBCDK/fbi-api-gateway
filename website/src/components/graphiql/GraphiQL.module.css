@@ -1,5 +1,6 @@
 .inlinegraphiql :global(.topBarWrap) {
   display: none;
+  content-visibility: none;
 }
 .inlinegraphiql :global(.graphiql-container) {
   height: 350px;
@@ -54,6 +55,7 @@
   max-width: 100%;
   background-color: var(--divider);
   border-radius: unset;
+  cursor: pointer !important;
 }
 
 /* scrollbar */

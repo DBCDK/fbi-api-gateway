@@ -16,6 +16,10 @@
   display: block;
 }
 
+.item.h2 {
+  padding-left: var(--pt3);
+}
+
 .item.active a {
   color: var(--primary-dark);
 }

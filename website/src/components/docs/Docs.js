@@ -1,16 +1,8 @@
-import {
-  useRef,
-  useState,
-  useMemo,
-  createRef,
-  useEffect,
-  forwardRef,
-} from "react";
+import { useRef, useState, useEffect } from "react";
 
-import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 
 import { Container, Row, Col } from "react-bootstrap";
-import { MDXProvider } from "@mdx-js/react";
 import { MDXRemote } from "next-mdx-remote";
 
 import useConfiguration from "@/hooks/useConfiguration";
@@ -21,10 +13,6 @@ import { InlineGraphiQL } from "@/components/graphiql/GraphiQL";
 
 import Header from "@/components/header";
 import Menu from "@/components/menu";
-
-import Link from "@/components/base/link";
-import Title from "@/components/base/title";
-import Text from "@/components/base/text";
 
 import styles from "./Docs.module.css";
 
@@ -40,18 +28,34 @@ export default function Docs() {
   const refs = useRef({});
   const containerRef = useRef(null);
 
+  console.log("docs", docs);
+
   // Only include docs usable by the selected token
-  const accessibleDocs = docs?.filter((doc, idx) => {
+  const accessibleDocs = docs?.filter((doc) => {
     let state = false;
 
+    // return all
     if (configuration?.permissions?.admin) {
       state = true;
     }
+    // return all public docs
+    if (doc.name.includes("public")) {
+      state = true;
+    }
+    // return client allowed docs
     if (configuration?.permissions?.allowRootFields?.includes(doc.name)) {
       state = true;
     }
     return state;
   });
+
+  useEffect(() => {
+    // container changes hight after last render, so we observe height/width changes, and rerender the menu
+    const resizeObserver = new ResizeObserver(
+      debounce(() => setIsReady(false), 100)
+    );
+    resizeObserver.observe(containerRef.current);
+  }, []);
 
   useEffect(() => {
     if (isReady) {

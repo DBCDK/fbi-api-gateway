@@ -15,7 +15,8 @@
 }
 
 .wrap .content > section {
-  padding: var(--pt15) 0 0 0;
+  padding: var(--pt10) 0 var(--pt15) 0;
+  border-bottom: inset 1px;
 }
 
 .content section p,

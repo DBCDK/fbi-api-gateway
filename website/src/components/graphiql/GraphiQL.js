@@ -4,10 +4,12 @@ import _GraphiQL from "graphiql";
 import useStorage from "@/hooks/useStorage";
 import useSchema from "@/hooks/useSchema";
 
+import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 import Input from "@/components/base/input";
 
 import Header from "@/components/header";
+import Overlay from "@/components/base/overlay";
 
 import styles from "./GraphiQL.module.css";
 
@@ -22,8 +24,11 @@ const noStorage = {
 export function InlineGraphiQL({ query, variables }) {
   const { selectedToken } = useStorage();
   const instanceRef = useRef();
+
+  const curlRef = useRef();
   const { schema } = useSchema(selectedToken);
 
+  const [showCopy, setShowCopy] = useState(false);
   const [editQuery, setEditQuery] = useState(query);
   const [editVariables, setEditVariables] = useState(variables);
 
@@ -98,10 +103,21 @@ export function InlineGraphiQL({ query, variables }) {
       )}
 
       <Input
+        elRef={curlRef}
         value={curl}
+        readOnly={true}
         className={styles.curl}
-        onClick={(e) => e.target.select()}
+        onClick={(e) => {
+          e.target.select();
+          navigator?.clipboard?.writeText?.(e.target.value);
+          setShowCopy(true);
+          setTimeout(() => setShowCopy(false), 2000);
+        }}
       />
+
+      <Overlay show={navigator?.clipboard && showCopy} container={curlRef}>
+        <Text type="text1">Copied to clipboard 📋</Text>
+      </Overlay>
     </div>
   );
 }

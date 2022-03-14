@@ -3,19 +3,17 @@ import { throttle } from "lodash";
 
 import { Row, Col } from "react-bootstrap";
 
-import useWindowSize from "@/hooks/useWindowSize";
-
 import Link from "@/components/base/link";
-import Input from "@/components/base/input";
+// import Input from "@/components/base/input";
 import Text from "@/components/base/text";
 
 import styles from "./Menu.module.css";
 
-function scrollTo(id) {
-  document.getElementById(id)?.scrollIntoView?.({ behavior: "smooth" });
+function scrollTo(top, offset = 150) {
+  window.scrollTo({ top: top - offset, behavior: "smooth" });
 }
 
-export function Menu({ docs, active }) {
+export function Menu({ sections, active }) {
   return (
     <Row as="ul" className={styles.menu}>
       {/* <Col xs={12}>
@@ -23,20 +21,20 @@ export function Menu({ docs, active }) {
       </Col> */}
       <Col xs={12}>
         <Row as="ul" className={styles.items}>
-          {docs?.map((doc, idx) => {
-            const id = `${doc.name}-${idx}`;
-
-            const isActive = id === active;
+          {sections?.map((s) => {
+            const isActive = s.id === active;
             const activeClass = isActive ? styles.active : "";
+
+            const tagStyle = styles[s.tag];
 
             return (
               <Col
                 as="li"
-                key={doc.name}
-                className={`${styles.item} ${activeClass}`}
+                key={s.id}
+                className={`${styles.item} ${tagStyle} ${activeClass}`}
               >
                 <Text type="text5">
-                  <Link onClick={() => scrollTo(id)}>{doc.name}</Link>
+                  <Link onClick={() => scrollTo(s.top)}>{s.text}</Link>
                 </Text>
               </Col>
             );
@@ -49,62 +47,56 @@ export function Menu({ docs, active }) {
 
 export default function Wrap(props) {
   const [active, setActive] = useState();
-  const windowSize = useWindowSize();
 
   const container = props.containerRef.current;
 
   const sections = useMemo(() => {
-    const matches = container.querySelectorAll("section[id]");
+    const matches = container.querySelectorAll("h1, h2");
 
-    const obj = {};
+    const arr = [];
     matches.forEach((match) => {
       const top = match.offsetTop;
       const height = match.offsetHeight;
-      const id = match.getAttribute("id");
-      obj[id] = { top, height };
+      const parent = match.parentNode.getAttribute("id");
+      const tag = match.tagName.toLowerCase();
+      const text = match.textContent;
+      const label = text?.toLowerCase().replace(/\s+/g, "-");
+      const id = `${top}-${tag}-${label}`;
+
+      arr.push({ tag, text, top, height, id, parent });
     });
 
-    return obj;
-  }, [windowSize.height, windowSize.width, container.offsetHeight]);
+    return arr;
+  }, []);
 
   useEffect(() => {
     const onScroll = throttle(() => handleScroll(), 10);
 
     function handleScroll() {
       const scrollY = window.scrollY;
-      const windowH = window.innerHeight;
-      const documentH = document.body.offsetHeight;
-      const offset = 200;
+      const offset = 100;
 
-      const first = Object.keys(sections)[0];
-      const last = Object.keys(sections)[Object.keys(sections).length - 1];
+      const hit = sections.reduce((prev, cur) =>
+        Math.abs(scrollY + offset - cur.top) <
+        Math.abs(scrollY + offset - prev.top)
+          ? cur
+          : prev
+      );
 
-      const hit = Object.keys(sections).find((k) => {
-        return (
-          scrollY + offset > sections[k].top &&
-          scrollY + offset < sections[k].top + sections[k].height
-        );
-      });
-      if (scrollY + offset < sections[first].top - offset) {
-        setActive(first);
-        return;
-      }
-      if (windowH + scrollY + offset >= documentH) {
-        setActive(last);
-        return;
-      }
       if (hit) {
-        setActive(hit);
-        return;
+        setActive(hit.id);
       }
     }
 
-    setTimeout(() => handleScroll(), 100);
+    // init scroll position
+    handleScroll();
 
     window.addEventListener("scroll", onScroll);
     // cleanup on unMount
     return () => window.removeEventListener("scroll", onScroll);
   }, [sections]);
 
-  return <Menu active={active} {...props} />;
+  console.log("### active", active);
+
+  return <Menu sections={sections} active={active} {...props} />;
 }
