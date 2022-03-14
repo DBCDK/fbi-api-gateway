@@ -4,6 +4,11 @@
   top: 100px;
   position: sticky;
   list-style: none;
+  padding: 0 var(--pt05);
+
+  /* scroll */
+  height: 85vh;
+  overflow-y: auto;
 }
 
 .items {
@@ -14,6 +19,7 @@
 .item {
   position: relative;
   display: block;
+  margin-top: var(--pt05);
 }
 
 .item.h2 {
@@ -35,6 +41,7 @@
   border-left: 2px solid var(--text-dark);
   position: absolute;
   pointer-events: none;
+  height: 100%;
 
   transform: scaleY(0) translateX(calc(var(--pt2) * -1));
   transition-duration: 0.2s;

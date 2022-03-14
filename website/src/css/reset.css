@@ -61,11 +61,6 @@ button {
   border: 0;
 }
 
-a,
-a:hover {
-  color: var(--accent);
-}
-
 /* chrome blue autocomplete */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,

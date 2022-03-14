@@ -22,7 +22,7 @@ export default function Page() {
   return (
     <>
       <Head>
-        <title>Documentation</title>
+        <title>Gateway 🥳 | Documentation</title>
       </Head>
       <MDXProvider components={components}>
         <Docs />

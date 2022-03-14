@@ -51,7 +51,7 @@
 }
 
 .curl {
-  margin-top: var(--pt2);
+  margin: var(--pt2) 0;
   max-width: 100%;
   background-color: var(--divider);
   border-radius: unset;

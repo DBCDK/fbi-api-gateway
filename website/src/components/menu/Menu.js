@@ -10,7 +10,7 @@ import Text from "@/components/base/text";
 import styles from "./Menu.module.css";
 
 function scrollTo(top, offset = 150) {
-  window.scrollTo({ top: top - offset, behavior: "smooth" });
+  window?.scrollTo({ top: top - offset, behavior: "smooth" });
 }
 
 export function Menu({ sections, active }) {
@@ -33,7 +33,7 @@ export function Menu({ sections, active }) {
                 key={s.id}
                 className={`${styles.item} ${tagStyle} ${activeClass}`}
               >
-                <Text type="text5">
+                <Text type="text2">
                   <Link onClick={() => scrollTo(s.top)}>{s.text}</Link>
                 </Text>
               </Col>
@@ -95,8 +95,6 @@ export default function Wrap(props) {
     // cleanup on unMount
     return () => window.removeEventListener("scroll", onScroll);
   }, [sections]);
-
-  console.log("### active", active);
 
   return <Menu sections={sections} active={active} {...props} />;
 }

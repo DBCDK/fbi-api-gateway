@@ -6,7 +6,7 @@ export default function Page(props) {
   return (
     <>
       <Head>
-        <title>Voyager</title>
+        <title>Gateway 🥳 | Voyager</title>
       </Head>
       <div style={{ height: "100vh" }}>
         <Header />

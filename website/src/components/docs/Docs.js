@@ -28,8 +28,6 @@ export default function Docs() {
   const refs = useRef({});
   const containerRef = useRef(null);
 
-  console.log("docs", docs);
-
   // Only include docs usable by the selected token
   const accessibleDocs = docs?.filter((doc) => {
     let state = false;
@@ -84,7 +82,7 @@ export default function Docs() {
               <Menu docs={accessibleDocs} containerRef={containerRef} />
             )}
           </Col>
-          <Col className={styles.content} ref={containerRef}>
+          <Col className={styles.content} ref={containerRef} id="container">
             {accessibleDocs?.map((doc, idx) => {
               const id = `${doc.name}-${idx}`;
 

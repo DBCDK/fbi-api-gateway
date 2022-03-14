@@ -16,7 +16,7 @@ export default function Page() {
   return (
     <>
       <Head>
-        <title>Schema</title>
+        <title>Gateway 🥳 | Schema</title>
       </Head>
       <Header />
       <Layout>

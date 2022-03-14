@@ -100,8 +100,7 @@
   border-bottom: none;
 }
 
-.top .logo a:hover,
-.top .links .link a:hover {
+.top .logo a:hover {
   color: var(--primary-dark);
 }
 

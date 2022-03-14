@@ -3,6 +3,7 @@
 }
 
 .wrap .menu {
+  display: none;
   margin: var(--pt15) 0 0 0;
   padding: 0 var(--pt4);
   position: relative;
@@ -10,12 +11,12 @@
 
 .wrap .content {
   flex-grow: 99;
-  max-width: 1000px;
-  padding: 0 0 var(--pt15) 0;
+  max-width: 992px;
+  padding: 0 var(--pt2) var(--pt15) var(--pt2);
 }
 
 .wrap .content > section {
-  padding: var(--pt10) 0 var(--pt15) 0;
+  padding: var(--pt2) 0 var(--pt6) 0;
   border-bottom: inset 1px;
 }
 
@@ -39,8 +40,15 @@
   margin: var(--pt2) 0;
 }
 
-@media screen and (min-width: calc(1400px + 64px)) {
+@media screen and (min-width: 992px) {
   .wrap .menu {
-    padding: 0;
+    display: block;
   }
+
+  .wrap .content > section {
+    padding: var(--pt10) 0 var(--pt15) 0;
+  }
+}
+
+@media screen and (min-width: calc(992px + 32px)) {
 }

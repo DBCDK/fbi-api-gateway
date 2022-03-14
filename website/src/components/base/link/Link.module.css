@@ -39,7 +39,7 @@
 
 /* Real-hover */
 @media (hover: hover) {
-  .link:hover {
+  .link:not(.disabled):hover {
     /* border-left: 2px solid var(--text-dark); */
     color: var(--primary-dark);
   }
@@ -57,7 +57,7 @@
     transition-duration: 0.2s;
   }
 
-  .link:hover:before {
+  .link:not(.disabled):hover:before {
     transform: scaleY(1) translateX(calc((var(--pt1) + var(--pt05)) * -1));
     opacity: 1;
     pointer-events: unset;
