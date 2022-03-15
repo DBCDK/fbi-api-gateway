@@ -33,8 +33,7 @@
 }
 
 .button.primary.disabled {
-  background-color: var(--concrete);
-  border: 2px solid var(--iron);
+  border: 1px solid var(--divider-dark);
 }
 
 /* Secondary */
@@ -50,8 +49,7 @@
 }
 
 .button.secondary.disabled {
-  background-color: var(--concrete);
-  border: 2px solid var(--iron);
+  border: 1px solid var(--divider-dark);
 }
 
 /* 

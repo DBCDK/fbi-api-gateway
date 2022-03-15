@@ -3,7 +3,7 @@
 
   display: flex;
   flex-direction: column;
-  background-color: var(--divider);
+  background-color: var(--white);
 
   /* scroll in modal */
   overflow-y: auto;
@@ -21,7 +21,7 @@
 
 /* item */
 .item {
-  background-color: var(--white);
+  background-color: var(--divider);
   margin-bottom: var(--pt2);
 }
 
@@ -54,7 +54,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--divider);
+  background-color: var(--white);
   padding: var(--pt1) 0 !important;
 }
 
@@ -66,6 +66,10 @@
 
 .buttons .use {
   margin-left: var(--pt2);
+}
+
+.buttons .remove {
+  background-color: var(--divider);
 }
 
 .item.inUse .use {
@@ -80,7 +84,7 @@
 }
 
 .item hr {
-  background-color: var(--divider);
+  background-color: var(--divider-dark);
   border: none;
   height: 1px;
 }
@@ -94,6 +98,7 @@
   transition: transform 0.2s, background-color 0.3s;
   position: relative;
   border-radius: 50%;
+  background-color: white;
 
   display: flex;
   justify-content: center;

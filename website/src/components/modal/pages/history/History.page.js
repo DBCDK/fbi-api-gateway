@@ -98,6 +98,7 @@ function Item({
           <hr />
           <Col className={styles.buttons}>
             <Button
+              className={styles.remove}
               size="small"
               onClick={() => {
                 removeHistoryItem(token);
@@ -169,7 +170,7 @@ function History({ modal, context }) {
   }, [modal.isVisible, history]);
 
   return (
-    <Container className={`${styles.history}`}>
+    <div className={`${styles.history}`}>
       <Row className={styles.keys}>
         <Col>
           <Row>
@@ -188,7 +189,7 @@ function History({ modal, context }) {
           </Row>
         </Col>
       </Row>
-    </Container>
+    </div>
   );
 }
 

@@ -4,7 +4,7 @@
   top: -1px;
 
   z-index: 99;
-  padding: var(--pt1) var(--pt2);
+  padding: var(--pt1) 0;
   background-color: var(--white);
   /* background: rgb(255, 175, 204);
   background: linear-gradient(

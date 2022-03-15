@@ -5,14 +5,14 @@
 .wrap .menu {
   display: none;
   margin: var(--pt15) 0 0 0;
-  padding: 0 var(--pt4);
+  padding: 0;
   position: relative;
 }
 
 .wrap .content {
   flex-grow: 99;
   max-width: 992px;
-  padding: 0 var(--pt2) var(--pt15) var(--pt2);
+  padding: 0 0 var(--pt15) 0;
 }
 
 .wrap .content > section {
@@ -49,6 +49,13 @@
     padding: var(--pt10) 0 var(--pt15) 0;
   }
 }
+/* 
+@media screen and (max-width: calc(1400px + 64px)) {
+  .wrap .menu {
+    padding: 0 var(--pt4);
+  }
 
-@media screen and (min-width: calc(992px + 32px)) {
-}
+  .wrap .content {
+    padding: 0 var(--pt2) var(--pt15) var(--pt2);
+  }
+} */
