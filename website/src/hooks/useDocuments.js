@@ -11,7 +11,7 @@ const fetcher = async (url) => {
   return await response.json();
 };
 
-export default function useDocuments(token) {
+export default function useDocuments() {
   const url = "/api/mdxloader";
 
   const { data } = useSWR(url, fetcher);

@@ -1,44 +1,146 @@
-# Search examples
+# Search
 
-## Basic search
-blah bla
-<InlineGraphiQL 
-  query={
-    `query ($q: SearchQuery!) {
+The following examples show how to search for bibliographic works.
+
+## A Basic Example
+
+A search request takes a query string as input and returns a list of works.
+In this simple example we search for _harry_ and ask for work titles to be returned.
+Note how _all_ in the query object is used to hold the query string. This is
+useful where one does not know if the query matches a title, crator or subject.
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
       search(q: $q) {
-        hitcount
-        works(offset: 0, limit: 10) {
+        works(offset: $offset, limit: $limit) {
           title
         }
       }
-    }`
-  } 
-  variables={{q: {all: "harry"}}}
+    }`}
+  variables={{ q: { all: "harry" }, offset: 0, limit: 10 }}
 />
 
-## Facets
-Blah blah
-<InlineGraphiQL 
-  query={
-    `query ($q: SearchQuery!, $facets: [FacetField!]!) {
+## Pagination
+
+In the example above only 10 works are returned, but what if we want to browse the entire search
+result?
+
+For this purpose one needs to get the _hitcount_ indicating the total number of works in the result, and
+to send _offset_ and _limit_ which specify some slice of the result to be returned.
+
+If one wants to show 10 works per page the limit is set to 10 (the max limit size is 100). The first
+page is selected by setting offset to 0, the second page by setting offset to 10 and so on.
+The total number of pages is calculated by dividing hitcount with limit.
+
+The example below returns the second page of the search result.
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
+      search(q: $q) {
+        hitcount
+        works(offset: $offset, limit: $limit) {
+          title
+        }
+      }
+    }`}
+  variables={{ q: { all: "harry" }, offset: 10, limit: 10 }}
+/>
+
+## Search For Title, Creator, and Subject
+
+When it is known in advance that the search string is a title, creator or a subject,
+it may be specified in the query object _q_. Combinations are possible as well, for instance
+implemented in the UI with multiple input fields.
+
+This examples searches for _hopper_ as title, _hesteavl_ as subject, and _carl_ as creator.
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
+    search(q: $q) {
+      hitcount
+      works(offset: $offset, limit: $limit) {
+        title
+        creators {
+          name
+        }
+        subjects {
+          type
+          value
+        }
+      }
+    }
+  }`}
+  variables={{
+    q: { title: "hopper", subject: "hesteavl", creator: "carl" },
+    offset: 0,
+    limit: 10,
+  }}
+/>
+
+## Faceted Search and Filters
+
+Faceted search seeks to provide an improved overview by clustering the search result into
+categories. This allows for the user to incrementally customize and narrow down the search result.
+
+The following example is a search for _andersen_ where facet categories _language_ and _materialType_
+is returned.
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!) {
       search(q: $q) {
         hitcount
         facets(facets: $facets) {
           name
-          values(limit: 10) {
+          values(limit: $facetLimit) {
             term
             count
           }
         }
       }
-    }`
-  } 
-  variables={
-    {
-      q: {
-        all: "harry"
-      },
-      facets: ["language"]
-    }
-  }
+    }`}
+  variables={{
+    q: {
+      all: "harry",
+    },
+    facetLimit: 5,
+    facets: ["language", "materialType"],
+  }}
 />
+
+Then the term of the facet can be used as a filter. In this example, a language filter
+is applied resulting in an updated facet result.
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFilters!) {
+      search(q: $q, filters: $filters) {
+        hitcount
+        facets(facets: $facets) {
+          name
+          values(limit: $facetLimit) {
+            term
+            count
+          }
+        }
+      }
+    }`}
+  variables={{
+    q: {
+      all: "harry",
+    },
+    filters: { language: ["Svensk"] },
+    facetLimit: 5,
+    facets: ["language", "materialType"],
+  }}
+/>
+
+If multiple filters are added for the same category, they are OR'ed together.
+For instance, works must be Svensk OR Engelsk. Filters applied across categories
+are AND'ed together. For instance (Svensk OR Engelsk) AND dvd.
+
+## Facet performance
+
+While it is possible to fetch both facets and works in a single request, it is not recommended.
+Compared to getting the works, facets are more expensive to generate.
+
+Split the search for works and facets into two requests and send them in parallel. Then the works
+can be shown to the user as quickly as possible.

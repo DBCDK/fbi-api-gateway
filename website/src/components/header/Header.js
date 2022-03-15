@@ -1,3 +1,4 @@
+import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Container, Row, Col } from "react-bootstrap";
 
@@ -16,8 +17,20 @@ import styles from "./Header.module.css";
 
 export default function Header() {
   const router = useRouter();
-
   const modal = useModal();
+  const elRef = useRef();
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([e]) => setIsSticky(e.intersectionRatio < 1),
+      { threshold: [1] }
+    );
+
+    observer.observe(elRef.current);
+
+    return () => observer.disconnect();
+  }, [elRef]);
 
   const { selectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
@@ -30,8 +43,13 @@ export default function Header() {
 
   const indexStyles = isIndex ? styles.index : "";
 
+  const stickyClass = isSticky ? styles.sticky : "";
+
   return (
-    <header className={`${styles.top} ${indexStyles}`}>
+    <header
+      className={`${styles.top} ${stickyClass} ${indexStyles}`}
+      ref={elRef}
+    >
       <Container fluid>
         <Row>
           <Col className={styles.left}>

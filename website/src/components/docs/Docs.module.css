@@ -1,3 +1,54 @@
-.container {
-  padding-top: var(--pt5);
+.wrap {
+  margin: 0;
+}
+
+.wrap .menu {
+  display: none;
+  margin: var(--pt15) 0 0 0;
+  padding: 0 var(--pt4);
+  position: relative;
+}
+
+.wrap .content {
+  flex-grow: 99;
+  max-width: 992px;
+  padding: 0 var(--pt2) var(--pt15) var(--pt2);
+}
+
+.wrap .content > section {
+  padding: var(--pt2) 0 var(--pt6) 0;
+  border-bottom: inset 1px;
+}
+
+.content section p,
+.content section h1,
+.content section h2 {
+  max-width: 720px;
+}
+
+.content section p {
+  margin: var(--pt2) 0;
+}
+.content section h1 {
+  margin: var(--pt4) 0 var(--pt2) 0;
+}
+.content section h2 {
+  margin: var(--pt6) 0 var(--pt2) 0;
+}
+
+.content section h1 + h2 {
+  margin: var(--pt2) 0;
+}
+
+@media screen and (min-width: 992px) {
+  .wrap .menu {
+    display: block;
+  }
+
+  .wrap .content > section {
+    padding: var(--pt10) 0 var(--pt15) 0;
+  }
+}
+
+@media screen and (min-width: calc(992px + 32px)) {
 }

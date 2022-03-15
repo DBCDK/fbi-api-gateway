@@ -7,6 +7,7 @@ const fetcher = async (url) => {
   const response = await fetch(url, {
     method: "GET",
   });
+
   if (response.status !== 200) {
     return {};
   }

@@ -3,6 +3,7 @@
 /* Class to prevent user from body-scrolling when a modal is open */
 .lockScroll {
   height: 100vh;
+  overflow: hidden;
 }
 
 /* Dimmer */

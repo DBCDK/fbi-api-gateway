@@ -30,6 +30,10 @@
   align-items: center;
 }
 
+code {
+  background: var(--divider);
+  padding: var(--pt05);
+}
 @media screen and (min-width: 1400px) {
   .container,
   .container-fluid {

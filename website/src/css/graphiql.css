@@ -156,6 +156,7 @@
   flex-direction: column;
   height: 30px;
   position: relative;
+  padding: 0 !important;
 }
 
 .graphiql-container .secondary-editor-title {
