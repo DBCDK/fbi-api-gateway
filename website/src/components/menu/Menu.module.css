@@ -4,7 +4,7 @@
   top: 100px;
   position: sticky;
   list-style: none;
-  padding: 0 var(--pt05);
+  padding: var(--pt2) 0;
 
   /* scroll */
   height: 85vh;
@@ -12,7 +12,7 @@
 }
 
 .items {
-  margin-top: var(--pt2);
+  padding: 0 var(--pt05);
   flex-direction: column;
 }
 
@@ -26,7 +26,11 @@
   padding-left: var(--pt3);
 }
 
-.item.active a {
+.item.h2 {
+  padding-left: var(--pt3);
+}
+
+.item.active > p > a {
   color: var(--primary-dark);
 }
 
@@ -34,7 +38,11 @@
   display: none;
 }
 
-.item::before {
+.item > p {
+  position: relative;
+}
+
+.item > p::before {
   content: "\a0";
   display: block;
   padding: 2px 0;
@@ -47,7 +55,7 @@
   transition-duration: 0.2s;
 }
 
-.item.active::before {
+.item.active > p::before {
   transform: scaleY(1) translateX(calc(var(--pt2) * -1));
 }
 
