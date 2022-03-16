@@ -1,0 +1,13 @@
+.container {
+  padding-top: var(--pt10);
+}
+
+.title {
+  margin: var(--pt4) 0 var(--pt2) 0;
+}
+
+@media screen and (max-width: 576px) {
+  .container {
+    padding-top: var(--pt2);
+  }
+}

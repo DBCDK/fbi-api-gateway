@@ -74,6 +74,15 @@ export function Menu({ sections, active }) {
                         callback: () => setIsScrolling(false),
                       });
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.keyCode === 13) {
+                        setIsScrolling(!hasActiveSubheading);
+                        scrollTo({
+                          top: s.top,
+                          callback: () => setIsScrolling(false),
+                        });
+                      }
+                    }}
                   >
                     {s.text}
                   </Link>
@@ -98,7 +107,14 @@ export function Menu({ sections, active }) {
                               className={`${styles.item} ${tagClass} ${activeClass}`}
                             >
                               <Text type={s.tag === "h1" ? "text5" : "text2"}>
-                                <Link onClick={() => scrollTo({ top: s.top })}>
+                                <Link
+                                  onClick={() => scrollTo({ top: s.top })}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.keyCode === 13) {
+                                      scrollTo({ top: s.top });
+                                    }
+                                  }}
+                                >
                                   {s.text}
                                 </Link>
                               </Text>

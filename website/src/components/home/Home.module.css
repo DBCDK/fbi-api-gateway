@@ -12,3 +12,8 @@
 .content > div > .text {
   padding-top: var(--pt2);
 }
+
+.email {
+  padding: var(--pt2);
+  pointer-events: none;
+}

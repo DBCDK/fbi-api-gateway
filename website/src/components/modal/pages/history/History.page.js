@@ -29,19 +29,23 @@ function Item({
   inUse,
   configuration,
   isExpired,
-  isVisible,
+  // isVisible,
 }) {
-  const { setSelectedToken, removeHistoryItem } = useStorage();
+  const { selectedToken, setSelectedToken, removeHistoryItem } = useStorage();
 
   const [open, setOpen] = useState(inUse);
   const [removed, setRemoved] = useState(false);
 
   // update state on modal close
+  // useEffect(() => {
+  //   if (!isVisible) {
+  //     setTimeout(() => setOpen(inUse), 200);
+  //   }
+  // }, [isVisible]);
+
   useEffect(() => {
-    if (!isVisible) {
-      setTimeout(() => setOpen(inUse), 200);
-    }
-  }, [isVisible]);
+    setOpen(inUse);
+  }, [selectedToken]);
 
   const ExpiredDisplay = "This token is expired 😔";
 
@@ -55,7 +59,7 @@ function Item({
   const crossClass = open ? styles.less : styles.more;
 
   return (
-    <Collapse in={!removed}>
+    <Collapse in={!removed} id={`container-collapse-${token}`}>
       <Col xs={12} className={`${styles.item} ${expiredClass} ${inUseClass}`}>
         <Row>
           <Col xs={12} className={styles.display}>
@@ -71,7 +75,7 @@ function Item({
               {/* <Title type="title5">{open ? "-" : "+"}</Title> */}
             </button>
           </Col>
-          <Collapse in={open}>
+          <Collapse in={open} id={`details-collapse-${token}`}>
             <Row id="example-collapse-text">
               <Col xs={12} className={styles.date}>
                 <Text type="text4">Submitted at</Text>
@@ -165,7 +169,7 @@ function History({ modal, context }) {
   // update history on modal close
   useEffect(() => {
     if (!modal.isVisible) {
-      setState(history);
+      setTimeout(() => setState(history), 200);
     }
   }, [modal.isVisible, history]);
 
