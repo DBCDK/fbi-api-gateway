@@ -73,7 +73,6 @@ export default function Home() {
         <Row className={styles.content}>
           <Col>
             <Text type="text5">DBC DIGITAL</Text>
-
             <Text type="text3" className={styles.email}>
               <Link onClick={(e) => e.preventDefault()} keepActive>
                 dbc@dbc.dk

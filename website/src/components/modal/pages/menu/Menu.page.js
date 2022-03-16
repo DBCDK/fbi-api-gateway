@@ -27,7 +27,7 @@ function Menu({ modal, context }) {
     selectedToken && configuration && Object?.keys(configuration).length;
 
   return (
-    <Container className={`${styles.menu}`}>
+    <div className={`${styles.menu}`}>
       <Row className={styles.middle}>
         <Col>
           <Label for="token-input">
@@ -83,7 +83,7 @@ function Menu({ modal, context }) {
           </Text>
         </Col>
       </Row>
-    </Container>
+    </div>
   );
 }
 

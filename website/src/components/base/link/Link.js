@@ -23,6 +23,7 @@ export default function Link({
   disabled = false,
   scroll = true,
   keepActive = false,
+  ...props
 }) {
   const Tag = tag;
   // Maybe wrap with an a-tag
@@ -43,6 +44,7 @@ export default function Link({
         }}
         className={`${styles.link} ${keepActiveClass} ${disabledClass} ${className}`}
         tabIndex={disabled ? "-1" : tabIndex}
+        {...props}
       >
         {children}
       </Tag>

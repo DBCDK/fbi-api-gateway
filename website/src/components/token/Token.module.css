@@ -146,7 +146,7 @@
     width: 320px;
   }
 
-  .wrap.inActive .clear {
+  .wrap.inActive.value .clear {
     transform: translateX(0);
     background-color: var(--primary-dark) !important;
     color: var(--text-dark) !important;
