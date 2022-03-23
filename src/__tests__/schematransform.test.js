@@ -106,6 +106,7 @@ test("limited access to root fields", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      smaug: {},
     },
     clientPermissions: { allowRootFields: ["help"] },
   });
@@ -120,6 +121,7 @@ test("remove all fields by type", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      smaug: {},
     },
     clientPermissions: {
       allowRootFields: ["manifestation"],
@@ -137,6 +139,7 @@ test("default schema transform", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      smaug: {},
     },
     clientPermissions: permissions.default,
   });
