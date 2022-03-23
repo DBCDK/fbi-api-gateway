@@ -87,6 +87,7 @@ function schemaLoader() {
 export async function getExecutableSchema({
   loadExternal = true,
   clientPermissions = permissions.default,
+  hasValidAccessToken,
 }) {
   const key = JSON.stringify(clientPermissions);
 
@@ -104,12 +105,15 @@ export async function getExecutableSchema({
       : internalSchema;
 
     // Filter schema according to permissions of Smaug client
-    const filteredSchema = clientPermissions?.admin
-      ? mergedSchema
-      : wrapSchema({
-          schema: mergedSchema,
-          transforms: [new PermissionsTransform(clientPermissions)],
-        });
+    // If no valid accessToken is given (no smaug client), we allow to introspect
+    // the entire schema (useful for test purposes). But no data is accessible.
+    const filteredSchema =
+      clientPermissions?.admin || !hasValidAccessToken
+        ? mergedSchema
+        : wrapSchema({
+            schema: mergedSchema,
+            transforms: [new PermissionsTransform(clientPermissions)],
+          });
 
     // Wrap all resolvers with error logger
     wrapResolvers(filteredSchema, (resolveFn) => {
