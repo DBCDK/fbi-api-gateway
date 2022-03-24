@@ -19,7 +19,7 @@ type Query {
   work(id: String!): Work
   works(id: [String!]!): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
-  suggest(q: String!, worktype: WorkType): SuggestResponse!
+  suggest(q: String!, worktype: WorkType, suggesttype:String): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
@@ -155,7 +155,11 @@ export const resolvers = {
       });
     },
     async suggest(parent, args, context, info) {
-      return { q: args.q, worktype: args.worktype };
+      return {
+        q: args.q,
+        worktype: args.worktype,
+        suggesttype: args.suggesttype,
+      };
     },
     async deleteOrder(parent, args, context, info) {
       return await context.datasources.deleteOrder.load({
