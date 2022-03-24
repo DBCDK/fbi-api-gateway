@@ -130,7 +130,7 @@ type Query {
   work(id: String!): Work
   works(id: [String!]!): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
-  suggest(q: String!, worktype: WorkType): SuggestResponse!
+  suggest(q: String!, worktype: WorkType, suggesttype: String): SuggestResponse!
   infomediaContent(pid: String!): [InfomediaContent]
   refWorks(pid: String!): String!
   ris(pid: String!): String!
