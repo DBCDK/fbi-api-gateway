@@ -92,6 +92,14 @@ export default {
       token: process.env.SIMPLESEARCH_TOKEN,
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
     },
+    suggester: {
+      url:
+        process.env.SUGGESTER ||
+        "http://simple-suggest-1-1.mi-prod.svc.cloud.dbc.dk/suggest",
+      prefix: process.env.SUGGESTER_PREFIX || "suggester-1",
+      token: process.env.SUGGESTER_TOKEN,
+      ttl: process.env.SUGGESTER_TIME_TO_LIVE_SECONDS || 10,
+    },
     facets: {
       url:
         process.env.FACETS_URL ||

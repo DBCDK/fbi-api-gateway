@@ -5,7 +5,7 @@
  */
 
 import request from "superagent";
-
+const { url, prefix, ttl } = config.datasources.suggester;
 export async function load({
   q,
   worktype = null,
@@ -13,7 +13,7 @@ export async function load({
   unique_works = true,
 }) {
   const result = await request
-    .get("http://simple-suggest-1-1.mi-prod.svc.cloud.dbc.dk/suggest")
+    .get(url)
     .query({ q: q, worktype, type: suggesttype, unique_works });
 
   let body;
@@ -40,7 +40,7 @@ export async function status(loadFunc) {
 
 export const options = {
   redis: {
-    prefix: "suggester-3",
-    ttl: 60 * 60 * 24,
+    prefix,
+    ttl,
   },
 };
