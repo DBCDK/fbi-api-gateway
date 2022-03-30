@@ -5,7 +5,7 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, prefix, token } = config.datasources.simplesearch;
+const { url, prefix, ttl, token } = config.datasources.simplesearch;
 
 export async function load({ q, filters, limit = 10, offset = 0 }) {
   // get parsed arguments for query
@@ -40,6 +40,6 @@ export async function load({ q, filters, limit = 10, offset = 0 }) {
 export const options = {
   redis: {
     prefix,
-    ttl: 60 * 60 * 24,
+    ttl,
   },
 };

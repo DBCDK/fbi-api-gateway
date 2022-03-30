@@ -90,6 +90,7 @@ export default {
         "http://simple-search-bibdk-1-0.mi-prod.svc.cloud.dbc.dk/search",
       prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-6",
       token: process.env.SIMPLESEARCH_TOKEN,
+      ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
     },
     facets: {
       url:
@@ -97,6 +98,7 @@ export default {
         "http://simple-search-bibdk-1-0.mi-prod.svc.cloud.dbc.dk/facets",
       prefix: process.env.FACETS_PREFIX || "facets-1",
       token: process.env.FACETS_TOKEN,
+      ttl: process.env.FACETS_TIME_TO_LIVE_SECONDS || 10,
     },
     openplatform: {
       url: process.env.OPENPLATFORM_URL || "https://openplatform.dbc.dk/v3",

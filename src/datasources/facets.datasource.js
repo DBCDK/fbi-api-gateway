@@ -5,7 +5,7 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, prefix, token } = config.datasources.facets;
+const { url, prefix, ttl, token } = config.datasources.facets;
 
 export async function load({ q, filters, facets = [] }) {
   // get parsed arguments for query
@@ -39,6 +39,6 @@ export async function load({ q, filters, facets = [] }) {
 export const options = {
   redis: {
     prefix,
-    ttl: 60 * 60 * 24,
+    ttl,
   },
 };
