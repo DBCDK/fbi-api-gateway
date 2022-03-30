@@ -5,6 +5,8 @@
  */
 
 import request from "superagent";
+import config from "../config";
+
 const { url, prefix, ttl } = config.datasources.suggester;
 export async function load({
   q,
