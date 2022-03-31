@@ -120,7 +120,7 @@ promExporterApp.listen(9599, () => {
       return {
         schema: await getExecutableSchema({
           clientPermissions: request?.smaug?.gateway,
-          hasValidAccessToken: !!request?.smaug,
+          hasAccessToken: !!request.accessToken,
         }),
         // graphiql: { headerEditorEnabled: true, shouldPersistHeaders: true },
         extensions: ({ document, context, result }) => {

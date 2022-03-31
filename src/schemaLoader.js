@@ -87,9 +87,9 @@ function schemaLoader() {
 export async function getExecutableSchema({
   loadExternal = true,
   clientPermissions = permissions.default,
-  hasValidAccessToken,
+  hasAccessToken,
 }) {
-  const key = JSON.stringify(clientPermissions);
+  const key = JSON.stringify({ hasAccessToken, clientPermissions });
 
   if (!schemaCache[key]) {
     // Fetch external Drupal schema (bibdk)
@@ -108,7 +108,7 @@ export async function getExecutableSchema({
     // If no valid accessToken is given (no smaug client), we allow to introspect
     // the entire schema (useful for test purposes). But no data is accessible.
     const filteredSchema =
-      clientPermissions?.admin || !hasValidAccessToken
+      clientPermissions?.admin || !hasAccessToken
         ? mergedSchema
         : wrapSchema({
             schema: mergedSchema,
