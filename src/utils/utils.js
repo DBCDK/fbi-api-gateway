@@ -12,7 +12,7 @@ export async function performTestQuery({
     await getExecutableSchema({
       loadExternal: false,
       clientPermissions,
-      hasValidAccessToken: !!context.smaug,
+      hasAccessToken: !!context.accessToken,
     }),
     query,
     null,
