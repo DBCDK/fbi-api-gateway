@@ -69,7 +69,7 @@
           "details": "{bibdk_host_publication_details}"
         }
       ],
-      "hostPublicationPid":"{bibdk_host_publication_id}",
+      "hostPublicationPid": "{bibdk_host_publication_id}",
       "isbn": [
         {
           "value": "{isbn}"
@@ -191,7 +191,8 @@
       ],
       "shelf": [
         {
-          "value": "{shelf}"
+          "prefix": "{ddb_shelfmark_prefix}",
+          "shelfmark": "{ddb_shelfmark}"
         }
       ],
       "subject": [
@@ -250,7 +251,11 @@
       "usedLanguage": "{bibdk_used_language}",
       "physicalDescriptionArticles": "{physicalDescriptionArticles}",
       "volume": "{volume}",
-      "infomedia": [{"id":"{infomedia_id}"}],
+      "infomedia": [
+        {
+          "id": "{infomedia_id}"
+        }
+      ],
       "webarchive": "{web_archive}"
     }
   }
