@@ -6,6 +6,15 @@ exports[`default schema transform 1`] = `
   requestButton: Boolean
 }
 
+type Cover {
+  detail_117: String
+  detail_207: String
+  detail_42: String
+  detail_500: String
+  thumbnail: String
+  detail: String
+}
+
 type Creator {
   functionCode: String!
   functionSingular: String!
@@ -20,6 +29,87 @@ type DK5 {
   searchCode: String!
   searchString: String!
   value: String!
+}
+
+type Draft_Manifestation {
+  title: Draft_WorkTitles!
+  access: [Draft_Access!]!
+}
+
+type Draft_URL {
+  origin: String!
+  url: String!
+}
+
+type Draft_Ill {
+  ill: Boolean!
+}
+
+type Draft_InfomediaService {
+  id: String!
+}
+
+type Draft_DigitalArticleService {
+  issn: String!
+}
+
+union Draft_Access = Draft_URL | Draft_Ill | Draft_InfomediaService | Draft_DigitalArticleService
+
+type Draft_Work {
+  manifestations: [Draft_Manifestation!]!
+  reviews: [Draft_Review!]!
+  title: Draft_WorkTitles!
+  abstract: String
+}
+
+type Draft_Query {
+  work(id: String, faust: String): Draft_Work
+}
+
+type Query {
+  draft: Draft_Query!
+  manifestation(pid: String!): WorkManifestation!
+  work(id: String, faust: String): Work
+  works(id: [String!], faust: [String!]): [Work]!
+  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
+  suggest(q: String!, worktype: WorkType, suggesttype: String): SuggestResponse!
+  infomediaContent(pid: String!): [InfomediaContent]
+  refWorks(pid: String!): String!
+  ris(pid: String!): String!
+}
+
+union Draft_Review = Draft_ExternalReview | Draft_InfomediaReview | Draft_LibrariansReview
+
+type Draft_ExternalReview {
+  author: String
+  date: String
+  rating: String
+  urls: [Draft_URL!]!
+}
+
+type Draft_InfomediaReview {
+  author: String
+  date: String
+  origin: String
+  rating: String
+  id: String!
+}
+
+type Draft_LibrariansReview {
+  author: String
+  date: String
+  sections: [TextWithWork!]!
+
+  \\"\\"\\" This is a pid \\"\\"\\"
+  id: String!
+}
+
+type Draft_WorkTitles {
+  main: String!
+  full: String!
+  parallel: [String!]!
+  sort: String!
+  original: String
 }
 
 type InfomediaContent {
@@ -77,6 +167,31 @@ type DigitalCopy {
 
 union OnlineAccess = UrlReference | InfomediaReference | WebArchive | DigitalCopy
 
+input PeriodicaArticleOrder {
+  \\"\\"\\"The pid of an article or periodica\\"\\"\\"
+  pid: String!
+  pickUpBranch: String!
+  userName: String
+  userMail: String
+  publicationDateOfComponent: String
+  volume: String
+  authorOfComponent: String
+  titleOfComponent: String
+  pagination: String
+}
+
+enum PeriodicaArticleOrderStatus {
+  OK
+  ERROR_UNAUTHORIZED_USER
+  ERROR_AGENCY_NOT_SUBSCRIBED
+  ERROR_INVALID_PICKUP_BRANCH
+  ERROR_PID_NOT_RESERVABLE
+}
+
+type PeriodicaArticleOrderResponse {
+  status: PeriodicaArticleOrderStatus!
+}
+
 type Recommendation {
   work: Work!
   manifestation: WorkManifestation!
@@ -112,7 +227,8 @@ type ReviewMatVurd {
 }
 
 type TextWithWork {
-  name: String!
+  name: String! @deprecated(reason: \\"Use heading instead\\")
+  heading: String!
 
   \\"\\"\\"A piece of text mentioning a work at the end.\\"\\"\\"
   text: String!
@@ -125,15 +241,8 @@ type TextWithWork {
 
 union Review = ReviewInfomedia | ReviewExternalMedia | ReviewMatVurd
 
-type Query {
-  manifestation(pid: String!): WorkManifestation!
-  work(id: String!): Work
-  works(id: [String!]!): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
-  suggest(q: String!, worktype: WorkType, suggesttype: String): SuggestResponse!
-  infomediaContent(pid: String!): [InfomediaContent]
-  refWorks(pid: String!): String!
-  ris(pid: String!): String!
+type Mutation {
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!): PeriodicaArticleOrderResponse!
 }
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
@@ -264,6 +373,7 @@ enum WorkType {
 
 type MaterialType {
   materialType: String!
+  cover: Cover!
   localizations: Localizations
   manifestations: [WorkManifestation!]!
 }
@@ -273,6 +383,7 @@ type Work {
   fullTitle: String
   description: String
   creators: [Creator!]!
+  cover: Cover!
   id: String!
   manifestations: [WorkManifestation!]!
   materialTypes: [MaterialType!]!
@@ -290,6 +401,7 @@ type HostPublication {
 
 type WorkManifestation {
   content: [String!]
+  cover: Cover!
   creators: [Creator!]!
   datePublished(locale: String, format: String): CustomDateFormat!
   description: String!
@@ -325,7 +437,11 @@ type WorkManifestation {
 `;
 
 exports[`limited access to root fields 1`] = `
-"type HelpRow {
+"type Query {
+  help(q: String!, language: LanguageCode): HelpResponse
+}
+
+type HelpRow {
   nid: Int!
   group: String!
   orgTitle: String!
@@ -340,10 +456,6 @@ type HelpResponse {
 enum LanguageCode {
   da
   en
-}
-
-type Query {
-  help(q: String!, language: LanguageCode): HelpResponse
 }
 "
 `;
@@ -391,6 +503,10 @@ type DK5 {
   searchCode: String!
   searchString: String!
   value: String!
+}
+
+type Query {
+  manifestation(pid: String!): WorkManifestation!
 }
 
 type Localizations {
@@ -469,7 +585,8 @@ type ReviewMatVurd {
 }
 
 type TextWithWork {
-  name: String!
+  name: String! @deprecated(reason: \\"Use heading instead\\")
+  heading: String!
 
   \\"\\"\\"A piece of text mentioning a work at the end.\\"\\"\\"
   text: String!
@@ -481,10 +598,6 @@ type TextWithWork {
 }
 
 union Review = ReviewInfomedia | ReviewExternalMedia | ReviewMatVurd
-
-type Query {
-  manifestation(pid: String!): WorkManifestation!
-}
 
 \\"\\"\\"
 Using dayjs to format dates and support localization. https://day.js.org/docs/en/display/format

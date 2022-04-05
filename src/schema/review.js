@@ -36,7 +36,8 @@ type ReviewMatVurd {
   other: [TextWithWork!]!
 }
 type TextWithWork {
-  name: String!
+  name: String! @deprecated(reason: "Use heading instead")
+  heading: String!
   "A piece of text mentioning a work at the end."
   text: String!
   "The work the text is refering to. When work is null, the text does not refer to a work."

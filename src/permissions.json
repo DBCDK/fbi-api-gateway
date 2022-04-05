@@ -1,6 +1,7 @@
 {
   "default": {
     "allowRootFields": [
+      "draft",
       "manifestation",
       "search",
       "work",
@@ -9,8 +10,9 @@
       "suggest",
       "infomediaContent",
       "refWorks",
-      "ris"
+      "ris",
+      "submitPeriodicaArticleOrder"
     ],
-    "denyTypes": ["Cover", "CheckOrderPolicy", "Availability", "SEO"]
+    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO"]
   }
 }

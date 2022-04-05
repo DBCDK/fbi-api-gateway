@@ -16,8 +16,8 @@ type Query {
   manifestation(pid: String!): WorkManifestation!
   monitor(name: String!): String!
   user: User!
-  work(id: String!): Work
-  works(id: [String!]!): [Work]!
+  work(id: String, faust: String): Work
+  works(id: [String!], faust: [String!]): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   suggest(q: String!, worktype: WorkType, suggesttype:String): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
@@ -83,8 +83,19 @@ export const resolvers = {
       return { id: args.pid };
     },
     async works(parent, args, context, info) {
+      let ids;
+      if (args.id) {
+        ids = args.id;
+      } else if (args.faust) {
+        ids = await Promise.all(
+          args.faust.map((faust) => context.datasources.faust.load(faust))
+        );
+      }
+      if (!ids) {
+        return [];
+      }
       return Promise.all(
-        args.id.map(async (id) => {
+        ids.map(async (id) => {
           return (await context.datasources.workservice.load(id))?.work;
         })
       );
@@ -105,7 +116,17 @@ export const resolvers = {
       return { ...args };
     },
     async work(parent, args, context, info) {
-      const res = await context.datasources.workservice.load(args.id);
+      let id;
+      if (args.id) {
+        id = args.id;
+      } else if (args.faust) {
+        id = await context.datasources.faust.load(args.faust);
+      }
+      if (!id) {
+        return null;
+      }
+
+      const res = await context.datasources.workservice.load(id);
       return res?.work;
     },
     async search(parent, args, context, info) {

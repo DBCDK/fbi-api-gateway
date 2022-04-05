@@ -18,6 +18,7 @@ import drupalSchema from "./schema/external/drupal";
 import { getFilesRecursive } from "./utils/utils";
 import { wrapResolvers } from "./utils/wrapResolvers";
 import permissions from "./permissions.json";
+import merge from "lodash/merge";
 
 // Stores the transformed schemas
 const schemaCache = {};
@@ -73,7 +74,7 @@ function schemaLoader() {
       log.info(`Found type definition in ${file.path}`);
     }
     if (resolvers) {
-      allResolvers = { ...allResolvers, ...resolvers };
+      allResolvers = merge({}, allResolvers, resolvers);
     }
   });
 

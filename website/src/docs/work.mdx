@@ -1,12 +1,35 @@
-# Work examples
+# Work
+
+A work is a ...
+
+## Lookup by Faust
+
+One may look up a work by providing a faust.
 
 <InlineGraphiQL
-  query={`query ($id: String!) {
-      work(id: $id) {
+  query={`query ($faust: String!) {
+      work(faust: $faust) {
+        id
         title
       }
     }`}
   variables={{
-    id: "work-of:870970-basis:48953786",
+    faust: "48953786",
+  }}
+/>
+
+It is possible to look up multiple works by providing a list of fausts.
+The order of fausts are preserved when returning the list of works.
+If no work is found for a faust, null is returned at the corresponding position.
+
+<InlineGraphiQL
+  query={`query ($faust: [String!]!) {
+      works(faust: $faust) {
+        id
+        title
+      }
+    }`}
+  variables={{
+    faust: ["48953786", "61965815", "unknown-faust"],
   }}
 />
