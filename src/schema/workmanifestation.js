@@ -11,6 +11,10 @@ import dayjs from "dayjs";
  * The WorkManifestation type definition
  */
 export const typeDef = `
+    type Shelf {
+      prefix: String,
+      shelfmark: String
+    }
     type HostPublication {
       title: String!
       details: String!
@@ -39,7 +43,7 @@ export const typeDef = `
       physicalDescription: String!
       pid: String!
       publisher: [String!]!
-      shelf: String
+      shelf: Shelf
       title: String
       recommendations(limit: Int): [Recommendation]!
       availability: Availability
@@ -309,10 +313,10 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         parent.id
       );
-
-      return getArray(manifestation, "details.shelf.value").map(
-        (entry) => entry.$
-      )[0];
+      return {
+        prefix: manifestation?.details?.shelf?.prefix?.$ || "",
+        shelfmark: manifestation?.details?.shelf?.shelfmark?.$ || "",
+      };
     },
     async title(parent, args, context, info) {
       if (parent.title) {
