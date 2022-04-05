@@ -394,6 +394,11 @@ type Work {
   workTypes: [WorkType!]!
 }
 
+type Shelf {
+  prefix: String
+  shelfmark: String
+}
+
 type HostPublication {
   title: String!
   details: String!
@@ -424,7 +429,7 @@ type WorkManifestation {
   physicalDescription: String!
   pid: String!
   publisher: [String!]!
-  shelf: String
+  shelf: Shelf
   title: String
   recommendations(limit: Int): [Recommendation]!
   admin: AdminData
@@ -659,6 +664,11 @@ type Work {
   workTypes: [WorkType!]!
 }
 
+type Shelf {
+  prefix: String
+  shelfmark: String
+}
+
 type HostPublication {
   title: String!
   details: String!
@@ -688,7 +698,7 @@ type WorkManifestation {
   physicalDescription: String!
   pid: String!
   publisher: [String!]!
-  shelf: String
+  shelf: Shelf
   title: String
   recommendations(limit: Int): [Recommendation]!
   availability: Availability
