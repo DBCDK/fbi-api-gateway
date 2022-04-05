@@ -1,0 +1,21 @@
+# Manifestion
+
+A manifestion is a specific edition ...
+
+## Lookup shelf information
+
+Get shelf information for given pid
+
+<InlineGraphiQL
+  query={`query($pid: String!) {
+            manifestation(pid: $pid) {
+            shelf {
+                prefix
+                shelfmark
+                }
+            }
+        }` }
+  variables={{
+    pid: "870970-basis:48237053",
+  }}
+/>
