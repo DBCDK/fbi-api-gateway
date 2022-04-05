@@ -65,7 +65,10 @@ Object {
           "publisher": Array [
             "Kronstork",
           ],
-          "shelf": "skønlitteratur",
+          "shelf": Object {
+            "prefix": "85",
+            "shelfmark": "Min",
+          },
         },
         Object {
           "availability": Object {
@@ -126,7 +129,10 @@ Object {
           "publisher": Array [
             "Kronstork",
           ],
-          "shelf": "skønlitteratur",
+          "shelf": Object {
+            "prefix": "64.64",
+            "shelfmark": "gray",
+          },
         },
         Object {
           "availability": Object {
@@ -191,7 +197,10 @@ Object {
           "publisher": Array [
             "Kronstork",
           ],
-          "shelf": "skønlitteratur",
+          "shelf": Object {
+            "prefix": "85",
+            "shelfmark": "Knausgård",
+          },
         },
       ],
       "materialTypes": Array [
@@ -242,7 +251,10 @@ Object {
               "publisher": Array [
                 "Kronstork",
               ],
-              "shelf": "skønlitteratur",
+              "shelf": Object {
+                "prefix": "85",
+                "shelfmark": "Min",
+              },
             },
             Object {
               "content": Array [
@@ -293,7 +305,10 @@ Object {
               "publisher": Array [
                 "Kronstork",
               ],
-              "shelf": "skønlitteratur",
+              "shelf": Object {
+                "prefix": "64.64",
+                "shelfmark": "gray",
+              },
             },
           ],
           "materialType": "Bog",
@@ -356,7 +371,10 @@ Object {
               "publisher": Array [
                 "Kronstork",
               ],
-              "shelf": "skønlitteratur",
+              "shelf": Object {
+                "prefix": "85",
+                "shelfmark": "Knausgård",
+              },
             },
           ],
           "materialType": "E-bog / Bog",

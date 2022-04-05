@@ -504,8 +504,11 @@ export function load(pid) {
           latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } },
         },
         shelf: {
-          value: {
-            $: "skønlitteratur",
+          prefix: {
+            $: "85",
+          },
+          shelfmark: {
+            $: "Min",
           },
         },
         subject: [
@@ -727,8 +730,11 @@ export function load(pid) {
           latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } },
         },
         shelf: {
-          value: {
-            $: "skønlitteratur",
+          prefix: {
+            $: "85",
+          },
+          shelfmark: {
+            $: "Knausgård",
           },
         },
         subject: [
@@ -935,8 +941,11 @@ export function load(pid) {
           latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } },
         },
         shelf: {
-          value: {
-            $: "skønlitteratur",
+          prefix: {
+            $: "64.64",
+          },
+          shelfmark: {
+            $: "gray",
           },
         },
         subject: [

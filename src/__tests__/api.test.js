@@ -227,7 +227,10 @@ describe("API test cases", () => {
                   language
                   physicalDescription
                   publisher
-                  shelf
+                  shelf {
+                    prefix
+                    shelfmark
+                  }
                   availability {
                     willLend
                     expectedDelivery
@@ -269,7 +272,10 @@ describe("API test cases", () => {
                     language
                     physicalDescription
                     publisher
-                    shelf
+                    shelf {
+                      prefix
+                      shelfmark
+                    }
                   }
                 }
                 path
