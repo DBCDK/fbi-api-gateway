@@ -1,4 +1,8 @@
 export default {
+  profile: {
+    agencyId: process.env.PROFILE_AGENCY_ID || "190101",
+    name: process.env.PROFILE_NAME || "default",
+  },
   app: {
     id: process.env.APP_ID || "bibliotekdk-next-api",
   },
@@ -64,8 +68,6 @@ export default {
       url:
         process.env.WORKSERVICE_URL ||
         "http://work-presentation-service.cisterne.svc.cloud.dbc.dk/api/work-presentation",
-      agencyId: process.env.WORKSERVICE_AGENCY_ID || "190101",
-      profile: process.env.WORKSERVICE_PROFILE || "default",
       ttl: process.env.WORKSERVICE_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.WORKSERVICE_PREFIX || "workservice-11",
     },
@@ -73,8 +75,6 @@ export default {
       url:
         process.env.SERIES_URL ||
         "http://series-service.cisterne.svc.cloud.dbc.dk/api/v1/series-members",
-      agencyId: process.env.SERIES_AGENCY_ID || "190101",
-      profile: process.env.SERIES_PROFILE || "default",
       ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.SERIES_PREFIX || "seriesservice-1",
     },

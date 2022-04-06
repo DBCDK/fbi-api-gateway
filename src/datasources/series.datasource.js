@@ -1,7 +1,8 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, agencyId, profile, ttl, prefix } = config.datasources.series;
+const { url, ttl, prefix } = config.datasources.series;
+const { agencyId, name: profile } = config.profile;
 
 export async function load({ workId, trackingId = null }) {
   // trackingId can be added to the params by adding /${trackingId} to the end

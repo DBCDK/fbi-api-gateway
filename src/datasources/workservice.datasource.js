@@ -2,7 +2,8 @@ import { log } from "dbc-node-logger";
 import request from "superagent";
 import config from "../config";
 
-const { url, agencyId, profile, ttl, prefix } = config.datasources.work;
+const { url, ttl, prefix } = config.datasources.work;
+const { agencyId, name: profile } = config.profile;
 
 /**
  * Fetches a work from the work service
