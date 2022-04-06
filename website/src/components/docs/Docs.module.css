@@ -40,6 +40,10 @@
   margin: var(--pt2) 0;
 }
 
+.content li {
+  margin-left: var(--pt3);
+}
+
 @media screen and (min-width: 992px) {
   .wrap .menu {
     display: block;

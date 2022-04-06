@@ -16,6 +16,11 @@ const components = {
     </Title>
   ),
   p: ({ children }) => <Text type="text2">{children}</Text>,
+  li: ({ children }) => (
+    <li>
+      <Text type="text2">{children}</Text>
+    </li>
+  ),
 };
 
 export default function Page() {

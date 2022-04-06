@@ -33,3 +33,76 @@ If no work is found for a faust, null is returned at the corresponding position.
     faust: ["48953786", "61965815", "unknown-faust"],
   }}
 />
+
+## Reviews
+
+The reviews field returns a list of `Review`. Review is a union type consisting
+of the following underlying concrete types:
+
+- `ReviewInfomedia` includes infomediaId and pid that can be used to look up the actual
+  article. Check out the examples for infomedia.
+- `ReviewExternalMedia` includes an url to an external website where the review is located.
+- `ReviewMatVurd` is the librarians review. The entire review can be obtained from this object type.
+
+<InlineGraphiQL
+  query={`query ($id: String!) {
+  work(id: $id) {
+    id
+    title
+    reviews {
+      __typename
+      ... on ReviewInfomedia {
+        author
+        media
+        reference {
+          infomediaId
+          pid
+        }
+      }
+      ... on ReviewExternalMedia {
+        author
+        media
+        url
+        
+      }
+      ... on ReviewMatVurd {
+        author
+        date
+        all {
+          name
+          text
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    id: "work-of:870970-basis:51701763",
+  }}
+/>
+
+## Articles
+
+The full content of an article may be accessible with Infomedia.
+This example shows how to get the infomedia reference. Use the pid to get hold of
+the full article. See the Infomedia example.
+
+<InlineGraphiQL
+  query={`query ($id: String!) {
+  work(id: $id) {
+    id
+    title
+    manifestations {
+      onlineAccess {
+        __typename
+        ... on InfomediaReference {
+          pid
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    id: "work-of:870971-avis:33301561",
+  }}
+/>

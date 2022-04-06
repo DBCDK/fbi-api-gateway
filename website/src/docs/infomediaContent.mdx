@@ -1,0 +1,24 @@
+# Infomedia
+
+🔒 Requires user authenticated token. Access is granted when the users
+residence of municipality is subscribed to Infomedia.
+
+<InlineGraphiQL
+  query={`query ($pid: String!) {
+  infomediaContent(pid: $pid) {
+    id
+    headLine
+    subHeadLine
+    byLine
+    dateLine
+    paper
+    text
+    hedLine
+    logo
+    origin
+  }
+}`}
+  variables={{
+    pid: "870971-anmeld:36760729",
+  }}
+/>

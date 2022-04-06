@@ -1,0 +1,23 @@
+# Suggest
+
+<InlineGraphiQL
+  query={`query ($q: String!) {
+  suggest(q: $q) {
+    result {
+      __typename
+      ... on Creator {
+        name
+      }
+      ... on Subject {
+        value
+      }
+      ... on Work {
+        title
+      }
+    }
+  }
+}`}
+  variables={{
+    q: "harry",
+  }}
+/>
