@@ -6,7 +6,7 @@ def imageLabel=BUILD_NUMBER
 
 pipeline {
     agent {
-        label 'devel9-head'
+        label 'devel10-head'
     }
     environment {
         GITLAB_ID = "702"
@@ -14,6 +14,7 @@ pipeline {
         IMAGE = "${imageName}${env.BRANCH_NAME != 'master' ? "-${env.BRANCH_NAME.toLowerCase()}" : ''}:${imageLabel}"
         DOCKER_COMPOSE_NAME = "compose-${IMAGE}"
         GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
+        REPOSITORY = "docker-frontend.artifacts.dbccloud.dk"
     }
     stages {
 
@@ -42,7 +43,7 @@ pipeline {
             steps {
                 script {
                     if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
-                        docker.withRegistry('https://docker-ux.dbc.dk', 'docker') {
+                        docker.withRegistry("${REPOSITORY}", 'docker') {
                             app.push()
                             app.push("latest")
                         }
@@ -52,8 +53,8 @@ pipeline {
         stage("Update staging version number") {
 			agent {
 				docker {
-					label 'devel9-head'
-					image "docker-io.dbc.dk/python3-build-image"
+					label 'devel10-head'
+					image "docker-dbc.artifacts.dbccloud.dk/build-env"
 					alwaysPull true
 				}
 			}
@@ -62,14 +63,7 @@ pipeline {
 			}
 			steps {
 				dir("deploy") {
-					git(url: "gitlab@gitlab.dbc.dk:frontend/buggi-configuration.git", credentialsId: "gitlab-isworker", branch: "staging")
 					sh """#!/usr/bin/env bash
-						set -xe
-						rm -rf auto-committer-env
-						python3 -m venv auto-committer-env
-						source auto-committer-env/bin/activate
-						pip install -U pip
-						pip install git+https://github.com/DBCDK/kube-deployment-auto-committer#egg=deployversioner
 						set-new-version configuration.yaml ${env.GITLAB_PRIVATE_TOKEN} ${env.GITLAB_ID} ${env.DOCKER_TAG} -b staging
 					"""
 				}
