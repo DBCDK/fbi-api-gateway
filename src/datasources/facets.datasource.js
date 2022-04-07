@@ -4,6 +4,7 @@
 
 import request from "superagent";
 import config from "../config";
+const { agencyId: agency, name: profile } = config.profile;
 
 const { url, prefix, ttl, token } = config.datasources.facets;
 
@@ -13,6 +14,8 @@ export async function load({ q, filters, facets = [] }) {
   const statics = {
     "access-token": token,
     debug: false,
+    agency,
+    profile,
   };
 
   // merge variables and statics

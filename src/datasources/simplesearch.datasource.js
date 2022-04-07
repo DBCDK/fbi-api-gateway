@@ -5,6 +5,8 @@
 import request from "superagent";
 import config from "../config";
 
+const { agencyId: agency, name: profile } = config.profile;
+
 const { url, prefix, ttl, token } = config.datasources.simplesearch;
 
 export async function load({ q, filters, limit = 10, offset = 0 }) {
@@ -22,6 +24,8 @@ export async function load({ q, filters, limit = 10, offset = 0 }) {
     start: offset,
     rows: limit,
     ...statics,
+    agency,
+    profile,
   };
 
   // do the request
