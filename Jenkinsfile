@@ -14,7 +14,7 @@ pipeline {
         IMAGE = "${imageName}${env.BRANCH_NAME != 'master' ? "-${env.BRANCH_NAME.toLowerCase()}" : ''}:${imageLabel}"
         DOCKER_COMPOSE_NAME = "compose-${IMAGE}"
         GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
-        REPOSITORY = "docker-frontend.artifacts.dbccloud.dk"
+        REPOSITORY = "https://docker-frontend.artifacts.dbccloud.dk"
     }
     stages {
 
