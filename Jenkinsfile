@@ -54,7 +54,7 @@ pipeline {
 			agent {
 				docker {
 					label 'devel10-head'
-					image "https://docker-dbc.artifacts.dbccloud.dk/build-env:latest"
+					image "docker-dbc.artifacts.dbccloud.dk/build-env:latest"
 					alwaysPull true
 				}
 			}
