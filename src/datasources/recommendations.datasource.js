@@ -4,6 +4,8 @@
 
 import request from "superagent";
 import { log } from "dbc-node-logger";
+import config from "../config";
+const { agencyId } = config.profile;
 
 export async function load({ pid, limit = 10 }) {
   try {
@@ -14,7 +16,7 @@ export async function load({ pid, limit = 10 }) {
           .post("http://booklens-1-1.mi-prod.svc.cloud.dbc.dk")
           .send({
             like: [pid],
-            agencies: [190101],
+            agencies: [agencyId],
             persistent_work: true,
             limit,
           })

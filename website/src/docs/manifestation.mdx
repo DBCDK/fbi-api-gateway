@@ -14,7 +14,24 @@ Get shelf information for given pid
                 shelfmark
                 }
             }
-        }` }
+        }`}
+  variables={{
+    pid: "870970-basis:48237053",
+  }}
+/>
+
+## Recommendations
+
+<InlineGraphiQL
+  query={`query($pid: String!) {
+            manifestation(pid: $pid) {
+              recommendations {
+                work {
+                  title
+                }
+              }
+            }
+        }`}
   variables={{
     pid: "870970-basis:48237053",
   }}
