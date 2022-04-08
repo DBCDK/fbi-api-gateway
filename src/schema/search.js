@@ -153,6 +153,7 @@ export const resolvers = {
     async hitcount(parent, args, context) {
       const res = await context.datasources.simplesearch.load({
         ...parent,
+        profile: context.profile,
       });
 
       return res.hitcount;
@@ -161,11 +162,17 @@ export const resolvers = {
       const res = await context.datasources.simplesearch.load({
         ...parent,
         ...args,
+        profile: context.profile,
       });
 
       const expanded = await Promise.all(
         res.result.map(async ({ workid }) => {
-          return (await context.datasources.workservice.load(workid))?.work;
+          return (
+            await context.datasources.workservice.load({
+              workId: workid,
+              profile: context.profile,
+            })
+          )?.work;
         })
       );
 
@@ -175,6 +182,7 @@ export const resolvers = {
       const res = await context.datasources.facets.load({
         ...parent,
         ...args,
+        profile: context.profile,
       });
 
       const response = [];

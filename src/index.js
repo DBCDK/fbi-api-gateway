@@ -16,7 +16,6 @@ import howruHandler from "./howru";
 import { metrics, observeDuration, count } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
-import { wrapResolvers } from "./utils/wrapResolvers";
 import { uuid } from "uuidv4";
 
 const app = express();
@@ -55,7 +54,7 @@ promExporterApp.listen(9599, () => {
   });
   // Middleware that monitors performance of those GraphQL queries
   // which specify a monitor name.
-  app.use("/graphql", async (req, res, next) => {
+  app.use("/:agency/:profile/graphql", async (req, res, next) => {
     const start = process.hrtime();
     res.once("finish", () => {
       const elapsed = process.hrtime(start);
@@ -66,6 +65,7 @@ promExporterApp.listen(9599, () => {
         uuid: req?.datasources?.trackingObject.uuid,
         parsedQuery: req.parsedQuery,
         datasources: { ...req?.datasources?.trackingObject?.trackObject },
+        profile: req.profile,
         total: Math.round(seconds * 1000),
       });
       // monitorName is added to context/req in the monitor resolver
@@ -90,8 +90,12 @@ promExporterApp.listen(9599, () => {
 
   // Setup route handler for GraphQL
   app.use(
-    "/graphql",
+    "/:agency/:profile/graphql",
     graphqlHTTP(async (request, response, graphQLParams) => {
+      request.profile = {
+        agency: request.params.agency,
+        name: request.params.profile,
+      };
       // Create dataloaders and add to request
       request.datasources = createDataLoaders(uuid());
 

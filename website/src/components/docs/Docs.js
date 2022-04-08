@@ -40,8 +40,13 @@ export default function Docs() {
     if (doc.name.includes("public")) {
       state = true;
     }
+    const splitName = doc.name.split(".");
     // return client allowed docs
-    if (configuration?.permissions?.allowRootFields?.includes(doc.name)) {
+    if (
+      configuration?.permissions?.allowRootFields?.includes(
+        splitName[splitName.length - 1]
+      )
+    ) {
       state = true;
     }
     return state;

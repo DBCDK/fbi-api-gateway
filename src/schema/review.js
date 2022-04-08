@@ -106,7 +106,12 @@ export const resolvers = {
       try {
         if (parent.faust && parent.faust.$) {
           const id = `work-of:870970-basis:${parent.faust.$}`;
-          return (await context.datasources.workservice.load(id))?.work;
+          return (
+            await context.datasources.workservice.load({
+              workId: id,
+              profile: context.profile,
+            })
+          )?.work;
         }
       } catch (e) {
         return null;

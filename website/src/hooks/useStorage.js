@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { isEqual } from "@/components/utils";
 
 export default function useStorage() {
   const { data: history, mutate: mutateHistory } = useSWR("history", (key) =>
@@ -8,12 +9,15 @@ export default function useStorage() {
   const {
     data: selectedToken,
     mutate: mutateSelectedToken,
-  } = useSWR("selectedToken", (key) => sessionStorage.getItem(key));
+  } = useSWR("selectedToken", (key) =>
+    JSON.parse(sessionStorage.getItem(key || "{}"))
+  );
 
-  const setSelectedToken = (token) => {
-    sessionStorage.setItem("selectedToken", token);
-    mutateSelectedToken(token, false);
-    setHistory(token);
+  const setSelectedToken = (token, agency, profile) => {
+    const val = { token, agency, profile };
+    sessionStorage.setItem("selectedToken", JSON.stringify(val));
+    mutateSelectedToken(val, false);
+    setHistory(token, agency, profile);
   };
 
   /**
@@ -25,15 +29,31 @@ export default function useStorage() {
     mutateSelectedToken(null, false);
   };
 
-  const setHistory = (token) => {
+  const setHistory = (token, agency, profile) => {
     const timestamp = Date.now();
+
+    // Find existing
+    const existing = history.find((obj) =>
+      isEqual(obj, { token, agency, profile })
+    );
+
     // remove duplicate
-    const uniq = history.filter((obj) => !(obj.token === token));
-    // add to beginning of array
-    uniq.unshift({
-      token,
-      timestamp,
-    });
+    const uniq = history.filter(
+      (obj) => !isEqual(obj, { token, agency, profile })
+    );
+
+    if (existing) {
+      uniq.unshift(existing);
+    } else {
+      // add to beginning of array
+      uniq.unshift({
+        token,
+        agency,
+        profile,
+        timestamp,
+      });
+    }
+
     // slice
     const sliced = uniq.slice(0, 10);
     // store
@@ -43,8 +63,10 @@ export default function useStorage() {
     mutateHistory(sliced, false);
   };
 
-  const removeHistoryItem = (token) => {
-    const newHistory = history.filter((obj) => !(obj.token === token));
+  const removeHistoryItem = (token, agency, profile) => {
+    const newHistory = history.filter(
+      (obj) => !isEqual(obj, { token, agency, profile })
+    );
     // store
     const stringified = JSON.stringify(newHistory);
     localStorage.setItem("history", stringified);
@@ -53,7 +75,7 @@ export default function useStorage() {
   };
 
   return {
-    selectedToken,
+    selectedToken: selectedToken,
     setSelectedToken,
     removeSelectedToken,
     history,

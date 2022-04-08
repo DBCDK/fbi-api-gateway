@@ -1,11 +1,21 @@
+import { useRouter } from "next/router";
 import fetch from "isomorphic-unfetch";
 import { useMemo } from "react";
 import useSWR from "swr";
 
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql";
+import useStorage from "./useStorage";
 
+export function useGraphQLUrl() {
+  const { selectedToken = {} } = useStorage();
+  const { agency = "190101", profile = "default" } = selectedToken;
+
+  return `${
+    typeof window !== "undefined" && window.location.origin
+  }/${agency}/${profile}/graphql`;
+}
 export default function useSchema(token) {
-  const url = "/graphql";
+  const url = useGraphQLUrl();
 
   const fetcher = async (url) => {
     const response = await fetch(url, {
@@ -13,7 +23,7 @@ export default function useSchema(token) {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `bearer ${token}`,
+        Authorization: `bearer ${token?.token}`,
       },
       body: JSON.stringify({ query: getIntrospectionQuery() }),
     });
@@ -24,7 +34,7 @@ export default function useSchema(token) {
     return await response.json();
   };
 
-  const { data } = useSWR(token && [url, token], fetcher);
+  const { data } = useSWR(token?.token && [url, token?.token], fetcher);
 
   const schema = useMemo(() => {
     if (data?.data) {

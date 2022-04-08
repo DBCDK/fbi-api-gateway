@@ -62,9 +62,7 @@ export default function Header() {
 
           <Col as="nav" className={styles.links}>
             <Text type="text5" className={styles.link}>
-              <Link href="/documentation" disabled={!isValidToken}>
-                Docs
-              </Link>
+              <Link href="/documentation">Docs</Link>
             </Text>
             <Text type="text5" className={styles.link}>
               <Link href="/graphiql" disabled={!isValidToken}>
@@ -85,12 +83,10 @@ export default function Header() {
               </Link>
             </Text>
           </Col>
-          {!isIndex && (
-            <Col className={styles.middle}>
-              <Token className={styles.token} compact />
-              <History className={styles.history} compact />
-            </Col>
-          )}
+          <Col className={styles.middle}>
+            {/* <Token className={styles.token} compact /> */}
+            <History className={styles.history} compact />
+          </Col>
         </Row>
       </Container>
     </header>

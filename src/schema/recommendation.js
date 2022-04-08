@@ -15,7 +15,10 @@ export const resolvers = {
       return { id: parent.pid };
     },
     async work(parent, args, context, info) {
-      const res = await context.datasources.workservice.load(parent.work);
+      const res = await context.datasources.workservice.load({
+        workId: parent.work,
+        profile: context.profile,
+      });
       return res?.work;
     },
   },

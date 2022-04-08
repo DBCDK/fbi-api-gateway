@@ -4,15 +4,41 @@ import Collapse from "react-bootstrap/Collapse";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
+import Input from "@/components/base/input";
 
 import { dateTimeConverter } from "@/components/utils";
 import Text from "@/components/base/text";
 import Title from "@/components/base/title";
 import Button from "@/components/base/button";
 
-import { isToken } from "@/components/utils";
+import { isToken, isEqual } from "@/components/utils";
 
 import styles from "./History.module.css";
+
+function CreateForm() {
+  const { setSelectedToken } = useStorage();
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        setSelectedToken(
+          e.target.accessToken.value,
+          e.target.agency.value,
+          e.target.profile.value
+        );
+        console.log("hep", e.target.accessToken.value);
+      }}
+    >
+      <Input name="accessToken" placeholder="Access Token" />
+      <Input name="agency" placeholder="Agency ID" />
+      <Input name="profile" placeholder="Profile Name" />
+      <Button type="submit" className={styles.use} size="small" primary>
+        Create
+      </Button>
+    </form>
+  );
+}
 
 /**
  * The Component function
@@ -25,6 +51,8 @@ import styles from "./History.module.css";
 
 function Item({
   token,
+  agency,
+  profile,
   timestamp,
   inUse,
   configuration,
@@ -33,7 +61,7 @@ function Item({
 }) {
   const { selectedToken, setSelectedToken, removeHistoryItem } = useStorage();
 
-  const [open, setOpen] = useState(inUse);
+  const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
 
   // update state on modal close
@@ -43,9 +71,9 @@ function Item({
   //   }
   // }, [isVisible]);
 
-  useEffect(() => {
-    setOpen(inUse);
-  }, [selectedToken]);
+  // useEffect(() => {
+  //   setOpen(inUse);
+  // }, [selectedToken]);
 
   const ExpiredDisplay = "This token is expired 😔";
 
@@ -63,7 +91,19 @@ function Item({
       <Col xs={12} className={`${styles.item} ${expiredClass} ${inUseClass}`}>
         <Row>
           <Col xs={12} className={styles.display}>
-            <Text type="text5">{isExpired ? ExpiredDisplay : displayName}</Text>
+            <Text type="text5">
+              {isExpired ? (
+                ExpiredDisplay
+              ) : (
+                <>
+                  {displayName}
+                  <span className={styles.authenticated}>
+                    {authenticated ? "AUTHENTICATED" : "ANONYMOUS"}
+                  </span>
+                </>
+              )}
+            </Text>
+
             <button
               className={`${styles.cross} ${crossClass}`}
               onClick={() => setOpen(!open)}
@@ -81,6 +121,10 @@ function Item({
                 <Text type="text4">Submitted at</Text>
                 <Text type="text1">{date}</Text>
               </Col>
+              <Col xs={12} className={styles.date}>
+                <Text type="text4">Access token</Text>
+                <Text type="text1">{token}</Text>
+              </Col>
 
               {!isExpired && (
                 <Col xs={12} className={styles.id}>
@@ -91,10 +135,12 @@ function Item({
             </Row>
           </Collapse>
           <Col xs={12} className={styles.token}>
-            <Text type="text4">
-              {authenticated ? "Authenticated" : "Anonymous"} Token
+            <Text type="text4">Agency</Text>
+            <Text type="text1">{agency}</Text>
+            <Text type="text4" className={styles.label}>
+              Profile
             </Text>
-            <Text type="text1">{token}</Text>
+            <Text type="text1">{profile}</Text>
           </Col>
         </Row>
 
@@ -105,7 +151,7 @@ function Item({
               className={styles.remove}
               size="small"
               onClick={() => {
-                removeHistoryItem(token);
+                removeHistoryItem(token, agency, profile);
                 setRemoved(true);
               }}
               secondary
@@ -117,7 +163,7 @@ function Item({
               disabled={isExpired}
               size="small"
               onClick={() => {
-                setSelectedToken(token);
+                setSelectedToken(token, agency, profile);
               }}
               primary
             >
@@ -140,9 +186,9 @@ function Item({
  */
 
 function Wrap(props) {
-  const { configuration } = useConfiguration(props.token);
+  const { configuration, isLoading } = useConfiguration(props);
 
-  if (!configuration) {
+  if (isLoading) {
     return "loading...";
   }
 
@@ -171,24 +217,30 @@ function History({ modal, context }) {
     if (!modal.isVisible) {
       setTimeout(() => setState(history), 200);
     }
-  }, [modal.isVisible, history]);
+  }, [modal.isVisible]);
+
+  // update history on history length change
+  useEffect(() => {
+    setTimeout(() => setState(history), 200);
+  }, [history.length]);
 
   return (
     <div className={`${styles.history}`}>
       <Row className={styles.keys}>
         <Col>
           <Row>
+            <CreateForm />
+          </Row>
+          <Row>
             {state?.map((h) => {
-              if (isToken(h.token)) {
-                return (
-                  <Wrap
-                    key={h.token}
-                    isVisible={modal.isVisible}
-                    inUse={selectedToken === h.token}
-                    {...h}
-                  />
-                );
-              }
+              return (
+                <Wrap
+                  key={JSON.stringify(h)}
+                  isVisible={modal.isVisible}
+                  inUse={isEqual(selectedToken, h)}
+                  {...h}
+                />
+              );
             })}
           </Row>
         </Col>

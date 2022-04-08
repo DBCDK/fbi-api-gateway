@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import _GraphiQL from "graphiql";
 
 import useStorage from "@/hooks/useStorage";
-import useSchema from "@/hooks/useSchema";
+import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
@@ -27,6 +27,7 @@ export function InlineGraphiQL({ query, variables }) {
 
   const curlRef = useRef();
   const { schema } = useSchema(selectedToken);
+  const url = useGraphQLUrl(selectedToken);
 
   const [showCopy, setShowCopy] = useState(false);
   const [editQuery, setEditQuery] = useState(query);
@@ -34,7 +35,7 @@ export function InlineGraphiQL({ query, variables }) {
 
   const curl_vars = editVariables?.replace?.(/\s+/g, " ");
   const curl_query = editQuery?.replace(/\s+/g, " ");
-  const curl = `curl -i -H "Authorization: bearer ${selectedToken}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${window.location.origin}/graphql`;
+  const curl = `curl -i -H "Authorization: bearer ${selectedToken?.token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
 
   return (
     <div className={styles.inlinegraphiql}>
@@ -73,12 +74,12 @@ export function InlineGraphiQL({ query, variables }) {
         <GraphiQLFix
           schema={schema}
           fetcher={async (graphQLParams) => {
-            const data = await fetch("/graphql", {
+            const data = await fetch(url, {
               method: "POST",
               headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json",
-                Authorization: `bearer ${selectedToken}`,
+                Authorization: `bearer ${selectedToken?.token}`,
               },
               body: JSON.stringify(graphQLParams),
               credentials: "same-origin",
@@ -125,18 +126,19 @@ export function InlineGraphiQL({ query, variables }) {
 export default function GraphiQL() {
   const { selectedToken } = useStorage();
   const { schema } = useSchema(selectedToken);
+  const url = useGraphQLUrl(selectedToken);
   return (
     <div style={{ height: "100vh" }}>
       <Header />
       <GraphiQLFix
         schema={schema}
         fetcher={async (graphQLParams) => {
-          const data = await fetch("/graphql", {
+          const data = await fetch(url, {
             method: "POST",
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: `bearer ${selectedToken}`,
+              Authorization: `bearer ${selectedToken?.token}`,
             },
             body: JSON.stringify(graphQLParams),
             credentials: "same-origin",

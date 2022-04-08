@@ -5,11 +5,10 @@
 import request from "superagent";
 import config from "../config";
 
-const { agencyId: agency, name: profile } = config.profile;
-
 const { url, prefix, ttl, token } = config.datasources.simplesearch;
 
-export async function load({ q, filters, limit = 10, offset = 0 }) {
+export async function load({ q, filters, limit = 10, offset = 0, profile }) {
+  const { agency, name } = profile;
   // get parsed arguments for query
   // static parameters for the search
   const statics = {
@@ -25,7 +24,7 @@ export async function load({ q, filters, limit = 10, offset = 0 }) {
     rows: limit,
     ...statics,
     agency,
-    profile,
+    profile: name,
   };
 
   // do the request

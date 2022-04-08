@@ -144,6 +144,7 @@ export const resolvers = {
       // Continue if series-service contains series data
       const data = await context.datasources.series.load({
         workId: parent.workId,
+        profile: context.profile,
       });
 
       if (data) {

@@ -16,11 +16,12 @@ const fetcher = async (url) => {
 };
 
 export default function useConfiguration(token) {
-  const url = `/api/smaug?token=${token}`;
+  const url = `/api/smaug?token=${token?.token}`;
+  const isValid = isToken(token?.token);
 
-  const { data, error } = useSWR(isToken(token) && url, fetcher, {
+  const { data, error } = useSWR(isValid && url, fetcher, {
     fallback: {},
   });
 
-  return { configuration: data, isLoading: !data && !error } || {};
+  return { configuration: data, isLoading: !data && !error && isValid } || {};
 }

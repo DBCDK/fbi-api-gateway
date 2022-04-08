@@ -1,4 +1,4 @@
-export function load(workId) {
+export function load({ workId }) {
   const data = {
     "work-of:870970-basis:26521556": {
       trackingId: "032113e2-a929-46f9-8a28-8217611d75e9",

@@ -2,11 +2,11 @@ import request from "superagent";
 import config from "../config";
 
 const { url, ttl, prefix } = config.datasources.series;
-const { agencyId, name: profile } = config.profile;
 
-export async function load({ workId, trackingId = null }) {
+export async function load({ workId, trackingId = null, profile }) {
+  const { agency, name } = profile;
   // trackingId can be added to the params by adding /${trackingId} to the end
-  const params = `${agencyId}/${profile}/${workId}`;
+  const params = `${agency}/${name}/${workId}`;
 
   // series-service returns 404 if workId is not a part of a serie
   try {
@@ -21,6 +21,6 @@ export const options = {
   redis: {
     prefix,
     ttl,
-    staleWhileRevalidate: 60 * 60 * 24 * 7, // 7 days
+    staleWhileRevalidate: 60 * 60 * 48, // 48 hours
   },
 };

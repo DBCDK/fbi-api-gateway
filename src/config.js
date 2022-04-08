@@ -1,8 +1,4 @@
 export default {
-  profile: {
-    agencyId: process.env.PROFILE_AGENCY_ID || "190101",
-    name: process.env.PROFILE_NAME || "default",
-  },
   app: {
     id: process.env.APP_ID || "bibliotekdk-next-api",
   },
@@ -139,6 +135,13 @@ export default {
         "http://webservice.statsbiblioteket.dk",
       user: process.env.STATSBIBLIOTEKET_USER,
       password: process.env.STATSBIBLIOTEKET_PASSWORD,
+    },
+    recommendations: {
+      url:
+        process.env.RECOMMENDATIONS_URL ||
+        "http://booklens-1-1.mi-prod.svc.cloud.dbc.dk",
+      ttl: process.env.RECOMMENDATIONS_TIME_TO_LIVE_SECONDS || 5,
+      prefix: process.env.RECOMMENDATIONS_PREFIX || "recommendations-1",
     },
   },
 };

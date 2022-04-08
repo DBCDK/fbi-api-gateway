@@ -31,7 +31,13 @@ import { createMockedDataLoaders } from "../datasourceLoader";
 let internalSchema;
 
 export async function performTestQuery({ query, variables, context }) {
-  return graphql(internalSchema, query, null, context, variables);
+  return graphql(
+    internalSchema,
+    query,
+    null,
+    { ...context, profile: { agency: "123456", name: "some-profile" } },
+    variables
+  );
 }
 
 describe("API test cases", () => {

@@ -26,7 +26,7 @@ export default function Hero({ className = "" }) {
 
   return (
     <section className={`${styles.hero} ${className}`}>
-      <Container>
+      {/* <Container>
         <Row className={styles.row}>
           <Col>
             <Title className={styles.title}>
@@ -62,7 +62,7 @@ export default function Hero({ className = "" }) {
             </Button>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
     </section>
   );
 }

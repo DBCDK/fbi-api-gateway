@@ -96,7 +96,12 @@ export const resolvers = {
       }
       return Promise.all(
         ids.map(async (id) => {
-          return (await context.datasources.workservice.load(id))?.work;
+          return (
+            await context.datasources.workservice.load({
+              workId: id,
+              profile: context.profile,
+            })
+          )?.work;
         })
       );
     },
@@ -126,7 +131,10 @@ export const resolvers = {
         return null;
       }
 
-      const res = await context.datasources.workservice.load(id);
+      const res = await context.datasources.workservice.load({
+        workId: id,
+        profile: context.profile,
+      });
       return res?.work;
     },
     async search(parent, args, context, info) {

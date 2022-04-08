@@ -299,6 +299,7 @@ export const resolvers = {
       const recommendations = await context.datasources.recommendations.load({
         pid: parent.id,
         limit: args.limit,
+        profile: context.profile,
       });
       if (recommendations) {
         return recommendations.response || [];

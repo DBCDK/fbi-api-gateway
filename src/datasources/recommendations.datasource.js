@@ -5,23 +5,19 @@
 import request from "superagent";
 import { log } from "dbc-node-logger";
 import config from "../config";
-const { agencyId } = config.profile;
 
-export async function load({ pid, limit = 10 }) {
+const { url, prefix, ttl } = config.datasources.recommendations;
+
+export async function load({ pid, limit = 10, profile }) {
   try {
     return (
-      (
-        await request
-          //.post("http://recompass-work-1-2.mi-prod.svc.cloud.dbc.dk/recompass-work")
-          .post("http://booklens-1-1.mi-prod.svc.cloud.dbc.dk")
-          .send({
-            like: [pid],
-            agencies: [agencyId],
-            persistent_work: true,
-            limit,
-          })
-      ).body
-    );
+      await request.post(url).send({
+        like: [pid],
+        agencies: [profile.agency],
+        persistent_work: true,
+        limit,
+      })
+    ).body;
   } catch (e) {
     log.error("Request to recommender failed." + " Message: " + e.message);
 
@@ -32,7 +28,7 @@ export async function load({ pid, limit = 10 }) {
 
 export const options = {
   redis: {
-    prefix: "recommendations-1",
-    ttl: 60 * 60 * 24,
+    prefix,
+    ttl,
   },
 };

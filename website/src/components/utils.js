@@ -28,5 +28,13 @@ export function dateTimeConverter(timestamp) {
 
 export function isToken(token) {
   // alpha numeric and more than 32 characters
-  return !!(token && token.match(/^(?=.*[a-zA-Z])(?=.*[0-9]).{40}/));
+  return !!token?.match?.(/^(?=.*[a-zA-Z])(?=.*[0-9]).{40}/);
+}
+
+export function isEqual(token1, token2) {
+  return (
+    token1?.token === token2?.token &&
+    token1?.agency === token2?.agency &&
+    token1?.profile === token2?.profile
+  );
 }

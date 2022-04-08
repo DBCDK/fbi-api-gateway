@@ -3,20 +3,19 @@ import request from "superagent";
 import config from "../config";
 
 const { url, ttl, prefix } = config.datasources.work;
-const { agencyId, name: profile } = config.profile;
 
 /**
  * Fetches a work from the work service
  * @param {Object} params
  * @param {string} params.workId id of the work
  */
-export async function load({ workId }) {
+export async function load({ workId, profile }) {
   return (
     await request.get(url).query({
       workId,
       // trackingId: 'bibdk-api', this should be dynamic, and be generated per graphql request
-      agencyId,
-      profile,
+      agencyId: profile.agency,
+      profile: profile.name,
       includeRelations: true,
     })
   ).body;
@@ -31,7 +30,7 @@ export async function batchLoader(keys, loadFunc) {
   return await Promise.all(
     keys.map(async (key) => {
       try {
-        return await loadFunc({ workId: key });
+        return await loadFunc(key);
       } catch (e) {
         // We return error instead of throwing,
         // se we don't fail entire Promise.all
@@ -58,6 +57,6 @@ export const options = {
   redis: {
     prefix,
     ttl,
-    staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
+    staleWhileRevalidate: 60 * 60 * 48, // 48 hours
   },
 };

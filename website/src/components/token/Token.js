@@ -20,7 +20,7 @@ export default function Token({
   // useToken custom hook
   const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
-
+  // console.log({ selectedToken });
   // internal state
   const [state, setState] = useState({
     value: "",
@@ -32,12 +32,12 @@ export default function Token({
   useEffect(() => {
     setState({
       ...state,
-      value: selectedToken || "",
+      value: selectedToken?.token || "",
     });
 
     // upddate callback with new value
-    selectedToken && onChange?.(selectedToken);
-  }, [selectedToken]);
+    selectedToken?.token && onChange?.(selectedToken?.token);
+  }, [selectedToken?.token]);
 
   // ref
   const inputRef = useRef(null);
@@ -46,7 +46,7 @@ export default function Token({
   // states
   const hasFocus = !!state.focus;
   const hasValue = !!(state.value && state.value !== "");
-  const isToken = state.value === selectedToken;
+  const isToken = state.value === selectedToken?.token;
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 
@@ -95,7 +95,7 @@ export default function Token({
           }}
           onChange={(e) => {
             const value = e.target.value;
-            value && setSelectedToken(value);
+            value && setSelectedToken(value, "190101", "default");
             onChange?.(value);
             setState({ ...state, value });
           }}
@@ -119,7 +119,7 @@ export default function Token({
         </Button>
       </div>
       <Overlay
-        show={state.value && !selectedToken && !state.focus}
+        show={state.value && !selectedToken?.token && !state.focus}
         container={containerRef}
       >
         <Text type="text2">

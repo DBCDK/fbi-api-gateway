@@ -4,6 +4,7 @@ import useStorage from "@/hooks/useStorage";
 
 import dynamic from "next/dynamic";
 import styles from "./Voyager.module.css";
+import { useGraphQLUrl } from "@/hooks/useSchema";
 
 // Voyager cannot be imported server side
 const VoyagerComp = dynamic(
@@ -12,13 +13,14 @@ const VoyagerComp = dynamic(
 );
 
 export default function Voyager() {
+  const url = useGraphQLUrl();
   const { selectedToken } = useStorage();
   function introspectionProvider(query) {
-    return fetch("/graphql", {
+    return fetch(url, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${selectedToken}`,
+        Authorization: `Bearer ${selectedToken?.token}`,
       },
       body: JSON.stringify({ query: query }),
     }).then((response) => response.json());
