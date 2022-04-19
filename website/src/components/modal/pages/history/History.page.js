@@ -35,7 +35,7 @@ function CreateForm() {
           }}
         >
           <div className={styles.inputfield}>
-            <label for="accessToken">Access Token</label>
+            <label htmlFor="accessToken">Access Token</label>
             <Input
               name="accessToken"
               placeholder="Access Token"
@@ -44,11 +44,11 @@ function CreateForm() {
             />
           </div>
           <div className={styles.inputfield}>
-            <label for="agency">Agency ID</label>
+            <label htmlFor="agency">Agency ID</label>
             <Input name="agency" placeholder="Agency ID" id="agency" required />
           </div>
           <div className={styles.inputfield}>
-            <label for="profile">Profile Name</label>
+            <label htmlFor="profile">Profile Name</label>
             <Input
               name="profile"
               placeholder="Profile Name"
