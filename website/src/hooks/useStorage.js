@@ -6,12 +6,18 @@ export default function useStorage() {
     JSON.parse(localStorage.getItem(key) || "[]")
   );
 
-  const {
+  let {
     data: selectedToken,
     mutate: mutateSelectedToken,
   } = useSWR("selectedToken", (key) =>
     JSON.parse(sessionStorage.getItem(key || "{}"))
   );
+
+  // If user has not explicitly selected a token
+  // we use the first one from history if one exists
+  if (!selectedToken) {
+    selectedToken = history?.[0];
+  }
 
   const setSelectedToken = (token, agency, profile) => {
     const val = { token, agency, profile };
