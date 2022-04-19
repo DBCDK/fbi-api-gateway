@@ -10,8 +10,7 @@ import { useModal } from "@/components/modal";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
-import Token from "@/components/token";
-import History from "@/components/history";
+import TokenStatus from "@/components/tokenstatus";
 
 import styles from "./Header.module.css";
 
@@ -84,8 +83,7 @@ export default function Header() {
             </Text>
           </Col>
           <Col className={styles.middle}>
-            {/* <Token className={styles.token} compact /> */}
-            <History className={styles.history} compact />
+            <TokenStatus className={styles.token} compact />
           </Col>
         </Row>
       </Container>

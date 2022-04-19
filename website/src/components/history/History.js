@@ -29,7 +29,7 @@ export function History({ onClick, compact, disabled, className = "" }) {
       onClick={onClick}
       secondary
     >
-      <span>🔑</span>
+      <span>✏️</span>
       {/* <span>🗝️</span> */}
     </Button>
   );
@@ -45,7 +45,7 @@ export default function Wrap(props) {
   return (
     <History
       {...props}
-      disabled={!hasValidTokens}
+      // disabled={!hasValidTokens}
       onClick={() => modal.push("history")}
     />
   );

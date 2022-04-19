@@ -63,8 +63,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--divider);
-  padding: var(--pt1) 0 !important;
+  /* background-color: var(--divider); */
+  padding: var(--pt1) var(--pt1) 0 var(--pt2) !important;
 }
 
 .buttons {
@@ -89,10 +89,11 @@
 }
 
 .item hr {
-  background-color: var(--divider-dark);
-  border: none;
-  height: 1px;
+  
+  margin: 0 !important;
 }
+
+
 
 .cross {
   width: var(--pt4);
@@ -145,6 +146,49 @@
 
 .cross:focus-visible {
   outline: 2px solid var(--text-dark);
+}
+
+.configurations h2 {
+  margin-top: var(--pt3);
+  margin-bottom: var(--pt3);
+}
+
+.history h2,
+.createform form {
+  padding: 0;
+}
+.createform form {
+  margin-top: var(--pt1);
+  
+}
+.createform input {
+  /* background: red; */
+  border-radius: 0%;
+  width: 380px;
+  padding: var(--pt1);
+  height: var(--pt5);
+  font-size: 14px;
+  border: 1px solid gray;
+}
+.createform button {
+  margin-top: var(--pt2);
+}
+.history hr {
+  background-color: var(--divider-dark);
+  border: none;
+  height: 1px;
+  margin-top: var(--pt4);
+}
+
+.inputfield {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--pt2);
+}
+.formbutton {
+  display: flex;
+  justify-content: flex-end;
 }
 
 @media (min-width: 576px) {

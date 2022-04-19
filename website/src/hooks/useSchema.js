@@ -7,8 +7,8 @@ import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql";
 import useStorage from "./useStorage";
 
 export function useGraphQLUrl() {
-  const { selectedToken = {} } = useStorage();
-  const { agency = "190101", profile = "default" } = selectedToken;
+  const { selectedToken } = useStorage();
+  const { agency = "190101", profile = "default" } = selectedToken || {};
 
   return `${
     typeof window !== "undefined" && window.location.origin

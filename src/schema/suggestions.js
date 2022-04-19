@@ -31,7 +31,10 @@ export const resolvers = {
   },
   SuggestResponse: {
     async result(parent, args, context, info) {
-      const res = await context.datasources.suggester.load(parent);
+      const res = await context.datasources.suggester.load({
+        ...parent,
+        profile: context.profile,
+      });
 
       return res.map(async (row) => {
         if (row.type === "creator") {

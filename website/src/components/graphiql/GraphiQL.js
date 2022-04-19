@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import _GraphiQL from "graphiql";
 
 import useStorage from "@/hooks/useStorage";
@@ -36,6 +36,12 @@ export function InlineGraphiQL({ query, variables }) {
   const curl_vars = editVariables?.replace?.(/\s+/g, " ");
   const curl_query = editQuery?.replace(/\s+/g, " ");
   const curl = `curl -i -H "Authorization: bearer ${selectedToken?.token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
+
+  // When the selected token has changed, we rerun the query
+  // The token/profile/agency combo may lead to a different response
+  useEffect(() => {
+    instanceRef?.current?.handleRunQuery?.();
+  }, [selectedToken]);
 
   return (
     <div className={styles.inlinegraphiql}>

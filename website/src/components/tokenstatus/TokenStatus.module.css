@@ -1,0 +1,22 @@
+.tokenstatus {
+  border: 1px solid black;
+  border-radius: var(--pt3);
+  padding-left: var(--pt2);
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--primary-dark);
+  white-space: nowrap;
+}
+
+.history {
+  box-sizing: content-box;
+  padding: 0;
+  /* border: 2px solid var(--primary-dark); */
+  margin-left: var(--pt1);
+}
+
+.history:hover,
+.history:focus-visible {
+  border: none;
+  border: 2px solid transparent;
+}

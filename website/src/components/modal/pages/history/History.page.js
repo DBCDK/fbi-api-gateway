@@ -19,24 +19,52 @@ function CreateForm() {
   const { setSelectedToken } = useStorage();
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSelectedToken(
-          e.target.accessToken.value,
-          e.target.agency.value,
-          e.target.profile.value
-        );
-        console.log("hep", e.target.accessToken.value);
-      }}
-    >
-      <Input name="accessToken" placeholder="Access Token" />
-      <Input name="agency" placeholder="Agency ID" />
-      <Input name="profile" placeholder="Profile Name" />
-      <Button type="submit" className={styles.use} size="small" primary>
-        Create
-      </Button>
-    </form>
+    <Col xs={12} className={styles.createform}>
+      <Row>
+        <Title type="title1" tag="h2">
+          Create Access Configuration
+        </Title>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSelectedToken(
+              e.target.accessToken.value,
+              e.target.agency.value,
+              e.target.profile.value
+            );
+          }}
+        >
+          <div className={styles.inputfield}>
+            <label for="accessToken">Access Token</label>
+            <Input
+              name="accessToken"
+              placeholder="Access Token"
+              id="accessToken"
+              required
+            />
+          </div>
+          <div className={styles.inputfield}>
+            <label for="agency">Agency ID</label>
+            <Input name="agency" placeholder="Agency ID" id="agency" required />
+          </div>
+          <div className={styles.inputfield}>
+            <label for="profile">Profile Name</label>
+            <Input
+              name="profile"
+              placeholder="Profile Name"
+              id="profile"
+              required
+            />
+          </div>
+
+          <div className={styles.formbutton}>
+            <Button type="submit" className={styles.use} size="small" primary>
+              Create
+            </Button>
+          </div>
+        </form>
+      </Row>
+    </Col>
   );
 }
 
@@ -232,6 +260,13 @@ function History({ modal, context }) {
             <CreateForm />
           </Row>
           <Row>
+            <hr />
+          </Row>
+
+          <Row className={styles.configurations}>
+            <Title type="title1" tag="h2">
+              Previously Used Configurations
+            </Title>
             {state?.map((h) => {
               return (
                 <Wrap
