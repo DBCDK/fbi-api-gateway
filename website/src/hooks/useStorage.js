@@ -72,6 +72,10 @@ export default function useStorage() {
     localStorage.setItem("history", stringified);
     // mutate
     mutateHistory(newHistory, false);
+
+    if (isEqual(selectedToken, { token, agency, profile })) {
+      removeSelectedToken();
+    }
   };
 
   return {
