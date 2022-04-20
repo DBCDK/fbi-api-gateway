@@ -8,6 +8,10 @@
   background-color: var(--divider);
   /* border-radius: var(--pt2); */
 }
+.inlinegraphiql .dummycontainer {
+  height: 350px;
+  background-color: var(--divider);
+}
 .inlinegraphiql :global(.secondary-editor) {
   /* display: none; */
 }

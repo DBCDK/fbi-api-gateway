@@ -31,26 +31,18 @@ export default function useSchema(token) {
     if (response.status !== 200) {
       return {};
     }
-    return await response.json();
+
+    const json = await response.json();
+    const schema = buildClientSchema(json.data);
+    const schemaStr = printSchema(schema);
+    return { schema, schemaStr };
   };
 
   const { data } = useSWR(token?.token && [url, token?.token], fetcher);
 
-  const schema = useMemo(() => {
-    if (data?.data) {
-      return buildClientSchema(data.data);
-    }
-  }, [data]);
-
-  const schemaStr = useMemo(() => {
-    if (schema) {
-      return printSchema(schema);
-    }
-  }, [schema]);
-
   return {
-    schema,
-    schemaStr,
+    schema: data?.schema,
+    schemaStr: data?.schemaStr,
     isLoading: !data,
   };
 }

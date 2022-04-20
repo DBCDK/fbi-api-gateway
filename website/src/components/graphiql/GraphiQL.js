@@ -3,6 +3,7 @@ import _GraphiQL from "graphiql";
 
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
+import useIntersection from "@/hooks/useIntersection";
 
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
@@ -21,13 +22,46 @@ const noStorage = {
   setItem: () => {},
   length: 0,
 };
+
+/**
+ * Shows an empy grey box, calls inView when box is in viewport.
+ * Used for lazy loading
+ *
+ * @param {*} props
+ * @param {function} props.inView
+ * @param {boolean} props.show
+ * @returns {component}
+ */
+function DummyContainer({ inView, show }) {
+  const dummyContainerRef = useRef();
+  const dummyContainerInView = useIntersection(
+    dummyContainerRef.current,
+    "0px"
+  );
+  useEffect(() => {
+    if (dummyContainerInView) {
+      inView(true);
+    }
+  }, [dummyContainerInView]);
+  return (
+    <div
+      className={styles.dummycontainer}
+      ref={dummyContainerRef}
+      style={{ display: show ? "block" : "none" }}
+    />
+  );
+}
+
 export function InlineGraphiQL({ query, variables }) {
   const { selectedToken } = useStorage();
   const instanceRef = useRef();
 
+  // This is used for lazy loading
+  const [showDummyContainer, setShowDummyContainer] = useState(true);
+
   const curlRef = useRef();
   const { schema } = useSchema(selectedToken);
-  const url = useGraphQLUrl(selectedToken);
+  const url = useGraphQLUrl();
 
   const [showCopy, setShowCopy] = useState(false);
   const [editQuery, setEditQuery] = useState(query);
@@ -37,10 +71,11 @@ export function InlineGraphiQL({ query, variables }) {
   const curl_query = editQuery?.replace(/\s+/g, " ");
   const curl = `curl -i -H "Authorization: bearer ${selectedToken?.token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
 
-  // When the selected token has changed, we rerun the query
-  // The token/profile/agency combo may lead to a different response
+  // When the selected token has changed, we unmount graphiql
+  // and mounts the dummy container. Graphiql will be reinstantiated
+  // when the dummy container is in the viewport again
   useEffect(() => {
-    instanceRef?.current?.handleRunQuery?.();
+    setShowDummyContainer(true);
   }, [selectedToken]);
 
   return (
@@ -49,7 +84,7 @@ export function InlineGraphiQL({ query, variables }) {
         size="small"
         className={`${styles.button} ${styles.run}`}
         onClick={() => {
-          instanceRef.current.handleRunQuery();
+          instanceRef.current?.handleRunQuery?.();
         }}
       >
         Run 🚀
@@ -59,7 +94,7 @@ export function InlineGraphiQL({ query, variables }) {
         size="small"
         className={`${styles.button} ${styles.prettify}`}
         onClick={() => {
-          instanceRef.current.handlePrettifyQuery();
+          instanceRef.current?.handlePrettifyQuery?.();
         }}
       >
         Prettify ✨
@@ -76,7 +111,12 @@ export function InlineGraphiQL({ query, variables }) {
         Copy 🗐
       </Button> */}
 
-      {schema && (
+      <DummyContainer
+        inView={() => setShowDummyContainer(false)}
+        show={showDummyContainer}
+      />
+
+      {schema && !showDummyContainer && (
         <GraphiQLFix
           schema={schema}
           fetcher={async (graphQLParams) => {
