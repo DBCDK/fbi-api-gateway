@@ -7,12 +7,7 @@ module.exports = {
   async redirects() {
     return [
       {
-        source: "/:agency/:profile/graphql",
-        destination: "/",
-        permanent: false,
-      },
-      {
-        source: "/:agency/:profile",
+        source: "/775100/opac",
         destination: "/",
         permanent: false,
       },
