@@ -11,6 +11,11 @@ module.exports = {
         destination: "/",
         permanent: false,
       },
+      {
+        source: "/:agency/:profile",
+        destination: "/",
+        permanent: false,
+      },
     ];
   },
 };
