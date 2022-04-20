@@ -4,4 +4,13 @@ module.exports = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  async redirects() {
+    return [
+      {
+        source: "/:agency/:profile/graphql",
+        destination: "/",
+        permanent: false,
+      },
+    ];
+  },
 };

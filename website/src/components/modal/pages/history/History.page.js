@@ -250,7 +250,7 @@ function History({ modal, context }) {
   // update history on history length change
   useEffect(() => {
     setTimeout(() => setState(history), 200);
-  }, [history.length]);
+  }, [history?.length]);
 
   return (
     <div className={`${styles.history}`}>

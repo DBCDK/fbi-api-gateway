@@ -1,3 +1,6 @@
+.inlinegraphiql {
+  height: 486px;
+}
 .inlinegraphiql :global(.topBarWrap) {
   display: none;
   content-visibility: none;
