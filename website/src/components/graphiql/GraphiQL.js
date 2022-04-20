@@ -174,7 +174,7 @@ export default function GraphiQL() {
   const { schema } = useSchema(selectedToken);
   const url = useGraphQLUrl(selectedToken);
   return (
-    <div style={{ height: "100vh" }}>
+    <div className={styles.graphiql}>
       <Header />
       <GraphiQLFix
         schema={schema}
@@ -191,9 +191,8 @@ export default function GraphiQL() {
           });
           return data.json().catch(() => data.text());
         }}
+        defaultVariableEditorOpen={true}
         headerEditorEnabled={false}
-        secondaryEditorOpen={true}
-        variableEditorActive={true}
       />
     </div>
   );

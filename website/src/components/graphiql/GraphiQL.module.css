@@ -1,3 +1,6 @@
+.graphiql :global(.graphiql-container) {
+  height: calc(100vh - 68px);
+}
 .inlinegraphiql {
   height: 486px;
 }
