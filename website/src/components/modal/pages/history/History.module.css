@@ -152,6 +152,9 @@
   margin-top: var(--pt3);
   margin-bottom: var(--pt3);
 }
+.configurations > span {
+  padding: 0;
+}
 
 .history h2,
 .createform form {

@@ -22,7 +22,7 @@ function CreateForm() {
     <Col xs={12} className={styles.createform}>
       <Row>
         <Title type="title1" tag="h2">
-          Create Access Configuration
+          Configure Access
         </Title>
         <form
           onSubmit={(e) => {
@@ -59,7 +59,7 @@ function CreateForm() {
 
           <div className={styles.formbutton}>
             <Button type="submit" className={styles.use} size="small" primary>
-              Create
+              Use
             </Button>
           </div>
         </form>
@@ -265,8 +265,9 @@ function History({ modal, context }) {
 
           <Row className={styles.configurations}>
             <Title type="title1" tag="h2">
-              Previously Used Configurations
+              Your Configurations
             </Title>
+            {!state?.length && <span>You have no configurations yet ...</span>}
             {state?.map((h) => {
               return (
                 <Wrap
