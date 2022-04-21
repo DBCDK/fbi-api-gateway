@@ -106,3 +106,28 @@ the full article. See the Infomedia example.
     id: "work-of:870971-avis:33301561",
   }}
 />
+
+## Series
+
+<InlineGraphiQL
+  query={`query ($workId: String!) {
+    work(id: $workId) {
+      series {
+        title
+          works {
+            id
+            title
+              creators {
+              name
+              }
+              cover {
+              detail
+              }
+          }
+        }
+      }
+  }`}
+  variables={{
+  workId: "work-of:870970-basis:52557240",
+  }}
+/>
