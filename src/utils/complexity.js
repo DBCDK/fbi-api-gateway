@@ -23,7 +23,8 @@ function CustomFieldEstimator({ field, childComplexity }) {
     !fieldType.startsWith("[Int") &&
     !fieldType.startsWith("[Creator") &&
     !fieldType.startsWith("[TextWithWork") &&
-    !fieldType.startsWith("[MaterialType");
+    !fieldType.startsWith("[MaterialType") &&
+    !fieldType.startsWith("[Draft_");
   if (isExpensiveArray) {
     return 100 * (childComplexity || 1);
   }
