@@ -1,14 +1,17 @@
 export const typeDef = `
-union Draft_Review = Draft_ExternalReview | Draft_InfomediaReview | Draft_LibrariansReview
+interface Draft_Review {
+  author: String
+  date: String
+}
 
-type Draft_ExternalReview {
+type Draft_ExternalReview implements Draft_Review {
   author: String
   date: String
   rating: String
   urls: [Draft_URL!]!
 }
 
-type Draft_InfomediaReview {
+type Draft_InfomediaReview implements Draft_Review {
   author: String
   date: String
   origin: String
@@ -16,7 +19,7 @@ type Draft_InfomediaReview {
   id: String!
 }
 
-type Draft_LibrariansReview {
+type Draft_LibrariansReview implements Draft_Review {
   author: String
   date: String
   sections: [TextWithWork!]!

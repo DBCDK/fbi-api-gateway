@@ -11,7 +11,8 @@
       "infomediaContent",
       "refWorks",
       "ris",
-      "submitPeriodicaArticleOrder"
+      "submitPeriodicaArticleOrder",
+      "library"
     ],
     "denyTypes": ["CheckOrderPolicy", "Availability", "SEO"]
   }

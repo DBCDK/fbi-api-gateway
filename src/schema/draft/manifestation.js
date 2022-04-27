@@ -1,6 +1,7 @@
 export const typeDef = `
 type Draft_TableOfContent {
   heading: String
+  content: String
   listOfContent: [Draft_TableOfContent!]
 }
 type Draft_Shelfmark {
@@ -666,6 +667,11 @@ type Draft_DigitalArticleService {
   Issn which can be used to order article through Digital Article Service
   """
   issn: String!
+
+  """
+  Is true when access token belongs to a user whose municipality of residence is subscribed to Digital Article Service  
+  """
+  subscribed: Boolean!
 }
 union Draft_Access = Draft_URL | Draft_Ereol | Draft_Ill | Draft_InfomediaService | Draft_DigitalArticleService
 

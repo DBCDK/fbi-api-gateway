@@ -8,13 +8,13 @@ type Draft_Query {
     """
     The query to get suggestions from
     """
-    q: String!, 
+    q: String!
 
     """
     work type to include in the result
     Note: Is only supported in the bibdk suggester
     """
-    workType: WorkType, 
+    workType: WorkType
 
     """
     suggest type to include in result
@@ -29,6 +29,23 @@ type Draft_Query {
 }
 extend type Query {
   draft: Draft_Query!
+
+  library(
+    """
+    Specify the preferred language. Fields that can be translated will be translated into this language.
+    """
+    language: LanguageCode = da
+
+    """
+    Alternative to having agency as url parameter
+    """
+    agency: String
+
+    """
+    Alternative to having profile as url parameter
+    """
+    profile: String
+  ): Draft_Query!
 }
 `;
 
@@ -170,6 +187,7 @@ const FAKE_MANIFESTATION_1 = {
     {
       __typename: "Draft_DigitalArticleService",
       issn: "123456",
+      subscribed: true,
     },
   ],
   audience: {
@@ -331,13 +349,13 @@ const FAKE_MANIFESTATION_1 = {
     listOfContent: [
       {
         heading: "Puderne",
-        listOfContent: [{ heading: "Bruddet" }, { heading: "Hustelefonen" }],
+        listOfContent: [{ content: "Bruddet" }, { content: "Hustelefonen" }],
       },
       {
-        heading: "Tykke-Olsen m.fl.",
+        content: "Tykke-Olsen m.fl.",
       },
       {
-        heading: "Over skulderen",
+        content: "Over skulderen",
       },
     ],
   },
@@ -396,6 +414,9 @@ const FAKE_RECOMMEND_RESPONSE = {
 export const resolvers = {
   Query: {
     draft() {
+      return {};
+    },
+    library() {
       return {};
     },
   },

@@ -129,6 +129,7 @@ interface Draft_Creator {
 
 type Draft_TableOfContent {
   heading: String
+  content: String
   listOfContent: [Draft_TableOfContent!]
 }
 
@@ -669,9 +670,18 @@ type Draft_DigitalArticleService {
   Issn which can be used to order article through Digital Article Service
   \\"\\"\\"
   issn: String!
+
+  \\"\\"\\"
+  Is true when access token belongs to a user whose municipality of residence is subscribed to Digital Article Service  
+  \\"\\"\\"
+  subscribed: Boolean!
 }
 
 union Draft_Access = Draft_URL | Draft_Ereol | Draft_Ill | Draft_InfomediaService | Draft_DigitalArticleService
+
+type Mutation {
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!): PeriodicaArticleOrderResponse!
+}
 
 type Draft_Query {
   work(id: String, faust: String, pid: String): Draft_Work
@@ -698,6 +708,18 @@ type Draft_Query {
 
 type Query {
   draft: Draft_Query!
+  library(
+    \\"\\"\\"
+    Specify the preferred language. Fields that can be translated will be translated into this language.
+    \\"\\"\\"
+    language: LanguageCode = da
+
+    \\"\\"\\"Alternative to having agency as url parameter\\"\\"\\"
+    agency: String
+
+    \\"\\"\\"Alternative to having profile as url parameter\\"\\"\\"
+    profile: String
+  ): Draft_Query!
   manifestation(pid: String!): WorkManifestation!
   work(id: String, faust: String): Work
   works(id: [String!], faust: [String!]): [Work]!
@@ -720,16 +742,19 @@ type Draft_RecommendationResponse {
   result: [Draft_Recommendation!]!
 }
 
-union Draft_Review = Draft_ExternalReview | Draft_InfomediaReview | Draft_LibrariansReview
+interface Draft_Review {
+  author: String
+  date: String
+}
 
-type Draft_ExternalReview {
+type Draft_ExternalReview implements Draft_Review {
   author: String
   date: String
   rating: String
   urls: [Draft_URL!]!
 }
 
-type Draft_InfomediaReview {
+type Draft_InfomediaReview implements Draft_Review {
   author: String
   date: String
   origin: String
@@ -737,7 +762,7 @@ type Draft_InfomediaReview {
   id: String!
 }
 
-type Draft_LibrariansReview {
+type Draft_LibrariansReview implements Draft_Review {
   author: String
   date: String
   sections: [TextWithWork!]!
@@ -1010,6 +1035,11 @@ type InfomediaContent {
   html: String!
 }
 
+enum LanguageCode {
+  da
+  en
+}
+
 type Localizations {
   count: Int
   agencies: [holdingAgency]
@@ -1124,10 +1154,6 @@ type TextWithWork {
 }
 
 union Review = ReviewInfomedia | ReviewExternalMedia | ReviewMatVurd
-
-type Mutation {
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!): PeriodicaArticleOrderResponse!
-}
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
 scalar PaginationLimit

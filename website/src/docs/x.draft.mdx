@@ -67,6 +67,28 @@ For the time being, expect fake data to be returned.
         general
         specific
       }
+      reviews {
+        __typename
+        author
+        date
+        ... on Draft_ExternalReview {
+          rating
+          urls {
+            origin
+            url
+          }
+        }
+        ... on Draft_InfomediaReview {
+          rating
+          id
+        }
+        ... on Draft_LibrariansReview {
+          sections {
+            heading
+            text
+          }
+        }
+      }
       series {
         all {
           title
@@ -349,8 +371,10 @@ For the time being, expect fake data to be returned.
         heading
         listOfContent {
           heading
+          content
           listOfContent {
             heading
+            content
           }
         }
       }
