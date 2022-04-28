@@ -90,7 +90,7 @@ type Draft_Corporation implements Draft_Subject & Draft_Creator {
     sub: String
 
     """
-    Location or jurisdiction of the corporation or conference, like 710 00 *s Københavns Kommune *c Statistisk Kontor
+    Location or jurisdiction of the corporation or conference, like Københavns Kommune, Statistisk Kontor
     """
     location: String
 
@@ -105,7 +105,7 @@ type Draft_Corporation implements Draft_Subject & Draft_Creator {
     number: String
 
     """
-    Added information about the corporation, like 710 00 *a M. Folmer Andersen *e firma
+    Added information about the corporation, like M. Folmer Andersen (firma)
     """
     attributeToName: String
 
