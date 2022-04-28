@@ -154,7 +154,7 @@ type Draft_WorkTitles {
   sort: String!
 
   """
-  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has added distribution titles in marc field 239 and 739
+  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
   """
   original: [String!]
 
