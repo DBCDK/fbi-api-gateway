@@ -123,7 +123,7 @@ enum Draft_NoteType {
 }
 type Draft_Note {
   """
-  The type of note - e.g. note about language, genre etc, notspecified if not known. TODO add more types of notes, 502=originaltitle, 506=dissertation, 507=occasion 508=language, 509=arrangement, 512=description, 517=restrictions 520=original_version, 532=references
+  The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
   """
   type: Draft_NoteType!
 
@@ -355,7 +355,7 @@ type Draft_Classification {
   display: String!
 
   """
-  For DK5 only. The DK5 entry type: main entry, national entry, or additional entry and marc field 652
+  For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
   """
   entryType: Draft_EntryType
 
@@ -604,7 +604,7 @@ type Draft_ManifestationTitles {
   identifyingAddition: String
 
   """
-  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has added distribution titles in marc field 239 and 739
+  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
   """
   original: [String!]
 
