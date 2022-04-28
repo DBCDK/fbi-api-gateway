@@ -23,7 +23,7 @@ type Draft_MaterialTypes {
 }
 type Draft_FictionNonfiction {
   """
-  Displayable overall category/genre
+  Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
   """
   display: String!
 
