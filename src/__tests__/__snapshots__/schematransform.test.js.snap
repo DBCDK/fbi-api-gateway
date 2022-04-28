@@ -98,7 +98,7 @@ type Draft_Corporation implements Draft_Subject & Draft_Creator {
   sub: String
 
   \\"\\"\\"
-  Location or jurisdiction of the corporation or conference, like 710 00 *s Københavns Kommune *c Statistisk Kontor
+  Location or jurisdiction of the corporation or conference, like Københavns Kommune, Statistisk Kontor
   \\"\\"\\"
   location: String
 
@@ -109,7 +109,7 @@ type Draft_Corporation implements Draft_Subject & Draft_Creator {
   number: String
 
   \\"\\"\\"
-  Added information about the corporation, like 710 00 *a M. Folmer Andersen *e firma
+  Added information about the corporation, like M. Folmer Andersen (firma)
   \\"\\"\\"
   attributeToName: String
 
@@ -229,7 +229,7 @@ enum Draft_NoteType {
 
 type Draft_Note {
   \\"\\"\\"
-  The type of note - e.g. note about language, genre etc, notspecified if not known. TODO add more types of notes, 502=originaltitle, 506=dissertation, 507=occasion 508=language, 509=arrangement, 512=description, 517=restrictions 520=original_version, 532=references
+  The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
   \\"\\"\\"
   type: Draft_NoteType!
 
@@ -413,7 +413,7 @@ type Draft_Classification {
   display: String!
 
   \\"\\"\\"
-  For DK5 only. The DK5 entry type: main entry, national entry, or additional entry and marc field 652
+  For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
   \\"\\"\\"
   entryType: Draft_EntryType
 
@@ -614,7 +614,7 @@ type Draft_ManifestationTitles {
   identifyingAddition: String
 
   \\"\\"\\"
-  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has added distribution titles in marc field 239 and 739
+  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
   \\"\\"\\"
   original: [String!]
 
@@ -638,7 +638,7 @@ type Draft_Ereol {
   url: String!
 
   \\"\\"\\"
-  Is this a manifestation that always be loaned on ereolen.dk even if you've run out of loans this month
+  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
   \\"\\"\\"
   canAlwaysBeLoaned: Boolean!
 }
@@ -964,7 +964,9 @@ type Draft_MaterialTypes {
 }
 
 type Draft_FictionNonfiction {
-  \\"\\"\\"Displayable overall category/genre\\"\\"\\"
+  \\"\\"\\"
+  Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
   display: String!
 
   \\"\\"\\"Binary code fiction/nonfiction used for filtering\\"\\"\\"
@@ -1010,7 +1012,7 @@ type Draft_WorkTitles {
   sort: String!
 
   \\"\\"\\"
-  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has added distribution titles in marc field 239 and 739
+  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
   \\"\\"\\"
   original: [String!]
 
