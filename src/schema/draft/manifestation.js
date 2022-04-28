@@ -635,7 +635,7 @@ type Draft_Ereol {
   url: String!
 
   """
-  Is this a manifestation that always be loaned on ereolen.dk even if you've run out of loans this month
+  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
   """
   canAlwaysBeLoaned: Boolean!
 }
