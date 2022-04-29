@@ -733,18 +733,6 @@ type Draft_Query {
 
 type Query {
   draft: Draft_Query!
-  library(
-    \\"\\"\\"
-    Specify the preferred language. Fields that can be translated will be translated into this language.
-    \\"\\"\\"
-    language: LanguageCode = da
-
-    \\"\\"\\"Alternative to having agency as url parameter\\"\\"\\"
-    agency: String
-
-    \\"\\"\\"Alternative to having profile as url parameter\\"\\"\\"
-    profile: String
-  ): Draft_Query!
   manifestation(pid: String!): WorkManifestation!
   work(id: String, faust: String): Work
   works(id: [String!], faust: [String!]): [Work]!
@@ -1066,11 +1054,6 @@ type InfomediaContent {
   logo: String!
   origin: String!
   html: String!
-}
-
-enum LanguageCode {
-  da
-  en
 }
 
 type Localizations {

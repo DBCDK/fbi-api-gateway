@@ -29,23 +29,6 @@ type Draft_Query {
 }
 extend type Query {
   draft: Draft_Query!
-
-  library(
-    """
-    Specify the preferred language. Fields that can be translated will be translated into this language.
-    """
-    language: LanguageCode = da
-
-    """
-    Alternative to having agency as url parameter
-    """
-    agency: String
-
-    """
-    Alternative to having profile as url parameter
-    """
-    profile: String
-  ): Draft_Query!
 }
 `;
 
@@ -417,9 +400,6 @@ const FAKE_RECOMMEND_RESPONSE = {
 export const resolvers = {
   Query: {
     draft() {
-      return {};
-    },
-    library() {
       return {};
     },
   },

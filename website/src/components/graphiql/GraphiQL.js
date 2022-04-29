@@ -69,7 +69,7 @@ export function InlineGraphiQL({ query, variables }) {
 
   const curl_vars = editVariables?.replace?.(/\s+/g, " ");
   const curl_query = editQuery?.replace(/\s+/g, " ");
-  const curl = `curl -i -H "Authorization: bearer ${selectedToken?.token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
+  const curl = `curl -H "Authorization: bearer ${selectedToken?.token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
 
   // When the selected token has changed, we unmount graphiql
   // and mounts the dummy container. Graphiql will be reinstantiated
