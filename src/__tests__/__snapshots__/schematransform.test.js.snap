@@ -227,6 +227,26 @@ enum Draft_NoteType {
   RESTRICTIONS_ON_USE
 }
 
+enum Draft_ChildOrAdultCode {
+  TIL_BOERN
+  TIL_VOKSNE
+}
+
+type Draft_ChildOrAdult {
+  display: String!
+  code: Draft_ChildOrAdultCode!
+}
+
+enum Draft_SchoolUseCode {
+  TIL_SKOLEBRUG
+  TIL_LAEREREN
+}
+
+type Draft_SchoolUse {
+  display: String!
+  code: Draft_SchoolUseCode!
+}
+
 type Draft_Note {
   \\"\\"\\"
   The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
@@ -304,16 +324,16 @@ type Draft_Languages {
 }
 
 enum IdentifierType {
-  doi
-  isbn
-  issn
-  ismn
-  music
-  movie
-  Publizon
-  not_specified
-  order_number
-  barcode
+  DOI
+  ISBN
+  ISSN
+  ISMN
+  MUSIC
+  MOVIE
+  PUBLIZON
+  NOT_SPECIFIED
+  ORDER_NUMBER
+  BARCODE
 }
 
 type Draft_Identifier {
@@ -434,12 +454,12 @@ type Draft_Audience {
   libraryRecommendation: String
 
   \\"\\"\\"Is this material for children or adults\\"\\"\\"
-  childrenOrAdults: [String!]!
+  childrenOrAdults: [Draft_ChildOrAdult!]!
 
   \\"\\"\\"
   Is this material for use in schools (folkeskole/ungdomsuddannelse) or is this material for use in schools by the teacher (folkeskole only)
   \\"\\"\\"
-  schoolUse: [String!]!
+  schoolUse: [Draft_SchoolUse!]!
 
   \\"\\"\\"Primary target audience for this manifestation\\"\\"\\"
   primaryTarget: [String!]!
@@ -455,10 +475,15 @@ type Draft_Audience {
   lix: String
 }
 
-enum Draft_AccessType {
-  fysisk
-  online
-  ukendt
+enum Draft_AccessTypeCode {
+  FYSISK
+  ONLINE
+  UKENDT
+}
+
+type Draft_AccessType {
+  display: String!
+  code: Draft_AccessTypeCode!
 }
 
 type Draft_Manifestations {
@@ -938,7 +963,7 @@ type Draft_Suggestion {
   term: String!
 
   \\"\\"\\"A work related to the term\\"\\"\\"
-  work: Draft_Work!
+  work: Draft_Work
 }
 
 type Draft_SuggestResponse {
@@ -963,6 +988,12 @@ type Draft_MaterialTypes {
   specific: [String!]!
 }
 
+enum Draft_FictionNonfictionCode {
+  FICTION
+  NONFICTION
+  NOT_SPECIFIED
+}
+
 type Draft_FictionNonfiction {
   \\"\\"\\"
   Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
@@ -970,7 +1001,7 @@ type Draft_FictionNonfiction {
   display: String!
 
   \\"\\"\\"Binary code fiction/nonfiction used for filtering\\"\\"\\"
-  code: String!
+  code: Draft_FictionNonfictionCode!
 }
 
 type Draft_DK5MainEntry {
@@ -982,20 +1013,20 @@ type Draft_DK5MainEntry {
 }
 
 enum Draft_WorkType {
-  analysis
-  article
-  bookdescription
-  game
-  literature
-  map
-  movie
-  music
-  other
-  periodica
-  portrait
-  review
-  sheetmusic
-  track
+  ANALYSIS
+  ARTICLE
+  BOOKDESCRIPTION
+  GAME
+  LITERATURE
+  MAP
+  MOVIE
+  MUSIC
+  OTHER
+  PERIODICA
+  PORTRAIT
+  REVIEW
+  SHEETMUSIC
+  TRACK
 }
 
 type Draft_WorkTitles {

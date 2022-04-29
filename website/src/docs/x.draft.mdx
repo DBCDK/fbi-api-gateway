@@ -180,7 +180,10 @@ For the time being, expect fake data to be returned.
         translated
       }
       abstract
-      accessTypes
+      accessTypes {
+        display
+        code
+      }
       access {
         __typename
         ... on Draft_URL {
@@ -208,8 +211,14 @@ For the time being, expect fake data to be returned.
           display
         }
         libraryRecommendation
-        childrenOrAdults
-        schoolUse
+        childrenOrAdults {
+          display
+          code
+        }
+        schoolUse {
+          display
+          code
+        }
         primaryTarget
         let
         lix

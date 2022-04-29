@@ -163,7 +163,10 @@ const FAKE_MANIFESTATION_1 = {
     translated: ["En Oversat Titel"],
   },
   abstract: ["Some abstract ..."],
-  accessTypes: ["fysisk", "online"],
+  accessTypes: [
+    { display: "fysisk", code: "FYSISK" },
+    { display: "online", code: "ONLINE" },
+  ],
   access: [
     {
       __typename: "Draft_URL",
@@ -194,8 +197,8 @@ const FAKE_MANIFESTATION_1 = {
     generalAudience: ["general audience"],
     ages: [{ display: "10-14", begin: 10, end: 14 }],
     libraryRecommendation: "some library recommendation",
-    childrenOrAdults: ["til børn"],
-    schoolUse: ["til skolebrug"],
+    childrenOrAdults: [{ display: "til børn", code: "TIL_BOERN" }],
+    schoolUse: [{ display: "til skolebrug", code: "TIL_SKOLEBRUG" }],
     primaryTarget: ["Some primary target"],
     let: "some let",
     lix: "some lix",
@@ -242,7 +245,7 @@ const FAKE_MANIFESTATION_1 = {
       year: 2020,
     },
   },
-  fictionNonfiction: { display: "skønlitteratur", code: "fiction" },
+  fictionNonfiction: { display: "skønlitteratur", code: "FICTION" },
   genreAndForm: ["some genre"],
   hostPublication: {
     title: "Årsskrift / Carlsbergfondet",
@@ -262,7 +265,7 @@ const FAKE_MANIFESTATION_1 = {
   },
   identifiers: [
     {
-      type: "isbn",
+      type: "ISBN",
       value: "1234567891234",
     },
   ],
@@ -386,7 +389,7 @@ const FAKE_WORK = {
   universe: { title: "Some Universe" },
   subjects: FAKE_SUBJECTS,
   genreAndForm: ["some genre"],
-  workTypes: ["literature"],
+  workTypes: ["LITERATURE"],
   workYear: "1950",
   mainLanguages: [{ display: "dansk", isoCode: "dan" }],
   subjects: FAKE_SUBJECTS,

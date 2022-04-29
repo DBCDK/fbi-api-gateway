@@ -21,6 +21,11 @@ type Draft_MaterialTypes {
   """
   specific: [String!]!
 }
+enum Draft_FictionNonfictionCode {
+  FICTION
+  NONFICTION
+  NOT_SPECIFIED
+}
 type Draft_FictionNonfiction {
   """
   Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
@@ -30,7 +35,7 @@ type Draft_FictionNonfiction {
   """
   Binary code fiction/nonfiction used for filtering
   """
-  code: String!
+  code: Draft_FictionNonfictionCode!
 }
 type Draft_DK5MainEntry {
   """
@@ -117,20 +122,20 @@ type Draft_Work {
   manifestations: Draft_Manifestations!
 }
 enum Draft_WorkType {
-  analysis
-  article
-  bookdescription
-  game
-  literature
-  map
-  movie
-  music
-  other
-  periodica
-  portrait
-  review
-  sheetmusic
-  track
+  ANALYSIS
+  ARTICLE
+  BOOKDESCRIPTION
+  GAME
+  LITERATURE
+  MAP
+  MOVIE
+  MUSIC
+  OTHER
+  PERIODICA
+  PORTRAIT
+  REVIEW
+  SHEETMUSIC
+  TRACK
 }
 type Draft_WorkTitles {
   """

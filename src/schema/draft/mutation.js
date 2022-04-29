@@ -3,14 +3,21 @@ type Draft_DigitalArticleServiceResponse {
   msg: String!
 }
 extend type Mutation {
+
   """
-  TODO
+  Order digital article through Digital Article Service
+  Link to article is sent via email
   """
   digitalArticleService (
     """
-    Specify the preferred language. Fields that can be translated will be translated into this language.
+    The pid of an article or periodica
     """
     pid: String!
+    publicationDateOfComponent: String
+    volume: String
+    authorOfComponent: String
+    titleOfComponent: String
+    pagination: String
 
   ): Draft_DigitalArticleServiceResponse!
 }

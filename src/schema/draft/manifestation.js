@@ -121,6 +121,22 @@ enum Draft_NoteType {
   REFERENCES
   RESTRICTIONS_ON_USE
 }
+enum Draft_ChildOrAdultCode {
+  TIL_BOERN
+  TIL_VOKSNE
+}
+type Draft_ChildOrAdult {
+  display: String!
+  code: Draft_ChildOrAdultCode!
+}
+enum Draft_SchoolUseCode {
+  TIL_SKOLEBRUG
+  TIL_LAEREREN
+}
+type Draft_SchoolUse {
+  display: String!
+  code: Draft_SchoolUseCode!
+}
 type Draft_Note {
   """
   The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
@@ -217,16 +233,16 @@ type Draft_Languages {
   abstract: [Draft_Language!]
 }
 enum IdentifierType {
-  doi
-  isbn
-  issn
-  ismn
-  music
-  movie
-  Publizon
-  not_specified
-  order_number
-  barcode
+  DOI
+  ISBN
+  ISSN
+  ISMN
+  MUSIC
+  MOVIE
+  PUBLIZON
+  NOT_SPECIFIED
+  ORDER_NUMBER
+  BARCODE
 }
 type Draft_Identifier {
   """
@@ -383,12 +399,12 @@ type Draft_Audience {
   """
   Is this material for children or adults
   """
-  childrenOrAdults: [String!]!
+  childrenOrAdults: [Draft_ChildOrAdult!]!
 
   """
   Is this material for use in schools (folkeskole/ungdomsuddannelse) or is this material for use in schools by the teacher (folkeskole only)
   """
-  schoolUse: [String!]!
+  schoolUse: [Draft_SchoolUse!]!
   
   """
   Primary target audience for this manifestation
@@ -405,10 +421,14 @@ type Draft_Audience {
   """
   lix: String
 }
-enum Draft_AccessType {
-  fysisk
-  online
-  ukendt
+enum Draft_AccessTypeCode {
+  FYSISK
+  ONLINE
+  UKENDT
+}
+type Draft_AccessType {
+  display: String!
+  code: Draft_AccessTypeCode!
 }
 type Draft_Manifestations {
   first: Draft_Manifestation!

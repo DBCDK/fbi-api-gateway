@@ -18,7 +18,7 @@ type Draft_Suggestion {
   """
   A work related to the term
   """
-  work: Draft_Work!
+  work: Draft_Work
 }
 type Draft_SuggestResponse {
   result: [Draft_Suggestion!]!
