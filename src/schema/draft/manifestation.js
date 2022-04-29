@@ -122,16 +122,16 @@ enum Draft_NoteType {
   RESTRICTIONS_ON_USE
 }
 enum Draft_ChildOrAdultCode {
-  TIL_BOERN
-  TIL_VOKSNE
+  FOR_CHILDREN
+  FOR_ADULTS
 }
 type Draft_ChildOrAdult {
   display: String!
   code: Draft_ChildOrAdultCode!
 }
 enum Draft_SchoolUseCode {
-  TIL_SKOLEBRUG
-  TIL_LAEREREN
+  FOR_SCHOOL
+  FOR_TEACHER
 }
 type Draft_SchoolUse {
   display: String!
