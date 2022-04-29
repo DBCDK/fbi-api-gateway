@@ -130,7 +130,7 @@ type Draft_ChildOrAdult {
   code: Draft_ChildOrAdultCode!
 }
 enum Draft_SchoolUseCode {
-  FOR_SCHOOL
+  FOR_SCHOOL_USE
   FOR_TEACHER
 }
 type Draft_SchoolUse {
