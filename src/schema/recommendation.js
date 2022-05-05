@@ -21,5 +21,8 @@ export const resolvers = {
       });
       return res?.work;
     },
+    reader(parent) {
+      return Array.isArray(parent.reader) ? parent.reader[0] : parent.reader;
+    },
   },
 };
