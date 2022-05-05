@@ -50,7 +50,10 @@ export async function batchLoader(keys, loadFunc) {
  * @throws Will throw error if service is down
  */
 export async function status(loadFunc) {
-  await loadFunc({ workId: "work-of:870970-basis:51877330" });
+  await loadFunc({
+    workId: "work-of:870970-basis:51877330",
+    profile: { agency: "190101", name: "default" },
+  });
 }
 
 export const options = {
