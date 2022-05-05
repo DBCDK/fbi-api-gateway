@@ -67,6 +67,7 @@ promExporterApp.listen(9599, () => {
         datasources: { ...req?.datasources?.trackingObject?.trackObject },
         profile: req.profile,
         total: Math.round(seconds * 1000),
+        graphQLErrors: req.graphQLErrors,
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
@@ -132,9 +133,7 @@ promExporterApp.listen(9599, () => {
             count("query_success");
           } else {
             count("query_error");
-            result.errors.forEach((error) => {
-              log.error(error.message);
-            });
+            request.graphQLErrors = result.errors;
           }
           request.parsedQuery = print(document);
         },
