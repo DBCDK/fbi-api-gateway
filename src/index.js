@@ -64,10 +64,12 @@ promExporterApp.listen(9599, () => {
         clientId: req?.smaug?.app?.clientId,
         uuid: req?.datasources?.trackingObject.uuid,
         parsedQuery: req.parsedQuery,
+        queryVariables: req.queryVariables || {},
         datasources: { ...req?.datasources?.trackingObject?.trackObject },
         profile: req.profile,
         total: Math.round(seconds * 1000),
         graphQLErrors: req.graphQLErrors,
+        userAgent: req.get("User-Agent"),
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
@@ -99,6 +101,11 @@ promExporterApp.listen(9599, () => {
       };
       // Create dataloaders and add to request
       request.datasources = createDataLoaders(uuid());
+
+      request.queryVariables = graphQLParams.variables;
+      request.parsedQuery = graphQLParams.query
+        .replace(/\n/g, " ")
+        .replace(/\s+/g, " ");
 
       // Get bearer token from authorization header
       request.accessToken =
@@ -135,7 +142,6 @@ promExporterApp.listen(9599, () => {
             count("query_error");
             request.graphQLErrors = result.errors;
           }
-          request.parsedQuery = print(document);
         },
         validationRules: [
           function authenticate() {
