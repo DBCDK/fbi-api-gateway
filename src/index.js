@@ -67,7 +67,7 @@ promExporterApp.listen(9599, () => {
         queryVariables: req.queryVariables,
         datasources: { ...req?.datasources?.trackingObject?.trackObject },
         profile: req.profile,
-        total: Math.round(seconds * 1000),
+        total_ms: Math.round(seconds * 1000),
         graphQLErrors: req.graphQLErrors && JSON.stringify(req.graphQLErrors),
         userAgent: req.get("User-Agent"),
       });
