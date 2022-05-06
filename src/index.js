@@ -64,11 +64,11 @@ promExporterApp.listen(9599, () => {
         clientId: req?.smaug?.app?.clientId,
         uuid: req?.datasources?.trackingObject.uuid,
         parsedQuery: req.parsedQuery,
-        // queryVariables: req.queryVariables,
+        queryVariables: req.queryVariables,
         datasources: { ...req?.datasources?.trackingObject?.trackObject },
         profile: req.profile,
         total: Math.round(seconds * 1000),
-        // graphQLErrors: req.graphQLErrors && JSON.stringify(req.graphQLErrors),
+        graphQLErrors: req.graphQLErrors && JSON.stringify(req.graphQLErrors),
         userAgent: req.get("User-Agent"),
       });
       // monitorName is added to context/req in the monitor resolver
