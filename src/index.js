@@ -65,7 +65,9 @@ promExporterApp.listen(9599, () => {
       let queryVariables = {};
       if (req.queryVariables) {
         Object.entries(req.queryVariables).forEach(
-          ([key, val]) => (queryVariables[key] = JSON.stringify(val))
+          ([key, val]) =>
+            (queryVariables[key] =
+              typeof val === "string" ? val : JSON.stringify(val))
         );
       }
 
