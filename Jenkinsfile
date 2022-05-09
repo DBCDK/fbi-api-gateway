@@ -1,7 +1,7 @@
 #!groovy​
 
 def app
-def imageName="bibliotekdk-next-api"
+def imageName="fbi-api-gateway"
 def imageLabel=BUILD_NUMBER
 
 pipeline {
@@ -9,11 +9,11 @@ pipeline {
         label 'devel10-head'
     }
     environment {
-        GITLAB_ID = "702"
+        //GITLAB_ID = "702"
         DOCKER_TAG = "${imageLabel}"
         IMAGE = "${imageName}${env.BRANCH_NAME != 'master' ? "-${env.BRANCH_NAME.toLowerCase()}" : ''}:${imageLabel}"
         DOCKER_COMPOSE_NAME = "compose-${IMAGE}"
-        GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
+        GITLAB_PRIVATE_TOKEN = credentials("gitlab-isworker")
         REPOSITORY = "https://docker-frontend.artifacts.dbccloud.dk"
     }
     stages {
@@ -50,7 +50,7 @@ pipeline {
                     }
                 } }
         }
-        stage("Update staging version number") {
+       /*stage("Update staging version number") {
 			agent {
 				docker {
 					label 'devel10-head'
@@ -68,7 +68,7 @@ pipeline {
 					"""
 				}
 			}
-		}
+		}*/
     }
     post {
         always {
