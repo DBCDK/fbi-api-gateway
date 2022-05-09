@@ -59,12 +59,22 @@ promExporterApp.listen(9599, () => {
     res.once("finish", () => {
       const elapsed = process.hrtime(start);
       const seconds = elapsed[0] + elapsed[1] / 1e9;
+
+      // Convert variables to strings, to make sure there are no type conflicts,
+      // when log is indexed
+      let queryVariables = {};
+      if (req.queryVariables) {
+        Object.entries(req.queryVariables).forEach(
+          ([key, val]) => (queryVariables[key] = JSON.stringify(val))
+        );
+      }
+
       // detailed logging for SLA
       log.info("TRACK", {
         clientId: req?.smaug?.app?.clientId,
         uuid: req?.datasources?.trackingObject.uuid,
         parsedQuery: req.parsedQuery,
-        queryVariables: req.queryVariables,
+        queryVariables,
         datasources: { ...req?.datasources?.trackingObject?.trackObject },
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
