@@ -58,8 +58,8 @@ export default function Home() {
               On this site we have gathered developer tools and created
               documentation with a bunch of examples. Our goal is to make it as
               easy as possible to get an overview of the API capabilities, and
-              to get you started making queries that fulfill your application's
-              needs.
+              to get you started making queries that fulfill your
+              application&apos;s needs.
             </Text>
             <Text className={styles.text}>
               Head over to the{" "}
