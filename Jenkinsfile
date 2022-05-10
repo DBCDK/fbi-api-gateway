@@ -13,7 +13,8 @@ pipeline {
         DOCKER_TAG = "${imageLabel}"
         IMAGE = "${imageName}${env.BRANCH_NAME != 'master' ? "-${env.BRANCH_NAME.toLowerCase()}" : ''}:${BUILD_NUMBER}"
         DOCKER_COMPOSE_NAME = "compose-${IMAGE}"
-        GITLAB_PRIVATE_TOKEN = credentials("gitlab-isworker")
+        // we need to use metascrums gitlab token .. for the metascrum bot in deploy stage
+        GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
         REPOSITORY = "https://docker-frontend.artifacts.dbccloud.dk"
     }
     stages {
