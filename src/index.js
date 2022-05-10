@@ -110,6 +110,7 @@ promExporterApp.listen(9599, () => {
       request.profile = {
         agency: request.params.agency,
         name: request.params.profile,
+        combined: `${request.params.agency}/${request.params.profile}`,
       };
       // Create dataloaders and add to request
       request.datasources = createDataLoaders(uuid());
