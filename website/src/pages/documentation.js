@@ -1,5 +1,6 @@
 import { MDXProvider } from "@mdx-js/react";
 import Head from "next/head";
+import Link from "@/components/base/link";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Docs from "@/components/docs";
@@ -20,6 +21,15 @@ const components = {
     <li>
       <Text type="text2">{children}</Text>
     </li>
+  ),
+  a: ({ children, href }) => (
+    <Link
+      href={href}
+      underline
+      target={href?.startsWith("http") ? "_blank" : "_self"}
+    >
+      {children}
+    </Link>
   ),
 };
 

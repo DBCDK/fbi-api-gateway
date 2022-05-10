@@ -6,12 +6,12 @@ type Draft_TableOfContent {
 }
 type Draft_Shelfmark {
   """
-  A prefix to the shelfmark
+  A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935
   """
-  prefix: String!
+  postfix: String!
 
   """
-  The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found
+  The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
   """
   shelfmark: String!
 }
@@ -422,9 +422,9 @@ type Draft_Audience {
   lix: String
 }
 enum Draft_AccessTypeCode {
-  FYSISK
+  PHYSICAL
   ONLINE
-  UKENDT
+  NOT_SPECIFIED
 }
 type Draft_AccessType {
   display: String!

@@ -20,7 +20,7 @@ export default function Home() {
           <Col>
             <Text className={styles.text}>Hello! You have found the</Text>
             <Title tag="h1" type="title6" className={styles.title}>
-              DBC Gateway documentation page
+              DBC Gateway
             </Title>
           </Col>
         </Row>
@@ -31,13 +31,20 @@ export default function Home() {
               What is this?
             </Title>
             <Text className={styles.text}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-              pretium turpis ac ligula ullamcorper, ut consequat lorem finibus.
-              Curabitur porta magna sed massa mattis scelerisque. In rhoncus
-              fringilla nisi, at dignissim ex pharetra et. Sed ullamcorper quis
-              urna eget tempus. Integer a nisl dui. Vivamus aliquet ultrices
-              tempor. Nullam mattis sapien ut metus tempus, id porta erat
-              vestibulum. Maecenas nec orci leo.
+              DBC Gateway offers a uniform and flexible API to access a wide
+              variety of services. The API is based on GraphQL, which provides
+              benefits such as:
+              <ul>
+                <li>
+                  Comes with a query language built in - You decide what data
+                  you need, and you get only that
+                </li>
+                <li>Access many resources in a single request</li>
+                <li>
+                  A type system express the full capapabilities of the API,
+                  which allow for the creation of helpful developer tools
+                </li>
+              </ul>
             </Text>
           </Col>
         </Row>
@@ -45,27 +52,21 @@ export default function Home() {
         <Row className={styles.content}>
           <Col>
             <Title tag="h2" type="title1" className={styles.title}>
-              Why this?
+              Explore the API
             </Title>
             <Text className={styles.text}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-              pretium turpis ac ligula ullamcorper, ut consequat lorem finibus.
-              Curabitur porta magna sed massa mattis scelerisque. In rhoncus
-              fringilla nisi, at dignissim ex pharetra et. Sed ullamcorper quis
-              urna eget tempus.
+              On this site we have gathered developer tools and created
+              documentation with a bunch of examples. Our goal is to make it as
+              easy as possible to get an overview of the API capabilities, and
+              to get you started making queries that fulfill your application's
+              needs.
             </Text>
-          </Col>
-        </Row>
-
-        <Row className={styles.content}>
-          <Col>
-            <Title tag="h2" type="title1" className={styles.title}>
-              Dont have a token?
-            </Title>
             <Text className={styles.text}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-              pretium turpis ac ligula ullamcorper, ut consequat lorem finibus.
-              Curabitur porta magna sed massa mattis scelerisque.
+              Head over to the{" "}
+              <Link href="/documentation" underline>
+                documentation page
+              </Link>{" "}
+              to get started.
             </Text>
           </Col>
         </Row>

@@ -1,7 +1,59 @@
 # Get started :coffee:
 
-This is work in progress 👷
+Welcome to the documentation page of the DBC Gateway.
 
-## Access Tokens
+The API is powered by GraphQL, learn about that [here](https://graphql.org/learn).
 
-TODO something about anonymous vs authenticated tokens, and how to obtain them.
+On this page you will be able to get an overview of the API. We have included a
+bunch of examples, which you can modify right in the browser.
+
+You need to _configure access_ to see the examples, and you will need an access token to do so.
+Read on, to learn how to get one.
+
+## How to get access?
+
+Danish libraries can get access. Others have to go through a library to get access.
+
+1. First of all, you need to obtain a _CLIENT_ID_ and _SECRET_ for your application/project
+
+   Send a request via [customer support](https://kundeservice.dbc.dk) including the following information:
+
+   - Project owner (library, email, phone)
+   - Technical contact person (name, email, phone)
+   - Name and description of application/project
+
+2. Obtain access token
+
+   Get an _anonymous access token_, to access the API on behalf of the application:
+
+   ```
+   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://auth.dbc.dk/oauth/token -d "grant_type=password&username=@&password=@"
+   ```
+
+   Or get an _authenticated access token_ to access the API on behalf of an end user.
+
+   ```
+   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://auth.dbc.dk/oauth/token -d "grant_type=password&username=${USERNAME}&password=${PASSWORD}"
+   ```
+
+   `${USERNAME}` is Loanernumber@library-agencyId and `${PASSWORD}` is the loaners pincode.
+
+3. Begin using the API
+
+   Configure access on this site (you need to fill in an access token), to see
+   examples and build your own queries.
+
+   The examples show how to include the access token as a header when calling the API.
+
+## Developer tools
+
+A GraphQL server includes an introspectable schema that expresses the capabilities of the API.
+This allows for the creation of tools that improve the developer experience.
+
+This site comes with _GraphiQL_,
+a graphical interactive GraphQL IDE, which can be used to write and test queries.
+All examples comes with a simplified inline version of GraphiQL, which can be used as a starting point.
+Press `CTRL+SPACE` to autocomplete inside GraphiQL.
+
+Another tool that we included is _Voyager_, which gives a bird's-eye view of the
+GraphQL schema. See how different types are connected, and zoom in for more details.
