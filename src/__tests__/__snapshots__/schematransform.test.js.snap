@@ -134,11 +134,11 @@ type Draft_TableOfContent {
 }
 
 type Draft_Shelfmark {
-  \\"\\"\\"A prefix to the shelfmark\\"\\"\\"
-  prefix: String!
+  \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
+  postfix: String!
 
   \\"\\"\\"
-  The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found
+  The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
   \\"\\"\\"
   shelfmark: String!
 }
@@ -476,9 +476,9 @@ type Draft_Audience {
 }
 
 enum Draft_AccessTypeCode {
-  FYSISK
+  PHYSICAL
   ONLINE
-  UKENDT
+  NOT_SPECIFIED
 }
 
 type Draft_AccessType {
@@ -729,6 +729,9 @@ type Draft_Query {
 
   \\"\\"\\"Get recommendations based on a pid\\"\\"\\"
   recommend(pid: String!): Draft_RecommendationResponse!
+
+  \\"\\"\\"Search\\"\\"\\"
+  search(q: SearchQuery!): Draft_SearchResponse!
 }
 
 type Query {
@@ -835,6 +838,27 @@ type Draft_Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Draft_Manifestations!
+}
+
+type Draft_FacetTerm {
+  term: String!
+  count: Int!
+  facetCategory: String!
+  popular: Boolean!
+}
+
+type Draft_FacetResponse {
+  categories: [Draft_Facet!]!
+  popular: [Draft_FacetTerm!]!
+}
+
+type Draft_Facet {
+  facetCategory: String!
+  values: [Draft_FacetTerm!]!
+}
+
+type Draft_SearchResponse {
+  facets: Draft_FacetResponse
 }
 
 type Draft_Universe {
