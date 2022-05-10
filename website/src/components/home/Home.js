@@ -36,13 +36,13 @@ export default function Home() {
               benefits such as:
               <ul>
                 <li>
-                  Comes with a query language built in - You decide what data
-                  you need, and you get only that
+                  A bult in query language - You decide what data you need, and
+                  you get only that
                 </li>
-                <li>Access many resources in a single request</li>
+                <li>Access to many resources in a single request</li>
                 <li>
-                  A type system express the full capapabilities of the API,
-                  which allow for the creation of helpful developer tools
+                  A type system that expresses the full capapabilities of the
+                  API, which allows for the creation of helpful developer tools
                 </li>
               </ul>
             </Text>
