@@ -9,7 +9,7 @@ pipeline {
         label 'devel10-head'
     }
     environment {
-        //GITLAB_ID = "702"
+        GITLAB_ID = "1232"
         DOCKER_TAG = "${imageLabel}"
         IMAGE = "${imageName}${env.BRANCH_NAME != 'master' ? "-${env.BRANCH_NAME.toLowerCase()}" : ''}:${imageLabel}"
         DOCKER_COMPOSE_NAME = "compose-${IMAGE}"
@@ -17,7 +17,6 @@ pipeline {
         REPOSITORY = "https://docker-frontend.artifacts.dbccloud.dk"
     }
     stages {
-
         stage('Build image') {
             steps { script {
                 // Work around bug https://issues.jenkins-ci.org/browse/JENKINS-44609 , https://issues.jenkins-ci.org/browse/JENKINS-44789
@@ -50,7 +49,7 @@ pipeline {
                     }
                 } }
         }
-       /*stage("Update staging version number") {
+       stage("Update staging version number") {
 			agent {
 				docker {
 					label 'devel10-head'
@@ -68,7 +67,7 @@ pipeline {
 					"""
 				}
 			}
-		}*/
+		}
     }
     post {
         always {
@@ -78,7 +77,7 @@ pipeline {
                     docker rmi $IMAGE
                 """
         }  
-        failure {
+        /*failure {
             script {
                 if ("${env.BRANCH_NAME}" == 'master') {
                     slackSend(channel: 'fe-drift',
@@ -105,6 +104,6 @@ pipeline {
                     message: "${env.JOB_NAME} #${env.BUILD_NUMBER} back to normal: ${env.BUILD_URL}",
                     tokenCredentialId: 'slack-global-integration-token')
 
-        }
+        }*/
     }
 }
