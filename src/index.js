@@ -17,6 +17,7 @@ import { metrics, observeDuration, count } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
 import { uuid } from "uuidv4";
+import isbot from "isbot";
 
 const app = express();
 let server;
@@ -70,6 +71,7 @@ promExporterApp.listen(9599, () => {
               typeof val === "string" ? val : JSON.stringify(val))
         );
       }
+      const userAgent = req.get("User-Agent");
 
       // detailed logging for SLA
       log.info("TRACK", {
@@ -81,7 +83,9 @@ promExporterApp.listen(9599, () => {
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
         graphQLErrors: req.graphQLErrors && JSON.stringify(req.graphQLErrors),
-        userAgent: req.get("User-Agent"),
+        userAgent,
+        userAgentIsBot: isbot(userAgent),
+        ip: req?.smaug?.app?.ips?.[0],
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {

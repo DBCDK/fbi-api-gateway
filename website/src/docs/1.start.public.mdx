@@ -36,7 +36,7 @@ Danish libraries can get access. Others have to go through a library to get acce
    curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://auth.dbc.dk/oauth/token -d "grant_type=password&username=${USERNAME}&password=${PASSWORD}"
    ```
 
-   `${USERNAME}` is Loanernumber@library-agencyId and `${PASSWORD}` is the loaners pincode.
+   `${USERNAME}` is Loanernumber@library-agencyId and `${PASSWORD}` is the end user's pincode.
 
 3. Begin using the API
 
@@ -57,3 +57,7 @@ Press `CTRL+SPACE` to autocomplete inside GraphiQL.
 
 Another tool that we included is _Voyager_, which gives a bird's-eye view of the
 GraphQL schema. See how different types are connected, and zoom in for more details.
+
+## Feedback
+
+If you have any ideas on how to improve the developer experience, don't hesitate to contact us at [dbc@dbc.dk](mailto:dbc@dbc.dk)
