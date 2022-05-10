@@ -2,7 +2,7 @@
 
 def app
 def imageName="fbi-api-gateway"
-//def imageLabel=BUILD_NUMBER
+def imageLabel=BUILD_NUMBER
 
 pipeline {
     agent {
@@ -10,7 +10,7 @@ pipeline {
     }
     environment {
         GITLAB_ID = "1232"
-        //DOCKER_TAG = "${imageLabel}"
+        DOCKER_TAG = "${imageLabel}"
         IMAGE = "${imageName}${env.BRANCH_NAME != 'master' ? "-${env.BRANCH_NAME.toLowerCase()}" : ''}:${BUILD_NUMBER}"
         DOCKER_COMPOSE_NAME = "compose-${IMAGE}"
         GITLAB_PRIVATE_TOKEN = credentials("gitlab-isworker")
@@ -63,7 +63,7 @@ pipeline {
 			steps {
 				dir("deploy") {
 					sh """#!/usr/bin/env bash
-						set-new-version configuration.yaml ${env.GITLAB_PRIVATE_TOKEN} ${env.GITLAB_ID} ${env.BUILD_NUMBER} -b staging
+						set-new-version configuration.yaml ${env.GITLAB_PRIVATE_TOKEN} ${env.GITLAB_ID} ${env.DOCKER_TAG} -b staging
 					"""
 				}
 			}
