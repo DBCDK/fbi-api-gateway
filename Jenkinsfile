@@ -8,6 +8,9 @@ pipeline {
     agent {
         label 'devel10-head'
     }
+    triggers{
+        githubPush()
+    }
     environment {
         GITLAB_ID = "1232"
         DOCKER_TAG = "${imageLabel}"
@@ -78,7 +81,7 @@ pipeline {
                     docker rmi $IMAGE
                 """
         }  
-        /*failure {
+        failure {
             script {
                 if ("${env.BRANCH_NAME}" == 'master') {
                     slackSend(channel: 'fe-drift',
@@ -105,6 +108,6 @@ pipeline {
                     message: "${env.JOB_NAME} #${env.BUILD_NUMBER} back to normal: ${env.BUILD_URL}",
                     tokenCredentialId: 'slack-global-integration-token')
 
-        }*/
+        }
     }
 }
