@@ -6,9 +6,9 @@ The application is built with Node.js and Express, and exposes a GraphQL API. Th
 The development environment may be set up using npm. 
 
 ### npm
- - `npm install` installs dependencies
- - `npm run dev` starts a dev server
- - `npm test` runs jest tests
+ - `npm install` installs dependencies.
+ - `npm run dev` starts a dev server.
+ - `npm test` runs jest tests.
 
 ## Notes on performance
 A single query to the API typically leads to requests being sent to several underlying data sources. This is perfectly fine, and one of the strengths of GraphQL. But if data loading is not handled properly it results in an excessive number of network request round-trips.
@@ -20,7 +20,7 @@ DataLoader has a builtin memory cache, preventing multiple requests for the same
 - **Per request batching (DataLoader)**
 Batching is the primary feature of DataLoader. It groups requests to the same resource and let us (if the data source supports it) fetch the data in a single request. Even though, a data source does not support batch requests it is still highly beneficial. As soon as data is in the Redis cache, we fetch it using a batch requests.
 - **Global cache (Redis)**
-We use a global Redis cache shared across all GraphQL instances
+We use a global Redis cache shared across all GraphQL instances.
 - **Complex query analysis**
 Queries are analyzed before execution, and if they are too complex they are rejected.
 These queries are typically highly nested, leading to a high number of requests to underlying data sources.
