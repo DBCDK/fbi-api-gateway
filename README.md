@@ -1,5 +1,5 @@
-# The Next bibliotek.dk API
-This is the API part of the next bibliotek.dk.
+# The Next DBC API
+This is the API part of the next DBC graphql api.
 The application is built with Node.js and Express, and exposes a GraphQL API. The API is used by the frontend as the one and only entrance to underlying services.
 
 ## Getting started
