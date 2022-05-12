@@ -9,6 +9,7 @@ pipeline {
         label 'devel10-head'
     }
     triggers{
+        // @TODO parameters on githubPush .. eg. branch
         githubPush()
     }
     environment {
