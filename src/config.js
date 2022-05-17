@@ -143,5 +143,12 @@ export default {
       ttl: process.env.RECOMMENDATIONS_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.RECOMMENDATIONS_PREFIX || "recommendations-1",
     },
+    elk: {
+      url:
+        process.env.ELK_URL ||
+        "https://elk.dbc.dk:9100/k8s-frontend-prod-*/_search",
+      user: process.env.ELK_USER,
+      password: process.env.ELK_PASSWORD,
+    },
   },
 };
