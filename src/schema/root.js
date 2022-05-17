@@ -7,6 +7,8 @@ import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import { resolveBorrowerCheck, resolveOnlineAccess } from "../utils/utils";
 import translations from "../utils/translations.json";
+import * as consts from './draft/FAKE';
+import {workToJed} from './draft/draft_utils'
 
 /**
  * The root type definitions
@@ -16,7 +18,7 @@ type Query {
   manifestation(pid: String!): WorkManifestation!
   monitor(name: String!): String!
   user: User!
-  work(id: String, faust: String): Work
+  work(id: String, faust: String, pid: String): Draft_Work
   works(id: [String!], faust: [String!]): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   suggest(q: String!, worktype: WorkType, suggesttype:String): SuggestResponse!
@@ -135,7 +137,11 @@ export const resolvers = {
         workId: id,
         profile: context.profile,
       });
-      return res?.work;
+
+      const realData = workToJed(res);
+      return {  ...consts.FAKE_WORK,...realData};
+
+      //return res?.work;
     },
     async search(parent, args, context, info) {
       if (args.filters) {

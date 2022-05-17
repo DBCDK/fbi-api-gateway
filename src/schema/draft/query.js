@@ -1,3 +1,5 @@
+import * as consts from './FAKE';
+
 export const typeDef = `
 type Draft_Query {
   work(id: String, faust: String, pid: String): Draft_Work
@@ -32,7 +34,7 @@ extend type Query {
 }
 `;
 
-const FAKE_GENERAL_SERIES = {
+/*const FAKE_GENERAL_SERIES = {
   title: "Some Series",
   parallelTitles: [
     "Some Series, parallel title",
@@ -370,7 +372,6 @@ const FAKE_WORK = {
   materialTypes: { general: ["bøger", "ebøger"], specific: ["bog", "ebog"] },
   series: FAKE_SERIES_CONTAINER,
   universe: { title: "Some Universe" },
-  subjects: FAKE_SUBJECTS,
   genreAndForm: ["some genre"],
   workTypes: ["LITERATURE"],
   workYear: "1950",
@@ -395,7 +396,7 @@ const FAKE_RECOMMEND_RESPONSE = {
     { work: FAKE_WORK, manifestation: FAKE_MANIFESTATION_1 },
     { work: FAKE_WORK, manifestation: FAKE_MANIFESTATION_1 },
   ],
-};
+};*/
 
 export const resolvers = {
   Query: {
@@ -409,20 +410,16 @@ export const resolvers = {
     },
     works(parent, args, context) {
       const count =
-        args?.id?.length || args?.faust?.length || args?.pid?.length || 0;
-      return Array(count)
-        .fill(0)
-        .map(() => FAKE_WORK);
+          args?.id?.length || args?.faust?.length || args?.pid?.length || 0;
+      return Array(count).fill(0).map(() => FAKE_WORK);
     },
     manifestation() {
       return FAKE_MANIFESTATION_1;
     },
     manifestations(parent, args, context) {
       const count =
-        args?.id?.length || args?.faust?.length || args?.pid?.length || 0;
-      return Array(count)
-        .fill(0)
-        .map(() => FAKE_MANIFESTATION_1);
+          args?.id?.length || args?.faust?.length || args?.pid?.length || 0;
+      return Array(count).fill(0).map(() => FAKE_MANIFESTATION_1);
     },
     suggest() {
       return FAKE_SUGGEST_RESPONSE;

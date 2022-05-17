@@ -534,7 +534,7 @@ type Draft_Manifestation {
   """
   The type of material of the manifestation based on bibliotek.dk types
   """
-  materialTypes: Draft_MaterialTypes!
+  materialTypes: [Draft_MaterialType!]!
 
   """
   Notes about the manifestation

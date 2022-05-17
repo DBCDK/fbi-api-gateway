@@ -10,16 +10,16 @@ type Draft_Language {
   """
   isoCode: String!
 }
-type Draft_MaterialTypes {
+type Draft_MaterialType {
   """
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
   """
-  general: [String!]!
+  general: String!
 
   """
   The type of material of the manifestation based on bibliotek.dk types
   """
-  specific: [String!]!
+  specific: String!
 }
 enum Draft_FictionNonfictionCode {
   FICTION
@@ -79,7 +79,7 @@ type Draft_Work {
   """
   The type of material of the manifestation based on bibliotek.dk types
   """
-  materialTypes: Draft_MaterialTypes!
+  materialTypes: [Draft_MaterialType!]!
 
   """
   Series for this work
