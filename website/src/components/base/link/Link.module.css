@@ -5,6 +5,11 @@
 
   /* used for the ::before */
   position: relative;
+  
+}
+.link.underline {
+  text-decoration: underline;
+  text-underline-offset: var(--pt05);
 }
 
 .link.keepActive {
