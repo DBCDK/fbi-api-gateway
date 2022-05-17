@@ -149,6 +149,7 @@ export default {
         "https://elk.dbc.dk:9100/k8s-frontend-prod-*/_search",
       user: process.env.ELK_USER,
       password: process.env.ELK_PASSWORD,
+      prefix: process.env.ELK_PREFIX || "elk-1",
     },
   },
 };
