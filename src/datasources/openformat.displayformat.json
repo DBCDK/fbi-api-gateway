@@ -86,6 +86,7 @@
         }
       ],
       "language": "dkabm.dc:language.not(dcterms:ISO639-2)",
+      "iso639-2": "dkabm.dc:language",
       "latestReprint": [
         {
           "value": "{latestReprint}"

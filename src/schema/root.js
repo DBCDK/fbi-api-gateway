@@ -7,8 +7,8 @@ import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import { resolveBorrowerCheck, resolveOnlineAccess } from "../utils/utils";
 import translations from "../utils/translations.json";
-import * as consts from './draft/FAKE';
-import {workToJed} from './draft/draft_utils'
+import * as consts from "./draft/FAKE";
+import { workToJed } from "./draft/draft_utils";
 
 /**
  * The root type definitions
@@ -19,7 +19,7 @@ type Query {
   monitor(name: String!): String!
   user: User!
   work(id: String, faust: String, pid: String): Draft_Work
-  works(id: [String!], faust: [String!]): [Work]!
+  works(id: [String!], faust: [String!], pid: [String!]): [Draft_Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   suggest(q: String!, worktype: WorkType, suggesttype:String): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
@@ -92,18 +92,27 @@ export const resolvers = {
         ids = await Promise.all(
           args.faust.map((faust) => context.datasources.faust.load(faust))
         );
+      } else if (args.pid) {
+        ids = args.pid.map((pid) => `work-of:${pid}`);
       }
       if (!ids) {
         return [];
       }
       return Promise.all(
         ids.map(async (id) => {
-          return (
-            await context.datasources.workservice.load({
-              workId: id,
-              profile: context.profile,
-            })
-          )?.work;
+          const res = await context.datasources.workservice.load({
+            workId: id,
+            profile: context.profile,
+          });
+          if (!res) {
+            return null;
+          }
+
+          const manifestation = await context.datasources.openformat.load(
+            id.replace("work-of:", "")
+          );
+          const realData = workToJed(res, manifestation);
+          return { ...consts.FAKE_WORK, ...realData };
         })
       );
     },
@@ -128,6 +137,8 @@ export const resolvers = {
         id = args.id;
       } else if (args.faust) {
         id = await context.datasources.faust.load(args.faust);
+      } else if (args.pid) {
+        id = `work-of:${args.pid}`;
       }
       if (!id) {
         return null;
@@ -138,8 +149,17 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      const realData = workToJed(res);
-      return {  ...consts.FAKE_WORK,...realData};
+      if (!res) {
+        return null;
+      }
+
+      // A manifestation that may have original publication year and stuff
+      // that may be needed on the work
+      const manifestation = await context.datasources.openformat.load(
+        id.replace("work-of:", "")
+      );
+      const realData = workToJed(res, manifestation);
+      return { ...consts.FAKE_WORK, ...realData };
 
       //return res?.work;
     },
