@@ -18,8 +18,8 @@ type Query {
   manifestation(pid: String!): WorkManifestation!
   monitor(name: String!): String!
   user: User!
-  work(id: String, faust: String, pid: String): Draft_Work
-  works(id: [String!], faust: [String!], pid: [String!]): [Draft_Work]!
+  work(id: String, faust: String, pid: String, language: LanguageCode): Draft_Work
+  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Draft_Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   suggest(q: String!, worktype: WorkType, suggesttype:String): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
@@ -111,7 +111,7 @@ export const resolvers = {
           const manifestation = await context.datasources.openformat.load(
             id.replace("work-of:", "")
           );
-          const realData = workToJed(res, manifestation);
+          const realData = workToJed(res, manifestation, args.language);
           return { ...consts.FAKE_WORK, ...realData };
         })
       );
@@ -158,7 +158,7 @@ export const resolvers = {
       const manifestation = await context.datasources.openformat.load(
         id.replace("work-of:", "")
       );
-      const realData = workToJed(res, manifestation);
+      const realData = workToJed(res, manifestation, args.language);
       return { ...consts.FAKE_WORK, ...realData };
 
       //return res?.work;

@@ -2,15 +2,14 @@
 
 A work is a ...
 
-## Lookup by Faust
+## Fetch Single Work
 
-One may look up a work by providing a faust.
+One may use three different types of identifiers to fetch a work; _work id_, _pid_, or _faust_.
 
 <InlineGraphiQL
   query={`query ($faust: String!) {
       work(faust: $faust) {
-        id
-        title
+        workId
       }
     }`}
   variables={{
@@ -18,15 +17,41 @@ One may look up a work by providing a faust.
   }}
 />
 
-It is possible to look up multiple works by providing a list of fausts.
-The order of fausts are preserved when returning the list of works.
-If no work is found for a faust, null is returned at the corresponding position.
+<InlineGraphiQL
+  query={`query ($pid: String!) {
+      work(pid: $pid) {
+        workId
+      }
+    }`}
+  variables={{
+    pid: "870970-basis:48953786",
+  }}
+/>
+
+<InlineGraphiQL
+  query={`query ($id: String!) {
+      work(id: $id) {
+        workId
+      }
+    }`}
+  variables={{
+    id: "work-of:870970-basis:48953786",
+  }}
+/>
+
+## Fetch Multiple Works
+
+It is possible to fetch multiple works in a single request by providing
+a list of identifiers. The identifiers may be _a list of work ids_, _a list of pids_,
+or _a list of fausts_.
+
+The order of the works will match the order of provided identifiers.
+If no work is found for an identifier, null is returned at the corresponding position.
 
 <InlineGraphiQL
   query={`query ($faust: [String!]!) {
       works(faust: $faust) {
-        id
-        title
+        workId
       }
     }`}
   variables={{
@@ -128,6 +153,28 @@ the full article. See the Infomedia example.
       }
   }`}
   variables={{
-  workId: "work-of:870970-basis:52557240",
+    workId: "work-of:870970-basis:52557240",
+  }}
+/>
+
+## Translations
+
+We may have part of the work in english, specify a language and we will
+translate data where possible.
+
+Only fields named _display_, _summary_ etc. may contain translations.
+
+<InlineGraphiQL
+  query={`query ($workId: String!, $language: LanguageCode) {
+    work(id: $workId, language: $language) {
+      mainLanguages {
+        display
+        isoCode
+      }
+    }
+  }`}
+  variables={{
+    workId: "work-of:870970-basis:52557240",
+    language: "en",
   }}
 />

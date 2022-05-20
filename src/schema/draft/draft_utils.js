@@ -9,7 +9,7 @@ import translations from "../../utils/translations.json";
  * @param originalData
  * @returns {{}}
  */
-export function workToJed(originalData, manifestation) {
+export function workToJed(originalData, manifestation, language = "da") {
   //console.log(JSON.stringify(originalData, null, 4));
 
   const jedData = {};
@@ -28,18 +28,21 @@ export function workToJed(originalData, manifestation) {
   jedData.workTypes = workToWorkTypes(originalData?.work);
   jedData.workYear = manifestationToWorkYear(manifestation);
 
-  jedData.mainLanguages = manifestationToMainLanguages(manifestation);
+  jedData.mainLanguages = manifestationToMainLanguages(manifestation, language);
+  // console.log(JSON.stringify(manifestation, null, 2));
 
   return jedData;
 }
 
-function manifestationToMainLanguages(manifestation) {
+function manifestationToMainLanguages(manifestation, language) {
   const mainLanguages = getArray(manifestation, "details.iso639-2")
     .filter((entry) => translations.facets.language[entry.$])
     .map((entry) => {
       return {
         isoCode: entry.$,
-        display: translations.facets.language[entry.$]?.da,
+        display:
+          translations.facets.language[entry.$]?.[language] ||
+          translations.facets.language[entry.$]?.da,
       };
     });
 
