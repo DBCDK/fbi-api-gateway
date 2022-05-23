@@ -6,6 +6,8 @@
 import { getArray, resolveOnlineAccess } from "../utils/utils";
 import translations from "../utils/translations.json";
 import dayjs from "dayjs";
+import * as consts from "./draft/FAKE";
+import {FAKE_MANIFESTATION_1} from './draft/FAKE';
 
 /**
  * The WorkManifestation type definition

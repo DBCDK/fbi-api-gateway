@@ -9,13 +9,14 @@ import { resolveBorrowerCheck, resolveOnlineAccess } from "../utils/utils";
 import translations from "../utils/translations.json";
 import * as consts from "./draft/FAKE";
 import { workToJed } from "./draft/draft_utils";
+import {manifestationToJed} from './draft/draft_utils_manifestations';
 
 /**
  * The root type definitions
  */
 export const typeDef = `
 type Query {
-  manifestation(pid: String!): WorkManifestation!
+  manifestation(pid: String!): Draft_Manifestation!
   monitor(name: String!): String!
   user: User!
   work(id: String, faust: String, pid: String): Draft_Work
@@ -54,9 +55,9 @@ export const resolvers = {
       return ris;
     },
     async refWorks(parent, args, context, info) {
-      const ref = await context.datasources.refworks.load({
-        pid: args.pid,
-      });
+      const ref = await context.datasources.refworks.load(
+        args.pid
+      );
       return ref;
     },
     async localizations(parent, args, context, info) {
@@ -82,7 +83,11 @@ export const resolvers = {
       return "gr8";
     },
     async manifestation(parent, args, context, info) {
-      return { id: args.pid };
+      const pid = args.pid;
+      const manifestation = await context.datasources.openformat.load(pid);
+
+      const realData = manifestationToJed(manifestation);
+      return { ...consts.FAKE_MANIFESTATION_1, ...realData };
     },
     async works(parent, args, context, info) {
       let ids;
