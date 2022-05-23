@@ -644,11 +644,7 @@ export const resolvers = {
   Draft_Manifestation: {
     async access(parent, args, context, info) {
       const resolved = await resolveOnlineAccess(parent.pid, context);
-
       return resolved;
-      return [
-        {__typename:"Draft_URL", url: 'fisk', origin: 'hest'},
-        {__typename:"Draft_URL", url: 'hund', origin: 'krokodille'}];
     },
   },
 };

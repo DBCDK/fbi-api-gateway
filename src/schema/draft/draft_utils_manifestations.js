@@ -18,23 +18,37 @@ export function manifestationToJed(manifestation) {
   return jedData;
 }
 
+/**
+ * Get type of access for manifestation with given pid.
+ *  url access
+ *  ill access
+ *  infomedia access
+ *  digital article service access
+ *
+ * @param pid
+ * @param context
+ * @returns {Promise<*>}
+ */
 export async function resolveOnlineAccess(pid, context) {
   const result = [];
   // Get onlineAccess from openformat (UrlReferences)
   const manifestation = await context.datasources.openformat.load(pid);
+
+  // online access with url
   const data = getArray(manifestation, "details.onlineAccess");
   data.forEach((entry) => {
     if (entry.value) {
       result.push({
         __typename:"Draft_URL",
+        origin: (entry.value.link && parseOnlineUrlToOrigin(entry.value.link.$)) || "",
         url: (entry.value.link && entry.value.link.$) || "",
-        origin: "fisk"
         //note: (entry.value.note && entry.value.note.$) || "",
         //accessType: (entry.accessUrlDisplay && entry.accessUrlDisplay.$) || "",
       });
     }
   });
 
+  // infomedia access
   let infomedia =
       (manifestation &&
           manifestation.details &&
@@ -56,6 +70,7 @@ export async function resolveOnlineAccess(pid, context) {
     });
   }
 
+  // werarchive
   let webarchive =
       (manifestation &&
           manifestation.details &&
@@ -72,12 +87,13 @@ export async function resolveOnlineAccess(pid, context) {
         result.push({
           __typename:"Draft_URL",
           url: archive.url,
-          origin: "webarchive"
+          origin: parseOnlineUrlToOrigin(archive.url)
         });
       }
     });
   }
 
+  // Digital article service
   const articleIssn =
       getArray(manifestation, "details.articleIssn.value").map(
           (entry) => entry.$
@@ -88,10 +104,7 @@ export async function resolveOnlineAccess(pid, context) {
     const journals = await context.datasources.statsbiblioteketJournals.load(
         ""
     );
-
     const articleissn = articleIssn.replace(/[^a-z\d]/gi, "");
-
-
     const hasJournal = journals && journals[articleissn];
     if (hasJournal) {
       result.push({
@@ -102,8 +115,32 @@ export async function resolveOnlineAccess(pid, context) {
     }
   }
 
+  // ILL
+  const requestbutton = manifestation.admindata.requestButton.$;
+  result.push({
+    __typename: "Draft_Ill",
+    ill: requestbutton === "true"
+  })
+
   // Return array containing both InfomediaReference, UrlReferences, webArchive and DigitalCopy
   return _sortOnlineAccess(result);
+}
+
+/**
+ * Get domain from url
+ * @param url
+ * @return String
+ *  A parsed string eg. "DBC Webarkiv" or name of host eg. "infolink2003.elbo.dk"
+ *
+ * */
+function parseOnlineUrlToOrigin(url){
+  const parsedUrl = new URL(url);
+  if(parsedUrl["host"] === 'moreinfo.addi.dk'){
+    return "DBC Webarkiv"
+  }
+  else{
+    return (parsedUrl["host"] && parsedUrl["host"]) || "";
+  }
 }
 
 /**
@@ -132,6 +169,12 @@ function _sortOnlineAccess(onlineAccess) {
   return onlineAccess.sort(specialSort);
 }
 
+/**
+ * Parse for titles - @see /draft/manifestation::Draft_ManifestationTitles
+ *
+ * @param manifestation
+ * @returns {{identifyingAddition: string, standard: string, original: [string], parallel: string[], alternative: [string], main: [string], sort: string, translated: [string], full: [string]}}
+ */
 function jedTitles(manifestation) {
   /* NOTES .. we do not get properties marked with * MISSION in object below
   @TODO get missing properties from somewhere
@@ -160,6 +203,11 @@ function jedTitles(manifestation) {
   };
 }
 
+/**
+ * Parse for creators - @see /draft/creator.js
+ * @param manifestation
+ * @returns {{firstName: string, lastName: string, aliases: [{display: string},{display: string}], birthYear: string, attributeToName: string, __typename: string, display: *, romanNumeral: string, roles: [{functionCode: (string|*), valueOf?(): boolean, function: ({plural: string, singular: string}|{plural: *, singular: *})}]|[], nameSort: *}[]}
+ */
 function jedCreators(manifestation) {
   const creators = getArray(manifestation, 'details.creators.value');
   const jedData = creators.map((creator) => {
