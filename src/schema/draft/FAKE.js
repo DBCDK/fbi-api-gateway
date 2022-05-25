@@ -57,6 +57,13 @@ export const FAKE_PERSON = {
   roles: [FAKE_ROLE],
 };
 
+export const FAKE_ACCESS = {
+
+  __typename: 'Draft_URL',
+  origin: 'DBC Webarkiv',
+  url: 'https://moreinfo.dbc.dk',
+};
+
 export const FAKE_CORPORATION = {
   __typename: 'Draft_Corporation',
   display: 'Some Corporation',
@@ -101,50 +108,27 @@ export const FAKE_SUBJECTS = {
   ],
 };
 
+export const FAKE_MANIFESTATION_TITLE = {
+  main: ['Some Title'],
+  full: ['Some Title: Full'],
+  alternative: ['Some Title: Alternative'],
+  identifyingAddition: 'Indlæst af Jens Jensen',
+  original: ['Some Title: Original'],
+  parallel: ['Parallel Title 1', 'Parallel Title 2'],
+  sort: 'Some Title Sort',
+  standard: 'Some Title Standard',
+  translated: ['En Oversat Titel'],
+};
+
 export const FAKE_MANIFESTATION_1 = {
   pid: 'some-pid-1',
-  titles: {
-    main: ['Some Title'],
-    full: ['Some Title: Full'],
-    alternative: ['Some Title: Alternative'],
-    identifyingAddition: 'Indlæst af Jens Jensen',
-    original: ['Some Title: Original'],
-    parallel: ['Parallel Title 1', 'Parallel Title 2'],
-    sort: 'Some Title Sort',
-    standard: 'Some Title Standard',
-    translated: ['En Oversat Titel'],
-  },
+  titles: FAKE_MANIFESTATION_TITLE,
   abstract: ['Some abstract ...'],
   accessTypes: [
     {display: 'fysisk', code: 'FYSISK'},
     {display: 'online', code: 'ONLINE'},
   ],
-  access: [
-    {
-      __typename: 'Draft_URL',
-      origin: 'DBC Webarkiv',
-      url: 'https://moreinfo.dbc.dk',
-    },
-    {
-      __typename: 'Draft_Ereol',
-      origin: 'Ereolen',
-      url: 'https://...',
-      canAlwaysBeLoaned: true,
-    },
-    {
-      __typename: 'Draft_Ill',
-      ill: true,
-    },
-    {
-      __typename: 'Draft_InfomediaService',
-      id: '123456',
-    },
-    {
-      __typename: 'Draft_DigitalArticleService',
-      issn: '123456',
-      subscribed: true,
-    },
-  ],
+  access: FAKE_ACCESS,
   audience: {
     generalAudience: ['general audience'],
     ages: [{display: '10-14', begin: 10, end: 14}],
