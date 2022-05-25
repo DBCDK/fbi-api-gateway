@@ -43,6 +43,11 @@
           "value": "{creators_standard}"
         }
       ],
+      "contributors": [
+        {
+          "value": "{bibdk_contributors}"
+        }
+      ],
       "dk5": [
         {
           "searchCode": "dkcclphrase.ldk",
@@ -87,6 +92,12 @@
       ],
       "language": "dkabm.dc:language.not(dcterms:ISO639-2)",
       "iso639-2": "dkabm.dc:language",
+      "languages": {
+        "languageMain":"dkabm.dc:language.dcterms:ISO639-2",
+        "languageSpoken": "dkabm.dc:language.dkdcplus:spoken",
+        "languageSubtitles": "dkabm.dc:language.dkdcplus:subtitles"
+      },
+
       "latestReprint": [
         {
           "value": "{latestReprint}"

@@ -424,6 +424,18 @@ type Draft_Audience {
   """
   lix: String
 }
+
+type Draft_CatalogueCodes {
+  """
+  Catalogue codes for the national bibliography 
+  """
+  nationalBibliography: [String]!
+  """
+  other catalogue codes 
+  """
+  otherCatalogues: [String]!
+}
+
 type Draft_Manifestations {
   first: Draft_Manifestation!
   latest: Draft_Manifestation!
@@ -460,6 +472,10 @@ type Draft_Manifestation {
   """
   audience: Draft_Audience
 
+  """
+  CatalogueCodes for nationalBibliography and others
+  """
+  catalogueCodes: Draft_CatalogueCodes
   """
   Contributors to the manifestation, actors, illustrators etc
   """

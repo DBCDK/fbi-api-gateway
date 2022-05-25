@@ -120,6 +120,60 @@ export const FAKE_MANIFESTATION_TITLE = {
   translated: ['En Oversat Titel'],
 };
 
+export const FAKE_AUDIENCE = {
+  generalAudience: ['general audience'],
+  ages: [{display: '10-14', begin: 10, end: 14}],
+  libraryRecommendation: 'some library recommendation',
+  childrenOrAdults: [{display: 'til børn', code: 'FOR_CHILDREN'}],
+  schoolUse: [{display: 'til skolebrug', code: 'FOR_SCHOOL_USE'}],
+  primaryTarget: ['Some primary target'],
+  let: 'some let',
+  lix: 'some lix',
+}
+
+export const FAKE_CLASSIFICATION = {
+  system: 'DK5',
+  code: '86-096',
+  display: 'Skønlitteratur',
+  entryType: 'NATIONAL_BIBLIOGRAPHY_ENTRY',
+}
+
+export const FAKE_EDITION = {
+  summary: '3. i.e. 2 udgave, 2005',
+  edition: '3. i.e. 2 udgave',
+  contributors: [],
+  publicationYear: {
+    display: '2005',
+    year: 2005,
+  },
+}
+
+export const FAKE_LATEST_PRINTING = {
+  summary: '11. oplag, 2020',
+  printing: '11. oplag',
+  publicationYear: {
+    display: '2020',
+    year: 2020,
+  },
+}
+
+export const FAKE_HOST_PUBLICATION = {
+  title: 'Årsskrift / Carlsbergfondet',
+  creator: 'Some Creator',
+  isbn: 'some isbn',
+  issue: 'some issue',
+  notes: ['a note'],
+  pages: '140-145',
+  publisher: 'Some Publisher',
+  summary: 'Årsskrift / Carlsbergfondet, 2006',
+  issn: '1395-7961',
+  year: {
+    display: '2006',
+    year: 2006,
+  },
+  series: FAKE_GENERAL_SERIES,
+}
+
 export const FAKE_MANIFESTATION_1 = {
   pid: 'some-pid-1',
   titles: FAKE_MANIFESTATION_TITLE,
@@ -129,16 +183,7 @@ export const FAKE_MANIFESTATION_1 = {
     {display: 'online', code: 'ONLINE'},
   ],
   access: FAKE_ACCESS,
-  audience: {
-    generalAudience: ['general audience'],
-    ages: [{display: '10-14', begin: 10, end: 14}],
-    libraryRecommendation: 'some library recommendation',
-    childrenOrAdults: [{display: 'til børn', code: 'FOR_CHILDREN'}],
-    schoolUse: [{display: 'til skolebrug', code: 'FOR_SCHOOL_USE'}],
-    primaryTarget: ['Some primary target'],
-    let: 'some let',
-    lix: 'some lix',
-  },
+  audience: FAKE_AUDIENCE,
   contributors: [
     {
       ...FAKE_PERSON,
@@ -156,49 +201,12 @@ export const FAKE_MANIFESTATION_1 = {
   contributorsFromDescription: ['på dansk ved Vivi Berendt'],
   creators: [FAKE_PERSON, FAKE_CORPORATION],
   creatorsFromDescription: ['tekst af William Warren'],
-  classifications: [
-    {
-      system: 'DK5',
-      code: '86-096',
-      display: 'Skønlitteratur',
-      entryType: 'NATIONAL_BIBLIOGRAPHY_ENTRY',
-    },
-  ],
-  edition: {
-    summary: '3. i.e. 2 udgave, 2005',
-    edition: '3. i.e. 2 udgave',
-    contributors: [],
-    publicationYear: {
-      display: '2005',
-      year: 2005,
-    },
-  },
-  latestPrinting: {
-    summary: '11. oplag, 2020',
-    printing: '11. oplag',
-    publicationYear: {
-      display: '2020',
-      year: 2020,
-    },
-  },
+  classifications: [FAKE_CLASSIFICATION],
+  edition: FAKE_EDITION,
+  latestPrinting: FAKE_LATEST_PRINTING,
   fictionNonfiction: {display: 'skønlitteratur', code: 'FICTION'},
   genreAndForm: ['some genre'],
-  hostPublication: {
-    title: 'Årsskrift / Carlsbergfondet',
-    creator: 'Some Creator',
-    isbn: 'some isbn',
-    issue: 'some issue',
-    notes: ['a note'],
-    pages: '140-145',
-    publisher: 'Some Publisher',
-    summary: 'Årsskrift / Carlsbergfondet, 2006',
-    issn: '1395-7961',
-    year: {
-      display: '2006',
-      year: 2006,
-    },
-    series: FAKE_GENERAL_SERIES,
-  },
+  hostPublication: FAKE_HOST_PUBLICATION,
   identifiers: [
     {
       type: 'ISBN',
