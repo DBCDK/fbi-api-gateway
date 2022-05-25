@@ -29,7 +29,6 @@ function CreateForm() {
             e.preventDefault();
             setSelectedToken(
               e.target.accessToken.value,
-              e.target.agency.value,
               e.target.profile.value
             );
           }}
@@ -42,10 +41,6 @@ function CreateForm() {
               id="accessToken"
               required
             />
-          </div>
-          <div className={styles.inputfield}>
-            <label htmlFor="agency">Agency ID</label>
-            <Input name="agency" placeholder="Agency ID" id="agency" required />
           </div>
           <div className={styles.inputfield}>
             <label htmlFor="profile">Profile Name</label>
@@ -79,7 +74,6 @@ function CreateForm() {
 
 function Item({
   token,
-  agency,
   profile,
   timestamp,
   inUse,
@@ -87,7 +81,7 @@ function Item({
   isExpired,
   // isVisible,
 }) {
-  const { selectedToken, setSelectedToken, removeHistoryItem } = useStorage();
+  const { setSelectedToken, removeHistoryItem } = useStorage();
 
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
@@ -113,6 +107,8 @@ function Item({
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = isExpired ? styles.expired : "";
   const crossClass = open ? styles.less : styles.more;
+
+  const agency = configuration?.agency;
 
   return (
     <Collapse in={!removed} id={`container-collapse-${token}`}>
@@ -179,7 +175,7 @@ function Item({
               className={styles.remove}
               size="small"
               onClick={() => {
-                removeHistoryItem(token, agency, profile);
+                removeHistoryItem(token, profile);
                 setRemoved(true);
               }}
               secondary
@@ -191,7 +187,7 @@ function Item({
               disabled={isExpired}
               size="small"
               onClick={() => {
-                setSelectedToken(token, agency, profile);
+                setSelectedToken(token, profile);
               }}
               primary
             >

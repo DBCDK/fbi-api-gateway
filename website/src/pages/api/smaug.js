@@ -11,6 +11,7 @@ const selectData = (data) => {
     clientId: data.app?.clientId,
     uniqueId: data.user?.uniqueId,
     permissions: data.gateway ? data.gateway : permissions.default,
+    agency: data.agencyId,
   };
 };
 

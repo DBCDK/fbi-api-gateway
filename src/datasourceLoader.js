@@ -132,16 +132,16 @@ function createWrapLoader(loader) {
 
 const withTrackLoader = (batchloader, name, track) => {
   // Return the wrapped function
-  return async function (...args) {
+  return async function (keys) {
     // Start time
     const start = new Date().getTime();
     try {
-      return await batchloader(...args);
+      return await batchloader(keys, track);
     } finally {
       // end time
-      const numberOfCalls = { ...args };
+
       // a datasource is called once for each argument in list
-      const count = numberOfCalls[0].length;
+      const count = keys.length;
       const end = new Date().getTime();
       track.track(name, end - start, count);
     }
@@ -163,6 +163,7 @@ export default function createDataLoaders(uuid) {
           // to make it useful as a cache key
           cacheKeyFn: (key) =>
             typeof key === "object" ? JSON.stringify(key) : key,
+          maxBatchSize: 100,
         }
       )
     );
