@@ -30,6 +30,7 @@ export function workToJed(originalData, manifestation, language = "da") {
 
   jedData.mainLanguages = manifestationToMainLanguages(manifestation, language);
   // console.log(JSON.stringify(manifestation, null, 2));
+  jedData.relations = originalData?.work?.relations;
 
   return jedData;
 }
