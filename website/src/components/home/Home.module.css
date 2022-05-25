@@ -9,8 +9,13 @@
 }
 
 .content > div > .title,
-.content > div > .text {
+.content > div > .text,
+.content li {
   padding-top: var(--pt2);
+}
+
+.content li {
+  margin-left: var(--pt3);
 }
 
 .email {

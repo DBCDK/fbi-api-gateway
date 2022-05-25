@@ -28,6 +28,11 @@ type Draft_Query {
   Get recommendations based on a pid
   """
   recommend(pid: String!): Draft_RecommendationResponse!
+
+  """
+  Search
+  """
+  search(q: SearchQuery!): Draft_SearchResponse!
 }
 extend type Query {
   draft: Draft_Query!
@@ -149,7 +154,7 @@ const FAKE_MANIFESTATION_1 = {
   },
   abstract: ["Some abstract ..."],
   accessTypes: [
-    { display: "fysisk", code: "FYSISK" },
+    { display: "fysisk", code: "PHYSICAL" },
     { display: "online", code: "ONLINE" },
   ],
   access: [
@@ -326,7 +331,7 @@ const FAKE_MANIFESTATION_1 = {
   recordCreationDate: "19830414",
   series: FAKE_SERIES_CONTAINER,
   shelfmark: {
-    prefix: "some prefix",
+    postfix: "some postfix",
     shelfmark: "some shelfmark",
   },
   source: ["some source"],
@@ -426,6 +431,62 @@ export const resolvers = {
     },
     recommend() {
       return FAKE_RECOMMEND_RESPONSE;
+    },
+    search() {
+      return {
+        facets: {
+          categories: [
+            {
+              facetCategory: "materialType",
+              values: [
+                {
+                  term: "Ebog",
+                  count: 8,
+                  facetName: "materialType",
+                  popular: true,
+                },
+                {
+                  term: "Fysisk",
+                  count: 18,
+                  facetName: "materialType",
+                  popular: false,
+                },
+              ],
+            },
+            {
+              facetCategory: "subjects",
+              values: [
+                {
+                  term: "Fantasy",
+                  count: 8,
+                  facetName: "subjects",
+                  popular: true,
+                },
+                {
+                  term: "Heste",
+                  count: 2,
+                  facetName: "subjects",
+                  popular: false,
+                },
+              ],
+            },
+          ],
+          popular: [
+            {
+              term: "Ebog",
+              count: 8,
+              facetCategory: "materialType",
+              popular: true,
+            },
+            {
+              term: "Fantasy",
+              count: 82,
+              facetCategory: "subjects",
+              popular: true,
+            },
+          ],
+        },
+      };
     },
   },
 };

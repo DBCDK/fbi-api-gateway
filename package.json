@@ -34,6 +34,7 @@
     "graphql-scalars": "^1.9.1",
     "http-proxy-middleware": "^2.0.3",
     "ioredis": "^4.17.3",
+    "isbot": "^3.4.6",
     "lodash": "^4.17.19",
     "minisearch": "^3.0.2",
     "node-cache": "^5.1.0",

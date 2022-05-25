@@ -17,6 +17,7 @@ import { metrics, observeDuration, count } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
 import { uuid } from "uuidv4";
+import isbot from "isbot";
 
 const app = express();
 let server;
@@ -54,7 +55,7 @@ promExporterApp.listen(9599, () => {
   });
   // Middleware that monitors performance of those GraphQL queries
   // which specify a monitor name.
-  app.post("/:agency/:profile/graphql", async (req, res, next) => {
+  app.post("/:profile/graphql", async (req, res, next) => {
     const start = process.hrtime();
     res.once("finish", () => {
       const elapsed = process.hrtime(start);
@@ -70,6 +71,7 @@ promExporterApp.listen(9599, () => {
               typeof val === "string" ? val : JSON.stringify(val))
         );
       }
+      const userAgent = req.get("User-Agent");
 
       // detailed logging for SLA
       log.info("TRACK", {
@@ -81,7 +83,9 @@ promExporterApp.listen(9599, () => {
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
         graphQLErrors: req.graphQLErrors && JSON.stringify(req.graphQLErrors),
-        userAgent: req.get("User-Agent"),
+        userAgent,
+        userAgentIsBot: isbot(userAgent),
+        ip: req?.smaug?.app?.ips?.[0],
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
@@ -105,12 +109,8 @@ promExporterApp.listen(9599, () => {
 
   // Setup route handler for GraphQL
   app.post(
-    "/:agency/:profile/graphql",
+    "/:profile/graphql",
     graphqlHTTP(async (request, response, graphQLParams) => {
-      request.profile = {
-        agency: request.params.agency,
-        name: request.params.profile,
-      };
       // Create dataloaders and add to request
       request.datasources = createDataLoaders(uuid());
 
@@ -134,6 +134,15 @@ promExporterApp.listen(9599, () => {
         request.smaug.app.ips = (request.ips.length && request.ips) || [
           request.ip,
         ];
+
+        // Agency of the smaug client
+        const agency = request.smaug?.agencyId;
+
+        request.profile = {
+          agency,
+          name: request.params.profile,
+          combined: `${agency}/${request.params.profile}`,
+        };
       } catch (e) {
         if (e.response && e.response.statusCode !== 404) {
           log.error("Error fetching from smaug", { response: e });

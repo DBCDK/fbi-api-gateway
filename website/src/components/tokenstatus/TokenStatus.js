@@ -26,7 +26,7 @@ export default function TokenStatus() {
     content = (
       <>
         <span>{configuration?.displayName}</span> |
-        <span>{selectedToken?.agency}</span> |
+        <span>{configuration?.agency}</span> |
         <span>{selectedToken?.profile}</span>
       </>
     );

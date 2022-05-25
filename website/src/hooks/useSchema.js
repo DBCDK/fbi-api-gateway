@@ -8,11 +8,11 @@ import useStorage from "./useStorage";
 
 export function useGraphQLUrl() {
   const { selectedToken } = useStorage();
-  const { agency = "190101", profile = "default" } = selectedToken || {};
+  const { profile = "default" } = selectedToken || {};
 
   return `${
     typeof window !== "undefined" && window.location.origin
-  }/${agency}/${profile}/graphql`;
+  }/${profile}/graphql`;
 }
 export default function useSchema(token) {
   const url = useGraphQLUrl();
@@ -39,7 +39,6 @@ export default function useSchema(token) {
   };
 
   const { data } = useSWR(token?.token && [url, token?.token], fetcher);
-
   return {
     schema: data?.schema,
     schemaStr: data?.schemaStr,

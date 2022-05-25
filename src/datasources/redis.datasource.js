@@ -197,7 +197,7 @@ export function withRedis(
    *
    * @param {Array.<string>} keys The keys to fetch
    */
-  async function redisBatchLoader(keys) {
+  async function redisBatchLoader(keys, track) {
     const now = Date.now();
 
     // Create array of prefixed keys
@@ -205,6 +205,7 @@ export function withRedis(
 
     // Get values of all prefixed keys from Redis
     const cachedValues = await mgetFunc(prefixedKeys, inMemory);
+    track.track("redis", Date.now() - now, keys.length);
 
     // If some values were not found in Redis,
     // they are added to missing keys array

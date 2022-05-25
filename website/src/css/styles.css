@@ -36,8 +36,11 @@
 }
 
 code {
+  display: inline-block;
   background: var(--divider);
   padding: var(--pt05);
+  white-space: normal;
+  line-break: anywhere;
 }
 @media screen and (min-width: 1400px) {
   .container,

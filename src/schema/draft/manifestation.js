@@ -1,5 +1,5 @@
-import {resolveOnlineAccess} from './draft_utils_manifestations';
-import * as consts from './FAKE';
+import { resolveOnlineAccess } from "./draft_utils_manifestations";
+import * as consts from "./FAKE";
 
 export const typeDef = `
 type Draft_TableOfContent {
@@ -9,12 +9,12 @@ type Draft_TableOfContent {
 }
 type Draft_Shelfmark {
   """
-  A prefix to the shelfmark
+  A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935
   """
-  prefix: String!
+  postfix: String!
 
   """
-  The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found
+  The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
   """
   shelfmark: String!
 }
@@ -424,7 +424,6 @@ type Draft_Audience {
   """
   lix: String
 }
-
 type Draft_Manifestations {
   first: Draft_Manifestation!
   latest: Draft_Manifestation!
