@@ -19,11 +19,11 @@ export default function useStorage() {
     selectedToken = history?.[0];
   }
 
-  const setSelectedToken = (token, agency, profile) => {
-    const val = { token, agency, profile };
+  const setSelectedToken = (token, profile) => {
+    const val = { token, profile };
     sessionStorage.setItem("selectedToken", JSON.stringify(val));
     mutateSelectedToken(val, false);
-    setHistory(token, agency, profile);
+    setHistory(token, profile);
   };
 
   /**
@@ -35,18 +35,14 @@ export default function useStorage() {
     mutateSelectedToken(null, false);
   };
 
-  const setHistory = (token, agency, profile) => {
+  const setHistory = (token, profile) => {
     const timestamp = Date.now();
 
     // Find existing
-    const existing = history.find((obj) =>
-      isEqual(obj, { token, agency, profile })
-    );
+    const existing = history.find((obj) => isEqual(obj, { token, profile }));
 
     // remove duplicate
-    const uniq = history.filter(
-      (obj) => !isEqual(obj, { token, agency, profile })
-    );
+    const uniq = history.filter((obj) => !isEqual(obj, { token, profile }));
 
     if (existing) {
       uniq.unshift(existing);
@@ -54,7 +50,6 @@ export default function useStorage() {
       // add to beginning of array
       uniq.unshift({
         token,
-        agency,
         profile,
         timestamp,
       });
@@ -69,9 +64,9 @@ export default function useStorage() {
     mutateHistory(sliced, false);
   };
 
-  const removeHistoryItem = (token, agency, profile) => {
+  const removeHistoryItem = (token, profile) => {
     const newHistory = history.filter(
-      (obj) => !isEqual(obj, { token, agency, profile })
+      (obj) => !isEqual(obj, { token, profile })
     );
     // store
     const stringified = JSON.stringify(newHistory);
@@ -79,7 +74,7 @@ export default function useStorage() {
     // mutate
     mutateHistory(newHistory, false);
 
-    if (isEqual(selectedToken, { token, agency, profile })) {
+    if (isEqual(selectedToken, { token, profile })) {
       removeSelectedToken();
     }
   };

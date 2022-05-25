@@ -55,7 +55,7 @@ promExporterApp.listen(9599, () => {
   });
   // Middleware that monitors performance of those GraphQL queries
   // which specify a monitor name.
-  app.post("/:agency/:profile/graphql", async (req, res, next) => {
+  app.post("/:profile/graphql", async (req, res, next) => {
     const start = process.hrtime();
     res.once("finish", () => {
       const elapsed = process.hrtime(start);
@@ -109,13 +109,8 @@ promExporterApp.listen(9599, () => {
 
   // Setup route handler for GraphQL
   app.post(
-    "/:agency/:profile/graphql",
+    "/:profile/graphql",
     graphqlHTTP(async (request, response, graphQLParams) => {
-      request.profile = {
-        agency: request.params.agency,
-        name: request.params.profile,
-        combined: `${request.params.agency}/${request.params.profile}`,
-      };
       // Create dataloaders and add to request
       request.datasources = createDataLoaders(uuid());
 
@@ -139,6 +134,15 @@ promExporterApp.listen(9599, () => {
         request.smaug.app.ips = (request.ips.length && request.ips) || [
           request.ip,
         ];
+
+        // Agency of the smaug client
+        const agency = request.smaug?.agencyId;
+
+        request.profile = {
+          agency,
+          name: request.params.profile,
+          combined: `${agency}/${request.params.profile}`,
+        };
       } catch (e) {
         if (e.response && e.response.statusCode !== 404) {
           log.error("Error fetching from smaug", { response: e });

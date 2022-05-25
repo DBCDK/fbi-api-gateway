@@ -32,9 +32,5 @@ export function isToken(token) {
 }
 
 export function isEqual(token1, token2) {
-  return (
-    token1?.token === token2?.token &&
-    token1?.agency === token2?.agency &&
-    token1?.profile === token2?.profile
-  );
+  return token1?.token === token2?.token && token1?.profile === token2?.profile;
 }
