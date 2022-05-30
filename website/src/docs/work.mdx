@@ -2,15 +2,14 @@
 
 A work is a ...
 
-## Lookup by Faust
+## Fetch Single Work
 
-One may look up a work by providing a faust.
+One may use three different types of identifiers to fetch a work; _work id_, _pid_, or _faust_.
 
 <InlineGraphiQL
   query={`query ($faust: String!) {
       work(faust: $faust) {
-        id
-        title
+        workId
       }
     }`}
   variables={{
@@ -18,15 +17,41 @@ One may look up a work by providing a faust.
   }}
 />
 
-It is possible to look up multiple works by providing a list of fausts.
-The order of fausts are preserved when returning the list of works.
-If no work is found for a faust, null is returned at the corresponding position.
+<InlineGraphiQL
+  query={`query ($pid: String!) {
+      work(pid: $pid) {
+        workId
+      }
+    }`}
+  variables={{
+    pid: "870970-basis:48953786",
+  }}
+/>
+
+<InlineGraphiQL
+  query={`query ($id: String!) {
+      work(id: $id) {
+        workId
+      }
+    }`}
+  variables={{
+    id: "work-of:870970-basis:48953786",
+  }}
+/>
+
+## Fetch Multiple Works
+
+It is possible to fetch multiple works in a single request by providing
+a list of identifiers. The identifiers may be _a list of work ids_, _a list of pids_,
+or _a list of fausts_.
+
+The order of the works will match the order of provided identifiers.
+If no work is found for an identifier, null is returned at the corresponding position.
 
 <InlineGraphiQL
   query={`query ($faust: [String!]!) {
       works(faust: $faust) {
-        id
-        title
+        workId
       }
     }`}
   variables={{
@@ -36,41 +61,53 @@ If no work is found for a faust, null is returned at the corresponding position.
 
 ## Reviews
 
-The reviews field returns a list of `Review`. Review is a union type consisting
-of the following underlying concrete types:
+The reviews field returns a list of reviews. Each review may be one of the following types:
 
-- `ReviewInfomedia` includes infomediaId and pid that can be used to look up the actual
-  article. Check out the examples for infomedia.
-- `ReviewExternalMedia` includes an url to an external website where the review is located.
-- `ReviewMatVurd` is the librarians review. The entire review can be obtained from this object type.
+- `Draft_InfomediaReview` includes an ID that can be used to look up the actual
+  article. Check out the [Infomedia section](#Infomedia). Use the _accessStatus_ field to
+  determine if the logged in user has access to the article.
+- `Draft_ExternalReview` includes an url to an external website where the review is located.
+- `Draft_LibrariansReview` is the librarians review. The entire review can be obtained from
+  this object type, without the user is logged in. A review consists of a list of sections.
+  A section may include a work. If so, the title should be appended to the text
+  (preferably as a link).
 
 <InlineGraphiQL
   query={`query ($id: String!) {
   work(id: $id) {
-    id
-    title
+    workId
+    titles {
+      main
+    }
     reviews {
       __typename
-      ... on ReviewInfomedia {
-        author
-        media
-        reference {
-          infomediaId
-          pid
+      author
+      date
+      ... on Draft_ExternalReview {
+        rating
+        urls {
+          origin
+          url
         }
       }
-      ... on ReviewExternalMedia {
-        author
-        media
-        url
-        
+      ... on Draft_InfomediaReview {
+        id
+        rating
+        accessStatus
       }
-      ... on ReviewMatVurd {
-        author
-        date
-        all {
-          name
+      ... on Draft_LibrariansReview {
+        sections {
+          code
+          heading
           text
+          work {
+            titles {
+              main
+            }
+            creators {
+              display
+            }
+          }
         }
       }
     }
@@ -128,6 +165,28 @@ the full article. See the Infomedia example.
       }
   }`}
   variables={{
-  workId: "work-of:870970-basis:52557240",
+    workId: "work-of:870970-basis:52557240",
+  }}
+/>
+
+## Translations
+
+Some metadata may be available in english, specify a language and we will
+translate data where possible.
+
+Only fields named _display_, _summary_ etc. may contain translations.
+
+<InlineGraphiQL
+  query={`query ($workId: String!, $language: LanguageCode) {
+    work(id: $workId, language: $language) {
+      mainLanguages {
+        display
+        isoCode
+      }
+    }
+  }`}
+  variables={{
+    workId: "work-of:870970-basis:52557240",
+    language: "en",
   }}
 />

@@ -84,12 +84,11 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
   })
   .filter((func) => !!func);
 
-log.info(`found ${datasources.length} datasources`, {
-  datasources: datasources.map((datasource) => ({
-    name: datasource.name,
-    options: datasource.options,
-  })),
-});
+log.info(
+  `found ${datasources.length} datasources, ${datasources
+    .map((datasource) => datasource.name)
+    .join(", ")}`
+);
 
 /**
  * Wraps the load call in a try catch, in order to capture the

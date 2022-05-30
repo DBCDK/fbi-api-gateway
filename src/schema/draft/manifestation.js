@@ -1,3 +1,6 @@
+import { resolveOnlineAccess } from "./draft_utils_manifestations";
+import * as consts from "./FAKE";
+
 export const typeDef = `
 type Draft_TableOfContent {
   heading: String
@@ -421,15 +424,18 @@ type Draft_Audience {
   """
   lix: String
 }
-enum Draft_AccessTypeCode {
-  PHYSICAL
-  ONLINE
-  NOT_SPECIFIED
+
+type Draft_CatalogueCodes {
+  """
+  Catalogue codes for the national bibliography 
+  """
+  nationalBibliography: [String]!
+  """
+  other catalogue codes 
+  """
+  otherCatalogues: [String]!
 }
-type Draft_AccessType {
-  display: String!
-  code: Draft_AccessTypeCode!
-}
+
 type Draft_Manifestations {
   first: Draft_Manifestation!
   latest: Draft_Manifestation!
@@ -466,6 +472,10 @@ type Draft_Manifestation {
   """
   audience: Draft_Audience
 
+  """
+  CatalogueCodes for nationalBibliography and others
+  """
+  catalogueCodes: Draft_CatalogueCodes
   """
   Contributors to the manifestation, actors, illustrators etc
   """
@@ -534,7 +544,7 @@ type Draft_Manifestation {
   """
   The type of material of the manifestation based on bibliotek.dk types
   """
-  materialTypes: Draft_MaterialTypes!
+  materialTypes: [Draft_MaterialType!]!
 
   """
   Notes about the manifestation
@@ -643,58 +653,13 @@ type Draft_ManifestationTitles {
   """
   translated: [String!]
 }
-type Draft_Ereol {
-  """
-  The origin, e.g. "Ereolen" or "Ereolen Go"
-  """
-  origin: String!
-
-  """
-  The url where manifestation is located
-  """
-  url: String!
-
-  """
-  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
-  """
-  canAlwaysBeLoaned: Boolean!
-}
-type Draft_URL {
-  """
-  The origin, e.g. "DBC Webarkiv"
-  """
-  origin: String!
-
-  """
-  The url where manifestation is located
-  """
-  url: String!
-}
-type Draft_Ill {
-  """
-  Is true when manifestation can be borrowed via ill
-  """
-  ill: Boolean!
-}
-type Draft_InfomediaService {
-  """
-  Infomedia ID which can be used to fetch article through Infomedia Service
-  """
-  id: String!
-}
-type Draft_DigitalArticleService {
-  """
-  Issn which can be used to order article through Digital Article Service
-  """
-  issn: String!
-
-  """
-  Is true when access token belongs to a user whose municipality of residence is subscribed to Digital Article Service  
-  """
-  subscribed: Boolean!
-}
-union Draft_Access = Draft_URL | Draft_Ereol | Draft_Ill | Draft_InfomediaService | Draft_DigitalArticleService
-
 `;
 
-export const resolvers = {};
+export const resolvers = {
+  Draft_Manifestation: {
+    async access(parent, args, context, info) {
+      const resolved = await resolveOnlineAccess(parent.pid, context);
+      return resolved;
+    },
+  },
+};

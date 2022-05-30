@@ -7,17 +7,20 @@ import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import { resolveBorrowerCheck, resolveOnlineAccess } from "../utils/utils";
 import translations from "../utils/translations.json";
+import * as consts from "./draft/FAKE";
+import { workToJed } from "./draft/draft_utils";
+import { manifestationToJed } from "./draft/draft_utils_manifestations";
 
 /**
  * The root type definitions
  */
 export const typeDef = `
 type Query {
-  manifestation(pid: String!): WorkManifestation!
+  manifestation(pid: String!): Draft_Manifestation!
   monitor(name: String!): String!
   user: User!
-  work(id: String, faust: String): Work
-  works(id: [String!], faust: [String!]): [Work]!
+  work(id: String, faust: String, pid: String, language: LanguageCode): Draft_Work
+  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Draft_Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   suggest(q: String!, worktype: WorkType, suggesttype:String): SuggestResponse!
   help(q: String!, language: LanguageCode): HelpResponse
@@ -25,6 +28,7 @@ type Query {
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomediaContent(pid: String!): [InfomediaContent]
+  infomedia(id: String!): Draft_InfomediaResponse!
   session: Session
   howru:String
   localizations(pids:[String!]!):Localizations
@@ -52,9 +56,7 @@ export const resolvers = {
       return ris;
     },
     async refWorks(parent, args, context, info) {
-      const ref = await context.datasources.refworks.load({
-        pid: args.pid,
-      });
+      const ref = await context.datasources.refworks.load(args.pid);
       return ref;
     },
     async localizations(parent, args, context, info) {
@@ -80,7 +82,11 @@ export const resolvers = {
       return "gr8";
     },
     async manifestation(parent, args, context, info) {
-      return { id: args.pid };
+      const pid = args.pid;
+      const manifestation = await context.datasources.openformat.load(pid);
+
+      const realData = manifestationToJed(manifestation);
+      return { ...consts.FAKE_MANIFESTATION_1, ...realData };
     },
     async works(parent, args, context, info) {
       let ids;
@@ -90,18 +96,27 @@ export const resolvers = {
         ids = await Promise.all(
           args.faust.map((faust) => context.datasources.faust.load(faust))
         );
+      } else if (args.pid) {
+        ids = args.pid.map((pid) => `work-of:${pid}`);
       }
       if (!ids) {
         return [];
       }
       return Promise.all(
         ids.map(async (id) => {
-          return (
-            await context.datasources.workservice.load({
-              workId: id,
-              profile: context.profile,
-            })
-          )?.work;
+          const res = await context.datasources.workservice.load({
+            workId: id,
+            profile: context.profile,
+          });
+          if (!res) {
+            return null;
+          }
+
+          const manifestation = await context.datasources.openformat.load(
+            id.replace("work-of:", "")
+          );
+          const realData = workToJed(res, manifestation, args.language);
+          return { ...consts.FAKE_WORK, ...realData };
         })
       );
     },
@@ -126,6 +141,8 @@ export const resolvers = {
         id = args.id;
       } else if (args.faust) {
         id = await context.datasources.faust.load(args.faust);
+      } else if (args.pid) {
+        id = `work-of:${args.pid}`;
       }
       if (!id) {
         return null;
@@ -135,7 +152,20 @@ export const resolvers = {
         workId: id,
         profile: context.profile,
       });
-      return res?.work;
+
+      if (!res) {
+        return null;
+      }
+
+      // A manifestation that may have original publication year and stuff
+      // that may be needed on the work
+      const manifestation = await context.datasources.openformat.load(
+        id.replace("work-of:", "")
+      );
+      const realData = workToJed(res, manifestation, args.language);
+      return { ...consts.FAKE_WORK, ...realData };
+
+      //return res?.work;
     },
     async search(parent, args, context, info) {
       if (args.filters) {
@@ -204,11 +234,8 @@ export const resolvers = {
         userPincode: args.userPincode,
       });
     },
-    async infomediaContent(parent, args, context, info) {
-      return await context.datasources.infomedia.load({
-        pid: args.pid,
-        accessToken: context.accessToken,
-      });
+    infomedia(parent, args, context, info) {
+      return args;
     },
     async session(parent, args, context, info) {
       return await context.datasources.session.load({

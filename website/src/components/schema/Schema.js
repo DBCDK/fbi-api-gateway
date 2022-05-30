@@ -26,9 +26,9 @@ export default function Wrap() {
             <Text>
               On this page you get an overview of the GraphQL schema available
               for the selected token. The schema defines a type system that
-              describes which data can be retrieved. All calls to DBC Gateway
-              are validated and executed against the schema. Learn about the
-              GraphQL schema definition language{" "}
+              describes which data can be retrieved. All calls to FBI API
+              Gateway are validated and executed against the schema. Learn about
+              the GraphQL schema definition language{" "}
               <a
                 href="https://graphql.org/learn/schema/"
                 target="_blank"
