@@ -52,7 +52,7 @@ export const resolvers = {
         userId,
         municipalityAgencyId,
       });
-      return { id: articleId, ...article };
+      return article;
     },
   },
 };

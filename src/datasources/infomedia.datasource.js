@@ -42,7 +42,11 @@ export async function load({ articleId, userId, municipalityAgencyId }) {
         ?.$;
 
     if (html) {
-      return getInfomediaDetails({ html });
+      const details = getInfomediaDetails({ html });
+      if (!details.text) {
+        return null;
+      }
+      return { id: articleId, ...details };
     }
     return null;
   } catch (e) {
