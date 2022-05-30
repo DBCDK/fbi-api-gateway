@@ -61,41 +61,53 @@ If no work is found for an identifier, null is returned at the corresponding pos
 
 ## Reviews
 
-The reviews field returns a list of `Review`. Review is a union type consisting
-of the following underlying concrete types:
+The reviews field returns a list of reviews. Each review may be one of the following types:
 
-- `ReviewInfomedia` includes infomediaId and pid that can be used to look up the actual
-  article. Check out the examples for infomedia.
-- `ReviewExternalMedia` includes an url to an external website where the review is located.
-- `ReviewMatVurd` is the librarians review. The entire review can be obtained from this object type.
+- `Draft_InfomediaReview` includes an ID that can be used to look up the actual
+  article. Check out the [Infomedia section](#Infomedia). Use the _accessStatus_ field to
+  determine if the logged in user has access to the article.
+- `Draft_ExternalReview` includes an url to an external website where the review is located.
+- `Draft_LibrariansReview` is the librarians review. The entire review can be obtained from
+  this object type, without the user is logged in. A review consists of a list of sections.
+  A section may include a work. If so, the title should be appended to the text
+  (preferably as a link).
 
 <InlineGraphiQL
   query={`query ($id: String!) {
   work(id: $id) {
-    id
-    title
+    workId
+    titles {
+      main
+    }
     reviews {
       __typename
-      ... on ReviewInfomedia {
-        author
-        media
-        reference {
-          infomediaId
-          pid
+      author
+      date
+      ... on Draft_ExternalReview {
+        rating
+        urls {
+          origin
+          url
         }
       }
-      ... on ReviewExternalMedia {
-        author
-        media
-        url
-        
+      ... on Draft_InfomediaReview {
+        id
+        rating
+        accessStatus
       }
-      ... on ReviewMatVurd {
-        author
-        date
-        all {
-          name
+      ... on Draft_LibrariansReview {
+        sections {
+          code
+          heading
           text
+          work {
+            titles {
+              main
+            }
+            creators {
+              display
+            }
+          }
         }
       }
     }

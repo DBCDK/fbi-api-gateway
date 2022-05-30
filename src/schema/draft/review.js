@@ -1,7 +1,62 @@
 import { orderBy, uniqBy } from "lodash";
-import { getArray } from "../../utils/utils";
+import {
+  getArray,
+  getBaseUrl,
+  getInfomediaAccessStatus,
+} from "../../utils/utils";
+import { workToJed } from "./draft_utils";
+import * as consts from "./FAKE";
+
+const reviews = {
+  heading: {
+    ALL: { da: null },
+    ABOUT: { da: "Kort om bogen" },
+    DESCRIPTION: { da: "Beskrivelse" },
+    EVALUATION: { da: "Vurdering" },
+    OTHER: { da: "Andre bøger om samme emne" },
+    LIBRARY: { da: null },
+    USE: { da: null },
+    OLDDESCRIPTION: { da: null },
+    COMPARE: { da: null },
+    CONCLUSION: { da: null },
+  },
+};
 
 export const typeDef = `
+enum LibrariansReviewSectionCode {
+  ALL
+  ABOUT
+  DESCRIPTION
+  EVALUATION
+  OTHER
+  LIBRARY
+  USE
+  OLDDESCRIPTION
+  COMPARE
+  CONCLUSION
+}
+type LibrariansReviewSection {
+
+  """
+  a code indicating the content type of the section
+  """
+  code: LibrariansReviewSectionCode!
+
+  """
+  The heading of the section
+  """
+  heading: String
+
+  """
+  A piece of text, maybe mentioning a work at the end.
+  """
+  text: String!
+
+  """
+  The work the text is refering to. When work is null, the text does not refer to a work.
+  """
+  work: Draft_Work
+}
 interface Draft_Review {
   author: String
   date: String
@@ -20,12 +75,17 @@ type Draft_InfomediaReview implements Draft_Review {
   origin: String
   rating: String
   id: String!
+
+  """
+  Can the current user obtain the article?
+  """
+  accessStatus: Draft_InfomediaAccessStatus!
 }
 
 type Draft_LibrariansReview implements Draft_Review {
   author: String
   date: String
-  sections: [TextWithWork!]!
+  sections: [LibrariansReviewSection!]!
   
   """ This is a pid """
   id: String!
@@ -82,10 +142,50 @@ export const resolvers = {
     id(parent, args, context, info) {
       return parent.infomediaId;
     },
+    accessStatus(parent, args, context, info) {
+      return getInfomediaAccessStatus(context);
+    },
   },
   Draft_LibrariansReview: {
     id(parent, args, context, info) {
       return parent.pid;
+    },
+    sections(parent) {
+      return (
+        parent?.fulltextmatvurd
+          ?.map?.(([code, entry]) => {
+            code = code.toUpperCase();
+            return {
+              code,
+              heading: reviews.heading[code]?.da,
+              text: entry?.text?.$ || "",
+              faust: entry?.faust?.$,
+            };
+          })
+          .filter((entry) => !!reviews.heading[entry.code]) || []
+      );
+    },
+  },
+  LibrariansReviewSection: {
+    async work(parent, args, context, info) {
+      if (parent.faust) {
+        // Most of this could be resolved from within the work resolvers work
+        const id = await context.datasources.faust.load(parent.faust);
+        const res = await context.datasources.workservice.load({
+          workId: id,
+          profile: context.profile,
+        });
+        if (!res) {
+          return null;
+        }
+        const manifestation = await context.datasources.openformat.load(
+          id.replace("work-of:", "")
+        );
+        const realData = workToJed(res, manifestation, args.language);
+        return { ...consts.FAKE_WORK, ...realData };
+      }
+
+      return null;
     },
   },
   Draft_Work: {
@@ -96,24 +196,45 @@ export const resolvers = {
             .filter((rel) => rel.type === "review")
             .map((review) => context.datasources.openformat.load(review.id))
         )
-      ).map((review) => ({
-        author: resolveAuthor(review),
-        date: resolveDate(review),
-        media: resolveMedia(review),
-        rating: resolveRating(review),
-        urls: getArray(review, "details.onlineAccess.value.link").map(
-          (entry) => entry.$
-        ),
-        infomediaId: getArray(review, "details.infomedia.id")?.map?.(
-          (entry) => entry.$
-        )?.[0],
-        pid: review?.admindata?.pid?.$,
-        __typename: review?.details?.fulltextmatvurd
-          ? "Draft_LibrariansReview"
-          : review?.details?.infomedia
-          ? "Draft_InfomediaReview"
-          : "Draft_ExternalReview",
-      }));
+      )
+        .filter((review) => !!review)
+        .map((review) => {
+          const parsed = {
+            author: resolveAuthor(review),
+            date: resolveDate(review),
+            media: resolveMedia(review),
+            rating: resolveRating(review),
+            urls: getArray(review, "details.onlineAccess.value.link")
+              .map((entry) => entry.$)
+              ?.map((url) => ({ origin: getBaseUrl(url), url })),
+            infomediaId: getArray(review, "details.infomedia.id")?.map?.(
+              (entry) => entry.$
+            )?.[0],
+            org: review,
+            fulltextmatvurd:
+              review?.details?.fulltextmatvurd?.value &&
+              Object.entries(review?.details?.fulltextmatvurd?.value),
+            pid: review?.admindata?.pid?.$,
+            __typename: review?.details?.fulltextmatvurd
+              ? "Draft_LibrariansReview"
+              : review?.details?.infomedia
+              ? "Draft_InfomediaReview"
+              : review?.urls?.length > 0
+              ? "Draft_ExternalReview"
+              : null,
+          };
+
+          parsed.__typename = review?.details?.fulltextmatvurd
+            ? "Draft_LibrariansReview"
+            : review?.details?.infomedia
+            ? "Draft_InfomediaReview"
+            : parsed.urls?.length > 0
+            ? "Draft_ExternalReview"
+            : null;
+
+          return parsed;
+        })
+        .filter((review) => review.__typename);
       reviews = orderBy(reviews, "date", "desc");
       reviews = uniqBy(reviews, "author");
       return reviews;

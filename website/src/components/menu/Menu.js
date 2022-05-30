@@ -9,6 +9,7 @@ import Link from "@/components/base/link";
 import Text from "@/components/base/text";
 
 import styles from "./Menu.module.css";
+import { useRouter } from "next/router";
 
 // function scrollTo({ top, offset = 150 }) {
 //   window?.scrollTo({ top: top - offset, behavior: "smooth" });
@@ -136,6 +137,7 @@ export function Menu({ sections, active }) {
 
 export default function Wrap(props) {
   const [active, setActive] = useState();
+  const router = useRouter();
 
   const container = props.containerRef.current;
 
@@ -167,7 +169,7 @@ export default function Wrap(props) {
     });
 
     return arr;
-  }, []);
+  }, [container]);
 
   const flattenSections = useMemo(() => {
     const subs = sections.map((s) => s.subHeadings).flat();
@@ -199,7 +201,17 @@ export default function Wrap(props) {
     window.addEventListener("scroll", onScroll);
     // cleanup on unMount
     return () => window.removeEventListener("scroll", onScroll);
-  }, [sections]);
+  }, [flattenSections]);
+
+  // Scroll to anchor
+  // TODO, base the rest of the scroll logic on anchors
+  useEffect(() => {
+    const anchor = location?.hash?.replace("#", "");
+    const el = flattenSections?.find?.((section) => section.text === anchor);
+    if (el) {
+      scrollTo({ top: el.top });
+    }
+  }, [router]);
 
   return <Menu sections={sections} active={active} {...props} />;
 }

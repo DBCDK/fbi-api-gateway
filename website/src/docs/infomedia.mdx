@@ -1,0 +1,34 @@
+# Infomedia
+
+🔒 Requires user authenticated token. Access is granted when the users
+residence of municipality is subscribed to Infomedia.
+
+Using an Infomedia ID, one may look up article content from the Infomedia service.
+Check out how to obtain IDs in the [reviews section](#Reviews), and [article section](#Articles)
+
+Use the field _accessStatus_ to determine if the current user has access to infomedia.
+
+Use the field _html_ if you want the entire article as one html string.
+
+<InlineGraphiQL
+  query={`query ($id: String!) {
+    infomedia(id: $id) {
+      accessStatus
+      article {
+        id
+        headLine
+        subHeadLine
+        byLine
+        dateLine
+        paper
+        text
+        hedLine
+        logo
+      }
+    }
+  }
+`}
+  variables={{
+    id: "e56b7250",
+  }}
+/>

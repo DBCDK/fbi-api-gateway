@@ -10,3 +10,10 @@ export async function load({ accessToken }) {
   ).body;
   return res;
 }
+
+export const options = {
+  redis: {
+    prefix: "userinfo",
+    ttl: 60 * 5,
+  },
+};
