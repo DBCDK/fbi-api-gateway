@@ -14,8 +14,8 @@ export const trackMe = () => {
       if (!this.trackObject[name]) {
         this.trackObject[name] = { count: 0, time: 0 };
       }
-      this.trackObject[name].count = count;
-      this.trackObject[name].time = this.trackObject[name].time + time;
+      this.trackObject[name].count += count;
+      this.trackObject[name].time += time;
     },
     uuid: null,
     trackObject: {},
