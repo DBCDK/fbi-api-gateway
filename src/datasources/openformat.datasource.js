@@ -35,10 +35,10 @@ export async function status(loadFunc) {
   await loadFunc("870970-basis:51877330");
 }
 
-/*export const options = {
+export const options = {
   redis: {
     prefix,
     ttl,
     staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
   },
-};*/
+};

@@ -1,6 +1,8 @@
 import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
 import { get, uniq } from "lodash";
+import { workToJed } from "../schema/draft/draft_utils";
+import * as consts from "../schema/draft/FAKE";
 
 export async function performTestQuery({
   query,
@@ -329,4 +331,35 @@ export async function getInfomediaAccessStatus(context) {
   }
 
   return "OK";
+}
+
+export async function resolveWork(args, context) {
+  let id;
+  if (args.id) {
+    id = args.id;
+  } else if (args.faust) {
+    id = await context.datasources.faust.load(args.faust);
+  } else if (args.pid) {
+    id = `work-of:${args.pid}`;
+  }
+  if (!id) {
+    return null;
+  }
+
+  const res = await context.datasources.workservice.load({
+    workId: id,
+    profile: context.profile,
+  });
+
+  if (!res) {
+    return null;
+  }
+
+  // A manifestation that may have original publication year and stuff
+  // that may be needed on the work
+  const manifestation = await context.datasources.openformat.load(
+    id.replace("work-of:", "")
+  );
+  const realData = workToJed(res, manifestation, args.language);
+  return { ...consts.FAKE_WORK, ...realData };
 }

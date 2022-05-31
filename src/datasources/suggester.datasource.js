@@ -10,23 +10,23 @@ import config from "../config";
 const { url, prefix, ttl, token } = config.datasources.suggester;
 export async function load({
   q,
-  worktype = null,
-  suggesttype = "all",
+  workType = null,
+  suggestType = "all",
   unique_works = true,
   profile,
 }) {
   const result = url.includes("prosper")
     ? await request.post(url).set("Authorization", `bearer ${token}`).send({
         q: q,
-        worktype,
+        worktype: workType,
         unique_works,
         agency: profile.agency,
       })
     : await request.get(url).query({
         q: q,
-        worktype,
+        worktype: workType,
         unique_works,
-        type: suggesttype,
+        type: suggestType === "COMPOSIT" ? "all" : suggestType?.toLowerCase(),
       });
 
   let body;

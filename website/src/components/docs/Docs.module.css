@@ -10,6 +10,7 @@
 }
 
 .wrap .content {
+  position: relative;
   flex-grow: 99;
   max-width: 992px;
   padding: 0 0 var(--pt15) 0;

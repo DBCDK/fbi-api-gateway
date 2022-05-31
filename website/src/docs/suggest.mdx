@@ -1,18 +1,24 @@
 # Suggest
 
+This is how to get suggestions given some query. The value of the _term_ field
+can be used to make a [search request](#Search).
+
+The _type_ field indicates whether
+the suggestion is a title, creator, subject, or composit (a combination of title and creator).
+This can be used to explicitly search for a [title, creator or subject](#Search-For-Title,-Creator,-and-Subject).
+
+The _work_ field is a work that is related to the _term_ in some way.
+
 <InlineGraphiQL
   query={`query ($q: String!) {
   suggest(q: $q) {
     result {
-      __typename
-      ... on Creator {
-        name
-      }
-      ... on Subject {
-        value
-      }
-      ... on Work {
-        title
+      type
+      term
+      work {
+        titles {
+          main
+        }
       }
     }
   }
