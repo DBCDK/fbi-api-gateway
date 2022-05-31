@@ -14,8 +14,8 @@ export const trackMe = () => {
       if (!this.trackObject[name]) {
         this.trackObject[name] = { count: 0, time: 0 };
       }
-      this.trackObject[name].count = count;
-      this.trackObject[name].time = this.trackObject[name].time + time;
+      this.trackObject[name].count += count;
+      this.trackObject[name].time += time;
     },
     uuid: null,
     trackObject: {},
@@ -84,12 +84,11 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
   })
   .filter((func) => !!func);
 
-log.info(`found ${datasources.length} datasources`, {
-  datasources: datasources.map((datasource) => ({
-    name: datasource.name,
-    options: datasource.options,
-  })),
-});
+log.info(
+  `found ${datasources.length} datasources, ${datasources
+    .map((datasource) => datasource.name)
+    .join(", ")}`
+);
 
 /**
  * Wraps the load call in a try catch, in order to capture the

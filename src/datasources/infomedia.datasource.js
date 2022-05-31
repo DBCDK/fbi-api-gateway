@@ -3,40 +3,60 @@ import config from "../config";
 import { log } from "dbc-node-logger";
 import { getInfomediaDetails } from "../utils/utils";
 
-const endpoint = "/infomedia";
+const { url, ttl, prefix } = config.datasources.infomedia;
+console.log(url, ttl, prefix);
 
-export async function load({ pid, accessToken }) {
-  const url = config.datasources.openplatform.url + endpoint;
-  const result = [];
+function createSoap({ articleId, userId, municipalityAgencyId }) {
+  return `
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope"
+  xmlns:xml="http://www.w3.org/XML/1998/namespace"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:uaim="http://oss.dbc.dk/ns/useraccessinfomedia"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xmlns="http://www.w3.org/1999/xhtml">
+  <SOAP-ENV:Body>
+  <uaim:getArticleRequest>
+    <uaim:articleIdentifier>
+      <uaim:file>${articleId}</uaim:file>
+    </uaim:articleIdentifier>
+    <uaim:userId>${userId}</uaim:userId>
+    <uaim:libraryCode>${municipalityAgencyId.replace(
+      /[^0-9]+/g,
+      ""
+    )}</uaim:libraryCode>
+    <uaim:outputType>json</uaim:outputType>
+  </uaim:getArticleRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>`;
+}
+
+export async function load({ articleId, userId, municipalityAgencyId }) {
   try {
-    const articles = (
-      await request.post(url).send({
-        access_token: accessToken,
-        pid: pid,
-      })
-    ).body.data;
+    const res = await request
+      .post(url)
+      .field("xml", createSoap({ articleId, userId, municipalityAgencyId }));
 
-    if (articles && articles[0]) {
-      articles.forEach((article) => {
-        // get details from infomedia article
-        let details = getInfomediaDetails(article);
-        result.push({ ...article, details });
-      });
+    const html =
+      res?.body?.getArticleResponse?.getArticleResponseDetails?.[0]?.imArticle
+        ?.$;
+
+    if (html) {
+      const details = getInfomediaDetails({ html });
+      if (!details.text) {
+        return null;
+      }
+      return { id: articleId, ...details };
     }
-    return result;
+    return null;
   } catch (e) {
-    log.error("Request to infomedia failed: " + url + " message: " + e.message);
-    throw e;
-    // @TODO what to return here - i made this one up
-    // return "internal_error";
+    return null;
   }
 }
 
-// cache for an hour
 export const options = {
   redis: {
-    prefix: "infomedia-1",
-    ttl: 60 * 60,
-    staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
+    prefix,
+    ttl,
   },
 };

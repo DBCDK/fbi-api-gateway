@@ -20,9 +20,6 @@ import {getArray} from '../../utils/utils';
  * @returns {{}}
  */
 export function manifestationToJed(manifestation) {
-
-  //console.log(JSON.stringify(manifestation, null, 4));
-
   const jedData = {};
   jedData.pid = manifestation.admindata.pid.$;
   jedData.titles = jedTitles(manifestation);
@@ -30,8 +27,10 @@ export function manifestationToJed(manifestation) {
       ? [manifestation.details.abstract.value.$]
       : [];
 
+
   const creators = getArray(manifestation, 'details.creators.value');
   jedData.creators = jedCreators(creators);
+
   if (manifestation.details?.catalogcode?.value?.$) {
     jedData.catalogueCodes = jedCatalogueCodes(manifestation);
   }
@@ -44,12 +43,14 @@ export function manifestationToJed(manifestation) {
       map((gaf) => gaf.$);
   jedData.hostPublication = jedHostPublication(manifestation);
   jedData.languages = jedLanguages(manifestation);
+
   jedData.manifestationParts = jedManifestationParts(manifestation);
 
   return jedData;
 }
 
 /**
+<<<<<<< HEAD
  * manifestationParts - this one is done with a music example pid: "870970-basis:22417657"
  *  missing:
  *  classifications
@@ -79,6 +80,8 @@ function jedManifestationParts(manifestation){
 }
 
 /**
+=======
+>>>>>>> master
  * Languages
  *
  *  missing:
@@ -92,15 +95,19 @@ function jedLanguages(manifestation) {
 
   /*array with objects {display, isocode}*/
 
+
   let tmpArr = getArray(manifestation, 'details.languages.languageSpoken');
   const spoken =  tmpArr.map((lang) => {
+
     // we have no iso code for spoken languages in dkabm
         return { display:lang.$, isoCode:'' }
       }
   );
 
+
   tmpArr = getArray(manifestation, 'details.languages.languageMain')
   const main = tmpArr.map((lang) => {
+
         // we only have iso code for main language from openformat (missing a xpath expression in code)
         return { display:"", isoCode:lang.$ }
       }
@@ -112,7 +119,9 @@ function jedLanguages(manifestation) {
         return { display:lang.$, isoCode:'' }
       }
   );
+
   return {...consts.FAKE_LANGUAGES, ...{main:main, spoken:spoken, subtitles:subtitles}};
+
 }
 
 /**
@@ -494,7 +503,6 @@ function _sortOnlineAccess(onlineAccess) {
  * @returns {{firstName: string, lastName: string, aliases: [{display: string},{display: string}], birthYear: string, attributeToName: string, __typename: string, display: *, romanNumeral: string, roles: [{functionCode: (string|*), valueOf?(): boolean, function: ({plural: string, singular: string}|{plural: *, singular: *})}]|[], nameSort: *}[]}
  */
 function jedCreators(creators) {
-
   const jedData = creators.map((creator) => {
     const role = creator.functionCode?.$ ? {
       ...{functionCode: creator.functionCode?.$},

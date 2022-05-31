@@ -174,6 +174,7 @@ export const FAKE_HOST_PUBLICATION = {
   series: FAKE_GENERAL_SERIES,
 }
 
+
 export const FAKE_LANGUAGES = {
   main: [{display: 'dansk', isoCode: 'dan'}],
   original: [{display: 'dansk', isoCode: 'dan'}],

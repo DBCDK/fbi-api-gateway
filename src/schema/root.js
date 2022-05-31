@@ -9,7 +9,7 @@ import { resolveBorrowerCheck, resolveOnlineAccess } from "../utils/utils";
 import translations from "../utils/translations.json";
 import * as consts from "./draft/FAKE";
 import { workToJed } from "./draft/draft_utils";
-import {manifestationToJed} from './draft/draft_utils_manifestations';
+import { manifestationToJed } from "./draft/draft_utils_manifestations";
 
 /**
  * The root type definitions
@@ -28,6 +28,7 @@ type Query {
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomediaContent(pid: String!): [InfomediaContent]
+  infomedia(id: String!): Draft_InfomediaResponse!
   session: Session
   howru:String
   localizations(pids:[String!]!):Localizations
@@ -55,9 +56,7 @@ export const resolvers = {
       return ris;
     },
     async refWorks(parent, args, context, info) {
-      const ref = await context.datasources.refworks.load(
-        args.pid
-      );
+      const ref = await context.datasources.refworks.load(args.pid);
       return ref;
     },
     async localizations(parent, args, context, info) {
@@ -235,11 +234,8 @@ export const resolvers = {
         userPincode: args.userPincode,
       });
     },
-    async infomediaContent(parent, args, context, info) {
-      return await context.datasources.infomedia.load({
-        pid: args.pid,
-        accessToken: context.accessToken,
-      });
+    infomedia(parent, args, context, info) {
+      return args;
     },
     async session(parent, args, context, info) {
       return await context.datasources.session.load({

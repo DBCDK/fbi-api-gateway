@@ -149,7 +149,7 @@ export function getInfomediaDetails(article) {
   const div_regex = /<div([\s\S\n]*?)<\/div>/g;
   const divs = html.match(div_regex);
 
-  const details = {};
+  const details = { html };
   divs.forEach((div) => {
     // extract div classNames (used for object keys)
     const class_regex = /class=\"(.*?)\"/;
@@ -296,4 +296,37 @@ function _sortOnlineAccess(onlineAccess) {
   };
 
   return onlineAccess.sort(specialSort);
+}
+
+/**
+ * Get the infomedia access status for the current user
+ *
+ * @param {*} context
+ * @returns {string}
+ */
+export async function getInfomediaAccessStatus(context) {
+  if (!context?.smaug?.user?.id) {
+    return "USER_NOT_LOGGED_IN";
+  }
+
+  let userInfo;
+  try {
+    userInfo = await context.datasources.userinfo.load({
+      accessToken: context.accessToken,
+    });
+  } catch (e) {
+    return "USER_NOT_LOGGED_IN";
+  }
+
+  const municipalityAgencyId = userInfo?.attributes?.municipalityAgencyId;
+
+  const infomediaSubscriptions = await context.datasources.idp.load("");
+
+  const isSubscribed = infomediaSubscriptions[municipalityAgencyId];
+
+  if (!isSubscribed) {
+    return "MUNICIPALITY_NOT_SUBSCRIBED";
+  }
+
+  return "OK";
 }
