@@ -1,8 +1,11 @@
+import { resolveWork } from "../../utils/utils";
+
 export const typeDef = `
 enum Draft_SuggestionType {
-  subject
-  title
-  creator
+  SUBJECT
+  TITLE
+  CREATOR
+  COMPOSIT
 }
 type Draft_Suggestion {
   """
@@ -25,4 +28,23 @@ type Draft_SuggestResponse {
 }
 `;
 
-export const resolvers = {};
+export const resolvers = {
+  Draft_Suggestion: {
+    type(parent) {
+      return parent?.type?.toUpperCase();
+    },
+    async work(parent, args, context, info) {
+      return resolveWork({ id: parent.work }, context);
+    },
+  },
+  Draft_SuggestResponse: {
+    async result(parent, args, context, info) {
+      const res = await context.datasources.suggester.load({
+        ...parent,
+        profile: context.profile,
+      });
+      console.log(parent, context.profile, res);
+      return res;
+    },
+  },
+};

@@ -5,7 +5,11 @@
 
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
-import { resolveBorrowerCheck, resolveOnlineAccess } from "../utils/utils";
+import {
+  resolveBorrowerCheck,
+  resolveOnlineAccess,
+  resolveWork,
+} from "../utils/utils";
 import translations from "../utils/translations.json";
 import * as consts from "./draft/FAKE";
 import { workToJed } from "./draft/draft_utils";
@@ -22,7 +26,25 @@ type Query {
   work(id: String, faust: String, pid: String, language: LanguageCode): Draft_Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Draft_Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
-  suggest(q: String!, worktype: WorkType, suggesttype:String): SuggestResponse!
+
+  suggest(
+    """
+    The query to get suggestions from
+    """
+    q: String!
+
+    """
+    work type to include in the result
+    Note: Is only supported in the bibdk suggester
+    """
+    workType: WorkType
+
+    """
+    suggest type to include in result
+    """
+    suggestType: Draft_SuggestionType
+  ): Draft_SuggestResponse!
+
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
@@ -136,36 +158,7 @@ export const resolvers = {
       return { ...args };
     },
     async work(parent, args, context, info) {
-      let id;
-      if (args.id) {
-        id = args.id;
-      } else if (args.faust) {
-        id = await context.datasources.faust.load(args.faust);
-      } else if (args.pid) {
-        id = `work-of:${args.pid}`;
-      }
-      if (!id) {
-        return null;
-      }
-
-      const res = await context.datasources.workservice.load({
-        workId: id,
-        profile: context.profile,
-      });
-
-      if (!res) {
-        return null;
-      }
-
-      // A manifestation that may have original publication year and stuff
-      // that may be needed on the work
-      const manifestation = await context.datasources.openformat.load(
-        id.replace("work-of:", "")
-      );
-      const realData = workToJed(res, manifestation, args.language);
-      return { ...consts.FAKE_WORK, ...realData };
-
-      //return res?.work;
+      return resolveWork(args, context);
     },
     async search(parent, args, context, info) {
       if (args.filters) {
@@ -214,11 +207,7 @@ export const resolvers = {
       });
     },
     async suggest(parent, args, context, info) {
-      return {
-        q: args.q,
-        worktype: args.worktype,
-        suggesttype: args.suggesttype,
-      };
+      return args;
     },
     async deleteOrder(parent, args, context, info) {
       return await context.datasources.deleteOrder.load({
