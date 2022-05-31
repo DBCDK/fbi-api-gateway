@@ -69,12 +69,11 @@ function jedManifestationParts(manifestation){
   jedData["heading"] = tracks[0]?.header?.$ || "";
 
   // @TODO find track array in a good way
-  jedData["parts"] = tracks[1]?.track?.map((tr) => {
-    let creators = jedCreators([tr.creator])
-    return {title:tr.title?.$ || "", creators:creators}
-  })
 
-  //console.log(JSON.stringify({...consts.FAKE_MANIFESTATION_PARTS, ...jedData}, null, 4));
+  jedData["parts"] = tracks[1] ? tracks[1]?.track?.map((tr) => {
+    let creators = jedCreators([tr.creator])
+    return {title:tr.title?.$ || "", creators:creators || []}
+  }) : [];
 
   return {...consts.FAKE_MANIFESTATION_PARTS, ...jedData};
 }
