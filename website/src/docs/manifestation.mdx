@@ -40,82 +40,156 @@ Get shelf information for given pid
 ## Jed data
 <InlineGraphiQL
 query={`query($pid: String!) { manifestation(pid: $pid) {
-pid
-titles {
-main
-full
-original
-}
-abstract
-access {
-__typename
-... on Draft_URL {
-origin
-url
-}
-... on Draft_InfomediaService {
-id
-}
-... on Draft_DigitalArticleService {
-issn
-}
-... on Draft_Ereol {
-url
-canAlwaysBeLoaned
-}
-... on Draft_Ill {
-ill
-}
-}
-audience {
-generalAudience
-let
-lix
-}
-catalogueCodes {
-nationalBibliography
-}
-contributors {
-... on Draft_Person {
-display
-nameSort
-roles {
-functionCode
-function {
-plural
-singular
-}
-}
-}
-}
-creators {
-... on Draft_Person {
-display
-nameSort
-roles {
-functionCode
-function {
-plural
-singular
-}
-}
-}
-}
-classifications {
-code
-entryType
-system
-}
-edition {
-summary
-edition
-publicationYear {
-display
-year
-}
-}
-latestPrinting {
-summary
+    pid
+    titles {
+        main
+        full
+        original
+    }
+    abstract
+    access {
+        __typename
+        ... on Draft_URL {
+            origin
+            url
+        }
+        ... on Draft_InfomediaService {
+            id
+        }
+        ... on Draft_DigitalArticleService {
+            issn
+        }
+        ... on Draft_Ereol {
+            url
+            canAlwaysBeLoaned
+        }
+        ... on Draft_Ill {
+            ill
+        }
+    }
+    audience {
+        generalAudience
+        let
+        lix
+    }
+    catalogueCodes {
+        nationalBibliography
+    }
+    contributors {
+        ... on Draft_Person {
+            display
+            nameSort
+                roles {
+                functionCode
+                    function {
+                        plural
+                        singular
+                    }
+                }
+            }
+        }
+    creators {
+        ... on Draft_Person {
+        display
+        nameSort
+            roles {
+            functionCode
+                function {
+                    plural
+                    singular
+                }
+            }
+        }
+    }
+    classifications {
+        code
+        entryType
+        system
+    }
+    edition {
+        summary
+        edition
+        publicationYear {
+            display
+            year
+        }
+    }
+    latestPrinting {
+        summary
+    }
+    genreAndForm
+    hostPublication {
+        title
+        issn
+        issue
+        pages
+        publisher
+            year {
+                display
+                year
+            }
+        summary
+    }
+    languages {
+        main {
+            display
+            isoCode
+        }
+        subtitles {
+            display
+            isoCode
+        }
+        spoken {
+            display
+            isoCode
+        }
+    }
+    manifestationParts {
+        heading
+        parts {
+            title
+            creators {
+                display
+                nameSort
+            }
+        }
+    }
+    materialTypes {
+        general
+        specific
+    }
+    notes {
+        display
+    }
+    physicalDescriptions {
+        summary
+    }
+    publicationYear {
+        year
+    }
+    publisher
+    shelfmark {
+        postfix
+        shelfmark
+    }
+    subjects {
+        all {
+            display
+        }
+    }
+    volume
+    tableOfContents {
+        heading
+        content
+        listOfContent {
+            heading
+            content
+        }
+    }
+    tableOfContents {
+    listOfContent {
+        content
+    }
 }
 }
 }`}

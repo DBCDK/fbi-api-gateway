@@ -63,7 +63,18 @@ export function manifestationToJed(manifestation) {
 }
 
 function jedTableOFContent(manifestation){
-  return consts.FAKE_LIST_OF_CONTENT;
+  // content comes as a string from openformat - split on ';'
+  const content = manifestation.details?.content?.value?.$;
+  if(!content){
+    return null;
+  }
+
+  const contentArray = content.split(';');
+  const listcontent = contentArray.map((con)=> {
+      return {heading:"", content:con}
+  })
+
+  return {...consts.FAKE_LIST_OF_CONTENT, ...{listOfContent:listcontent}};
 }
 
 function jedSubjects(manifestation){
