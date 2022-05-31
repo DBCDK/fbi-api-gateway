@@ -9,6 +9,10 @@
  * creatorsFromDescription
  * fictionNonFiction
  * identifiers
+ * relatedPublications
+ * recordCreationDate
+ * series
+ * source
  */
 
 import * as consts from './FAKE';
@@ -27,7 +31,6 @@ export function manifestationToJed(manifestation) {
       ? [manifestation.details.abstract.value.$]
       : [];
 
-
   const creators = getArray(manifestation, 'details.creators.value');
   jedData.creators = jedCreators(creators);
 
@@ -45,12 +48,81 @@ export function manifestationToJed(manifestation) {
   jedData.languages = jedLanguages(manifestation);
 
   jedData.manifestationParts = jedManifestationParts(manifestation);
+  jedData.materialTypes = jedMaterialTypes(manifestation);
+  jedData.notes = jedNotes(manifestation);
+  jedData.physicalDescriptions = jedPhysicalDescription(manifestation);
+  jedData.publicationYear = jedPublicationYear(manifestation);
+  jedData.publisher = getArray(manifestation, 'details.publication.publisher').
+      map((pub) => pub.$);
+  jedData.shelfmark = jedShelfMark(manifestation);
+  jedData.subjects = jedSubjects(manifestation);
+  jedData.volume = manifestation.details?.volume?.$ || null;
+  jedData.tableOfContents = jedTableOFContent(manifestation);
 
   return jedData;
 }
 
+function jedTableOFContent(manifestation){
+  return consts.FAKE_LIST_OF_CONTENT;
+}
+
+function jedSubjects(manifestation){
+  const subjects = getArray(manifestation, "details.subject");
+  const all = subjects.map((sub)=>{
+    return {...consts.FAKE_SUBJECTS.all[0], ... {display:sub.value.$}}
+  })
+  return {...consts.FAKE_SUBJECTS, ...{all:all}};
+}
+
+function jedShelfMark(manifestation) {
+  if (!manifestation.details?.shelf) {
+    return null;
+  }
+
+  const jedData = {
+    shelfmark: manifestation.details?.shelf?.shelfmark?.$ || '',
+    postfix: manifestation.details?.shelf?.prefix?.$ || '',
+  };
+  return {...consts.FAKE_SHELFMARK, ...jedData};
+}
+
+function jedPublicationYear(manifestation) {
+  const pubyear = manifestation.details?.publication?.publicationYear?.$ ||
+      null;
+  return {...consts.FAKE_PUBLICATIONYEAR, ...{year: pubyear}};
+}
+
+function jedPhysicalDescription(manifestation) {
+  const descriptions = getArray(manifestation,
+      'details.physicalDescription.value');
+  const jedData = descriptions.map((desc) => {
+    return {...consts.FAKE_PHYSICALDESCRIPTION, ...{summary: desc.$}};
+  });
+  return jedData;
+}
+
+function jedNotes(manifestation) {
+  const notes = getArray(manifestation, 'details.notes.value');
+
+  const jedData = notes.map((note) => {
+    return {...consts.FAKE_NOTES, ...{display: [note.$]}};
+  });
+
+  return jedData;
+}
+
+function jedMaterialTypes(manifestation) {
+
+  const mattype = getArray(manifestation, 'details.materialType');
+
+  const types = mattype.map((mat) => {
+    return {general: mat.$, specific: mat.$};
+  });
+  return types.length > 0 ? types : [consts.FAKE_MATERIALTYPE];
+}
+
 /**
-<<<<<<< HEAD
+ <<<<<<< HEAD
  * manifestationParts - this one is done with a music example pid: "870970-basis:22417657"
  *  missing:
  *  classifications
@@ -61,26 +133,25 @@ export function manifestationToJed(manifestation) {
  * @param manifestation
  * @returns {{heading: string, parts: [{classifications: [{system: string, code: string, display: string}], creators: [{firstName: string, lastName: string, __typename: string, display: string, roles: [], nameSort: string}], creatorsFromDescription: [string], title: string}], type: string}}
  */
-function jedManifestationParts(manifestation){
-  const tracks = getArray(manifestation, "details.tracks");
-
+function jedManifestationParts(manifestation) {
+  const tracks = getArray(manifestation, 'details.tracks');
 
   const jedData = {};
-  jedData["heading"] = tracks[0]?.header?.$ || "";
+  jedData['heading'] = tracks[0]?.header?.$ || '';
 
   // @TODO find track array in a good way
 
-  jedData["parts"] = tracks[1] ? tracks[1]?.track?.map((tr) => {
-    let creators = jedCreators([tr.creator])
-    return {title:tr.title?.$ || "", creators:creators || []}
+  jedData['parts'] = tracks[1] ? tracks[1]?.track?.map((tr) => {
+    let creators = jedCreators([tr.creator]);
+    return {title: tr.title?.$ || '', creators: creators || []};
   }) : [];
 
   return {...consts.FAKE_MANIFESTATION_PARTS, ...jedData};
 }
 
 /**
-=======
->>>>>>> master
+ =======
+ >>>>>>> master
  * Languages
  *
  *  missing:
@@ -94,32 +165,36 @@ function jedLanguages(manifestation) {
 
   /*array with objects {display, isocode}*/
 
-
   let tmpArr = getArray(manifestation, 'details.languages.languageSpoken');
-  const spoken =  tmpArr.map((lang) => {
+  const spoken = tmpArr.map((lang) => {
 
-    // we have no iso code for spoken languages in dkabm
-        return { display:lang.$, isoCode:'' }
-      }
+        // we have no iso code for spoken languages in dkabm
+        return {display: lang.$, isoCode: ''};
+      },
   );
 
-
-  tmpArr = getArray(manifestation, 'details.languages.languageMain')
+  tmpArr = getArray(manifestation, 'details.languages.languageMain');
   const main = tmpArr.map((lang) => {
 
         // we only have iso code for main language from openformat (missing a xpath expression in code)
-        return { display:"", isoCode:lang.$ }
-      }
+        return {display: '', isoCode: lang.$};
+      },
   );
 
-  tmpArr = getArray(manifestation, 'details.languages.languageSubtitles')
+  tmpArr = getArray(manifestation, 'details.languages.languageSubtitles');
   const subtitles = tmpArr.map((lang) => {
         // we have no iso code for subtitles in dkabm
-        return { display:lang.$, isoCode:'' }
-      }
+        return {display: lang.$, isoCode: ''};
+      },
   );
 
-  return {...consts.FAKE_LANGUAGES, ...{main:main, spoken:spoken, subtitles:subtitles}};
+  return {
+    ...consts.FAKE_LANGUAGES, ...{
+      main: main,
+      spoken: spoken,
+      subtitles: subtitles,
+    },
+  };
 
 }
 
@@ -218,7 +293,7 @@ function jedEdition(manifestation) {
     jedData['edition'] = edition;
   }
   const publicationYear = {
-    display: publication?.publicationYear?.$ || "",
+    display: publication?.publicationYear?.$ || '',
     year: publication?.publicationYear?.$ || 0,
   };
   if (publicationYear) {

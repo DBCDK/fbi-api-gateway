@@ -212,6 +212,48 @@ export const FAKE_MANIFESTATION_PARTS = {
   ],
 }
 
+export const FAKE_MATERIALTYPE = {general: 'bøger', specific: 'bog'}
+
+export const FAKE_NOTES = {
+      type: 'NOT_SPECIFIED',
+      display: ['Indspillet i Ꜳrhus Musikhus 12.-14. juni 2020'],
+    }
+
+export const FAKE_PHYSICALDESCRIPTION = {
+      summary:
+          '1 dvd-rom Xbox One Nødvendigt udstyr Xbox One. - Med multiplayerfunktion Spiludvikler fremgår ikke af materialet',
+      extent: '1 dvd-rom',
+      requirements: 'Nødvendigt udstyr Xbox One. - Med multiplayerfunktion',
+      technicalInformation: 'Xbox One',
+    }
+
+export const FAKE_PUBLICATIONYEAR = {
+  display: '1839',
+  year: 1839,
+  frequency: 'ugentlig',
+}
+
+export const FAKE_SHELFMARK={
+  prefix: 'some prefix',
+  shelfmark: 'some shelfmark',
+}
+
+export const FAKE_LIST_OF_CONTENT={
+  heading: 'Indhold',
+  listOfContent: [
+    {
+      heading: 'Puderne',
+      listOfContent: [{content: 'Bruddet'}, {content: 'Hustelefonen'}],
+    },
+    {
+      content: 'Tykke-Olsen m.fl.',
+    },
+    {
+      content: 'Over skulderen',
+    },
+  ],
+}
+
 export const FAKE_MANIFESTATION_1 = {
   pid: 'some-pid-1',
   titles: FAKE_MANIFESTATION_TITLE,
@@ -253,13 +295,8 @@ export const FAKE_MANIFESTATION_1 = {
   ],
   languages: FAKE_LANGUAGES,
   manifestationParts: FAKE_MANIFESTATION_PARTS,
-  materialTypes: {general: ['bøger', 'ebøger'], specific: ['bog', 'ebog']},
-  notes: [
-    {
-      type: 'NOT_SPECIFIED',
-      display: ['Indspillet i Ꜳrhus Musikhus 12.-14. juni 2020'],
-    },
-  ],
+  materialTypes: [FAKE_MATERIALTYPE],
+  notes: [FAKE_NOTES],
   relatedPublications: [
     {
       heading: 'Tidligere titel:',
@@ -272,45 +309,16 @@ export const FAKE_MANIFESTATION_1 = {
       issn: '1399-4174',
     },
   ],
-  physicalDescriptions: [
-    {
-      summary:
-          '1 dvd-rom Xbox One Nødvendigt udstyr Xbox One. - Med multiplayerfunktion Spiludvikler fremgår ikke af materialet',
-      extent: '1 dvd-rom',
-      requirements: 'Nødvendigt udstyr Xbox One. - Med multiplayerfunktion',
-      technicalInformation: 'Xbox One',
-    },
-  ],
-  publicationYear: {
-    display: '1839',
-    year: 1839,
-    frequency: 'ugentlig',
-  },
+  physicalDescriptions: [FAKE_PHYSICALDESCRIPTION],
+  publicationYear: FAKE_PUBLICATIONYEAR,
   publisher: ['Lægeforeningen'],
   recordCreationDate: '19830414',
   series: FAKE_SERIES_CONTAINER,
-  shelfmark: {
-    prefix: 'some prefix',
-    shelfmark: 'some shelfmark',
-  },
+  shelfmark: FAKE_SHELFMARK ,
   source: ['some source'],
   subjects: FAKE_SUBJECTS,
   volume: 'Bind 2',
-  tableOfContents: {
-    heading: 'Indhold',
-    listOfContent: [
-      {
-        heading: 'Puderne',
-        listOfContent: [{content: 'Bruddet'}, {content: 'Hustelefonen'}],
-      },
-      {
-        content: 'Tykke-Olsen m.fl.',
-      },
-      {
-        content: 'Over skulderen',
-      },
-    ],
-  },
+  tableOfContents: FAKE_LIST_OF_CONTENT,
 };
 
 export const FAKE_MANIFESTATION_2 = {
@@ -332,10 +340,6 @@ export const FAKE_WORKTITLES = {
   translated: ['Oversat titel'],
 };
 
-export const FAKE_MATERIALTYPE = {
-  general: 'ENMATERIALETYPE',
-  specific: 'ebog',
-};
 
 export const FAKE_DK5MAINENTRY = {
   display: 'some dk5 display',
@@ -351,7 +355,7 @@ export const FAKE_WORK = {
   creators: [FAKE_PERSON, FAKE_CORPORATION],
   dk5MainEntry: FAKE_DK5MAINENTRY,
   fictionNonfiction: {display: 'skønlitteratur', code: 'FICTION'},
-  materialTypes: [FAKE_MATERIALTYPE],
+  materialTypes: FAKE_MATERIALTYPE,
   series: FAKE_SERIES_CONTAINER,
   universe: {title: 'Some Universe'},
   genreAndForm: ['some genre'],
