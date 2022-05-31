@@ -174,6 +174,43 @@ export const FAKE_HOST_PUBLICATION = {
   series: FAKE_GENERAL_SERIES,
 }
 
+export const FAKE_LANGUAGES = {
+  main: [{display: 'dansk', isoCode: 'dan'}],
+  original: [{display: 'dansk', isoCode: 'dan'}],
+  parallel: [{display: 'dansk', isoCode: 'dan'}],
+  spoken: [{display: 'dansk', isoCode: 'dan'}],
+  subtitles: [{display: 'dansk', isoCode: 'dan'}],
+  abstract: [{display: 'dansk', isoCode: 'dan'}],
+}
+
+export const FAKE_MANIFESTATION_PARTS = {
+  type: 'MUSIC_TRACKS',
+  heading: 'Indhold:',
+  parts: [
+    {
+      title: 'Bouquet royal',
+      creators: [
+        {
+          __typename: 'Draft_Person',
+          display: 'H. C. Lumbye',
+          nameSort: 'Lumbye, H.C.',
+          firstName: 'H. C.',
+          lastName: 'Lumbye',
+          roles: [],
+        },
+      ],
+      creatorsFromDescription: ['arr.: Peter Ettrup Larsen'],
+      classifications: [
+        {
+          system: 'DK5',
+          code: '78.424',
+          display: 'Klaver og strygere. Orgel og strygere',
+        },
+      ],
+    },
+  ],
+}
+
 export const FAKE_MANIFESTATION_1 = {
   pid: 'some-pid-1',
   titles: FAKE_MANIFESTATION_TITLE,
@@ -213,41 +250,8 @@ export const FAKE_MANIFESTATION_1 = {
       value: '1234567891234',
     },
   ],
-  languages: {
-    main: [{display: 'dansk', isoCode: 'dan'}],
-    original: [{display: 'dansk', isoCode: 'dan'}],
-    parallel: [{display: 'dansk', isoCode: 'dan'}],
-    spoken: [{display: 'dansk', isoCode: 'dan'}],
-    subtitles: [{display: 'dansk', isoCode: 'dan'}],
-    abstract: [{display: 'dansk', isoCode: 'dan'}],
-  },
-  manifestationParts: {
-    type: 'MUSIC_TRACKS',
-    heading: 'Indhold:',
-    parts: [
-      {
-        title: 'Bouquet royal',
-        creators: [
-          {
-            __typename: 'Draft_Person',
-            display: 'H. C. Lumbye',
-            nameSort: 'Lumbye, H.C.',
-            firstName: 'H. C.',
-            lastName: 'Lumbye',
-            roles: [],
-          },
-        ],
-        creatorsFromDescription: ['arr.: Peter Ettrup Larsen'],
-        classifications: [
-          {
-            system: 'DK5',
-            code: '78.424',
-            display: 'Klaver og strygere. Orgel og strygere',
-          },
-        ],
-      },
-    ],
-  },
+  languages: FAKE_LANGUAGES,
+  manifestationParts: FAKE_MANIFESTATION_PARTS,
   materialTypes: {general: ['bøger', 'ebøger'], specific: ['bog', 'ebog']},
   notes: [
     {

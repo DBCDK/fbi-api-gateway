@@ -20,6 +20,9 @@ import {getArray} from '../../utils/utils';
  * @returns {{}}
  */
 export function manifestationToJed(manifestation) {
+
+  //console.log(JSON.stringify(manifestation, null, 4));
+
   const jedData = {};
   jedData.pid = manifestation.admindata.pid.$;
   jedData.titles = jedTitles(manifestation);
@@ -27,7 +30,8 @@ export function manifestationToJed(manifestation) {
       ? [manifestation.details.abstract.value.$]
       : [];
 
-  jedData.creators = jedCreators(manifestation);
+  const creators = getArray(manifestation, 'details.creators.value');
+  jedData.creators = jedCreators(creators);
   if (manifestation.details?.catalogcode?.value?.$) {
     jedData.catalogueCodes = jedCatalogueCodes(manifestation);
   }
@@ -40,8 +44,38 @@ export function manifestationToJed(manifestation) {
       map((gaf) => gaf.$);
   jedData.hostPublication = jedHostPublication(manifestation);
   jedData.languages = jedLanguages(manifestation);
+  jedData.manifestationParts = jedManifestationParts(manifestation);
 
   return jedData;
+}
+
+/**
+ * manifestationParts - this one is done with a music example pid: "870970-basis:22417657"
+ *  missing:
+ *  classifications
+ *  subjects
+ *  creatorsFromDescription
+ *  type
+ *
+ * @param manifestation
+ * @returns {{heading: string, parts: [{classifications: [{system: string, code: string, display: string}], creators: [{firstName: string, lastName: string, __typename: string, display: string, roles: [], nameSort: string}], creatorsFromDescription: [string], title: string}], type: string}}
+ */
+function jedManifestationParts(manifestation){
+  const tracks = getArray(manifestation, "details.tracks");
+
+
+  const jedData = {};
+  jedData["heading"] = tracks[0]?.header?.$ || "";
+
+  // @TODO find track array in a good way
+  jedData["parts"] = tracks[1]?.track?.map((tr) => {
+    let creators = jedCreators([tr.creator])
+    return {title:tr.title?.$ || "", creators:creators}
+  })
+
+  //console.log(JSON.stringify({...consts.FAKE_MANIFESTATION_PARTS, ...jedData}, null, 4));
+
+  return {...consts.FAKE_MANIFESTATION_PARTS, ...jedData};
 }
 
 /**
@@ -58,24 +92,27 @@ function jedLanguages(manifestation) {
 
   /*array with objects {display, isocode}*/
 
-  const spoken =  manifestation.details?.languages?.languageSpoken?.map((lang) => {
+  let tmpArr = getArray(manifestation, 'details.languages.languageSpoken');
+  const spoken =  tmpArr.map((lang) => {
     // we have no iso code for spoken languages in dkabm
         return { display:lang.$, isoCode:'' }
       }
   );
 
-  const main = manifestation.details?.languages?.languageMain?.map((lang) => {
+  tmpArr = getArray(manifestation, 'details.languages.languageMain')
+  const main = tmpArr.map((lang) => {
         // we only have iso code for main language from openformat (missing a xpath expression in code)
         return { display:"", isoCode:lang.$ }
       }
   );
 
-  const subtitles = manifestation.details?.languages?.languageSubtitles?.map((lang) => {
+  tmpArr = getArray(manifestation, 'details.languages.languageSubtitles')
+  const subtitles = tmpArr.map((lang) => {
         // we have no iso code for subtitles in dkabm
         return { display:lang.$, isoCode:'' }
       }
   );
-  return {main:main, spoken:spoken, subtitles:subtitles};
+  return {...consts.FAKE_LANGUAGES, ...{main:main, spoken:spoken, subtitles:subtitles}};
 }
 
 /**
@@ -173,8 +210,8 @@ function jedEdition(manifestation) {
     jedData['edition'] = edition;
   }
   const publicationYear = {
-    display: publication?.publicationYear?.$,
-    year: publication?.publicationYear?.$,
+    display: publication?.publicationYear?.$ || "",
+    year: publication?.publicationYear?.$ || 0,
   };
   if (publicationYear) {
     jedData['publicationYear'] = {...consts.FAKE_EDITION.publicationYear, ...publicationYear};
@@ -456,8 +493,8 @@ function _sortOnlineAccess(onlineAccess) {
  * @param manifestation
  * @returns {{firstName: string, lastName: string, aliases: [{display: string},{display: string}], birthYear: string, attributeToName: string, __typename: string, display: *, romanNumeral: string, roles: [{functionCode: (string|*), valueOf?(): boolean, function: ({plural: string, singular: string}|{plural: *, singular: *})}]|[], nameSort: *}[]}
  */
-function jedCreators(manifestation) {
-  const creators = getArray(manifestation, 'details.creators.value');
+function jedCreators(creators) {
+
   const jedData = creators.map((creator) => {
     const role = creator.functionCode?.$ ? {
       ...{functionCode: creator.functionCode?.$},
