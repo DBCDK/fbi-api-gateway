@@ -23,10 +23,8 @@ export default function Docs() {
   const { selectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
 
-  const [isReady, setIsReady] = useState(false);
-
-  const refs = useRef({});
-  const containerRef = useRef(null);
+  // const containerRef = useRef(null);
+  const [containerRef, setContainerRef] = useState();
 
   // Only include docs usable by the selected token
   const accessibleDocs = docs?.filter((doc) => {
@@ -52,47 +50,24 @@ export default function Docs() {
     return state;
   });
 
-  useEffect(() => {
-    // container changes hight after last render, so we observe height/width changes, and rerender the menu
-    const resizeObserver = new ResizeObserver(
-      debounce(() => setIsReady(false), 100)
-    );
-    resizeObserver.observe(containerRef.current);
-  }, []);
-
-  useEffect(() => {
-    if (isReady) {
-      refs.current = {};
-      setIsReady(false);
-    }
-  }, [selectedToken]);
-
-  function handleIsReady(el) {
-    if (el) {
-      const id = el.getAttribute("id");
-      refs.current[id] = true;
-      if (accessibleDocs.length === Object.keys(refs.current).length) {
-        setIsReady(true);
-      }
-    }
-  }
-
   return (
     <>
       <Header />
       <Container fluid>
         <Row className={styles.wrap}>
           <Col className={styles.menu}>
-            {isReady && (
-              <Menu docs={accessibleDocs} containerRef={containerRef} />
-            )}
+            <Menu docs={accessibleDocs} containerRef={containerRef} />
           </Col>
-          <Col className={styles.content} ref={containerRef} id="container">
+          <Col
+            className={styles.content}
+            ref={(el) => el && setContainerRef(el)}
+            id="container"
+          >
             {accessibleDocs?.map((doc, idx) => {
               const id = `${doc.name}-${idx}`;
 
               return (
-                <section key={doc.name} id={id} ref={handleIsReady}>
+                <section key={doc.name} id={id}>
                   <MDXRemote {...doc.mdxSource} components={customComponents} />
                 </section>
               );

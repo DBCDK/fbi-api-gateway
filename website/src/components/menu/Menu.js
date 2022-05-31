@@ -20,7 +20,7 @@ import { useRouter } from "next/router";
  * @param offset - offset to scroll to
  * @param callback - callback function
  */
-function scrollTo({ top, offset = 150, callback }) {
+function scrollTo({ top, offset = 10, callback }) {
   top = (top - offset).toFixed();
   const onScroll = function () {
     if (window.pageYOffset.toFixed() === top) {
@@ -34,8 +34,18 @@ function scrollTo({ top, offset = 150, callback }) {
   window.scrollTo({ top, behavior: "smooth" });
 }
 
-export function Menu({ sections, active }) {
-  const [isScrolling, setIsScrolling] = useState(false);
+export function Menu({ sections, active, onClick, isScrolling }) {
+  const [activeParent, setActiveParent] = useState();
+  useEffect(() => {
+    const hit = sections?.find?.(
+      (section) =>
+        active === section?.id ||
+        section?.subHeadings.find((subHeading) => subHeading.id === active)
+    );
+    if (activeParent !== hit?.id && !isScrolling) {
+      setActiveParent(hit?.id);
+    }
+  }, [active, sections, isScrolling]);
 
   return (
     <Row as="ul" className={styles.menu}>
@@ -46,16 +56,13 @@ export function Menu({ sections, active }) {
         <Row as="ul" className={styles.items}>
           {sections?.map((s) => {
             const hasSubheadings = s.subHeadings.length > 0;
-            const hasActiveSubheading =
-              hasSubheadings && s.subHeadings.find((s) => s.id === active);
 
-            const isActive =
-              (isScrolling && hasActiveSubheading) || s.id === active;
+            const isActive = s.id === active;
 
             const expandSubheadings =
               hasSubheadings &&
-              !isScrolling &&
-              (isActive || hasActiveSubheading);
+              (!isScrolling || activeParent === s.id) &&
+              (s.subHeadings.find((s) => s.id === active) || isActive);
 
             const activeClass = isActive ? styles.active : "";
             const tagClass = styles[s.tag] || "";
@@ -69,19 +76,11 @@ export function Menu({ sections, active }) {
                 <Text type={s.tag === "h1" ? "text5" : "text2"}>
                   <Link
                     onClick={() => {
-                      setIsScrolling(!hasActiveSubheading);
-                      scrollTo({
-                        top: s.top,
-                        callback: () => setIsScrolling(false),
-                      });
+                      onClick(s);
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.keyCode === 13) {
-                        setIsScrolling(!hasActiveSubheading);
-                        scrollTo({
-                          top: s.top,
-                          callback: () => setIsScrolling(false),
-                        });
+                        onClick(s);
                       }
                     }}
                   >
@@ -97,7 +96,7 @@ export function Menu({ sections, active }) {
                         className={`${styles.items} ${styles.subitems}`}
                       >
                         {s.subHeadings.map((s) => {
-                          const isActive = !isScrolling && s.id === active;
+                          const isActive = s.id === active;
                           const activeClass = isActive ? styles.active : "";
                           const tagClass = styles[s.tag] || "";
 
@@ -109,10 +108,10 @@ export function Menu({ sections, active }) {
                             >
                               <Text type={s.tag === "h1" ? "text5" : "text2"}>
                                 <Link
-                                  onClick={() => scrollTo({ top: s.top })}
+                                  onClick={() => onClick(s)}
                                   onKeyDown={(e) => {
                                     if (e.key === "Enter" || e.keyCode === 13) {
-                                      scrollTo({ top: s.top });
+                                      onClick(s);
                                     }
                                   }}
                                 >
@@ -135,40 +134,59 @@ export function Menu({ sections, active }) {
   );
 }
 
+function getHeadings(el) {
+  const headings = el.querySelectorAll("h1");
+
+  function extract(el) {
+    const top = el.offsetTop;
+    // const height = el.offsetHeight;
+    const tag = el.tagName.toLowerCase();
+    const text = el.textContent;
+    const raw = text.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, "");
+    const label = text?.toLowerCase().replace(/\s+/g, "-");
+    const id = `${top}-${tag}-${label}`;
+    return { tag, text, raw, top, id };
+  }
+
+  const arr = [];
+  headings.forEach((h1) => {
+    const parent = h1.parentNode;
+    const sectionId = parent.getAttribute("id");
+    const { tag, text, top, id: headingId } = extract(h1);
+    const subHeadings = parent.querySelectorAll("h2");
+    const subs = [];
+    subHeadings.forEach((h2) =>
+      subs.push({ ...extract(h2), headingId, sectionId })
+    );
+    arr.push({ tag, text, top, id: headingId, sectionId, subHeadings: subs });
+  });
+
+  return arr;
+}
 export default function Wrap(props) {
   const [active, setActive] = useState();
+  const [isScrolling, setIsScrolling] = useState(false);
   const router = useRouter();
 
-  const container = props.containerRef.current;
+  const container = props.containerRef;
 
-  const sections = useMemo(() => {
-    const headings = container.querySelectorAll("h1");
+  const [sections, setSections] = useState([]);
 
-    function extract(el) {
-      const top = el.offsetTop;
-      // const height = el.offsetHeight;
-      const tag = el.tagName.toLowerCase();
-      const text = el.textContent;
-      const raw = text.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, "");
-      const label = text?.toLowerCase().replace(/\s+/g, "-");
-      const id = `${top}-${tag}-${label}`;
-      return { tag, text, raw, top, id };
+  useEffect(() => {
+    if (!container) {
+      return;
     }
+    const handleMutation = throttle(() => {
+      const headings = getHeadings(container);
+      setSections(headings);
+    }, 10);
 
-    const arr = [];
-    headings.forEach((h1) => {
-      const parent = h1.parentNode;
-      const sectionId = parent.getAttribute("id");
-      const { tag, text, top, id: headingId } = extract(h1);
-      const subHeadings = parent.querySelectorAll("h2");
-      const subs = [];
-      subHeadings.forEach((h2) =>
-        subs.push({ ...extract(h2), headingId, sectionId })
-      );
-      arr.push({ tag, text, top, id: headingId, sectionId, subHeadings: subs });
+    const observer = new MutationObserver(handleMutation);
+    observer.observe(container, {
+      childList: true,
     });
-
-    return arr;
+    handleMutation();
+    return () => observer.disconnect();
   }, [container]);
 
   const flattenSections = useMemo(() => {
@@ -181,14 +199,16 @@ export default function Wrap(props) {
 
     function handleScroll() {
       const scrollY = window.scrollY;
-      const offset = 100;
+      const offset = 0;
 
-      const hit = flattenSections.reduce((prev, cur) =>
-        Math.abs(scrollY + offset - cur.top) <
-        Math.abs(scrollY + offset - prev.top)
-          ? cur
-          : prev
-      );
+      const hit =
+        flattenSections.length > 0 &&
+        flattenSections.reduce((prev, cur) =>
+          Math.abs(scrollY + offset - cur.top) <
+          Math.abs(scrollY + offset - prev.top)
+            ? cur
+            : prev
+        );
 
       if (hit) {
         setActive(hit.id);
@@ -204,14 +224,25 @@ export default function Wrap(props) {
   }, [flattenSections]);
 
   // Scroll to anchor
-  // TODO, base the rest of the scroll logic on anchors
   useEffect(() => {
-    const anchor = location?.hash?.replace("#", "");
-    const el = flattenSections?.find?.((section) => section.text === anchor);
+    const anchor = decodeURIComponent(location?.hash?.replace("#", "") || "");
+    const el = flattenSections?.find?.(
+      (section) => section.text?.replace?.(/\s/g, "-") === anchor
+    );
     if (el) {
-      scrollTo({ top: el.top });
+      setIsScrolling(true);
+      scrollTo({ top: el.top, callback: () => setIsScrolling(false) });
     }
-  }, [router]);
-
-  return <Menu sections={sections} active={active} {...props} />;
+  }, [router, flattenSections]);
+  return (
+    <Menu
+      sections={sections}
+      active={active}
+      {...props}
+      isScrolling={isScrolling}
+      onClick={(s) => {
+        router.replace("#" + s.text?.replace?.(/\s/g, "-"));
+      }}
+    />
+  );
 }
