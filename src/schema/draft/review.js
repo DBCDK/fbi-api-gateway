@@ -170,7 +170,7 @@ export const resolvers = {
     async work(parent, args, context, info) {
       if (parent.faust) {
         // Most of this could be resolved from within the work resolvers work
-        const id = await context.datasources.faust.load(parent.faust);
+        const id = (await context.datasources.faust.load(parent.faust)).id;
         const res = await context.datasources.workservice.load({
           workId: id,
           profile: context.profile,

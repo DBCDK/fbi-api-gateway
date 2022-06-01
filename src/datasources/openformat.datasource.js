@@ -23,7 +23,7 @@ function createRequest(pid) {
 
 export async function load(pid) {
   return (await request.post(url).field("xml", createRequest(pid))).body
-    .formatResponse.customDisplay[0].manifestation;
+    ?.formatResponse?.customDisplay?.[0].manifestation;
 }
 
 /**

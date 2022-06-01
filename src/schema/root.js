@@ -7,6 +7,7 @@ import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import {
   resolveBorrowerCheck,
+  resolveManifestation,
   resolveOnlineAccess,
   resolveWork,
 } from "../utils/utils";
@@ -20,7 +21,7 @@ import { manifestationToJed } from "./draft/draft_utils_manifestations";
  */
 export const typeDef = `
 type Query {
-  manifestation(pid: String!): Draft_Manifestation!
+  manifestation(pid: String, faust: String): Draft_Manifestation
   monitor(name: String!): String!
   user: User!
   work(id: String, faust: String, pid: String, language: LanguageCode): Draft_Work
@@ -44,6 +45,12 @@ type Query {
     """
     suggestType: Draft_SuggestionType
   ): Draft_SuggestResponse!
+
+  """
+  Get recommendations
+  """
+  recommend(id: String, pid: String, faust: String, limit: Int): Draft_RecommendationResponse!
+
 
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
@@ -104,11 +111,7 @@ export const resolvers = {
       return "gr8";
     },
     async manifestation(parent, args, context, info) {
-      const pid = args.pid;
-      const manifestation = await context.datasources.openformat.load(pid);
-
-      const realData = manifestationToJed(manifestation);
-      return { ...consts.FAKE_MANIFESTATION_1, ...realData };
+      return resolveManifestation(args, context);
     },
     async works(parent, args, context, info) {
       let ids;
@@ -116,7 +119,9 @@ export const resolvers = {
         ids = args.id;
       } else if (args.faust) {
         ids = await Promise.all(
-          args.faust.map((faust) => context.datasources.faust.load(faust))
+          args.faust.map(
+            async (faust) => (await context.datasources.faust.load(faust)).id
+          )
         );
       } else if (args.pid) {
         ids = args.pid.map((pid) => `work-of:${pid}`);
@@ -207,6 +212,9 @@ export const resolvers = {
       });
     },
     async suggest(parent, args, context, info) {
+      return args;
+    },
+    recommend(parent, args, context, info) {
       return args;
     },
     async deleteOrder(parent, args, context, info) {

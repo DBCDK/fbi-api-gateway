@@ -9,7 +9,7 @@
 
 export async function load(faust) {
   // Until we have a service for mapping faust to work id
-  return `work-of:870970-basis:${faust}`;
+  return { id: `work-of:870970-basis:${faust}`, pid: `870970-basis:${faust}` };
 }
 
 // export const options = {

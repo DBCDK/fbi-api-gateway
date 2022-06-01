@@ -20,26 +20,10 @@ Get shelf information for given pid
   }}
 />
 
-## Recommendations
-
-<InlineGraphiQL
-  query={`query($pid: String!) {
-            manifestation(pid: $pid) {
-              recommendations {
-                work {
-                  title
-                }
-              }
-            }
-        }`}
-  variables={{
-    pid: "870970-basis:48237053",
-  }}
-/>
-
 ## Jed data
+
 <InlineGraphiQL
-query={`query($pid: String!) { manifestation(pid: $pid) {
+  query={`query($pid: String!) { manifestation(pid: $pid) {
     pid
     titles {
         main
@@ -193,8 +177,7 @@ query={`query($pid: String!) { manifestation(pid: $pid) {
 }
 }
 }`}
-variables={{
-pid: "870970-basis:27002609",
-}}
+  variables={{
+    pid: "870970-basis:27002609",
+  }}
 />
-

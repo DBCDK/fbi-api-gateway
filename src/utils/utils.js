@@ -3,6 +3,7 @@ import { getExecutableSchema } from "../schemaLoader";
 import { get, uniq } from "lodash";
 import { workToJed } from "../schema/draft/draft_utils";
 import * as consts from "../schema/draft/FAKE";
+import { manifestationToJed } from "../schema/draft/draft_utils_manifestations";
 
 export async function performTestQuery({
   query,
@@ -338,7 +339,7 @@ export async function resolveWork(args, context) {
   if (args.id) {
     id = args.id;
   } else if (args.faust) {
-    id = await context.datasources.faust.load(args.faust);
+    id = (await context.datasources.faust.load(args.faust)).id;
   } else if (args.pid) {
     id = `work-of:${args.pid}`;
   }
@@ -362,4 +363,21 @@ export async function resolveWork(args, context) {
   );
   const realData = workToJed(res, manifestation, args.language);
   return { ...consts.FAKE_WORK, ...realData };
+}
+
+export async function resolveManifestation(args, context) {
+  let pid;
+  if (args.pid) {
+    pid = args.pid;
+  } else if (args.faust) {
+    pid = (await context.datasources.faust.load(args.faust)).pid;
+  }
+
+  const manifestation = await context.datasources.openformat.load(pid);
+  if (!manifestation) {
+    return null;
+  }
+
+  const realData = manifestationToJed(manifestation);
+  return { ...consts.FAKE_MANIFESTATION_1, ...realData };
 }

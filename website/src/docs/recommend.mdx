@@ -1,0 +1,25 @@
+# Recommend
+
+Get work or manifestation reccomendations based on a pid.
+
+<InlineGraphiQL
+  query={`query ($pid: String!, $limit: Int!) {
+  recommend(pid: $pid, limit: $limit) {
+    result {
+      work {
+        workId
+        titles {
+          main
+        }
+        creators {
+          display
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    pid: "870970-basis:55139784",
+    limit: 10,
+  }}
+/>
