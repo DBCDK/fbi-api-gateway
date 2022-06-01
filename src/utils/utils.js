@@ -334,6 +334,41 @@ export async function getInfomediaAccessStatus(context) {
   return "OK";
 }
 
+/**
+ * Get the infomedia access status for the current user
+ *
+ * @param {*} context
+ * @returns {string}
+ */
+export async function getDigitalArticleAccessStatus(context) {
+  if (!context?.smaug?.user?.id) {
+    return "USER_NOT_LOGGED_IN";
+  }
+
+  let userInfo;
+  try {
+    userInfo = await context.datasources.userinfo.load({
+      accessToken: context.accessToken,
+    });
+  } catch (e) {
+    return "USER_NOT_LOGGED_IN";
+  }
+
+  const municipalityAgencyId = userInfo?.attributes?.municipalityAgencyId;
+
+  const digitalArticleSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
+    ""
+  );
+
+  const isSubscribed = digitalArticleSubscriptions[municipalityAgencyId];
+
+  if (!isSubscribed) {
+    return "MUNICIPALITY_NOT_SUBSCRIBED";
+  }
+
+  return "OK";
+}
+
 export async function resolveWork(args, context) {
   let id;
   if (args.id) {

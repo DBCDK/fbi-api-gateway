@@ -20,6 +20,49 @@ Get shelf information for given pid
   }}
 />
 
+## Accessing a Manifestation
+
+The _access_ field contains a list of ways to access a manifestation.
+
+If a Draft_InfomediaService entry is present, one may use the id to access
+the content of the article with [Infomedia](#Infomedia)
+
+<InlineGraphiQL
+  query={`query($pid: [String!]!) {
+            manifestations(pid: $pid) {
+            titles {
+              main
+            }
+            access {
+              __typename
+              ... on Draft_URL {
+                origin
+                url
+              }
+              ... on Draft_InfomediaService {
+                id
+                accessStatus
+              }
+              ... on Draft_InterLibraryLoan {
+                loanIsPossible
+              }
+              ... on Draft_Ereol {
+                origin
+                url
+                canAlwaysBeLoaned
+              }
+              ... on Draft_DigitalArticleService {
+                issn
+                accessStatus
+              }
+            }
+          }
+        }`}
+  variables={{
+    pid: ["870971-avis:33301561", "870971-tsart:36160780"],
+  }}
+/>
+
 ## Jed data
 
 <InlineGraphiQL
@@ -47,8 +90,8 @@ Get shelf information for given pid
             url
             canAlwaysBeLoaned
         }
-        ... on Draft_Ill {
-            ill
+        ... on Draft_InterLibraryLoan {
+            loanIsPossible
         }
     }
     audience {

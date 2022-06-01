@@ -23,6 +23,7 @@ import { manifestationToJed } from "./draft/draft_utils_manifestations";
 export const typeDef = `
 type Query {
   manifestation(pid: String, faust: String): Draft_Manifestation
+  manifestations(faust: [String!], pid: [String!]): [Draft_Manifestation]!
   monitor(name: String!): String!
   user: User!
   work(id: String, faust: String, pid: String, language: LanguageCode): Draft_Work
@@ -113,6 +114,18 @@ export const resolvers = {
     },
     async manifestation(parent, args, context, info) {
       return resolveManifestation(args, context);
+    },
+    async manifestations(parent, args, context, info) {
+      if (args.faust) {
+        return Promise.all(
+          args.faust.map((faust) => resolveManifestation({ faust }, context))
+        );
+      } else if (args.pid) {
+        return Promise.all(
+          args.pid.map((pid) => resolveManifestation({ pid }, context))
+        );
+      }
+      return [];
     },
     async works(parent, args, context, info) {
       let ids;

@@ -15,9 +15,9 @@
  * source
  */
 
-import * as consts from './FAKE';
-import {getArray} from '../../utils/utils';
-import {collectSubFields} from '@graphql-tools/utils';
+import * as consts from "./FAKE";
+import { getArray } from "../../utils/utils";
+import { collectSubFields } from "@graphql-tools/utils";
 
 /**
  * convert manifestion data to JED
@@ -29,10 +29,10 @@ export function manifestationToJed(manifestation) {
   jedData.pid = manifestation.admindata.pid.$;
   jedData.titles = jedTitles(manifestation);
   jedData.abstract = manifestation.details?.abstract?.value?.$
-      ? [manifestation.details.abstract.value.$]
-      : [];
+    ? [manifestation.details.abstract.value.$]
+    : [];
 
-  const creators = getArray(manifestation, 'details.creators.value');
+  const creators = getArray(manifestation, "details.creators.value");
   jedData.creators = jedCreators(creators);
 
   if (manifestation.details?.catalogcode?.value?.$) {
@@ -43,8 +43,9 @@ export function manifestationToJed(manifestation) {
   jedData.contributors = jedContributors(manifestation);
   jedData.edition = jedEdition(manifestation);
   jedData.latestPrinting = jedLatestPrinting(manifestation);
-  jedData.genreAndForm = getArray(manifestation, 'details.form.value').
-      map((gaf) => gaf.$);
+  jedData.genreAndForm = getArray(manifestation, "details.form.value").map(
+    (gaf) => gaf.$
+  );
   jedData.hostPublication = jedHostPublication(manifestation);
   jedData.languages = jedLanguages(manifestation);
 
@@ -53,8 +54,10 @@ export function manifestationToJed(manifestation) {
   jedData.notes = jedNotes(manifestation);
   jedData.physicalDescriptions = jedPhysicalDescription(manifestation);
   jedData.publicationYear = jedPublicationYear(manifestation);
-  jedData.publisher = getArray(manifestation, 'details.publication.publisher').
-      map((pub) => pub.$);
+  jedData.publisher = getArray(
+    manifestation,
+    "details.publication.publisher"
+  ).map((pub) => pub.$);
   jedData.shelfmark = jedShelfMark(manifestation);
   jedData.subjects = jedSubjects(manifestation);
   jedData.volume = manifestation.details?.volume?.$ || null;
@@ -63,27 +66,27 @@ export function manifestationToJed(manifestation) {
   return jedData;
 }
 
-function jedTableOFContent(manifestation){
+function jedTableOFContent(manifestation) {
   // content comes as a string from openformat - split on ';'
   const content = manifestation.details?.content?.value?.$;
-  if(!content){
+  if (!content) {
     return null;
   }
 
-  const contentArray = content.split(';');
-  const listcontent = contentArray.map((con)=> {
-      return {heading:"", content:con}
-  })
+  const contentArray = content.split(";");
+  const listcontent = contentArray.map((con) => {
+    return { heading: "", content: con };
+  });
 
-  return {...consts.FAKE_LIST_OF_CONTENT, ...{listOfContent:listcontent}};
+  return { ...consts.FAKE_LIST_OF_CONTENT, ...{ listOfContent: listcontent } };
 }
 
-function jedSubjects(manifestation){
+function jedSubjects(manifestation) {
   const subjects = getArray(manifestation, "details.subject");
-  const all = subjects.map((sub)=>{
-    return {...consts.FAKE_SUBJECTS.all[0], ... {display:sub.value.$}}
-  })
-  return {...consts.FAKE_SUBJECTS, ...{all:all}};
+  const all = subjects.map((sub) => {
+    return { ...consts.FAKE_SUBJECTS.all[0], ...{ display: sub.value.$ } };
+  });
+  return { ...consts.FAKE_SUBJECTS, ...{ all: all } };
 }
 
 function jedShelfMark(manifestation) {
@@ -92,43 +95,44 @@ function jedShelfMark(manifestation) {
   }
 
   const jedData = {
-    shelfmark: manifestation.details?.shelf?.shelfmark?.$ || '',
-    postfix: manifestation.details?.shelf?.prefix?.$ || '',
+    shelfmark: manifestation.details?.shelf?.shelfmark?.$ || "",
+    postfix: manifestation.details?.shelf?.prefix?.$ || "",
   };
-  return {...consts.FAKE_SHELFMARK, ...jedData};
+  return { ...consts.FAKE_SHELFMARK, ...jedData };
 }
 
 function jedPublicationYear(manifestation) {
-  const pubyear = manifestation.details?.publication?.publicationYear?.$ ||
-      null;
-  return {...consts.FAKE_PUBLICATIONYEAR, ...{year: pubyear}};
+  const pubyear =
+    manifestation.details?.publication?.publicationYear?.$ || null;
+  return { ...consts.FAKE_PUBLICATIONYEAR, ...{ year: pubyear } };
 }
 
 function jedPhysicalDescription(manifestation) {
-  const descriptions = getArray(manifestation,
-      'details.physicalDescription.value');
+  const descriptions = getArray(
+    manifestation,
+    "details.physicalDescription.value"
+  );
   const jedData = descriptions.map((desc) => {
-    return {...consts.FAKE_PHYSICALDESCRIPTION, ...{summary: desc.$}};
+    return { ...consts.FAKE_PHYSICALDESCRIPTION, ...{ summary: desc.$ } };
   });
   return jedData;
 }
 
 function jedNotes(manifestation) {
-  const notes = getArray(manifestation, 'details.notes.value');
+  const notes = getArray(manifestation, "details.notes.value");
 
   const jedData = notes.map((note) => {
-    return {...consts.FAKE_NOTES, ...{display: [note.$]}};
+    return { ...consts.FAKE_NOTES, ...{ display: [note.$] } };
   });
 
   return jedData;
 }
 
 function jedMaterialTypes(manifestation) {
-
-  const mattype = getArray(manifestation, 'details.materialType');
+  const mattype = getArray(manifestation, "details.materialType");
 
   const types = mattype.map((mat) => {
-    return {general: mat.$, specific: mat.$};
+    return { general: mat.$, specific: mat.$ };
   });
   return types.length > 0 ? types : [consts.FAKE_MATERIALTYPE];
 }
@@ -146,19 +150,21 @@ function jedMaterialTypes(manifestation) {
  * @returns {{heading: string, parts: [{classifications: [{system: string, code: string, display: string}], creators: [{firstName: string, lastName: string, __typename: string, display: string, roles: [], nameSort: string}], creatorsFromDescription: [string], title: string}], type: string}}
  */
 function jedManifestationParts(manifestation) {
-  const tracks = getArray(manifestation, 'details.tracks');
+  const tracks = getArray(manifestation, "details.tracks");
 
   const jedData = {};
-  jedData['heading'] = tracks[0]?.header?.$ || '';
+  jedData["heading"] = tracks[0]?.header?.$ || "";
 
   // @TODO find track array in a good way
 
-  jedData['parts'] = tracks[1] ? tracks[1]?.track?.map((tr) => {
-    let creators = jedCreators([tr.creator]);
-    return {title: tr.title?.$ || '', creators: creators || []};
-  }) : [];
+  jedData["parts"] = tracks[1]
+    ? tracks[1]?.track?.map((tr) => {
+        let creators = jedCreators([tr.creator]);
+        return { title: tr.title?.$ || "", creators: creators || [] };
+      })
+    : [];
 
-  return {...consts.FAKE_MANIFESTATION_PARTS, ...jedData};
+  return { ...consts.FAKE_MANIFESTATION_PARTS, ...jedData };
 }
 
 /**
@@ -174,40 +180,34 @@ function jedManifestationParts(manifestation) {
  * @returns {{subtitles: *, spoken: *, main: *}}
  */
 function jedLanguages(manifestation) {
-
   /*array with objects {display, isocode}*/
 
-  let tmpArr = getArray(manifestation, 'details.languages.languageSpoken');
+  let tmpArr = getArray(manifestation, "details.languages.languageSpoken");
   const spoken = tmpArr.map((lang) => {
+    // we have no iso code for spoken languages in dkabm
+    return { display: lang.$, isoCode: "" };
+  });
 
-        // we have no iso code for spoken languages in dkabm
-        return {display: lang.$, isoCode: ''};
-      },
-  );
-
-  tmpArr = getArray(manifestation, 'details.languages.languageMain');
+  tmpArr = getArray(manifestation, "details.languages.languageMain");
   const main = tmpArr.map((lang) => {
+    // we only have iso code for main language from openformat (missing a xpath expression in code)
+    return { display: "", isoCode: lang.$ };
+  });
 
-        // we only have iso code for main language from openformat (missing a xpath expression in code)
-        return {display: '', isoCode: lang.$};
-      },
-  );
-
-  tmpArr = getArray(manifestation, 'details.languages.languageSubtitles');
+  tmpArr = getArray(manifestation, "details.languages.languageSubtitles");
   const subtitles = tmpArr.map((lang) => {
-        // we have no iso code for subtitles in dkabm
-        return {display: lang.$, isoCode: ''};
-      },
-  );
+    // we have no iso code for subtitles in dkabm
+    return { display: lang.$, isoCode: "" };
+  });
 
   return {
-    ...consts.FAKE_LANGUAGES, ...{
+    ...consts.FAKE_LANGUAGES,
+    ...{
       main: main,
       spoken: spoken,
       subtitles: subtitles,
     },
   };
-
 }
 
 /**
@@ -232,15 +232,15 @@ function jedHostPublication(manifestation) {
   // the article
   const art = manifestation.details?.articleData?.article;
   const jedData = {
-    summary: hostpub?.value?.$ || '',
-    publisher: hostpub?.title?.$ || '',
-    pages: art?.pages?.$ || '',
-    title: hostpub?.title?.$ || '',
-    year: {display: art?.year?.$ || '', year: art?.year?.$ || 0},
-    issue: hostpub?.details?.$ || '',
-    issn: manifestation?.details?.articleIssn?.value?.$ || '',
+    summary: hostpub?.value?.$ || "",
+    publisher: hostpub?.title?.$ || "",
+    pages: art?.pages?.$ || "",
+    title: hostpub?.title?.$ || "",
+    year: { display: art?.year?.$ || "", year: art?.year?.$ || 0 },
+    issue: hostpub?.details?.$ || "",
+    issn: manifestation?.details?.articleIssn?.value?.$ || "",
   };
-  return {...consts.FAKE_HOST_PUBLICATION, ...jedData};
+  return { ...consts.FAKE_HOST_PUBLICATION, ...jedData };
 }
 
 /**
@@ -266,21 +266,21 @@ function jedTitles(manifestation) {
    */
   // we need to do a check before setting the object
   const mainTitles = manifestation.details?.title?.value?.$
-      ? [manifestation.details?.title?.value?.$]
-      : [];
+    ? [manifestation.details?.title?.value?.$]
+    : [];
   const titleFull = manifestation.details?.titleFull?.value.$
-      ? [manifestation.details?.titleFull?.value.$]
-      : [];
+    ? [manifestation.details?.titleFull?.value.$]
+    : [];
   const originalTitle = manifestation.details?.originalTitle?.value.$
-      ? [manifestation.details?.originalTitle?.value.$]
-      : [];
+    ? [manifestation.details?.originalTitle?.value.$]
+    : [];
   return {
-    ...consts.FAKE_MANIFESTATION_TITLE, ...
-        {
-          main: mainTitles,
-          full: titleFull,
-          original: originalTitle,
-        },
+    ...consts.FAKE_MANIFESTATION_TITLE,
+    ...{
+      main: mainTitles,
+      full: titleFull,
+      original: originalTitle,
+    },
   };
 }
 
@@ -288,61 +288,71 @@ function jedLatestPrinting(manifestation) {
   const jedData = {};
   const summaryTxt = manifestation.details?.latestReprint?.value?.$;
   if (summaryTxt) {
-    jedData['summary'] = summaryTxt;
+    jedData["summary"] = summaryTxt;
   }
-  return {...consts.FAKE_LATEST_PRINTING, ...jedData};
+  return { ...consts.FAKE_LATEST_PRINTING, ...jedData };
 }
 
 function jedEdition(manifestation) {
   const jedData = {};
   const publication = manifestation.details?.publication;
 
-  const summaryTxt = `${manifestation.details?.edition?.value?.$ ||
-  ''}, ${publication?.publisher?.$ || ''}, ${publication?.publicationYear?.$}`;
-  jedData['summary'] = summaryTxt;
+  const summaryTxt = `${manifestation.details?.edition?.value?.$ || ""}, ${
+    publication?.publisher?.$ || ""
+  }, ${publication?.publicationYear?.$}`;
+  jedData["summary"] = summaryTxt;
   const edition = manifestation.details?.edition?.value?.$;
   if (edition) {
-    jedData['edition'] = edition;
+    jedData["edition"] = edition;
   }
   const publicationYear = {
-    display: publication?.publicationYear?.$ || '',
+    display: publication?.publicationYear?.$ || "",
     year: publication?.publicationYear?.$ || 0,
   };
   if (publicationYear) {
-    jedData['publicationYear'] = {...consts.FAKE_EDITION.publicationYear, ...publicationYear};
+    jedData["publicationYear"] = {
+      ...consts.FAKE_EDITION.publicationYear,
+      ...publicationYear,
+    };
   }
 
   return {
-    ...consts.FAKE_EDITION, ...jedData,
+    ...consts.FAKE_EDITION,
+    ...jedData,
   };
 }
 
 function jedContributors(manifestation) {
-  const contributors = getArray(manifestation, 'details.contributors.value');
+  const contributors = getArray(manifestation, "details.contributors.value");
   const jedData = contributors.map((contributor) => {
-    const role = contributor.functionCode?.$ ? {
-      ...{functionCode: contributor.functionCode?.$},
-      ...{
-        function: {
-          ...consts.FAKE_TRANSLATION,
+    const role = contributor.functionCode?.$
+      ? {
+          ...{ functionCode: contributor.functionCode?.$ },
           ...{
-            plural: contributor.functionPlural?.$,
-            singular: contributor.functionSingular?.$,
+            function: {
+              ...consts.FAKE_TRANSLATION,
+              ...{
+                plural: contributor.functionPlural?.$,
+                singular: contributor.functionSingular?.$,
+              },
+            },
           },
-        },
-      },
-    } : false;
+        }
+      : false;
 
     return {
       ...consts.FAKE_PERSON,
       ...{
         display: contributor.name?.$,
         nameSort: contributor.name?.$,
-        roles: role ? [
-          {
-            ...consts.FAKE_ROLE, ...role,
-          },
-        ] : [],
+        roles: role
+          ? [
+              {
+                ...consts.FAKE_ROLE,
+                ...role,
+              },
+            ]
+          : [],
       },
     };
   });
@@ -366,19 +376,20 @@ function jedClassification(manifestation) {
    */
   const jedData = {};
   if (manifestation.details?.dk5?.value) {
-    jedData['system'] = 'DK5';
-    jedData['code'] = manifestation.details?.dk5?.value.$;
-    jedData['entryType'] = 'NATIONAL_BIBLIOGRAPHY_ENTRY';
-    jedData['display'] = manifestation.details?.dk5?.value.$;
+    jedData["system"] = "DK5";
+    jedData["code"] = manifestation.details?.dk5?.value.$;
+    jedData["entryType"] = "NATIONAL_BIBLIOGRAPHY_ENTRY";
+    jedData["display"] = manifestation.details?.dk5?.value.$;
   }
 
-  return {...consts.FAKE_CLASSIFICATION, ...jedData};
+  return { ...consts.FAKE_CLASSIFICATION, ...jedData };
 }
 
 function jedCatalogueCodes(manifestation) {
   return {
     nationalBibliography: (manifestation.details?.catalogcode?.value?.$).split(
-        ' '),
+      " "
+    ),
     otherCatalogues: [],
   };
 }
@@ -398,7 +409,8 @@ function jedAudience(manifestation) {
   const parsedAudience = parseAudienceAges(manifestation.details?.audience);
 
   return {
-    ...consts.FAKE_AUDIENCE, ...{
+    ...consts.FAKE_AUDIENCE,
+    ...{
       let: manifestation.details?.lettal?.value?.$,
       lix: manifestation.details?.lix?.value?.$,
       generalAudience: parsedAudience,
@@ -448,14 +460,15 @@ export async function resolveOnlineAccess(pid, context) {
   const manifestation = await context.datasources.openformat.load(pid);
 
   // online access with url
-  const data = getArray(manifestation, 'details.onlineAccess');
+  const data = getArray(manifestation, "details.onlineAccess");
   data.forEach((entry) => {
     if (entry.value) {
       result.push({
-        __typename: 'Draft_URL',
-        origin: (entry.value.link &&
-            parseOnlineUrlToOrigin(entry.value.link.$)) || '',
-        url: (entry.value.link && entry.value.link.$) || '',
+        __typename: "Draft_URL",
+        origin:
+          (entry.value.link && parseOnlineUrlToOrigin(entry.value.link.$)) ||
+          "",
+        url: (entry.value.link && entry.value.link.$) || "",
         //note: (entry.value.note && entry.value.note.$) || "",
         //accessType: (entry.accessUrlDisplay && entry.accessUrlDisplay.$) || "",
       });
@@ -464,11 +477,11 @@ export async function resolveOnlineAccess(pid, context) {
 
   // infomedia access
   let infomedia =
-      (manifestation &&
-          manifestation.details &&
-          manifestation.details.infomedia &&
-          manifestation.details.infomedia.id) ||
-      null;
+    (manifestation &&
+      manifestation.details &&
+      manifestation.details.infomedia &&
+      manifestation.details.infomedia.id) ||
+    null;
 
   if (infomedia) {
     if (!Array.isArray(infomedia)) {
@@ -479,8 +492,8 @@ export async function resolveOnlineAccess(pid, context) {
         console.log("FISK");
 
         result.push({
-          __typename: 'Draft_InfomediaService',
-          id: id.$ || '',
+          __typename: "Draft_InfomediaService",
+          id: id.$ || "",
         });
       }
     });
@@ -488,20 +501,20 @@ export async function resolveOnlineAccess(pid, context) {
 
   // werarchive
   let webarchive =
-      (manifestation &&
-          manifestation.details &&
-          manifestation.details.webarchive &&
-          manifestation.details.webarchive.$) ||
-      null;
+    (manifestation &&
+      manifestation.details &&
+      manifestation.details.webarchive &&
+      manifestation.details.webarchive.$) ||
+    null;
   if (webarchive) {
     const archives = await context.datasources.moreinfoWebarchive.load(
-        manifestation.admindata.pid.$,
+      manifestation.admindata.pid.$
     );
 
     archives.forEach((archive) => {
       if (archive.url) {
         result.push({
-          __typename: 'Draft_URL',
+          __typename: "Draft_URL",
           url: archive.url,
           origin: parseOnlineUrlToOrigin(archive.url),
         });
@@ -511,21 +524,20 @@ export async function resolveOnlineAccess(pid, context) {
 
   // Digital article service
   const articleIssn =
-      getArray(manifestation, 'details.articleIssn.value').map(
-          (entry) => entry.$,
-      )[0] ||
-      getArray(manifestation, 'details.issn.value').
-          map((entry) => entry.$)[0];
+    getArray(manifestation, "details.articleIssn.value").map(
+      (entry) => entry.$
+    )[0] ||
+    getArray(manifestation, "details.issn.value").map((entry) => entry.$)[0];
 
   if (articleIssn) {
     const journals = await context.datasources.statsbiblioteketJournals.load(
-        '',
+      ""
     );
-    const articleissn = articleIssn.replace(/[^a-z\d]/gi, '');
+    const articleissn = articleIssn.replace(/[^a-z\d]/gi, "");
     const hasJournal = journals && journals[articleissn];
     if (hasJournal) {
       result.push({
-        __typename: 'Draft_DigitalArticleService',
+        __typename: "Draft_DigitalArticleService",
         issn: articleissn,
         subscribed: true,
       });
@@ -535,8 +547,8 @@ export async function resolveOnlineAccess(pid, context) {
   // ILL
   const requestbutton = manifestation.admindata.requestButton.$;
   result.push({
-    __typename: 'Draft_Ill',
-    ill: requestbutton === 'true',
+    __typename: "Draft_InterLibraryLoan",
+    loanIsPossible: requestbutton === "true",
   });
 
   // Return array containing all types of access
@@ -552,10 +564,10 @@ export async function resolveOnlineAccess(pid, context) {
  * */
 function parseOnlineUrlToOrigin(url) {
   const parsedUrl = new URL(url);
-  if (parsedUrl['host'] === 'moreinfo.addi.dk') {
-    return 'DBC Webarkiv';
+  if (parsedUrl["host"] === "moreinfo.addi.dk") {
+    return "DBC Webarkiv";
   } else {
-    return (parsedUrl['host'] && parsedUrl['host']) || '';
+    return (parsedUrl["host"] && parsedUrl["host"]) || "";
   }
 }
 
@@ -569,14 +581,14 @@ function parseOnlineUrlToOrigin(url) {
 function _sortOnlineAccess(onlineAccess) {
   const specialSort = (a, b) => {
     // fjernleje should be on top
-    if (b.url && b.url.indexOf('filmstriben.dk/fjernleje') !== -1) {
+    if (b.url && b.url.indexOf("filmstriben.dk/fjernleje") !== -1) {
       return 1;
-    } else if (a.url && a.url.indexOf('filmstriben.dk/fjernleje') !== -1) {
+    } else if (a.url && a.url.indexOf("filmstriben.dk/fjernleje") !== -1) {
       return -1;
       // dfi is not a 'real' online url - sort low
-    } else if (b.url && b.url.indexOf('dfi.dk') !== -1) {
+    } else if (b.url && b.url.indexOf("dfi.dk") !== -1) {
       return -1;
-    } else if (a.url && a.url.indexOf('dfi.dk') !== -1) {
+    } else if (a.url && a.url.indexOf("dfi.dk") !== -1) {
       return 1;
     }
     return 0;
@@ -592,29 +604,34 @@ function _sortOnlineAccess(onlineAccess) {
  */
 function jedCreators(creators) {
   const jedData = creators.map((creator) => {
-    const role = creator.functionCode?.$ ? {
-      ...{functionCode: creator.functionCode?.$},
-      ...{
-        function: {
-          ...consts.FAKE_TRANSLATION,
+    const role = creator.functionCode?.$
+      ? {
+          ...{ functionCode: creator.functionCode?.$ },
           ...{
-            plural: creator.functionPlural?.$,
-            singular: creator.functionSingular?.$,
+            function: {
+              ...consts.FAKE_TRANSLATION,
+              ...{
+                plural: creator.functionPlural?.$,
+                singular: creator.functionSingular?.$,
+              },
+            },
           },
-        },
-      },
-    } : false;
+        }
+      : false;
 
     return {
       ...consts.FAKE_PERSON,
       ...{
         display: creator.name?.$,
         nameSort: creator.name?.$,
-        roles: role ? [
-          {
-            ...consts.FAKE_ROLE, ...role,
-          },
-        ] : [],
+        roles: role
+          ? [
+              {
+                ...consts.FAKE_ROLE,
+                ...role,
+              },
+            ]
+          : [],
       },
     };
   });

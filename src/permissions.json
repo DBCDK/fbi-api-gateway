@@ -3,6 +3,7 @@
     "allowRootFields": [
       "draft",
       "manifestation",
+      "manifestations",
       "search",
       "work",
       "works",

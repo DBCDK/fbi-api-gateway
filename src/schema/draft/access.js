@@ -1,11 +1,16 @@
-import {getBaseUrl, resolveOnlineAccess} from '../../utils/utils';
-import * as consts from './FAKE';
+import {
+  getBaseUrl,
+  getDigitalArticleAccessStatus,
+  getInfomediaAccessStatus,
+  resolveOnlineAccess,
+} from "../../utils/utils";
+import * as consts from "./FAKE";
 
 export const typeDef = `
 enum Draft_AccessTypeCode {
-  FYSISK
+  PHYSICAL
   ONLINE
-  UKENDT
+  NOT_SPECIFIED
 }
 type Draft_AccessType {
   display: String!
@@ -22,7 +27,7 @@ type Draft_Ereol {
   """
   url: String!
 
-      """
+  """
   Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
   """
   canAlwaysBeLoaned: Boolean!
@@ -38,17 +43,22 @@ type Draft_URL {
   """
   url: String!
 }
-type Draft_Ill {
+type Draft_InterLibraryLoan {
   """
   Is true when manifestation can be borrowed via ill
   """
-  ill: Boolean!
+  loanIsPossible: Boolean!
 }
 type Draft_InfomediaService {
   """
   Infomedia ID which can be used to fetch article through Infomedia Service
   """
   id: String!
+
+  """
+  Can the current user obtain the article?
+  """
+  accessStatus: Draft_AccessStatus!
 }
 type Draft_DigitalArticleService {
   """
@@ -56,12 +66,23 @@ type Draft_DigitalArticleService {
   """
   issn: String!
 
-      """
-  Is true when access token belongs to a user whose municipality of residence is subscribed to Digital Article Service
   """
-  subscribed: Boolean!
+  Can the current user obtain the article?
+  """
+  accessStatus: Draft_AccessStatus!
 }
-union Draft_Access = Draft_URL | Draft_Ereol | Draft_Ill | Draft_InfomediaService | Draft_DigitalArticleService
+union Draft_Access = Draft_URL | Draft_Ereol | Draft_InterLibraryLoan | Draft_InfomediaService | Draft_DigitalArticleService
 `;
 
-export const resolvers = {};
+export const resolvers = {
+  Draft_InfomediaService: {
+    accessStatus(parent, args, context, info) {
+      return getInfomediaAccessStatus(context);
+    },
+  },
+  Draft_DigitalArticleService: {
+    accessStatus(parent, args, context, info) {
+      return getDigitalArticleAccessStatus(context);
+    },
+  },
+};

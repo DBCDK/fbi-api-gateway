@@ -79,7 +79,7 @@ type Draft_InfomediaReview implements Draft_Review {
   """
   Can the current user obtain the article?
   """
-  accessStatus: Draft_InfomediaAccessStatus!
+  accessStatus: Draft_AccessStatus!
 }
 
 type Draft_LibrariansReview implements Draft_Review {
