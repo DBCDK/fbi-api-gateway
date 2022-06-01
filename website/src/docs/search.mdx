@@ -13,7 +13,9 @@ useful where one does not know if the query matches a title, crator or subject.
   query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
       search(q: $q) {
         works(offset: $offset, limit: $limit) {
-          title
+          titles {
+            main
+          }
         }
       }
     }`}
@@ -39,7 +41,9 @@ The example below returns the second page of the search result.
       search(q: $q) {
         hitcount
         works(offset: $offset, limit: $limit) {
-          title
+          titles {
+            main
+          }
         }
       }
     }`}
@@ -59,13 +63,16 @@ This examples searches for _hopper_ as title, _hesteavl_ as subject, and _carl_ 
     search(q: $q) {
       hitcount
       works(offset: $offset, limit: $limit) {
-        title
+        titles {
+          main
+        }
         creators {
-          name
+          display
         }
         subjects {
-          type
-          value
+          dbcVerified {
+            display
+          }
         }
       }
     }

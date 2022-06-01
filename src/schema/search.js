@@ -1,4 +1,5 @@
 import translations from "../utils/translations.json";
+import { resolveWork } from "../utils/utils";
 
 /**
  * define a searchquery
@@ -120,7 +121,7 @@ type SearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int! limit: PaginationLimit!): [Work!]!
+  works(offset: Int! limit: PaginationLimit!): [Draft_Work!]!
   
   """
   Make sure only to fetch this when needed
@@ -166,14 +167,9 @@ export const resolvers = {
       });
 
       const expanded = await Promise.all(
-        res.result.map(async ({ workid }) => {
-          return (
-            await context.datasources.workservice.load({
-              workId: workid,
-              profile: context.profile,
-            })
-          )?.work;
-        })
+        res.result.map(async ({ workid }) =>
+          resolveWork({ id: workid }, context)
+        )
       );
 
       return expanded.filter((work) => !!work);
