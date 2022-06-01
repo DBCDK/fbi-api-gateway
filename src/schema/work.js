@@ -111,9 +111,7 @@ export const resolvers = {
       return parent.workId;
     },
     manifestations(parent, args, context, info) {
-      const fisk = flattenRecords(parent);
-      console.log(fisk);
-      return fisk;
+      return flattenRecords(parent);
     },
     materialTypes(parent, args, context, info) {
       return parseMaterialTypes(flattenRecords(parent));

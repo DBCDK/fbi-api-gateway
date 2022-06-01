@@ -375,7 +375,7 @@ export async function resolveWork(args, context) {
   return { ...consts.FAKE_WORK, ...realData };
 }
 
-async function resolveAllManifestations(pids, context){
+export async function resolveAllManifestations(pids, context){
   const responses = await Promise.all(pids.map(
       (pid) => resolveManifestation({pid:pid}, context)
   ));

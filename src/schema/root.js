@@ -6,11 +6,12 @@
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import {
+  resolveAllManifestations,
   resolveBorrowerCheck,
   resolveManifestation,
   resolveOnlineAccess,
   resolveWork,
-} from "../utils/utils";
+} from '../utils/utils';
 import translations from "../utils/translations.json";
 import * as consts from "./draft/FAKE";
 import { workToJed } from "./draft/draft_utils";
@@ -142,7 +143,17 @@ export const resolvers = {
           const manifestation = await context.datasources.openformat.load(
             id.replace("work-of:", "")
           );
-          const realData = workToJed(res, manifestation, args.language, context);
+
+          const allPids = res?.work?.groups.map((group) => {
+            return (
+                group.records.find((record) => record.id.startsWith("870970-basis"))?.id ||
+                group.records[0].id
+            );
+          });
+
+          const allManifestations = await resolveAllManifestations(allPids, context);
+
+          const realData = workToJed(res, manifestation,allManifestations, args.language);
 
           return { ...consts.FAKE_WORK, ...realData };
         })
