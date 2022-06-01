@@ -1,3 +1,5 @@
+import {resolveOnlineAccess} from './draft_utils_manifestations';
+
 export const typeDef = `
 type Draft_Language {
   """

@@ -142,7 +142,8 @@ export const resolvers = {
           const manifestation = await context.datasources.openformat.load(
             id.replace("work-of:", "")
           );
-          const realData = workToJed(res, manifestation, args.language);
+          const realData = workToJed(res, manifestation, args.language, context);
+
           return { ...consts.FAKE_WORK, ...realData };
         })
       );

@@ -361,8 +361,26 @@ export async function resolveWork(args, context) {
   const manifestation = await context.datasources.openformat.load(
     id.replace("work-of:", "")
   );
-  const realData = workToJed(res, manifestation, args.language);
+
+  const allPids = res?.work?.groups.map((group) => {
+    return (
+        group.records.find((record) => record.id.startsWith("870970-basis"))?.id ||
+        group.records[0].id
+    );
+  });
+
+  const allManifestations = await resolveAllManifestations(allPids, context);
+
+  const realData = workToJed(res, manifestation, allManifestations, args.language);
   return { ...consts.FAKE_WORK, ...realData };
+}
+
+async function resolveAllManifestations(pids, context){
+  const responses = await Promise.all(pids.map(
+      (pid) => resolveManifestation({pid:pid}, context)
+  ));
+
+  return responses;
 }
 
 export async function resolveManifestation(args, context) {
