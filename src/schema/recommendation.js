@@ -1,7 +1,9 @@
+import {resolveManifestation} from '../utils/utils';
+
 export const typeDef = `
 type Recommendation {
   work: Work!
-  manifestation: WorkManifestation!
+  manifestation: Draft_Manifestation!
   reader: String
   value: Float
 }`;
@@ -11,8 +13,8 @@ export const resolvers = {
     value(parent) {
       return parent.value;
     },
-    manifestation(parent) {
-      return { id: parent.pid };
+    manifestation(parent, context) {
+      return resolveManifestation({pid: parent.pid}, context);
     },
     async work(parent, args, context, info) {
       const res = await context.datasources.workservice.load({

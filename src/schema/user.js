@@ -3,6 +3,8 @@
  *
  */
 
+import {resolveManifestation} from '../utils/utils';
+
 /**
  * The Profile type definition
  */
@@ -21,7 +23,7 @@ type User {
 type Loan {
   dueDate:	DateTime!
   loanId:	String!
-  manifestation: WorkManifestation!
+  manifestation: Draft_Manifestation!
 }
 enum OrderStatus {
   ACTIVE
@@ -38,7 +40,7 @@ type Order {
   pickUpBranch: Branch!
   orderDate: DateTime!
   pickUpExpiryDate: DateTime!
-  manifestation: WorkManifestation!
+  manifestation: Draft_Manifestation!
 }
 type Debt {
   amount: String!
@@ -133,12 +135,12 @@ export const resolvers = {
   },
   Loan: {
     manifestation(parent, args, context, info) {
-      return { id: `870970-basis:${parent.titleId}` };
+      return resolveManifestation({pid: `870970-basis:${parent.titleId}`}, context);
     },
   },
   Order: {
     manifestation(parent, args, context, info) {
-      return { id: `870970-basis:${parent.titleId}` };
+      return resolveManifestation({pid: `870970-basis:${parent.titleId}`}, context);
     },
     async pickUpBranch(parent, args, context, info) {
       const res = await context.datasources.branch.load({

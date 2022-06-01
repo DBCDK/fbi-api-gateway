@@ -32,7 +32,7 @@ export const typeDef = `
     materialType: String!
     cover: Cover!
     localizations: Localizations
-    manifestations: [WorkManifestation!]!
+    manifestations: [Draft_Manifestation!]!
   }
   type Work {
     title: String
@@ -41,7 +41,7 @@ export const typeDef = `
     creators: [Creator!]!
     cover: Cover!
     id: String!
-    manifestations: [WorkManifestation!]!
+    manifestations: [Draft_Manifestation!]!
     materialTypes: [MaterialType!]!
     path: [String!]!
     reviews: [Review!]!
