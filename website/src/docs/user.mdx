@@ -1,0 +1,25 @@
+# BIBDK User examples
+This is bibdk specific stuff! :blush: you need to have an access token for a logged in user.
+
+## fetch user loans 
+with info for loaned manifestations
+
+<InlineGraphiQL 
+  query={
+    `{
+    user {
+    name
+      loans {
+      loanId
+        manifestation {
+          pid
+          titles {
+            main
+          }
+        }
+      }
+    }
+    }`
+  } 
+  
+/>
