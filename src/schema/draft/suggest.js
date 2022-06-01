@@ -43,7 +43,6 @@ export const resolvers = {
         ...parent,
         profile: context.profile,
       });
-      console.log(parent, context.profile, res);
       return res;
     },
   },

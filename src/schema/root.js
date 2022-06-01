@@ -11,7 +11,7 @@ import {
   resolveManifestation,
   resolveOnlineAccess,
   resolveWork,
-} from '../utils/utils';
+} from "../utils/utils";
 import translations from "../utils/translations.json";
 import * as consts from "./draft/FAKE";
 import { workToJed } from "./draft/draft_utils";
@@ -40,7 +40,7 @@ type Query {
     work type to include in the result
     Note: Is only supported in the bibdk suggester
     """
-    workType: WorkType
+    workType: Draft_WorkType
 
     """
     suggest type to include in result
@@ -159,14 +159,23 @@ export const resolvers = {
 
           const allPids = res?.work?.groups.map((group) => {
             return (
-                group.records.find((record) => record.id.startsWith("870970-basis"))?.id ||
-                group.records[0].id
+              group.records.find((record) =>
+                record.id.startsWith("870970-basis")
+              )?.id || group.records[0].id
             );
           });
 
-          const allManifestations = await resolveAllManifestations(allPids, context);
+          const allManifestations = await resolveAllManifestations(
+            allPids,
+            context
+          );
 
-          const realData = workToJed(res, manifestation,allManifestations, args.language);
+          const realData = workToJed(
+            res,
+            manifestation,
+            allManifestations,
+            args.language
+          );
 
           return { ...consts.FAKE_WORK, ...realData };
         })

@@ -16,7 +16,7 @@ type Draft_Query {
     work type to include in the result
     Note: Is only supported in the bibdk suggester
     """
-    workType: WorkType
+    workType: Draft_WorkType
 
     """
     suggest type to include in result

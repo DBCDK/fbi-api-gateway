@@ -35,7 +35,7 @@ type Draft_GeneralSeries {
   """
   Works in the series
   """
-  works: [Work!]!
+  works: [Draft_Work!]!
 }
 type Draft_PopularSeries {
   """
@@ -66,7 +66,7 @@ type Draft_PopularSeries {
   """
   Works in the series
   """
-  works: [Work!]!
+  works: [Draft_Work!]!
 }
 type Draft_SeriesContainer {
   all: [Draft_GeneralSeries!]!
