@@ -17,6 +17,7 @@
 
 import * as consts from './FAKE';
 import {getArray} from '../../utils/utils';
+import {collectSubFields} from '@graphql-tools/utils';
 
 /**
  * convert manifestion data to JED
@@ -475,9 +476,11 @@ export async function resolveOnlineAccess(pid, context) {
     }
     infomedia.forEach((id) => {
       if (id.$) {
+        console.log("FISK");
+
         result.push({
           __typename: 'Draft_InfomediaService',
-          infomediaId: id.$ || '',
+          id: id.$ || '',
         });
       }
     });
