@@ -40,7 +40,6 @@ export async function load({ articleId, userId, municipalityAgencyId }) {
     const html =
       res?.body?.getArticleResponse?.getArticleResponseDetails?.[0]?.imArticle
         ?.$;
-
     if (html) {
       const details = getInfomediaDetails({ html });
       if (!details.text) {

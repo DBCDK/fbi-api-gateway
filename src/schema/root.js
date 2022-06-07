@@ -58,7 +58,6 @@ type Query {
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
-  infomediaContent(pid: String!): [InfomediaContent]
   infomedia(id: String!): Draft_InfomediaResponse!
   session: Session
   howru:String
