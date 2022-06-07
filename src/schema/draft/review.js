@@ -3,6 +3,7 @@ import {
   getArray,
   getBaseUrl,
   getInfomediaAccessStatus,
+  resolveWork,
 } from "../../utils/utils";
 import { workToJed } from "./draft_utils";
 import * as consts from "./FAKE";
@@ -169,23 +170,8 @@ export const resolvers = {
   LibrariansReviewSection: {
     async work(parent, args, context, info) {
       if (parent.faust) {
-        // Most of this could be resolved from within the work resolvers work
-        const id = (await context.datasources.faust.load(parent.faust)).id;
-        const res = await context.datasources.workservice.load({
-          workId: id,
-          profile: context.profile,
-        });
-        if (!res) {
-          return null;
-        }
-        const manifestation = await context.datasources.openformat.load(
-          id.replace("work-of:", "")
-        );
-        const realData = workToJed(res, manifestation, args.language);
-        return { ...consts.FAKE_WORK, ...realData };
+        return resolveWork({ faust: parent.faust }, context);
       }
-
-      return null;
     },
   },
   Draft_Work: {
