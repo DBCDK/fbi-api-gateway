@@ -8,27 +8,22 @@ export const FAKE_GENERAL_SERIES = {
     display: "number one",
     number: 1,
   },
-  works: [],
+  isPopular: false,
 };
 
-export const FAKE_SERIES_CONTAINER = {
-  all: [FAKE_GENERAL_SERIES],
-  popular: [
-    {
-      title: "Some Series",
-      alternativeTitles: [
-        "Some Series, parallel title",
-        "Some Series, another parallel title",
-      ],
-      numberInSeries: {
-        display: "number one",
-        number: 1,
-      },
-      readThisFirst: true,
-      readThisWhenever: false,
-      works: [],
-    },
+export const FAKE_POPULAR_SERIES = {
+  title: "Some Series",
+  alternativeTitles: [
+    "Some Series, parallel title",
+    "Some Series, another parallel title",
   ],
+  numberInSeries: {
+    display: "number one",
+    number: 1,
+  },
+  isPopular: true,
+  readThisFirst: true,
+  readThisWhenever: false,
 };
 
 export const FAKE_TRANSLATION = {
@@ -311,7 +306,7 @@ export const FAKE_MANIFESTATION_1 = {
   publicationYear: FAKE_PUBLICATIONYEAR,
   publisher: ["Lægeforeningen"],
   recordCreationDate: "19830414",
-  series: FAKE_SERIES_CONTAINER,
+  series: [FAKE_POPULAR_SERIES, FAKE_GENERAL_SERIES],
   shelfmark: FAKE_SHELFMARK,
   source: ["some source"],
   subjects: FAKE_SUBJECTS,
@@ -353,7 +348,7 @@ export const FAKE_WORK = {
   dk5MainEntry: FAKE_DK5MAINENTRY,
   fictionNonfiction: { display: "skønlitteratur", code: "FICTION" },
   materialTypes: FAKE_MATERIALTYPE,
-  series: FAKE_SERIES_CONTAINER,
+  series: [FAKE_POPULAR_SERIES, FAKE_GENERAL_SERIES],
   universe: { title: "Some Universe" },
   genreAndForm: ["some genre"],
   workTypes: ["LITERATURE"],

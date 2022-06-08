@@ -86,7 +86,12 @@ type Work {
   """
   Series for this work
   """
-  series: SeriesContainer
+  series: [Series!]!
+
+  """
+  Members of a series that this work is part of
+  """
+  seriesMembers: [Work!]!
 
   """
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe

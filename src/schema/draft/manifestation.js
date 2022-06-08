@@ -302,7 +302,7 @@ type HostPublication {
   """
   Series of the publication this manifestation can be found in
   """
-  series: GeneralSeries
+  series: Series
 
   """
   The publication year of the publication this manifestation can be found in
@@ -579,7 +579,7 @@ type Manifestation {
   """
   Series for this work
   """
-  series: SeriesContainer
+  series: [Series!]!
 
   """
   Information about on which shelf in the library this manifestation can be found

@@ -1,3 +1,5 @@
+import { resolveWork } from "../../utils/utils";
+
 export const typeDef = `
 type Universe {
   """
@@ -16,28 +18,7 @@ type NumberInSeries {
   """
   number: Int!
 }
-type GeneralSeries {
-  """
-  The title of the series
-  """
-  title: String!
-
-  """
-  A parallel title to the main 'title' of the series, in a different language
-  """
-  parallelTitles: [String!]!
-
-  """
-  The number in the series as text quotation and a number
-  """
-  numberInSeries: NumberInSeries
-
-  """
-  Works in the series
-  """
-  works: [Work!]!
-}
-type PopularSeries {
+type Series {
   """
   The title of the series
   """
@@ -47,6 +28,11 @@ type PopularSeries {
   A alternative title to the main 'title' of the series
   """
   alternativeTitles: [String!]!
+
+  """
+  A parallel title to the main 'title' of the series, in a different language
+  """
+  parallelTitles: [String!]!
 
   """
   The number in the series as text qoutation and a number
@@ -64,14 +50,31 @@ type PopularSeries {
   readThisWhenever: Boolean
 
   """
-  Works in the series
+  Whether this is a popular series or general series
   """
-  works: [Work!]!
-}
-type SeriesContainer {
-  all: [GeneralSeries!]!
-  popular: [PopularSeries!]!
+  isPopular: Boolean
 }
 `;
 
-export const resolvers = {};
+export const resolvers = {
+  Work: {
+    async seriesMembers(parent, args, context, info) {
+      const data = await context.datasources.series.load({
+        workId: parent.workId,
+        profile: context.profile,
+      });
+
+      if (data && data.series) {
+        const works = await Promise.all(
+          data.series.slice(0, 100).map(async (id) => {
+            return resolveWork({ id }, context);
+          })
+        );
+
+        return works.filter((work) => !!work);
+      }
+
+      return [];
+    },
+  },
+};
