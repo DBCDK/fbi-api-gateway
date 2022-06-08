@@ -5,22 +5,17 @@ test("localizations - get for a number of pids", async () => {
   const result = await performTestQuery({
     query: `
           query  {
-            work(id: "work-of:870970-basis:47051649") {
-              materialTypes {          
-                localizations{
-                  count
-                  agencies{
-                  agencyId
-                    holdingItems{
-                      localizationPid
-                      localIdentifier
-                      codes
-                    }
-                  }
-                }
+          localizations(pids: ["870970-basis:29433909"]) {
+            count
+            agencies {
+              agencyId
+              holdingItems {
+                localizationPid
+                localIdentifier
               }
             }
           }
+        }
         `,
     variables: {},
     context: { datasources: createMockedDataLoaders() },

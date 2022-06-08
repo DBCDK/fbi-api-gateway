@@ -796,6 +796,9 @@ export function load(pid) {
         creationDate: {
           $: "2016-07-09",
         },
+        pid: {
+          $: "870970-basis:29433909",
+        },
       },
       details: {
         abstract: {
