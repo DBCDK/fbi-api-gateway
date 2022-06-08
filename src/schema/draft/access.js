@@ -54,35 +54,14 @@ type InfomediaService {
   Infomedia ID which can be used to fetch article through Infomedia Service
   """
   id: String!
-
-  """
-  Can the current user obtain the article?
-  """
-  accessStatus: AccessStatus!
 }
 type DigitalArticleService {
   """
   Issn which can be used to order article through Digital Article Service
   """
   issn: String!
-
-  """
-  Can the current user obtain the article?
-  """
-  accessStatus: AccessStatus!
 }
 union Access = URLE | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 `;
 
-export const resolvers = {
-  InfomediaService: {
-    accessStatus(parent, args, context, info) {
-      return getInfomediaAccessStatus(context);
-    },
-  },
-  DigitalArticleService: {
-    accessStatus(parent, args, context, info) {
-      return getDigitalArticleAccessStatus(context);
-    },
-  },
-};
+export const resolvers = {};

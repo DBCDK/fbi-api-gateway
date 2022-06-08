@@ -4,6 +4,7 @@ export const FAKE_GENERAL_SERIES = {
     "Some Series, parallel title",
     "Some Series, another parallel title",
   ],
+  alternativeTitles: [],
   numberInSeries: {
     display: "number one",
     number: 1,
@@ -17,6 +18,7 @@ export const FAKE_POPULAR_SERIES = {
     "Some Series, parallel title",
     "Some Series, another parallel title",
   ],
+  parallelTitles: [],
   numberInSeries: {
     display: "number one",
     number: 1,
@@ -252,7 +254,7 @@ export const FAKE_MANIFESTATION_1 = {
   titles: FAKE_MANIFESTATION_TITLE,
   abstract: ["Some abstract ..."],
   accessTypes: [
-    { display: "fysisk", code: "FYSISK" },
+    { display: "fysisk", code: "PHYSICAL" },
     { display: "online", code: "ONLINE" },
   ],
   access: FAKE_ACCESS,

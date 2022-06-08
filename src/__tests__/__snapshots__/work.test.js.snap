@@ -1,0 +1,199 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Work Query all fields 1`] = `
+Object {
+  "data": Object {
+    "work": Object {
+      "abstract": Array [
+        "Selvbiografisk roman",
+      ],
+      "creators": Array [
+        Object {
+          "display": "karl ove knausgård",
+          "nameSort": "karl ove knausgård",
+        },
+      ],
+      "dk5MainEntry": Object {
+        "code": "some dk5 code",
+        "display": "some dk5 display",
+      },
+      "fictionNonfiction": Object {
+        "code": "FICTION",
+        "display": "skønlitteratur",
+      },
+      "genreAndForm": Array [],
+      "mainLanguages": Array [],
+      "manifestations": Object {
+        "all": Array [
+          Object {
+            "pid": "800010-katalog:99121962154805763__1",
+          },
+          Object {
+            "pid": "300101-katalog:28486006",
+          },
+          Object {
+            "pid": "870970-basis:29433909",
+          },
+        ],
+        "first": Object {
+          "pid": "300101-katalog:28486006",
+        },
+        "latest": Object {
+          "pid": "870970-basis:29433909",
+        },
+      },
+      "materialTypes": Array [
+        Object {
+          "general": "bøger",
+          "specific": "Bog",
+        },
+        Object {
+          "general": "bøger",
+          "specific": "Ebog",
+        },
+      ],
+      "series": Array [
+        Object {
+          "alternativeTitles": Array [
+            "Some Series, parallel title",
+            "Some Series, another parallel title",
+          ],
+          "isPopular": true,
+          "numberInSeries": Object {
+            "display": "number one",
+            "number": 1,
+          },
+          "parallelTitles": Array [],
+          "readThisFirst": true,
+          "readThisWhenever": false,
+          "title": "Some Series",
+        },
+        Object {
+          "alternativeTitles": Array [],
+          "isPopular": false,
+          "numberInSeries": Object {
+            "display": "number one",
+            "number": 1,
+          },
+          "parallelTitles": Array [
+            "Some Series, parallel title",
+            "Some Series, another parallel title",
+          ],
+          "readThisFirst": null,
+          "readThisWhenever": null,
+          "title": "Some Series",
+        },
+      ],
+      "seriesMembers": Array [],
+      "subjects": Object {
+        "all": Array [
+          Object {
+            "display": "krimi",
+          },
+          Object {
+            "display": "krimi",
+          },
+          Object {
+            "display": "småbørnsbog",
+          },
+        ],
+        "dbcVerified": Array [],
+      },
+      "titles": Object {
+        "full": Array [
+          "Min kamp : roman. 1. bog",
+        ],
+        "main": Array [
+          "min kamp",
+        ],
+        "original": Array [
+          "Some Title Origintal",
+        ],
+        "parallel": Array [
+          "Parallel Title 1",
+          "Parallel Title 2",
+        ],
+        "sort": "Some Title Sort",
+        "standard": "Some Title Standard",
+        "translated": Array [
+          "Oversat titel",
+        ],
+      },
+      "universe": Object {
+        "title": "Some Universe",
+      },
+      "workId": "work-of:870970-basis:28329490",
+      "workTypes": Array [
+        "LITERATURE",
+      ],
+      "workYear": "1988",
+    },
+  },
+}
+`;
+
+exports[`Work fetch by faust 1`] = `
+Object {
+  "data": Object {
+    "work": Object {
+      "workId": "work-of:870970-basis:28329490",
+    },
+  },
+}
+`;
+
+exports[`Work fetch by id 1`] = `
+Object {
+  "data": Object {
+    "work": Object {
+      "workId": "work-of:870970-basis:28329490",
+    },
+  },
+}
+`;
+
+exports[`Work fetch by pid 1`] = `
+Object {
+  "data": Object {
+    "work": Object {
+      "workId": "work-of:870970-basis:28329490",
+    },
+  },
+}
+`;
+
+exports[`Work fetch multi by faust 1`] = `
+Object {
+  "data": Object {
+    "works": Array [
+      Object {
+        "workId": "work-of:870970-basis:28329490",
+      },
+    ],
+  },
+}
+`;
+
+exports[`Work fetch multi by id 1`] = `
+Object {
+  "data": Object {
+    "works": Array [
+      Object {
+        "workId": "work-of:870970-basis:28329490",
+      },
+    ],
+  },
+}
+`;
+
+exports[`Work fetch multi by pid 1`] = `
+Object {
+  "data": Object {
+    "works": Array [
+      Object {
+        "workId": "work-of:870970-basis:28329490",
+      },
+    ],
+  },
+}
+`;

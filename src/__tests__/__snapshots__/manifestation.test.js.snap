@@ -1,0 +1,360 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Manifestation Query all fields 1`] = `
+Object {
+  "data": Object {
+    "manifestation": Object {
+      "abstract": Array [
+        "Den ellers så pæne familie Didriksen går straks i aktion som detektiver, da det viser sig, at deres ret så usædvanlige hund er blevet kidnappet af en mistænkelig iskagemand!",
+      ],
+      "access": Array [
+        Object {
+          "__typename": "InterLibraryLoan",
+          "loanIsPossible": true,
+        },
+      ],
+      "accessTypes": Array [
+        Object {
+          "code": "PHYSICAL",
+          "display": "fysisk",
+        },
+        Object {
+          "code": "ONLINE",
+          "display": "online",
+        },
+      ],
+      "audience": Object {
+        "ages": Array [
+          Object {
+            "begin": 10,
+            "display": "10-14",
+            "end": 14,
+          },
+        ],
+        "childrenOrAdults": Array [
+          Object {
+            "code": "FOR_CHILDREN",
+            "display": "til børn",
+          },
+        ],
+        "generalAudience": Array [],
+        "let": null,
+        "libraryRecommendation": "some library recommendation",
+        "lix": null,
+        "primaryTarget": Array [
+          "Some primary target",
+        ],
+        "schoolUse": Array [
+          Object {
+            "code": "FOR_SCHOOL_USE",
+            "display": "til skolebrug",
+          },
+        ],
+      },
+      "catalogueCodes": Object {
+        "nationalBibliography": Array [
+          "DLF201207",
+          "BKM201207",
+        ],
+        "otherCatalogues": Array [],
+      },
+      "classifications": Array [
+        Object {
+          "code": "86-096",
+          "display": "Skønlitteratur",
+          "entryType": "NATIONAL_BIBLIOGRAPHY_ENTRY",
+          "system": "DK5",
+        },
+      ],
+      "contributors": Array [],
+      "contributorsFromDescription": Array [
+        "på dansk ved Vivi Berendt",
+      ],
+      "creators": Array [
+        Object {
+          "display": "Kim Fupz Ꜳkeson",
+          "nameSort": "Kim Fupz Ꜳkeson",
+        },
+        Object {
+          "display": "Peter Frödin",
+          "nameSort": "Peter Frödin",
+        },
+      ],
+      "creatorsFromDescription": Array [
+        "tekst af William Warren",
+      ],
+      "edition": Object {
+        "contributors": Array [],
+        "edition": "1. udgave",
+        "publicationYear": Object {
+          "display": "2020",
+          "endYear": null,
+          "frequency": null,
+          "year": 2020,
+        },
+        "summary": "1. udgave, Kronstork, 2020",
+      },
+      "genreAndForm": Array [],
+      "hostPublication": Object {
+        "creator": "Some Creator",
+        "isbn": "some isbn",
+        "issn": "",
+        "issue": "Årg. 97, nr. 10 (2014)",
+        "notes": Array [
+          "a note",
+        ],
+        "pages": "",
+        "publisher": "Dansk veterinærtidsskrift",
+        "series": Object {
+          "title": "Some Series",
+        },
+        "summary": "I: Dansk veterinærtidsskrift, Årg. 97, nr. 10 (2014), 2014",
+        "title": "Dansk veterinærtidsskrift",
+        "year": Object {
+          "display": "",
+        },
+      },
+      "identifiers": Array [
+        Object {
+          "type": "ISBN",
+          "value": "1234567891234",
+        },
+      ],
+      "languages": Object {
+        "abstract": Array [
+          Object {
+            "display": "dansk",
+            "isoCode": "dan",
+          },
+        ],
+        "main": Array [],
+        "original": Array [
+          Object {
+            "display": "dansk",
+            "isoCode": "dan",
+          },
+        ],
+        "parallel": Array [
+          Object {
+            "display": "dansk",
+            "isoCode": "dan",
+          },
+        ],
+        "spoken": Array [],
+        "subtitles": Array [],
+      },
+      "latestPrinting": Object {
+        "printing": "11. oplag",
+        "publicationYear": Object {
+          "display": "2020",
+        },
+        "summary": "11. oplag, 2020",
+      },
+      "manifestationParts": Object {
+        "heading": "",
+        "parts": Array [],
+        "type": "MUSIC_TRACKS",
+      },
+      "materialTypes": Array [
+        Object {
+          "general": "Lydbog (cd)",
+          "specific": "Lydbog (cd)",
+        },
+      ],
+      "notes": Array [],
+      "physicalDescriptions": Array [
+        Object {
+          "accompanyingMaterial": null,
+          "additionalDescription": null,
+          "extent": "1 dvd-rom",
+          "numberOfPages": null,
+          "numberOfUnits": null,
+          "playingTime": null,
+          "requirements": "Nødvendigt udstyr Xbox One. - Med multiplayerfunktion",
+          "size": null,
+          "summary": "1 cd i 1 mappe (67 min.)",
+          "technicalInformation": "Xbox One",
+        },
+      ],
+      "pid": "870970-basis:29433909",
+      "publicationYear": Object {
+        "display": "1839",
+      },
+      "publisher": Array [
+        "Kronstork",
+      ],
+      "relatedPublications": Array [
+        Object {
+          "heading": "Tidligere titel:",
+          "isbn": null,
+          "issn": "0105-0508",
+          "title": Array [
+            "Yngre læger",
+          ],
+          "url": null,
+          "urlText": null,
+        },
+        Object {
+          "heading": "Udgave i andet medium: Også på cd-rom",
+          "isbn": null,
+          "issn": "1399-4174",
+          "title": Array [
+            "Ugeskrift for læger",
+          ],
+          "url": null,
+          "urlText": null,
+        },
+      ],
+      "series": Array [
+        Object {
+          "alternativeTitles": Array [
+            "Some Series, parallel title",
+            "Some Series, another parallel title",
+          ],
+          "isPopular": true,
+          "numberInSeries": Object {
+            "display": "number one",
+            "number": 1,
+          },
+          "parallelTitles": Array [],
+          "readThisFirst": true,
+          "readThisWhenever": false,
+          "title": "Some Series",
+        },
+        Object {
+          "alternativeTitles": Array [],
+          "isPopular": false,
+          "numberInSeries": Object {
+            "display": "number one",
+            "number": 1,
+          },
+          "parallelTitles": Array [
+            "Some Series, parallel title",
+            "Some Series, another parallel title",
+          ],
+          "readThisFirst": null,
+          "readThisWhenever": null,
+          "title": "Some Series",
+        },
+      ],
+      "shelfmark": Object {
+        "postfix": "64.64",
+        "shelfmark": "gray",
+      },
+      "source": Array [
+        "some source",
+      ],
+      "subjects": Object {
+        "all": Array [
+          Object {
+            "display": "sjove bøger",
+          },
+          Object {
+            "display": "krimi",
+          },
+          Object {
+            "display": "hunde",
+          },
+          Object {
+            "display": "bortførelse",
+          },
+        ],
+        "dbcVerified": Array [
+          Object {
+            "display": "Some fictional subject",
+          },
+          Object {
+            "display": "1950-1980",
+          },
+          Object {
+            "display": "Jens Jensen",
+          },
+          Object {
+            "display": "Some Corporation",
+          },
+        ],
+      },
+      "tableOfContents": Object {
+        "content": null,
+        "heading": "Indhold",
+        "listOfContent": Array [
+          Object {
+            "content": "Jeg bor i Hvidovre ",
+          },
+          Object {
+            "content": " Jeg fremlejer en lejlighed ",
+          },
+          Object {
+            "content": " Modsætningen mellem",
+          },
+        ],
+      },
+      "titles": Object {
+        "alternative": Array [
+          "Some Title: Alternative",
+        ],
+        "full": Array [],
+        "identifyingAddition": "Indlæst af Jens Jensen",
+        "main": Array [
+          "Didriksen detektiverne",
+        ],
+        "original": Array [],
+        "parallel": Array [
+          "Parallel Title 1",
+          "Parallel Title 2",
+        ],
+        "sort": "Some Title Sort",
+        "standard": "Some Title Standard",
+        "translated": Array [
+          "En Oversat Titel",
+        ],
+      },
+      "volume": null,
+    },
+  },
+}
+`;
+
+exports[`Manifestation fetch by faust 1`] = `
+Object {
+  "data": Object {
+    "manifestation": Object {
+      "pid": "870970-basis:29433909",
+    },
+  },
+}
+`;
+
+exports[`Manifestation fetch by pid 1`] = `
+Object {
+  "data": Object {
+    "manifestation": Object {
+      "pid": "870970-basis:29433909",
+    },
+  },
+}
+`;
+
+exports[`Manifestation fetch multi by faust 1`] = `
+Object {
+  "data": Object {
+    "manifestations": Array [
+      Object {
+        "pid": "870970-basis:29433909",
+      },
+    ],
+  },
+}
+`;
+
+exports[`Manifestation fetch multi by pid 1`] = `
+Object {
+  "data": Object {
+    "manifestations": Array [
+      Object {
+        "pid": "870970-basis:29433909",
+      },
+    ],
+  },
+}
+`;
