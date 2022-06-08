@@ -1,7 +1,7 @@
 import { createMockedDataLoaders } from "../datasourceLoader";
 import { performTestQuery } from "../utils/utils";
 
-test("InfomediaContent, 2 articles", async () => {
+test.skip("InfomediaContent, 2 articles", async () => {
   const result = await performTestQuery({
     query: `
         query ($pid: String!) {
@@ -21,21 +21,28 @@ test("InfomediaContent, 2 articles", async () => {
 test("InfomediaContent, single article", async () => {
   const result = await performTestQuery({
     query: `
-        query ($pid: String!) {
-          infomediaContent(pid:$pid){
-            id
-            html
-          }
-        }
+        query ($id: String!) {
+  infomedia(id: $id) {
+    error
+    article {
+      id
+      html
+    }
+  }
+}
         `,
-    variables: { pid: "870971-anmeld:47413281" },
-    context: { datasources: createMockedDataLoaders() },
+    variables: { id: "e2a3ae5c" },
+    context: {
+      smaug: { user: { id: "fisk" } },
+      accessToken: "qwerty",
+      datasources: createMockedDataLoaders(),
+    },
   });
 
   expect(result).toMatchSnapshot();
 });
 
-test("InfomediaContent, multiple reviews", async () => {
+test.skip("InfomediaContent, multiple reviews", async () => {
   const result = await performTestQuery({
     query: `
         query ($pid: String!) {
@@ -52,7 +59,7 @@ test("InfomediaContent, multiple reviews", async () => {
   expect(result).toMatchSnapshot();
 });
 
-test("Manifestation -> onlineAccess returns InfomediaReference", async () => {
+test.skip("Manifestation -> onlineAccess returns InfomediaReference", async () => {
   const result = await performTestQuery({
     query: `
         query ($pid: String!) {
