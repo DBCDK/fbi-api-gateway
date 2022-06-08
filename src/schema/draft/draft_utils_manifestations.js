@@ -244,7 +244,7 @@ function jedHostPublication(manifestation) {
 }
 
 /**
- * Parse for titles - @see /draft/manifestation::Draft_ManifestationTitles
+ * Parse for titles - @see /draft/manifestation::ManifestationTitles
  *
  * @param manifestation
  * @returns {{identifyingAddition: string, standard: string, original: [string], parallel: string[], alternative: [string], main: [string], sort: string, translated: [string], full: [string]}}

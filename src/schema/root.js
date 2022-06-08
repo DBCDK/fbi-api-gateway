@@ -22,8 +22,8 @@ import { manifestationToJed } from "./draft/draft_utils_manifestations";
  */
 export const typeDef = `
 type Query {
-  manifestation(pid: String, faust: String): Draft_Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Draft_Manifestation]!
+  manifestation(pid: String, faust: String): Manifestation
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
   user: User!
   work(id: String, faust: String, pid: String, language: LanguageCode): Draft_Work

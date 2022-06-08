@@ -1,4 +1,4 @@
-import {resolveOnlineAccess} from './draft_utils_manifestations';
+import { resolveOnlineAccess } from "./draft_utils_manifestations";
 
 export const typeDef = `
 type Draft_Language {
@@ -121,7 +121,7 @@ type Draft_Work {
   """
   Details about the manifestations of this work
   """
-  manifestations: Draft_Manifestations!
+  manifestations: Manifestations!
 }
 enum Draft_WorkType {
   ANALYSIS

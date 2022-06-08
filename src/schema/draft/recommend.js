@@ -10,7 +10,7 @@ type Draft_Recommendation {
   """
   The recommended manifestation
   """
-  manifestation: Draft_Manifestation!
+  manifestation: Manifestation!
 
   """
   Info on how this recommendation was generated

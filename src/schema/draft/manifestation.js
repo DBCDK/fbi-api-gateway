@@ -156,13 +156,13 @@ type Draft_Note {
   """
   display: [String!]!  
 }
-enum Draft_ManifestationPartType {
+enum ManifestationPartType {
   MUSIC_TRACKS
   SHEET_MUSIC_CONTENT
   PARTS_OF_BOOK
   NOT_SPECIFIED
 }
-type Draft_ManifestationPart {
+type ManifestationPart {
   """
   The title of the entry (music track or title of a literary analysis)
   """
@@ -188,7 +188,7 @@ type Draft_ManifestationPart {
   """
   creatorsFromDescription: [String!]!
 }
-type Draft_ManifestationParts {
+type ManifestationParts {
   """
   Heading for the music content note
   """
@@ -197,12 +197,12 @@ type Draft_ManifestationParts {
   """
   The creator and title etc of the individual parts
   """
-  parts: [Draft_ManifestationPart!]!
+  parts: [ManifestationPart!]!
 
   """
   The type of manifestation parts, is this music tracks, book parts etc.
   """
-  type: Draft_ManifestationPartType!
+  type: ManifestationPartType!
 }
 type Draft_Languages {
   """
@@ -436,12 +436,12 @@ type Draft_CatalogueCodes {
   otherCatalogues: [String]!
 }
 
-type Draft_Manifestations {
-  first: Draft_Manifestation!
-  latest: Draft_Manifestation!
-  all: [Draft_Manifestation!]!
+type Manifestations {
+  first: Manifestation!
+  latest: Manifestation!
+  all: [Manifestation!]!
 }
-type Draft_Manifestation {
+type Manifestation {
   """
   Unique identification of the manifestation e.g 870970-basis:54029519
   """
@@ -450,7 +450,7 @@ type Draft_Manifestation {
   """
   Different kinds of titles for this work
   """
-  titles: Draft_ManifestationTitles!
+  titles: ManifestationTitles!
 
   """
   Abstract of the entity
@@ -539,7 +539,7 @@ type Draft_Manifestation {
   """
   Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
   """
-  manifestationParts: Draft_ManifestationParts
+  manifestationParts: ManifestationParts
 
   """
   The type of material of the manifestation based on bibliotek.dk types
@@ -607,7 +607,7 @@ type Draft_Manifestation {
   tableOfContents: Draft_TableOfContent
 
 }
-type Draft_ManifestationTitles {
+type ManifestationTitles {
   """
   The main title(s) of the work
   """
@@ -656,7 +656,7 @@ type Draft_ManifestationTitles {
 `;
 
 export const resolvers = {
-  Draft_Manifestation: {
+  Manifestation: {
     async access(parent, args, context, info) {
       const resolved = await resolveOnlineAccess(parent.pid, context);
       return resolved;
