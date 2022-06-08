@@ -52,7 +52,7 @@ export async function load({ articleId, userId, municipalityAgencyId }) {
     }
     return null;
   } catch (e) {
-    return null;
+    return { error: "INTERNAL_SERVER_ERROR" };
   }
 }
 
