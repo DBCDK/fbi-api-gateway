@@ -64,8 +64,7 @@ If no work is found for an identifier, null is returned at the corresponding pos
 The reviews field returns a list of reviews. Each review may be one of the following types:
 
 - `InfomediaReview` includes an ID that can be used to look up the actual
-  article. Check out the [Infomedia section](#Infomedia). Use the _accessStatus_ field to
-  determine if the current user has access to the article.
+  article. Check out the [Infomedia section](#Infomedia).
 - `ExternalReview` includes an url to an external website where the review is located.
 - `LibrariansReview` is the librarians review. The entire review can be obtained from
   this object type, without the user is logged in. A review consists of a list of sections.
@@ -93,7 +92,6 @@ The reviews field returns a list of reviews. Each review may be one of the follo
       ... on InfomediaReview {
         id
         rating
-        accessStatus
       }
       ... on LibrariansReview {
         sections {

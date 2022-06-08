@@ -1,10 +1,5 @@
 import { orderBy, uniqBy } from "lodash";
-import {
-  getArray,
-  getBaseUrl,
-  getInfomediaAccessStatus,
-  resolveWork,
-} from "../../utils/utils";
+import { getArray, getBaseUrl, resolveWork } from "../../utils/utils";
 import { workToJed } from "./draft_utils";
 import * as consts from "./FAKE";
 
@@ -76,11 +71,6 @@ type InfomediaReview implements Review {
   origin: String
   rating: String
   id: String!
-
-  """
-  Can the current user obtain the article?
-  """
-  accessStatus: AccessStatus!
 }
 
 type LibrariansReview implements Review {
@@ -142,9 +132,6 @@ export const resolvers = {
   InfomediaReview: {
     id(parent, args, context, info) {
       return parent.infomediaId;
-    },
-    accessStatus(parent, args, context, info) {
-      return getInfomediaAccessStatus(context);
     },
   },
   LibrariansReview: {
