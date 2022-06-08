@@ -464,7 +464,7 @@ export async function resolveOnlineAccess(pid, context) {
   data.forEach((entry) => {
     if (entry.value) {
       result.push({
-        __typename: "Draft_URL",
+        __typename: "URLE",
         origin:
           (entry.value.link && parseOnlineUrlToOrigin(entry.value.link.$)) ||
           "",
@@ -492,7 +492,7 @@ export async function resolveOnlineAccess(pid, context) {
         console.log("FISK");
 
         result.push({
-          __typename: "Draft_InfomediaService",
+          __typename: "InfomediaService",
           id: id.$ || "",
         });
       }
@@ -514,7 +514,7 @@ export async function resolveOnlineAccess(pid, context) {
     archives.forEach((archive) => {
       if (archive.url) {
         result.push({
-          __typename: "Draft_URL",
+          __typename: "URLE",
           url: archive.url,
           origin: parseOnlineUrlToOrigin(archive.url),
         });
@@ -537,7 +537,7 @@ export async function resolveOnlineAccess(pid, context) {
     const hasJournal = journals && journals[articleissn];
     if (hasJournal) {
       result.push({
-        __typename: "Draft_DigitalArticleService",
+        __typename: "DigitalArticleService",
         issn: articleissn,
         subscribed: true,
       });
@@ -547,7 +547,7 @@ export async function resolveOnlineAccess(pid, context) {
   // ILL
   const requestbutton = manifestation.admindata.requestButton.$;
   result.push({
-    __typename: "Draft_InterLibraryLoan",
+    __typename: "InterLibraryLoan",
     loanIsPossible: requestbutton === "true",
   });
 

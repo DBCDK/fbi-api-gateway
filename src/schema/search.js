@@ -121,7 +121,7 @@ type SearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int! limit: PaginationLimit!): [Draft_Work!]!
+  works(offset: Int! limit: PaginationLimit!): [Work!]!
   
   """
   Make sure only to fetch this when needed

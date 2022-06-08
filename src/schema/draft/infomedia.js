@@ -1,21 +1,21 @@
 import { getInfomediaAccessStatus } from "../../utils/utils";
 
 export const typeDef = `
-enum Draft_AccessStatus {
+enum AccessStatus {
   OK
   USER_NOT_LOGGED_IN
   MUNICIPALITY_NOT_SUBSCRIBED
 }
-type Draft_InfomediaResponse {
+type InfomediaResponse {
 
   """
   Can the current user obtain the article?
   """
-  accessStatus: Draft_AccessStatus!
+  accessStatus: AccessStatus!
 
-  article: Draft_InfomediaArticle
+  article: InfomediaArticle
 }
-type Draft_InfomediaArticle {
+type InfomediaArticle {
   id: String!
   headLine: String
   subHeadLine: String
@@ -30,7 +30,7 @@ type Draft_InfomediaArticle {
 `;
 
 export const resolvers = {
-  Draft_InfomediaResponse: {
+  InfomediaResponse: {
     accessStatus(parent, args, context, info) {
       return getInfomediaAccessStatus(context);
     },

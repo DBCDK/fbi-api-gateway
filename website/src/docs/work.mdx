@@ -63,11 +63,11 @@ If no work is found for an identifier, null is returned at the corresponding pos
 
 The reviews field returns a list of reviews. Each review may be one of the following types:
 
-- `Draft_InfomediaReview` includes an ID that can be used to look up the actual
+- `InfomediaReview` includes an ID that can be used to look up the actual
   article. Check out the [Infomedia section](#Infomedia). Use the _accessStatus_ field to
   determine if the current user has access to the article.
-- `Draft_ExternalReview` includes an url to an external website where the review is located.
-- `Draft_LibrariansReview` is the librarians review. The entire review can be obtained from
+- `ExternalReview` includes an url to an external website where the review is located.
+- `LibrariansReview` is the librarians review. The entire review can be obtained from
   this object type, without the user is logged in. A review consists of a list of sections.
   A section may include a work. If so, the title should be appended to the text
   (preferably as a link).
@@ -83,19 +83,19 @@ The reviews field returns a list of reviews. Each review may be one of the follo
       __typename
       author
       date
-      ... on Draft_ExternalReview {
+      ... on ExternalReview {
         rating
         urls {
           origin
           url
         }
       }
-      ... on Draft_InfomediaReview {
+      ... on InfomediaReview {
         id
         rating
         accessStatus
       }
-      ... on Draft_LibrariansReview {
+      ... on LibrariansReview {
         sections {
           code
           heading

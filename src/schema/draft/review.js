@@ -56,21 +56,21 @@ type LibrariansReviewSection {
   """
   The work the text is refering to. When work is null, the text does not refer to a work.
   """
-  work: Draft_Work
+  work: Work
 }
-interface Draft_Review {
+interface Review {
   author: String
   date: String
 }
 
-type Draft_ExternalReview implements Draft_Review {
+type ExternalReview implements Review {
   author: String
   date: String
   rating: String
-  urls: [Draft_URL!]!
+  urls: [URLE!]!
 }
 
-type Draft_InfomediaReview implements Draft_Review {
+type InfomediaReview implements Review {
   author: String
   date: String
   origin: String
@@ -80,10 +80,10 @@ type Draft_InfomediaReview implements Draft_Review {
   """
   Can the current user obtain the article?
   """
-  accessStatus: Draft_AccessStatus!
+  accessStatus: AccessStatus!
 }
 
-type Draft_LibrariansReview implements Draft_Review {
+type LibrariansReview implements Review {
   author: String
   date: String
   sections: [LibrariansReviewSection!]!
@@ -92,8 +92,8 @@ type Draft_LibrariansReview implements Draft_Review {
   id: String!
 }
 
-extend type Draft_Work {
-  reviews: [Draft_Review!]!
+extend type Work {
+  reviews: [Review!]!
 }
 `;
 
@@ -139,7 +139,7 @@ function resolveRating(parent) {
 }
 
 export const resolvers = {
-  Draft_InfomediaReview: {
+  InfomediaReview: {
     id(parent, args, context, info) {
       return parent.infomediaId;
     },
@@ -147,7 +147,7 @@ export const resolvers = {
       return getInfomediaAccessStatus(context);
     },
   },
-  Draft_LibrariansReview: {
+  LibrariansReview: {
     id(parent, args, context, info) {
       return parent.pid;
     },
@@ -174,7 +174,7 @@ export const resolvers = {
       }
     },
   },
-  Draft_Work: {
+  Work: {
     async reviews(parent, args, context, info) {
       let reviews = (
         await Promise.all(
@@ -202,20 +202,20 @@ export const resolvers = {
               Object.entries(review?.details?.fulltextmatvurd?.value),
             pid: review?.admindata?.pid?.$,
             __typename: review?.details?.fulltextmatvurd
-              ? "Draft_LibrariansReview"
+              ? "LibrariansReview"
               : review?.details?.infomedia
-              ? "Draft_InfomediaReview"
+              ? "InfomediaReview"
               : review?.urls?.length > 0
-              ? "Draft_ExternalReview"
+              ? "ExternalReview"
               : null,
           };
 
           parsed.__typename = review?.details?.fulltextmatvurd
-            ? "Draft_LibrariansReview"
+            ? "LibrariansReview"
             : review?.details?.infomedia
-            ? "Draft_InfomediaReview"
+            ? "InfomediaReview"
             : parsed.urls?.length > 0
-            ? "Draft_ExternalReview"
+            ? "ExternalReview"
             : null;
 
           return parsed;

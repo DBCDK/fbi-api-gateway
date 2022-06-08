@@ -1,5 +1,5 @@
 export const typeDef = `
-type Draft_Translation {
+type Translation {
   """
   Translation in plural form, e.g. forfattere, komponister, instruktører etc.
   """
@@ -10,7 +10,7 @@ type Draft_Translation {
   """
   singular: String!
 }
-type Draft_Role {
+type Role {
   """
   The code for the type of creator or contributor, e.g. 'aut' for author, 'ill' for illustrator etc
   """
@@ -19,10 +19,10 @@ type Draft_Role {
   """
   The type of creator/contributor as text in singular and plural in Danish, e.g. forfatter/forfattere, komponist/komponister etc
   """
-  function: Draft_Translation!
+  function: Translation!
 
 }
-type Draft_Person implements Draft_Subject & Draft_Creator {
+type Person implements Subject & Creator {
   """
   The person's whole name in normal order
   """
@@ -61,14 +61,14 @@ type Draft_Person implements Draft_Subject & Draft_Creator {
   """
   Creator aliases, creators behind used pseudonym
   """
-  aliases: [Draft_Person!]!
+  aliases: [Person!]!
 
   """
   A list of which kinds of contributions this person made to this creation
   """
-  roles: [Draft_Role!]!
+  roles: [Role!]!
 }
-type Draft_Corporation implements Draft_Subject & Draft_Creator {
+type Corporation implements Subject & Creator {
     """
     The full corporation or conference name
     """
@@ -112,9 +112,9 @@ type Draft_Corporation implements Draft_Subject & Draft_Creator {
     """
     A list of which kinds of contributions this corporation made to this creation
     """
-    roles: [Draft_Role!]!
+    roles: [Role!]!
 }
-interface Draft_Creator {
+interface Creator {
   """
   Name of the creator
   """

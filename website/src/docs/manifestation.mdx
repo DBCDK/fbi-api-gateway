@@ -24,7 +24,7 @@ Get shelf information for given pid
 
 The _access_ field contains a list of ways to access a manifestation.
 
-If a Draft_InfomediaService entry is present, one may use the id to access
+If a InfomediaService entry is present, one may use the id to access
 the content of the article with [Infomedia](#Infomedia)
 
 <InlineGraphiQL
@@ -35,23 +35,23 @@ the content of the article with [Infomedia](#Infomedia)
             }
             access {
               __typename
-              ... on Draft_URL {
+              ... on URLE {
                 origin
                 url
               }
-              ... on Draft_InfomediaService {
+              ... on InfomediaService {
                 id
                 accessStatus
               }
-              ... on Draft_InterLibraryLoan {
+              ... on InterLibraryLoan {
                 loanIsPossible
               }
-              ... on Draft_Ereol {
+              ... on Ereol {
                 origin
                 url
                 canAlwaysBeLoaned
               }
-              ... on Draft_DigitalArticleService {
+              ... on DigitalArticleService {
                 issn
                 accessStatus
               }
@@ -76,21 +76,21 @@ the content of the article with [Infomedia](#Infomedia)
     abstract
     access {
         __typename
-        ... on Draft_URL {
+        ... on URLE {
             origin
             url
         }
-        ... on Draft_InfomediaService {
+        ... on InfomediaService {
             id
         }
-        ... on Draft_DigitalArticleService {
+        ... on DigitalArticleService {
             issn
         }
-        ... on Draft_Ereol {
+        ... on Ereol {
             url
             canAlwaysBeLoaned
         }
-        ... on Draft_InterLibraryLoan {
+        ... on InterLibraryLoan {
             loanIsPossible
         }
     }
@@ -103,7 +103,7 @@ the content of the article with [Infomedia](#Infomedia)
         nationalBibliography
     }
     contributors {
-        ... on Draft_Person {
+        ... on Person {
             display
             nameSort
                 roles {
@@ -116,7 +116,7 @@ the content of the article with [Infomedia](#Infomedia)
             }
         }
     creators {
-        ... on Draft_Person {
+        ... on Person {
         display
         nameSort
             roles {

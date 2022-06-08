@@ -123,13 +123,13 @@ function workToSubjects(work) {
     .map((subject) => ({
       type: "TOPIC",
       display: subject.value,
-      __typename: "Draft_SubjectText",
+      __typename: "SubjectText",
     }));
 
   const all = work?.subjects.map((subject) => ({
     type: "TOPIC",
     display: subject.value,
-    __typename: "Draft_SubjectText",
+    __typename: "SubjectText",
   }));
 
   return { all, dbcVerified };

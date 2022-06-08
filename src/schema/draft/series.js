@@ -1,11 +1,11 @@
 export const typeDef = `
-type Draft_Universe {
+type Universe {
   """
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Universe
   """
   title: String!
 }
-type Draft_NumberInSeries {
+type NumberInSeries {
   """
   The number in the series as text, quoted form the publication, e.g. 'Vol. IX'
   """
@@ -16,7 +16,7 @@ type Draft_NumberInSeries {
   """
   number: Int!
 }
-type Draft_GeneralSeries {
+type GeneralSeries {
   """
   The title of the series
   """
@@ -30,14 +30,14 @@ type Draft_GeneralSeries {
   """
   The number in the series as text quotation and a number
   """
-  numberInSeries: Draft_NumberInSeries
+  numberInSeries: NumberInSeries
 
   """
   Works in the series
   """
-  works: [Draft_Work!]!
+  works: [Work!]!
 }
-type Draft_PopularSeries {
+type PopularSeries {
   """
   The title of the series
   """
@@ -51,7 +51,7 @@ type Draft_PopularSeries {
   """
   The number in the series as text qoutation and a number
   """
-  numberInSeries: Draft_NumberInSeries
+  numberInSeries: NumberInSeries
 
   """
   Information about whether this work in the series should be read first
@@ -66,11 +66,11 @@ type Draft_PopularSeries {
   """
   Works in the series
   """
-  works: [Draft_Work!]!
+  works: [Work!]!
 }
-type Draft_SeriesContainer {
-  all: [Draft_GeneralSeries!]!
-  popular: [Draft_PopularSeries!]!
+type SeriesContainer {
+  all: [GeneralSeries!]!
+  popular: [PopularSeries!]!
 }
 `;
 

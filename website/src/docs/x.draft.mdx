@@ -1,7 +1,7 @@
 # Draft (FBI-135)
 
 This is the draft of the schema which is being delivered with FBI-135. Types related
-to the draft are prefixed with `Draft_`. When the draft is approved, the prefix is removed.
+to the draft are prefixed with ``. When the draft is approved, the prefix is removed.
 
 For the time being, expect fake data to be returned.
 
@@ -26,7 +26,7 @@ For the time being, expect fake data to be returned.
         __typename
         display
         nameSort
-        ... on Draft_Person {
+        ... on Person {
           firstName
           lastName
           birthYear
@@ -43,7 +43,7 @@ For the time being, expect fake data to be returned.
             display
           }
         }
-        ... on Draft_Corporation {
+        ... on Corporation {
           main
           sub
           location
@@ -71,18 +71,18 @@ For the time being, expect fake data to be returned.
         __typename
         author
         date
-        ... on Draft_ExternalReview {
+        ... on ExternalReview {
           rating
           urls {
             origin
             url
           }
         }
-        ... on Draft_InfomediaReview {
+        ... on InfomediaReview {
           rating
           id
         }
-        ... on Draft_LibrariansReview {
+        ... on LibrariansReview {
           sections {
             heading
             text
@@ -123,7 +123,7 @@ For the time being, expect fake data to be returned.
         all {
           __typename
           display
-          ... on Draft_SubjectText {
+          ... on SubjectText {
             type
           }
          
@@ -186,22 +186,22 @@ For the time being, expect fake data to be returned.
       }
       access {
         __typename
-        ... on Draft_URL {
+        ... on URLE {
           origin
           url
         }
-        ... on Draft_Ereol {
+        ... on Ereol {
           origin
           url
           canAlwaysBeLoaned
         }
-        ... on Draft_Ill {
+        ... on Ill {
           ill
         }
-        ... on Draft_InfomediaService {
+        ... on InfomediaService {
           id
         }
-        ... on Draft_DigitalArticleService {
+        ... on DigitalArticleService {
           issn
         }
       }
@@ -225,10 +225,10 @@ For the time being, expect fake data to be returned.
       }
       contributors {
         __typename
-        ... on Draft_Person {
+        ... on Person {
           display
         }
-        ... on Draft_Corporation {
+        ... on Corporation {
           display
         }
       }
@@ -309,7 +309,7 @@ For the time being, expect fake data to be returned.
         parts {
           title
           creators {
-            ... on Draft_Person {
+            ... on Person {
               display
             }
           }
@@ -317,7 +317,7 @@ For the time being, expect fake data to be returned.
             display
           }
           subjects {
-            ... on Draft_SubjectText {
+            ... on SubjectText {
               display
             }
           }
