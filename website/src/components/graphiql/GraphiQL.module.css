@@ -68,6 +68,15 @@
   cursor: pointer !important;
 }
 
+.buttons{
+  display:flex;
+}
+
+.open{
+  margin-left: auto;
+  margin-right:0;
+}
+
 /* scrollbar */
 
 .inlinegraphiql * {
