@@ -1,7 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`default schema transform 1`] = `
-"enum AccessTypeCode {
+"type Cover {
+  detail_117: String
+  detail_207: String
+  detail_42: String
+  detail_500: String
+  thumbnail: String
+  detail: String
+}
+
+enum AccessTypeCode {
   PHYSICAL
   ONLINE
   NOT_SPECIFIED
@@ -578,6 +587,9 @@ type Manifestation {
   Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
   \\"\\"\\"
   contributorsFromDescription: [String!]!
+
+  \\"\\"\\"Cover for this manifestation\\"\\"\\"
+  cover: Cover!
 
   \\"\\"\\"
   Primary creators of the manifestation e.g. authors, directors, musicians etc

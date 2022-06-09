@@ -487,6 +487,11 @@ type Manifestation {
   contributorsFromDescription: [String!]!
 
   """
+  Cover for this manifestation
+  """
+  cover: Cover!
+
+  """
   Primary creators of the manifestation e.g. authors, directors, musicians etc
   """
   creators: [Creator!]!
@@ -660,6 +665,11 @@ export const resolvers = {
     async access(parent, args, context, info) {
       const resolved = await resolveOnlineAccess(parent.pid, context);
       return resolved;
+    },
+    async cover(parent, args, context, info) {
+      return parent?.pid
+        ? context.datasources.moreinfoCovers.load(parent.pid)
+        : {};
     },
   },
 };

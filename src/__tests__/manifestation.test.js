@@ -55,6 +55,14 @@ describe("Manifestation", () => {
       query: `query ($faust: String!) {
         manifestation(faust: $faust) {
           pid
+          cover {
+            thumbnail
+            detail_117
+            detail_207
+            detail_42
+            detail_500
+            detail
+          }
           titles {
             main
             full
