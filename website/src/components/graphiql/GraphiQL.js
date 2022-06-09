@@ -7,7 +7,6 @@ import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useIntersection from "@/hooks/useIntersection";
 
-import Link from "@/components/base/link";
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 import Input from "@/components/base/input";
@@ -20,8 +19,6 @@ import styles from "./GraphiQL.module.css";
 // Url Origin
 const APP_URL =
   getConfig()?.publicRuntimeConfig?.app?.url || "http://localhost:3000";
-
-console.log("APP_URL", APP_URL);
 
 // A storage implementation that does nothing
 // Basically prevents inline graphiql to interfere with the "real" graphiql
@@ -170,12 +167,6 @@ export function InlineGraphiQL({ query, variables }) {
             });
             return data.json().catch(() => data.text());
           }}
-          // query={parameters.query}
-          // variables={parameters.variables}
-          // operationName={parameters.operationName}
-          // onEditQuery={(newQuery) => onEditQuery(newQuery, parameters)}
-          // onEditVariables={onEditVariables}
-          // onEditOperationName={onEditOperationName}
           query={query}
           onEditQuery={(str) => setEditQuery(str)}
           onEditVariables={(str) => setEditVariables(str)}
