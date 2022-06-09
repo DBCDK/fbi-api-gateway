@@ -1,4 +1,5 @@
 .link {
+  display:inline-block;
   color: var(--text-dark);
   text-decoration: none;
   cursor: pointer;
@@ -12,8 +13,12 @@
   text-underline-offset: var(--pt05);
 }
 
+.link.underline:focus-visible{
+  color: var(--primary-dark);
+}
+
 .link.keepActive {
-  color: var(--accent);
+  /* color: var(--accent); */
   color: var(--primary-dark);
 }
 
@@ -62,7 +67,7 @@
     transition-duration: 0.2s;
   }
 
-  .link:not(.disabled):hover:before {
+  .link:not(.disabled):not(.underline):hover:before {
     transform: scaleY(1) translateX(calc((var(--pt1) + var(--pt05)) * -1));
     opacity: 1;
     pointer-events: unset;
