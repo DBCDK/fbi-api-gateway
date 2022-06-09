@@ -11,6 +11,7 @@ import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 import TokenStatus from "@/components/tokenstatus";
+// import Token from "@/components/token";
 
 import styles from "./Header.module.css";
 
@@ -41,12 +42,13 @@ export default function Header() {
   const isDocumentation = router.pathname === "/documentation";
 
   const indexStyles = isIndex ? styles.index : "";
+  const documentationStyles = isDocumentation ? styles.documentation : "";
 
   const stickyClass = isSticky ? styles.sticky : "";
 
   return (
     <header
-      className={`${styles.top} ${stickyClass} ${indexStyles}`}
+      className={`${styles.top} ${stickyClass} ${indexStyles} ${documentationStyles}`}
       ref={elRef}
     >
       <Container fluid>

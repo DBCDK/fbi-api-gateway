@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import _GraphiQL from "graphiql";
+import { useRouter } from "next/router";
+import getConfig from "next/config";
 
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
@@ -13,6 +15,10 @@ import Header from "@/components/header";
 import Overlay from "@/components/base/overlay";
 
 import styles from "./GraphiQL.module.css";
+
+// Url Origin
+const APP_URL =
+  getConfig()?.publicRuntimeConfig?.app?.url || "http://localhost:3000";
 
 // A storage implementation that does nothing
 // Basically prevents inline graphiql to interfere with the "real" graphiql
@@ -52,6 +58,18 @@ function DummyContainer({ inView, show }) {
   );
 }
 
+function generateGraphiqlURL(parameters) {
+  // const origin = window.location.origin
+  const path = APP_URL + "/graphiql";
+
+  const params = Object.keys(parameters)
+    .filter((key) => Boolean(parameters[key]))
+    .map((key) => key + "=" + encodeURIComponent(parameters[key]))
+    .join("&");
+
+  return path + "?" + params;
+}
+
 export function InlineGraphiQL({ query, variables }) {
   const { selectedToken } = useStorage();
   const instanceRef = useRef();
@@ -71,6 +89,11 @@ export function InlineGraphiQL({ query, variables }) {
   const curl_query = editQuery?.replace(/\s+/g, " ");
   const curl = `curl -H "Authorization: bearer ${selectedToken?.token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
 
+  const graphiqlUrl = generateGraphiqlURL({
+    query,
+    variables: JSON.stringify(variables),
+  });
+
   // When the selected token has changed, we unmount graphiql
   // and mounts the dummy container. Graphiql will be reinstantiated
   // when the dummy container is in the viewport again
@@ -80,25 +103,37 @@ export function InlineGraphiQL({ query, variables }) {
 
   return (
     <div className={styles.inlinegraphiql}>
-      <Button
-        size="small"
-        className={`${styles.button} ${styles.run}`}
-        onClick={() => {
-          instanceRef.current?.handleRunQuery?.();
-        }}
-      >
-        Run 🚀
-      </Button>
-      <Button
-        secondary
-        size="small"
-        className={`${styles.button} ${styles.prettify}`}
-        onClick={() => {
-          instanceRef.current?.handlePrettifyQuery?.();
-        }}
-      >
-        Prettify ✨
-      </Button>
+      <div className={styles.buttons}>
+        <Button
+          size="small"
+          className={`${styles.button} ${styles.run}`}
+          onClick={() => {
+            instanceRef.current?.handleRunQuery?.();
+          }}
+        >
+          Run 🚀
+        </Button>
+
+        <Button
+          secondary
+          size="small"
+          className={`${styles.button} ${styles.prettify}`}
+          onClick={() => {
+            instanceRef.current?.handlePrettifyQuery?.();
+          }}
+        >
+          Prettify ✨
+        </Button>
+
+        <Button
+          secondary
+          size="small"
+          className={`${styles.button} ${styles.open}`}
+          onClick={() => window.open(graphiqlUrl, "_blank")}
+        >
+          Open in GraphiQL 🛰️
+        </Button>
+      </div>
 
       {/* <Button
         secondary
@@ -173,6 +208,35 @@ export default function GraphiQL() {
   const { selectedToken } = useStorage();
   const { schema } = useSchema(selectedToken);
   const url = useGraphQLUrl(selectedToken);
+  const router = useRouter();
+  const parameters = { ...router.query };
+
+  // Parse the search string to get url parameters.
+  // https://github.com/graphql/graphiql/blob/2ea30c6029fd47107e85fb9d86459b02792ec705/packages/graphiql-examples/cdn/index.html#L48-L55
+
+  // example:
+  // http://localhost:3000/graphiql?query=query%20(%24id%3A%20String)%7B%20%0A%20%20work(id%3A%20%24id)%20%7B%0A%20%20%20%20titles%20%7B%0A%20%20%20%20%20%20full%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D&variables=%7B%22id%22%3A%20%22work-of%3A870970-basis%3A26895642%22%7D
+
+  // When the query and variables string is edited, update the URL bar so that it can be easily shared.
+  function onEditQuery(newQuery) {
+    parameters.query = newQuery;
+    updateURL();
+  }
+
+  function onEditVariables(newVariables) {
+    parameters.variables = newVariables;
+    updateURL();
+  }
+
+  function onEditOperationName(newOperationName) {
+    parameters.operationName = newOperationName;
+    updateURL();
+  }
+
+  function updateURL() {
+    router.replace({ query: parameters });
+  }
+
   return (
     <div className={styles.graphiql}>
       <Header />
@@ -191,12 +255,26 @@ export default function GraphiQL() {
           });
           return data.json().catch(() => data.text());
         }}
+        onMount={(instance) => {
+          setTimeout(() => {
+            instance.handlePrettifyQuery();
+            instance.handleRunQuery();
+          }, 250);
+        }}
+        query={parameters.query}
+        variables={parameters.variables}
+        operationName={parameters.operationName}
+        onEditQuery={onEditQuery}
+        onEditVariables={onEditVariables}
+        onEditOperationName={onEditOperationName}
         defaultVariableEditorOpen={true}
         headerEditorEnabled={false}
       />
     </div>
   );
 }
+
+// https://graphiql-test.netlify.app/typedoc/modules/graphiql.html#graphiqlprops
 
 class GraphiQLFix extends _GraphiQL {
   constructor(props) {
