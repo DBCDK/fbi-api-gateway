@@ -47,9 +47,6 @@ type InfomediaService {
   Infomedia ID which can be used to fetch article through Infomedia Service
   \\"\\"\\"
   id: String!
-
-  \\"\\"\\"Can the current user obtain the article?\\"\\"\\"
-  accessStatus: AccessStatus!
 }
 
 type DigitalArticleService {
@@ -57,9 +54,6 @@ type DigitalArticleService {
   Issn which can be used to order article through Digital Article Service
   \\"\\"\\"
   issn: String!
-
-  \\"\\"\\"Can the current user obtain the article?\\"\\"\\"
-  accessStatus: AccessStatus!
 }
 
 union Access = URLE | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
@@ -170,12 +164,6 @@ enum InfomediaError {
   BORROWERCHECK_NOT_ALLOWED
   INTERNAL_SERVER_ERROR
   BORROWER_NOT_IN_MUNICIPALITY
-}
-
-enum AccessStatus {
-  OK
-  USER_NOT_LOGGED_IN
-  MUNICIPALITY_NOT_SUBSCRIBED
 }
 
 type InfomediaResponse {
@@ -1263,9 +1251,6 @@ type InfomediaService {
   Infomedia ID which can be used to fetch article through Infomedia Service
   \\"\\"\\"
   id: String!
-
-  \\"\\"\\"Can the current user obtain the article?\\"\\"\\"
-  accessStatus: AccessStatus!
 }
 
 type DigitalArticleService {
@@ -1273,9 +1258,6 @@ type DigitalArticleService {
   Issn which can be used to order article through Digital Article Service
   \\"\\"\\"
   issn: String!
-
-  \\"\\"\\"Can the current user obtain the article?\\"\\"\\"
-  accessStatus: AccessStatus!
 }
 
 union Access = URLE | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
@@ -1374,12 +1356,6 @@ interface Creator {
 
   \\"\\"\\"Name of the creator which can be used to sort after \\"\\"\\"
   nameSort: String!
-}
-
-enum AccessStatus {
-  OK
-  USER_NOT_LOGGED_IN
-  MUNICIPALITY_NOT_SUBSCRIBED
 }
 
 type TableOfContent {
