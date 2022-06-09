@@ -43,7 +43,6 @@ function getFieldPaths(typeMap, query, res, count) {
   const ast = parse(query);
   let stack = [];
   let namedType;
-
   // Visit nodes of the parsed query
   visit(ast, {
     enter(node, key, parent, path, ancestors) {
@@ -127,12 +126,16 @@ export const resolvers = {
                 end: end.toISOString(),
               };
             }
-            getFieldPaths(
-              typeMap,
-              query,
-              profileMap[profileBucket?.key].fieldsMap || {},
-              count
-            );
+            try {
+              getFieldPaths(
+                typeMap,
+                query,
+                profileMap[profileBucket?.key].fieldsMap || {},
+                count
+              );
+            } catch (e) {
+              // skip queries with syntax errors
+            }
           });
         });
       });
