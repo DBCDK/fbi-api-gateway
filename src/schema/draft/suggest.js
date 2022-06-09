@@ -1,17 +1,17 @@
 import { resolveWork } from "../../utils/utils";
 
 export const typeDef = `
-enum Draft_SuggestionType {
+enum SuggestionType {
   SUBJECT
   TITLE
   CREATOR
   COMPOSIT
 }
-type Draft_Suggestion {
+type Suggestion {
   """
   The type of suggestion: creator, subject or title
   """
-  type: Draft_SuggestionType!
+  type: SuggestionType!
 
   """
   The suggested term which can be searched for
@@ -21,15 +21,15 @@ type Draft_Suggestion {
   """
   A work related to the term
   """
-  work: Draft_Work
+  work: Work
 }
-type Draft_SuggestResponse {
-  result: [Draft_Suggestion!]!
+type SuggestResponse {
+  result: [Suggestion!]!
 }
 `;
 
 export const resolvers = {
-  Draft_Suggestion: {
+  Suggestion: {
     type(parent) {
       return parent?.type?.toUpperCase();
     },
@@ -37,7 +37,7 @@ export const resolvers = {
       return resolveWork({ id: parent.work }, context);
     },
   },
-  Draft_SuggestResponse: {
+  SuggestResponse: {
     async result(parent, args, context, info) {
       const res = await context.datasources.suggester.load({
         ...parent,

@@ -71,7 +71,7 @@ function schemaLoader() {
     const { typeDef, resolvers } = require(file.path);
     if (typeDef) {
       allTypeDefs = [...allTypeDefs, typeDef];
-      log.info(`Found type definition in ${file.path}`);
+      log.debug(`Found type definition in ${file.path}`);
     }
     if (resolvers) {
       allResolvers = merge({}, allResolvers, resolvers);

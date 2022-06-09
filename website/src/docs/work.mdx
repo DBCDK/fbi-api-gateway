@@ -63,11 +63,10 @@ If no work is found for an identifier, null is returned at the corresponding pos
 
 The reviews field returns a list of reviews. Each review may be one of the following types:
 
-- `Draft_InfomediaReview` includes an ID that can be used to look up the actual
-  article. Check out the [Infomedia section](#Infomedia). Use the _accessStatus_ field to
-  determine if the current user has access to the article.
-- `Draft_ExternalReview` includes an url to an external website where the review is located.
-- `Draft_LibrariansReview` is the librarians review. The entire review can be obtained from
+- `InfomediaReview` includes an ID that can be used to look up the actual
+  article. Check out the [Infomedia section](#Infomedia).
+- `ExternalReview` includes an url to an external website where the review is located.
+- `LibrariansReview` is the librarians review. The entire review can be obtained from
   this object type, without the user is logged in. A review consists of a list of sections.
   A section may include a work. If so, the title should be appended to the text
   (preferably as a link).
@@ -83,19 +82,18 @@ The reviews field returns a list of reviews. Each review may be one of the follo
       __typename
       author
       date
-      ... on Draft_ExternalReview {
+      ... on ExternalReview {
         rating
         urls {
           origin
           url
         }
       }
-      ... on Draft_InfomediaReview {
+      ... on InfomediaReview {
         id
         rating
-        accessStatus
       }
-      ... on Draft_LibrariansReview {
+      ... on LibrariansReview {
         sections {
           code
           heading
@@ -120,24 +118,45 @@ The reviews field returns a list of reviews. Each review may be one of the follo
 
 ## Series
 
+A work may be part of one or more series. The example below fetches the series title
+as well as some information about how the work itself fits inside the series.
+
+⚠️ Note that fake data is returned at this point.
+
 <InlineGraphiQL
   query={`query ($workId: String!) {
-    work(id: $workId) {
-      series {
-        title
-          works {
-            id
-            title
-              creators {
-              name
-              }
-              cover {
-              detail
-              }
-          }
-        }
+  work(id: $workId) {
+    series {
+    	title
+      isPopular
+      numberInSeries {
+        display
+        number
       }
-  }`}
+      readThisFirst
+      readThisWhenever
+    }
+  }
+}`}
+  variables={{
+    workId: "work-of:870970-basis:52557240",
+  }}
+/>
+
+## Series Members
+
+All the members (works) of a series that this work is member of (including itself).
+
+<InlineGraphiQL
+  query={`query ($workId: String!) {
+  work(id: $workId) {
+    seriesMembers {
+      titles {
+        main
+      }
+    }
+  }
+}`}
   variables={{
     workId: "work-of:870970-basis:52557240",
   }}

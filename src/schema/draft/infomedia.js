@@ -1,21 +1,40 @@
-import { getInfomediaAccessStatus } from "../../utils/utils";
-
+const errors = [
+  "SERVICE_NOT_LICENSED",
+  "SERVICE_UNAVAILABLE",
+  "LIBRARY_NOT_FOUND",
+  "ERROR_IN_REQUEST",
+  "BORROWER_NOT_LOGGED_IN",
+  "BORROWER_NOT_FOUND",
+  "BORROWERCHECK_NOT_ALLOWED",
+  "BORROWER_NOT_IN_MUNICIPALITY",
+];
 export const typeDef = `
-enum Draft_AccessStatus {
+enum InfomediaError {
+  SERVICE_NOT_LICENSED
+  SERVICE_UNAVAILABLE
+  LIBRARY_NOT_FOUND
+  ERROR_IN_REQUEST
+  BORROWER_NOT_LOGGED_IN
+  BORROWER_NOT_FOUND
+  BORROWERCHECK_NOT_ALLOWED
+  INTERNAL_SERVER_ERROR
+  BORROWER_NOT_IN_MUNICIPALITY
+}
+enum AccessStatus {
   OK
   USER_NOT_LOGGED_IN
   MUNICIPALITY_NOT_SUBSCRIBED
 }
-type Draft_InfomediaResponse {
+type InfomediaResponse {
 
   """
-  Can the current user obtain the article?
+  Infomedia error
   """
-  accessStatus: Draft_AccessStatus!
+  error: InfomediaError
 
-  article: Draft_InfomediaArticle
+  article: InfomediaArticle
 }
-type Draft_InfomediaArticle {
+type InfomediaArticle {
   id: String!
   headLine: String
   subHeadLine: String
@@ -28,30 +47,44 @@ type Draft_InfomediaArticle {
   html: String
 }
 `;
+async function fetchArticle(parent, context) {
+  const articleId = parent?.id;
+  const userId = context.smaug?.user?.id;
+  const municipalityAgencyId = (
+    await context.datasources.userinfo.load({
+      accessToken: context.accessToken,
+    })
+  )?.attributes?.municipalityAgencyId;
 
+  const article = await context.datasources.infomedia.load({
+    articleId,
+    userId,
+    municipalityAgencyId,
+  });
+  return article;
+}
 export const resolvers = {
-  Draft_InfomediaResponse: {
-    accessStatus(parent, args, context, info) {
-      return getInfomediaAccessStatus(context);
+  InfomediaResponse: {
+    async error(parent, args, context, info) {
+      if (!context?.smaug?.user?.id) {
+        return "BORROWER_NOT_LOGGED_IN";
+      }
+      const article = await fetchArticle(parent, context);
+      if (article.error) {
+        if (!errors.includes(article.error)) {
+          return "INTERNAL_SERVER_ERROR";
+        }
+        return article.error;
+      }
     },
     async article(parent, args, context, info) {
-      const accessStatus = await getInfomediaAccessStatus(context);
-      if (accessStatus !== "OK") {
+      if (!context?.smaug?.user?.id) {
         return null;
       }
-      const articleId = parent?.id;
-      const userId = context.smaug?.user?.id;
-      const municipalityAgencyId = (
-        await context.datasources.userinfo.load({
-          accessToken: context.accessToken,
-        })
-      )?.attributes?.municipalityAgencyId;
-
-      const article = await context.datasources.infomedia.load({
-        articleId,
-        userId,
-        municipalityAgencyId,
-      });
+      const article = await fetchArticle(parent, context);
+      if (article.error) {
+        return null;
+      }
       return article;
     },
   },

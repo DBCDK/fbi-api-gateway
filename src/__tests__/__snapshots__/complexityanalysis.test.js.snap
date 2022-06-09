@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Complexity analysis Query complexity validation - exceeding complexitylimit 1`] = `Array []`;
+
+exports[`Complexity analysis Query complexity validation - no errors 1`] = `Array []`;

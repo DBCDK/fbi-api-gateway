@@ -36,10 +36,13 @@ export async function load({ articleId, userId, municipalityAgencyId }) {
     const res = await request
       .post(url)
       .field("xml", createSoap({ articleId, userId, municipalityAgencyId }));
-
     const html =
       res?.body?.getArticleResponse?.getArticleResponseDetails?.[0]?.imArticle
         ?.$;
+    const error = res?.body?.getArticleResponse?.error?.$;
+    if (error) {
+      return { error: error.toUpperCase() };
+    }
     if (html) {
       const details = getInfomediaDetails({ html });
       if (!details.text) {
@@ -49,7 +52,7 @@ export async function load({ articleId, userId, municipalityAgencyId }) {
     }
     return null;
   } catch (e) {
-    return null;
+    return { error: "INTERNAL_SERVER_ERROR" };
   }
 }
 

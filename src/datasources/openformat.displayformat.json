@@ -91,7 +91,7 @@
         }
       ],
       "language": "dkabm.dc:language.not(dcterms:ISO639-2)",
-      "iso639-2": "dkabm.dc:language",
+      "iso639-2": "dkabm.dc:language.dcterms:ISO639-2",
       "languages": {
         "languageMain":"dkabm.dc:language.dcterms:ISO639-2",
         "languageSpoken": "dkabm.dc:language.dkdcplus:spoken",

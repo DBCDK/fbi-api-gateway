@@ -1,12 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`default schema transform 1`] = `
-"type AdminData {
-  creationDate: String
-  requestButton: Boolean
-}
-
-type Cover {
+"type Cover {
   detail_117: String
   detail_207: String
   detail_42: String
@@ -15,23 +10,64 @@ type Cover {
   detail: String
 }
 
-type Creator {
-  functionCode: String!
-  functionSingular: String!
-  functionPlural: String!
-  name: String!
-  type: String!
-  description: String!
-  imageUrl: String
+enum AccessTypeCode {
+  PHYSICAL
+  ONLINE
+  NOT_SPECIFIED
 }
 
-type DK5 {
-  searchCode: String!
-  searchString: String!
-  value: String!
+type AccessType {
+  display: String!
+  code: AccessTypeCode!
 }
 
-type Draft_Translation {
+type Ereol {
+  \\"\\"\\"
+  The origin, e.g. \\"Ereolen\\" or \\"Ereolen Go\\"
+  \\"\\"\\"
+  origin: String!
+
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
+  url: String!
+
+  \\"\\"\\"
+  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
+  \\"\\"\\"
+  canAlwaysBeLoaned: Boolean!
+}
+
+type URLE {
+  \\"\\"\\"
+  The origin, e.g. \\"DBC Webarkiv\\"
+  \\"\\"\\"
+  origin: String!
+
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
+  url: String!
+}
+
+type InterLibraryLoan {
+  \\"\\"\\"Is true when manifestation can be borrowed via ill\\"\\"\\"
+  loanIsPossible: Boolean!
+}
+
+type InfomediaService {
+  \\"\\"\\"
+  Infomedia ID which can be used to fetch article through Infomedia Service
+  \\"\\"\\"
+  id: String!
+}
+
+type DigitalArticleService {
+  \\"\\"\\"
+  Issn which can be used to order article through Digital Article Service
+  \\"\\"\\"
+  issn: String!
+}
+
+union Access = URLE | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+
+type Translation {
   \\"\\"\\"
   Translation in plural form, e.g. forfattere, komponister, instruktører etc.
   \\"\\"\\"
@@ -41,7 +77,7 @@ type Draft_Translation {
   singular: String!
 }
 
-type Draft_Role {
+type Role {
   \\"\\"\\"
   The code for the type of creator or contributor, e.g. 'aut' for author, 'ill' for illustrator etc
   \\"\\"\\"
@@ -50,10 +86,10 @@ type Draft_Role {
   \\"\\"\\"
   The type of creator/contributor as text in singular and plural in Danish, e.g. forfatter/forfattere, komponist/komponister etc
   \\"\\"\\"
-  function: Draft_Translation!
+  function: Translation!
 }
 
-type Draft_Person implements Draft_Subject & Draft_Creator {
+type Person implements Subject & Creator {
   \\"\\"\\"The person's whole name in normal order\\"\\"\\"
   display: String!
 
@@ -76,15 +112,15 @@ type Draft_Person implements Draft_Subject & Draft_Creator {
   attributeToName: String
 
   \\"\\"\\"Creator aliases, creators behind used pseudonym\\"\\"\\"
-  aliases: [Draft_Person!]!
+  aliases: [Person!]!
 
   \\"\\"\\"
   A list of which kinds of contributions this person made to this creation
   \\"\\"\\"
-  roles: [Draft_Role!]!
+  roles: [Role!]!
 }
 
-type Draft_Corporation implements Draft_Subject & Draft_Creator {
+type Corporation implements Subject & Creator {
   \\"\\"\\"The full corporation or conference name\\"\\"\\"
   display: String!
 
@@ -116,10 +152,10 @@ type Draft_Corporation implements Draft_Subject & Draft_Creator {
   \\"\\"\\"
   A list of which kinds of contributions this corporation made to this creation
   \\"\\"\\"
-  roles: [Draft_Role!]!
+  roles: [Role!]!
 }
 
-interface Draft_Creator {
+interface Creator {
   \\"\\"\\"Name of the creator\\"\\"\\"
   display: String!
 
@@ -127,13 +163,44 @@ interface Draft_Creator {
   nameSort: String!
 }
 
-type Draft_TableOfContent {
-  heading: String
-  content: String
-  listOfContent: [Draft_TableOfContent!]
+enum InfomediaError {
+  SERVICE_NOT_LICENSED
+  SERVICE_UNAVAILABLE
+  LIBRARY_NOT_FOUND
+  ERROR_IN_REQUEST
+  BORROWER_NOT_LOGGED_IN
+  BORROWER_NOT_FOUND
+  BORROWERCHECK_NOT_ALLOWED
+  INTERNAL_SERVER_ERROR
+  BORROWER_NOT_IN_MUNICIPALITY
 }
 
-type Draft_Shelfmark {
+type InfomediaResponse {
+  \\"\\"\\"Infomedia error\\"\\"\\"
+  error: InfomediaError
+  article: InfomediaArticle
+}
+
+type InfomediaArticle {
+  id: String!
+  headLine: String
+  subHeadLine: String
+  byLine: String
+  dateLine: String
+  paper: String
+  text: String
+  hedLine: String
+  logo: String
+  html: String
+}
+
+type TableOfContent {
+  heading: String
+  content: String
+  listOfContent: [TableOfContent!]
+}
+
+type Shelfmark {
   \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
   postfix: String!
 
@@ -143,14 +210,14 @@ type Draft_Shelfmark {
   shelfmark: String!
 }
 
-type Draft_PublicationYear_2 {
+type PublicationYear_2 {
   display: String!
   year: Int
   endYear: Int
   frequency: String
 }
 
-type Draft_PhysicalDescription {
+type PhysicalDescription {
   \\"\\"\\"
   A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
@@ -191,7 +258,7 @@ type Draft_PhysicalDescription {
   textVsIllustrations: Int
 }
 
-type Draft_RelatedPublication {
+type RelatedPublication {
   \\"\\"\\"
   Notes describing the relation of the related periodical/journal/publication
   \\"\\"\\"
@@ -213,7 +280,7 @@ type Draft_RelatedPublication {
   url: String
 }
 
-enum Draft_NoteType {
+enum NoteType {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
   DISSERTATION
@@ -227,31 +294,31 @@ enum Draft_NoteType {
   RESTRICTIONS_ON_USE
 }
 
-enum Draft_ChildOrAdultCode {
+enum ChildOrAdultCode {
   FOR_CHILDREN
   FOR_ADULTS
 }
 
-type Draft_ChildOrAdult {
+type ChildOrAdult {
   display: String!
-  code: Draft_ChildOrAdultCode!
+  code: ChildOrAdultCode!
 }
 
-enum Draft_SchoolUseCode {
+enum SchoolUseCode {
   FOR_SCHOOL_USE
   FOR_TEACHER
 }
 
-type Draft_SchoolUse {
+type SchoolUse {
   display: String!
-  code: Draft_SchoolUseCode!
+  code: SchoolUseCode!
 }
 
-type Draft_Note {
+type Note {
   \\"\\"\\"
   The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
   \\"\\"\\"
-  type: Draft_NoteType!
+  type: NoteType!
 
   \\"\\"\\"Heading before note\\"\\"\\"
   heading: String
@@ -260,25 +327,25 @@ type Draft_Note {
   display: [String!]!
 }
 
-enum Draft_ManifestationPartType {
+enum ManifestationPartType {
   MUSIC_TRACKS
   SHEET_MUSIC_CONTENT
   PARTS_OF_BOOK
   NOT_SPECIFIED
 }
 
-type Draft_ManifestationPart {
+type ManifestationPart {
   \\"\\"\\"The title of the entry (music track or title of a literary analysis)\\"\\"\\"
   title: String!
 
   \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [Draft_Creator!]!
+  creators: [Creator!]!
 
   \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
-  classifications: [Draft_Classification!]!
+  classifications: [Classification!]!
 
   \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [Draft_Subject!]
+  subjects: [Subject!]
 
   \\"\\"\\"
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
@@ -286,41 +353,41 @@ type Draft_ManifestationPart {
   creatorsFromDescription: [String!]!
 }
 
-type Draft_ManifestationParts {
+type ManifestationParts {
   \\"\\"\\"Heading for the music content note\\"\\"\\"
   heading: String
 
   \\"\\"\\"The creator and title etc of the individual parts\\"\\"\\"
-  parts: [Draft_ManifestationPart!]!
+  parts: [ManifestationPart!]!
 
   \\"\\"\\"The type of manifestation parts, is this music tracks, book parts etc.\\"\\"\\"
-  type: Draft_ManifestationPartType!
+  type: ManifestationPartType!
 }
 
-type Draft_Languages {
+type Languages {
   \\"\\"\\"Main language of this manifestation\\"\\"\\"
-  main: [Draft_Language!]
+  main: [Language!]
 
   \\"\\"\\"Original language of this manifestation\\"\\"\\"
-  original: [Draft_Language!]
+  original: [Language!]
 
   \\"\\"\\"
   Parallel languages of this manifestation, if more languages are printed in the same book
   \\"\\"\\"
-  parallel: [Draft_Language!]
+  parallel: [Language!]
 
   \\"\\"\\"
   Spoken language in this manifestation e.g. dubbed/syncronized language in movie
   \\"\\"\\"
-  spoken: [Draft_Language!]
+  spoken: [Language!]
 
   \\"\\"\\"Subtitles in this manifestation\\"\\"\\"
-  subtitles: [Draft_Language!]
+  subtitles: [Language!]
 
   \\"\\"\\"
   Summary/abstract languages of this manifestation, if the manifestation contains short summaries of the content in another language
   \\"\\"\\"
-  abstract: [Draft_Language!]
+  abstract: [Language!]
 }
 
 enum IdentifierType {
@@ -336,7 +403,7 @@ enum IdentifierType {
   BARCODE
 }
 
-type Draft_Identifier {
+type Identifier {
   \\"\\"\\"The type of identifier\\"\\"\\"
   type: IdentifierType!
 
@@ -344,7 +411,7 @@ type Draft_Identifier {
   value: String!
 }
 
-type Draft_HostPublication {
+type HostPublication {
   \\"\\"\\"Publication this manifestation can be found in\\"\\"\\"
   title: String!
 
@@ -372,18 +439,18 @@ type Draft_HostPublication {
   publisher: String
 
   \\"\\"\\"Series of the publication this manifestation can be found in\\"\\"\\"
-  series: Draft_GeneralSeries
+  series: Series
 
   \\"\\"\\"
   The publication year of the publication this manifestation can be found in
   \\"\\"\\"
-  year: Draft_PublicationYear
+  year: PublicationYear
 
   \\"\\"\\"All details about the publication this manifestation can be found in\\"\\"\\"
   summary: String!
 }
 
-type Draft_Printing {
+type Printing {
   \\"\\"\\"
   Properties 'printing' and 'publicationYear' as one string, e.g.: '11. oplag, 2020'
   \\"\\"\\"
@@ -393,17 +460,17 @@ type Draft_Printing {
   printing: String!
 
   \\"\\"\\"A year as displayable text and as number\\"\\"\\"
-  publicationYear: Draft_PublicationYear
+  publicationYear: PublicationYear
 }
 
-type Draft_PublicationYear {
+type PublicationYear {
   display: String!
   year: Int
   endYear: Int
   frequency: String
 }
 
-type Draft_Edition {
+type Edition {
   \\"\\"\\"
   Properties 'edition', 'contributorsToEdition' and 'publicationYear' as one string, e.g.: '3. udgave, revideret af Hugin Eide, 2005'
   \\"\\"\\"
@@ -416,16 +483,16 @@ type Draft_Edition {
   contributors: [String!]!
 
   \\"\\"\\"A year as displayable text and as number\\"\\"\\"
-  publicationYear: Draft_PublicationYear
+  publicationYear: PublicationYear
 }
 
-enum Draft_EntryType {
+enum EntryType {
   MAIN_ENTRY
   NATIONAL_BIBLIOGRAPHY_ENTRY
   ADDITIONAL_ENTRY
 }
 
-type Draft_Classification {
+type Classification {
   \\"\\"\\"The classification code\\"\\"\\"
   code: String!
 
@@ -435,31 +502,31 @@ type Draft_Classification {
   \\"\\"\\"
   For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
   \\"\\"\\"
-  entryType: Draft_EntryType
+  entryType: EntryType
 
   \\"\\"\\"Name of the classification system\\"\\"\\"
   system: String!
 }
 
-type Draft_Audience {
+type Audience {
   \\"\\"\\"Appropriate audience for this manifestation\\"\\"\\"
   generalAudience: [String!]!
 
   \\"\\"\\"
   Range of numbers with either beginning of range or end of range or both e.g. 6-10, 1980-1999
   \\"\\"\\"
-  ages: [Draft_Range!]!
+  ages: [Range!]!
 
   \\"\\"\\"Appropriate audience as recommended by the library\\"\\"\\"
   libraryRecommendation: String
 
   \\"\\"\\"Is this material for children or adults\\"\\"\\"
-  childrenOrAdults: [Draft_ChildOrAdult!]!
+  childrenOrAdults: [ChildOrAdult!]!
 
   \\"\\"\\"
   Is this material for use in schools (folkeskole/ungdomsuddannelse) or is this material for use in schools by the teacher (folkeskole only)
   \\"\\"\\"
-  schoolUse: [Draft_SchoolUse!]!
+  schoolUse: [SchoolUse!]!
 
   \\"\\"\\"Primary target audience for this manifestation\\"\\"\\"
   primaryTarget: [String!]!
@@ -475,56 +542,59 @@ type Draft_Audience {
   lix: String
 }
 
-enum Draft_AccessTypeCode {
-  PHYSICAL
-  ONLINE
-  NOT_SPECIFIED
+type CatalogueCodes {
+  \\"\\"\\"Catalogue codes for the national bibliography \\"\\"\\"
+  nationalBibliography: [String]!
+
+  \\"\\"\\"other catalogue codes \\"\\"\\"
+  otherCatalogues: [String]!
 }
 
-type Draft_AccessType {
-  display: String!
-  code: Draft_AccessTypeCode!
+type Manifestations {
+  first: Manifestation!
+  latest: Manifestation!
+  all: [Manifestation!]!
 }
 
-type Draft_Manifestations {
-  first: Draft_Manifestation!
-  latest: Draft_Manifestation!
-  all: [Draft_Manifestation!]!
-}
-
-type Draft_Manifestation {
+type Manifestation {
   \\"\\"\\"Unique identification of the manifestation e.g 870970-basis:54029519\\"\\"\\"
   pid: String!
 
   \\"\\"\\"Different kinds of titles for this work\\"\\"\\"
-  titles: Draft_ManifestationTitles!
+  titles: ManifestationTitles!
 
   \\"\\"\\"Abstract of the entity\\"\\"\\"
   abstract: [String!]!
 
   \\"\\"\\"Access type of this manifestation\\"\\"\\"
-  accessTypes: [Draft_AccessType!]!
+  accessTypes: [AccessType!]!
 
   \\"\\"\\"Different options to access manifestation\\"\\"\\"
-  access: [Draft_Access!]!
+  access: [Access!]!
 
   \\"\\"\\"
   Different kinds of definitions of appropriate audience for this manifestation
   \\"\\"\\"
-  audience: Draft_Audience
+  audience: Audience
+
+  \\"\\"\\"CatalogueCodes for nationalBibliography and others\\"\\"\\"
+  catalogueCodes: CatalogueCodes
 
   \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
-  contributors: [Draft_Creator!]!
+  contributors: [Creator!]!
 
   \\"\\"\\"
   Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
   \\"\\"\\"
   contributorsFromDescription: [String!]!
 
+  \\"\\"\\"Cover for this manifestation\\"\\"\\"
+  cover: Cover!
+
   \\"\\"\\"
   Primary creators of the manifestation e.g. authors, directors, musicians etc
   \\"\\"\\"
-  creators: [Draft_Creator!]!
+  creators: [Creator!]!
 
   \\"\\"\\"
   Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
@@ -534,54 +604,54 @@ type Draft_Manifestation {
   \\"\\"\\"
   Classification codes for this manifestation from any classification system
   \\"\\"\\"
-  classifications: [Draft_Classification!]!
+  classifications: [Classification!]!
 
   \\"\\"\\"Edition details for this manifestation\\"\\"\\"
-  edition: Draft_Edition!
+  edition: Edition!
 
   \\"\\"\\"Details about the latest printing of this manifestation\\"\\"\\"
-  latestPrinting: Draft_Printing
+  latestPrinting: Printing
 
   \\"\\"\\"
   Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
   \\"\\"\\"
-  fictionNonfiction: Draft_FictionNonfiction
+  fictionNonfiction: FictionNonfiction
 
   \\"\\"\\"The genre, (literary) form, type etc. of this manifestation\\"\\"\\"
   genreAndForm: [String!]!
 
   \\"\\"\\"Details about the host publications of this manifestation\\"\\"\\"
-  hostPublication: Draft_HostPublication
+  hostPublication: HostPublication
 
   \\"\\"\\"Identifiers for this manifestation - often used for search indexes\\"\\"\\"
-  identifiers: [Draft_Identifier!]!
+  identifiers: [Identifier!]!
 
   \\"\\"\\"Languages in this manifestation\\"\\"\\"
-  languages: Draft_Languages
+  languages: Languages
 
   \\"\\"\\"
   Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
   \\"\\"\\"
-  manifestationParts: Draft_ManifestationParts
+  manifestationParts: ManifestationParts
 
   \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  materialTypes: Draft_MaterialTypes!
+  materialTypes: [MaterialType!]!
 
   \\"\\"\\"Notes about the manifestation\\"\\"\\"
-  notes: [Draft_Note!]!
+  notes: [Note!]!
 
   \\"\\"\\"
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   \\"\\"\\"
-  relatedPublications: [Draft_RelatedPublication!]!
+  relatedPublications: [RelatedPublication!]!
 
   \\"\\"\\"
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescriptions: [Draft_PhysicalDescription!]!
+  physicalDescriptions: [PhysicalDescription!]!
 
   \\"\\"\\"The publication year of the manifestation - OBS! was datePublished\\"\\"\\"
-  publicationYear: Draft_PublicationYear_2!
+  publicationYear: PublicationYear_2!
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -592,12 +662,12 @@ type Draft_Manifestation {
   recordCreationDate: String!
 
   \\"\\"\\"Series for this work\\"\\"\\"
-  series: Draft_SeriesContainer
+  series: [Series!]!
 
   \\"\\"\\"
   Information about on which shelf in the library this manifestation can be found
   \\"\\"\\"
-  shelfmark: Draft_Shelfmark
+  shelfmark: Shelfmark
 
   \\"\\"\\"
   The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
@@ -605,7 +675,7 @@ type Draft_Manifestation {
   source: [String!]!
 
   \\"\\"\\"Subjects for this manifestation\\"\\"\\"
-  subjects: Draft_SubjectContainer!
+  subjects: SubjectContainer!
 
   \\"\\"\\"
   Information about on which volume this manifestation is in multi volume work
@@ -615,10 +685,10 @@ type Draft_Manifestation {
   \\"\\"\\"
   Quotation of the manifestation's table of contents or a similar content list
   \\"\\"\\"
-  tableOfContents: Draft_TableOfContent
+  tableOfContents: TableOfContent
 }
 
-type Draft_ManifestationTitles {
+type ManifestationTitles {
   \\"\\"\\"The main title(s) of the work\\"\\"\\"
   main: [String!]!
 
@@ -653,124 +723,67 @@ type Draft_ManifestationTitles {
   translated: [String!]
 }
 
-type Draft_Ereol {
-  \\"\\"\\"
-  The origin, e.g. \\"Ereolen\\" or \\"Ereolen Go\\"
-  \\"\\"\\"
-  origin: String!
-
-  \\"\\"\\"The url where manifestation is located\\"\\"\\"
-  url: String!
-
-  \\"\\"\\"
-  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
-  \\"\\"\\"
-  canAlwaysBeLoaned: Boolean!
-}
-
-type Draft_URL {
-  \\"\\"\\"
-  The origin, e.g. \\"DBC Webarkiv\\"
-  \\"\\"\\"
-  origin: String!
-
-  \\"\\"\\"The url where manifestation is located\\"\\"\\"
-  url: String!
-}
-
-type Draft_Ill {
-  \\"\\"\\"Is true when manifestation can be borrowed via ill\\"\\"\\"
-  ill: Boolean!
-}
-
-type Draft_InfomediaService {
-  \\"\\"\\"
-  Infomedia ID which can be used to fetch article through Infomedia Service
-  \\"\\"\\"
-  id: String!
-}
-
-type Draft_DigitalArticleService {
-  \\"\\"\\"
-  Issn which can be used to order article through Digital Article Service
-  \\"\\"\\"
-  issn: String!
-
-  \\"\\"\\"
-  Is true when access token belongs to a user whose municipality of residence is subscribed to Digital Article Service  
-  \\"\\"\\"
-  subscribed: Boolean!
-}
-
-union Draft_Access = Draft_URL | Draft_Ereol | Draft_Ill | Draft_InfomediaService | Draft_DigitalArticleService
-
 type Mutation {
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!): PeriodicaArticleOrderResponse!
 }
 
-type Draft_Query {
-  work(id: String, faust: String, pid: String): Draft_Work
-  works(id: [String!], faust: [String!], pid: [String!]): [Draft_Work]!
-  manifestation(faust: String, pid: String): Draft_Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Draft_Manifestation]!
-  suggest(
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"
-    work type to include in the result
-    Note: Is only supported in the bibdk suggester
-    \\"\\"\\"
-    workType: WorkType
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: Draft_SuggestionType
-  ): Draft_SuggestResponse!
-
-  \\"\\"\\"Get recommendations based on a pid\\"\\"\\"
-  recommend(pid: String!): Draft_RecommendationResponse!
-
-  \\"\\"\\"Search\\"\\"\\"
-  search(q: SearchQuery!): Draft_SearchResponse!
-}
-
-type Query {
-  draft: Draft_Query!
-  manifestation(pid: String!): WorkManifestation!
-  work(id: String, faust: String): Work
-  works(id: [String!], faust: [String!]): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
-  suggest(q: String!, worktype: WorkType, suggesttype: String): SuggestResponse!
-  infomediaContent(pid: String!): [InfomediaContent]
-  refWorks(pid: String!): String!
-  ris(pid: String!): String!
-}
-
-type Draft_Recommendation {
+type Recommendation {
   \\"\\"\\"The recommended work\\"\\"\\"
-  work: Draft_Work!
+  work: Work!
 
   \\"\\"\\"The recommended manifestation\\"\\"\\"
-  manifestation: Draft_Manifestation!
+  manifestation: Manifestation!
+
+  \\"\\"\\"Info on how this recommendation was generated\\"\\"\\"
+  reader: [String!]!
 }
 
-type Draft_RecommendationResponse {
-  result: [Draft_Recommendation!]!
+type RecommendationResponse {
+  result: [Recommendation!]!
 }
 
-interface Draft_Review {
+enum LibrariansReviewSectionCode {
+  ALL
+  ABOUT
+  DESCRIPTION
+  EVALUATION
+  OTHER
+  LIBRARY
+  USE
+  OLDDESCRIPTION
+  COMPARE
+  CONCLUSION
+}
+
+type LibrariansReviewSection {
+  \\"\\"\\"a code indicating the content type of the section\\"\\"\\"
+  code: LibrariansReviewSectionCode!
+
+  \\"\\"\\"The heading of the section\\"\\"\\"
+  heading: String
+
+  \\"\\"\\"A piece of text, maybe mentioning a work at the end.\\"\\"\\"
+  text: String!
+
+  \\"\\"\\"
+  The work the text is refering to. When work is null, the text does not refer to a work.
+  \\"\\"\\"
+  work: Work
+}
+
+interface Review {
   author: String
   date: String
 }
 
-type Draft_ExternalReview implements Draft_Review {
+type ExternalReview implements Review {
   author: String
   date: String
   rating: String
-  urls: [Draft_URL!]!
+  urls: [URLE!]!
 }
 
-type Draft_InfomediaReview implements Draft_Review {
+type InfomediaReview implements Review {
   author: String
   date: String
   origin: String
@@ -778,97 +791,79 @@ type Draft_InfomediaReview implements Draft_Review {
   id: String!
 }
 
-type Draft_LibrariansReview implements Draft_Review {
+type LibrariansReview implements Review {
   author: String
   date: String
-  sections: [TextWithWork!]!
+  sections: [LibrariansReviewSection!]!
 
   \\"\\"\\" This is a pid \\"\\"\\"
   id: String!
 }
 
-type Draft_Work {
-  reviews: [Draft_Review!]!
+type Work {
+  reviews: [Review!]!
 
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
   \\"\\"\\"
   workId: String!
-  titles: Draft_WorkTitles!
+  titles: WorkTitles!
 
   \\"\\"\\"Abstract of the entity\\"\\"\\"
   abstract: [String!]
 
   \\"\\"\\"Creators\\"\\"\\"
-  creators: [Draft_Creator!]!
+  creators: [Creator!]!
 
   \\"\\"\\"DK5 main entry for this work\\"\\"\\"
-  dk5MainEntry: Draft_DK5MainEntry
+  dk5MainEntry: DK5MainEntry
 
   \\"\\"\\"
   Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
   \\"\\"\\"
-  fictionNonfiction: Draft_FictionNonfiction
+  fictionNonfiction: FictionNonfiction
 
   \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  materialTypes: Draft_MaterialTypes!
+  materialTypes: [MaterialType!]!
 
   \\"\\"\\"Series for this work\\"\\"\\"
-  series: Draft_SeriesContainer
+  series: [Series!]!
+
+  \\"\\"\\"Members of a series that this work is part of\\"\\"\\"
+  seriesMembers: [Work!]!
 
   \\"\\"\\"
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
   \\"\\"\\"
-  universe: Draft_Universe
+  universe: Universe
 
   \\"\\"\\"Subjects for this work\\"\\"\\"
-  subjects: Draft_SubjectContainer!
+  subjects: SubjectContainer!
 
   \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
   genreAndForm: [String!]!
 
   \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
-  workTypes: [Draft_WorkType!]!
+  workTypes: [WorkType!]!
 
   \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
   workYear: String
 
   \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
-  mainLanguages: [Draft_Language!]!
+  mainLanguages: [Language!]!
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
-  manifestations: Draft_Manifestations!
+  manifestations: Manifestations!
 }
 
-type Draft_FacetTerm {
-  term: String!
-  count: Int!
-  facetCategory: String!
-  popular: Boolean!
-}
-
-type Draft_FacetResponse {
-  categories: [Draft_Facet!]!
-  popular: [Draft_FacetTerm!]!
-}
-
-type Draft_Facet {
-  facetCategory: String!
-  values: [Draft_FacetTerm!]!
-}
-
-type Draft_SearchResponse {
-  facets: Draft_FacetResponse
-}
-
-type Draft_Universe {
+type Universe {
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Universe
   \\"\\"\\"
   title: String!
 }
 
-type Draft_NumberInSeries {
+type NumberInSeries {
   \\"\\"\\"
   The number in the series as text, quoted form the publication, e.g. 'Vol. IX'
   \\"\\"\\"
@@ -878,31 +873,20 @@ type Draft_NumberInSeries {
   number: Int!
 }
 
-type Draft_GeneralSeries {
-  \\"\\"\\"The title of the series\\"\\"\\"
-  title: String!
-
-  \\"\\"\\"
-  A parallel title to the main 'title' of the series, in a different language
-  \\"\\"\\"
-  parallelTitles: [String!]!
-
-  \\"\\"\\"The number in the series as text quotation and a number\\"\\"\\"
-  numberInSeries: Draft_NumberInSeries
-
-  \\"\\"\\"Works in the series\\"\\"\\"
-  works: [Work!]!
-}
-
-type Draft_PopularSeries {
+type Series {
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 
   \\"\\"\\"A alternative title to the main 'title' of the series\\"\\"\\"
   alternativeTitles: [String!]!
 
+  \\"\\"\\"
+  A parallel title to the main 'title' of the series, in a different language
+  \\"\\"\\"
+  parallelTitles: [String!]!
+
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: Draft_NumberInSeries
+  numberInSeries: NumberInSeries
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean
@@ -912,30 +896,25 @@ type Draft_PopularSeries {
   \\"\\"\\"
   readThisWhenever: Boolean
 
-  \\"\\"\\"Works in the series\\"\\"\\"
-  works: [Work!]!
+  \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
+  isPopular: Boolean
 }
 
-type Draft_SeriesContainer {
-  all: [Draft_GeneralSeries!]!
-  popular: [Draft_PopularSeries!]!
-}
-
-interface Draft_Subject {
+interface Subject {
   display: String!
 }
 
-type Draft_SubjectText implements Draft_Subject {
-  type: Draft_SubjectType!
+type SubjectText implements Subject {
+  type: SubjectType!
   display: String!
 }
 
-type Draft_TimePeriod implements Draft_Subject {
-  period: Draft_Range!
+type TimePeriod implements Subject {
+  period: Range!
   display: String!
 }
 
-enum Draft_SubjectType {
+enum SubjectType {
   TOPIC
   LOCATION
   FICTIONAL_CHARACTER
@@ -947,42 +926,43 @@ enum Draft_SubjectType {
   LIBRARY_OF_CONGRESS_SUBJECT_HEADING
 }
 
-type Draft_Range {
+type Range {
   begin: Int
   end: Int
   display: String!
 }
 
-type Draft_SubjectContainer {
+type SubjectContainer {
   \\"\\"\\"All subjects\\"\\"\\"
-  all: [Draft_Subject!]!
+  all: [Subject!]!
 
   \\"\\"\\"Only DBC verified subjects\\"\\"\\"
-  dbcVerified: [Draft_Subject!]!
+  dbcVerified: [Subject!]!
 }
 
-enum Draft_SuggestionType {
-  subject
-  title
-  creator
+enum SuggestionType {
+  SUBJECT
+  TITLE
+  CREATOR
+  COMPOSIT
 }
 
-type Draft_Suggestion {
+type Suggestion {
   \\"\\"\\"The type of suggestion: creator, subject or title\\"\\"\\"
-  type: Draft_SuggestionType!
+  type: SuggestionType!
 
   \\"\\"\\"The suggested term which can be searched for\\"\\"\\"
   term: String!
 
   \\"\\"\\"A work related to the term\\"\\"\\"
-  work: Draft_Work
+  work: Work
 }
 
-type Draft_SuggestResponse {
-  result: [Draft_Suggestion!]!
+type SuggestResponse {
+  result: [Suggestion!]!
 }
 
-type Draft_Language {
+type Language {
   \\"\\"\\"Language as displayable text\\"\\"\\"
   display: String!
 
@@ -990,33 +970,33 @@ type Draft_Language {
   isoCode: String!
 }
 
-type Draft_MaterialTypes {
+type MaterialType {
   \\"\\"\\"
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
   \\"\\"\\"
-  general: [String!]!
+  general: String!
 
   \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  specific: [String!]!
+  specific: String!
 }
 
-enum Draft_FictionNonfictionCode {
+enum FictionNonfictionCode {
   FICTION
   NONFICTION
   NOT_SPECIFIED
 }
 
-type Draft_FictionNonfiction {
+type FictionNonfiction {
   \\"\\"\\"
   Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
   \\"\\"\\"
   display: String!
 
   \\"\\"\\"Binary code fiction/nonfiction used for filtering\\"\\"\\"
-  code: Draft_FictionNonfictionCode!
+  code: FictionNonfictionCode!
 }
 
-type Draft_DK5MainEntry {
+type DK5MainEntry {
   \\"\\"\\"Displayable main DK5 classification\\"\\"\\"
   display: String!
 
@@ -1024,7 +1004,7 @@ type Draft_DK5MainEntry {
   code: String!
 }
 
-enum Draft_WorkType {
+enum WorkType {
   ANALYSIS
   ARTICLE
   BOOKDESCRIPTION
@@ -1041,7 +1021,7 @@ enum Draft_WorkType {
   TRACK
 }
 
-type Draft_WorkTitles {
+type WorkTitles {
   \\"\\"\\"The main title(s) of the work\\"\\"\\"
   main: [String!]!
 
@@ -1066,60 +1046,10 @@ type Draft_WorkTitles {
   translated: [String!]
 }
 
-type InfomediaContent {
-  id: String!
-  headLine: String!
-  subHeadLine: String!
-  byLine: String!
-  dateLine: String!
-  paper: String!
-  text: String!
-  hedLine: String!
-  logo: String!
-  origin: String!
-  html: String!
+enum LanguageCode {
+  da
+  en
 }
-
-type Localizations {
-  count: Int
-  agencies: [holdingAgency]
-}
-
-type holdingAgency {
-  agencyId: String
-  holdingItems: [holdingsItem]
-}
-
-type holdingsItem {
-  localizationPid: String
-  codes: String
-  localIdentifier: String
-}
-
-type UrlReference {
-  url: String!
-  origin: String!
-  note: String!
-  accessType: String
-}
-
-type InfomediaReference {
-  infomediaId: String!
-  pid: String!
-  error: String
-}
-
-type WebArchive {
-  type: String!
-  url: String!
-  pid: String!
-}
-
-type DigitalCopy {
-  issn: String!
-}
-
-union OnlineAccess = UrlReference | InfomediaReference | WebArchive | DigitalCopy
 
 input PeriodicaArticleOrder {
   \\"\\"\\"The pid of an article or periodica\\"\\"\\"
@@ -1146,62 +1076,35 @@ type PeriodicaArticleOrderResponse {
   status: PeriodicaArticleOrderStatus!
 }
 
-type Recommendation {
-  work: Work!
-  manifestation: WorkManifestation!
-  reader: String
-  value: Float
+type Query {
+  manifestation(pid: String, faust: String): Manifestation
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
+  work(id: String, faust: String, pid: String, language: LanguageCode): Work
+  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
+  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
+  suggest(
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"
+    work type to include in the result
+    Note: Is only supported in the bibdk suggester
+    \\"\\"\\"
+    workType: WorkType
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: SuggestionType
+  ): SuggestResponse!
+
+  \\"\\"\\"Get recommendations\\"\\"\\"
+  recommend(id: String, pid: String, faust: String, limit: Int): RecommendationResponse!
+  infomedia(id: String!): InfomediaResponse!
+  refWorks(pid: String!): String!
+  ris(pid: String!): String!
 }
-
-type ReviewInfomedia {
-  author: String!
-  date: String!
-  media: String!
-  rating: String!
-  reference: [InfomediaReference]
-}
-
-type ReviewExternalMedia {
-  author: String!
-  date: String!
-  media: String!
-  rating: String!
-  url: String!
-  alternateUrl: String
-}
-
-type ReviewMatVurd {
-  author: String!
-  date: String!
-  all: [TextWithWork!]!
-  about: [TextWithWork!]!
-  description: [TextWithWork!]!
-  evaluation: [TextWithWork!]!
-  other: [TextWithWork!]!
-}
-
-type TextWithWork {
-  name: String! @deprecated(reason: \\"Use heading instead\\")
-  heading: String!
-
-  \\"\\"\\"A piece of text mentioning a work at the end.\\"\\"\\"
-  text: String!
-
-  \\"\\"\\"
-  The work the text is refering to. When work is null, the text does not refer to a work.
-  \\"\\"\\"
-  work: Work
-}
-
-union Review = ReviewInfomedia | ReviewExternalMedia | ReviewMatVurd
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
 scalar PaginationLimit
-
-\\"\\"\\"
-Using dayjs to format dates and support localization. https://day.js.org/docs/en/display/format
-\\"\\"\\"
-scalar CustomDateFormat
 
 \\"\\"\\"The supported fields to query\\"\\"\\"
 input SearchQuery {
@@ -1286,117 +1189,11 @@ type SearchResponse {
   \\"\\"\\"
   facets(facets: [FacetField!]!): [FacetResult!]!
 }
-
-type Series {
-  part: String
-  title: String
-  works: [Work!]!
-}
-
-type Subject {
-  type: String
-  value: String!
-}
-
-union SuggestRow = Creator | Subject | Work
-
-type SuggestResponse {
-  result: [SuggestRow!]!
-}
-
-enum WorkType {
-  analysis
-  article
-  bookdescription
-  game
-  literature
-  map
-  movie
-  music
-  none
-  periodica
-  portrait
-  review
-  sheetmusic
-  track
-}
-
-type MaterialType {
-  materialType: String!
-  cover: Cover!
-  localizations: Localizations
-  manifestations: [WorkManifestation!]!
-}
-
-type Work {
-  title: String
-  fullTitle: String
-  description: String
-  creators: [Creator!]!
-  cover: Cover!
-  id: String!
-  manifestations: [WorkManifestation!]!
-  materialTypes: [MaterialType!]!
-  path: [String!]!
-  reviews: [Review!]!
-  series: Series
-  subjects: [Subject!]!
-  workTypes: [WorkType!]!
-}
-
-type Shelf {
-  prefix: String
-  shelfmark: String
-}
-
-type HostPublication {
-  title: String!
-  details: String!
-}
-
-type WorkManifestation {
-  content: [String!]
-  cover: Cover!
-  creators: [Creator!]!
-  datePublished(locale: String, format: String): CustomDateFormat!
-  description: String!
-  dk5: [DK5!]!
-  edition: String!
-  fullTitle: String!
-
-  \\"\\"\\"
-  Where this manifestation is published. For instance, in which magazine an article is published.
-  \\"\\"\\"
-  hostPublication: HostPublication
-  hostPublicationPid: String
-  isbn: String
-  language: [String!]!
-  materialType: String!
-  notes: [String!]!
-  onlineAccess: [OnlineAccess!]!
-  originals: [String!]!
-  originalTitle: String
-  physicalDescription: String!
-  pid: String!
-  publisher: [String!]!
-  shelf: Shelf
-  title: String
-  recommendations(limit: Int): [Recommendation]!
-  admin: AdminData
-  inLanguage: String
-  usedLanguage: [String]
-  physicalDescriptionArticles: String
-  volume: String
-}
 "
 `;
 
 exports[`limited access to root fields 1`] = `
-"type Query {
-  help(q: String!, language: LanguageCode): HelpResponse
-}
-
-type HelpRow {
+"type HelpRow {
   nid: Int!
   group: String!
   orgTitle: String!
@@ -1412,252 +1209,800 @@ enum LanguageCode {
   da
   en
 }
+
+type Query {
+  help(q: String!, language: LanguageCode): HelpResponse
+}
 "
 `;
 
 exports[`remove all fields by type 1`] = `
-"type AdminData {
-  creationDate: String
-  requestButton: Boolean
+"enum AccessTypeCode {
+  PHYSICAL
+  ONLINE
+  NOT_SPECIFIED
 }
 
-type Availability {
-  willLend: Boolean
-  expectedDelivery: String
-  orderPossible: Boolean
-  orderPossibleReason: String
+type AccessType {
+  display: String!
+  code: AccessTypeCode!
 }
 
-enum OrderPossibleReason {
-  OWNED_ACCEPTED
-  NOT_OWNED_ILL_LOC
-  OWNED_WRONG_MEDIUMTYPE
-  NOT_OWNED_WRONG_ILL_MEDIUMTYPE
-  NOT_OWNED_NO_ILL_LOC
-  OWNED_OWN_CATALOGUE
-  NOT_OWNED_ACCEPTED_BY_CONSORTIA
-}
-
-type CheckOrderPolicy {
-  lookUpUrl: String
-  orderPossible: Boolean
-  orderPossibleReason: OrderPossibleReason
-}
-
-type Creator {
-  functionCode: String!
-  functionSingular: String!
-  functionPlural: String!
-  name: String!
-  type: String!
-  description: String!
-  imageUrl: String
-}
-
-type DK5 {
-  searchCode: String!
-  searchString: String!
-  value: String!
-}
-
-type Query {
-  manifestation(pid: String!): WorkManifestation!
-}
-
-type Localizations {
-  count: Int
-  agencies: [holdingAgency]
-}
-
-type holdingAgency {
-  agencyId: String
-  holdingItems: [holdingsItem]
-}
-
-type holdingsItem {
-  localizationPid: String
-  codes: String
-  localIdentifier: String
-}
-
-type UrlReference {
-  url: String!
+type Ereol {
+  \\"\\"\\"
+  The origin, e.g. \\"Ereolen\\" or \\"Ereolen Go\\"
+  \\"\\"\\"
   origin: String!
-  note: String!
-  accessType: String
-}
 
-type InfomediaReference {
-  infomediaId: String!
-  pid: String!
-  error: String
-}
-
-type WebArchive {
-  type: String!
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
   url: String!
-  pid: String!
+
+  \\"\\"\\"
+  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
+  \\"\\"\\"
+  canAlwaysBeLoaned: Boolean!
 }
 
-type DigitalCopy {
+type URLE {
+  \\"\\"\\"
+  The origin, e.g. \\"DBC Webarkiv\\"
+  \\"\\"\\"
+  origin: String!
+
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
+  url: String!
+}
+
+type InterLibraryLoan {
+  \\"\\"\\"Is true when manifestation can be borrowed via ill\\"\\"\\"
+  loanIsPossible: Boolean!
+}
+
+type InfomediaService {
+  \\"\\"\\"
+  Infomedia ID which can be used to fetch article through Infomedia Service
+  \\"\\"\\"
+  id: String!
+}
+
+type DigitalArticleService {
+  \\"\\"\\"
+  Issn which can be used to order article through Digital Article Service
+  \\"\\"\\"
   issn: String!
 }
 
-union OnlineAccess = UrlReference | InfomediaReference | WebArchive | DigitalCopy
+union Access = URLE | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 
-type Recommendation {
-  work: Work!
-  manifestation: WorkManifestation!
-  reader: String
-  value: Float
+type Translation {
+  \\"\\"\\"
+  Translation in plural form, e.g. forfattere, komponister, instruktører etc.
+  \\"\\"\\"
+  plural: String!
+
+  \\"\\"\\"Translation in singular form, e.g. forfatter, komponist, instruktør\\"\\"\\"
+  singular: String!
 }
 
-type ReviewInfomedia {
-  author: String!
-  date: String!
-  media: String!
-  rating: String!
-  reference: [InfomediaReference]
+type Role {
+  \\"\\"\\"
+  The code for the type of creator or contributor, e.g. 'aut' for author, 'ill' for illustrator etc
+  \\"\\"\\"
+  functionCode: String!
+
+  \\"\\"\\"
+  The type of creator/contributor as text in singular and plural in Danish, e.g. forfatter/forfattere, komponist/komponister etc
+  \\"\\"\\"
+  function: Translation!
 }
 
-type ReviewExternalMedia {
-  author: String!
-  date: String!
-  media: String!
-  rating: String!
-  url: String!
-  alternateUrl: String
+type Person implements Subject & Creator {
+  \\"\\"\\"The person's whole name in normal order\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"The person's full name inverted\\"\\"\\"
+  nameSort: String!
+
+  \\"\\"\\"First name of the person\\"\\"\\"
+  firstName: String
+
+  \\"\\"\\"Last name of the person\\"\\"\\"
+  lastName: String
+
+  \\"\\"\\"Birth year of the person\\"\\"\\"
+  birthYear: String
+
+  \\"\\"\\"A roman numeral added to the person, like Christian IV\\"\\"\\"
+  romanNumeral: String
+
+  \\"\\"\\"Added information about the person, like Henri, konge af Frankrig\\"\\"\\"
+  attributeToName: String
+
+  \\"\\"\\"Creator aliases, creators behind used pseudonym\\"\\"\\"
+  aliases: [Person!]!
+
+  \\"\\"\\"
+  A list of which kinds of contributions this person made to this creation
+  \\"\\"\\"
+  roles: [Role!]!
 }
 
-type ReviewMatVurd {
-  author: String!
-  date: String!
-  all: [TextWithWork!]!
-  about: [TextWithWork!]!
-  description: [TextWithWork!]!
-  evaluation: [TextWithWork!]!
-  other: [TextWithWork!]!
+type Corporation implements Subject & Creator {
+  \\"\\"\\"The full corporation or conference name\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"The full corporation or conference name to sort after\\"\\"\\"
+  nameSort: String!
+
+  \\"\\"\\"Main corporation or conference\\"\\"\\"
+  main: String
+
+  \\"\\"\\"Sub corporation or conference/meeting\\"\\"\\"
+  sub: String
+
+  \\"\\"\\"
+  Location or jurisdiction of the corporation or conference, like Københavns Kommune, Statistisk Kontor
+  \\"\\"\\"
+  location: String
+
+  \\"\\"\\"Year of the conference\\"\\"\\"
+  year: String
+
+  \\"\\"\\"Number of the conference\\"\\"\\"
+  number: String
+
+  \\"\\"\\"
+  Added information about the corporation, like M. Folmer Andersen (firma)
+  \\"\\"\\"
+  attributeToName: String
+
+  \\"\\"\\"
+  A list of which kinds of contributions this corporation made to this creation
+  \\"\\"\\"
+  roles: [Role!]!
 }
 
-type TextWithWork {
-  name: String! @deprecated(reason: \\"Use heading instead\\")
+interface Creator {
+  \\"\\"\\"Name of the creator\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Name of the creator which can be used to sort after \\"\\"\\"
+  nameSort: String!
+}
+
+type TableOfContent {
+  heading: String
+  content: String
+  listOfContent: [TableOfContent!]
+}
+
+type Shelfmark {
+  \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
+  postfix: String!
+
+  \\"\\"\\"
+  The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
+  \\"\\"\\"
+  shelfmark: String!
+}
+
+type PublicationYear_2 {
+  display: String!
+  year: Int
+  endYear: Int
+  frequency: String
+}
+
+type PhysicalDescription {
+  \\"\\"\\"
+  A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  summary: String!
+
+  \\"\\"\\"Material that comes with the manifestation (bilag)\\"\\"\\"
+  accompanyingMaterial: String
+
+  \\"\\"\\"
+  Additional physical description of the manifestation (e.g illustrations etc)
+  \\"\\"\\"
+  additionalDescription: String
+
+  \\"\\"\\"Extent of the manifestation like pages and number of items\\"\\"\\"
+  extent: String
+
+  \\"\\"\\"Number of pages of the manifestation as number\\"\\"\\"
+  numberOfPages: Int
+
+  \\"\\"\\"Number of units, like 3 cassettes, or 1 score etc.\\"\\"\\"
+  numberOfUnits: Int
+
+  \\"\\"\\"The playing time of the manifestation (e.g 2 hours 5 minutes)\\"\\"\\"
+  playingTime: String
+
+  \\"\\"\\"The necessary equipment to use the material\\"\\"\\"
+  requirements: String
+
+  \\"\\"\\"Size of the manifestation\\"\\"\\"
+  size: String
+
+  \\"\\"\\"Technical information about the manifestation (e.g blu-ray disc)\\"\\"\\"
+  technicalInformation: String
+
+  \\"\\"\\"
+  Ratio of text vs. illustration from 1-5 as a number, where 1 means no illustrations and 5 means illustrations on all pages
+  \\"\\"\\"
+  textVsIllustrations: Int
+}
+
+type RelatedPublication {
+  \\"\\"\\"
+  Notes describing the relation of the related periodical/journal/publication
+  \\"\\"\\"
   heading: String!
 
-  \\"\\"\\"A piece of text mentioning a work at the end.\\"\\"\\"
-  text: String!
+  \\"\\"\\"Title of the related periodical/journal\\"\\"\\"
+  title: [String!]!
 
-  \\"\\"\\"
-  The work the text is refering to. When work is null, the text does not refer to a work.
-  \\"\\"\\"
-  work: Work
+  \\"\\"\\"ISSN of the related periodical/journal/publication\\"\\"\\"
+  issn: String
+
+  \\"\\"\\"ISBN of the related publication\\"\\"\\"
+  isbn: String
+
+  \\"\\"\\"Note regarding the URL of the related publication\\"\\"\\"
+  urlText: String
+
+  \\"\\"\\"URL of the related publication\\"\\"\\"
+  url: String
 }
 
-union Review = ReviewInfomedia | ReviewExternalMedia | ReviewMatVurd
+enum NoteType {
+  CONNECTION_TO_OTHER_WORKS
+  DESCRIPTION_OF_MATERIAL
+  DISSERTATION
+  LANGUAGE
+  MUSICAL_ENSEMBLE_OR_CAST
+  NOT_SPECIFIED
+  OCCASION_FOR_PUBLICATION
+  ORIGINAL_TITLE
+  ORIGINAL_VERSION
+  REFERENCES
+  RESTRICTIONS_ON_USE
+}
 
-\\"\\"\\"
-Using dayjs to format dates and support localization. https://day.js.org/docs/en/display/format
-\\"\\"\\"
-scalar CustomDateFormat
+enum ChildOrAdultCode {
+  FOR_CHILDREN
+  FOR_ADULTS
+}
 
-type SEO {
+type ChildOrAdult {
+  display: String!
+  code: ChildOrAdultCode!
+}
+
+enum SchoolUseCode {
+  FOR_SCHOOL_USE
+  FOR_TEACHER
+}
+
+type SchoolUse {
+  display: String!
+  code: SchoolUseCode!
+}
+
+type Note {
+  \\"\\"\\"
+  The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
+  \\"\\"\\"
+  type: NoteType!
+
+  \\"\\"\\"Heading before note\\"\\"\\"
+  heading: String
+
+  \\"\\"\\"The actual notes\\"\\"\\"
+  display: [String!]!
+}
+
+enum ManifestationPartType {
+  MUSIC_TRACKS
+  SHEET_MUSIC_CONTENT
+  PARTS_OF_BOOK
+  NOT_SPECIFIED
+}
+
+type ManifestationPart {
+  \\"\\"\\"The title of the entry (music track or title of a literary analysis)\\"\\"\\"
   title: String!
-  description: String!
+
+  \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
+  creators: [Creator!]!
+
+  \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
+  classifications: [Classification!]!
+
+  \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
+  subjects: [Subject!]
+
+  \\"\\"\\"
+  Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
+  \\"\\"\\"
+  creatorsFromDescription: [String!]!
 }
 
-type Series {
-  part: String
-  title: String
-  works: [Work!]!
+type ManifestationParts {
+  \\"\\"\\"Heading for the music content note\\"\\"\\"
+  heading: String
+
+  \\"\\"\\"The creator and title etc of the individual parts\\"\\"\\"
+  parts: [ManifestationPart!]!
+
+  \\"\\"\\"The type of manifestation parts, is this music tracks, book parts etc.\\"\\"\\"
+  type: ManifestationPartType!
 }
 
-type Subject {
-  type: String
+type Languages {
+  \\"\\"\\"Main language of this manifestation\\"\\"\\"
+  main: [Language!]
+
+  \\"\\"\\"Original language of this manifestation\\"\\"\\"
+  original: [Language!]
+
+  \\"\\"\\"
+  Parallel languages of this manifestation, if more languages are printed in the same book
+  \\"\\"\\"
+  parallel: [Language!]
+
+  \\"\\"\\"
+  Spoken language in this manifestation e.g. dubbed/syncronized language in movie
+  \\"\\"\\"
+  spoken: [Language!]
+
+  \\"\\"\\"Subtitles in this manifestation\\"\\"\\"
+  subtitles: [Language!]
+
+  \\"\\"\\"
+  Summary/abstract languages of this manifestation, if the manifestation contains short summaries of the content in another language
+  \\"\\"\\"
+  abstract: [Language!]
+}
+
+enum IdentifierType {
+  DOI
+  ISBN
+  ISSN
+  ISMN
+  MUSIC
+  MOVIE
+  PUBLIZON
+  NOT_SPECIFIED
+  ORDER_NUMBER
+  BARCODE
+}
+
+type Identifier {
+  \\"\\"\\"The type of identifier\\"\\"\\"
+  type: IdentifierType!
+
+  \\"\\"\\"The actual identifier\\"\\"\\"
   value: String!
 }
 
-enum WorkType {
-  analysis
-  article
-  bookdescription
-  game
-  literature
-  map
-  movie
-  music
-  none
-  periodica
-  portrait
-  review
-  sheetmusic
-  track
+type HostPublication {
+  \\"\\"\\"Publication this manifestation can be found in\\"\\"\\"
+  title: String!
+
+  \\"\\"\\"Creator of the host publication if host publication is book\\"\\"\\"
+  creator: String
+
+  \\"\\"\\"ISSN of the publication this manifestation can be found in\\"\\"\\"
+  issn: String
+
+  \\"\\"\\"ISBN of the publication this manifestation can be found in\\"\\"\\"
+  isbn: String
+
+  \\"\\"\\"The issue of the publication this manifestation can be found in\\"\\"\\"
+  issue: String
+
+  \\"\\"\\"Notes about the publication where this manifestation can be found in\\"\\"\\"
+  notes: [String!]
+
+  \\"\\"\\"The pages in the publication where this manifestation can be found in\\"\\"\\"
+  pages: String
+
+  \\"\\"\\"
+  The publisher of the publication where this manifestation can be found in
+  \\"\\"\\"
+  publisher: String
+
+  \\"\\"\\"Series of the publication this manifestation can be found in\\"\\"\\"
+  series: Series
+
+  \\"\\"\\"
+  The publication year of the publication this manifestation can be found in
+  \\"\\"\\"
+  year: PublicationYear
+
+  \\"\\"\\"All details about the publication this manifestation can be found in\\"\\"\\"
+  summary: String!
+}
+
+type Printing {
+  \\"\\"\\"
+  Properties 'printing' and 'publicationYear' as one string, e.g.: '11. oplag, 2020'
+  \\"\\"\\"
+  summary: String!
+
+  \\"\\"\\"The printing number and name\\"\\"\\"
+  printing: String!
+
+  \\"\\"\\"A year as displayable text and as number\\"\\"\\"
+  publicationYear: PublicationYear
+}
+
+type PublicationYear {
+  display: String!
+  year: Int
+  endYear: Int
+  frequency: String
+}
+
+type Edition {
+  \\"\\"\\"
+  Properties 'edition', 'contributorsToEdition' and 'publicationYear' as one string, e.g.: '3. udgave, revideret af Hugin Eide, 2005'
+  \\"\\"\\"
+  summary: String!
+
+  \\"\\"\\"The edition number and name\\"\\"\\"
+  edition: String
+
+  \\"\\"\\"Quotation of contributor statements related to the edition\\"\\"\\"
+  contributors: [String!]!
+
+  \\"\\"\\"A year as displayable text and as number\\"\\"\\"
+  publicationYear: PublicationYear
+}
+
+enum EntryType {
+  MAIN_ENTRY
+  NATIONAL_BIBLIOGRAPHY_ENTRY
+  ADDITIONAL_ENTRY
+}
+
+type Classification {
+  \\"\\"\\"The classification code\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"Descriptive text for the classification code (DK5 only)\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"
+  For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
+  \\"\\"\\"
+  entryType: EntryType
+
+  \\"\\"\\"Name of the classification system\\"\\"\\"
+  system: String!
+}
+
+type Audience {
+  \\"\\"\\"Appropriate audience for this manifestation\\"\\"\\"
+  generalAudience: [String!]!
+
+  \\"\\"\\"
+  Range of numbers with either beginning of range or end of range or both e.g. 6-10, 1980-1999
+  \\"\\"\\"
+  ages: [Range!]!
+
+  \\"\\"\\"Appropriate audience as recommended by the library\\"\\"\\"
+  libraryRecommendation: String
+
+  \\"\\"\\"Is this material for children or adults\\"\\"\\"
+  childrenOrAdults: [ChildOrAdult!]!
+
+  \\"\\"\\"
+  Is this material for use in schools (folkeskole/ungdomsuddannelse) or is this material for use in schools by the teacher (folkeskole only)
+  \\"\\"\\"
+  schoolUse: [SchoolUse!]!
+
+  \\"\\"\\"Primary target audience for this manifestation\\"\\"\\"
+  primaryTarget: [String!]!
+
+  \\"\\"\\"
+  LET number of this manifestion, defines the reability level, LET stands for læseegnethedstal
+  \\"\\"\\"
+  let: String
+
+  \\"\\"\\"
+  Lix number of this manifestion, defines the reability level, Lix stands for læsbarhedsindex
+  \\"\\"\\"
+  lix: String
+}
+
+type CatalogueCodes {
+  \\"\\"\\"Catalogue codes for the national bibliography \\"\\"\\"
+  nationalBibliography: [String]!
+
+  \\"\\"\\"other catalogue codes \\"\\"\\"
+  otherCatalogues: [String]!
+}
+
+type Manifestation {
+  \\"\\"\\"Unique identification of the manifestation e.g 870970-basis:54029519\\"\\"\\"
+  pid: String!
+
+  \\"\\"\\"Different kinds of titles for this work\\"\\"\\"
+  titles: ManifestationTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]!
+
+  \\"\\"\\"Access type of this manifestation\\"\\"\\"
+  accessTypes: [AccessType!]!
+
+  \\"\\"\\"Different options to access manifestation\\"\\"\\"
+  access: [Access!]!
+
+  \\"\\"\\"
+  Different kinds of definitions of appropriate audience for this manifestation
+  \\"\\"\\"
+  audience: Audience
+
+  \\"\\"\\"CatalogueCodes for nationalBibliography and others\\"\\"\\"
+  catalogueCodes: CatalogueCodes
+
+  \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
+  contributors: [Creator!]!
+
+  \\"\\"\\"
+  Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
+  \\"\\"\\"
+  contributorsFromDescription: [String!]!
+
+  \\"\\"\\"
+  Primary creators of the manifestation e.g. authors, directors, musicians etc
+  \\"\\"\\"
+  creators: [Creator!]!
+
+  \\"\\"\\"
+  Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
+  \\"\\"\\"
+  creatorsFromDescription: [String!]!
+
+  \\"\\"\\"
+  Classification codes for this manifestation from any classification system
+  \\"\\"\\"
+  classifications: [Classification!]!
+
+  \\"\\"\\"Edition details for this manifestation\\"\\"\\"
+  edition: Edition!
+
+  \\"\\"\\"Details about the latest printing of this manifestation\\"\\"\\"
+  latestPrinting: Printing
+
+  \\"\\"\\"
+  Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this manifestation\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Details about the host publications of this manifestation\\"\\"\\"
+  hostPublication: HostPublication
+
+  \\"\\"\\"Identifiers for this manifestation - often used for search indexes\\"\\"\\"
+  identifiers: [Identifier!]!
+
+  \\"\\"\\"Languages in this manifestation\\"\\"\\"
+  languages: Languages
+
+  \\"\\"\\"
+  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
+  \\"\\"\\"
+  manifestationParts: ManifestationParts
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Notes about the manifestation\\"\\"\\"
+  notes: [Note!]!
+
+  \\"\\"\\"
+  Notes about relations to this book/periodical/journal, - like previous names or related journals
+  \\"\\"\\"
+  relatedPublications: [RelatedPublication!]!
+
+  \\"\\"\\"
+  Physical description of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  physicalDescriptions: [PhysicalDescription!]!
+
+  \\"\\"\\"The publication year of the manifestation - OBS! was datePublished\\"\\"\\"
+  publicationYear: PublicationYear_2!
+
+  \\"\\"\\"Publisher of this manifestion\\"\\"\\"
+  publisher: [String!]!
+
+  \\"\\"\\"
+  The creation date of the record describing this manifestation in the format YYYYMMDD
+  \\"\\"\\"
+  recordCreationDate: String!
+
+  \\"\\"\\"Series for this work\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"
+  Information about on which shelf in the library this manifestation can be found
+  \\"\\"\\"
+  shelfmark: Shelfmark
+
+  \\"\\"\\"
+  The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
+  \\"\\"\\"
+  source: [String!]!
+
+  \\"\\"\\"Subjects for this manifestation\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"
+  Information about on which volume this manifestation is in multi volume work
+  \\"\\"\\"
+  volume: String
+
+  \\"\\"\\"
+  Quotation of the manifestation's table of contents or a similar content list
+  \\"\\"\\"
+  tableOfContents: TableOfContent
+}
+
+type ManifestationTitles {
+  \\"\\"\\"The main title(s) of the work\\"\\"\\"
+  main: [String!]!
+
+  \\"\\"\\"The full title(s) of the work including subtitles etc\\"\\"\\"
+  full: [String!]!
+
+  \\"\\"\\"The sorted title of the entity\\"\\"\\"
+  sort: String!
+
+  \\"\\"\\"
+  Alternative titles for this manifestation e.g. a title in a different language
+  \\"\\"\\"
+  alternative: [String!]!
+
+  \\"\\"\\"
+  Information that distinguishes this manifestation from a similar manifestation with same title, e.g. 'illustrated by Ted Kirby'
+  \\"\\"\\"
+  identifyingAddition: String
+
+  \\"\\"\\"
+  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
+  \\"\\"\\"
+  original: [String!]
+
+  \\"\\"\\"Titles (in other languages) parallel to the main 'title' of the work\\"\\"\\"
+  parallel: [String!]!
+
+  \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
+  standard: String
+
+  \\"\\"\\"Danish translation of the main title\\"\\"\\"
+  translated: [String!]
+}
+
+type NumberInSeries {
+  \\"\\"\\"
+  The number in the series as text, quoted form the publication, e.g. 'Vol. IX'
+  \\"\\"\\"
+  display: String!
+
+  \\"\\"\\"The number in the series as integer\\"\\"\\"
+  number: Int!
+}
+
+type Series {
+  \\"\\"\\"The title of the series\\"\\"\\"
+  title: String!
+
+  \\"\\"\\"A alternative title to the main 'title' of the series\\"\\"\\"
+  alternativeTitles: [String!]!
+
+  \\"\\"\\"
+  A parallel title to the main 'title' of the series, in a different language
+  \\"\\"\\"
+  parallelTitles: [String!]!
+
+  \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
+  numberInSeries: NumberInSeries
+
+  \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
+  readThisFirst: Boolean
+
+  \\"\\"\\"
+  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
+  \\"\\"\\"
+  readThisWhenever: Boolean
+
+  \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
+  isPopular: Boolean
+}
+
+interface Subject {
+  display: String!
+}
+
+type SubjectText implements Subject {
+  type: SubjectType!
+  display: String!
+}
+
+type TimePeriod implements Subject {
+  period: Range!
+  display: String!
+}
+
+enum SubjectType {
+  TOPIC
+  LOCATION
+  FICTIONAL_CHARACTER
+  MUSIC_COUNTRY_OF_ORIGIN
+  MUSIC_TIME_PERIOD
+  MUSICAL_INSTRUMENTATION
+  TIME_PERIOD
+  FILM_NATIONALITY
+  LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+}
+
+type Range {
+  begin: Int
+  end: Int
+  display: String!
+}
+
+type SubjectContainer {
+  \\"\\"\\"All subjects\\"\\"\\"
+  all: [Subject!]!
+
+  \\"\\"\\"Only DBC verified subjects\\"\\"\\"
+  dbcVerified: [Subject!]!
+}
+
+type Language {
+  \\"\\"\\"Language as displayable text\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"ISO639-2 language code\\"\\"\\"
+  isoCode: String!
 }
 
 type MaterialType {
-  materialType: String!
-  localizations: Localizations
-  manifestations: [WorkManifestation!]!
-}
-
-type Work {
-  title: String
-  fullTitle: String
-  description: String
-  creators: [Creator!]!
-  id: String!
-  manifestations: [WorkManifestation!]!
-  materialTypes: [MaterialType!]!
-  path: [String!]!
-  reviews: [Review!]!
-  series: Series
-  seo: SEO!
-  subjects: [Subject!]!
-  workTypes: [WorkType!]!
-}
-
-type Shelf {
-  prefix: String
-  shelfmark: String
-}
-
-type HostPublication {
-  title: String!
-  details: String!
-}
-
-type WorkManifestation {
-  content: [String!]
-  creators: [Creator!]!
-  datePublished(locale: String, format: String): CustomDateFormat!
-  description: String!
-  dk5: [DK5!]!
-  edition: String!
-  fullTitle: String!
-
   \\"\\"\\"
-  Where this manifestation is published. For instance, in which magazine an article is published.
+  The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
   \\"\\"\\"
-  hostPublication: HostPublication
-  hostPublicationPid: String
-  isbn: String
-  language: [String!]!
-  materialType: String!
-  notes: [String!]!
-  onlineAccess: [OnlineAccess!]!
-  originals: [String!]!
-  originalTitle: String
-  physicalDescription: String!
-  pid: String!
-  publisher: [String!]!
-  shelf: Shelf
-  title: String
-  recommendations(limit: Int): [Recommendation]!
-  availability: Availability
-  checkorder(pickupBranch: String!): CheckOrderPolicy
-  admin: AdminData
-  inLanguage: String
-  usedLanguage: [String]
-  physicalDescriptionArticles: String
-  volume: String
+  general: String!
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  specific: String!
+}
+
+enum FictionNonfictionCode {
+  FICTION
+  NONFICTION
+  NOT_SPECIFIED
+}
+
+type FictionNonfiction {
+  \\"\\"\\"
+  Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Binary code fiction/nonfiction used for filtering\\"\\"\\"
+  code: FictionNonfictionCode!
+}
+
+type Query {
+  manifestation(pid: String, faust: String): Manifestation
 }
 "
 `;

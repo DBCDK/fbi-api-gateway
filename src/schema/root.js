@@ -22,12 +22,12 @@ import { manifestationToJed } from "./draft/draft_utils_manifestations";
  */
 export const typeDef = `
 type Query {
-  manifestation(pid: String, faust: String): Draft_Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Draft_Manifestation]!
+  manifestation(pid: String, faust: String): Manifestation
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
   user: User!
-  work(id: String, faust: String, pid: String, language: LanguageCode): Draft_Work
-  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Draft_Work]!
+  work(id: String, faust: String, pid: String, language: LanguageCode): Work
+  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
 
   suggest(
@@ -40,25 +40,25 @@ type Query {
     work type to include in the result
     Note: Is only supported in the bibdk suggester
     """
-    workType: Draft_WorkType
+    workType: WorkType
 
     """
     suggest type to include in result
     """
-    suggestType: Draft_SuggestionType
-  ): Draft_SuggestResponse!
+    suggestType: SuggestionType
+  ): SuggestResponse!
 
   """
   Get recommendations
   """
-  recommend(id: String, pid: String, faust: String, limit: Int): Draft_RecommendationResponse!
+  recommend(id: String, pid: String, faust: String, limit: Int): RecommendationResponse!
 
 
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
-  infomedia(id: String!): Draft_InfomediaResponse!
+  infomedia(id: String!): InfomediaResponse!
   session: Session
   howru:String
   localizations(pids:[String!]!):Localizations

@@ -23,10 +23,4 @@ type Cover {
  * Note that for fields not represented in resolvers, GraphQL
  * uses its default resolver (it looks in parent obj for the field).
  */
-export const resolvers = {
-  Cover: {
-    detail(parent, args, context, info) {
-      return parent.detail || null;
-    },
-  },
-};
+export const resolvers = {};

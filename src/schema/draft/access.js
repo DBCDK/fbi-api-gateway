@@ -7,16 +7,16 @@ import {
 import * as consts from "./FAKE";
 
 export const typeDef = `
-enum Draft_AccessTypeCode {
+enum AccessTypeCode {
   PHYSICAL
   ONLINE
   NOT_SPECIFIED
 }
-type Draft_AccessType {
+type AccessType {
   display: String!
-  code: Draft_AccessTypeCode!
+  code: AccessTypeCode!
 }
-type Draft_Ereol {
+type Ereol {
   """
   The origin, e.g. "Ereolen" or "Ereolen Go"
   """
@@ -32,7 +32,7 @@ type Draft_Ereol {
   """
   canAlwaysBeLoaned: Boolean!
 }
-type Draft_URL {
+type URLE {
   """
   The origin, e.g. "DBC Webarkiv"
   """
@@ -43,46 +43,25 @@ type Draft_URL {
   """
   url: String!
 }
-type Draft_InterLibraryLoan {
+type InterLibraryLoan {
   """
   Is true when manifestation can be borrowed via ill
   """
   loanIsPossible: Boolean!
 }
-type Draft_InfomediaService {
+type InfomediaService {
   """
   Infomedia ID which can be used to fetch article through Infomedia Service
   """
   id: String!
-
-  """
-  Can the current user obtain the article?
-  """
-  accessStatus: Draft_AccessStatus!
 }
-type Draft_DigitalArticleService {
+type DigitalArticleService {
   """
   Issn which can be used to order article through Digital Article Service
   """
   issn: String!
-
-  """
-  Can the current user obtain the article?
-  """
-  accessStatus: Draft_AccessStatus!
 }
-union Draft_Access = Draft_URL | Draft_Ereol | Draft_InterLibraryLoan | Draft_InfomediaService | Draft_DigitalArticleService
+union Access = URLE | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 `;
 
-export const resolvers = {
-  Draft_InfomediaService: {
-    accessStatus(parent, args, context, info) {
-      return getInfomediaAccessStatus(context);
-    },
-  },
-  Draft_DigitalArticleService: {
-    accessStatus(parent, args, context, info) {
-      return getDigitalArticleAccessStatus(context);
-    },
-  },
-};
+export const resolvers = {};

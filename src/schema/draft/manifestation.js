@@ -2,12 +2,12 @@ import { resolveOnlineAccess } from "./draft_utils_manifestations";
 import * as consts from "./FAKE";
 
 export const typeDef = `
-type Draft_TableOfContent {
+type TableOfContent {
   heading: String
   content: String
-  listOfContent: [Draft_TableOfContent!]
+  listOfContent: [TableOfContent!]
 }
-type Draft_Shelfmark {
+type Shelfmark {
   """
   A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935
   """
@@ -18,13 +18,13 @@ type Draft_Shelfmark {
   """
   shelfmark: String!
 }
-type Draft_PublicationYear_2 {
+type PublicationYear_2 {
   display: String!
   year: Int
   endYear: Int
   frequency: String
 }
-type Draft_PhysicalDescription {
+type PhysicalDescription {
   """
   A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
   """
@@ -80,7 +80,7 @@ type Draft_PhysicalDescription {
   """
   textVsIllustrations: Int
 }
-type Draft_RelatedPublication {
+type RelatedPublication {
   """
   Notes describing the relation of the related periodical/journal/publication
   """
@@ -111,7 +111,7 @@ type Draft_RelatedPublication {
   """
   url: String
 }
-enum Draft_NoteType {
+enum NoteType {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
   DISSERTATION
@@ -124,27 +124,27 @@ enum Draft_NoteType {
   REFERENCES
   RESTRICTIONS_ON_USE
 }
-enum Draft_ChildOrAdultCode {
+enum ChildOrAdultCode {
   FOR_CHILDREN
   FOR_ADULTS
 }
-type Draft_ChildOrAdult {
+type ChildOrAdult {
   display: String!
-  code: Draft_ChildOrAdultCode!
+  code: ChildOrAdultCode!
 }
-enum Draft_SchoolUseCode {
+enum SchoolUseCode {
   FOR_SCHOOL_USE
   FOR_TEACHER
 }
-type Draft_SchoolUse {
+type SchoolUse {
   display: String!
-  code: Draft_SchoolUseCode!
+  code: SchoolUseCode!
 }
-type Draft_Note {
+type Note {
   """
   The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
   """
-  type: Draft_NoteType!
+  type: NoteType!
 
   """
   Heading before note
@@ -156,13 +156,13 @@ type Draft_Note {
   """
   display: [String!]!  
 }
-enum Draft_ManifestationPartType {
+enum ManifestationPartType {
   MUSIC_TRACKS
   SHEET_MUSIC_CONTENT
   PARTS_OF_BOOK
   NOT_SPECIFIED
 }
-type Draft_ManifestationPart {
+type ManifestationPart {
   """
   The title of the entry (music track or title of a literary analysis)
   """
@@ -171,24 +171,24 @@ type Draft_ManifestationPart {
   """
   The creator of the music track or literary analysis
   """
-  creators: [Draft_Creator!]!
+  creators: [Creator!]!
 
   """
   Classification of this entry (music track or literary analysis)
   """
-  classifications: [Draft_Classification!]!
+  classifications: [Classification!]!
 
   """
   Subjects of this entry (music track or literary analysis)
   """
-  subjects: [Draft_Subject!]
+  subjects: [Subject!]
 
   """
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
   """
   creatorsFromDescription: [String!]!
 }
-type Draft_ManifestationParts {
+type ManifestationParts {
   """
   Heading for the music content note
   """
@@ -197,43 +197,43 @@ type Draft_ManifestationParts {
   """
   The creator and title etc of the individual parts
   """
-  parts: [Draft_ManifestationPart!]!
+  parts: [ManifestationPart!]!
 
   """
   The type of manifestation parts, is this music tracks, book parts etc.
   """
-  type: Draft_ManifestationPartType!
+  type: ManifestationPartType!
 }
-type Draft_Languages {
+type Languages {
   """
   Main language of this manifestation
   """
-  main: [Draft_Language!]
+  main: [Language!]
 
   """
   Original language of this manifestation
   """
-  original: [Draft_Language!]
+  original: [Language!]
 
   """
   Parallel languages of this manifestation, if more languages are printed in the same book
   """
-  parallel: [Draft_Language!]
+  parallel: [Language!]
 
   """
   Spoken language in this manifestation e.g. dubbed/syncronized language in movie
   """
-  spoken: [Draft_Language!]
+  spoken: [Language!]
 
   """
   Subtitles in this manifestation
   """
-  subtitles: [Draft_Language!]
+  subtitles: [Language!]
 
   """
   Summary/abstract languages of this manifestation, if the manifestation contains short summaries of the content in another language
   """
-  abstract: [Draft_Language!]
+  abstract: [Language!]
 }
 enum IdentifierType {
   DOI
@@ -247,7 +247,7 @@ enum IdentifierType {
   ORDER_NUMBER
   BARCODE
 }
-type Draft_Identifier {
+type Identifier {
   """
   The type of identifier
   """
@@ -258,7 +258,7 @@ type Draft_Identifier {
   """
   value: String!
 }
-type Draft_HostPublication {
+type HostPublication {
   """
   Publication this manifestation can be found in
   """
@@ -302,19 +302,19 @@ type Draft_HostPublication {
   """
   Series of the publication this manifestation can be found in
   """
-  series: Draft_GeneralSeries
+  series: Series
 
   """
   The publication year of the publication this manifestation can be found in
   """
-  year: Draft_PublicationYear
+  year: PublicationYear
 
   """
   All details about the publication this manifestation can be found in
   """
   summary: String!
 }
-type Draft_Printing {
+type Printing {
   """
   Properties 'printing' and 'publicationYear' as one string, e.g.: '11. oplag, 2020'
   """
@@ -328,15 +328,15 @@ type Draft_Printing {
   """
   A year as displayable text and as number
   """
-  publicationYear: Draft_PublicationYear
+  publicationYear: PublicationYear
 }
-type Draft_PublicationYear {
+type PublicationYear {
   display: String!
   year: Int
   endYear: Int
   frequency: String
 }
-type Draft_Edition {
+type Edition {
   """
   Properties 'edition', 'contributorsToEdition' and 'publicationYear' as one string, e.g.: '3. udgave, revideret af Hugin Eide, 2005'
   """
@@ -355,14 +355,14 @@ type Draft_Edition {
   """
   A year as displayable text and as number
   """
-  publicationYear: Draft_PublicationYear
+  publicationYear: PublicationYear
 }
-enum Draft_EntryType {
+enum EntryType {
   MAIN_ENTRY
   NATIONAL_BIBLIOGRAPHY_ENTRY
   ADDITIONAL_ENTRY
 }
-type Draft_Classification {
+type Classification {
   """
   The classification code
   """
@@ -376,14 +376,14 @@ type Draft_Classification {
   """
   For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
   """
-  entryType: Draft_EntryType
+  entryType: EntryType
 
   """
   Name of the classification system
   """
   system: String!
 }
-type Draft_Audience {
+type Audience {
   """
   Appropriate audience for this manifestation
   """
@@ -392,7 +392,7 @@ type Draft_Audience {
   """
   Range of numbers with either beginning of range or end of range or both e.g. 6-10, 1980-1999
   """
-  ages: [Draft_Range!]!
+  ages: [Range!]!
   
   """
   Appropriate audience as recommended by the library
@@ -402,12 +402,12 @@ type Draft_Audience {
   """
   Is this material for children or adults
   """
-  childrenOrAdults: [Draft_ChildOrAdult!]!
+  childrenOrAdults: [ChildOrAdult!]!
 
   """
   Is this material for use in schools (folkeskole/ungdomsuddannelse) or is this material for use in schools by the teacher (folkeskole only)
   """
-  schoolUse: [Draft_SchoolUse!]!
+  schoolUse: [SchoolUse!]!
   
   """
   Primary target audience for this manifestation
@@ -425,7 +425,7 @@ type Draft_Audience {
   lix: String
 }
 
-type Draft_CatalogueCodes {
+type CatalogueCodes {
   """
   Catalogue codes for the national bibliography 
   """
@@ -436,12 +436,12 @@ type Draft_CatalogueCodes {
   otherCatalogues: [String]!
 }
 
-type Draft_Manifestations {
-  first: Draft_Manifestation!
-  latest: Draft_Manifestation!
-  all: [Draft_Manifestation!]!
+type Manifestations {
+  first: Manifestation!
+  latest: Manifestation!
+  all: [Manifestation!]!
 }
-type Draft_Manifestation {
+type Manifestation {
   """
   Unique identification of the manifestation e.g 870970-basis:54029519
   """
@@ -450,7 +450,7 @@ type Draft_Manifestation {
   """
   Different kinds of titles for this work
   """
-  titles: Draft_ManifestationTitles!
+  titles: ManifestationTitles!
 
   """
   Abstract of the entity
@@ -460,26 +460,26 @@ type Draft_Manifestation {
   """
   Access type of this manifestation
   """
-  accessTypes: [Draft_AccessType!]!
+  accessTypes: [AccessType!]!
 
   """
   Different options to access manifestation
   """
-  access: [Draft_Access!]!
+  access: [Access!]!
 
   """
   Different kinds of definitions of appropriate audience for this manifestation
   """
-  audience: Draft_Audience
+  audience: Audience
 
   """
   CatalogueCodes for nationalBibliography and others
   """
-  catalogueCodes: Draft_CatalogueCodes
+  catalogueCodes: CatalogueCodes
   """
   Contributors to the manifestation, actors, illustrators etc
   """
-  contributors: [Draft_Creator!]!
+  contributors: [Creator!]!
 
   """
   Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
@@ -487,9 +487,14 @@ type Draft_Manifestation {
   contributorsFromDescription: [String!]!
 
   """
+  Cover for this manifestation
+  """
+  cover: Cover!
+
+  """
   Primary creators of the manifestation e.g. authors, directors, musicians etc
   """
-  creators: [Draft_Creator!]!
+  creators: [Creator!]!
 
   """
   Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
@@ -499,22 +504,22 @@ type Draft_Manifestation {
   """
   Classification codes for this manifestation from any classification system
   """
-  classifications: [Draft_Classification!]!
+  classifications: [Classification!]!
 
   """
   Edition details for this manifestation
   """
-  edition: Draft_Edition!
+  edition: Edition!
 
   """
   Details about the latest printing of this manifestation
   """
-  latestPrinting: Draft_Printing
+  latestPrinting: Printing
 
   """
   Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
   """
-  fictionNonfiction: Draft_FictionNonfiction
+  fictionNonfiction: FictionNonfiction
 
   """
   The genre, (literary) form, type etc. of this manifestation
@@ -524,47 +529,47 @@ type Draft_Manifestation {
   """
   Details about the host publications of this manifestation
   """
-  hostPublication: Draft_HostPublication
+  hostPublication: HostPublication
 
   """
   Identifiers for this manifestation - often used for search indexes
   """
-  identifiers: [Draft_Identifier!]!
+  identifiers: [Identifier!]!
 
   """
   Languages in this manifestation
   """
-  languages: Draft_Languages
+  languages: Languages
 
   """
   Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
   """
-  manifestationParts: Draft_ManifestationParts
+  manifestationParts: ManifestationParts
 
   """
   The type of material of the manifestation based on bibliotek.dk types
   """
-  materialTypes: [Draft_MaterialType!]!
+  materialTypes: [MaterialType!]!
 
   """
   Notes about the manifestation
   """
-  notes: [Draft_Note!]!
+  notes: [Note!]!
 
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
-  relatedPublications: [Draft_RelatedPublication!]!
+  relatedPublications: [RelatedPublication!]!
 
   """
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   """
-  physicalDescriptions: [Draft_PhysicalDescription!]!
+  physicalDescriptions: [PhysicalDescription!]!
 
   """
   The publication year of the manifestation - OBS! was datePublished
   """
-  publicationYear: Draft_PublicationYear_2!
+  publicationYear: PublicationYear_2!
 
   """
   Publisher of this manifestion
@@ -579,12 +584,12 @@ type Draft_Manifestation {
   """
   Series for this work
   """
-  series: Draft_SeriesContainer
+  series: [Series!]!
 
   """
   Information about on which shelf in the library this manifestation can be found
   """
-  shelfmark: Draft_Shelfmark
+  shelfmark: Shelfmark
 
   """
   The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
@@ -594,7 +599,7 @@ type Draft_Manifestation {
   """
   Subjects for this manifestation
   """
-  subjects: Draft_SubjectContainer!
+  subjects: SubjectContainer!
 
   """
   Information about on which volume this manifestation is in multi volume work
@@ -604,10 +609,10 @@ type Draft_Manifestation {
   """
   Quotation of the manifestation's table of contents or a similar content list
   """
-  tableOfContents: Draft_TableOfContent
+  tableOfContents: TableOfContent
 
 }
-type Draft_ManifestationTitles {
+type ManifestationTitles {
   """
   The main title(s) of the work
   """
@@ -656,10 +661,15 @@ type Draft_ManifestationTitles {
 `;
 
 export const resolvers = {
-  Draft_Manifestation: {
+  Manifestation: {
     async access(parent, args, context, info) {
       const resolved = await resolveOnlineAccess(parent.pid, context);
       return resolved;
+    },
+    async cover(parent, args, context, info) {
+      return parent?.pid
+        ? context.datasources.moreinfoCovers.load(parent.pid)
+        : {};
     },
   },
 };

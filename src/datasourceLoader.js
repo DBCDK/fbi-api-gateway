@@ -84,7 +84,7 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
   })
   .filter((func) => !!func);
 
-log.info(
+log.debug(
   `found ${datasources.length} datasources, ${datasources
     .map((datasource) => datasource.name)
     .join(", ")}`

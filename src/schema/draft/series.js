@@ -1,11 +1,13 @@
+import { resolveWork } from "../../utils/utils";
+
 export const typeDef = `
-type Draft_Universe {
+type Universe {
   """
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Universe
   """
   title: String!
 }
-type Draft_NumberInSeries {
+type NumberInSeries {
   """
   The number in the series as text, quoted form the publication, e.g. 'Vol. IX'
   """
@@ -16,28 +18,7 @@ type Draft_NumberInSeries {
   """
   number: Int!
 }
-type Draft_GeneralSeries {
-  """
-  The title of the series
-  """
-  title: String!
-
-  """
-  A parallel title to the main 'title' of the series, in a different language
-  """
-  parallelTitles: [String!]!
-
-  """
-  The number in the series as text quotation and a number
-  """
-  numberInSeries: Draft_NumberInSeries
-
-  """
-  Works in the series
-  """
-  works: [Draft_Work!]!
-}
-type Draft_PopularSeries {
+type Series {
   """
   The title of the series
   """
@@ -49,9 +30,14 @@ type Draft_PopularSeries {
   alternativeTitles: [String!]!
 
   """
+  A parallel title to the main 'title' of the series, in a different language
+  """
+  parallelTitles: [String!]!
+
+  """
   The number in the series as text qoutation and a number
   """
-  numberInSeries: Draft_NumberInSeries
+  numberInSeries: NumberInSeries
 
   """
   Information about whether this work in the series should be read first
@@ -64,14 +50,31 @@ type Draft_PopularSeries {
   readThisWhenever: Boolean
 
   """
-  Works in the series
+  Whether this is a popular series or general series
   """
-  works: [Draft_Work!]!
-}
-type Draft_SeriesContainer {
-  all: [Draft_GeneralSeries!]!
-  popular: [Draft_PopularSeries!]!
+  isPopular: Boolean
 }
 `;
 
-export const resolvers = {};
+export const resolvers = {
+  Work: {
+    async seriesMembers(parent, args, context, info) {
+      const data = await context.datasources.series.load({
+        workId: parent.workId,
+        profile: context.profile,
+      });
+
+      if (data && data.series) {
+        const works = await Promise.all(
+          data.series.slice(0, 100).map(async (id) => {
+            return resolveWork({ id }, context);
+          })
+        );
+
+        return works.filter((work) => !!work);
+      }
+
+      return [];
+    },
+  },
+};

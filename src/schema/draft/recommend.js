@@ -1,29 +1,29 @@
 import { resolveWork, resolveManifestation } from "../../utils/utils";
 
 export const typeDef = `
-type Draft_Recommendation {
+type Recommendation {
   """
   The recommended work
   """
-  work: Draft_Work!
+  work: Work!
 
   """
   The recommended manifestation
   """
-  manifestation: Draft_Manifestation!
+  manifestation: Manifestation!
 
   """
   Info on how this recommendation was generated
   """
   reader: [String!]!
 }
-type Draft_RecommendationResponse {
-  result: [Draft_Recommendation!]!
+type RecommendationResponse {
+  result: [Recommendation!]!
 }
 `;
 
 export const resolvers = {
-  Draft_Recommendation: {
+  Recommendation: {
     work(parent, args, context, info) {
       return resolveWork({ id: parent.work }, context);
     },
@@ -31,7 +31,7 @@ export const resolvers = {
       return resolveManifestation({ pid: parent.pid }, context);
     },
   },
-  Draft_RecommendationResponse: {
+  RecommendationResponse: {
     async result(parent, args, context, info) {
       let pid;
       if (parent.pid) {

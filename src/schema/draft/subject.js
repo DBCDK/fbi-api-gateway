@@ -1,16 +1,16 @@
 export const typeDef = `
-interface Draft_Subject {
+interface Subject {
   display: String!
 }
-type Draft_SubjectText implements Draft_Subject {
-  type: Draft_SubjectType!
+type SubjectText implements Subject {
+  type: SubjectType!
   display: String!
 }
-type Draft_TimePeriod implements Draft_Subject {
-  period: Draft_Range! 
+type TimePeriod implements Subject {
+  period: Range! 
   display: String!
 }
-enum Draft_SubjectType {
+enum SubjectType {
   TOPIC
   LOCATION
   FICTIONAL_CHARACTER
@@ -21,22 +21,22 @@ enum Draft_SubjectType {
   FILM_NATIONALITY
   LIBRARY_OF_CONGRESS_SUBJECT_HEADING
 }
-type Draft_Range {
+type Range {
   begin: Int
   end: Int
   display: String!
 }
 
-type Draft_SubjectContainer {
+type SubjectContainer {
   """
   All subjects
   """
-  all: [Draft_Subject!]!
+  all: [Subject!]!
 
   """
   Only DBC verified subjects
   """
-  dbcVerified: [Draft_Subject!]!
+  dbcVerified: [Subject!]!
 }
 `;
 

@@ -1,7 +1,7 @@
-import {resolveOnlineAccess} from './draft_utils_manifestations';
+import { resolveOnlineAccess } from "./draft_utils_manifestations";
 
 export const typeDef = `
-type Draft_Language {
+type Language {
   """
   Language as displayable text
   """
@@ -12,7 +12,7 @@ type Draft_Language {
   """
   isoCode: String!
 }
-type Draft_MaterialType {
+type MaterialType {
   """
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
   """
@@ -23,12 +23,12 @@ type Draft_MaterialType {
   """
   specific: String!
 }
-enum Draft_FictionNonfictionCode {
+enum FictionNonfictionCode {
   FICTION
   NONFICTION
   NOT_SPECIFIED
 }
-type Draft_FictionNonfiction {
+type FictionNonfiction {
   """
   Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
   """
@@ -37,9 +37,9 @@ type Draft_FictionNonfiction {
   """
   Binary code fiction/nonfiction used for filtering
   """
-  code: Draft_FictionNonfictionCode!
+  code: FictionNonfictionCode!
 }
-type Draft_DK5MainEntry {
+type DK5MainEntry {
   """
   Displayable main DK5 classification
   """
@@ -50,13 +50,13 @@ type Draft_DK5MainEntry {
   """
   code: String!
 }
-type Draft_Work {
+type Work {
   """
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
   """
   workId: String!
   
-  titles: Draft_WorkTitles!
+  titles: WorkTitles!
 
   """
   Abstract of the entity
@@ -66,37 +66,42 @@ type Draft_Work {
   """
   Creators
   """
-  creators: [Draft_Creator!]!
+  creators: [Creator!]!
 
   """
   DK5 main entry for this work
   """
-  dk5MainEntry: Draft_DK5MainEntry
+  dk5MainEntry: DK5MainEntry
 
   """
   Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
   """
-  fictionNonfiction: Draft_FictionNonfiction
+  fictionNonfiction: FictionNonfiction
 
   """
   The type of material of the manifestation based on bibliotek.dk types
   """
-  materialTypes: [Draft_MaterialType!]!
+  materialTypes: [MaterialType!]!
 
   """
   Series for this work
   """
-  series: Draft_SeriesContainer
+  series: [Series!]!
+
+  """
+  Members of a series that this work is part of
+  """
+  seriesMembers: [Work!]!
 
   """
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
   """
-  universe: Draft_Universe
+  universe: Universe
 
   """
   Subjects for this work
   """
-  subjects: Draft_SubjectContainer!
+  subjects: SubjectContainer!
 
   """
   The genre, (literary) form, type etc. of this work
@@ -106,7 +111,7 @@ type Draft_Work {
   """
   Worktypes for this work - 'none' replaced by 'other'
   """
-  workTypes: [Draft_WorkType!]!
+  workTypes: [WorkType!]!
 
   """
   The year this work was originally published or produced
@@ -116,14 +121,14 @@ type Draft_Work {
   """
   The main language(s) of the work's content
   """
-  mainLanguages: [Draft_Language!]!
+  mainLanguages: [Language!]!
 
   """
   Details about the manifestations of this work
   """
-  manifestations: Draft_Manifestations!
+  manifestations: Manifestations!
 }
-enum Draft_WorkType {
+enum WorkType {
   ANALYSIS
   ARTICLE
   BOOKDESCRIPTION
@@ -139,7 +144,7 @@ enum Draft_WorkType {
   SHEETMUSIC
   TRACK
 }
-type Draft_WorkTitles {
+type WorkTitles {
   """
   The main title(s) of the work
   """

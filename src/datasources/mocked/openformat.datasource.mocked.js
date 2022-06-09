@@ -1,5 +1,112 @@
 export function load(pid) {
   const data = {
+    "870970-basis:26521556": {
+      admindata: {
+        creationDate: { $: "2016-07-09" },
+        pid: { $: "870970-basis:29433909" },
+      },
+      details: {
+        abstract: {
+          value: {
+            $:
+              "Den ellers så pæne familie Didriksen går straks i aktion som detektiver, da det viser sig, at deres ret så usædvanlige hund er blevet kidnappet af en mistænkelig iskagemand!",
+          },
+        },
+        catalogcode: { value: { $: "DLF201207 BKM201207" } },
+        content: {
+          value: {
+            $:
+              "Jeg bor i Hvidovre ; Jeg fremlejer en lejlighed ; Modsætningen mellem",
+          },
+        },
+        creators: {
+          value: [
+            {
+              functionCode: { $: "aut" },
+              functionSingular: { $: "forfatter" },
+              functionPlural: { $: "forfattere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Kim Fupz Ꜳkeson" },
+              name: { $: "Kim Fupz Ꜳkeson" },
+            },
+            {
+              functionCode: { $: "dkind" },
+              functionSingular: { $: "indlæser" },
+              functionPlural: { $: "indlæsere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Peter Frödin" },
+              name: { $: "Peter Frödin" },
+            },
+          ],
+        },
+        dk5: [
+          {
+            searchCode: { $: "dkcclphrase.ldk" },
+            searchString: { $: "86-096" },
+            value: { $: "86-096" },
+          },
+          {
+            searchCode: { $: "dkcclphrase.ldk" },
+            searchString: { $: "sk" },
+            value: { $: "sk" },
+          },
+        ],
+        edition: { value: { $: "1. udgave" } },
+        isbn: { value: { $: "978-87-11-40713-4" } },
+        language: { $: "Dansk" },
+        materialType: { $: "Lydbog (cd)" },
+        originals: {
+          value: [
+            { $: "Gengivelse af bogen" },
+            { $: "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786" },
+            { $: "Bogens originaludgave: 1988" },
+          ],
+        },
+        originalsFaust: {
+          searchCode: { $: "dkcclterm.nr" },
+          searchString: { $: "26521556" },
+          value: { $: "26521556" },
+        },
+        physicalDescription: { value: { $: "1 cd i 1 mappe (67 min.)" } },
+        hostPublication: {
+          value: {
+            $: "I: Dansk veterinærtidsskrift, Årg. 97, nr. 10 (2014), 2014",
+          },
+          title: { $: "Dansk veterinærtidsskrift" },
+          details: { $: "Årg. 97, nr. 10 (2014)" },
+        },
+        publication: {
+          publisher: { $: "Kronstork" },
+          publicationYear: { $: "2020" },
+          latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } },
+        },
+        shelf: { prefix: { $: "64.64" }, shelfmark: { $: "gray" } },
+        subject: [
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "sjove bøger" },
+            value: { $: "sjove bøger" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "krimi" },
+            value: { $: "krimi" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "hunde" },
+            value: { $: "hunde" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "bortførelse" },
+            value: { $: "bortførelse" },
+          },
+        ],
+        title: { value: { $: "Didriksen detektiverne" } },
+        tracks: [null, null],
+      },
+    },
     "870971-avis:34591016": {
       admindata: {
         pid: { $: "870971-tsart:33261853" },
@@ -369,637 +476,506 @@ export function load(pid) {
     },
     "800010-katalog:99121962154805763__1": {
       admindata: {
-        creationDate: {
-          $: "2016-07-09",
-        },
+        pid: { $: "800010-katalog:99121962154805763__1" },
+        creationDate: { $: "2020-01-13" },
+        requestButton: { $: "true" },
       },
       details: {
-        abstract: {
-          value: {
-            $:
-              "Den ellers så pæne familie Didriksen går straks i aktion som detektiver, da det viser sig, at deres ret så usædvanlige hund er blevet kidnappet af en mistænkelig iskagemand!",
-          },
-        },
-        catalogcode: {
-          value: {
-            $: "DLF201207 BKM201207",
-          },
-        },
         creators: {
           value: [
             {
-              functionCode: {
-                $: "aut",
-              },
-              functionSingular: {
-                $: "forfatter",
-              },
-              functionPlural: {
-                $: "forfattere",
-              },
-              searchCode: {
-                $: "phrase.creator",
-              },
-              searchString: {
-                $: "Kim Fupz Ꜳkeson",
-              },
-              name: {
-                $: "Kim Fupz Ꜳkeson",
-              },
+              functionCode: { $: "aut" },
+              functionSingular: { $: "forfatter" },
+              functionPlural: { $: "forfattere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Karl Ove Knausgård" },
+              name: { $: "Karl Ove Knausgård" },
             },
             {
-              functionCode: {
-                $: "dkind",
-              },
-              functionSingular: {
-                $: "indlæser",
-              },
-              functionPlural: {
-                $: "indlæsere",
-              },
-              searchCode: {
-                $: "phrase.creator",
-              },
-              searchString: {
-                $: "Peter Frödin",
-              },
-              name: {
-                $: "Peter Frödin",
-              },
+              functionCode: { $: "trl" },
+              functionSingular: { $: "oversætter" },
+              functionPlural: { $: "oversættere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Sara Koch" },
+              name: { $: "Sara Koch" },
+            },
+          ],
+        },
+        contributors: {
+          value: [
+            {
+              functionCode: { $: "aut" },
+              functionSingular: { $: "forfatter" },
+              functionPlural: { $: "forfattere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Karl Ove Knausgård" },
+              name: { $: "Karl Ove Knausgård" },
+            },
+            {
+              functionCode: { $: "trl" },
+              functionSingular: { $: "oversætter" },
+              functionPlural: { $: "oversættere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Sara Koch" },
+              name: { $: "Sara Koch" },
             },
           ],
         },
         dk5: [
           {
-            searchCode: {
-              $: "dkcclphrase.ldk",
-            },
-            searchString: {
-              $: "86-096",
-            },
-            value: {
-              $: "86-096",
-            },
+            searchCode: { $: "dkcclphrase.ldk" },
+            searchString: { $: "85-26" },
+            value: { $: "85-26" },
           },
           {
-            searchCode: {
-              $: "dkcclphrase.ldk",
-            },
-            searchString: {
-              $: "sk",
-            },
-            value: {
-              $: "sk",
-            },
+            searchCode: { $: "dkcclphrase.ldk" },
+            searchString: { $: "sk" },
+            value: { $: "sk" },
           },
         ],
-        edition: {
-          value: {
-            $: "1. udgave",
-          },
-        },
-        isbn: {
-          value: {
-            $: "978-87-11-40713-4",
-          },
-        },
-        language: {
-          $: "Dansk",
-        },
-        materialType: {
-          $: "Lydbog (cd)",
-        },
-        originals: {
-          value: [
-            {
-              $: "Gengivelse af bogen",
-            },
-            {
-              $: "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
-            },
-            {
-              $: "Bogens originaludgave: 1988",
-            },
-          ],
-        },
-        originalsFaust: {
-          searchCode: {
-            $: "dkcclterm.nr",
-          },
-          searchString: {
-            $: "26521556",
-          },
-          value: {
-            $: "26521556",
-          },
-        },
+        edition: { value: { $: "2. udgave" } },
+        isbn: { value: { $: "9788711419113" } },
+        isText: { value: { $: "a" } },
+        language: { $: "dansk" },
+        "iso639-2": { $: "dan" },
+        languages: { languageMain: { $: "dan" } },
+        materialType: { $: "Bog" },
+        otherClassification: { value: { $: "Dewey: 839.828" } },
+        pagination: { value: { $: "487 sider" } },
         physicalDescription: {
-          value: {
-            $: "1 cd i 1 mappe (67 min.)",
-          },
+          value: [{ $: "487 sider" }, { $: "6 bind" }],
         },
         publication: {
-          publisher: { $: "Kronstork" },
-          publicationYear: { $: "2020" },
-          latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } },
+          publisher: { $: "Lindhardt og Ringhof" },
+          publicationYear: { $: "2011" },
         },
-        shelf: {
-          prefix: {
-            $: "85",
-          },
-          shelfmark: {
-            $: "Min",
-          },
-        },
+        shelf: { prefix: { $: "85" }, shelfmark: { $: "Min" } },
         subject: [
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "sjove bøger",
-            },
-            value: {
-              $: "sjove bøger",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "far-søn forholdet" },
+            value: { $: "far-søn forholdet" },
           },
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "krimi",
-            },
-            value: {
-              $: "krimi",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "døden" },
+            value: { $: "døden" },
           },
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "hunde",
-            },
-            value: {
-              $: "hunde",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "alkoholmisbrug" },
+            value: { $: "alkoholmisbrug" },
           },
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "bortførelse",
-            },
-            value: {
-              $: "bortførelse",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "forfattere" },
+            value: { $: "forfattere" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "familien" },
+            value: { $: "familien" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "parforhold" },
+            value: { $: "parforhold" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "forældre" },
+            value: { $: "forældre" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "børn" },
+            value: { $: "børn" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "barndom" },
+            value: { $: "barndom" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "identitet" },
+            value: { $: "identitet" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "barndomserindringer" },
+            value: { $: "barndomserindringer" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "erindringer" },
+            value: { $: "erindringer" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "1980-1989" },
+            value: { $: "1980-1989" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "1990-1999" },
+            value: { $: "1990-1999" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "2000-2009" },
+            value: { $: "2000-2009" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "Norge" },
+            value: { $: "Norge" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "Sverige" },
+            value: { $: "Sverige" },
           },
         ],
-        title: {
-          value: {
-            $: "Didriksen detektiverne",
-          },
-        },
+        title: { value: { $: "Min kamp : roman" } },
         tracks: [null, null],
+        inLanguage: { $: "da" },
+        volume: { $: "1. bog" },
       },
     },
     "300101-katalog:28486006": {
       admindata: {
-        creationDate: {
-          $: "2016-07-09",
-        },
+        pid: { $: "300101-katalog:28486006" },
+        creationDate: { $: "2010-10-21" },
+        requestButton: { $: "true" },
       },
       details: {
         abstract: {
           value: {
             $:
-              "Den ellers så pæne familie Didriksen går straks i aktion som detektiver, da det viser sig, at deres ret så usædvanlige hund er blevet kidnappet af en mistænkelig iskagemand!",
+              "I sin kontroversielle selvbiografiske skildring beretter Knausgård om sit dilemma mellem at være uforstyrret, ambitiøs forfatter og samtidig være familiefar med kone og tre børn",
           },
         },
         catalogcode: {
-          value: {
-            $: "DLF201207 BKM201207",
-          },
+          value: [
+            { $: "ACC201042 DBF201207 BKM201207 DAT201246" },
+            { $: "DBF201207 BKM201207 DAT201206" },
+          ],
         },
         creators: {
           value: [
             {
-              functionCode: {
-                $: "aut",
-              },
-              functionSingular: {
-                $: "forfatter",
-              },
-              functionPlural: {
-                $: "forfattere",
-              },
-              searchCode: {
-                $: "phrase.creator",
-              },
-              searchString: {
-                $: "Kim Fupz Ꜳkeson",
-              },
-              name: {
-                $: "Kim Fupz Ꜳkeson",
-              },
+              functionCode: { $: "aut" },
+              functionSingular: { $: "forfatter" },
+              functionPlural: { $: "forfattere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Karl Ove Knausgård" },
+              name: { $: "Karl Ove Knausgård" },
             },
             {
-              functionCode: {
-                $: "dkind",
-              },
-              functionSingular: {
-                $: "indlæser",
-              },
-              functionPlural: {
-                $: "indlæsere",
-              },
-              searchCode: {
-                $: "phrase.creator",
-              },
-              searchString: {
-                $: "Peter Frödin",
-              },
-              name: {
-                $: "Peter Frödin",
-              },
+              functionCode: { $: "trl" },
+              functionSingular: { $: "oversætter" },
+              functionPlural: { $: "oversættere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Sara Koch" },
+              name: { $: "Sara Koch" },
             },
           ],
+        },
+        contributors: {
+          value: {
+            functionCode: { $: "trl" },
+            functionSingular: { $: "oversætter" },
+            functionPlural: { $: "oversættere" },
+            searchCode: { $: "phrase.creator" },
+            searchString: { $: "Sara Koch" },
+            name: { $: "Sara Koch" },
+          },
         },
         dk5: [
           {
-            searchCode: {
-              $: "dkcclphrase.ldk",
-            },
-            searchString: {
-              $: "86-096",
-            },
-            value: {
-              $: "86-096",
-            },
+            searchCode: { $: "dkcclphrase.ldk" },
+            searchString: { $: "85-26" },
+            value: { $: "85-26" },
           },
           {
-            searchCode: {
-              $: "dkcclphrase.ldk",
-            },
-            searchString: {
-              $: "sk",
-            },
-            value: {
-              $: "sk",
-            },
+            searchCode: { $: "dkcclphrase.ldk" },
+            searchString: { $: "sk" },
+            value: { $: "sk" },
           },
         ],
-        edition: {
-          value: {
-            $: "1. udgave",
-          },
+        edition: { value: { $: "1. udgave" } },
+        form: {
+          searchCode: { $: "phrase.subject" },
+          searchString: { $: "biografiske romaner" },
+          value: { $: "biografiske romaner" },
         },
-        isbn: {
-          value: {
-            $: "978-87-11-40713-4",
-          },
-        },
-        language: {
-          $: "Dansk",
-        },
-        materialType: {
-          $: "Lydbog (cd)",
-        },
-        onlineAccess: [
-          {
-            value: {
-              link: {
-                $: "https://ereolen.dk/ting/object/870970-basis:52552478",
-              },
-              note: {
-                $: "Adgang til lån hos eReolen.dk",
-              },
-            },
-            accessUrlDisplay: {
-              $: "urlEreolen",
-            },
-          },
-          {
-            value: {
-              link: {
-                $: "https://ereolengo.dk/ting/object/870970-basis:52552478",
-              },
-              note: {
-                $: "Adgang til titlen på5 eReolen Go",
-              },
-            },
-            accessUrlDisplay: {
-              $: "urlEreolen",
-            },
-          },
-        ],
-        originals: {
-          value: [
-            {
-              $: "Gengivelse af bogen",
-            },
-            {
-              $: "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
-            },
-            {
-              $: "Bogens originaludgave: 1988",
-            },
-          ],
-        },
-        originalsFaust: {
-          searchCode: {
-            $: "dkcclterm.nr",
-          },
-          searchString: {
-            $: "26521556",
-          },
-          value: {
-            $: "26521556",
-          },
-        },
-        physicalDescription: {
-          value: {
-            $: "1 cd i 1 mappe (67 min.)",
-          },
-        },
+        isbn: { value: { $: "9788711412572" } },
+        isText: { value: { $: "a" } },
+        language: { $: "dansk" },
+        "iso639-2": { $: "dan" },
+        languages: { languageMain: { $: "dan" } },
+        latestReprint: { value: { $: "Seneste oplag: 4. oplag, 2012" } },
+        materialType: { $: "Bog" },
+        originalTitle: { value: { $: "Min kamp (norsk)" } },
+        pagination: { value: { $: "651 sider" } },
+        physicalDescription: { value: { $: "651 sider" } },
         publication: {
-          publisher: { $: "Kronstork" },
-          publicationYear: { $: "2020" },
-          latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } },
+          publisher: { $: "Lindhardt og Ringhof" },
+          publicationYear: { $: "2010" },
+          latestReprint: { latestReprintElement: { $: "4. oplag, 2012" } },
         },
-        shelf: {
-          prefix: {
-            $: "85",
-          },
-          shelfmark: {
-            $: "Knausgård",
-          },
-        },
+        shelf: { prefix: { $: "85" }, shelfmark: { $: "Knausgård" } },
         subject: [
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "sjove bøger",
-            },
-            value: {
-              $: "sjove bøger",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "far-søn-forholdet" },
+            value: { $: "far-søn-forholdet" },
           },
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "krimi",
-            },
-            value: {
-              $: "krimi",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "døden" },
+            value: { $: "døden" },
           },
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "hunde",
-            },
-            value: {
-              $: "hunde",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "alkoholmisbrug" },
+            value: { $: "alkoholmisbrug" },
           },
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "bortførelse",
-            },
-            value: {
-              $: "bortførelse",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "forfattere" },
+            value: { $: "forfattere" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "familien" },
+            value: { $: "familien" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "parforhold" },
+            value: { $: "parforhold" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "forældre" },
+            value: { $: "forældre" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "børn" },
+            value: { $: "børn" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "barndom" },
+            value: { $: "barndom" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "identitet" },
+            value: { $: "identitet" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "Norge" },
+            value: { $: "Norge" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "Sverige" },
+            value: { $: "Sverige" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "1980-1989" },
+            value: { $: "1980-1989" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "1990-1999" },
+            value: { $: "1990-1999" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "2000-2009" },
+            value: { $: "2000-2009" },
           },
         ],
-        title: {
-          value: {
-            $: "Didriksen detektiverne",
-          },
-        },
+        title: { value: { $: "Min kamp : roman" } },
         tracks: [null, null],
+        inLanguage: { $: "da" },
+        volume: { $: "2. bog" },
       },
     },
     "870970-basis:29433909": {
       admindata: {
-        creationDate: {
-          $: "2016-07-09",
-        },
+        pid: { $: "870970-basis:29433909" },
+        creationDate: { $: "2016-07-09" },
+        requestButton: { $: "true" },
       },
       details: {
         abstract: {
           value: {
             $:
-              "Den ellers så pæne familie Didriksen går straks i aktion som detektiver, da det viser sig, at deres ret så usædvanlige hund er blevet kidnappet af en mistænkelig iskagemand!",
+              "Selvbiografisk roman med nærgående beskrivelse af at vokse op og blive til i en sammensat verden med udgangspunkt i faderens død og hovedpersonens selvrealisering som forfatter",
           },
         },
-        catalogcode: {
-          value: {
-            $: "DLF201207 BKM201207",
-          },
-        },
-        content: {
-          value: {
-            $:
-              "Jeg bor i Hvidovre ; Jeg fremlejer en lejlighed ; Modsætningen mellem",
-          },
-        },
+        catalogcode: { value: { $: "ACC201225 DBF201340 BKM201340" } },
         creators: {
           value: [
             {
-              functionCode: {
-                $: "aut",
-              },
-              functionSingular: {
-                $: "forfatter",
-              },
-              functionPlural: {
-                $: "forfattere",
-              },
-              searchCode: {
-                $: "phrase.creator",
-              },
-              searchString: {
-                $: "Kim Fupz Ꜳkeson",
-              },
-              name: {
-                $: "Kim Fupz Ꜳkeson",
-              },
+              functionCode: { $: "aut" },
+              functionSingular: { $: "forfatter" },
+              functionPlural: { $: "forfattere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Karl Ove Knausgård" },
+              name: { $: "Karl Ove Knausgård" },
             },
             {
-              functionCode: {
-                $: "dkind",
-              },
-              functionSingular: {
-                $: "indlæser",
-              },
-              functionPlural: {
-                $: "indlæsere",
-              },
-              searchCode: {
-                $: "phrase.creator",
-              },
-              searchString: {
-                $: "Peter Frödin",
-              },
-              name: {
-                $: "Peter Frödin",
-              },
+              functionCode: { $: "trl" },
+              functionSingular: { $: "oversætter" },
+              functionPlural: { $: "oversættere" },
+              searchCode: { $: "phrase.creator" },
+              searchString: { $: "Sara Koch" },
+              name: { $: "Sara Koch" },
             },
           ],
+        },
+        contributors: {
+          value: {
+            functionCode: { $: "trl" },
+            functionSingular: { $: "oversætter" },
+            functionPlural: { $: "oversættere" },
+            searchCode: { $: "phrase.creator" },
+            searchString: { $: "Sara Koch" },
+            name: { $: "Sara Koch" },
+          },
         },
         dk5: [
           {
-            searchCode: {
-              $: "dkcclphrase.ldk",
-            },
-            searchString: {
-              $: "86-096",
-            },
-            value: {
-              $: "86-096",
-            },
+            searchCode: { $: "dkcclphrase.ldk" },
+            searchString: { $: "85-26" },
+            value: { $: "85-26" },
           },
           {
-            searchCode: {
-              $: "dkcclphrase.ldk",
-            },
-            searchString: {
-              $: "sk",
-            },
-            value: {
-              $: "sk",
-            },
+            searchCode: { $: "dkcclphrase.ldk" },
+            searchString: { $: "sk" },
+            value: { $: "sk" },
           },
         ],
-        edition: {
-          value: {
-            $: "1. udgave",
-          },
+        edition: { value: { $: "3. udgave" } },
+        form: {
+          searchCode: { $: "phrase.subject" },
+          searchString: { $: "biografiske romaner" },
+          value: { $: "biografiske romaner" },
         },
-        isbn: {
-          value: {
-            $: "978-87-11-40713-4",
-          },
-        },
-        language: {
-          $: "Dansk",
-        },
-        materialType: {
-          $: "Lydbog (cd)",
-        },
+        isbn: { value: { $: "9788711391839" } },
+        isText: { value: { $: "a" } },
+        language: { $: "dansk" },
+        "iso639-2": { $: "dan" },
+        languages: { languageMain: { $: "dan" } },
+        latestReprint: { value: { $: "Seneste oplag: 4. oplag, 2013" } },
+        materialType: { $: "Bog" },
         originals: {
-          value: [
-            {
-              $: "Gengivelse af bogen",
-            },
-            {
-              $: "Indlæst efter 2. udgave med cd. 2006. ISBN: 9788762602786",
-            },
-            {
-              $: "Bogens originaludgave: 1988",
-            },
-          ],
+          value: { $: "Tidligere: 2. udgave. 2011. ISBN: 9788711419113" },
         },
         originalsFaust: {
-          searchCode: {
-            $: "dkcclterm.nr",
-          },
-          searchString: {
-            $: "26521556",
-          },
-          value: {
-            $: "26521556",
-          },
+          searchCode: { $: "dkcclterm.nr" },
+          searchString: { $: "28692765" },
+          value: { $: "28692765" },
         },
-        physicalDescription: {
-          value: {
-            $: "1 cd i 1 mappe (67 min.)",
-          },
-        },
-        hostPublication: {
-          value: {
-            $: "I: Dansk veterinærtidsskrift, Årg. 97, nr. 10 (2014), 2014",
-          },
-          title: { $: "Dansk veterinærtidsskrift" },
-          details: { $: "Årg. 97, nr. 10 (2014)" },
-        },
+        originalTitle: { value: { $: "Min kamp (norsk)" } },
+        pagination: { value: { $: "487 sider" } },
+        physicalDescription: { value: { $: "487 sider" } },
         publication: {
-          publisher: { $: "Kronstork" },
-          publicationYear: { $: "2020" },
-          latestReprint: { latestReprintElement: { $: "1. oplag, 2020" } },
+          publisher: { $: "Lindhardt og Ringhof" },
+          publicationYear: { $: "2012" },
+          latestReprint: { latestReprintElement: { $: "4. oplag, 2013" } },
         },
-        shelf: {
-          prefix: {
-            $: "64.64",
-          },
-          shelfmark: {
-            $: "gray",
-          },
-        },
+        shelf: { prefix: { $: "85" }, shelfmark: { $: "Knausgård" } },
         subject: [
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "sjove bøger",
-            },
-            value: {
-              $: "sjove bøger",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "far-søn-forholdet" },
+            value: { $: "far-søn-forholdet" },
           },
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "krimi",
-            },
-            value: {
-              $: "krimi",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "døden" },
+            value: { $: "døden" },
           },
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "hunde",
-            },
-            value: {
-              $: "hunde",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "alkoholmisbrug" },
+            value: { $: "alkoholmisbrug" },
           },
           {
-            searchCode: {
-              $: "phrase.subject",
-            },
-            searchString: {
-              $: "bortførelse",
-            },
-            value: {
-              $: "bortførelse",
-            },
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "forfattere" },
+            value: { $: "forfattere" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "familien" },
+            value: { $: "familien" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "parforhold" },
+            value: { $: "parforhold" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "forældre" },
+            value: { $: "forældre" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "børn" },
+            value: { $: "børn" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "barndom" },
+            value: { $: "barndom" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "identitet" },
+            value: { $: "identitet" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "Norge" },
+            value: { $: "Norge" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "Sverige" },
+            value: { $: "Sverige" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "1980-1989" },
+            value: { $: "1980-1989" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "1990-1999" },
+            value: { $: "1990-1999" },
+          },
+          {
+            searchCode: { $: "phrase.subject" },
+            searchString: { $: "2000-2009" },
+            value: { $: "2000-2009" },
           },
         ],
-        title: {
-          value: {
-            $: "Didriksen detektiverne",
-          },
-        },
+        title: { value: { $: "Min kamp : roman" } },
         tracks: [null, null],
+        inLanguage: { $: "da" },
+        volume: { $: "1. bog" },
       },
     },
     "870971-anmeld:47403855": {
@@ -1591,6 +1567,5 @@ export function load(pid) {
       },
     },
   };
-
   return data[pid];
 }

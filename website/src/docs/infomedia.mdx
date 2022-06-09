@@ -7,14 +7,12 @@ Using an Infomedia ID, one may look up article content from the Infomedia servic
 Check out how to obtain IDs in the [Reviews](#Reviews) section, and [Accessing a Manifestation](#Accessing-a-Manifestation)
 section.
 
-Use the field _accessStatus_ to determine if the current user has access to infomedia.
-
 Use the field _html_ if you want the entire article as one html string.
 
 <InlineGraphiQL
   query={`query ($id: String!) {
     infomedia(id: $id) {
-      accessStatus
+      error
       article {
         id
         headLine

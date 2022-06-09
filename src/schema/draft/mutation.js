@@ -1,5 +1,5 @@
 export const typeDef = `
-type Draft_DigitalArticleServiceResponse {
+type DigitalArticleServiceResponse {
   msg: String!
 }
 extend type Mutation {
@@ -19,7 +19,7 @@ extend type Mutation {
     titleOfComponent: String
     pagination: String
 
-  ): Draft_DigitalArticleServiceResponse!
+  ): DigitalArticleServiceResponse!
 }
 `;
 
