@@ -1,6 +1,5 @@
 .top {
-  position: sticky;
-  /* observer hack */
+   /* observer hack */
   top: -1px;
 
   z-index: 99;
@@ -17,10 +16,6 @@
 
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.25);
   transition-duration: 0.2s;
-}
-
-.top.sticky {
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
 }
 
 .left {
@@ -94,9 +89,18 @@
   display: none;
 }
 
+/* documentation */
+
+.top.documentation{
+  position: sticky;
+}
+
+.top.documentation.sticky {
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
+}
+
 /* index */
-.top.index {
-  position: unset;
+.top.index{
   border-bottom: none;
 }
 

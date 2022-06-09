@@ -255,6 +255,12 @@ export default function GraphiQL() {
           });
           return data.json().catch(() => data.text());
         }}
+        onMount={(instance) => {
+          setTimeout(() => {
+            instance.handlePrettifyQuery();
+            instance.handleRunQuery();
+          }, 250);
+        }}
         query={parameters.query}
         variables={parameters.variables}
         operationName={parameters.operationName}
@@ -267,6 +273,8 @@ export default function GraphiQL() {
     </div>
   );
 }
+
+// https://graphiql-test.netlify.app/typedoc/modules/graphiql.html#graphiqlprops
 
 class GraphiQLFix extends _GraphiQL {
   constructor(props) {
