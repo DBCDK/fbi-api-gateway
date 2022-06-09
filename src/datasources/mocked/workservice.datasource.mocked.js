@@ -3,6 +3,7 @@ export function load({ workId }) {
     "work-of:870970-basis:26521556": {
       trackingId: "032113e2-a929-46f9-8a28-8217611d75e9",
       work: {
+        manifestations: [],
         creators: [{ type: "aut", value: "karl ove knausgård" }],
         description: "Selvbiografisk roman",
         fullTitle: "Min kamp : roman. 1. bog",
@@ -432,6 +433,7 @@ export function load({ workId }) {
         title: "Skyggesøsteren",
         workId: "work-of:870970-basis:53557791",
         workTypes: ["literature"],
+        groups: [],
       },
     },
   };

@@ -106,9 +106,11 @@ function workToWorkTypes(work) {
 function workToGenreAndForm(work) {
   const include = ["DBCO"];
   return (
-    work?.subjects
-      .filter((subject) => include.includes(subject.type))
-      .map((subject) => subject.value) || []
+    (work?.subjects &&
+      work?.subjects
+        .filter((subject) => include.includes(subject.type))
+        .map((subject) => subject.value)) ||
+    []
   );
 }
 
@@ -126,7 +128,7 @@ function workToSubjects(work) {
       __typename: "SubjectText",
     }));
 
-  const all = work?.subjects.map((subject) => ({
+  const all = work?.subjects?.map((subject) => ({
     type: "TOPIC",
     display: subject.value,
     __typename: "SubjectText",

@@ -8,14 +8,14 @@ test("search - with all filters and facets", async () => {
   const result = await performTestQuery({
     query: `
       {
-        search(q: {all: "*", title: "*", creator: "*", subject: "*"},filters: {accessType: [], audience: [], creator: [], fictionNonfiction: [], fictiveCharacter: [], genre: [], language: [], materialType: [], subject: [], workType: []}) {
-          hitcount
+        search(q:{all:"harry"})  {
+          hitcount       
           works(offset: 0, limit: 10) {
-            id
-          }
-          facets(facets: [workType, language, materialType, fictiveCharacter, genre, audience, accessType, fictionNonfiction, subject, creator]) {
+            workId
+          }   
+          facets(facets: [language, materialType]) {
             name
-            values(limit: 1) {
+            values(limit: 5) {
               term
               count
             }

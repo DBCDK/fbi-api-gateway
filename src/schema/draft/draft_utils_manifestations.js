@@ -74,7 +74,7 @@ function jedTableOFContent(manifestation) {
   }
 
   const contentArray = content.split(";");
-  const listcontent = contentArray.map((con) => {
+  const listcontent = contentArray?.map((con) => {
     return { heading: "", content: con };
   });
 
@@ -83,7 +83,7 @@ function jedTableOFContent(manifestation) {
 
 function jedSubjects(manifestation) {
   const subjects = getArray(manifestation, "details.subject");
-  const all = subjects.map((sub) => {
+  const all = subjects?.map((sub) => {
     return { ...consts.FAKE_SUBJECTS.all[0], ...{ display: sub.value.$ } };
   });
   return { ...consts.FAKE_SUBJECTS, ...{ all: all } };
@@ -440,7 +440,7 @@ function parseAudienceAges(audience) {
     return [];
   }
 
-  return audience.map((aud) => aud.value.$);
+  return audience?.map((aud) => aud.value.$);
 }
 
 /**
@@ -603,7 +603,7 @@ function _sortOnlineAccess(onlineAccess) {
  * @returns {{firstName: string, lastName: string, aliases: [{display: string},{display: string}], birthYear: string, attributeToName: string, __typename: string, display: *, romanNumeral: string, roles: [{functionCode: (string|*), valueOf?(): boolean, function: ({plural: string, singular: string}|{plural: *, singular: *})}]|[], nameSort: *}[]}
  */
 function jedCreators(creators) {
-  const jedData = creators.map((creator) => {
+  const jedData = creators?.map((creator) => {
     const role = creator.functionCode?.$
       ? {
           ...{ functionCode: creator.functionCode?.$ },

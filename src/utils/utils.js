@@ -402,12 +402,14 @@ export async function resolveWork(args, context) {
     );
   });
   const allManifestations = await resolveAllManifestations(allPids, context);
-  const realData = workToJed(
-    res,
-    manifestation,
-    allManifestations,
-    args.language
-  );
+
+  let realData = [];
+  try {
+    realData = workToJed(res, manifestation, allManifestations, args.language);
+  } catch (e) {
+    console.log(e);
+  }
+
   return { ...consts.FAKE_WORK, ...realData };
 }
 
