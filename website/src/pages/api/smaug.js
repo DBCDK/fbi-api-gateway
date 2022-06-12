@@ -4,7 +4,28 @@ import permissions from "../../../../src/permissions.json";
 /**
  * Extract specific data from whitelist
  */
-const selectData = (data) => {
+const selectProfiles = (data) => {
+  return data?.profile?.map((p) => p.profileName);
+};
+
+/**
+ * remote smaug api call
+ */
+async function getProfiles(agency) {
+  const url =
+    process.env.VIPCORE_URL ||
+    "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0";
+  const version = process.env.VIPCORE_VERSION || "3";
+
+  return await fetch(`${url}/api/opensearchprofile/${agency}/${version}`, {
+    method: "GET",
+  });
+}
+
+/**
+ * Extract specific data from whitelist
+ */
+const selectConfigurations = (data) => {
   return {
     displayName: data.displayName,
     logoColor: data.logoColor,
@@ -36,13 +57,26 @@ export default async function handler(req, res) {
     return res.status(400).send({});
   }
 
-  const response = await getConfiguration(token);
+  const smaug_response = await getConfiguration(token);
 
-  switch (response.status) {
+  switch (smaug_response.status) {
     case 200:
-      const data = await response.json();
-      const selected = selectData(data);
-      return res.status(200).send(selected);
+      const smaug_data = await smaug_response.json();
+      const configuration = selectConfigurations(smaug_data);
+
+      if (configuration.agency) {
+        // Get Search Profiles from vipcore
+        const vipcore_response = await getProfiles(configuration.agency);
+
+        switch (vipcore_response.status) {
+          case 200:
+            const vipcore_data = await vipcore_response.json();
+            const profiles = selectProfiles(vipcore_data);
+            return res.status(200).send({ ...configuration, profiles });
+        }
+      }
+
+      return res.status(200).send(configuration);
     default:
       return res.status(400).send({});
   }

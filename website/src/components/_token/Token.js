@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 
+import Dropdown from "react-bootstrap/Dropdown";
+
 import Overlay from "@/components/base/overlay";
 
 import useStorage from "@/hooks/useStorage";
@@ -47,10 +49,11 @@ export default function Token({
   const hasFocus = !!state.focus;
   const hasValue = !!(state.value && state.value !== "");
   const isToken = state.value === selectedToken?.token;
-  const isAuthenticated = !!configuration?.uniqueId;
-  const isAuthIcon = isAuthenticated ? "🔒" : "🔓";
+  const hasProfiles = configuration?.profiles;
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
+  const selectedProfile =
+    selectedToken?.profile || configuration?.profiles?.[0];
 
   // custom class'
   const compactSize = compact ? styles.compact : "";
@@ -62,11 +65,6 @@ export default function Token({
     <form
       ref={containerRef}
       id={`${id}-form`}
-      onClick={() => {
-        inputRef?.current?.focus();
-        state.value && hasDisplay && inputRef?.current?.select();
-        setState({ ...state, focus: true });
-      }}
       className={`${styles.form} ${compactSize} ${className}`}
       onSubmit={(e) => {
         e.preventDefault();
@@ -78,8 +76,15 @@ export default function Token({
         className={`${styles.wrap} ${valueState} ${displayState} ${focusState}`}
       >
         {hasDisplay && (
-          <div className={styles.display}>
-            <Text type="text4">{`${isAuthIcon} ${configuration?.displayName}`}</Text>
+          <div
+            className={styles.display}
+            onClick={() => {
+              inputRef?.current?.focus();
+              state.value && hasDisplay && inputRef?.current?.select();
+              setState({ ...state, focus: true });
+            }}
+          >
+            <Text type="text4">{configuration?.displayName}</Text>
           </div>
         )}
         <input
@@ -97,11 +102,12 @@ export default function Token({
           }}
           onChange={(e) => {
             const value = e.target.value;
-            value && setSelectedToken(value, null);
+            value && setSelectedToken(value);
             onChange?.(value);
             setState({ ...state, value });
           }}
         />
+
         <Button
           className={styles.clear}
           onClick={(e) => {
@@ -120,6 +126,7 @@ export default function Token({
           {/* 🗑️ */}
         </Button>
       </div>
+
       <Overlay
         show={state.value && !selectedToken?.token && !state.focus}
         container={containerRef}
@@ -128,6 +135,25 @@ export default function Token({
           {false ? "😬 This token is expired" : "😬 This is not a valid token"}
         </Text>
       </Overlay>
+
+      {isToken && hasProfiles && (
+        <Dropdown className={styles.dropdown} align="end">
+          <Dropdown.Toggle id="dropdown" className={styles.toggle}>
+            {selectedProfile}
+          </Dropdown.Toggle>
+          <Dropdown.Menu className={styles.menu}>
+            {configuration?.profiles?.map((p) => (
+              <Dropdown.Item
+                key={p}
+                className={styles.item}
+                onClick={() => setSelectedToken(selectedToken?.token, p)}
+              >
+                {p}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
     </form>
   );
 }

@@ -1,0 +1,29 @@
+.dropdown{
+  margin-left:var(--pt1);
+}
+
+.toggle {
+  border: 2px solid var(--primary-dark);
+
+  height: var(--pt5);
+  background-color: transparent;
+  font-family: var(--font-mono-regular);
+  transition-duration: 0.35s;
+  display: inline-block;
+  box-sizing: content-box;
+  
+  /* half height */
+  border-radius: var(--pt5);
+
+  /* changes on focus */
+  transition-duration: 0.3s;
+  padding: 0 var(--pt2);
+}
+
+.toggle::after{
+  margin-left:var(--pt2);
+}
+
+@media screen and (max-width: 576px) {
+
+}

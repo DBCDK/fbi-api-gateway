@@ -10,8 +10,10 @@ import { useModal } from "@/components/modal";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
-import TokenStatus from "@/components/tokenstatus";
-// import Token from "@/components/token";
+import History from "@/components/history";
+// import TokenStatus from "@/components/tokenstatus";
+import Token from "@/components/token";
+import Profile from "@/components/profile";
 
 import styles from "./Header.module.css";
 
@@ -85,7 +87,9 @@ export default function Header() {
             </Text>
           </Col>
           <Col className={styles.middle}>
-            <TokenStatus className={styles.token} compact />
+            <Token className={styles.token} compact />
+            <Profile className={styles.profiles} />
+            <History className={styles.history} />
           </Col>
         </Row>
       </Container>
