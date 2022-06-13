@@ -31,7 +31,7 @@ function Menu({ modal, context }) {
       <Row className={styles.middle}>
         <Col>
           <Label for="token-input">
-            <Text type="text5">Gateway token</Text>
+            <Text type="text5">FBI API token</Text>
           </Label>
           <Row>
             <Col className={styles.token}>

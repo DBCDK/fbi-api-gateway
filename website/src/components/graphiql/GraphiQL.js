@@ -16,10 +16,6 @@ import Overlay from "@/components/base/overlay";
 
 import styles from "./GraphiQL.module.css";
 
-// Url Origin
-const APP_URL =
-  getConfig()?.publicRuntimeConfig?.app?.url || "http://localhost:3000";
-
 // A storage implementation that does nothing
 // Basically prevents inline graphiql to interfere with the "real" graphiql
 const noStorage = {
@@ -59,8 +55,8 @@ function DummyContainer({ inView, show }) {
 }
 
 function generateGraphiqlURL(parameters) {
-  // const origin = window.location.origin
-  const path = APP_URL + "/graphiql";
+  const origin = window.location.origin;
+  const path = origin + "/graphiql";
 
   const params = Object.keys(parameters)
     .filter((key) => Boolean(parameters[key]))
@@ -256,9 +252,18 @@ export default function GraphiQL() {
           return data.json().catch(() => data.text());
         }}
         onMount={(instance) => {
+          // autoclose history section (history tab bug)
+          // keep this, but for now, bug solved in css
+          // if (instance.state.historyPaneOpen) {
+          //   instance.handleToggleHistory();
+          // }
+
+          // Prettify and run query
           setTimeout(() => {
-            instance.handlePrettifyQuery();
-            instance.handleRunQuery();
+            if (instance?.props?.query) {
+              instance?.handlePrettifyQuery();
+              instance?.handleRunQuery();
+            }
           }, 250);
         }}
         query={parameters.query}

@@ -28,7 +28,7 @@
 }
 
 .token {
-  background-color: var(--primary-dark);
+  /* background-color: var(--primary-dark); */
   box-sizing: content-box;
   align-self: center;
   border: 2px solid var(--primary-dark);
@@ -36,18 +36,23 @@
   /* transform: scale(0.85); */
 }
 
-.token > div {
+.token > div:first-child {
   background-color: var(--primary-dark) !important;
 }
 
-.token input {
-}
-
 .history {
+  max-height: var(--pt5);
+  max-width: var(--pt5);
+
   box-sizing: content-box;
   padding: 0;
   border: 2px solid var(--primary-dark);
   margin-left: var(--pt1);
+}
+
+.history span{
+  /* icon size */
+  font-size: 16px;
 }
 
 .history:hover,
@@ -102,6 +107,14 @@
 /* index */
 .top.index{
   border-bottom: none;
+}
+
+.top.index .profiles{
+  display:none;
+}
+
+.top.index .token {
+  display:none;
 }
 
 .top .logo a:hover {

@@ -47,6 +47,7 @@ export default function Token({
   const hasFocus = !!state.focus;
   const hasValue = !!(state.value && state.value !== "");
   const isToken = state.value === selectedToken?.token;
+  const isAuthenticated = !!configuration?.uniqueId;
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 
@@ -77,7 +78,10 @@ export default function Token({
       >
         {hasDisplay && (
           <div className={styles.display}>
-            <Text type="text4">{configuration?.displayName}</Text>
+            <Text type="text4" title={`${configuration?.displayName}`}>
+              {isAuthenticated && <i title="Authenticated token">🧑</i>}{" "}
+              {`${configuration?.displayName}`}
+            </Text>
           </div>
         )}
         <input
@@ -95,7 +99,7 @@ export default function Token({
           }}
           onChange={(e) => {
             const value = e.target.value;
-            value && setSelectedToken(value, "190101", "default");
+            value && setSelectedToken(value, null);
             onChange?.(value);
             setState({ ...state, value });
           }}

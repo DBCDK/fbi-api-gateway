@@ -14,9 +14,14 @@ function Text({
   className = "",
   type = "text2",
   style,
+  ...props
 }) {
   return (
-    <p className={`${styles.text} ${styles[type]} ${className}`} style={style}>
+    <p
+      className={`${styles.text} ${styles[type]} ${className}`}
+      style={style}
+      {...props}
+    >
       {children}
     </p>
   );

@@ -16,7 +16,7 @@ export default function useStorage() {
   // If user has not explicitly selected a token
   // we use the first one from history if one exists
   if (!selectedToken) {
-    selectedToken = history?.[0];
+    // selectedToken = history?.[0];
   }
 
   const setSelectedToken = (token, profile) => {
@@ -39,13 +39,17 @@ export default function useStorage() {
     const timestamp = Date.now();
 
     // Find existing
-    const existing = history.find((obj) => isEqual(obj, { token, profile }));
+    const existing = history.find((obj) => obj.token === token);
 
     // remove duplicate
-    const uniq = history.filter((obj) => !isEqual(obj, { token, profile }));
+    const uniq = history.filter((obj) => !(obj.token === token));
 
     if (existing) {
-      uniq.unshift(existing);
+      // update only the profile if token already exist
+      uniq.unshift({
+        ...existing,
+        profile,
+      });
     } else {
       // add to beginning of array
       uniq.unshift({
@@ -65,16 +69,14 @@ export default function useStorage() {
   };
 
   const removeHistoryItem = (token, profile) => {
-    const newHistory = history.filter(
-      (obj) => !isEqual(obj, { token, profile })
-    );
+    const newHistory = history.filter((obj) => !(obj.token === token));
     // store
     const stringified = JSON.stringify(newHistory);
     localStorage.setItem("history", stringified);
     // mutate
     mutateHistory(newHistory, false);
 
-    if (isEqual(selectedToken, { token, profile })) {
+    if (selectedToken.token === token) {
       removeSelectedToken();
     }
   };

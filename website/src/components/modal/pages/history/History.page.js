@@ -243,21 +243,21 @@ function History({ modal, context }) {
     }
   }, [modal.isVisible]);
 
-  // update history on history length change
+  // update history on history change
   useEffect(() => {
     setTimeout(() => setState(history), 200);
-  }, [history?.length]);
+  }, [history]);
 
   return (
     <div className={`${styles.history}`}>
       <Row className={styles.keys}>
         <Col>
-          <Row>
+          {/* <Row>
             <CreateForm />
           </Row>
           <Row>
             <hr />
-          </Row>
+          </Row> */}
 
           <Row className={styles.configurations}>
             <Title type="title1" tag="h2">

@@ -7,7 +7,7 @@ export default function Page(props) {
   return (
     <>
       <Head>
-        <title>Gateway 🥳 | GraphiQL</title>
+        <title>FBI API 🥳 | GraphiQL</title>
       </Head>
       <GraphiQL {...props} />
     </>

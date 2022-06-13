@@ -42,7 +42,7 @@
 }
 
 .wrap.inActive.value.display .input {
-  padding: 0 var(--pt2);
+  padding: 0 var(--pt1) 0 var(--pt2);
   cursor: pointer;
 }
 
@@ -50,6 +50,7 @@
 
 .input {
   width: 100%;
+  min-width:75px;
   height: var(--pt6);
   padding: 0 var(--pt3);
   border: none;
@@ -71,8 +72,25 @@
 
 /* display */
 
+.display{
+  display:flex;
+  max-width:calc(450px);
+}
+
 .display p {
-  padding: 0 var(--pt2) 0 var(--pt3);
+  padding: 0 var(--pt2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+}
+
+.display i{
+margin-left:calc(var(--pt05) * -1);
+font-style: normal;
+ /* outline: 2px solid white;
+ border-radius: 50%;
+ outline-offset: var(--pt1); */
 }
 
 /* clear button */
@@ -116,6 +134,10 @@
 .form.compact {
   /* 40 * 8 = 320 */
   width: 320px;
+
+  /* width: unset;
+  min-width: 250px;
+  max-width: 320px; */
 }
 
 .form.compact .wrap {
@@ -123,9 +145,19 @@
   border-radius: calc(var(--pt5) / 2);
   /* 44 * 8 = 320 */
   width: 320px;
+
+  /* width:unset;
+  min-width: 250px;
+  max-width: 320px; */
+}
+
+.form.compact .wrap .display p {
+  max-width:calc(320px - 100px);
+  /* max-width:320px; */
 }
 
 .form.compact .input {
+  min-width:75px;
   height: var(--pt5);
   /* half height */
   border-radius: calc(var(--pt5) / 2);
@@ -133,6 +165,10 @@
   font-size: 14px;
 
   padding: 0 var(--pt3);
+}
+
+.form.compact .wrap.inActive.value.display .input {
+  /* padding: 0; */
 }
 
 .form.compact .clear {
