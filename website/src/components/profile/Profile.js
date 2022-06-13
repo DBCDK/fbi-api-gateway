@@ -19,6 +19,8 @@ export default function Profile({ id = "dropdown", className = "" }) {
   const hasProfile = selectedToken?.profile;
   const hasProfiles = configuration?.profiles;
 
+  const sortedProfiles = hasProfiles?.sort();
+
   // check if selected profile exist on list
   const isProfile =
     hasProfile && hasProfiles && configuration?.profiles.includes(hasProfile);
@@ -46,20 +48,30 @@ export default function Profile({ id = "dropdown", className = "" }) {
   }
 
   return (
-    <Dropdown className={`${styles.dropdown} ${className}`} align="end">
+    <Dropdown
+      className={`${styles.dropdown} ${className}`}
+      align="end"
+      title="Search profile"
+    >
       <Dropdown.Toggle id={id} className={styles.toggle}>
         {selectedProfile}
       </Dropdown.Toggle>
       <Dropdown.Menu className={styles.menu}>
-        {configuration?.profiles?.map((p) => (
-          <Dropdown.Item
-            key={p}
-            className={styles.item}
-            onClick={() => setSelectedToken(selectedToken?.token, p)}
-          >
-            {p}
-          </Dropdown.Item>
-        ))}
+        <Dropdown.Header>Search Profiles</Dropdown.Header>
+        {/* <Dropdown.Divider /> */}
+        {sortedProfiles?.map((p) => {
+          const selected = p === hasProfile;
+          const selectedClass = selected ? styles.selected : "";
+          return (
+            <Dropdown.Item
+              key={p}
+              className={`${styles.item} ${selectedClass}`}
+              onClick={() => setSelectedToken(selectedToken?.token, p)}
+            >
+              {p}
+            </Dropdown.Item>
+          );
+        })}
       </Dropdown.Menu>
     </Dropdown>
   );

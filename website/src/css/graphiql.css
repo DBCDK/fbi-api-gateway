@@ -22,6 +22,15 @@
   flex-direction: column;
   flex: 1;
   overflow-x: hidden;
+  position:relative;
+}
+
+/* history tab bug on refresh */
+.graphiql-container .editorWrap:first-child{
+  max-width:230px;
+}
+.graphiql-container .editorWrap:last-child{
+  max-width:unset;
 }
 
 .graphiql-container .title {
@@ -1457,6 +1466,7 @@ li.CodeMirror-hint-active {
   text-overflow: ellipsis;
   user-select: text;
   white-space: nowrap;
+  align-self: baseline;
 }
 
 .graphiql-container .doc-explorer-back {

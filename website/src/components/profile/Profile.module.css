@@ -2,6 +2,8 @@
   margin-left:var(--pt1);
 }
 
+
+
 .toggle {
   border: 2px solid var(--primary-dark);
 
@@ -20,8 +22,36 @@
   padding: 0 var(--pt2);
 }
 
+.toggle:focus-visible {
+  border: 2px solid var(--text-dark);
+}
+
 .toggle::after{
   margin-left:var(--pt2);
+}
+
+.menu{
+  padding:var(--pt2);
+}
+
+.item{
+  font-family: var(--font-sans-regular);
+}
+
+.item.selected{
+  font-family: var(--font-sans-bold);
+  color: var(--primary-dark);
+  border-left: 2px solid black;
+}
+
+.item:focus-visible{
+  outline: 2px solid var(--text-dark);
+  background-color:transparent;
+}
+
+.item:hover{  
+  color: var(--primary-dark);
+  background-color:transparent;
 }
 
 @media screen and (max-width: 576px) {
