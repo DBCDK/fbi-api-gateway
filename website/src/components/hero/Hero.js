@@ -65,38 +65,4 @@ export default function Hero({ className = "" }) {
       </Container>
     </section>
   );
-
-  // return (
-  //   <section className={`${styles.hero} ${className}`}>
-  //     <Container>
-  //       <Row className={styles.row}>
-  //         <Col>
-  //           <Title className={styles.title}>
-  //             Configure access to get started
-  //           </Title>
-  //         </Col>
-  //       </Row>
-
-  //       <Row className={styles.row}>
-  //         <Col>
-  //           <Button
-  //             className={styles.go}
-  //             type="submit"
-  //             // disabled={!inputIsValid}
-  //             form="token-input-form"
-  //             onClick={() => {
-  //               modal.push("history");
-  //               // router.push({
-  //               //   pathname: "/documentation",
-  //               // });
-  //             }}
-  //             secondary
-  //           >
-  //             Go!
-  //           </Button>
-  //         </Col>
-  //       </Row>
-  //     </Container>
-  //   </section>
-  // );
 }
