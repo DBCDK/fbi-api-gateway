@@ -81,7 +81,7 @@ describe("Manifestation", () => {
           }
           access {
             __typename
-            ... on URLE {
+            ... on AccessUrl {
               origin
               url
             }

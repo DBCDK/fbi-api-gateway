@@ -36,7 +36,7 @@ type Ereol {
   canAlwaysBeLoaned: Boolean!
 }
 
-type URLE {
+type AccessUrl {
   \\"\\"\\"
   The origin, e.g. \\"DBC Webarkiv\\"
   \\"\\"\\"
@@ -65,7 +65,7 @@ type DigitalArticleService {
   issn: String!
 }
 
-union Access = URLE | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+union Access = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 
 type Translation {
   \\"\\"\\"
@@ -780,7 +780,7 @@ type ExternalReview implements Review {
   author: String
   date: String
   rating: String
-  urls: [URLE!]!
+  urls: [AccessUrl!]!
 }
 
 type InfomediaReview implements Review {
@@ -1243,7 +1243,7 @@ type Ereol {
   canAlwaysBeLoaned: Boolean!
 }
 
-type URLE {
+type AccessUrl {
   \\"\\"\\"
   The origin, e.g. \\"DBC Webarkiv\\"
   \\"\\"\\"
@@ -1272,7 +1272,7 @@ type DigitalArticleService {
   issn: String!
 }
 
-union Access = URLE | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+union Access = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 
 type Translation {
   \\"\\"\\"
