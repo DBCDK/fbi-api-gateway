@@ -55,7 +55,7 @@ export const FAKE_PERSON = {
 };
 
 export const FAKE_ACCESS = {
-  __typename: "accessUrl",
+  __typename: "AccessUrl",
   origin: "DBC Webarkiv",
   url: "https://moreinfo.dbc.dk",
 };
