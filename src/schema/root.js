@@ -35,17 +35,14 @@ type Query {
     The query to get suggestions from
     """
     q: String!
-
-    """
-    work type to include in the result
-    Note: Is only supported in the bibdk suggester
-    """
-    workType: WorkType
-
-    """
+    """    
     suggest type to include in result
     """
-    suggestType: SuggestionType
+    suggestType: [SuggestionType]
+    """
+    Number of items to return
+    """
+    limit: Int
   ): SuggestResponse!
 
   """
