@@ -20,7 +20,7 @@ export default function Home() {
           <Col>
             <Text className={styles.text}>Hello! You have found the</Text>
             <Title tag="h1" type="title6" className={styles.title}>
-              FBI API Gateway
+              FBI API
             </Title>
           </Col>
         </Row>
@@ -31,9 +31,9 @@ export default function Home() {
               What is this?
             </Title>
             <Text className={styles.text}>
-              FBI API Gateway offers a uniform and flexible API to access a wide
-              variety of services. The API is based on GraphQL, which provides
-              benefits such as:
+              FBI API offers a uniform and flexible API to access a wide variety
+              of services. The API is based on GraphQL, which provides benefits
+              such as:
               <ul>
                 <li>
                   A bult in query language - You decide what data you need, and

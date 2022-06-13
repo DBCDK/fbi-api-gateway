@@ -58,7 +58,7 @@ export default function Header() {
           <Col className={styles.left}>
             <Title className={styles.logo}>
               <span>
-                <Link href="/">FBI API Gateway</Link> 🥳
+                <Link href="/">FBI API</Link> 🥳
               </span>
             </Title>
           </Col>

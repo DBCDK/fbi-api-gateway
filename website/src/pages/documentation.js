@@ -37,7 +37,7 @@ export default function Page() {
   return (
     <>
       <Head>
-        <title>FBI API Gateway 🥳 | Documentation</title>
+        <title>FBI API 🥳 | Documentation</title>
       </Head>
       <MDXProvider components={components}>
         <Docs />

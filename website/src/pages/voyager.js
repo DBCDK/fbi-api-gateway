@@ -6,7 +6,7 @@ export default function Page(props) {
   return (
     <>
       <Head>
-        <title>FBI API Gateway 🥳 | Voyager</title>
+        <title>FBI API 🥳 | Voyager</title>
       </Head>
       <div style={{ height: "100vh" }}>
         <Header />
