@@ -26,6 +26,7 @@ import { collectSubFields } from "@graphql-tools/utils";
  */
 export function manifestationToJed(manifestation) {
   const jedData = {};
+
   jedData.pid = manifestation.admindata.pid.$;
   jedData.titles = jedTitles(manifestation);
   jedData.abstract = manifestation.details?.abstract?.value?.$
@@ -604,7 +605,7 @@ function _sortOnlineAccess(onlineAccess) {
  */
 function jedCreators(creators) {
   const jedData = creators?.map((creator) => {
-    const role = creator.functionCode?.$
+    const role = creator?.functionCode?.$
       ? {
           ...{ functionCode: creator.functionCode?.$ },
           ...{
@@ -622,8 +623,8 @@ function jedCreators(creators) {
     return {
       ...consts.FAKE_PERSON,
       ...{
-        display: creator.name?.$,
-        nameSort: creator.name?.$,
+        display: creator?.name?.$,
+        nameSort: creator?.name?.$,
         roles: role
           ? [
               {
