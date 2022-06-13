@@ -38,7 +38,7 @@ type Query {
     """    
     suggest type to include in result
     """
-    suggestType: [SuggestionType]
+    suggestType: [SuggestionType!]
     """
     Number of items to return
     """
