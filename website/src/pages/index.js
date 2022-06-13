@@ -5,7 +5,7 @@ export default function Page(props) {
   return (
     <>
       <Head>
-        <title>Gateway 🥳</title>
+        <title>FBI API Gateway 🥳</title>
       </Head>
       <Home />
     </>
