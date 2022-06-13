@@ -41,6 +41,7 @@ export const resolvers = {
     async result(parent, args, context, info) {
       const res = await context.datasources.suggester.load({
         ...parent,
+        ...args,
         profile: context.profile,
       });
       return res;

@@ -11,17 +11,23 @@ const { url, prefix, ttl, token } = config.datasources.suggester;
 export async function load({
   q,
   workType = null,
-  suggestType = "all",
+  suggestType = ["creator", "subject", "title"],
   unique_works = true,
   profile,
+  limit,
 }) {
+  const types = suggestType.map((sug) => sug.toLowerCase());
+
   const result = url.includes("prosper")
-    ? await request.post(url).set("Authorization", `bearer ${token}`).send({
-        q: q,
-        worktype: workType,
-        unique_works,
-        agency: profile.agency,
-      })
+    ? await request
+        .post(url)
+        .set("Authorization", `bearer ${token}`)
+        .send({
+          q: q,
+          agency: profile.agency,
+          rows: limit || 10,
+          type: types,
+        })
     : await request.get(url).query({
         q: q,
         worktype: workType,
