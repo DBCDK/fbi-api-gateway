@@ -464,7 +464,7 @@ export async function resolveOnlineAccess(pid, context) {
   data.forEach((entry) => {
     if (entry.value) {
       result.push({
-        __typename: "URLE",
+        __typename: "accessUrl",
         origin:
           (entry.value.link && parseOnlineUrlToOrigin(entry.value.link.$)) ||
           "",
@@ -514,7 +514,7 @@ export async function resolveOnlineAccess(pid, context) {
     archives.forEach((archive) => {
       if (archive.url) {
         result.push({
-          __typename: "URLE",
+          __typename: "accessUrl",
           url: archive.url,
           origin: parseOnlineUrlToOrigin(archive.url),
         });

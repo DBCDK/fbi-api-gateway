@@ -62,7 +62,7 @@ type ExternalReview implements Review {
   author: String
   date: String
   rating: String
-  urls: [URLE!]!
+  urls: [accessUrl!]!
 }
 
 type InfomediaReview implements Review {

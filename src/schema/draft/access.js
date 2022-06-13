@@ -32,7 +32,7 @@ type Ereol {
   """
   canAlwaysBeLoaned: Boolean!
 }
-type URLE {
+type accessUrl {
   """
   The origin, e.g. "DBC Webarkiv"
   """
@@ -61,7 +61,7 @@ type DigitalArticleService {
   """
   issn: String!
 }
-union Access = URLE | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+union Access = accessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 `;
 
 export const resolvers = {};
