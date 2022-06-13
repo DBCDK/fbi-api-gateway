@@ -18,22 +18,15 @@ export async function load({
 }) {
   const types = suggestType.map((sug) => sug.toLowerCase());
 
-  const result = url.includes("prosper")
-    ? await request
-        .post(url)
-        .set("Authorization", `bearer ${token}`)
-        .send({
-          q: q,
-          agency: profile.agency,
-          rows: limit || 10,
-          type: types,
-        })
-    : await request.get(url).query({
-        q: q,
-        worktype: workType,
-        unique_works,
-        type: suggestType === "COMPOSIT" ? "all" : suggestType?.toLowerCase(),
-      });
+  const result = await request
+    .post(url)
+    .set("Authorization", `bearer ${token}`)
+    .send({
+      q: q,
+      agency: profile.agency,
+      rows: limit || 10,
+      type: types,
+    });
 
   let body;
   try {
