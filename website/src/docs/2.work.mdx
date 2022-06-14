@@ -1,10 +1,64 @@
 # Work
 
-A work is a ...
+A work is some creation like a book, article, movie etc.
+It may exist in many different forms or manifestations. For instance, a
+book may be available in multiple physical and online variants. A movie could be
+streamed online or maybe borrowed on DVD or Bluray.
 
-## Fetch Single Work
+In the following examples we show how to get metadata for a work and its manifestations.
 
-One may use three different types of identifiers to fetch a work; _work id_, _pid_, or _faust_.
+## The Basics of a Work
+
+Different user interfaces have different needs, hence we offer several ways to fetch
+metadata. Fields named _display_, or _summary_ hide complexity at the cost of
+flexibility.
+
+An example is time periods, where the value of _display_ could be "1980 - 1990". But
+The fields _begin_ and _end_ may be fetched seperately. Likewise, a list of subjects
+can easily be shown with _display_, but if the subject is for instance a Person,
+more fields are available.
+
+In this example we fetch often used fields in the simplest way possible.
+
+<InlineGraphiQL
+  query={`query ($id: String!) {
+  work(id: $id) {
+    workId
+    titles {
+      full
+    }
+    abstract
+    creators {
+      display
+    }
+    subjects {
+      dbcVerified {
+        display
+      }
+    }
+    workYear
+    workTypes
+    mainLanguages {
+      display
+    }
+    manifestations {
+      latest {
+        cover {
+          detail
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    id: "work-of:870970-basis:48953786",
+  }}
+/>
+
+## Work Identifiers
+
+A work is identified by a _work id_, _pid_, or _faust_, and either of them can be used to
+fetch a work.
 
 <InlineGraphiQL
   query={`query ($faust: String!) {
@@ -39,7 +93,7 @@ One may use three different types of identifiers to fetch a work; _work id_, _pi
   }}
 />
 
-## Fetch Multiple Works
+## Fetch List of Works
 
 It is possible to fetch multiple works in a single request by providing
 a list of identifiers. The identifiers may be _a list of work ids_, _a list of pids_,
