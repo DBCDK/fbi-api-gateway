@@ -35,6 +35,10 @@
   align-items: center;
 }
 
+.popover{
+max-width: 350px;
+}
+
 code {
   display: inline-block;
   background: var(--divider);

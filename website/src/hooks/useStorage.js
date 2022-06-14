@@ -19,11 +19,17 @@ export default function useStorage() {
     // selectedToken = history?.[0];
   }
 
+  const isToken = (token) => {
+    return !!(token.length === 40);
+  };
+
   const setSelectedToken = (token, profile) => {
-    const val = { token, profile };
-    sessionStorage.setItem("selectedToken", JSON.stringify(val));
-    mutateSelectedToken(val, false);
-    setHistory(token, profile);
+    if (isToken(token)) {
+      const val = { token, profile };
+      sessionStorage.setItem("selectedToken", JSON.stringify(val));
+      mutateSelectedToken(val, false);
+      setHistory(token, profile);
+    }
   };
 
   /**
@@ -82,7 +88,7 @@ export default function useStorage() {
   };
 
   return {
-    selectedToken: selectedToken,
+    selectedToken,
     setSelectedToken,
     removeSelectedToken,
     history,

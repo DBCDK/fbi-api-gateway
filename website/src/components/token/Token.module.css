@@ -176,6 +176,10 @@ font-style: normal;
   min-width: var(--pt5) !important;
 }
 
+.overlay{
+  background-color:var(--primary-light) !important;
+}
+
 @media screen and (max-width: 576px) {
   .form,
   .form .wrap {

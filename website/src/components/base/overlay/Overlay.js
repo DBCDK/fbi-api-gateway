@@ -3,7 +3,12 @@ import _Popover from "react-bootstrap/Popover";
 
 import styles from "./Overlay.module.css";
 
-export default function Overlay({ show = false, container, children }) {
+export default function Overlay({
+  className = "",
+  show = false,
+  container,
+  children,
+}) {
   return (
     <_Overlay
       show={show}
@@ -11,7 +16,10 @@ export default function Overlay({ show = false, container, children }) {
       placement="bottom"
       containerPadding={20}
     >
-      <_Popover id="popover-contained" className={styles.container}>
+      <_Popover
+        id="popover-contained"
+        className={`${styles.container} ${className}`}
+      >
         <div className={styles.body}>{children}</div>
       </_Popover>
     </_Overlay>

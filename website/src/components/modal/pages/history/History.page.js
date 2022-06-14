@@ -160,11 +160,11 @@ function Item({
           </Collapse>
           <Col xs={12} className={styles.token}>
             <Text type="text4">Agency</Text>
-            <Text type="text1">{agency}</Text>
+            <Text type="text1">{agency || "Missing 😔"}</Text>
             <Text type="text4" className={styles.label}>
               Profile
             </Text>
-            <Text type="text1">{profile}</Text>
+            <Text type="text1">{profile || "None 😔"}</Text>
           </Col>
         </Row>
 

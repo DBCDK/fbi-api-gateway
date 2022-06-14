@@ -123,12 +123,11 @@ export default function Token({
         </Button>
       </div>
       <Overlay
+        className={styles.overlay}
         show={state.value && !selectedToken?.token && !state.focus}
         container={containerRef}
       >
-        <Text type="text2">
-          {false ? "😬 This token is expired" : "😬 This is not a valid token"}
-        </Text>
+        <Text type="text2">{"😬 This is not a valid token"}</Text>
       </Overlay>
     </form>
   );

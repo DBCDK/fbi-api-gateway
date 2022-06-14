@@ -264,7 +264,7 @@ export default function GraphiQL() {
               instance?.handlePrettifyQuery();
               instance?.handleRunQuery();
             }
-          }, 250);
+          }, 350);
         }}
         query={parameters.query}
         variables={parameters.variables}
