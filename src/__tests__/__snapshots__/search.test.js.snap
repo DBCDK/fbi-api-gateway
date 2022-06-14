@@ -6,51 +6,51 @@ Object {
     "search": Object {
       "facets": Array [
         Object {
-          "name": "language",
+          "name": "mainLanguages",
           "values": Array [
             Object {
-              "count": 2252441,
+              "score": 2252441,
               "term": "Dansk",
             },
             Object {
-              "count": 611581,
+              "score": 611581,
               "term": "Engelsk",
             },
             Object {
-              "count": 147546,
+              "score": 147546,
               "term": "Tysk",
             },
             Object {
-              "count": 84833,
+              "score": 84833,
               "term": "flere sprog",
             },
             Object {
-              "count": 59599,
+              "score": 59599,
               "term": "Svensk",
             },
           ],
         },
         Object {
-          "name": "materialType",
+          "name": "materialTypes",
           "values": Array [
             Object {
-              "count": 1148775,
+              "score": 1148775,
               "term": "tidsskriftsartikel",
             },
             Object {
-              "count": 892951,
+              "score": 892951,
               "term": "bog",
             },
             Object {
-              "count": 748565,
+              "score": 748565,
               "term": "avisartikel",
             },
             Object {
-              "count": 223653,
+              "score": 223653,
               "term": "artikel",
             },
             Object {
-              "count": 119305,
+              "score": 119305,
               "term": "cd (musik)",
             },
           ],

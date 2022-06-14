@@ -13,11 +13,11 @@ test("search - with all filters and facets", async () => {
           works(offset: 0, limit: 10) {
             workId
           }   
-          facets(facets: [language, materialType]) {
+          facets(facets: [mainLanguages, materialTypes]) {
             name
             values(limit: 5) {
               term
-              count
+              score
             }
           }
         }

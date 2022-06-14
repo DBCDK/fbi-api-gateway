@@ -4,7 +4,6 @@ import { log } from "dbc-node-logger";
 import { getInfomediaDetails } from "../utils/utils";
 
 const { url, ttl, prefix } = config.datasources.infomedia;
-console.log(url, ttl, prefix);
 
 function createSoap({ articleId, userId, municipalityAgencyId }) {
   return `

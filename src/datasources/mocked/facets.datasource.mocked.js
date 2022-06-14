@@ -1,7 +1,7 @@
 export async function load() {
   const mock = [
     {
-      name: "workType",
+      name: "workTypes",
       values: [
         {
           term: "article",
@@ -54,7 +54,7 @@ export async function load() {
       ],
     },
     {
-      name: "language",
+      name: "mainLanguages",
       values: [
         {
           term: "dan",
@@ -259,7 +259,7 @@ export async function load() {
       ],
     },
     {
-      name: "materialType",
+      name: "materialTypes",
       values: [
         {
           term: "tidsskriftsartikel",
@@ -464,7 +464,7 @@ export async function load() {
       ],
     },
     {
-      name: "fictiveCharacter",
+      name: "fictionalCharacter",
       values: [
         {
           term: "Batman",
@@ -669,7 +669,7 @@ export async function load() {
       ],
     },
     {
-      name: "genre",
+      name: "genreAndForm",
       values: [
         {
           term: "rock",
@@ -874,7 +874,7 @@ export async function load() {
       ],
     },
     {
-      name: "audience",
+      name: "childrenOrAdults",
       values: [
         {
           term: "voksenmaterialer",
@@ -887,7 +887,7 @@ export async function load() {
       ],
     },
     {
-      name: "accessType",
+      name: "accessTypes",
       values: [
         {
           term: "physical",
@@ -917,7 +917,7 @@ export async function load() {
       ],
     },
     {
-      name: "subject",
+      name: "subjects",
       values: [
         {
           term: "historie",
@@ -1122,7 +1122,7 @@ export async function load() {
       ],
     },
     {
-      name: "creator",
+      name: "creators",
       values: [
         {
           term: "Association for Computing Machinery-Digital Library",

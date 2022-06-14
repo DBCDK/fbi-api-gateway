@@ -57,13 +57,13 @@ function firstManifestation(allManifestations, asc = true) {
 function manifestationToMainLanguages(manifestation, language) {
   const fisk = getArray(manifestation, "details.iso639-2");
   const mainLanguages = getArray(manifestation, "details.iso639-2")
-    .filter((entry) => translations.facets.language[entry.$])
+    .filter((entry) => translations.facets.mainLanguages[entry.$])
     .map((entry) => {
       return {
         isoCode: entry.$,
         display:
-          translations.facets.language[entry.$]?.[language] ||
-          translations.facets.language[entry.$]?.["da"],
+          translations.facets.mainLanguages[entry.$]?.[language] ||
+          translations.facets.mainLanguages[entry.$]?.["da"],
       };
     });
 
