@@ -9,6 +9,10 @@ This can be used to explicitly search for a [title, creator or subject](#Search-
 
 The _work_ field is a work that is related to the _term_ in some way.
 
+## Lookup suggestions
+
+Suggestions are filtered by the agency associated with your access token.
+
 <InlineGraphiQL
   query={`query ($q: String!) {
   suggest(q: $q) {
@@ -26,4 +30,28 @@ The _work_ field is a work that is related to the _term_ in some way.
   variables={{
     q: "harry",
   }}
+/>
+
+## Filter on branch name
+
+The branch parameter can be used to limit suggestions to a specific branch. Name of the branch MUST be a valid branch name
+for the agency associated with your access token. This example assumes that you have an access token for århus. 
+
+<InlineGraphiQL
+query={`query ($q: String!) {
+suggest(q: $q branch:"Beder-Malling") {
+result {
+type
+term
+work {
+titles {
+main
+}
+}
+}
+}
+}`}
+variables={{
+q: "harry",
+}}
 />

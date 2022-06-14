@@ -10,14 +10,13 @@ import config from "../config";
 const { url, prefix, ttl, token } = config.datasources.suggester;
 export async function load({
   q,
-  workType = null,
+  // suggestType defaults to all
   suggestType = ["creator", "subject", "title"],
-  unique_works = true,
   profile,
+  branch,
   limit,
 }) {
   const types = suggestType.map((sug) => sug.toLowerCase());
-
   const result = await request
     .post(url)
     .set("Authorization", `bearer ${token}`)
@@ -26,6 +25,7 @@ export async function load({
       agency: profile.agency,
       rows: limit || 10,
       type: types,
+      ...(branch && { branch: branch }),
     });
 
   let body;

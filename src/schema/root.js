@@ -43,6 +43,11 @@ type Query {
     Number of items to return
     """
     limit: Int
+    """
+    Name of branch to filter by
+    """
+    branch: String
+    
   ): SuggestResponse!
 
   """
