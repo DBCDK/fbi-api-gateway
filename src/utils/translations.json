@@ -1,6 +1,6 @@
 {
   "facets": {
-    "accessType": {
+    "accessTypes": {
       "physical": {
         "da": "Fysisk"
       },
@@ -16,7 +16,7 @@
         "da": "Faglitteratur"
       }
     },
-    "language": {
+    "mainLanguages": {
       "aar": { "da": "Afar" },
       "abk": { "da": "Abkhasisk" },
       "ace": { "da": "Achenesisk" },
@@ -519,7 +519,7 @@
       "zxx": { "da": "Ikke linguistisk indhold" },
       "zza": { "da": "Zaza" }
     },
-    "workType": {
+    "workTypes": {
       "literature": {
         "da": "Bøger",
         "en": "Books"
@@ -569,7 +569,7 @@
         "en": "Analysis"
       }
     },
-    "materialType": {
+    "materialTypes": {
       "ebog": {
         "da": "e-bog"
       },

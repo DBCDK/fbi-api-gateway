@@ -46,32 +46,32 @@ input SearchQuery {
 The supported facet fields
 """
 enum FacetField {
-  workType
-  language
-  materialType
-  fictiveCharacter
-  genre
-  audience
-  accessType
+  workTypes
+  mainLanguages
+  materialTypes
+  fictionalCharacter
+  genreAndForm
+  childrenOrAdults
+  accessTypes
   fictionNonfiction
-  subject
-  creator
+  subjects
+  creators
 }
 
 """
 Search Filters
 """
 input SearchFilters {
-  accessType: [String!]
-  audience: [String!]
-  creator: [String!]
+  accessTypes: [String!]
+  childrenOrAdults: [String!]
+  creators: [String!]
   fictionNonfiction: [String!]
-  fictiveCharacter: [String!]
-  genre: [String!]
-  language: [String!]
-  materialType: [String!]
-  subject: [String!]
-  workType: [String!]
+  fictionalCharacter: [String!]
+  genreAndForm: [String!]
+  mainLanguages: [String!]
+  materialTypes: [String!]
+  subjects: [String!]
+  workTypes: [String!]
 }
 
 """
@@ -89,9 +89,9 @@ type FacetValue {
   term: String!
 
   """
-  The count of the term for a facet field
+  A score indicating relevance
   """
-  count: Int
+  score: Int
 }
 
 """
@@ -141,6 +141,9 @@ export const resolvers = {
       return (
         translations.facets[parent.facetName]?.[parent.term]?.da || parent.term
       );
+    },
+    score(parent, args, context) {
+      return parent?.score || parent?.count || 0;
     },
   },
   FacetResult: {

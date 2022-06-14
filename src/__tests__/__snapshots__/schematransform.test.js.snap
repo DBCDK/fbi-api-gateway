@@ -1123,30 +1123,30 @@ input SearchQuery {
 
 \\"\\"\\"The supported facet fields\\"\\"\\"
 enum FacetField {
-  workType
-  language
-  materialType
-  fictiveCharacter
-  genre
-  audience
-  accessType
+  workTypes
+  mainLanguages
+  materialTypes
+  fictionalCharacter
+  genreAndForm
+  childrenOrAdults
+  accessTypes
   fictionNonfiction
-  subject
-  creator
+  subjects
+  creators
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
 input SearchFilters {
-  accessType: [String!]
-  audience: [String!]
-  creator: [String!]
+  accessTypes: [String!]
+  childrenOrAdults: [String!]
+  creators: [String!]
   fictionNonfiction: [String!]
-  fictiveCharacter: [String!]
-  genre: [String!]
-  language: [String!]
-  materialType: [String!]
-  subject: [String!]
-  workType: [String!]
+  fictionalCharacter: [String!]
+  genreAndForm: [String!]
+  mainLanguages: [String!]
+  materialTypes: [String!]
+  subjects: [String!]
+  workTypes: [String!]
 }
 
 \\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
@@ -1157,8 +1157,8 @@ type FacetValue {
   \\"\\"\\"A value of a facet field\\"\\"\\"
   term: String!
 
-  \\"\\"\\"The count of the term for a facet field\\"\\"\\"
-  count: Int
+  \\"\\"\\"A score indicating relevance\\"\\"\\"
+  score: Int
 }
 
 \\"\\"\\"The result for a specific facet\\"\\"\\"
