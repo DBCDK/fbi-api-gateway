@@ -55,6 +55,48 @@ You can get shelf information for a specific edition, based on a given pid or fa
 
 The _access_ field contains a list of ways to access a manifestation. The type of the access can be both fysical and digital.
 
+There can be 5 different types of access:
+
+- `AccessUrl`: Returns a url to an online media, where the article e.g. can be read.
+- `Ereol`: Returns a url to the manifestation on ereolen.dk.
+- `InterLibraryLoan`: True if the manifestation is part of the ill (the internal library loaner service)
+- `InfomediaService`: Returns an article id. The ID can be used to fetch the article via. the InfomediaService.
+- `DigitalArticleService`: Returns a issn to the article e.g. The loaner will recieve a digital copy of the article.
+
+<InlineGraphiQL
+  query={`query($pid: [String!]!) {
+            manifestations(pid: $pid) {
+            titles {
+              main
+            }
+            access {
+              __typename
+              ... on AccessUrl {
+                origin
+                url
+              }
+              ... on InfomediaService {
+                id
+              }
+              ... on InterLibraryLoan {
+                loanIsPossible
+              }
+              ... on Ereol {
+                origin
+                url
+                canAlwaysBeLoaned
+              }
+              ... on DigitalArticleService {
+                issn
+              }
+            }
+          }
+        }`}
+  variables={{
+    pid: ["870970-basis:47508134", "870971-tsart:36160780"],
+  }}
+/>
+
 If a InfomediaService entry is presented, the article id can be used to access
 the content of the article thrue the [Infomedia](#Infomedia) type.
 
@@ -88,7 +130,7 @@ the content of the article thrue the [Infomedia](#Infomedia) type.
           }
         }`}
   variables={{
-    pid: ["870971-avis:36707321", "870971-tsart:36160780"],
+    pid: ["870971-avis:36707321"],
   }}
 />
 
