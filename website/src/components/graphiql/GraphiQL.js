@@ -107,7 +107,7 @@ export function InlineGraphiQL({ query, variables }) {
             instanceRef.current?.handleRunQuery?.();
           }}
         >
-          Run 🚀
+          Run 🏃 {/*🚀*/}
         </Button>
 
         <Button

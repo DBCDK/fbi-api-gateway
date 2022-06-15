@@ -83,7 +83,7 @@ export default {
     simplesearch: {
       url:
         process.env.SIMPLESEARCH_URL ||
-        "http://simple-search-bibdk-1-1.mi-prod.svc.cloud.dbc.dk/search",
+        "http://simple-search-fbiapi-1-2.mi-staging.svc.cloud.dbc.dk/search",
       prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-6",
       token: process.env.SIMPLESEARCH_TOKEN,
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
@@ -99,7 +99,7 @@ export default {
     facets: {
       url:
         process.env.FACETS_URL ||
-        "http://simple-search-bibdk-1-1.mi-prod.svc.cloud.dbc.dk/facets",
+        "http://simple-search-fbiapi-1-2.mi-staging.svc.cloud.dbc.dk/facets",
       prefix: process.env.FACETS_PREFIX || "facets-1",
       token: process.env.FACETS_TOKEN,
       ttl: process.env.FACETS_TIME_TO_LIVE_SECONDS || 10,

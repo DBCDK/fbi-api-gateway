@@ -1,14 +1,45 @@
 # Manifestion
 
-A manifestion is a specific edition ...
+A manifestion is a specific edition in a work. A work may contain one or more different manifestations within the same type of material.
 
-## Lookup shelf information
+## Basic example
 
-Get shelf information for given pid
+Manifestations can be retrieved either by including a pid or a faust.
 
 <InlineGraphiQL
-  query={`query($pid: String!) {
-            manifestation(pid: $pid) {
+  query={`query ($pid: String!) {
+  manifestation(pid: $pid) {
+    titles {
+      main
+    }
+    creators {
+      display
+    }
+    abstract
+    physicalDescriptions {
+      summary
+    }
+    edition {
+      edition 
+      summary
+      publicationYear {
+        display
+      }
+    }
+  }
+}`}
+  variables={{
+    pid: "870970-basis:42097675",
+  }}
+/>
+
+## Shelf information
+
+You can get shelf information for a specific edition, based on a given pid or faust.
+
+<InlineGraphiQL
+  query={`query($faust: String!) {
+            manifestation(faust: $faust) {
             shelfmark {
                 postfix
                 shelfmark
@@ -16,16 +47,16 @@ Get shelf information for given pid
             }
         }`}
   variables={{
-    pid: "870970-basis:48237053",
+    faust: "48237053",
   }}
 />
 
-## Accessing a Manifestation
+## Manifestation access
 
-The _access_ field contains a list of ways to access a manifestation.
+The _access_ field contains a list of ways to access a manifestation. The type of the access can be both fysical and digital.
 
-If a InfomediaService entry is present, one may use the id to access
-the content of the article with [Infomedia](#Infomedia)
+If a InfomediaService entry is presented, the article id can be used to access
+the content of the article thrue the [Infomedia](#Infomedia) type.
 
 <InlineGraphiQL
   query={`query($pid: [String!]!) {
@@ -57,7 +88,7 @@ the content of the article with [Infomedia](#Infomedia)
           }
         }`}
   variables={{
-    pid: ["870971-avis:33301561", "870971-tsart:36160780"],
+    pid: ["870971-avis:36707321", "870971-tsart:36160780"],
   }}
 />
 
