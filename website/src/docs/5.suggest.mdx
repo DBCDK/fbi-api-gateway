@@ -32,14 +32,15 @@ Suggestions are filtered by the agency associated with your access token.
   }}
 />
 
-## Filter on branch name
+## Filter on branch name (local suggestions)
+When using the 'localSuggest' query results are limited to the agency associated with your access token.
 
-The branch parameter can be used to limit suggestions to a specific branch. Name of the branch MUST be a valid branch name
+The branch parameter can be used to further limit suggestions to a specific branch. Name of the branch MUST be a valid branch name
 for the agency associated with your access token. This example assumes that you have an access token for århus. 
 
 <InlineGraphiQL
 query={`query ($q: String!) {
-suggest(q: $q branch:"Beder-Malling") {
+localSuggest(q: $q branch:"Beder-Malling") {
 result {
 type
 term
