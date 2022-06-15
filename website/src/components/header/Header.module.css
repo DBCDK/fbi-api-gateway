@@ -121,7 +121,7 @@
   color: var(--primary-dark);
 }
 
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 1200px) {
   .links {
     padding: 0;
   }
@@ -135,11 +135,7 @@
     padding: 0;
   }
 
-  .top.index .links .link.more {
-    margin-right: var(--pt2);
-  }
-
-  .token {
+  .token, .profiles {
     display: none;
   }
 }

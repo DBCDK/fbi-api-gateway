@@ -4,6 +4,7 @@ import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 
 import Token from "@/components/token";
+import Profile from "@/components/profile";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 import Label from "@/components/base/label";
@@ -36,6 +37,7 @@ function Menu({ modal, context }) {
           <Row>
             <Col className={styles.token}>
               <Token className={styles.input} />
+              <Profile className={styles.profiles} />
             </Col>
           </Row>
         </Col>

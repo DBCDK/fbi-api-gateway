@@ -86,8 +86,8 @@ export function InlineGraphiQL({ query, variables }) {
   const curl = `curl -H "Authorization: bearer ${selectedToken?.token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
 
   const graphiqlUrl = generateGraphiqlURL({
-    query,
-    variables: JSON.stringify(variables),
+    query: editQuery,
+    variables: editVariables,
   });
 
   // When the selected token has changed, we unmount graphiql
@@ -107,7 +107,7 @@ export function InlineGraphiQL({ query, variables }) {
             instanceRef.current?.handleRunQuery?.();
           }}
         >
-          Run 🚀
+          Run 🏃 {/*🚀*/}
         </Button>
 
         <Button

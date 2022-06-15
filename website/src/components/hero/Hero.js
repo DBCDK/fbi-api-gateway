@@ -26,6 +26,8 @@ export default function Hero({ className = "" }) {
 
   return (
     <section className={`${styles.hero} ${className}`}>
+      <div className={styles.color} />
+      <div className={styles.silhouette} />
       <Container>
         <Row className={styles.row}>
           <Col>
