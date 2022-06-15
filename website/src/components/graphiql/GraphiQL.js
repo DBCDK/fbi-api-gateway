@@ -90,8 +90,6 @@ export function InlineGraphiQL({ query, variables }) {
     variables: editVariables,
   });
 
-  console.log("render");
-
   // When the selected token has changed, we unmount graphiql
   // and mounts the dummy container. Graphiql will be reinstantiated
   // when the dummy container is in the viewport again
