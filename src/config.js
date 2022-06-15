@@ -88,10 +88,18 @@ export default {
       token: process.env.SIMPLESEARCH_TOKEN,
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
     },
+    prosper: {
+      url:
+        process.env.PROSPER_URL ||
+        "http://prosper-1-0.mi-prod.svc.cloud.dbc.dk/suggest",
+      prefix: process.env.PROSPER_PREFIX || "prosper-1",
+      token: process.env.SUGGESTER_TOKEN,
+      ttl: process.env.PROSPER_TIME_TO_LIVE_SECONDS || 10,
+    },
     suggester: {
       url:
         process.env.SUGGESTER_URL ||
-        "http://prosper-1-0.mi-prod.svc.cloud.dbc.dk/suggest",
+        "http://simple-suggest-1-1.mi-prod.svc.cloud.dbc.dk/suggest",
       prefix: process.env.SUGGESTER_PREFIX || "suggester-1",
       token: process.env.SUGGESTER_TOKEN,
       ttl: process.env.SUGGESTER_TIME_TO_LIVE_SECONDS || 10,
