@@ -26,7 +26,6 @@ import { collectSubFields } from "@graphql-tools/utils";
  */
 export function manifestationToJed(manifestation) {
   const jedData = {};
-
   jedData.pid = manifestation.admindata.pid.$;
   jedData.titles = jedTitles(manifestation);
   jedData.abstract = manifestation.details?.abstract?.value?.$
@@ -156,10 +155,14 @@ function jedManifestationParts(manifestation) {
   const jedData = {};
   jedData["heading"] = tracks[0]?.header?.$ || "";
 
-  // @TODO find track array in a good way
+  // @TODO find parts array in a good way
+  const parts =
+    tracks[1] && tracks[1]?.track && Array.isArray(tracks[1]?.track)
+      ? tracks[1]?.track
+      : (tracks[1]?.track && [tracks[1]?.track]) || null;
 
-  jedData["parts"] = tracks[1]
-    ? tracks[1]?.track?.map((tr) => {
+  jedData["parts"] = parts
+    ? parts.map((tr) => {
         let creators = jedCreators([tr.creator]);
         return { title: tr.title?.$ || "", creators: creators || [] };
       })

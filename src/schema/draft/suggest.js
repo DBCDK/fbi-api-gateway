@@ -26,6 +26,10 @@ type Suggestion {
 type SuggestResponse {
   result: [Suggestion!]!
 }
+
+type localSuggestResponse{
+result: [Suggestion!]!
+}
 `;
 
 export const resolvers = {
@@ -40,6 +44,16 @@ export const resolvers = {
   SuggestResponse: {
     async result(parent, args, context, info) {
       const res = await context.datasources.suggester.load({
+        ...parent,
+        ...args,
+        profile: context.profile,
+      });
+      return res;
+    },
+  },
+  localSuggestResponse: {
+    async result(parent, args, context, info) {
+      const res = await context.datasources.prosper.load({
         ...parent,
         ...args,
         profile: context.profile,

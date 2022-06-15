@@ -30,7 +30,7 @@ type Query {
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
 
-  suggest(
+  localSuggest(
     """
     The query to get suggestions from
     """
@@ -46,8 +46,23 @@ type Query {
     """
     Name of branch to filter by
     """
-    branch: String
-    
+    branch: String    
+  ): localSuggestResponse!
+  
+  suggest(
+    workType: WorkType
+    """
+    The query to get suggestions from
+    """
+    q: String!
+    """    
+    suggest type to include in result
+    """
+    suggestType: SuggestionType
+    """
+    Number of items to return
+    """
+    limit: Int
   ): SuggestResponse!
 
   """
@@ -247,6 +262,9 @@ export const resolvers = {
       });
     },
     async suggest(parent, args, context, info) {
+      return args;
+    },
+    async localSuggest(parent, args, context, info) {
       return args;
     },
     recommend(parent, args, context, info) {

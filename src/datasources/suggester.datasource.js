@@ -8,25 +8,22 @@ import request from "superagent";
 import config from "../config";
 
 const { url, prefix, ttl, token } = config.datasources.suggester;
+
 export async function load({
   q,
+  workType = null,
   // suggestType defaults to all
-  suggestType = ["creator", "subject", "title"],
-  profile,
-  branch,
+  suggestType = "all",
+  unique_works = true,
   limit,
 }) {
-  const types = suggestType.map((sug) => sug.toLowerCase());
-  const result = await request
-    .post(url)
-    .set("Authorization", `bearer ${token}`)
-    .send({
-      q: q,
-      agency: profile.agency,
-      rows: limit || 10,
-      type: types,
-      ...(branch && { branch: branch }),
-    });
+  const result = await request.get(url).query({
+    q: q,
+    ...(workType && { worktype: workType.toLowerCase() }),
+    unique_works,
+    type: suggestType.toLowerCase(),
+    limit: limit || 10,
+  });
 
   let body;
   try {
