@@ -89,7 +89,7 @@ This examples searches for _hopper_ as title, _hesteavl_ as subject, and _carl_ 
 Faceted search seeks to provide an improved overview by clustering the search result into
 categories. This allows for the user to incrementally customize and narrow down the search result.
 
-The following example is a search for _andersen_ where facet categories _language_ and _materialType_
+The following example is a search for _andersen_ where facet categories _mainLanguages_ and _materialTypes_
 is returned.
 
 <InlineGraphiQL
@@ -100,7 +100,7 @@ is returned.
           name
           values(limit: $facetLimit) {
             term
-            count
+            score
           }
         }
       }
@@ -110,7 +110,7 @@ is returned.
       all: "harry",
     },
     facetLimit: 5,
-    facets: ["language", "materialType"],
+    facets: ["mainLanguages", "materialTypes"],
   }}
 />
 
@@ -125,7 +125,7 @@ is applied resulting in an updated facet result.
           name
           values(limit: $facetLimit) {
             term
-            count
+            score
           }
         }
       }
@@ -134,9 +134,9 @@ is applied resulting in an updated facet result.
     q: {
       all: "harry",
     },
-    filters: { language: ["Svensk"] },
+    filters: { mainLanguages: ["Svensk"] },
     facetLimit: 5,
-    facets: ["language", "materialType"],
+    facets: ["mainLanguages", "materialTypes"],
   }}
 />
 
