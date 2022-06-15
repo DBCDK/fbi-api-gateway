@@ -13,7 +13,6 @@ import Label from "@/components/base/label";
 import History from "@/components/history";
 
 import styles from "./Hero.module.css";
-import { dedentBlockStringLines } from "graphql/language/blockString";
 
 export default function Hero({ className = "" }) {
   const modal = useModal();

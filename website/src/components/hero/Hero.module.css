@@ -26,7 +26,6 @@
   z-index:-1;
   background-size: 400% 100%;
   animation: gradient 60s infinite;
-  background-blend-mode: lighten;
   /* background-image: linear-gradient(
     to right,
     #ffafcc,
