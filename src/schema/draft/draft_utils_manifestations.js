@@ -493,8 +493,6 @@ export async function resolveOnlineAccess(pid, context) {
     }
     infomedia.forEach((id) => {
       if (id.$) {
-        console.log("FISK");
-
         result.push({
           __typename: "InfomediaService",
           id: id.$ || "",
