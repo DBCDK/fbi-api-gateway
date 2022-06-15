@@ -962,6 +962,10 @@ type SuggestResponse {
   result: [Suggestion!]!
 }
 
+type localSuggestResponse {
+  result: [Suggestion!]!
+}
+
 type Language {
   \\"\\"\\"Language as displayable text\\"\\"\\"
   display: String!
@@ -1082,6 +1086,19 @@ type Query {
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
+  localSuggest(
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: [SuggestionType!]
+
+    \\"\\"\\"Number of items to return\\"\\"\\"
+    limit: Int
+
+    \\"\\"\\"Name of branch to filter by\\"\\"\\"
+    branch: String
+  ): localSuggestResponse!
   suggest(
     workType: WorkType
 
