@@ -37,6 +37,8 @@ promExporterApp.listen(9599, () => {
 
 (async () => {
   app.use(cors());
+  // Set limit on body size
+  app.use(express.json({ limit: 10000 }));
 
   // trust ip-addresses from X-Forwarded-By header, and log requests
   app.enable("trust proxy");
@@ -199,6 +201,19 @@ promExporterApp.listen(9599, () => {
   app.get("/howru", howruHandler);
 
   app.use(proxy);
+
+  // Default error handler
+  app.use((error, request, response, next) => {
+    if (error) {
+      log.error(String(error), {
+        error: String(error),
+        stacktrace: error.stack,
+      });
+      response.status(500).send({ error: "Internal server error" });
+    } else {
+      next();
+    }
+  });
 
   server = app.listen(config.port, () => {
     log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);
