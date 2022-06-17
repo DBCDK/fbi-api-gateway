@@ -2,9 +2,9 @@
 
 A manifestion is a specific edition in a work. A work may contain one or more different manifestations within the same type of material.
 
-## Basic example
+## Basic Example
 
-Manifestations can be retrieved either by including a pid or a faust.
+A basic example fetching often used fields.
 
 <InlineGraphiQL
   query={`query ($pid: String!) {
@@ -13,6 +13,9 @@ Manifestations can be retrieved either by including a pid or a faust.
       main
     }
     creators {
+      display
+    }
+    contributors {
       display
     }
     abstract
@@ -33,25 +36,60 @@ Manifestations can be retrieved either by including a pid or a faust.
   }}
 />
 
-## Shelf information
+## Manifestation Identifiers
 
-You can get shelf information for a specific edition, based on a given pid or faust.
+A manifestation is identified by a _pid_, or _faust_, and either of them can be used to
+fetch a work.
 
 <InlineGraphiQL
-  query={`query($faust: String!) {
-            manifestation(faust: $faust) {
-            shelfmark {
-                postfix
-                shelfmark
-                }
-            }
-        }`}
+  query={`query ($pid: String!) {
+  manifestation(pid: $pid) {
+    titles {
+      main
+    }
+  }
+}`}
   variables={{
-    faust: "48237053",
+    pid: "870970-basis:42097675",
   }}
 />
 
-## Manifestation access
+<InlineGraphiQL
+  query={`query ($faust: String!) {
+  manifestation(faust: $faust) {
+    titles {
+      main
+    }
+  }
+}`}
+  variables={{
+    faust: "42097675",
+  }}
+/>
+
+## Fetch List of manifestations
+
+It is possible to fetch multiple manifestations in a single request by providing
+a list of identifiers. The identifiers may be _a list of pids_,
+or _a list of fausts_.
+
+The order of the manifestations will match the order of provided identifiers.
+If no manifestation is found for an identifier, null is returned at the corresponding position.
+
+<InlineGraphiQL
+  query={`query ($faust: [String!]!) {
+      manifestations(faust: $faust) {
+        titles {
+            main
+        }
+      }
+    }`}
+  variables={{
+    faust: ["48953786", "61965815", "unknown-faust"],
+  }}
+/>
+
+## Manifestation Access
 
 The _access_ field contains a list of ways to access a manifestation. The type of the access can be both fysical and digital.
 
@@ -134,7 +172,30 @@ the content of the article thrue the [Infomedia](#Infomedia) type.
   }}
 />
 
-## Jed data
+## Shelf information
+
+You can get shelf information for a specific edition, based on a given pid or faust.
+
+<InlineGraphiQL
+  query={`query($faust: String!) {
+            manifestation(faust: $faust) {
+            shelfmark {
+                postfix
+                shelfmark
+                }
+            }
+        }`}
+  variables={{
+    faust: "48237053",
+  }}
+/>
+
+## JED
+
+JED is a new metadata format that this API is built upon. JED is still work in progress,
+and therefore the values of some fields may be dummy data.
+
+This is an example where fields should return real data.
 
 <InlineGraphiQL
   query={`query($pid: String!) { manifestation(pid: $pid) {

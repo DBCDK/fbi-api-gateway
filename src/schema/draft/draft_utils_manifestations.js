@@ -18,6 +18,7 @@
 import * as consts from "./FAKE";
 import { getArray } from "../../utils/utils";
 import { collectSubFields } from "@graphql-tools/utils";
+import translations from "../../utils/translations.json";
 
 /**
  * convert manifestion data to JED
@@ -195,7 +196,10 @@ function jedLanguages(manifestation) {
   tmpArr = getArray(manifestation, "details.languages.languageMain");
   const main = tmpArr.map((lang) => {
     // we only have iso code for main language from openformat (missing a xpath expression in code)
-    return { display: "", isoCode: lang.$ };
+    return {
+      display: translations.facets.mainLanguages[lang.$]?.["da"],
+      isoCode: lang.$,
+    };
   });
 
   tmpArr = getArray(manifestation, "details.languages.languageSubtitles");
