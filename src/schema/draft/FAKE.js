@@ -77,7 +77,7 @@ export const FAKE_SUBJECTS = {
   all: [
     {
       __typename: "SubjectText",
-      type: "Dummy TOPIC",
+      type: "TOPIC",
       display: "Dummy Some fictional subject",
     },
     {
@@ -91,7 +91,7 @@ export const FAKE_SUBJECTS = {
   dbcVerified: [
     {
       __typename: "SubjectText",
-      type: "Dummy TOPIC",
+      type: "TOPIC",
       display: "Dummy Some fictional subject",
     },
     {
@@ -131,7 +131,7 @@ export const FAKE_CLASSIFICATION = {
   system: "Dummy DK5",
   code: "Dummy 86-096",
   display: "Dummy Skønlitteratur",
-  entryType: "Dummy NATIONAL_BIBLIOGRAPHY_ENTRY",
+  entryType: "NATIONAL_BIBLIOGRAPHY_ENTRY",
 };
 
 export const FAKE_EDITION = {
@@ -180,7 +180,7 @@ export const FAKE_LANGUAGES = {
 };
 
 export const FAKE_MANIFESTATION_PARTS = {
-  type: "Dummy MUSIC_TRACKS",
+  type: "MUSIC_TRACKS",
   heading: "Dummy Indhold:",
   parts: [
     {
@@ -198,7 +198,7 @@ export const FAKE_MANIFESTATION_PARTS = {
       creatorsFromDescription: ["Dummy arr.: Peter Ettrup Larsen"],
       classifications: [
         {
-          system: "Dummy DK5",
+          system: "DK5",
           code: "Dummy 78.424",
           display: "Dummy Klaver og strygere. Orgel og strygere",
         },
@@ -210,7 +210,7 @@ export const FAKE_MANIFESTATION_PARTS = {
 export const FAKE_MATERIALTYPE = { general: "Dummy bøger", specific: "Dummy bog" };
 
 export const FAKE_NOTES = {
-  type: "Dummy NOT_SPECIFIED",
+  type: "NOT_SPECIFIED",
   display: ["Dummy Indspillet i Ꜳrhus Musikhus 12.-14. juni 2020"],
 };
 
@@ -284,7 +284,7 @@ export const FAKE_MANIFESTATION_1 = {
   hostPublication: FAKE_HOST_PUBLICATION,
   identifiers: [
     {
-      type: "Dummy ISBN",
+      type: "ISBN",
       value: "Dummy 1234567891234",
     },
   ],
@@ -353,7 +353,7 @@ export const FAKE_WORK = {
   series: [FAKE_POPULAR_SERIES, FAKE_GENERAL_SERIES],
   universe: { title: "Dummy Some Universe" },
   genreAndForm: ["Dummy some genre"],
-  workTypes: ["Dummy LITERATURE"],
+  workTypes: ["LITERATURE"],
   workYear: "Dummy 1950",
   mainLanguages: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
   subjects: FAKE_SUBJECTS,
