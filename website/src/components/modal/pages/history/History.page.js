@@ -252,14 +252,7 @@ function History({ modal, context }) {
     if (!modal.isVisible) {
       setTimeout(() => setState(history), 200);
     }
-  }, [modal.isVisible]);
-
-  // update history on history change
-  useEffect(() => {
-    if(!modal.isVisible){
-      setTimeout(() => setState(history), 200);
-    }
-  }, [history]);
+  }, [modal.isVisible, history]);
 
   return (
     <div className={`${styles.history}`}>

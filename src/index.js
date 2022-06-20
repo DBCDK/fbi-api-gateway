@@ -183,9 +183,9 @@ promExporterApp.listen(9599, () => {
 
             // prevent access if no agency is configured on client
             if (!request.profile?.agency) {
-              log.error("Missing configuration for token client", request.smaug?.app?.clientId);
-              response.status(400);
-              return response.send({statusCode: 400, message: "Bad request"});
+              log.error(`Missing agency in configuration for client ${request.smaug?.app?.clientId}`);
+              response.status(403);
+              return response.send({statusCode: 403, message: "Invalid client configuration"});
             }
 
             // All ok
