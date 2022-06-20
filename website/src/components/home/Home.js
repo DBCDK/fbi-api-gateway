@@ -32,8 +32,14 @@ export default function Home() {
             </Title>
             <Text className={styles.text}>
               FBI API offers a uniform and flexible API to access a wide variety
-              of services. The API is based on GraphQL, which provides benefits
-              such as:
+              of services within the danish library area. The API is a part of
+              the Common Library Infrastructure, in danish “Fælles
+              Biblioteksinfrastrutur”. The API allows access to metadata about
+              libraries and their collections and services like search, order
+              and recommendations.
+              <br />
+              <br />
+              The API is based on GraphQL, which provides benefits such as:
               <ul>
                 <li>
                   A bult in query language - You decide what data you need, and

@@ -12,19 +12,19 @@ Read on, and learn how to get one.
 
 ## How to get access?
 
-Danish libraries can get access. Others have to go through a library to get access.
+Currently only Danish libraries can get access to the API. So, in order to get started, you will need an agreement with a library.
 
-1. First of all, you need to obtain a _CLIENT_ID_ and _SECRET_ for your application/project
+1. First of all, you need to obtain a _CLIENT_ID_ and a _SECRET_ for your application/project
 
-   Send a request via [customer support](https://kundeservice.dbc.dk) including the following information:
+   Send a request via [customer support](https://kundeservice.dbc.dk) and include the following information:
 
    - Project owner (library, email, phone)
    - Technical contact person (name, email, phone)
-   - Name and description of application/project
+   - Name and description of the application/project
 
-2. Obtain access token
+2. Obtain an access token
 
-   Get an _anonymous access token_, to access the API on behalf of the application:
+   Get an _anonymous access token_ to access the API on behalf of the application:
 
    ```
    curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://auth.dbc.dk/oauth/token -d "grant_type=password&username=@&password=@"
@@ -40,7 +40,7 @@ Danish libraries can get access. Others have to go through a library to get acce
 
 3. Begin using the API
 
-   Configure access on this site (you need to fill in an access token), to see
+   Configure access on this site (you will need to fill in an access token in the field where it reads "Drop token here ..."), to see
    examples and build your own queries.
 
    The examples show how to include the access token as a header when calling the API.
@@ -52,15 +52,15 @@ This allows for the creation of tools that improve the developer experience.
 
 This site comes with _GraphiQL_,
 a graphical interactive GraphQL IDE, which can be used to write and test queries.
-All examples comes with a simplified inline version of GraphiQL, which can be used as a starting point.
+All examples come with a simplified inline version of GraphiQL, which can be used as a starting point.
 Press `CTRL+SPACE` to autocomplete inside GraphiQL.
 
 Another tool that we included is _Voyager_, which gives a bird's-eye view of the
-GraphQL schema. See how different types are connected, and zoom in for more details.
+GraphQL schema. See how different types are connected and zoom in for more details.
 
 ## Feedback
 
 If you have any ideas on how to improve the developer experience, don't hesitate to contact us at [dbc@dbc.dk](mailto:dbc@dbc.dk).
 
-We encourage you to add any issues/bugs you experience while using the api to the [issues page](https://github.com/DBCDK/fbi-api-gateway/issues). 
-Please attach the query that caused the bug to the issue.
+We encourage you to add any issues/bugs you experience while using the api to the [issues page](https://github.com/DBCDK/fbi-api-gateway/issues).
+Please attach the query that caused the bug in the issue.
