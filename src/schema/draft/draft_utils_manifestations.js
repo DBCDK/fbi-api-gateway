@@ -107,7 +107,10 @@ function jedPublicationYear(manifestation) {
     manifestation.details?.publication?.publicationYear?.$ || null;
   return {
     ...consts.FAKE_PUBLICATIONYEAR,
-    ...{ year: pubyear, display: pubyear || "" },
+    ...{
+      year: Number.isInteger(parseInt(pubyear, 10)) && pubyear,
+      display: pubyear || "",
+    },
   };
 }
 
