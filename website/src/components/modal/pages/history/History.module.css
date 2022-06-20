@@ -48,6 +48,12 @@
   padding: var(--pt2) var(--pt2) 0 var(--pt2) !important;
 }
 
+.date p{
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .token {
   padding: var(--pt2) !important;
 }

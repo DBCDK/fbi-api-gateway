@@ -149,7 +149,6 @@ function Item({
                 <Text type="text4">Access token</Text>
                 <Text type="text1">{token}</Text>
               </Col>
-
               {!isExpired && (
                 <Col xs={12} className={styles.id}>
                   <Text type="text4">ClientID</Text>
@@ -159,12 +158,18 @@ function Item({
             </Row>
           </Collapse>
           <Col xs={12} className={styles.token}>
-            <Text type="text4">Agency</Text>
-            <Text type="text1">{agency || "Missing 😔"}</Text>
-            <Text type="text4" className={styles.label}>
-              Profile
-            </Text>
-            <Text type="text1">{profile || "None 😔"}</Text>
+            <Row>
+            <Col xs={6}>
+              <Text type="text4">Agency</Text>
+              <Text type="text1">{agency || "Missing 😔"}</Text>
+            </Col>
+            <Col xs={6}>
+              <Text type="text4">
+                Profile
+              </Text>
+              <Text type="text1">{profile || "None 😔"}</Text>
+            </Col>
+            </Row>
           </Col>
         </Row>
 
@@ -263,7 +268,7 @@ function History({ modal, context }) {
             <Title type="title1" tag="h2">
               Your Configurations
             </Title>
-            {!state?.length && <span>You have no configurations yet ...</span>}
+            {!state?.length && <span>You have no configurations yet 🥹 ...</span>}
             {state?.map((h) => {
               return (
                 <Wrap

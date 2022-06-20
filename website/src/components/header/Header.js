@@ -87,7 +87,7 @@ export default function Header() {
             </Text>
           </Col>
           <Col className={styles.middle}>
-            <Token className={styles.token} compact />
+            {!isIndex && <Token className={styles.token} compact />}
             <Profile className={styles.profiles} />
             <History className={styles.history} />
           </Col>

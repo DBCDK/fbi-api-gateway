@@ -138,7 +138,7 @@ promExporterApp.listen(9599, () => {
         ];
 
         // Agency of the smaug client
-        const agency = request.smaug?.agencyId;
+        const agency = request.smaug?.agencyId; 
 
         request.profile = {
           agency,
@@ -181,6 +181,13 @@ promExporterApp.listen(9599, () => {
               throw "Unauthorized";
             }
 
+            // prevent access if no agency is configured on client
+            if (!request.profile?.agency) {
+              log.error("Missing configuration for token client", request.smaug?.app?.clientId);
+              // response.status(400);
+              return response.send({statusCode: 400, message: "Bad request"});
+            }
+
             // All ok
             return { Field() {} };
           },
@@ -189,6 +196,10 @@ promExporterApp.listen(9599, () => {
             variables: graphQLParams.variables,
           }),
         ],
+        // customFormatErrorFn: ((err) => {
+        //   console.log("ggggggggggggggg", err === "Bad request")
+        //   return ({statusCode: "hest"})
+        // }),
       };
     })
   );
