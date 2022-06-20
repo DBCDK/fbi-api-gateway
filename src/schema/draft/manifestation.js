@@ -18,12 +18,7 @@ type Shelfmark {
   """
   shelfmark: String!
 }
-type PublicationYear_2 {
-  display: String!
-  year: Int
-  endYear: Int
-  frequency: String
-}
+
 type PhysicalDescription {
   """
   A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
@@ -569,7 +564,7 @@ type Manifestation {
   """
   The publication year of the manifestation - OBS! was datePublished
   """
-  publicationYear: PublicationYear_2!
+  publicationYear: PublicationYear!
 
   """
   Publisher of this manifestion

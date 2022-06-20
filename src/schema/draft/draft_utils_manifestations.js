@@ -105,7 +105,10 @@ function jedShelfMark(manifestation) {
 function jedPublicationYear(manifestation) {
   const pubyear =
     manifestation.details?.publication?.publicationYear?.$ || null;
-  return { ...consts.FAKE_PUBLICATIONYEAR, ...{ year: pubyear } };
+  return {
+    ...consts.FAKE_PUBLICATIONYEAR,
+    ...{ year: pubyear, display: pubyear || "" },
+  };
 }
 
 function jedPhysicalDescription(manifestation) {
