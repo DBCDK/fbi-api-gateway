@@ -16,38 +16,38 @@ Object {
       "accessTypes": Array [
         Object {
           "code": "PHYSICAL",
-          "display": "fysisk",
+          "display": "Dummy fysisk",
         },
         Object {
           "code": "ONLINE",
-          "display": "online",
+          "display": "Dummy online",
         },
       ],
       "audience": Object {
         "ages": Array [
           Object {
             "begin": 10,
-            "display": "10-14",
+            "display": "Dummy 10-14",
             "end": 14,
           },
         ],
         "childrenOrAdults": Array [
           Object {
             "code": "FOR_CHILDREN",
-            "display": "til børn",
+            "display": "Dummy til børn",
           },
         ],
         "generalAudience": Array [],
         "let": null,
-        "libraryRecommendation": "some library recommendation",
+        "libraryRecommendation": "Dummy some library recommendation",
         "lix": null,
         "primaryTarget": Array [
-          "Some primary target",
+          "Dummy Some primary target",
         ],
         "schoolUse": Array [
           Object {
             "code": "FOR_SCHOOL_USE",
-            "display": "til skolebrug",
+            "display": "Dummy til skolebrug",
           },
         ],
       },
@@ -60,15 +60,15 @@ Object {
       },
       "classifications": Array [
         Object {
-          "code": "86-096",
-          "display": "Skønlitteratur",
+          "code": "Dummy 86-096",
+          "display": "Dummy Skønlitteratur",
           "entryType": "NATIONAL_BIBLIOGRAPHY_ENTRY",
-          "system": "DK5",
+          "system": "Dummy DK5",
         },
       ],
       "contributors": Array [],
       "contributorsFromDescription": Array [
-        "på dansk ved Vivi Berendt",
+        "Dummy på dansk ved Vivi Berendt",
       ],
       "cover": Object {
         "detail": "link-to-detail",
@@ -89,7 +89,7 @@ Object {
         },
       ],
       "creatorsFromDescription": Array [
-        "tekst af William Warren",
+        "Dummy tekst af William Warren",
       ],
       "edition": Object {
         "contributors": Array [],
@@ -104,17 +104,17 @@ Object {
       },
       "genreAndForm": Array [],
       "hostPublication": Object {
-        "creator": "Some Creator",
-        "isbn": "some isbn",
+        "creator": "Dummy Some Creator",
+        "isbn": "Dummy some isbn",
         "issn": "",
         "issue": "Årg. 97, nr. 10 (2014)",
         "notes": Array [
-          "a note",
+          "Dummy a note",
         ],
         "pages": "",
         "publisher": "Dansk veterinærtidsskrift",
         "series": Object {
-          "title": "Some Series",
+          "title": "Dummy Some Series",
         },
         "summary": "I: Dansk veterinærtidsskrift, Årg. 97, nr. 10 (2014), 2014",
         "title": "Dansk veterinærtidsskrift",
@@ -125,38 +125,38 @@ Object {
       "identifiers": Array [
         Object {
           "type": "ISBN",
-          "value": "1234567891234",
+          "value": "Dummy 1234567891234",
         },
       ],
       "languages": Object {
         "abstract": Array [
           Object {
-            "display": "dansk",
-            "isoCode": "dan",
+            "display": "Dummy dansk",
+            "isoCode": "Dummy dan",
           },
         ],
         "main": Array [],
         "original": Array [
           Object {
-            "display": "dansk",
-            "isoCode": "dan",
+            "display": "Dummy dansk",
+            "isoCode": "Dummy dan",
           },
         ],
         "parallel": Array [
           Object {
-            "display": "dansk",
-            "isoCode": "dan",
+            "display": "Dummy dansk",
+            "isoCode": "Dummy dan",
           },
         ],
         "spoken": Array [],
         "subtitles": Array [],
       },
       "latestPrinting": Object {
-        "printing": "11. oplag",
+        "printing": "Dummy 11. oplag",
         "publicationYear": Object {
-          "display": "2020",
+          "display": "Dummy 2020",
         },
-        "summary": "11. oplag, 2020",
+        "summary": "Dummy 11. oplag, 2020",
       },
       "manifestationParts": Object {
         "heading": "",
@@ -174,14 +174,14 @@ Object {
         Object {
           "accompanyingMaterial": null,
           "additionalDescription": null,
-          "extent": "1 dvd-rom",
+          "extent": "Dummy 1 dvd-rom",
           "numberOfPages": null,
           "numberOfUnits": null,
           "playingTime": null,
-          "requirements": "Nødvendigt udstyr Xbox One. - Med multiplayerfunktion",
+          "requirements": "Dummy Nødvendigt udstyr Xbox One. - Med multiplayerfunktion",
           "size": null,
           "summary": "1 cd i 1 mappe (67 min.)",
-          "technicalInformation": "Xbox One",
+          "technicalInformation": "Dummy Xbox One",
         },
       ],
       "pid": "870970-basis:29433909",
@@ -193,21 +193,21 @@ Object {
       ],
       "relatedPublications": Array [
         Object {
-          "heading": "Tidligere titel:",
+          "heading": "Dummy Tidligere titel:",
           "isbn": null,
-          "issn": "0105-0508",
+          "issn": "Dummy 0105-0508",
           "title": Array [
-            "Yngre læger",
+            "Dummy Yngre læger",
           ],
           "url": null,
           "urlText": null,
         },
         Object {
-          "heading": "Udgave i andet medium: Også på cd-rom",
+          "heading": "Dummy Udgave i andet medium: Også på cd-rom",
           "isbn": null,
-          "issn": "1399-4174",
+          "issn": "Dummy 1399-4174",
           "title": Array [
-            "Ugeskrift for læger",
+            "Dummy Ugeskrift for læger",
           ],
           "url": null,
           "urlText": null,
@@ -216,33 +216,33 @@ Object {
       "series": Array [
         Object {
           "alternativeTitles": Array [
-            "Some Series, parallel title",
-            "Some Series, another parallel title",
+            "Dummy Some Series, parallel title",
+            "Dummy Some Series, another parallel title",
           ],
           "isPopular": true,
           "numberInSeries": Object {
-            "display": "number one",
+            "display": "Dummy number one",
             "number": 1,
           },
           "parallelTitles": Array [],
           "readThisFirst": true,
           "readThisWhenever": false,
-          "title": "Some Series",
+          "title": "Dummy Some Series",
         },
         Object {
           "alternativeTitles": Array [],
           "isPopular": false,
           "numberInSeries": Object {
-            "display": "number one",
+            "display": "Dummy number one",
             "number": 1,
           },
           "parallelTitles": Array [
-            "Some Series, parallel title",
-            "Some Series, another parallel title",
+            "Dummy  Some Series, parallel title",
+            "Dummy Some Series, another parallel title",
           ],
           "readThisFirst": null,
           "readThisWhenever": null,
-          "title": "Some Series",
+          "title": "Dummy Some Series",
         },
       ],
       "shelfmark": Object {
@@ -250,7 +250,7 @@ Object {
         "shelfmark": "gray",
       },
       "source": Array [
-        "some source",
+        "Dummy some source",
       ],
       "subjects": Object {
         "all": Array [
@@ -269,22 +269,22 @@ Object {
         ],
         "dbcVerified": Array [
           Object {
-            "display": "Some fictional subject",
+            "display": "Dummy Some fictional subject",
           },
           Object {
-            "display": "1950-1980",
+            "display": "Dummy 1950-1980",
           },
           Object {
-            "display": "Jens Jensen",
+            "display": "Dummy Jens Jensen",
           },
           Object {
-            "display": "Some Corporation",
+            "display": "Dummy Some Corporation",
           },
         ],
       },
       "tableOfContents": Object {
         "content": null,
-        "heading": "Indhold",
+        "heading": "Dummy Indhold",
         "listOfContent": Array [
           Object {
             "content": "Jeg bor i Hvidovre ",
@@ -299,22 +299,22 @@ Object {
       },
       "titles": Object {
         "alternative": Array [
-          "Some Title: Alternative",
+          "Dummy Some Title: Alternative",
         ],
         "full": Array [],
-        "identifyingAddition": "Indlæst af Jens Jensen",
+        "identifyingAddition": "Dummy Indlæst af Jens Jensen",
         "main": Array [
           "Didriksen detektiverne",
         ],
         "original": Array [],
         "parallel": Array [
-          "Parallel Title 1",
+          "Dummy Parallel Title 1",
           "Parallel Title 2",
         ],
-        "sort": "Some Title Sort",
-        "standard": "Some Title Standard",
+        "sort": "Dummy Some Title Sort",
+        "standard": "Dummy Some Title Standard",
         "translated": Array [
-          "En Oversat Titel",
+          "Dummy En Oversat Titel",
         ],
       },
       "volume": null,

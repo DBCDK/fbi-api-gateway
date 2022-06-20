@@ -14,12 +14,12 @@ Object {
         },
       ],
       "dk5MainEntry": Object {
-        "code": "some dk5 code",
-        "display": "some dk5 display",
+        "code": "Dummy some dk5 code",
+        "display": "Dummy some dk5 display",
       },
       "fictionNonfiction": Object {
         "code": "FICTION",
-        "display": "skønlitteratur",
+        "display": "Dummy skønlitteratur",
       },
       "genreAndForm": Array [],
       "mainLanguages": Array [],
@@ -44,44 +44,44 @@ Object {
       },
       "materialTypes": Array [
         Object {
-          "general": "bøger",
+          "general": "Dummy general type",
           "specific": "Bog",
         },
         Object {
-          "general": "bøger",
+          "general": "Dummy general type",
           "specific": "Ebog",
         },
       ],
       "series": Array [
         Object {
           "alternativeTitles": Array [
-            "Some Series, parallel title",
-            "Some Series, another parallel title",
+            "Dummy Some Series, parallel title",
+            "Dummy Some Series, another parallel title",
           ],
           "isPopular": true,
           "numberInSeries": Object {
-            "display": "number one",
+            "display": "Dummy number one",
             "number": 1,
           },
           "parallelTitles": Array [],
           "readThisFirst": true,
           "readThisWhenever": false,
-          "title": "Some Series",
+          "title": "Dummy Some Series",
         },
         Object {
           "alternativeTitles": Array [],
           "isPopular": false,
           "numberInSeries": Object {
-            "display": "number one",
+            "display": "Dummy number one",
             "number": 1,
           },
           "parallelTitles": Array [
-            "Some Series, parallel title",
-            "Some Series, another parallel title",
+            "Dummy  Some Series, parallel title",
+            "Dummy Some Series, another parallel title",
           ],
           "readThisFirst": null,
           "readThisWhenever": null,
-          "title": "Some Series",
+          "title": "Dummy Some Series",
         },
       ],
       "seriesMembers": Array [],
@@ -107,20 +107,20 @@ Object {
           "min kamp",
         ],
         "original": Array [
-          "Some Title Origintal",
+          "Dummy Some Title Origintal",
         ],
         "parallel": Array [
-          "Parallel Title 1",
-          "Parallel Title 2",
+          "Dummy Parallel Title 1",
+          "Dummy Parallel Title 2",
         ],
-        "sort": "Some Title Sort",
-        "standard": "Some Title Standard",
+        "sort": "Dummy Some Title Sort",
+        "standard": "Dummy Some Title Standard",
         "translated": Array [
-          "Oversat titel",
+          "Dummy Oversat titel",
         ],
       },
       "universe": Object {
-        "title": "Some Universe",
+        "title": "Dummy Some Universe",
       },
       "workId": "work-of:870970-basis:28329490",
       "workTypes": Array [
