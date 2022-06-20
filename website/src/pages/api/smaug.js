@@ -1,5 +1,5 @@
 import fetch from "isomorphic-unfetch";
-import permissions from "../../../../src/permissions.json";
+import _permissions from "../../../../src/permissions.json";
 
 /**
  * Extract specific data from whitelist
@@ -26,12 +26,14 @@ async function getProfiles(agency) {
  * Extract specific data from whitelist
  */
 const selectConfigurations = (data) => {
+  const permissions = data.gateway ? data.gateway : _permissions.default;
+
   return {
     displayName: data.displayName,
     logoColor: data.logoColor,
     clientId: data.app?.clientId,
     uniqueId: data.user?.uniqueId,
-    permissions: data.gateway ? data.gateway : permissions.default,
+    permissions: data.agencyId && permissions,
     agency: data.agencyId,
   };
 };

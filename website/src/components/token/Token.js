@@ -123,11 +123,11 @@ export default function Token({
         </Button>
       </div>
       <Overlay
-        className={styles.overlay}
-        show={state.value && !selectedToken?.token && !state.focus}
+        className={`${styles.overlay} ${compact ? "compact" : ""}`}
+        show={!state.focus && state.value && (!selectedToken?.token || !configuration?.agency) }
         container={containerRef}
       >
-        <Text type="text2">{"😬 This is not a valid token"}</Text>
+        <Text type="text2">{!configuration?.agency ? "😬 Missing client configuration" : "😬 This is not a valid token"}</Text>
       </Overlay>
     </form>
   );

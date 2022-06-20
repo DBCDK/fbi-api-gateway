@@ -138,7 +138,7 @@ promExporterApp.listen(9599, () => {
         ];
 
         // Agency of the smaug client
-        const agency = request.smaug?.agencyId;
+        const agency = request.smaug?.agencyId; 
 
         request.profile = {
           agency,
@@ -179,6 +179,13 @@ promExporterApp.listen(9599, () => {
             // a valid token is required
             if (!request.smaug && !isIntrospectionQuery(ast)) {
               throw "Unauthorized";
+            }
+
+            // prevent access if no agency is configured on client
+            if (!request.profile?.agency) {
+              log.error(`Missing agency in configuration for client ${request.smaug?.app?.clientId}`);
+              response.status(403);
+              return response.send({statusCode: 403, message: "Invalid client configuration"});
             }
 
             // All ok
