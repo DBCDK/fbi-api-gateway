@@ -37,15 +37,17 @@
 .item.expired .display,
 .item.expired .date,
 .item.expired .id,
-.item.expired .token {
+.item.expired .token, 
+.item.expired .error {
   color: var(--text-light);
 }
 
 .display,
 .date,
 .id,
-.token {
-  padding: var(--pt2) var(--pt2) 0 var(--pt2) !important;
+.token, 
+.error {
+  padding: var(--pt2) var(--pt2) 0 var(--pt2);
 }
 
 .date p{
@@ -55,7 +57,7 @@
 }
 
 .token {
-  padding: var(--pt2) !important;
+  padding: var(--pt2);
 }
 
 .token p,
@@ -63,6 +65,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.error{
+  color: var(--error-dark);
+  padding-top:0;
 }
 
 .display {

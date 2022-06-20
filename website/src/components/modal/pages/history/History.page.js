@@ -139,6 +139,11 @@ function Item({
               {/* <Title type="title5">{open ? "-" : "+"}</Title> */}
             </button>
           </Col>
+
+          {(!agency || !profile) && <Col xs={12} className={styles.error}>
+              <Text type="text1">😬 This token has missing client configuration!</Text>
+          </Col>}
+
           <Collapse in={open} id={`details-collapse-${token}`}>
             <Row id="example-collapse-text">
               <Col xs={12} className={styles.date}>
@@ -157,6 +162,7 @@ function Item({
               )}
             </Row>
           </Collapse>
+
           <Col xs={12} className={styles.token}>
             <Row>
             <Col xs={6}>

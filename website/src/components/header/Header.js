@@ -38,7 +38,7 @@ export default function Header() {
   const { configuration } = useConfiguration(selectedToken);
 
   const isValidToken =
-    selectedToken && configuration && Object?.keys(configuration).length;
+    selectedToken && configuration && Object?.keys(configuration).length && configuration.agency;
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
