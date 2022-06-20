@@ -207,7 +207,10 @@ export const FAKE_MANIFESTATION_PARTS = {
   ],
 };
 
-export const FAKE_MATERIALTYPE = { general: "Dummy bøger", specific: "Dummy bog" };
+export const FAKE_MATERIALTYPE = {
+  general: "Dummy general type",
+  specific: "Dummy bog",
+};
 
 export const FAKE_NOTES = {
   type: "NOT_SPECIFIED",
@@ -238,7 +241,10 @@ export const FAKE_LIST_OF_CONTENT = {
   listOfContent: [
     {
       heading: "Dummy Puderne",
-      listOfContent: [{ content: "Dummy Bruddet" }, { content: "Dummy Hustelefonen" }],
+      listOfContent: [
+        { content: "Dummy Bruddet" },
+        { content: "Dummy Hustelefonen" },
+      ],
     },
     {
       content: "Dummy Tykke-Olsen m.fl.",
