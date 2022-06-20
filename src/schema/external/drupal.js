@@ -13,6 +13,7 @@ const executor = async ({ document, variables }) => {
 // Avoid naming conflicts with internal schema
 const typeNameMap = {
   User: "DrupalUser",
+  Language: "DrupalLanguage",
 };
 
 export default async () => {
