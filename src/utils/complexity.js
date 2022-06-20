@@ -18,13 +18,8 @@ import config from "../config";
 function CustomFieldEstimator({ field, childComplexity }) {
   const fieldType = field.type.toString();
   const isExpensiveArray =
-    fieldType.startsWith("[") &&
-    !fieldType.startsWith("[String") &&
-    !fieldType.startsWith("[Int") &&
-    !fieldType.startsWith("[Creator") &&
-    !fieldType.startsWith("[TextWithWork") &&
-    !fieldType.startsWith("[MaterialType") &&
-    !fieldType.startsWith("[Draft_");
+    fieldType.startsWith("[Work") || fieldType.startsWith("[Manifestation");
+
   if (isExpensiveArray) {
     return 100 * (childComplexity || 1);
   }
