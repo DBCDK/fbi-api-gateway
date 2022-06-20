@@ -260,7 +260,6 @@ export default function GraphiQL() {
 
           // Prettify and run query
           setTimeout(() => {
-            console.log("instance", instance)
             if (instance?.props?.query) {
               instance?.handlePrettifyQuery();
               instance?.handleRunQuery();

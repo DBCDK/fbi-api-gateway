@@ -184,7 +184,7 @@ promExporterApp.listen(9599, () => {
             // prevent access if no agency is configured on client
             if (!request.profile?.agency) {
               log.error("Missing configuration for token client", request.smaug?.app?.clientId);
-              // response.status(400);
+              response.status(400);
               return response.send({statusCode: 400, message: "Bad request"});
             }
 
@@ -196,10 +196,6 @@ promExporterApp.listen(9599, () => {
             variables: graphQLParams.variables,
           }),
         ],
-        // customFormatErrorFn: ((err) => {
-        //   console.log("ggggggggggggggg", err === "Bad request")
-        //   return ({statusCode: "hest"})
-        // }),
       };
     })
   );
