@@ -256,7 +256,9 @@ function History({ modal, context }) {
 
   // update history on history change
   useEffect(() => {
-    setTimeout(() => setState(history), 200);
+    if(!modal.isVisible){
+      setTimeout(() => setState(history), 200);
+    }
   }, [history]);
 
   return (
