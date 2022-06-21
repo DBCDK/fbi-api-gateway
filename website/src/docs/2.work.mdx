@@ -1,24 +1,24 @@
 # Work
 
-A work is some creation like a book, article, movie etc.
-It may exist in many different forms or manifestations. For instance, a
-book may be available in multiple physical and online variants. A movie could be
-streamed online or maybe borrowed on DVD or Bluray.
+A work is some creation like a book, article, movie etc. It may exist in many different variants -
+in the API we call these manifestations. For instance, a book may be available in multiple physical
+and online variants or manifestations. And a movie could be streamed online or maybe borrowed on DVD
+or Blu-ray. The work data, then, is the data that is common for all manifestations in the work.
 
-In the following examples we show how to get metadata for a work and its manifestations.
+In the following examples, we show how to get metadata for a work and for its manifestations.
 
 ## The Basics of a Work
 
-Different user interfaces have different needs, hence we offer several ways to fetch
-metadata. Fields named _display_, or _summary_ hide complexity at the cost of
-flexibility.
+Different user interfaces have different needs, hence we offer several ways to fetch metadata.
+E.g. if you don’t need a lot of flexibility, fields named “display” or “summary” contain the
+most important information while hiding complexity.
 
-An example is time periods, where the value of _display_ could be "1980 - 1990". But
-The fields _begin_ and _end_ may be fetched seperately. Likewise, a list of subjects
-can easily be shown with _display_, but if the subject is for instance a Person,
-more fields are available.
+For example when fetching data based on a time period, the display could be “1980 - 1989". But users can also just use the
+“begin” or “end” field separately to return a wider result. Likewise, a list of subjects can
+easily be shown by using the “display” field, but if the subject is for instance a person,
+detailed fields like “lastname”, “nameSort” and “birthYear” are available for more precision.
 
-In the following example we fetch often used fields in the simplest way possible.
+In the following example, often-used fields are fetched in the simplest way possible.
 
 <InlineGraphiQL
   query={`query ($id: String!) {
@@ -99,8 +99,8 @@ It is possible to fetch multiple works in a single request by providing
 a list of identifiers. The identifiers may be _a list of work ids_, _a list of pids_,
 or _a list of fausts_.
 
-The order of the works will match the order of provided identifiers.
-If no work is found for an identifier, null is returned at the corresponding position.
+The order of these works will match the order of the identifiers that are provided.
+If no work is found as an identifier, null is returned at the corresponding position.
 
 <InlineGraphiQL
   query={`query ($faust: [String!]!) {
@@ -119,11 +119,12 @@ The reviews field returns a list of reviews. Each review may be one of the follo
 
 - `InfomediaReview` includes an ID that can be used to look up the actual
   article. Check out the [Infomedia section](#Infomedia).
-- `ExternalReview` includes an url to an external website where the review is located.
-- `LibrariansReview` is the librarians review. The entire review can be obtained from
-  this object type, without the user is logged in. A review consists of a list of sections.
-  A section may include a work. If so, the title should be appended to the text
-  (preferably as a link).
+- `ExternalReview` includes a url to an external website where the review is located.
+- `LibrariansReview` is a review made by Danish librarians - in Danish it's known as “lektørudtalelse” or “materialevurdering”.
+  The entire review can be obtained from this object type, without the user being logged
+  in, and consists of a list of content sections. A section may include a reference
+  to another work. If so, the title of this referenced work should be appended to the
+  text (preferably as a link).
 
 The following example shows a librarians review with a reference to an external work
 (in the last section of the response).
@@ -227,7 +228,8 @@ as well as some information about how the work itself fits inside the series.
 
 ## Series Members
 
-All the members (works) of a series that this work is member of (including itself).
+Fetch all the members (works) of a series that the referenced work is a member of,
+including the work itself.
 
 <InlineGraphiQL
   query={`query ($workId: String!) {
@@ -246,7 +248,7 @@ All the members (works) of a series that this work is member of (including itsel
 
 ## Translations
 
-Some metadata may be available in english, specify a language and we will
+Some metadata may be available in English. Specify a language and we will
 translate data where possible.
 
 Only fields named _display_, _summary_ etc. may contain translations.

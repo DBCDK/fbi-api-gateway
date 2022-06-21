@@ -1,16 +1,18 @@
 # Suggest
 
-This is how to get suggestions given some query. The value of the _term_ field
+A list of suggestions can be returned by providing a query in the following way.
+
+The value of the _term_ field
 can be used to make a [search request](#Search).
 
 The _type_ field indicates whether
-the suggestion is a title, creator, subject, or composit (a combination of title and creator).
+the suggestion is a title, a creator, a subject, or a composit (a combination of title and creator).
 This can be used to explicitly search for a [title, creator or subject](#Search-For-Title,-Creator,-and-Subject).
 
 The value of the _work_ field is a work that will be a top hit in the search result based
 on the corresponding _term_.
 
-## Lookup suggestions
+The following example gets suggestions for all agencies.
 
 <InlineGraphiQL
   query={`query ($q: String!) {
@@ -31,27 +33,29 @@ on the corresponding _term_.
   }}
 />
 
-## Filter on branch name (local suggestions)
+## Local Suggestions
 
-When using the 'localSuggest' query results are limited to the agency associated with your access token.
+When using the 'localSuggest' query, results are limited to the agency associated with your access token.
 
-The branch parameter can be used to further limit suggestions to a specific branch. Name of the branch MUST be a valid branch name
-for the agency associated with your access token. This example assumes that you have an access token for Aarhus.
+The branch parameter can be used to further limit suggestions to a specific branch within that agency.
+The value of _branch_ is a string that must be the name of one of the branches.
+
+This example assumes that you have an access token for Aarhus.
 
 <InlineGraphiQL
   query={`query ($q: String!) {
-  localSuggest(q: $q branch:"Beder-Malling") {
+  localSuggest(q: $q, branch: "Beder-Malling") {
     result {
       type
-        term
-        work {
-          titles {
-            main
-          }
+      term
+      work {
+        titles {
+          main
         }
       }
     }
-  }`}
+  }
+}`}
   variables={{
     q: "harry",
   }}

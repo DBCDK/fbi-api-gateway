@@ -1,10 +1,13 @@
 # Manifestation
 
-A manifestation is a specific edition in a work. A work may contain one or more different manifestations within the same type of material.
+A manifestion is a specific edition within a work. A work may contain one or more different
+manifestations within the same type of material. A physical book, which is published with
+different cover illustrations or minor text edits, will be regarded as a different
+manifestation, but will still be a part of the same work.
 
 ## Basic Example
 
-A basic example fetching often used fields.
+A basic example fetching often-used fields.
 
 <InlineGraphiQL
   query={`query ($pid: String!) {
@@ -38,7 +41,7 @@ A basic example fetching often used fields.
 
 ## Manifestation Identifiers
 
-A manifestation is identified by a _pid_, or _faust_, and either of them can be used to
+A manifestation is identified by a _pid_ or _faust_, and either of them can be used to
 fetch a work.
 
 <InlineGraphiQL
@@ -70,11 +73,11 @@ fetch a work.
 ## Fetch List of manifestations
 
 It is possible to fetch multiple manifestations in a single request by providing
-a list of identifiers. The identifiers may be _a list of pids_,
+a list of identifiers. The identifiers may be _a list of pids_
 or _a list of fausts_.
 
-The order of the manifestations will match the order of provided identifiers.
-If no manifestation is found for an identifier, null is returned at the corresponding position.
+The order of the manifestations will match the order of the identifiers provided.
+If a manifestation provides no identifier, null is returned at the corresponding position.
 
 <InlineGraphiQL
   query={`query ($faust: [String!]!) {
@@ -91,15 +94,16 @@ If no manifestation is found for an identifier, null is returned at the correspo
 
 ## Manifestation Access
 
-The _access_ field contains a list of ways to access a manifestation. The type of the access can be both fysical and digital.
+The _access_ field contains a list of ways to access a manifestation. The type of access can be both physical and digital.
 
 There can be 5 different types of access:
 
 - `AccessUrl`: Returns a url to an online media, where the article e.g. can be read.
 - `Ereol`: Returns a url to the manifestation on ereolen.dk.
-- `InterLibraryLoan`: True if the manifestation is part of the ill (the internal library loaner service)
-- `InfomediaService`: Returns an article id. The ID can be used to fetch the article via. the InfomediaService.
-- `DigitalArticleService`: Returns a issn to the article e.g. The loaner will recieve a digital copy of the article.
+- `InterLibraryLoan`: Returns true if the manifestation is part of the ILL (the internal library loaner service)
+- `InfomediaService`: Returns an article id. This id can be used to fetch the article via the InfomediaService.
+- `DigitalArticleService`: Returns an ISSN to the article which can be used to order a digital copy of the
+  article via “Digital Article Service”.
 
 <InlineGraphiQL
   query={`query($pid: [String!]!) {
@@ -135,8 +139,8 @@ There can be 5 different types of access:
   }}
 />
 
-If a InfomediaService entry is presented, the article id can be used to access
-the content of the article thrue the [Infomedia](#Infomedia) type.
+If an InfomediaService entry is presented, the article id can be used to access
+the content of the article through the [Infomedia](#Infomedia) type.
 
 <InlineGraphiQL
   query={`query($pid: [String!]!) {
@@ -175,6 +179,8 @@ the content of the article thrue the [Infomedia](#Infomedia) type.
 ## Shelf information
 
 You can get shelf information for a specific edition, based on a given pid or faust.
+This would be common shelfmark information and would not be based on the shelf information
+from a specific library.
 
 <InlineGraphiQL
   query={`query($faust: String!) {
@@ -187,172 +193,5 @@ You can get shelf information for a specific edition, based on a given pid or fa
         }`}
   variables={{
     faust: "48237053",
-  }}
-/>
-
-## JED
-
-JED is a new metadata format that this API is built upon. JED is still work in progress,
-and therefore the values of some fields may be dummy data.
-
-This is an example where fields should return real data.
-
-<InlineGraphiQL
-  query={`query($pid: String!) { manifestation(pid: $pid) {
-    pid
-    titles {
-        main
-        full
-        original
-    }
-    abstract
-    access {
-        __typename
-        ... on AccessUrl {
-            origin
-            url
-        }
-        ... on InfomediaService {
-            id
-        }
-        ... on DigitalArticleService {
-            issn
-        }
-        ... on Ereol {
-            url
-            canAlwaysBeLoaned
-        }
-        ... on InterLibraryLoan {
-            loanIsPossible
-        }
-    }
-    audience {
-        generalAudience
-        let
-        lix
-    }
-    catalogueCodes {
-        nationalBibliography
-    }
-    contributors {
-        ... on Person {
-            display
-            nameSort
-                roles {
-                functionCode
-                    function {
-                        plural
-                        singular
-                    }
-                }
-            }
-        }
-    creators {
-        ... on Person {
-        display
-        nameSort
-            roles {
-            functionCode
-                function {
-                    plural
-                    singular
-                }
-            }
-        }
-    }
-    classifications {
-        code
-        entryType
-        system
-    }
-    edition {
-        summary
-        edition
-        publicationYear {
-            display
-            year
-        }
-    }
-    latestPrinting {
-        summary
-    }
-    genreAndForm
-    hostPublication {
-        title
-        issn
-        issue
-        pages
-        publisher
-            year {
-                display
-                year
-            }
-        summary
-    }
-    languages {
-        main {
-            display
-            isoCode
-        }
-        subtitles {
-            display
-            isoCode
-        }
-        spoken {
-            display
-            isoCode
-        }
-    }
-    manifestationParts {
-        heading
-        parts {
-            title
-            creators {
-                display
-                nameSort
-            }
-        }
-    }
-    materialTypes {
-        general
-        specific
-    }
-    notes {
-        display
-    }
-    physicalDescriptions {
-        summary
-    }
-    publicationYear {
-        year
-    }
-    publisher
-    shelfmark {
-        postfix
-        shelfmark
-    }
-    subjects {
-        all {
-            display
-        }
-    }
-    volume
-    tableOfContents {
-        heading
-        content
-        listOfContent {
-            heading
-            content
-        }
-    }
-    tableOfContents {
-    listOfContent {
-        content
-    }
-}
-}
-}`}
-  variables={{
-    pid: "870970-basis:27002609",
   }}
 />
