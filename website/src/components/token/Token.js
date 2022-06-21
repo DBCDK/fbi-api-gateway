@@ -50,9 +50,6 @@ export default function Token({
   const isAuthenticated = !!configuration?.uniqueId;
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
-
-  console.log("selectedToken?.token", selectedToken?.token, state.value);
-
  
   const emptyConfiguration = Object.keys(configuration || {}).length === 0;
   const _errorToken = !selectedToken?.token && "😬 This is not a valid token!";
