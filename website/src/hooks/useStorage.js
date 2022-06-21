@@ -74,7 +74,7 @@ export default function useStorage() {
     mutateHistory(sliced, false);
   };
 
-  const removeHistoryItem = (token, profile) => {
+  const removeHistoryItem = (token) => {
     const newHistory = history.filter((obj) => !(obj.token === token));
     // store
     const stringified = JSON.stringify(newHistory);
@@ -82,7 +82,7 @@ export default function useStorage() {
     // mutate
     mutateHistory(newHistory, false);
 
-    if (selectedToken.token === token) {
+    if (selectedToken?.token === token) {
       removeSelectedToken();
     }
   };

@@ -140,7 +140,7 @@ function Item({
             </button>
           </Col>
 
-          {(!agency || !profile) && <Col xs={12} className={styles.error}>
+          {!isExpired && (!agency || !profile) && <Col xs={12} className={styles.error}>
               <Text type="text1">😬 This token has missing client configuration!</Text>
           </Col>}
 
@@ -163,7 +163,7 @@ function Item({
             </Row>
           </Collapse>
 
-          <Col xs={12} className={styles.token}>
+          <Col xs={12} className={styles.details}>
             <Row>
             <Col xs={6}>
               <Text type="text4">Agency</Text>
