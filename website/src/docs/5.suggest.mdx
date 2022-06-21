@@ -12,7 +12,7 @@ This can be used to explicitly search for a [title, creator or subject](#Search-
 The value of the _work_ field is a work that will be a top hit in the search result based
 on the corresponding _term_.
 
-## Lookup suggestions
+The following example gets suggestions for all agencies.
 
 <InlineGraphiQL
   query={`query ($q: String!) {
@@ -33,26 +33,28 @@ on the corresponding _term_.
   }}
 />
 
-## Filter on branch name (local suggestions)
+## Local Suggestions
 
 When using the 'localSuggest' query, results are limited to the agency associated with your access token.
 
-The branch parameter can be used to further limit suggestions to a specific branch. The name of the branch MUST be a valid branch name and
-the name must also be associated with the current agency in use via its access token. This example assumes that you have an access token for Århus.
+The branch parameter can be used to further limit suggestions to a specific branch within that agency.
+The value of _branch_ is a string that must be the name of one of the branches.
+
+This example assumes that you have an access token for Aarhus.
 
 <InlineGraphiQL
   query={`query ($q: String!) {
-localSuggest(q: $q branch:"Beder-Malling") {
-result {
-type
-term
-work {
-titles {
-main
-}
-}
-}
-}
+  localSuggest(q: $q, branch: "Beder-Malling") {
+    result {
+      type
+      term
+      work {
+        titles {
+          main
+        }
+      }
+    }
+  }
 }`}
   variables={{
     q: "harry",
