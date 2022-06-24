@@ -222,7 +222,9 @@ Object {
           "isPopular": true,
           "numberInSeries": Object {
             "display": "Dummy number one",
-            "number": 1,
+            "number": Array [
+              1,
+            ],
           },
           "parallelTitles": Array [],
           "readThisFirst": true,
@@ -234,7 +236,9 @@ Object {
           "isPopular": false,
           "numberInSeries": Object {
             "display": "Dummy number one",
-            "number": 1,
+            "number": Array [
+              1,
+            ],
           },
           "parallelTitles": Array [
             "Dummy  Some Series, parallel title",

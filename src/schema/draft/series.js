@@ -16,7 +16,7 @@ type NumberInSeries {
   """
   The number in the series as integer
   """
-  number: Int!
+  number: [Int!]
 }
 type Series {
   """

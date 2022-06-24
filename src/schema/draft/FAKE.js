@@ -7,7 +7,7 @@ export const FAKE_GENERAL_SERIES = {
   alternativeTitles: [],
   numberInSeries: {
     display: "Dummy number one",
-    number: 1,
+    number: [1],
   },
   isPopular: false,
 };
@@ -21,7 +21,7 @@ export const FAKE_POPULAR_SERIES = {
   parallelTitles: [],
   numberInSeries: {
     display: "Dummy number one",
-    number: 1,
+    number: [1],
   },
   isPopular: true,
   readThisFirst: true,
