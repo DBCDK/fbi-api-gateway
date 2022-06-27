@@ -348,9 +348,7 @@ export const FAKE_DK5MAINENTRY = {
 
 export const FAKE_WORK = {
   workId: "work-of:870970-basis:54029519",
-  titles: {
-    FAKE_WORKTITLES,
-  },
+  titles: FAKE_WORKTITLES,
   abstract: ["Dummy The abstract"],
   creators: [FAKE_PERSON, FAKE_CORPORATION],
   dk5MainEntry: FAKE_DK5MAINENTRY,
