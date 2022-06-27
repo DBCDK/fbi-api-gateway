@@ -5,12 +5,16 @@ Object {
   "data": Object {
     "work": Object {
       "abstract": Array [
-        "Selvbiografisk roman",
+        "Dummy The abstract",
       ],
       "creators": Array [
         Object {
-          "display": "karl ove knausgård",
-          "nameSort": "karl ove knausgård",
+          "display": "Dummy Jens Jensen",
+          "nameSort": "Dummy Jensen Jens",
+        },
+        Object {
+          "display": "Dummy Some Corporation",
+          "nameSort": "Dummy Some Corporation for sorting",
         },
       ],
       "dk5MainEntry": Object {
@@ -21,8 +25,15 @@ Object {
         "code": "FICTION",
         "display": "Dummy skønlitteratur",
       },
-      "genreAndForm": Array [],
-      "mainLanguages": Array [],
+      "genreAndForm": Array [
+        "Dummy some genre",
+      ],
+      "mainLanguages": Array [
+        Object {
+          "display": "Dummy dansk",
+          "isoCode": "Dummy dan",
+        },
+      ],
       "manifestations": Object {
         "all": Array [
           Object {
@@ -36,20 +47,16 @@ Object {
           },
         ],
         "first": Object {
-          "pid": "300101-katalog:28486006",
+          "pid": "800010-katalog:99121962154805763__1",
         },
         "latest": Object {
-          "pid": "870970-basis:29433909",
+          "pid": "800010-katalog:99121962154805763__1",
         },
       },
       "materialTypes": Array [
         Object {
           "general": "Dummy general type",
-          "specific": "Bog",
-        },
-        Object {
-          "general": "Dummy general type",
-          "specific": "Ebog",
+          "specific": "Dummy bog",
         },
       ],
       "series": Array [
@@ -92,23 +99,39 @@ Object {
       "subjects": Object {
         "all": Array [
           Object {
-            "display": "krimi",
+            "display": "Dummy Some fictional subject",
           },
           Object {
-            "display": "krimi",
+            "display": "Dummy 1950-1980",
           },
           Object {
-            "display": "småbørnsbog",
+            "display": "Dummy Jens Jensen",
+          },
+          Object {
+            "display": "Dummy Some Corporation",
           },
         ],
-        "dbcVerified": Array [],
+        "dbcVerified": Array [
+          Object {
+            "display": "Dummy Some fictional subject",
+          },
+          Object {
+            "display": "Dummy 1950-1980",
+          },
+          Object {
+            "display": "Dummy Jens Jensen",
+          },
+          Object {
+            "display": "Dummy Some Corporation",
+          },
+        ],
       },
       "titles": Object {
         "full": Array [
-          "Min kamp : roman. 1. bog",
+          "Dummy Some Title: Full",
         ],
         "main": Array [
-          "min kamp",
+          "Dummy Some Title",
         ],
         "original": Array [
           "Dummy Some Title Origintal",
@@ -130,7 +153,7 @@ Object {
       "workTypes": Array [
         "LITERATURE",
       ],
-      "workYear": "1988",
+      "workYear": "Dummy 1950",
     },
   },
 }
