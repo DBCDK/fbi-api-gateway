@@ -302,7 +302,7 @@ Object {
         },
       ],
       "shelfmark": Object {
-        "postfix": "Dummy some prefix",
+        "postfix": "Dummy some postfix",
         "shelfmark": "Dummy some shelfmark",
       },
       "source": Array [
