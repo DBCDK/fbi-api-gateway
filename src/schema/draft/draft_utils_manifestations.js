@@ -28,7 +28,7 @@ import translations from "../../utils/translations.json";
 export function manifestationToJed(manifestation) {
   const jedData = {};
   jedData.pid = manifestation.admindata.pid.$;
-  jedData.titles = jedTitles(manifestation);
+  /*jedData.titles = jedTitles(manifestation);
   jedData.abstract = manifestation.details?.abstract?.value?.$
     ? [manifestation.details.abstract.value.$]
     : [];
@@ -62,7 +62,7 @@ export function manifestationToJed(manifestation) {
   jedData.shelfmark = jedShelfMark(manifestation);
   jedData.subjects = jedSubjects(manifestation);
   jedData.volume = manifestation.details?.volume?.$ || null;
-  jedData.tableOfContents = jedTableOFContent(manifestation);
+  jedData.tableOfContents = jedTableOFContent(manifestation);*/
 
   return jedData;
 }
