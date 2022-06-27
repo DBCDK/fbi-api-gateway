@@ -353,7 +353,7 @@ export const FAKE_WORK = {
   creators: [FAKE_PERSON, FAKE_CORPORATION],
   dk5MainEntry: FAKE_DK5MAINENTRY,
   fictionNonfiction: { display: "Dummy skønlitteratur", code: "FICTION" },
-  materialTypes: FAKE_MATERIALTYPE,
+  materialTypes: [FAKE_MATERIALTYPE],
   series: [FAKE_POPULAR_SERIES, FAKE_GENERAL_SERIES],
   universe: { title: "Dummy Some Universe" },
   genreAndForm: ["Dummy some genre"],
