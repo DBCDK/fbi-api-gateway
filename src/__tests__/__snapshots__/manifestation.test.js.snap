@@ -250,8 +250,8 @@ Object {
         },
       ],
       "shelfmark": Object {
-        "postfix": "64.64",
-        "shelfmark": "gray",
+        "postfix": "gray",
+        "shelfmark": "64.64",
       },
       "source": Array [
         "Dummy some source",

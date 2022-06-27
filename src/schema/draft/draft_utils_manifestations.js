@@ -95,9 +95,11 @@ function jedShelfMark(manifestation) {
     return null;
   }
 
+  // Shelfmark is actually postfix - its switched up in openformat.
+  // We switch it back here, while we await the JED..
   const jedData = {
-    shelfmark: manifestation.details?.shelf?.shelfmark?.$ || "",
-    postfix: manifestation.details?.shelf?.prefix?.$ || "",
+    postfix: manifestation.details?.shelf?.shelfmark?.$ || "",
+    shelfmark: manifestation.details?.shelf?.prefix?.$ || "",
   };
   return { ...consts.FAKE_SHELFMARK, ...jedData };
 }
