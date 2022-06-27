@@ -5,7 +5,7 @@ Object {
   "data": Object {
     "manifestation": Object {
       "abstract": Array [
-        "Den ellers så pæne familie Didriksen går straks i aktion som detektiver, da det viser sig, at deres ret så usædvanlige hund er blevet kidnappet af en mistænkelig iskagemand!",
+        "Dummy Some abstract ...",
       ],
       "access": Array [
         Object {
@@ -37,10 +37,12 @@ Object {
             "display": "Dummy til børn",
           },
         ],
-        "generalAudience": Array [],
-        "let": null,
+        "generalAudience": Array [
+          "Dummy general audience",
+        ],
+        "let": "Dummy some let",
         "libraryRecommendation": "Dummy some library recommendation",
-        "lix": null,
+        "lix": "Dummy some lix",
         "primaryTarget": Array [
           "Dummy Some primary target",
         ],
@@ -53,10 +55,12 @@ Object {
       },
       "catalogueCodes": Object {
         "nationalBibliography": Array [
-          "DLF201207",
-          "BKM201207",
+          "Dummy DLF201207",
+          "Dummy BKM201207",
         ],
-        "otherCatalogues": Array [],
+        "otherCatalogues": Array [
+          "Dummy some other catalogue",
+        ],
       },
       "classifications": Array [
         Object {
@@ -66,7 +70,12 @@ Object {
           "system": "Dummy DK5",
         },
       ],
-      "contributors": Array [],
+      "contributors": Array [
+        Object {
+          "display": "Dummy Jens Jensen",
+          "nameSort": "Dummy Jensen Jens",
+        },
+      ],
       "contributorsFromDescription": Array [
         "Dummy på dansk ved Vivi Berendt",
       ],
@@ -80,12 +89,12 @@ Object {
       },
       "creators": Array [
         Object {
-          "display": "Kim Fupz Ꜳkeson",
-          "nameSort": "Kim Fupz Ꜳkeson",
+          "display": "Dummy Jens Jensen",
+          "nameSort": "Dummy Jensen Jens",
         },
         Object {
-          "display": "Peter Frödin",
-          "nameSort": "Peter Frödin",
+          "display": "Dummy Some Corporation",
+          "nameSort": "Dummy Some Corporation for sorting",
         },
       ],
       "creatorsFromDescription": Array [
@@ -93,33 +102,35 @@ Object {
       ],
       "edition": Object {
         "contributors": Array [],
-        "edition": "1. udgave",
+        "edition": "Dummy 3. i.e. 2 udgave",
         "publicationYear": Object {
-          "display": "2020",
+          "display": "Dummy 2005",
           "endYear": null,
           "frequency": null,
-          "year": 2020,
+          "year": 2005,
         },
-        "summary": "1. udgave, Kronstork, 2020",
+        "summary": "Dummy 3. i.e. 2 udgave, 2005",
       },
-      "genreAndForm": Array [],
+      "genreAndForm": Array [
+        "Dummy some genre",
+      ],
       "hostPublication": Object {
         "creator": "Dummy Some Creator",
         "isbn": "Dummy some isbn",
-        "issn": "",
-        "issue": "Årg. 97, nr. 10 (2014)",
+        "issn": "Dummy 1395-7961",
+        "issue": "Dummy some issue",
         "notes": Array [
           "Dummy a note",
         ],
-        "pages": "",
-        "publisher": "Dansk veterinærtidsskrift",
+        "pages": "Dummy 140-145",
+        "publisher": "Dummy Some Publisher",
         "series": Object {
           "title": "Dummy Some Series",
         },
-        "summary": "I: Dansk veterinærtidsskrift, Årg. 97, nr. 10 (2014), 2014",
-        "title": "Dansk veterinærtidsskrift",
+        "summary": "Dummy Årsskrift / Carlsbergfondet, 2006",
+        "title": "Dummy Årsskrift / Carlsbergfondet",
         "year": Object {
-          "display": "",
+          "display": "Dummy 2006",
         },
       },
       "identifiers": Array [
@@ -135,7 +146,12 @@ Object {
             "isoCode": "Dummy dan",
           },
         ],
-        "main": Array [],
+        "main": Array [
+          Object {
+            "display": "Dummy dansk",
+            "isoCode": "Dummy dan",
+          },
+        ],
         "original": Array [
           Object {
             "display": "Dummy dansk",
@@ -148,8 +164,18 @@ Object {
             "isoCode": "Dummy dan",
           },
         ],
-        "spoken": Array [],
-        "subtitles": Array [],
+        "spoken": Array [
+          Object {
+            "display": "Dummy dansk",
+            "isoCode": "Dummy dan",
+          },
+        ],
+        "subtitles": Array [
+          Object {
+            "display": "Dummy dansk",
+            "isoCode": "Dummy dan",
+          },
+        ],
       },
       "latestPrinting": Object {
         "printing": "Dummy 11. oplag",
@@ -159,17 +185,43 @@ Object {
         "summary": "Dummy 11. oplag, 2020",
       },
       "manifestationParts": Object {
-        "heading": "",
-        "parts": Array [],
+        "heading": "Dummy Indhold:",
+        "parts": Array [
+          Object {
+            "classifications": Array [
+              Object {
+                "code": "Dummy 78.424",
+              },
+            ],
+            "creators": Array [
+              Object {
+                "display": "Dummy H. C. Lumbye",
+              },
+            ],
+            "creatorsFromDescription": Array [
+              "Dummy arr.: Peter Ettrup Larsen",
+            ],
+            "subjects": null,
+            "title": "Dummy Bouquet royal",
+          },
+        ],
         "type": "MUSIC_TRACKS",
       },
       "materialTypes": Array [
         Object {
-          "general": "Lydbog (cd)",
-          "specific": "Lydbog (cd)",
+          "general": "Dummy general type",
+          "specific": "Dummy bog",
         },
       ],
-      "notes": Array [],
+      "notes": Array [
+        Object {
+          "display": Array [
+            "Dummy Indspillet i Ꜳrhus Musikhus 12.-14. juni 2020",
+          ],
+          "heading": null,
+          "type": "NOT_SPECIFIED",
+        },
+      ],
       "physicalDescriptions": Array [
         Object {
           "accompanyingMaterial": null,
@@ -180,16 +232,16 @@ Object {
           "playingTime": null,
           "requirements": "Dummy Nødvendigt udstyr Xbox One. - Med multiplayerfunktion",
           "size": null,
-          "summary": "1 cd i 1 mappe (67 min.)",
+          "summary": "Dummy 1 dvd-rom Xbox One Nødvendigt udstyr Xbox One. - Med multiplayerfunktion Spiludvikler fremgår ikke af materialet",
           "technicalInformation": "Dummy Xbox One",
         },
       ],
       "pid": "870970-basis:29433909",
       "publicationYear": Object {
-        "display": "2020",
+        "display": "Dummy 1839",
       },
       "publisher": Array [
-        "Kronstork",
+        "Dummy Lægeforeningen",
       ],
       "relatedPublications": Array [
         Object {
@@ -250,8 +302,8 @@ Object {
         },
       ],
       "shelfmark": Object {
-        "postfix": "gray",
-        "shelfmark": "64.64",
+        "postfix": "Dummy some prefix",
+        "shelfmark": "Dummy some shelfmark",
       },
       "source": Array [
         "Dummy some source",
@@ -259,16 +311,16 @@ Object {
       "subjects": Object {
         "all": Array [
           Object {
-            "display": "sjove bøger",
+            "display": "Dummy Some fictional subject",
           },
           Object {
-            "display": "krimi",
+            "display": "Dummy 1950-1980",
           },
           Object {
-            "display": "hunde",
+            "display": "Dummy Jens Jensen",
           },
           Object {
-            "display": "bortførelse",
+            "display": "Dummy Some Corporation",
           },
         ],
         "dbcVerified": Array [
@@ -291,13 +343,13 @@ Object {
         "heading": "Dummy Indhold",
         "listOfContent": Array [
           Object {
-            "content": "Jeg bor i Hvidovre ",
+            "content": null,
           },
           Object {
-            "content": " Jeg fremlejer en lejlighed ",
+            "content": "Dummy Tykke-Olsen m.fl.",
           },
           Object {
-            "content": " Modsætningen mellem",
+            "content": "Dummy Over skulderen",
           },
         ],
       },
@@ -305,12 +357,16 @@ Object {
         "alternative": Array [
           "Dummy Some Title: Alternative",
         ],
-        "full": Array [],
+        "full": Array [
+          "Dummy Some Title: Full",
+        ],
         "identifyingAddition": "Dummy Indlæst af Jens Jensen",
         "main": Array [
-          "Didriksen detektiverne",
+          "Dummy Some Title",
         ],
-        "original": Array [],
+        "original": Array [
+          "Dummy Some Title: Original",
+        ],
         "parallel": Array [
           "Dummy Parallel Title 1",
           "Parallel Title 2",
@@ -321,7 +377,7 @@ Object {
           "Dummy En Oversat Titel",
         ],
       },
-      "volume": null,
+      "volume": "Dummy Bind 2",
     },
   },
 }
