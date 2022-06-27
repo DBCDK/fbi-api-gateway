@@ -232,7 +232,7 @@ export const FAKE_PUBLICATIONYEAR = {
 };
 
 export const FAKE_SHELFMARK = {
-  postfix: "Dummy some prefix",
+  postfix: "Dummy some postfix",
   shelfmark: "Dummy some shelfmark",
 };
 
