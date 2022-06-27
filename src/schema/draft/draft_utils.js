@@ -34,8 +34,9 @@ export function workToJed(
   jedData.workYear = manifestationToWorkYear(manifestation);
 
   jedData.mainLanguages = manifestationToMainLanguages(manifestation, language);
+   */
   jedData.relations = originalData?.work?.relations;
-*/
+
   jedData.manifestations = {
     all: allManifestations,
     first: firstManifestation(allManifestations),
