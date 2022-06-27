@@ -18,7 +18,7 @@ export function workToJed(
   const jedData = {};
 
   jedData.workId = originalData?.work.workId;
-  jedData.abstract = originalData?.work.description
+  /*jedData.abstract = originalData?.work.description
     ? [originalData?.work.description]
     : null;
 
@@ -34,6 +34,7 @@ export function workToJed(
   jedData.workYear = manifestationToWorkYear(manifestation);
 
   jedData.mainLanguages = manifestationToMainLanguages(manifestation, language);
+   */
   jedData.relations = originalData?.work?.relations;
 
   jedData.manifestations = {
