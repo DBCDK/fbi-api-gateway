@@ -151,3 +151,29 @@ Compared to getting the _works_, _facets_ are more expensive to generate.
 
 Split the search for _works_ and _facets_ into two requests and send them in parallel. Then the _works_
 can be shown to the user as quickly as possible.
+
+## Did You Mean
+
+You can fetch a list of alternative _did you mean_ queries. The user may have misspelled
+something, which results in a low number of results, or results that are not useful.
+
+The score is a value between 0 and 1 and can be used to determine if a query suggestion
+should be displayed.
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
+    search(q: $q) {
+      hitcount
+      works(offset: $offset, limit: $limit) {
+        titles {
+          main
+        }
+      }
+      didYouMean {
+        query
+        score
+      }
+    }
+  }`}
+  variables={{ q: { all: "some query" }, offset: 0, limit: 1 }}
+/>
