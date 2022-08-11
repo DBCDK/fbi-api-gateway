@@ -1197,6 +1197,17 @@ type SearchResponse {
   This may take seconds to complete
   \\"\\"\\"
   facets(facets: [FacetField!]!): [FacetResult!]!
+
+  \\"\\"\\"A list of alternative search queries\\"\\"\\"
+  didYouMean: [DidYouMean!]!
+}
+
+type DidYouMean {
+  \\"\\"\\"An alternative query\\"\\"\\"
+  query: String!
+
+  \\"\\"\\"A probability score between 0-1 indicating how relevant the query is\\"\\"\\"
+  score: Float!
 }
 "
 `;

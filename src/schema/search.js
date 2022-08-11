@@ -128,6 +128,23 @@ type SearchResponse {
   This may take seconds to complete
   """
   facets(facets: [FacetField!]!): [FacetResult!]!
+
+  """
+  A list of alternative search queries
+  """
+  didYouMean: [DidYouMean!]!
+}
+
+type DidYouMean {
+  """
+  An alternative query
+  """
+  query: String!
+
+  """
+  A probability score between 0-1 indicating how relevant the query is
+  """
+  score: Float!
 }
 `;
 
@@ -154,6 +171,13 @@ export const resolvers = {
     },
   },
   SearchResponse: {
+    didYouMean() {
+      return [
+        { query: "some alternative query 1", score: 0.8 },
+        { query: "some alternative query 2", score: 0.65 },
+        { query: "some alternative query 3", score: 0.2 },
+      ];
+    },
     async hitcount(parent, args, context) {
       const res = await context.datasources.simplesearch.load({
         ...parent,
