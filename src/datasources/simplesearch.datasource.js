@@ -17,7 +17,6 @@ export async function load({
 }) {
   const { agency, name } = profile;
 
-  console.log({ holdingsFilters });
   // get parsed arguments for query
   // static parameters for the search
   const statics = {
