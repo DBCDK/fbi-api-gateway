@@ -28,7 +28,7 @@ type Query {
   user: User!
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
+  search(q: SearchQuery!, filters: SearchFilters, holdingsFilters: HoldingsFilters): SearchResponse!
 
   localSuggest(
     """
@@ -246,9 +246,8 @@ export const resolvers = {
       return args;
     },
     async branches(parent, args, context, info) {
-      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
+      const digitalAccessSubscriptions =
+        await context.datasources.statsbiblioteketSubscribers.load("");
       const infomediaSubscriptions = await context.datasources.idp.load("");
       return await context.datasources.library.load({
         q: args.q,
@@ -331,9 +330,8 @@ export const resolvers = {
       let { userName, userMail } = args.input;
 
       // Fetch and check existence of branch
-      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
+      const digitalAccessSubscriptions =
+        await context.datasources.statsbiblioteketSubscribers.load("");
       const infomediaSubscriptions = await context.datasources.idp.load("");
       const branch = (
         await context.datasources.library.load({
@@ -383,9 +381,8 @@ export const resolvers = {
       }
 
       // Agency must be subscribed
-      const subscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
+      const subscriptions =
+        await context.datasources.statsbiblioteketSubscribers.load("");
       if (!subscriptions[branch.agencyId]) {
         return {
           status: "ERROR_AGENCY_NOT_SUBSCRIBED",
@@ -427,9 +424,8 @@ export const resolvers = {
       }
     },
     async submitOrder(parent, args, context, info) {
-      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
+      const digitalAccessSubscriptions =
+        await context.datasources.statsbiblioteketSubscribers.load("");
       const infomediaSubscriptions = await context.datasources.idp.load("");
       const input = {
         ...args.input,
