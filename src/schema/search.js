@@ -75,6 +75,29 @@ input SearchFilters {
 }
 
 """
+Holdings Filters
+"""
+input HoldingsFilters {
+  branchId: [String!]
+  department: [String!]
+  location: [String!]
+  sublocation: [String!]
+  status: [HoldingsStatus!]
+}
+
+enum HoldingsStatus {
+  """
+  Holding is physically available at the branch
+  """
+  OnShelf
+
+  """
+  Holding is on loan
+  """
+  OnLoan
+}
+
+"""
 A facet value consists of a term and a count.
 """
 type FacetValue {

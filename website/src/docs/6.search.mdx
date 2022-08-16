@@ -177,3 +177,36 @@ should be displayed.
   }`}
   variables={{ q: { all: "some query" }, offset: 0, limit: 1 }}
 />
+
+## Holdings Filters
+
+In the following example we only include works that are on the shelf in a specific branch.
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!, $holdingsFilters: HoldingsFilters!) {
+  search(q: $q, holdingsFilters: $holdingsFilters) {
+    hitcount
+    works(offset: $offset, limit: $limit) {
+      titles {
+        main
+      }
+    }
+    facets(facets: [workTypes]) {
+      name
+      values(limit: 10) {
+        key
+        term
+        score
+      }
+    }
+  }
+}`}
+  variables={{
+    q: {
+      all: "Harry",
+    },
+    holdingsFilters: { branchId: ["775122"], status: ["OnShelf"] },
+    offset: 0,
+    limit: 5,
+  }}
+/>

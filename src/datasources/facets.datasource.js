@@ -7,7 +7,13 @@ import config from "../config";
 
 const { url, prefix, ttl, token } = config.datasources.facets;
 
-export async function load({ q, filters, facets = [], profile }) {
+export async function load({
+  q,
+  filters,
+  holdingsFilters,
+  facets = [],
+  profile,
+}) {
   const { agency, name } = profile;
   // get parsed arguments for query
   // static parameters for the search
@@ -22,6 +28,7 @@ export async function load({ q, filters, facets = [], profile }) {
   const query = {
     q,
     filters,
+    holdingsFilter: holdingsFilters,
     facets,
     ...statics,
   };

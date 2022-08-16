@@ -1078,7 +1078,7 @@ type Query {
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
+  search(q: SearchQuery!, filters: SearchFilters, holdingsFilters: HoldingsFilters): SearchResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
@@ -1159,6 +1159,23 @@ input SearchFilters {
   materialTypes: [String!]
   subjects: [String!]
   workTypes: [String!]
+}
+
+\\"\\"\\"Holdings Filters\\"\\"\\"
+input HoldingsFilters {
+  branchId: [String!]
+  department: [String!]
+  location: [String!]
+  sublocation: [String!]
+  status: [HoldingsStatus!]
+}
+
+enum HoldingsStatus {
+  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
+  OnShelf
+
+  \\"\\"\\"Holding is on loan\\"\\"\\"
+  OnLoan
 }
 
 \\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
