@@ -559,7 +559,7 @@ export async function resolveOnlineAccess(pid, context) {
   }
 
   // ILL
-  const requestbutton = manifestation.admindata.requestButton.$;
+  const requestbutton = manifestation?.admindata?.requestButton?.$;
   result.push({
     __typename: "InterLibraryLoan",
     loanIsPossible: requestbutton === "true",

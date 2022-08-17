@@ -11,3 +11,10 @@ export async function load({ accessToken }) {
     )
   ).body;
 }
+
+export const options = {
+  redis: {
+    prefix: "smaug-1",
+    ttl: 10, // 10 seconds
+  },
+};

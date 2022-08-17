@@ -392,15 +392,17 @@ export async function resolveWork(args, context) {
 
   // A manifestation that may have original publication year and stuff
   // that may be needed on the work
-  const manifestation = await context.datasources.openformat.load(
-    id.replace("work-of:", "")
-  );
+  // const manifestation = await context.datasources.openformat.load(
+  //   id.replace("work-of:", "")
+  // );
+
   const allPids = res?.work?.groups.map((group) => {
     return (
       group.records.find((record) => record.id.startsWith("870970-basis"))
         ?.id || group.records[0].id
     );
   });
+  const manifestation = { pid: allPids[0] };
   const allManifestations = await resolveAllManifestations(allPids, context);
 
   let realData = [];
@@ -429,11 +431,11 @@ export async function resolveManifestation(args, context) {
     pid = (await context.datasources.faust.load(args.faust)).pid;
   }
 
-  const manifestation = await context.datasources.openformat.load(pid);
-  if (!manifestation) {
-    return null;
-  }
+  // const manifestation = await context.datasources.openformat.load(pid);
+  // if (!manifestation) {
+  //   return null;
+  // }
 
-  const realData = manifestationToJed(manifestation);
-  return { ...consts.FAKE_MANIFESTATION_1, ...realData };
+  // const realData = manifestationToJed(manifestation);
+  return { ...consts.FAKE_MANIFESTATION_1, pid };
 }

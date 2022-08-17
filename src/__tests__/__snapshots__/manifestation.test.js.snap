@@ -10,7 +10,7 @@ Object {
       "access": Array [
         Object {
           "__typename": "InterLibraryLoan",
-          "loanIsPossible": true,
+          "loanIsPossible": false,
         },
       ],
       "accessTypes": Array [
@@ -236,7 +236,7 @@ Object {
           "technicalInformation": "Dummy Xbox One",
         },
       ],
-      "pid": "870970-basis:29433909",
+      "pid": "870970-basis:26521556",
       "publicationYear": Object {
         "display": "Dummy 1839",
       },
@@ -387,7 +387,7 @@ exports[`Manifestation fetch by faust 1`] = `
 Object {
   "data": Object {
     "manifestation": Object {
-      "pid": "870970-basis:29433909",
+      "pid": "870970-basis:26521556",
     },
   },
 }
@@ -397,7 +397,7 @@ exports[`Manifestation fetch by pid 1`] = `
 Object {
   "data": Object {
     "manifestation": Object {
-      "pid": "870970-basis:29433909",
+      "pid": "870970-basis:26521556",
     },
   },
 }
@@ -408,7 +408,7 @@ Object {
   "data": Object {
     "manifestations": Array [
       Object {
-        "pid": "870970-basis:29433909",
+        "pid": "870970-basis:26521556",
       },
     ],
   },
@@ -420,7 +420,7 @@ Object {
   "data": Object {
     "manifestations": Array [
       Object {
-        "pid": "870970-basis:29433909",
+        "pid": "870970-basis:26521556",
       },
     ],
   },
