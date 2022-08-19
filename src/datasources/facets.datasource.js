@@ -14,7 +14,7 @@ const HOLDINGS_FILTERS = [
   "sublocation",
   "status",
 ];
-export async function load({ q, filters, facets = [], profile }) {
+export async function load({ q, filters = {}, facets = [], profile }) {
   // We split filters into holdingsFilters and otherFilters.
   // This is temprorary until simplesearch have holdingsFilter in filters
   const holdingsFilter = {};

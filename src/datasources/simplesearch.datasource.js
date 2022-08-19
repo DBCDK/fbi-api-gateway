@@ -15,7 +15,13 @@ const HOLDINGS_FILTERS = [
   "status",
 ];
 
-export async function load({ q, filters, limit = 10, offset = 0, profile }) {
+export async function load({
+  q,
+  filters = {},
+  limit = 10,
+  offset = 0,
+  profile,
+}) {
   const { agency, name } = profile;
 
   // We split filters into holdingsFilters and otherFilters.
