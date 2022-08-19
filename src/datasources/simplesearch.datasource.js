@@ -7,15 +7,28 @@ import config from "../config";
 
 const { url, prefix, ttl, token } = config.datasources.simplesearch;
 
-export async function load({
-  q,
-  filters,
-  holdingsFilters,
-  limit = 10,
-  offset = 0,
-  profile,
-}) {
+const HOLDINGS_FILTERS = [
+  "branchId",
+  "department",
+  "location",
+  "sublocation",
+  "status",
+];
+
+export async function load({ q, filters, limit = 10, offset = 0, profile }) {
   const { agency, name } = profile;
+
+  // We split filters into holdingsFilters and otherFilters.
+  // This is temprorary until simplesearch have holdingsFilter in filters
+  const holdingsFilter = {};
+  const otherFilters = {};
+  Object.entries(filters).forEach(([key, val]) => {
+    if (HOLDINGS_FILTERS.includes(key)) {
+      holdingsFilter[key] = val;
+    } else {
+      otherFilters[key] = val;
+    }
+  });
 
   // get parsed arguments for query
   // static parameters for the search
@@ -27,8 +40,8 @@ export async function load({
   // merge variables and statics
   const query = {
     q,
-    filters,
-    holdingsFilter: holdingsFilters,
+    filters: otherFilters,
+    holdingsFilter,
     start: offset,
     rows: limit,
     ...statics,

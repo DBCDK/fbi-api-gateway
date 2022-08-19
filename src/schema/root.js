@@ -28,7 +28,7 @@ type Query {
   user: User!
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters, holdingsFilters: HoldingsFilters): SearchResponse!
+  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
 
   localSuggest(
     """

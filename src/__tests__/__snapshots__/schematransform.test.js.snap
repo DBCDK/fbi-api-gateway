@@ -1078,7 +1078,7 @@ type Query {
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters, holdingsFilters: HoldingsFilters): SearchResponse!
+  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
@@ -1159,10 +1159,6 @@ input SearchFilters {
   materialTypes: [String!]
   subjects: [String!]
   workTypes: [String!]
-}
-
-\\"\\"\\"Holdings Filters\\"\\"\\"
-input HoldingsFilters {
   branchId: [String!]
   department: [String!]
   location: [String!]

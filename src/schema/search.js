@@ -72,12 +72,7 @@ input SearchFilters {
   materialTypes: [String!]
   subjects: [String!]
   workTypes: [String!]
-}
 
-"""
-Holdings Filters
-"""
-input HoldingsFilters {
   branchId: [String!]
   department: [String!]
   location: [String!]

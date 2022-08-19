@@ -183,8 +183,8 @@ should be displayed.
 In the following example we only include works that are on the shelf in a specific branch.
 
 <InlineGraphiQL
-  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!, $holdingsFilters: HoldingsFilters!) {
-  search(q: $q, holdingsFilters: $holdingsFilters) {
+  query={`query ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!, $filters: SearchFilters!) {
+  search(q: $q, filters: $filters) {
     hitcount
     works(offset: $offset, limit: $limit) {
       titles {
@@ -205,7 +205,7 @@ In the following example we only include works that are on the shelf in a specif
     q: {
       all: "Harry",
     },
-    holdingsFilters: { branchId: ["775122"], status: ["OnShelf"] },
+    filters: { branchId: ["775122"], status: ["OnShelf"] },
     offset: 0,
     limit: 5,
   }}
