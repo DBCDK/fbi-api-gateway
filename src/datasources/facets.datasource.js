@@ -7,26 +7,7 @@ import config from "../config";
 
 const { url, prefix, ttl, token } = config.datasources.facets;
 
-const HOLDINGS_FILTERS = [
-  "branchId",
-  "department",
-  "location",
-  "sublocation",
-  "status",
-];
 export async function load({ q, filters = {}, facets = [], profile }) {
-  // We split filters into holdingsFilters and otherFilters.
-  // This is temprorary until simplesearch have holdingsFilter in filters
-  const holdingsFilter = {};
-  const otherFilters = {};
-  Object.entries(filters).forEach(([key, val]) => {
-    if (HOLDINGS_FILTERS.includes(key)) {
-      holdingsFilter[key] = val;
-    } else {
-      otherFilters[key] = val;
-    }
-  });
-
   const { agency, name } = profile;
   // get parsed arguments for query
   // static parameters for the search
@@ -40,8 +21,7 @@ export async function load({ q, filters = {}, facets = [], profile }) {
   // merge variables and statics
   const query = {
     q,
-    filters: otherFilters,
-    holdingsFilter,
+    filters,
     facets,
     ...statics,
   };
