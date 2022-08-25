@@ -9,6 +9,7 @@
       "works",
       "search",
       "suggest",
+      "complexSearch",
       "localSuggest",
       "recommend",
       "infomedia",

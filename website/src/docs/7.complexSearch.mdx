@@ -1,0 +1,27 @@
+# Complex Search
+
+Complex search has support for CQL queries.
+
+Currently, it uses simplesearch under the hood. The CQL query is handled as q.all,
+meaning you can't actually use the CQL syntax and expect to get something meaningful back.
+
+<InlineGraphiQL
+  query={`query ($q: ComplexSearchQuery!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!) {
+  complexSearch(q: $q, filters: $filters) {
+    hitcount
+    works(offset: $offset, limit: $limit) {
+      titles {
+        main
+      }
+    }
+  }
+}`}
+  variables={{
+    q: {
+      cql: "Harry",
+    },
+    filters: { branchId: ["775122"], status: ["OnShelf"] },
+    offset: 0,
+    limit: 5,
+  }}
+/>

@@ -1,7 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`default schema transform 1`] = `
-"type Cover {
+"\\"\\"\\"Search Filters\\"\\"\\"
+input ComplexSearchFilters {
+  branchId: [String!]
+  department: [String!]
+  location: [String!]
+  sublocation: [String!]
+  status: [HoldingsStatus!]
+}
+
+\\"\\"\\"Search query\\"\\"\\"
+input ComplexSearchQuery {
+  cql: String!
+}
+
+\\"\\"\\"The search response\\"\\"\\"
+type ComplexSearchResponse {
+  \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"
+  The works matching the given search query. Use offset and limit for pagination.
+  \\"\\"\\"
+  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+}
+
+type Cover {
   detail_117: String
   detail_207: String
   detail_42: String
@@ -1079,6 +1104,7 @@ type Query {
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
+  complexSearch(q: ComplexSearchQuery!, filters: ComplexSearchFilters): ComplexSearchResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!

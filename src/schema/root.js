@@ -29,6 +29,7 @@ type Query {
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
+  complexSearch(q: ComplexSearchQuery!, filters: ComplexSearchFilters): ComplexSearchResponse!
 
   localSuggest(
     """
@@ -91,6 +92,32 @@ type Mutation {
   deleteSession: String!
 }`;
 
+function translateFilters(filters) {
+  const res = {};
+
+  // Reverse translate facet terms
+  Object.entries(filters).forEach(([filter, values]) => {
+    res[filter] = [];
+
+    // Get entries for the filter/facet in an array
+    const filterTranslations =
+      translations.facets[filter] &&
+      Object.entries(translations.facets[filter]);
+
+    // Loop through each of the provided filters
+    values.forEach((value) => {
+      // Find a translation for a given value, (could be 'Dansk')
+      const found = filterTranslations?.find(
+        ([key, translation]) => translation.da === value
+      );
+
+      // Push the key for the filter (could be 'dan' if filter was 'Dansk')
+      // or if we do not have a translation, use the provided value
+      res[filter].push(found ? found[0] : value);
+    });
+  });
+  return res;
+}
 /**
  * Root resolvers
  */
@@ -217,29 +244,17 @@ export const resolvers = {
     },
     async search(parent, args, context, info) {
       if (args.filters) {
-        const filters = {};
+        const filters = translateFilters(args.filters);
 
-        // Reverse translate facet terms
-        Object.entries(args.filters).forEach(([filter, values]) => {
-          filters[filter] = [];
+        return { ...args, filters };
+      }
 
-          // Get entries for the filter/facet in an array
-          const filterTranslations =
-            translations.facets[filter] &&
-            Object.entries(translations.facets[filter]);
+      return args;
+    },
+    async complexSearch(parent, args, context, info) {
+      if (args.filters) {
+        const filters = translateFilters(args.filters);
 
-          // Loop through each of the provided filters
-          values.forEach((value) => {
-            // Find a translation for a given value, (could be 'Dansk')
-            const found = filterTranslations?.find(
-              ([key, translation]) => translation.da === value
-            );
-
-            // Push the key for the filter (could be 'dan' if filter was 'Dansk')
-            // or if we do not have a translation, use the provided value
-            filters[filter].push(found ? found[0] : value);
-          });
-        });
         return { ...args, filters };
       }
 
