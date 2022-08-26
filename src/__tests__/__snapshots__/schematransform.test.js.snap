@@ -10,11 +10,6 @@ input ComplexSearchFilters {
   status: [HoldingsStatus!]
 }
 
-\\"\\"\\"Search query\\"\\"\\"
-input ComplexSearchQuery {
-  cql: String!
-}
-
 \\"\\"\\"The search response\\"\\"\\"
 type ComplexSearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
@@ -1104,7 +1099,7 @@ type Query {
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
-  complexSearch(q: ComplexSearchQuery!, filters: ComplexSearchFilters): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!

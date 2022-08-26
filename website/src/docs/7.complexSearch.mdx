@@ -6,8 +6,8 @@ Currently, it uses simplesearch under the hood. The CQL query is handled as q.al
 meaning you can't actually use the CQL syntax and expect to get something meaningful back.
 
 <InlineGraphiQL
-  query={`query ($q: ComplexSearchQuery!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!) {
-  complexSearch(q: $q, filters: $filters) {
+  query={`query ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!) {
+  complexSearch(cql: $cql, filters: $filters) {
     hitcount
     works(offset: $offset, limit: $limit) {
       titles {
@@ -17,9 +17,7 @@ meaning you can't actually use the CQL syntax and expect to get something meanin
   }
 }`}
   variables={{
-    q: {
-      cql: "Harry",
-    },
+    cql: "Harry",
     filters: { branchId: ["775122"], status: ["OnShelf"] },
     offset: 0,
     limit: 5,

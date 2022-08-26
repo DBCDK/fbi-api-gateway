@@ -29,7 +29,7 @@ type Query {
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
-  complexSearch(q: ComplexSearchQuery!, filters: ComplexSearchFilters): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
 
   localSuggest(
     """

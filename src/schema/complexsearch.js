@@ -13,14 +13,6 @@ input ComplexSearchFilters {
 }
 
 """
-Search query
-"""
-input ComplexSearchQuery {
-  cql: String!
-}
-
-
-"""
 The search response
 """
 type ComplexSearchResponse {
@@ -40,7 +32,7 @@ export const resolvers = {
   ComplexSearchResponse: {
     async hitcount(parent, args, context) {
       const res = await context.datasources.simplesearch.load({
-        q: { all: parent.q.cql },
+        q: { all: parent.cql },
         filters: parent.filters,
         profile: context.profile,
       });
@@ -49,7 +41,7 @@ export const resolvers = {
     },
     async works(parent, args, context) {
       const res = await context.datasources.simplesearch.load({
-        q: { all: parent.q.cql },
+        q: { all: parent.cql },
         filters: parent.filters,
         ...args,
         profile: context.profile,
