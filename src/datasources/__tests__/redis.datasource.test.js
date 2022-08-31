@@ -59,7 +59,7 @@ describe("Testing the withRedis higher order function", () => {
     const prefixedKeys = ["prefix_a", "prefix_b", "prefix_c"];
 
     // All values are in Redis
-    const mgetReturn = ["a_res", "b_res", "c_res"];
+    const mgetReturn = [{ val: "a_res" }, { val: "b_res" }, { val: "c_res" }];
 
     // These are the keys missing
     const missingKeys = [];
@@ -92,7 +92,7 @@ describe("Testing the withRedis higher order function", () => {
     const prefixedKeys = ["prefix_a", "prefix_b", "prefix_c"];
 
     // Some values are not found in Redis
-    const mgetReturn = [null, "b_res", null];
+    const mgetReturn = [null, { val: "b_res" }, null];
 
     // These are the keys missing
     const missingKeys = ["a", "c"];
