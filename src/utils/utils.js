@@ -381,38 +381,13 @@ export async function resolveWork(args, context) {
   if (!id) {
     return null;
   }
-  const res = await context.datasources.workservice.load({
+
+  const w = await context.datasources.jedWork.load({
     workId: id,
     profile: context.profile,
   });
 
-  if (!res) {
-    return null;
-  }
-
-  // A manifestation that may have original publication year and stuff
-  // that may be needed on the work
-  // const manifestation = await context.datasources.openformat.load(
-  //   id.replace("work-of:", "")
-  // );
-
-  const allPids = res?.work?.groups.map((group) => {
-    return (
-      group.records.find((record) => record.id.startsWith("870970-basis"))
-        ?.id || group.records[0].id
-    );
-  });
-  const manifestation = { pid: allPids[0] };
-  const allManifestations = await resolveAllManifestations(allPids, context);
-
-  let realData = [];
-  try {
-    realData = workToJed(res, manifestation, allManifestations, args.language);
-  } catch (e) {
-    console.log(e);
-  }
-
-  return { ...consts.FAKE_WORK, ...realData };
+  return { ...consts.FAKE_WORK, ...w?.data?.work };
 }
 
 export async function resolveAllManifestations(pids, context) {
