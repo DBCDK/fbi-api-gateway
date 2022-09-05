@@ -435,6 +435,7 @@ type Manifestations {
   first: Manifestation!
   latest: Manifestation!
   all: [Manifestation!]!
+  bestRepresentation: Manifestation!
 }
 type Manifestation {
   """

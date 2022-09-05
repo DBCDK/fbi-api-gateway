@@ -39,6 +39,7 @@ export function workToJed(
 
   jedData.manifestations = {
     all: allManifestations,
+    bestRepresentation: firstManifestation(allManifestations),
     first: firstManifestation(allManifestations),
     latest: firstManifestation(allManifestations, false),
   };
