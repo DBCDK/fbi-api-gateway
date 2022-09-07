@@ -507,8 +507,6 @@ export async function resolveOnlineAccess(pid, context) {
   // online access with url
   const data = getArray(manifestation, "details.onlineAccess");
   data.forEach((entry) => {
-    console.log(entry, "ENTRY");
-
     if (entry.value) {
       // hold origin
       const tmpOrigin = parseOnlineUrlToOrigin(
