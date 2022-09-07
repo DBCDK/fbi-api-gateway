@@ -16,7 +16,7 @@
  */
 
 import * as consts from "./FAKE";
-import { getArray, getBaseUrl } from "../../utils/utils";
+import { getArray } from "../../utils/utils";
 import { collectSubFields } from "@graphql-tools/utils";
 import translations from "../../utils/translations.json";
 
