@@ -474,7 +474,7 @@ function parseForMunicipalityNumber(agencyId) {
  * @param user
  * @returns {*}
  */
-function getRealUrl(url, user) {
+function getProxyUrl(url, user) {
   const proxyurl = "https://bib<kommunenummer>.bibbaser.dk/login?url=";
   if (url.indexOf("ebookcentral") !== -1) {
     // check if user is logged in
@@ -509,25 +509,25 @@ export async function resolveOnlineAccess(pid, context) {
   data.forEach((entry) => {
     if (entry.value) {
       // hold origin
-      const tmpOrigin = parseOnlineUrlToOrigin(
+      const Origin = parseOnlineUrlToOrigin(
         (entry.value.link && entry.value.link.$) || ""
       );
 
       // hold url
-      const tmpUrl = getRealUrl(
+      const proxyUrl = getProxyUrl(
         (entry.value.link && entry.value.link.$) || "",
         context.smaug?.user
       );
 
       // hold loginRequired
-      const tmpLoginRequired = tmpUrl.indexOf("ebookcentral") !== -1;
+      const loginRequired = tmpUrl.indexOf("ebookcentral") !== -1;
 
       result.push({
         __typename: "AccessUrl",
-        origin: tmpOrigin,
-        url: tmpUrl,
+        origin: Origin,
+        url: proxyUrl,
         note: (entry.value.note && entry.value.note.$) || "",
-        loginRequired: tmpLoginRequired,
+        loginRequired: loginRequired,
         //accessType: (entry.accessUrlDisplay && entry.accessUrlDisplay.$) || "",
       });
     }
