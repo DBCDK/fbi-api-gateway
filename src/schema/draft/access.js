@@ -38,10 +38,20 @@ type AccessUrl {
   """
   origin: String!
 
-      """
+  """
   The url where manifestation is located
   """
   url: String!
+  
+  """
+  Notes for the resource
+  """
+  note: String
+  
+  """
+  If the resource requires login
+  """
+  loginRequired: Boolean!
 }
 type InterLibraryLoan {
   """
