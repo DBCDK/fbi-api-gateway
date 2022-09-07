@@ -16,7 +16,7 @@
  */
 
 import * as consts from "./FAKE";
-import { getArray } from "../../utils/utils";
+import { getArray, getBaseUrl } from "../../utils/utils";
 import { collectSubFields } from "@graphql-tools/utils";
 import translations from "../../utils/translations.json";
 
@@ -460,6 +460,35 @@ function parseAudienceAges(audience) {
 }
 
 /**
+ * municipality number is the second|third|fourth digit in agencyId
+ * @param agencyId
+ * @returns {string | undefined}
+ */
+function parseForMunicipalityNumber(agencyId) {
+  return agencyId?.substring(1, 4);
+}
+
+/**
+ * This one is for ebook.plus - we need to go via a proxy url (if user is logged in)
+ * @param url
+ * @param user
+ * @returns {*}
+ */
+function getRealUrl(url, user) {
+  const proxyurl = "https://bib<kommunenummer>.bibbaser.dk/login?url=";
+  if (url.indexOf("ebookcentral") !== -1) {
+    // check if user is logged in
+    if (user?.uniqueId) {
+      const realUrl = `https://bib${parseForMunicipalityNumber(
+        user?.agency
+      )}.bibbaser.dk/login?url=${url}`;
+      return realUrl;
+    }
+  }
+  return url;
+}
+
+/**
  * Get type of access for manifestation with given pid.
  *  url access
  *  ill access
@@ -478,14 +507,29 @@ export async function resolveOnlineAccess(pid, context) {
   // online access with url
   const data = getArray(manifestation, "details.onlineAccess");
   data.forEach((entry) => {
+    console.log(entry, "ENTRY");
+
     if (entry.value) {
+      // hold origin
+      const tmpOrigin = parseOnlineUrlToOrigin(
+        (entry.value.link && entry.value.link.$) || ""
+      );
+
+      // hold url
+      const tmpUrl = getRealUrl(
+        (entry.value.link && entry.value.link.$) || "",
+        context.smaug?.user
+      );
+
+      // hold loginRequired
+      const tmpLoginRequired = tmpUrl.indexOf("ebookcentral") !== -1;
+
       result.push({
         __typename: "AccessUrl",
-        origin:
-          (entry.value.link && parseOnlineUrlToOrigin(entry.value.link.$)) ||
-          "",
-        url: (entry.value.link && entry.value.link.$) || "",
-        //note: (entry.value.note && entry.value.note.$) || "",
+        origin: tmpOrigin,
+        url: tmpUrl,
+        note: (entry.value.note && entry.value.note.$) || "",
+        loginRequired: tmpLoginRequired,
         //accessType: (entry.accessUrlDisplay && entry.accessUrlDisplay.$) || "",
       });
     }
