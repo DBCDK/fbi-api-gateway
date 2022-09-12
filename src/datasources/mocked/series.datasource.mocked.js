@@ -15,5 +15,5 @@ export async function load({ workId }) {
     },
   };
 
-  return mock[workId].body;
+  return mock[workId]?.body;
 }

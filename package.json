@@ -22,7 +22,7 @@
     "@graphql-tools/utils": "^8.6.1",
     "@graphql-tools/wrap": "^8.3.3",
     "cors": "^2.8.5",
-    "dataloader": "^2.0.0",
+    "dataloader": "^2.1.0",
     "dayjs": "^1.10.6",
     "dbc-node-logger": "^2.0.10",
     "esm-wallaby": "^3.2.25",

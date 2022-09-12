@@ -12,6 +12,13 @@ export default {
     url: process.env.PROXY_URL || null,
   },
   datasources: {
+    jed: {
+      url:
+        process.env.JED_URL ||
+        "http://jed-presentation-service.fbstest.svc.cloud.dbc.dk/graphql",
+      ttl: process.env.JED_TIME_TO_LIVE_SECONDS || 60 * 10,
+      prefix: process.env.JED_PREFIX || "jed-1",
+    },
     openformat: {
       url:
         process.env.OPENFORMAT_URL ||

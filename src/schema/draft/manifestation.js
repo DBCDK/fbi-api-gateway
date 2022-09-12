@@ -1,3 +1,4 @@
+import { parseJedSubjects } from "../../utils/utils";
 import { resolveOnlineAccess } from "./draft_utils_manifestations";
 import * as consts from "./FAKE";
 
@@ -666,6 +667,48 @@ export const resolvers = {
       return parent?.pid
         ? context.datasources.moreinfoCovers.load(parent.pid)
         : {};
+    },
+    creators(parent, args, context, info) {
+      if (Array.isArray(parent?.creators)) {
+        return parent?.creators;
+      }
+      // Handle difference in structure from JED service
+      return [
+        ...parent?.creators?.persons?.map((person) => ({
+          ...person,
+          __typename: "Person",
+        })),
+        ...parent?.creators?.corporations?.map((person) => ({
+          ...person,
+          __typename: "Corporation",
+        })),
+      ];
+    },
+    contributors(parent, args, context, info) {
+      if (Array.isArray(parent?.contributors)) {
+        return parent?.contributors;
+      }
+      // Handle difference in structure from JED service
+      return [
+        ...parent?.contributors?.persons?.map((person) => ({
+          ...person,
+          __typename: "Person",
+        })),
+        ...parent?.contributors?.corporations?.map((person) => ({
+          ...person,
+          __typename: "Corporation",
+        })),
+      ];
+    },
+    subjects(parent, args, context, info) {
+      return {
+        all: Array.isArray(parent?.subjects?.all)
+          ? parent?.subjects?.all
+          : parseJedSubjects(parent?.subjects?.all),
+        dbcVerified: Array.isArray(parent?.subjects?.dbcVerified)
+          ? parent?.subjects?.dbcVerified
+          : parseJedSubjects(parent?.subjects?.dbcVerified),
+      };
     },
   },
 };

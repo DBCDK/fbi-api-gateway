@@ -1,3 +1,4 @@
+import { parseJedSubjects } from "../../utils/utils";
 import { resolveOnlineAccess } from "./draft_utils_manifestations";
 
 export const typeDef = `
@@ -182,4 +183,48 @@ type WorkTitles {
 }
 `;
 
-export const resolvers = {};
+export const resolvers = {
+  Work: {
+    creators(parent, args, context, info) {
+      // Handle difference in structure from JED service
+      if (Array.isArray(parent?.creators)) {
+        return parent?.creators;
+      }
+      return [
+        ...parent?.creators?.persons?.map((person) => ({
+          ...person,
+          __typename: "Person",
+        })),
+        ...parent?.creators?.corporations?.map((person) => ({
+          ...person,
+          __typename: "Corporation",
+        })),
+      ];
+    },
+    subjects(parent, args, context, info) {
+      return {
+        all: parseJedSubjects(parent?.subjects?.all),
+        dbcVerified: parseJedSubjects(parent?.subjects?.dbcVerified),
+      };
+    },
+    async manifestations(parent, args, context, info) {
+      if (Array.isArray(parent?.manifestations?.all)) {
+        return parent?.manifestations;
+      }
+
+      const manifestations = parent?.manifestations;
+      const all = parent?.manifestations?.all || [];
+      const first =
+        manifestations?.all?.find((m) => m.pid === manifestations.first) || {};
+      const latest =
+        manifestations?.all?.find((m) => m.pid === manifestations.latest) || {};
+
+      return {
+        first,
+        latest,
+        bestRepresentation: latest,
+        all,
+      };
+    },
+  },
+};

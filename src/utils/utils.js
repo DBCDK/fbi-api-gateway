@@ -1,9 +1,6 @@
 import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
 import { get, uniq } from "lodash";
-import { workToJed } from "../schema/draft/draft_utils";
-import * as consts from "../schema/draft/FAKE";
-import { manifestationToJed } from "../schema/draft/draft_utils_manifestations";
 
 export async function performTestQuery({
   query,
@@ -381,46 +378,17 @@ export async function resolveWork(args, context) {
   if (!id) {
     return null;
   }
-  const res = await context.datasources.workservice.load({
+
+  const w = await context.datasources.jedWork.load({
     workId: id,
     profile: context.profile,
   });
 
-  if (!res) {
+  if (!w?.data?.work) {
     return null;
   }
 
-  // A manifestation that may have original publication year and stuff
-  // that may be needed on the work
-  // const manifestation = await context.datasources.openformat.load(
-  //   id.replace("work-of:", "")
-  // );
-
-  const allPids = res?.work?.groups.map((group) => {
-    return (
-      group.records.find((record) => record.id.startsWith("870970-basis"))
-        ?.id || group.records[0].id
-    );
-  });
-  const manifestation = { pid: allPids[0] };
-  const allManifestations = await resolveAllManifestations(allPids, context);
-
-  let realData = [];
-  try {
-    realData = workToJed(res, manifestation, allManifestations, args.language);
-  } catch (e) {
-    console.log(e);
-  }
-
-  return { ...consts.FAKE_WORK, ...realData };
-}
-
-export async function resolveAllManifestations(pids, context) {
-  const responses = await Promise.all(
-    pids.map((pid) => resolveManifestation({ pid: pid }, context))
-  );
-
-  return responses;
+  return w?.data?.work;
 }
 
 export async function resolveManifestation(args, context) {
@@ -431,11 +399,43 @@ export async function resolveManifestation(args, context) {
     pid = (await context.datasources.faust.load(args.faust)).pid;
   }
 
-  // const manifestation = await context.datasources.openformat.load(pid);
-  // if (!manifestation) {
-  //   return null;
-  // }
+  const res = await context.datasources.jedManifestation.load({
+    pid,
+    profile: context.profile,
+  });
 
-  // const realData = manifestationToJed(manifestation);
-  return { ...consts.FAKE_MANIFESTATION_1, pid };
+  if (!res?.data?.manifestation) {
+    return null;
+  }
+
+  return res?.data?.manifestation;
+}
+
+/**
+ * Take Jed subjects object, and returns FBI-API list of subjects
+ */
+export function parseJedSubjects({
+  corporations = [],
+  persons = [],
+  subjects = [],
+  timePeriods = [],
+} = {}) {
+  return [
+    ...subjects.map((subject) => ({
+      ...subject,
+      __typename: "SubjectText",
+    })),
+    ...persons.map((person) => ({
+      ...person,
+      __typename: "Person",
+    })),
+    ...corporations.map((corporation) => ({
+      ...corporation,
+      __typename: "Corporation",
+    })),
+    ...timePeriods.map((timePeriod) => ({
+      ...timePeriod,
+      __typename: "TimePeriod",
+    })),
+  ];
 }

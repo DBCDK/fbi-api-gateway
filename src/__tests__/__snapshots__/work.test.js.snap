@@ -37,20 +37,17 @@ Object {
       "manifestations": Object {
         "all": Array [
           Object {
-            "pid": "800010-katalog:99121962154805763__1",
+            "pid": "Dummy some-pid-1",
           },
           Object {
-            "pid": "300101-katalog:28486006",
-          },
-          Object {
-            "pid": "870970-basis:29433909",
+            "pid": "Dummy some-pid-2",
           },
         ],
         "first": Object {
-          "pid": "800010-katalog:99121962154805763__1",
+          "pid": "Dummy some-pid-1",
         },
         "latest": Object {
-          "pid": "800010-katalog:99121962154805763__1",
+          "pid": "Dummy some-pid-2",
         },
       },
       "materialTypes": Array [
@@ -97,34 +94,8 @@ Object {
       ],
       "seriesMembers": Array [],
       "subjects": Object {
-        "all": Array [
-          Object {
-            "display": "Dummy Some fictional subject",
-          },
-          Object {
-            "display": "Dummy 1950-1980",
-          },
-          Object {
-            "display": "Dummy Jens Jensen",
-          },
-          Object {
-            "display": "Dummy Some Corporation",
-          },
-        ],
-        "dbcVerified": Array [
-          Object {
-            "display": "Dummy Some fictional subject",
-          },
-          Object {
-            "display": "Dummy 1950-1980",
-          },
-          Object {
-            "display": "Dummy Jens Jensen",
-          },
-          Object {
-            "display": "Dummy Some Corporation",
-          },
-        ],
+        "all": Array [],
+        "dbcVerified": Array [],
       },
       "titles": Object {
         "full": Array [
@@ -149,7 +120,7 @@ Object {
       "universe": Object {
         "title": "Dummy Some Universe",
       },
-      "workId": "work-of:870970-basis:28329490",
+      "workId": "work-of:870970-basis:26521556",
       "workTypes": Array [
         "LITERATURE",
       ],
@@ -163,7 +134,7 @@ exports[`Work fetch by faust 1`] = `
 Object {
   "data": Object {
     "work": Object {
-      "workId": "work-of:870970-basis:28329490",
+      "workId": "work-of:870970-basis:26521556",
     },
   },
 }
@@ -173,7 +144,7 @@ exports[`Work fetch by id 1`] = `
 Object {
   "data": Object {
     "work": Object {
-      "workId": "work-of:870970-basis:28329490",
+      "workId": "work-of:870970-basis:26521556",
     },
   },
 }
@@ -183,7 +154,7 @@ exports[`Work fetch by pid 1`] = `
 Object {
   "data": Object {
     "work": Object {
-      "workId": "work-of:870970-basis:28329490",
+      "workId": "work-of:870970-basis:26521556",
     },
   },
 }
@@ -194,7 +165,7 @@ Object {
   "data": Object {
     "works": Array [
       Object {
-        "workId": "work-of:870970-basis:28329490",
+        "workId": "work-of:870970-basis:26521556",
       },
     ],
   },
@@ -206,7 +177,7 @@ Object {
   "data": Object {
     "works": Array [
       Object {
-        "workId": "work-of:870970-basis:28329490",
+        "workId": "work-of:870970-basis:26521556",
       },
     ],
   },
@@ -218,7 +189,7 @@ Object {
   "data": Object {
     "works": Array [
       Object {
-        "workId": "work-of:870970-basis:28329490",
+        "workId": "work-of:870970-basis:26521556",
       },
     ],
   },

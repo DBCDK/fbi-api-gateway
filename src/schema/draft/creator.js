@@ -127,4 +127,10 @@ interface Creator {
 }
 `;
 
-export const resolvers = {};
+export const resolvers = {
+  Person: {
+    roles(parent, args, context, info) {
+      return parent?.roles || [];
+    },
+  },
+};
