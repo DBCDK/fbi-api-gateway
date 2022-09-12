@@ -35,6 +35,7 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
     }
     creators {
       corporations {
+        __typename
         attributeToName
         type
         display
@@ -53,6 +54,7 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
         year
       }
       persons {
+        __typename
         aliases {
           aliases {
             attributeToName
@@ -209,7 +211,7 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
     workYear
 }`;
 
-const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on JedManifestation
+export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on JedManifestation {
     abstract
     accessTypes {
       code
@@ -568,4 +570,5 @@ const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on JedManife
       }
     }
     volume
+  }
 `;

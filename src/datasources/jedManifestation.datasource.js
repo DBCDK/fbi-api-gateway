@@ -5,14 +5,8 @@ import { MANIFESTATION_FIELDS_FRAGMENT } from "./jedFragments";
 const { url, ttl, prefix } = config.datasources.jed;
 
 const WORK_QUERY = `query ($id: String) {
-  work(id: $id) {
-    manifestations {
-      first
-      latest
-      all {
-        ...manifestationFields
-      }
-    }
+  manifestation(id: $id) {
+    ...manifestationFields
   }
 }
 ${MANIFESTATION_FIELDS_FRAGMENT}`;
@@ -22,11 +16,11 @@ ${MANIFESTATION_FIELDS_FRAGMENT}`;
  * @param {Object} params
  * @param {string} params.workId id of the work
  */
-export async function load({ workId, profile }) {
+export async function load({ pid, profile }) {
   return (
     await request.post(url).send({
       query: WORK_QUERY,
-      variables: { id: workId, profile: `${profile.agency}-${profile.name}` },
+      variables: { id: pid, profile: `${profile.agency}-${profile.name}` },
     })
   ).body;
 }

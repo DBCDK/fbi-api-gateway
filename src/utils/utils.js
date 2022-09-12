@@ -1,9 +1,7 @@
 import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
 import { get, uniq } from "lodash";
-import { workToJed } from "../schema/draft/draft_utils";
 import * as consts from "../schema/draft/FAKE";
-import { manifestationToJed } from "../schema/draft/draft_utils_manifestations";
 
 export async function performTestQuery({
   query,
@@ -387,15 +385,11 @@ export async function resolveWork(args, context) {
     profile: context.profile,
   });
 
+  if (!w?.data?.work) {
+    return null;
+  }
+
   return { ...consts.FAKE_WORK, ...w?.data?.work };
-}
-
-export async function resolveAllManifestations(pids, context) {
-  const responses = await Promise.all(
-    pids.map((pid) => resolveManifestation({ pid: pid }, context))
-  );
-
-  return responses;
 }
 
 export async function resolveManifestation(args, context) {
@@ -406,11 +400,43 @@ export async function resolveManifestation(args, context) {
     pid = (await context.datasources.faust.load(args.faust)).pid;
   }
 
-  // const manifestation = await context.datasources.openformat.load(pid);
-  // if (!manifestation) {
-  //   return null;
-  // }
+  const res = await context.datasources.jedManifestation.load({
+    pid,
+    profile: context.profile,
+  });
 
-  // const realData = manifestationToJed(manifestation);
-  return { ...consts.FAKE_MANIFESTATION_1, pid };
+  if (!res?.data?.manifestation) {
+    return null;
+  }
+
+  return { ...consts.FAKE_MANIFESTATION_1, ...res?.data?.manifestation };
+}
+
+/**
+ * Take Jed subjects object, and returns FBI-API list of subjects
+ */
+export function parseJedSubjects({
+  corporations = [],
+  persons = [],
+  subjects = [],
+  timePeriods = [],
+} = {}) {
+  return [
+    ...subjects.map((subject) => ({
+      ...subject,
+      __typename: "SubjectText",
+    })),
+    ...persons.map((person) => ({
+      ...person,
+      __typename: "Person",
+    })),
+    ...corporations.map((corporation) => ({
+      ...corporation,
+      __typename: "Corporation",
+    })),
+    ...timePeriods.map((timePeriod) => ({
+      ...timePeriod,
+      __typename: "TimePeriod",
+    })),
+  ];
 }

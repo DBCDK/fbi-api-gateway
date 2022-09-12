@@ -6,16 +6,12 @@
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import {
-  resolveAllManifestations,
   resolveBorrowerCheck,
   resolveManifestation,
   resolveOnlineAccess,
   resolveWork,
 } from "../utils/utils";
 import translations from "../utils/translations.json";
-import * as consts from "./draft/FAKE";
-import { workToJed } from "./draft/draft_utils";
-import { manifestationToJed } from "./draft/draft_utils_manifestations";
 
 /**
  * The root type definitions
@@ -171,58 +167,18 @@ export const resolvers = {
       return [];
     },
     async works(parent, args, context, info) {
-      let ids;
       if (args.id) {
-        ids = args.id;
+        return Promise.all(args.id.map((id) => resolveWork({ id }, context)));
       } else if (args.faust) {
-        ids = await Promise.all(
-          args.faust.map(
-            async (faust) => (await context.datasources.faust.load(faust)).id
-          )
+        return Promise.all(
+          args.faust.map((faust) => resolveWork({ faust }, context))
         );
       } else if (args.pid) {
-        ids = args.pid.map((pid) => `work-of:${pid}`);
+        return Promise.all(
+          args.pid.map((pid) => resolveWork({ pid }, context))
+        );
       }
-      if (!ids) {
-        return [];
-      }
-      return Promise.all(
-        ids.map(async (id) => {
-          const res = await context.datasources.workservice.load({
-            workId: id,
-            profile: context.profile,
-          });
-          if (!res) {
-            return null;
-          }
-
-          const manifestation = await context.datasources.openformat.load(
-            id.replace("work-of:", "")
-          );
-
-          const allPids = res?.work?.groups.map((group) => {
-            return (
-              group.records.find((record) =>
-                record.id.startsWith("870970-basis")
-              )?.id || group.records[0].id
-            );
-          });
-
-          const allManifestations = await resolveAllManifestations(
-            allPids,
-            context
-          );
-
-          const realData = workToJed(
-            res,
-            manifestation,
-            allManifestations,
-            args.language
-          );
-
-          return { ...consts.FAKE_WORK, ...realData };
-        })
-      );
+      return [];
     },
     monitor(parent, args, context, info) {
       try {
