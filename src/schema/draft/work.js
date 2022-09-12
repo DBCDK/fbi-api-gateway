@@ -208,10 +208,6 @@ export const resolvers = {
       };
     },
     async manifestations(parent, args, context, info) {
-      if (Array.isArray(parent?.manifestations?.all)) {
-        return parent?.manifestations;
-      }
-
       const manifestations = parent?.manifestations;
       const all = parent?.manifestations?.all || [];
       const first =

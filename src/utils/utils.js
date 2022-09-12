@@ -384,6 +384,7 @@ export async function resolveWork(args, context) {
     profile: context.profile,
   });
 
+
   if (!w?.data?.work) {
     return null;
   }

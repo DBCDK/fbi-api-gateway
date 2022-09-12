@@ -368,9 +368,9 @@ export const FAKE_WORK = {
   mainLanguages: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
   subjects: FAKE_SUBJECTS,
   manifestations: {
-    bestRepresentation: FAKE_MANIFESTATION_1,
-    first: FAKE_MANIFESTATION_1,
-    latest: FAKE_MANIFESTATION_2,
+    bestRepresentation: FAKE_MANIFESTATION_1.pid,
+    first: FAKE_MANIFESTATION_1.pid,
+    latest: FAKE_MANIFESTATION_2.pid,
     all: [FAKE_MANIFESTATION_1, FAKE_MANIFESTATION_2],
   },
 };
