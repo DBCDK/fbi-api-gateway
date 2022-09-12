@@ -1,7 +1,6 @@
 import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
 import { get, uniq } from "lodash";
-import * as consts from "../schema/draft/FAKE";
 
 export async function performTestQuery({
   query,
@@ -389,7 +388,7 @@ export async function resolveWork(args, context) {
     return null;
   }
 
-  return { ...consts.FAKE_WORK, ...w?.data?.work };
+  return w?.data?.work;
 }
 
 export async function resolveManifestation(args, context) {
@@ -409,7 +408,7 @@ export async function resolveManifestation(args, context) {
     return null;
   }
 
-  return { ...consts.FAKE_MANIFESTATION_1, ...res?.data?.manifestation };
+  return res?.data?.manifestation;
 }
 
 /**

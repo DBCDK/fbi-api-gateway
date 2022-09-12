@@ -208,18 +208,12 @@ export const resolvers = {
       };
     },
     async manifestations(parent, args, context, info) {
-      if (parent?.manifestations) {
+      if (Array.isArray(parent?.manifestations?.all)) {
         return parent?.manifestations;
       }
-      // Handle difference in structure from JED service
 
-      const work = await context.datasources.jedWorkManifestations.load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
-
-      const manifestations = work?.data?.work?.manifestations;
-      const all = work?.data?.work?.manifestations?.all || [];
+      const manifestations = parent?.manifestations;
+      const all = parent?.manifestations?.all || [];
       const first =
         manifestations?.all?.find((m) => m.pid === manifestations.first) || {};
       const latest =

@@ -25,6 +25,25 @@ function createRequest(pid) {
 </mi:moreInfoRequest>`;
 }
 
+function createMultiRequest(pids) {
+  return `<mi:moreInfoRequest xmlns:mi="http://oss.dbc.dk/ns/moreinfo">
+  <mi:authentication>
+      <mi:authenticationUser>${authenticationUser}</mi:authenticationUser>
+      <mi:authenticationGroup>${authenticationGroup}</mi:authenticationGroup>
+      <mi:authenticationPassword>${authenticationPassword}</mi:authenticationPassword>
+  </mi:authentication>
+  
+  ${pids
+    .map(
+      (pid) => `<mi:identifier>
+    <mi:pid>${pid}</mi:pid>
+</mi:identifier>`
+    )
+    .join("\n")}
+  <mi:outputType>json</mi:outputType>
+</mi:moreInfoRequest>`;
+}
+
 // @TODO - handle net archive also - moreInfoResponse.identifierInformation.netArchive
 export async function load(pid) {
   try {
@@ -55,6 +74,42 @@ export async function load(pid) {
     }
 
     return {};
+  }
+}
+
+/**
+ * A DataLoader batch function
+ *
+ * @param {Array.<string>} keys The keys to fetch
+ */
+export async function batchLoader(keys, loadFunc) {
+  try {
+    const images = (
+      await request.post(url).field("xml", createMultiRequest(keys))
+    ).body.moreInfoResponse.identifierInformation.map(
+      (entry) => entry.coverImage
+    );
+
+    return images.map((entry) => {
+      const res = {};
+      entry?.forEach((cover) => {
+        res[cover["@imageSize"].$] = cover.$;
+      });
+      return res;
+    });
+  } catch (e) {
+    if (e.status !== 404) {
+      log.error(`Request to moreinfo failed for pid ${keys.join(",")}`, {
+        error: String(e),
+        stacktrace: e.stack,
+      });
+      return {
+        ok: false,
+        message: String(e),
+      };
+    }
+
+    return keys.map(() => ({}));
   }
 }
 
