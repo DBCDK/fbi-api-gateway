@@ -1,3 +1,6 @@
+# Idea folder
+.idea/
+
 # environment files
 *.env
 
