@@ -124,6 +124,11 @@ interface Creator {
   Name of the creator which can be used to sort after 
   """
   nameSort: String!
+  
+  """
+  A list of which kinds of contributions this creator made to this creation
+  """
+  roles: [Role!]!
 }
 `;
 
