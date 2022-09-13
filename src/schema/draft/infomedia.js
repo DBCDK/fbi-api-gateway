@@ -7,6 +7,7 @@ const errors = [
   "BORROWER_NOT_FOUND",
   "BORROWERCHECK_NOT_ALLOWED",
   "BORROWER_NOT_IN_MUNICIPALITY",
+  "NO_MUNICIPALITY",
 ];
 export const typeDef = `
 enum InfomediaError {
@@ -19,6 +20,7 @@ enum InfomediaError {
   BORROWERCHECK_NOT_ALLOWED
   INTERNAL_SERVER_ERROR
   BORROWER_NOT_IN_MUNICIPALITY
+  NO_MUNICIPALITY  
 }
 enum AccessStatus {
   OK
@@ -47,6 +49,7 @@ type InfomediaArticle {
   html: String
 }
 `;
+
 async function fetchArticle(parent, context) {
   const articleId = parent?.id;
   const userId = context.smaug?.user?.id;
@@ -61,8 +64,10 @@ async function fetchArticle(parent, context) {
     userId,
     municipalityAgencyId,
   });
+
   return article;
 }
+
 export const resolvers = {
   InfomediaResponse: {
     async error(parent, args, context, info) {

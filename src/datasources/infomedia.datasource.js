@@ -31,6 +31,11 @@ function createSoap({ articleId, userId, municipalityAgencyId }) {
 }
 
 export async function load({ articleId, userId, municipalityAgencyId }) {
+  // municipalityAgencyId might be empty
+  if (!municipalityAgencyId) {
+    return { error: "NO_MUNICIPALITY" };
+  }
+
   try {
     const res = await request
       .post(url)
