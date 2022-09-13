@@ -93,4 +93,9 @@ export const resolvers = {
       return article;
     },
   },
+  InfomediaArticle: {
+    async hedLine(parent, args, context, info) {
+      return parent.hedline;
+    },
+  },
 };
