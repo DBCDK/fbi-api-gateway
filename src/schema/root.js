@@ -120,19 +120,21 @@ function translateFilters(filters) {
 export const resolvers = {
   Query: {
     async ris(parent, args, context, info) {
-      const ris = await context.datasources.ris.load({
+      const ris = await context.datasources.getLoader("ris").load({
         pid: args.pid,
       });
       return ris;
     },
     async refWorks(parent, args, context, info) {
-      const ref = await context.datasources.refworks.load(args.pid);
+      const ref = await context.datasources
+        .getLoader("refworks")
+        .load(args.pid);
       return ref;
     },
     async localizations(parent, args, context, info) {
       const allmanifestations = await Promise.all(
         args.pids.map((pid) => {
-          return context.datasources.openformat.load(pid);
+          return context.datasources.getLoader("openformat").load(pid);
         })
       );
 
@@ -143,9 +145,11 @@ export const resolvers = {
       );
 
       // get localizations from openholdingstatus
-      const localizations = await context.datasources.localizations.load({
-        pids: pids,
-      });
+      const localizations = await context.datasources
+        .getLoader("localizations")
+        .load({
+          pids: pids,
+        });
       return localizations;
     },
     howru(parent, args, context, info) {
@@ -217,11 +221,13 @@ export const resolvers = {
       return args;
     },
     async branches(parent, args, context, info) {
-      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
-      const infomediaSubscriptions = await context.datasources.idp.load("");
-      return await context.datasources.library.load({
+      const digitalAccessSubscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+      const infomediaSubscriptions = await context.datasources
+        .getLoader("idp")
+        .load("");
+      return await context.datasources.getLoader("library").load({
         q: args.q,
         limit: args.limit,
         offset: args.offset,
@@ -242,14 +248,14 @@ export const resolvers = {
       return args;
     },
     async deleteOrder(parent, args, context, info) {
-      return await context.datasources.deleteOrder.load({
+      return await context.datasources.getLoader("deleteOrder").load({
         orderId: args.orderId,
         orderType: args.orderType,
         accessToken: context.accessToken,
       });
     },
     async borchk(parent, args, context, info) {
-      return context.datasources.borchk.load({
+      return context.datasources.getLoader("borchk").load({
         libraryCode: args.libraryCode,
         userId: args.userId,
         userPincode: args.userPincode,
@@ -259,7 +265,7 @@ export const resolvers = {
       return args;
     },
     async session(parent, args, context, info) {
-      return await context.datasources.session.load({
+      return await context.datasources.getLoader("session").load({
         accessToken: context.accessToken,
       });
     },
@@ -302,12 +308,14 @@ export const resolvers = {
       let { userName, userMail } = args.input;
 
       // Fetch and check existence of branch
-      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
-      const infomediaSubscriptions = await context.datasources.idp.load("");
+      const digitalAccessSubscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+      const infomediaSubscriptions = await context.datasources
+        .getLoader("idp")
+        .load("");
       const branch = (
-        await context.datasources.library.load({
+        await context.datasources.getLoader("library").load({
           branchId: args.input.pickUpBranch,
           digitalAccessSubscriptions,
           infomediaSubscriptions,
@@ -340,7 +348,7 @@ export const resolvers = {
         }
 
         // We need users name and email
-        const user = await context.datasources.user.load({
+        const user = await context.datasources.getLoader("user").load({
           accessToken: context.accessToken,
         });
         userName = user.name ? user.name : userMail;
@@ -354,9 +362,9 @@ export const resolvers = {
       }
 
       // Agency must be subscribed
-      const subscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
+      const subscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
       if (!subscriptions[branch.agencyId]) {
         return {
           status: "ERROR_AGENCY_NOT_SUBSCRIBED",
@@ -381,10 +389,12 @@ export const resolvers = {
 
       // Then send order
       try {
-        await context.datasources.statsbiblioteketSubmitArticleOrder.load({
-          ...args.input,
-          agencyId: branch.agencyId,
-        });
+        await context.datasources
+          .getLoader("statsbiblioteketSubmitArticleOrder")
+          .load({
+            ...args.input,
+            agencyId: branch.agencyId,
+          });
         log.info("Periodica article order succes", {
           args,
           accessToken: context.accessToken,
@@ -398,16 +408,18 @@ export const resolvers = {
       }
     },
     async submitOrder(parent, args, context, info) {
-      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
-      const infomediaSubscriptions = await context.datasources.idp.load("");
+      const digitalAccessSubscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+      const infomediaSubscriptions = await context.datasources
+        .getLoader("idp")
+        .load("");
       const input = {
         ...args.input,
         accessToken: context.accessToken,
         smaug: context.smaug,
         branch: (
-          await context.datasources.library.load({
+          await context.datasources.getLoader("library").load({
             branchId: args.input.pickUpBranch,
             digitalAccessSubscriptions,
             infomediaSubscriptions,
@@ -415,17 +427,17 @@ export const resolvers = {
         ).result[0],
       };
 
-      return await context.datasources.submitOrder.load(input);
+      return await context.datasources.getLoader("submitOrder").load(input);
     },
     async submitSession(parent, args, context, info) {
-      await context.datasources.submitSession.load({
+      await context.datasources.getLoader("submitSession").load({
         accessToken: context.accessToken,
         session: args.input,
       });
       return "OK";
     },
     async deleteSession(parent, args, context, info) {
-      await context.datasources.deleteSession.load({
+      await context.datasources.getLoader("deleteSession").load({
         accessToken: context.accessToken,
       });
       return "OK";

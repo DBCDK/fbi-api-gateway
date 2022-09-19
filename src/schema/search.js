@@ -197,7 +197,7 @@ export const resolvers = {
       ];
     },
     async hitcount(parent, args, context) {
-      const res = await context.datasources.simplesearch.load({
+      const res = await context.datasources.getLoader("simplesearch").load({
         ...parent,
         profile: context.profile,
       });
@@ -205,7 +205,7 @@ export const resolvers = {
       return res.hitcount;
     },
     async works(parent, args, context) {
-      const res = await context.datasources.simplesearch.load({
+      const res = await context.datasources.getLoader("simplesearch").load({
         ...parent,
         ...args,
         profile: context.profile,
@@ -220,7 +220,7 @@ export const resolvers = {
       return expanded.filter((work) => !!work);
     },
     async facets(parent, args, context) {
-      const res = await context.datasources.facets.load({
+      const res = await context.datasources.getLoader("facets").load({
         ...parent,
         ...args,
         profile: context.profile,

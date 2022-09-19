@@ -61,50 +61,50 @@ function isEmail(email) {
 export const resolvers = {
   User: {
     async name(parent, args, context, info) {
-      const res = await context.datasources.user.load({
+      const res = await context.datasources.getLoader("user").load({
         accessToken: context.accessToken,
       });
       return res.name;
     },
     async address(parent, args, context, info) {
-      const res = await context.datasources.user.load({
+      const res = await context.datasources.getLoader("user").load({
         accessToken: context.accessToken,
       });
       return res.address;
     },
     async debt(parent, args, context, info) {
-      const res = await context.datasources.debt.load({
+      const res = await context.datasources.getLoader("debt").load({
         accessToken: context.accessToken,
       });
       return res.debt;
     },
     async loans(parent, args, context, info) {
-      const res = await context.datasources.loans.load({
+      const res = await context.datasources.getLoader("loans").load({
         accessToken: context.accessToken,
       });
       return res.loans;
     },
     async orders(parent, args, context, info) {
-      const res = await context.datasources.orders.load({
+      const res = await context.datasources.getLoader("orders").load({
         accessToken: context.accessToken,
       });
       return res.orders;
     },
     async postalCode(parent, args, context, info) {
-      const res = await context.datasources.user.load({
+      const res = await context.datasources.getLoader("user").load({
         accessToken: context.accessToken,
       });
 
       return res.postalCode;
     },
     async mail(parent, args, context, info) {
-      const res = await context.datasources.user.load({
+      const res = await context.datasources.getLoader("user").load({
         accessToken: context.accessToken,
       });
       return res.mail;
     },
     async culrMail(parent, args, context, info) {
-      const resUserInfo = await context.datasources.userinfo.load({
+      const resUserInfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
       const agencyWithEmail =
@@ -117,14 +117,16 @@ export const resolvers = {
       return agencyWithEmail && agencyWithEmail.userId;
     },
     async agency(parent, args, context, info) {
-      const res = await context.datasources.user.load({
+      const res = await context.datasources.getLoader("user").load({
         accessToken: context.accessToken,
       });
-      const digitalAccessSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
-      const infomediaSubscriptions = await context.datasources.idp.load("");
-      return await context.datasources.library.load({
+      const digitalAccessSubscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+      const infomediaSubscriptions = await context.datasources
+        .getLoader("idp")
+        .load("");
+      return await context.datasources.getLoader("library").load({
         agencyid: res.agency,
         language: parent.language,
         limit: 100,
@@ -149,7 +151,7 @@ export const resolvers = {
       );
     },
     async pickUpBranch(parent, args, context, info) {
-      const res = await context.datasources.branch.load({
+      const res = await context.datasources.getLoader("branch").load({
         branchId: parent.pickUpAgency,
         accessToken: context.accessToken,
       });

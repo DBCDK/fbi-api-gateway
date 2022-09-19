@@ -167,7 +167,9 @@ export const resolvers = {
         await Promise.all(
           parent.relations
             .filter((rel) => rel.type === "review")
-            .map((review) => context.datasources.openformat.load(review.id))
+            .map((review) =>
+              context.datasources.getLoader("openformat").load(review.id)
+            )
         )
       )
         .filter((review) => !!review)

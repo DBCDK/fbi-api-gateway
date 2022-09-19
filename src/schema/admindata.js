@@ -9,15 +9,15 @@ type AdminData {
 export const resolvers = {
   AdminData: {
     async creationDate(parent, args, context, info) {
-      const manifestation = await context.datasources.openformat.load(
-        parent.pid
-      );
+      const manifestation = await context.datasources
+        .getLoader("openformat")
+        .load(parent.pid);
       return get(manifestation, "admindata.creationDate.$", "unknown");
     },
     async requestButton(parent, args, context, info) {
-      const manifestation = await context.datasources.openformat.load(
-        parent.pid
-      );
+      const manifestation = await context.datasources
+        .getLoader("openformat")
+        .load(parent.pid);
       return get(manifestation, "admindata.requestButton.$") === "true";
     },
   },

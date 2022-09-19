@@ -51,12 +51,12 @@ async function fetchArticle(parent, context) {
   const articleId = parent?.id;
   const userId = context.smaug?.user?.id;
   const municipalityAgencyId = (
-    await context.datasources.userinfo.load({
+    await context.datasources.getLoader("userinfo").load({
       accessToken: context.accessToken,
     })
   )?.attributes?.municipalityAgencyId;
 
-  const article = await context.datasources.infomedia.load({
+  const article = await context.datasources.getLoader("infomedia").load({
     articleId,
     userId,
     municipalityAgencyId,

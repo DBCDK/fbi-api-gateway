@@ -131,7 +131,7 @@ promExporterApp.listen(9599, () => {
     try {
       req.smaug =
         req.accessToken &&
-        (await req.datasources.smaug.load({
+        (await req.datasources.getLoader("smaug").load({
           accessToken: req.accessToken,
         }));
       req.smaug.app.ips = (req.ips.length && req.ips) || [req.ip];

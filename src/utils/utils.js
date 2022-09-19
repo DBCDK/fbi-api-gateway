@@ -175,9 +175,9 @@ export async function resolveBorrowerCheck(agencyId, context) {
   if (!agencyId) {
     return false;
   }
-  const res = await context.datasources.vipcore_UserOrderParameters.load(
-    agencyId
-  );
+  const res = await context.datasources
+    .getLoader("vipcore_UserOrderParameters")
+    .load(agencyId);
   if (res.agencyParameters && res.agencyParameters.borrowerCheckParameters) {
     return !!res.agencyParameters.borrowerCheckParameters.find(
       ({ borrowerCheckSystem, borrowerCheck }) =>
@@ -191,7 +191,9 @@ export async function resolveOnlineAccess(pid, context) {
   const result = [];
 
   // Get onlineAccess from openformat (UrlReferences)
-  const manifestation = await context.datasources.openformat.load(pid);
+  const manifestation = await context.datasources
+    .getLoader("openformat")
+    .load(pid);
 
   const data = getArray(manifestation, "details.onlineAccess");
   data.forEach((entry) => {
@@ -233,9 +235,9 @@ export async function resolveOnlineAccess(pid, context) {
       manifestation.details.webarchive.$) ||
     null;
   if (webarchive) {
-    const archives = await context.datasources.moreinfoWebarchive.load(
-      manifestation.admindata.pid.$
-    );
+    const archives = await context.datasources
+      .getLoader("moreinfoWebarchive")
+      .load(manifestation.admindata.pid.$);
 
     archives.forEach((archive) => {
       if (archive.url) {
@@ -255,9 +257,9 @@ export async function resolveOnlineAccess(pid, context) {
     getArray(manifestation, "details.issn.value").map((entry) => entry.$)[0];
 
   if (articleIssn) {
-    const journals = await context.datasources.statsbiblioteketJournals.load(
-      ""
-    );
+    const journals = await context.datasources
+      .getLoader("statsbiblioteketJournals")
+      .load("");
 
     const issn = articleIssn.replace(/[^a-z\d]/gi, "");
     const hasJournal = journals && journals[issn];
@@ -311,7 +313,7 @@ export async function getInfomediaAccessStatus(context) {
 
   let userInfo;
   try {
-    userInfo = await context.datasources.userinfo.load({
+    userInfo = await context.datasources.getLoader("userinfo").load({
       accessToken: context.accessToken,
     });
   } catch (e) {
@@ -320,7 +322,9 @@ export async function getInfomediaAccessStatus(context) {
 
   const municipalityAgencyId = userInfo?.attributes?.municipalityAgencyId;
 
-  const infomediaSubscriptions = await context.datasources.idp.load("");
+  const infomediaSubscriptions = await context.datasources
+    .getLoader("idp")
+    .load("");
 
   const isSubscribed = infomediaSubscriptions[municipalityAgencyId];
 
@@ -344,7 +348,7 @@ export async function getDigitalArticleAccessStatus(context) {
 
   let userInfo;
   try {
-    userInfo = await context.datasources.userinfo.load({
+    userInfo = await context.datasources.getLoader("userinfo").load({
       accessToken: context.accessToken,
     });
   } catch (e) {
@@ -353,9 +357,9 @@ export async function getDigitalArticleAccessStatus(context) {
 
   const municipalityAgencyId = userInfo?.attributes?.municipalityAgencyId;
 
-  const digitalArticleSubscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-    ""
-  );
+  const digitalArticleSubscriptions = await context.datasources
+    .getLoader("statsbiblioteketSubscribers")
+    .load("");
 
   const isSubscribed = digitalArticleSubscriptions[municipalityAgencyId];
 
@@ -371,7 +375,7 @@ export async function resolveWork(args, context) {
   if (args.id) {
     id = args.id;
   } else if (args.faust) {
-    id = (await context.datasources.faust.load(args.faust)).id;
+    id = (await context.datasources.getLoader("faust").load(args.faust)).id;
   } else if (args.pid) {
     id = `work-of:${args.pid}`;
   }
@@ -379,11 +383,10 @@ export async function resolveWork(args, context) {
     return null;
   }
 
-  const w = await context.datasources.jedWork.load({
+  const w = await context.datasources.getLoader("jedWork").load({
     workId: id,
     profile: context.profile,
   });
-
 
   if (!w?.data?.work) {
     return null;
@@ -397,10 +400,10 @@ export async function resolveManifestation(args, context) {
   if (args.pid) {
     pid = args.pid;
   } else if (args.faust) {
-    pid = (await context.datasources.faust.load(args.faust)).pid;
+    pid = (await context.datasources.getLoader("faust").load(args.faust)).pid;
   }
 
-  const res = await context.datasources.jedManifestation.load({
+  const res = await context.datasources.getLoader("jedManifestation").load({
     pid,
     profile: context.profile,
   });

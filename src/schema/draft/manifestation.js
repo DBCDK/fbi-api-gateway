@@ -665,7 +665,7 @@ export const resolvers = {
     },
     async cover(parent, args, context, info) {
       return parent?.pid
-        ? context.datasources.moreinfoCovers.load(parent.pid)
+        ? context.datasources.getLoader("moreinfoCovers").load(parent.pid)
         : {};
     },
     creators(parent, args, context, info) {
