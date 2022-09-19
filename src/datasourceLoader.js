@@ -114,7 +114,7 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
     // If key is an object, we stringify
     // to make it useful as a cache key
     cacheKeyFn: (key) => (typeof key === "object" ? JSON.stringify(key) : key),
-    // maxBatchSize: 100,
+    maxBatchSize: 100,
   });
 
   return {

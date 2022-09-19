@@ -16,7 +16,7 @@ import howruHandler from "./howru";
 import { metrics, observeDuration, count } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
-import { uuid } from "uuidv4";
+import { v4 as uuid } from "uuid";
 import isbot from "isbot";
 
 const app = express();
