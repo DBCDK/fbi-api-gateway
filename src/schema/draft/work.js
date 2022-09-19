@@ -1,5 +1,4 @@
 import { parseJedSubjects } from "../../utils/utils";
-import { resolveOnlineAccess } from "./draft_utils_manifestations";
 
 export const typeDef = `
 type Language {
@@ -211,9 +210,11 @@ export const resolvers = {
       const manifestations = parent?.manifestations;
       const all = parent?.manifestations?.all || [];
       const first =
-        manifestations?.all?.find((m) => m.pid === manifestations.first) || {};
+        manifestations?.all?.find((m) => m.pid === manifestations.first) ||
+        manifestations?.all[0];
       const latest =
-        manifestations?.all?.find((m) => m.pid === manifestations.latest) || {};
+        manifestations?.all?.find((m) => m.pid === manifestations.latest) ||
+        manifestations?.all[0];
 
       return {
         first,
