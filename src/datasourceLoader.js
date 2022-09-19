@@ -67,8 +67,8 @@ log.debug(
 
 /**
  * This will initialize a single dataloader.
- * It makes sure a context (with a concurrency limited fetcher) and stuff, is injected
- * into the bathloader function.
+ * It makes sure a context (with a concurrency limited fetcher), is injected
+ * into the batchloader function.
  *
  * It sets up Redis for the dataloader
  *
