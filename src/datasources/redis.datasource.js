@@ -98,7 +98,7 @@ export const set = monitor(
       if (inMemory) {
         localStore[key] = obj;
       }
-      await redis.set(key, JSON.stringify(obj), "ex", seconds);
+      await redis.set(key, JSON.stringify(obj), "EX", seconds);
     } catch (e) {
       log.error(`Redis setex failed`, {
         key,
@@ -186,6 +186,8 @@ export function withRedis(
     setexFunc = setex,
     mgetFunc = mget,
     inMemory = false,
+    track,
+    datasourceName,
   }
 ) {
   /**
@@ -197,7 +199,7 @@ export function withRedis(
    *
    * @param {Array.<string>} keys The keys to fetch
    */
-  async function redisBatchLoader(keys, track) {
+  async function redisBatchLoader(keys) {
     const now = Date.now();
 
     // Create array of prefixed keys
@@ -219,6 +221,8 @@ export function withRedis(
         staleKeys.push(keys[idx]);
       }
     });
+
+    track?.cacheMiss(datasourceName, missingKeys.length + staleKeys.length);
 
     // Fetch missing values using the provided batch function
     let values;

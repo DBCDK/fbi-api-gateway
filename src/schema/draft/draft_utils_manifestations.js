@@ -504,7 +504,9 @@ function getProxyUrl(url, user) {
 export async function resolveOnlineAccess(pid, context) {
   const result = [];
   // Get onlineAccess from openformat (UrlReferences)
-  const manifestation = await context.datasources.openformat.load(pid);
+  const manifestation = await context.datasources
+    .getLoader("openformat")
+    .load(pid);
 
   // online access with url
   const data = getArray(manifestation, "details.onlineAccess");
@@ -562,9 +564,9 @@ export async function resolveOnlineAccess(pid, context) {
       manifestation.details.webarchive.$) ||
     null;
   if (webarchive) {
-    const archives = await context.datasources.moreinfoWebarchive.load(
-      manifestation.admindata.pid.$
-    );
+    const archives = await context.datasources
+      .getLoader("moreinfoWebarchive")
+      .load(manifestation.admindata.pid.$);
 
     archives.forEach((archive) => {
       if (archive.url) {
@@ -585,9 +587,9 @@ export async function resolveOnlineAccess(pid, context) {
     getArray(manifestation, "details.issn.value").map((entry) => entry.$)[0];
 
   if (articleIssn) {
-    const journals = await context.datasources.statsbiblioteketJournals.load(
-      ""
-    );
+    const journals = await context.datasources
+      .getLoader("statsbiblioteketJournals")
+      .load("");
     const articleissn = articleIssn.replace(/[^a-z\d]/gi, "");
     const hasJournal = journals && journals[articleissn];
     if (hasJournal) {

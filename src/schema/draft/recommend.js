@@ -37,15 +37,18 @@ export const resolvers = {
       if (parent.pid) {
         pid = parent.pid;
       } else if (parent.faust) {
-        pid = (await context.datasources.faust.load(parent.faust)).pid;
+        pid = (await context.datasources.getLoader("faust").load(parent.faust))
+          .pid;
       } else if (parent.id) {
         pid = parent.id.replace("work-of:", "");
       }
-      const recommendations = await context.datasources.recommendations.load({
-        pid,
-        limit: parent.limit || 10,
-        profile: context.profile,
-      });
+      const recommendations = await context.datasources
+        .getLoader("recommendations")
+        .load({
+          pid,
+          limit: parent.limit || 10,
+          profile: context.profile,
+        });
       if (recommendations?.response) {
         return recommendations.response;
       }

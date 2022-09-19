@@ -31,7 +31,7 @@ type ComplexSearchResponse {
 export const resolvers = {
   ComplexSearchResponse: {
     async hitcount(parent, args, context) {
-      const res = await context.datasources.simplesearch.load({
+      const res = await context.datasources.getLoader("simplesearch").load({
         q: { all: parent.cql },
         filters: parent.filters,
         profile: context.profile,
@@ -40,7 +40,7 @@ export const resolvers = {
       return res.hitcount;
     },
     async works(parent, args, context) {
-      const res = await context.datasources.simplesearch.load({
+      const res = await context.datasources.getLoader("simplesearch").load({
         q: { all: parent.cql },
         filters: parent.filters,
         ...args,

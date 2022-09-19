@@ -43,7 +43,7 @@ export const resolvers = {
   },
   SuggestResponse: {
     async result(parent, args, context, info) {
-      const res = await context.datasources.suggester.load({
+      const res = await context.datasources.getLoader("suggester").load({
         ...parent,
         ...args,
         profile: context.profile,
@@ -53,7 +53,7 @@ export const resolvers = {
   },
   localSuggestResponse: {
     async result(parent, args, context, info) {
-      const res = await context.datasources.prosper.load({
+      const res = await context.datasources.getLoader("prosper").load({
         ...parent,
         ...args,
         profile: context.profile,

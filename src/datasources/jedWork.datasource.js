@@ -1,4 +1,3 @@
-import request from "superagent";
 import config from "../config";
 import {
   MANIFESTATION_FIELDS_FRAGMENT,
@@ -27,13 +26,19 @@ ${MANIFESTATION_FIELDS_FRAGMENT}`;
  * @param {Object} params
  * @param {string} params.workId id of the work
  */
-export async function load({ workId, profile }) {
-  return (
-    await request.post(url).send({
+export async function load({ workId, profile }, context) {
+  const res = await context.fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
       query: WORK_QUERY,
-      variables: { id: workId, profile: `${profile.agency}-${profile.name}` },
-    })
-  ).body;
+      variables: {
+        id: workId,
+        profile: `${profile.agency}-${profile.name}`,
+      },
+    }),
+  });
+
+  return await res.json();
 }
 
 export const options = {

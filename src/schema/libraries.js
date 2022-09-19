@@ -134,9 +134,9 @@ export const resolvers = {
       }
 
       // Fetch from vip-core
-      const res = await context.datasources.vipcore_UserOrderParameters.load(
-        parent.agencyId
-      );
+      const res = await context.datasources
+        .getLoader("vipcore_UserOrderParameters")
+        .load(parent.agencyId);
 
       const userParameters = res.userParameter || [];
 
@@ -198,7 +198,7 @@ export const resolvers = {
       return orderBy(result, "order");
     },
     async orderPolicy(parent, args, context, info) {
-      return await context.datasources.checkorder.load({
+      return await context.datasources.getLoader("checkorder").load({
         pickupBranch: parent.branchId,
         pid: args.pid,
       });
@@ -207,14 +207,14 @@ export const resolvers = {
       return !!parent.pickupAllowed;
     },
     async infomediaAccess(parent, args, context, info) {
-      const response = await context.datasources.idp.load("");
+      const response = await context.datasources.getLoader("idp").load("");
 
       return !!response[parent.agencyId];
     },
     async digitalCopyAccess(parent, args, context, info) {
-      const subscriptions = await context.datasources.statsbiblioteketSubscribers.load(
-        ""
-      );
+      const subscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
       return !!subscriptions[parent.agencyId];
     },
     /**
@@ -234,9 +234,11 @@ export const resolvers = {
      */
     async holdingStatus(parent, args, context, info) {
       // get localizations from openholdingstatus
-      const localizations = await context.datasources.localizations.load({
-        pids: args.pids,
-      });
+      const localizations = await context.datasources
+        .getLoader("localizations")
+        .load({
+          pids: args.pids,
+        });
 
       // find local holdings for this agency - we use Array.find - there is only one
       // most branches has holdings on agency level
@@ -265,10 +267,12 @@ export const resolvers = {
         return { holdingstatus: [], holdingsitems: null };
       }
       // get detailed holdings from openholdingsstatus.
-      const detailedHoldings = await context.datasources.detailedholdings.load({
-        localIds: localids,
-        agencyId: parent.agencyId,
-      });
+      const detailedHoldings = await context.datasources
+        .getLoader("detailedholdings")
+        .load({
+          localIds: localids,
+          agencyId: parent.agencyId,
+        });
 
       // NOTICE .. if we are not allowed to use itemholdings -> remove next block
       // of code
@@ -278,11 +282,13 @@ export const resolvers = {
       let holdingsitems;
       try {
         // get holdingitems
-        holdingsitems = await context.datasources.holdingsitems.load({
-          agencyId: parent.agencyId,
-          branchId: parent.branchId,
-          pids: args.pids,
-        });
+        holdingsitems = await context.datasources
+          .getLoader("holdingsitems")
+          .load({
+            agencyId: parent.agencyId,
+            branchId: parent.branchId,
+            pids: args.pids,
+          });
       } catch (e) {
         holdingsitems = null;
       }

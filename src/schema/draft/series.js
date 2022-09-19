@@ -59,7 +59,7 @@ type Series {
 export const resolvers = {
   Work: {
     async seriesMembers(parent, args, context, info) {
-      const data = await context.datasources.series.load({
+      const data = await context.datasources.getLoader("series").load({
         workId: parent.workId,
         profile: context.profile,
       });

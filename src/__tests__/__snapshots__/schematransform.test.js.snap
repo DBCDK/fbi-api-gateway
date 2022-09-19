@@ -633,7 +633,7 @@ type Manifestation {
   classifications: [Classification!]!
 
   \\"\\"\\"Edition details for this manifestation\\"\\"\\"
-  edition: Edition!
+  edition: Edition
 
   \\"\\"\\"Details about the latest printing of this manifestation\\"\\"\\"
   latestPrinting: Printing
@@ -1845,7 +1845,7 @@ type Manifestation {
   classifications: [Classification!]!
 
   \\"\\"\\"Edition details for this manifestation\\"\\"\\"
-  edition: Edition!
+  edition: Edition
 
   \\"\\"\\"Details about the latest printing of this manifestation\\"\\"\\"
   latestPrinting: Printing

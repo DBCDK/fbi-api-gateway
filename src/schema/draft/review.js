@@ -163,11 +163,21 @@ export const resolvers = {
   },
   Work: {
     async reviews(parent, args, context, info) {
+      // We still use old workservice for relations
+      const work = await context.datasources
+        .getLoader("workservice")
+        .load({ workId: parent.workId, profile: context.profile });
+
+      if (!work?.relations) {
+        return [];
+      }
       let reviews = (
         await Promise.all(
-          parent.relations
+          work.relations
             .filter((rel) => rel.type === "review")
-            .map((review) => context.datasources.openformat.load(review.id))
+            .map((review) =>
+              context.datasources.getLoader("openformat").load(review.id)
+            )
         )
       )
         .filter((review) => !!review)
