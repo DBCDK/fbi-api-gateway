@@ -22,14 +22,11 @@ export async function load({ workId, profile }, context) {
  * @param {Array.<string>} keys The keys to fetch
  */
 export async function batchLoader(keys, context) {
-  console.log("get", keys);
   return await Promise.all(
     keys.map(async (key) => {
       try {
-        console.log("hep", key, context);
         return await load(key, context);
       } catch (e) {
-        console.log("whatt", e);
         // We return error instead of throwing,
         // se we don't fail entire Promise.all
         // DataLoader will make sure its thrown in a resolver
