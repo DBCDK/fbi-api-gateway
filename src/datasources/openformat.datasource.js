@@ -1,6 +1,6 @@
-import request from "superagent";
 import config from "../config";
 import displayFormat from "./openformat.displayformat.json";
+import fetch from "isomorphic-unfetch";
 
 const { url, ttl, prefix } = config.datasources.openformat;
 
@@ -21,9 +21,14 @@ function createRequest(pid) {
 </SOAP-ENV:Envelope>`;
 }
 
-export async function load(pid) {
-  return (await request.post(url).field("xml", createRequest(pid))).body
-    ?.formatResponse?.customDisplay?.[0].manifestation;
+export async function load(pid, context) {
+  const formData = new URLSearchParams();
+  formData.append("xml", createRequest(pid));
+  const res = await context?.fetch(url, {
+    method: "POST",
+    body: formData,
+  });
+  return (await res.json())?.formatResponse?.customDisplay?.[0]?.manifestation;
 }
 
 /**
@@ -32,7 +37,7 @@ export async function load(pid) {
  * @throws Will throw error if service is down
  */
 export async function status(loadFunc) {
-  await loadFunc("870970-basis:51877330");
+  await loadFunc("870970-basis:51877330", { fetch });
 }
 
 export const options = {
