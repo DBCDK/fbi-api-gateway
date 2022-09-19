@@ -506,7 +506,7 @@ type Manifestation {
   """
   Edition details for this manifestation
   """
-  edition: Edition!
+  edition: Edition
 
   """
   Details about the latest printing of this manifestation
