@@ -9,10 +9,6 @@ const { url, ttl, prefix } = config.datasources.work;
  * @param {string} params.workId id of the work
  */
 export async function load({ workId, profile }, context) {
-  console.log(
-    "hest",
-    `${url}?workId=${workId}&agencyId=${profile.agency}=&profile=${profile.name}&includeRelations=true`
-  );
   const res = await context?.fetch(
     `${url}?workId=${workId}&agencyId=${profile.agency}=&profile=${profile.name}&includeRelations=true`
   );
