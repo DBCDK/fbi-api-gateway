@@ -131,13 +131,17 @@ export default function createDataLoaders(uuid) {
   const track = trackMe().start(uuid);
 
   result.trackingObject = track;
+  const fetchWithConcurrencyLimit = createFetchWithConcurrencyLimit(
+    config.fetchConcurrencyLimit
+  );
   // Gets a loader by name.
   // A loader will be initialized first time it is called
   function getLoader(name) {
     if (!result[name]) {
       result[name] = setupDataloader(nameToDatasource[name], {
         track,
-        fetch: createFetchWithConcurrencyLimit(config.fetchConcurrencyLimit),
+        fetch: fetchWithConcurrencyLimit,
+        trackingId: uuid,
       })?.loader;
     }
     return result[name];

@@ -14,6 +14,11 @@ export default {
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   datasources: {
+    faustService: {
+      url:
+        process.env.FAUST_SERVICE_URL ||
+        "http://faust-resolver-service.cisterne.svc.cloud.dbc.dk",
+    },
     jed: {
       url:
         process.env.JED_URL ||
