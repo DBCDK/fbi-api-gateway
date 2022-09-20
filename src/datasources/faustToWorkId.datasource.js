@@ -1,7 +1,3 @@
-/**
- * @file Mapping faust to manifestation id
- */
-
 import config from "../config";
 
 const { url } = config.datasources.faustService;
