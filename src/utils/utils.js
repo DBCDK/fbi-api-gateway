@@ -375,9 +375,13 @@ export async function resolveWork(args, context) {
   if (args.id) {
     id = args.id;
   } else if (args.faust) {
-    id = (await context.datasources.getLoader("faust").load(args.faust)).id;
+    id = await context.datasources
+      .getLoader("faustToWorkId")
+      .load({ faust: args.faust, profile: context.profile });
   } else if (args.pid) {
-    id = `work-of:${args.pid}`;
+    id = await context.datasources
+      .getLoader("pidToWorkId")
+      .load({ pid: args.pid, profile: context.profile });
   }
   if (!id) {
     return null;
@@ -400,7 +404,12 @@ export async function resolveManifestation(args, context) {
   if (args.pid) {
     pid = args.pid;
   } else if (args.faust) {
-    pid = (await context.datasources.getLoader("faust").load(args.faust)).pid;
+    pid = await context.datasources
+      .getLoader("faustToPid")
+      .load({ faust: args.faust, profile: context.profile });
+  }
+  if (!pid) {
+    return null;
   }
 
   const res = await context.datasources.getLoader("jedManifestation").load({

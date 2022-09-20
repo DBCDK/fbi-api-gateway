@@ -37,8 +37,12 @@ export const resolvers = {
       if (parent.pid) {
         pid = parent.pid;
       } else if (parent.faust) {
-        pid = (await context.datasources.getLoader("faust").load(parent.faust))
-          .pid;
+        pid = await context.datasources
+          .getLoader("faustToPid")
+          .load({ faust: parent.faust, profile: context.profile });
+        if (!pid) {
+          return [];
+        }
       } else if (parent.id) {
         pid = parent.id.replace("work-of:", "");
       }
