@@ -22,6 +22,7 @@ const fields = [
   "branchId",
   "city",
   "postalCode",
+  "libraryStatus",
 ];
 
 // Indexer options
@@ -195,23 +196,24 @@ export async function search(props, getFunc) {
   }
 
   // filter on requested status
-  let filteredBranches = branches;
-  if (status !== "ALLE") {
-    filteredBranches = branches.filter(
-      (branch) => branch.libraryStatus === status
-    );
-  }
-  let result = filteredBranches;
+  const filterMe =
+    status !== "ALLE" ? (branch) => branch.libraryStatus === status : null;
+
+  let result = branches;
 
   if (q) {
     // prefix match
-    result = index.search(q, filteredBranches, searchOptions);
+    result = index.search(q, branches, {
+      ...searchOptions,
+      ...(filterMe && { filter: filterMe }),
+    });
 
     // If no match use fuzzy to find the nearest match
     if (result.length === 0) {
       // try fuzzy  match
-      result = index.search(q, filteredBranches, {
+      result = index.search(q, branches, {
         ...searchOptions,
+        ...(filterMe && { filter: filterMe }),
         fuzzy: 0.4,
       });
     }
@@ -236,11 +238,13 @@ export async function search(props, getFunc) {
     ...merged.filter((branch) => !branch.pickupAllowed),
   ];
 
+  const res = merged
+    .slice(offset, limit)
+    .map((branch) => ({ ...branch, language }));
+
   return {
     hitcount: merged.length,
-    result: merged
-      .slice(offset, limit)
-      .map((branch) => ({ ...branch, language })),
+    result: res,
   };
 }
 
