@@ -238,13 +238,11 @@ export async function search(props, getFunc) {
     ...merged.filter((branch) => !branch.pickupAllowed),
   ];
 
-  const res = merged
-    .slice(offset, limit)
-    .map((branch) => ({ ...branch, language }));
-
   return {
     hitcount: merged.length,
-    result: res,
+    result: merged
+      .slice(offset, limit)
+      .map((branch) => ({ ...branch, language })),
   };
 }
 
