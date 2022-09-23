@@ -111,16 +111,18 @@ promExporterApp.listen(9599, () => {
    */
   app.post("/:profile/graphql", async (req, res, next) => {
     // Get graphQL params
-    const graphQLParams = await getGraphQLParams(req);
-    const document = parse(graphQLParams.query);
-    const ast = getOperationAST(document);
-    req.queryVariables = graphQLParams.variables;
-    req.parsedQuery = graphQLParams.query
-      .replace(/\n/g, " ")
-      .replace(/\s+/g, " ");
+    try {
+      const graphQLParams = await getGraphQLParams(req);
+      const document = parse(graphQLParams.query);
+      const ast = getOperationAST(document);
+      req.queryVariables = graphQLParams.variables;
+      req.parsedQuery = graphQLParams.query
+        .replace(/\n/g, " ")
+        .replace(/\s+/g, " ");
 
-    // Check if query is introspection query
-    req.isIntrospectionQuery = isIntrospectionQuery(ast);
+      // Check if query is introspection query
+      req.isIntrospectionQuery = isIntrospectionQuery(ast);
+    } catch (e) {}
 
     // Get bearer token from authorization header
     req.accessToken =
