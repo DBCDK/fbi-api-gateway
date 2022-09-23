@@ -43,6 +43,7 @@
     "promise-limit": "^2.7.0",
     "superagent": "^5.2.2",
     "superagent-proxy": "^3.0.0",
+    "undici": "^5.10.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
