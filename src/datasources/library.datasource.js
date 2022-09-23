@@ -24,7 +24,7 @@ const fields = [
   "postalCode",
 ];
 
-const storeFields = [...fields, "libraryStatus"];
+const storeFields = [...fields, "libraryStatus", "pickupAllowed"];
 
 // Indexer options
 const options = {
@@ -156,6 +156,7 @@ export async function search(props, getFunc) {
     digitalAccessSubscriptions,
     infomediaSubscriptions,
     status = "AKTIVE",
+    excludeBranches,
   } = props;
 
   if (!branches || age() > timeToLiveMS) {
@@ -173,16 +174,6 @@ export async function search(props, getFunc) {
           name: branch.branchName,
         }));
 
-        if (excludeBranches) {
-          branches = branches.filter(function (item) {
-            return (
-              digitalAccessSubscriptions[item.agencyId] ||
-              infomediaSubscriptions[item.agencyId] ||
-              item.pickupAllowed
-            );
-          });
-        }
-
         branchesMap = {};
         branches.forEach((branch) => (branchesMap[branch.id] = branch));
 
@@ -195,16 +186,44 @@ export async function search(props, getFunc) {
   }
 
   // filter on requested status
-  const filterMe =
-    status !== "ALLE" ? (branch) => branch.libraryStatus === status : null;
+  const filterMe = status !== "ALLE";
+
+  // three different filter funcs - depending on parameters given
+  const filterAndExclude = (branch) => {
+    return (
+      (digitalAccessSubscriptions[branch.agencyId] ||
+        infomediaSubscriptions[branch.agencyId] ||
+        branch.pickupAllowed) &&
+      branch.libraryStatus === status
+    );
+  };
+
+  const exclude = (branch) => {
+    return (
+      digitalAccessSubscriptions[branch.agencyId] ||
+      infomediaSubscriptions[branch.agencyId] ||
+      branch.pickupAllowed
+    );
+  };
+
+  const filterOnly = (branch) => branch.libraryStatus === status;
+  // end three different filter funcs
+
+  const filterFunc =
+    excludeBranches && filterMe
+      ? filterAndExclude
+      : excludeBranches && !filterMe
+      ? exclude
+      : filterMe
+      ? filterOnly
+      : null;
 
   let result = branches;
-
   if (q) {
     // prefix match
     result = index.search(q, branches, {
       ...searchOptions,
-      ...(filterMe && { filter: filterMe }),
+      ...(filterFunc && { filter: filterFunc }),
     });
 
     // If no match use fuzzy to find the nearest match
@@ -216,6 +235,8 @@ export async function search(props, getFunc) {
         fuzzy: 0.4,
       });
     }
+  } else if (filterMe || excludeBranches) {
+    result = result.filter(filterFunc);
   }
 
   // merged to return all fields.
