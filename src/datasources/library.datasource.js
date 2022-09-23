@@ -6,11 +6,13 @@
  * it does not support highlighting and "one field search"
  *
  */
-import { orderBy } from "lodash";
+import { orderBy, uniqBy } from "lodash";
 import request from "superagent";
 import config from "../config";
 import { createIndexer } from "../utils/searcher";
 
+// this endpoint is not in use right now. wait for fbiscrum to
+// fix vip-core.
 const endpoint = "/findlibrary/all?trackingId=betabib";
 
 const fields = [
@@ -22,10 +24,12 @@ const fields = [
   "postalCode",
 ];
 
+const storeFields = [...fields, "libraryStatus"];
+
 // Indexer options
 const options = {
   fields, // fields to index for full-text search
-  storeFields: fields,
+  storeFields,
   processTerm: (term, _fieldName) =>
     term
       .toLowerCase()
@@ -55,12 +59,71 @@ let fetchingPromise;
 const index = createIndexer({ options });
 const timeToLiveMS = 1000 * 60 * 30;
 
+/**
+ * Not in use at the moment - a bug in vip-core. To get libraries to
+ * show in bibliotek.dk use libraryStatus="AKTIVE"
+ * @returns {Promise<*>}
+ */
 async function get() {
   const url = config.datasources.vipcore.url + endpoint;
-  let result = (await request.get(url)).body.pickupAgency;
+  const result = (await request.get(url)).body.pickupAgency;
 
-  // Map to format supported by minisearch
-  result = result.map((branch) => {
+  return result;
+}
+
+/**
+ * Do a post with given library status
+ * @param status
+ * @returns {Promise<*>}
+ */
+async function post(status) {
+  const url =
+    config.datasources.vipcore.url + "/findlibrary?trackingId=betabib";
+  const result = (
+    await request.post(url).send({
+      libraryStatus: status,
+    })
+  ).body.pickupAgency;
+
+  return result;
+}
+
+/**
+ * Time to cache libraries
+ * @returns {number|number}
+ */
+const age = () => {
+  return lastUpdateMS ? new Date().getTime() - lastUpdateMS : 0;
+};
+
+/**
+ * Do request(s) - we do several requests to get hold of all libraries (active, deleted, invisible)
+ * and set a library status to filter on.
+ *
+ * @returns {Promise<(*&{branchShortName, branchName, openingHours, illOrderReceiptText})[]>}
+ */
+async function doRequest() {
+  let result;
+
+  // get active libraries first (librarStatus:"AKTIVE")
+  const active = await post("AKTIVE");
+  // set active status on active libraries
+  active.forEach((del) => (del.libraryStatus = "AKTIVE"));
+  // now get deleted libraries (libraryStatus: "SLETTET")
+  const deleted = await post("SLETTET");
+  // set deleted status on deleted libraries
+  deleted.forEach((del) => (del.libraryStatus = "SLETTET"));
+  // now get invisible libraries (libraryStatus:"USYNLIG")
+  // invisible libraries are also included in active
+  const invisible = await post("USYNLIG");
+  // set invisible status on invisible libraries
+  invisible.forEach((del) => (del.libraryStatus = "USYNLIG"));
+  // merge arrays to get ALL libraries with libraryStatus set on relevant ones
+  const alllibrarieswithstatus = [...invisible, ...active, ...deleted];
+  // filter out duplicates
+  const uniqueLibraries = uniqBy(alllibrarieswithstatus, "branchId");
+
+  result = uniqueLibraries.map((branch) => {
     return {
       ...branch,
       branchName:
@@ -78,6 +141,12 @@ async function get() {
   return result;
 }
 
+/**
+ * Search on given query.
+ * @param props
+ * @param getFunc
+ * @returns {Promise<{result: (*&{language: string})[], hitcount: number}>}
+ */
 export async function search(props, getFunc) {
   const {
     q,
@@ -88,18 +157,18 @@ export async function search(props, getFunc) {
     branchId,
     digitalAccessSubscriptions,
     infomediaSubscriptions,
+    status = "AKTIVE",
   } = props;
 
-  const age = lastUpdateMS ? new Date().getTime() - lastUpdateMS : 0;
-
-  if (!branches || age > timeToLiveMS) {
+  if (!branches || age() > timeToLiveMS) {
+    //if (true) {
     try {
       // Handle race condition
-      // Avoid fetching branches at mulitple requests at a time
+      // Avoid fetching branches at multiple requests at a time
       if (fetchingPromise) {
         await fetchingPromise;
       } else {
-        fetchingPromise = getFunc(props);
+        fetchingPromise = getFunc();
         branches = (await fetchingPromise).map((branch) => ({
           ...branch,
           id: branch.branchId,
@@ -127,17 +196,25 @@ export async function search(props, getFunc) {
     }
   }
 
+  // filter on requested status
+  const filterMe =
+    status !== "ALLE" ? (branch) => branch.libraryStatus === status : null;
+
   let result = branches;
 
   if (q) {
     // prefix match
-    result = index.search(q, branches, searchOptions);
+    result = index.search(q, branches, {
+      ...searchOptions,
+      ...(filterMe && { filter: filterMe }),
+    });
 
-    // If no match use fuzzy to find nearest match
+    // If no match use fuzzy to find the nearest match
     if (result.length === 0) {
       // try fuzzy  match
       result = index.search(q, branches, {
         ...searchOptions,
+        ...(filterMe && { filter: filterMe }),
         fuzzy: 0.4,
       });
     }
@@ -171,5 +248,5 @@ export async function search(props, getFunc) {
 }
 
 export async function load(props) {
-  return search(props, get);
+  return search(props, doRequest);
 }

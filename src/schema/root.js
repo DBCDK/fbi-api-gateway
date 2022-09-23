@@ -69,7 +69,7 @@ type Query {
 
 
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit): BranchResult!
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomedia(id: String!): InfomediaResponse!
@@ -234,6 +234,7 @@ export const resolvers = {
         language: args.language,
         agencyid: args.agencyid,
         branchId: args.branchId,
+        status: args.status || "AKTIVE",
         digitalAccessSubscriptions,
         infomediaSubscriptions,
       });

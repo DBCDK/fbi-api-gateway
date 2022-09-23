@@ -3,10 +3,16 @@
  *
  */
 
-import { orderBy, sortedUniqBy, uniqBy } from "lodash";
+import { orderBy } from "lodash";
 import { resolveBorrowerCheck } from "../utils/utils";
 
-export const typeDef = `  
+export const typeDef = `
+  enum LibraryStatus {
+    SLETTET
+    AKTIVE
+    ALLE
+    USYNLIG
+  }  
   enum VipUserParameter {
     cpr
     userId
@@ -335,8 +341,8 @@ export const resolvers = {
     },
     agencyUrl(parent, args, context, info) {
       return (
-        parent.result[0].userStatusUrl ||
-        parent.result[0].branchWebsiteUrl ||
+        parent?.result[0]?.userStatusUrl ||
+        parent?.result[0]?.branchWebsiteUrl ||
         ""
       );
     },
