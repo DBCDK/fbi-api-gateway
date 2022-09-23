@@ -22,13 +22,14 @@ const fields = [
   "branchId",
   "city",
   "postalCode",
-  "libraryStatus",
 ];
+
+const storeFields = [...fields, "libraryStatus"];
 
 // Indexer options
 const options = {
   fields, // fields to index for full-text search
-  storeFields: fields,
+  storeFields,
   processTerm: (term, _fieldName) =>
     term
       .toLowerCase()
