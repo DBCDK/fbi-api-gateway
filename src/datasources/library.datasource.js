@@ -79,13 +79,11 @@ async function get() {
 async function post(status) {
   const url =
     config.datasources.vipcore.url + "/findlibrary?trackingId=betabib";
-  const result = (
+  return (
     await request.post(url).send({
       libraryStatus: status,
     })
   ).body.pickupAgency;
-
-  return result;
 }
 
 /**
