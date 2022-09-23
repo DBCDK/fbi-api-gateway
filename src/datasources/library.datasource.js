@@ -221,7 +221,7 @@ export async function search(props, getFunc) {
 
   // merged to return all fields.
   let merged = result.map((branch) => ({
-    ...branches,
+    ...branch,
     ...branchesMap[branch.id],
   }));
 
