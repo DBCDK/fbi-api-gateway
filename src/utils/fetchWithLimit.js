@@ -9,11 +9,11 @@ const { performance, PerformanceObserver } = require("perf_hooks");
 // Log dns and tcp connect durations
 const obs = new PerformanceObserver((list) => {
   list.getEntries().forEach((entry) => {
-    if (entry.duration > 1000) {
+    if (entry.duration > 0) {
       if (entry.name === "lookup") {
         log.info("DNS_DIAGNOSTICS", {
           diagnostics: {
-            hostname: entry.hostname,
+            hostname: entry.detail.hostname,
             total: entry.duration,
           },
         });
