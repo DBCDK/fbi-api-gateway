@@ -14,6 +14,11 @@ export default {
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   datasources: {
+    relatedsubjects: {
+      url:
+        process.env.RELATED_SUBJECTS ||
+        "http://query-related-subject-1-0.mi-prod.svc.cloud.dbc.dk/",
+    },
     faustService: {
       url:
         process.env.FAUST_SERVICE_URL ||
