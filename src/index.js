@@ -22,7 +22,7 @@ import isbot from "isbot";
 const app = express();
 let server;
 
-const proxy = createProxyMiddleware("http://localhost:3001", {
+const proxy = createProxyMiddleware("http://127.0.0.1:3001", {
   changeOrigin: true,
   ws: true,
   logLevel: "silent",
