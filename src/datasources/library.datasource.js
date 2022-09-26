@@ -156,7 +156,9 @@ export async function search(props, getFunc) {
     digitalAccessSubscriptions,
     infomediaSubscriptions,
     status = "AKTIVE",
-    excludeBranches,
+    digitalAccess,
+    infomediaAccess,
+    pickupAllowed,
   } = props;
 
   if (!branches || age() > timeToLiveMS) {
@@ -187,43 +189,24 @@ export async function search(props, getFunc) {
 
   // filter on requested status
   const filterMe = status !== "ALLE";
+  // exclude branches on one or more parameters
+  const excludeBranches = digitalAccess || infomediaAccess || pickupAllowed;
 
-  // three different filter funcs - depending on parameters given
   const filterAndExclude = (branch) => {
     return (
-      (digitalAccessSubscriptions[branch.agencyId] ||
-        infomediaSubscriptions[branch.agencyId] ||
-        branch.pickupAllowed) &&
-      branch.libraryStatus === status
+      (digitalAccess ? digitalAccessSubscriptions[branch.agencyId] : true) &&
+      (infomediaAccess ? infomediaSubscriptions[branch.agencyId] : true) &&
+      (pickupAllowed ? branch.pickupAllowed : true) &&
+      (filterMe ? branch.libraryStatus === status : true)
     );
   };
-
-  const exclude = (branch) => {
-    return (
-      digitalAccessSubscriptions[branch.agencyId] ||
-      infomediaSubscriptions[branch.agencyId] ||
-      branch.pickupAllowed
-    );
-  };
-
-  const filterOnly = (branch) => branch.libraryStatus === status;
-  // end three different filter funcs
-
-  const filterFunc =
-    excludeBranches && filterMe
-      ? filterAndExclude
-      : excludeBranches && !filterMe
-      ? exclude
-      : filterMe
-      ? filterOnly
-      : null;
 
   let result = branches;
   if (q) {
     // prefix match
     result = index.search(q, branches, {
       ...searchOptions,
-      ...(filterFunc && { filter: filterFunc }),
+      ...((filterMe || excludeBranches) && { filter: filterAndExclude }),
     });
 
     // If no match use fuzzy to find the nearest match
@@ -231,13 +214,13 @@ export async function search(props, getFunc) {
       // try fuzzy  match
       result = index.search(q, branches, {
         ...searchOptions,
-        ...(filterMe && { filter: filterMe }),
+        ...((filterMe || excludeBranches) && { filter: filterAndExclude }),
         fuzzy: 0.4,
       });
     }
   } // no query given - result is all branches - filter if requested
   else if (filterMe || excludeBranches) {
-    result = result.filter(filterFunc);
+    result = result.filter(filterAndExclude);
   }
 
   // merged to return all fields.
