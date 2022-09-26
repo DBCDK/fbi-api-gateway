@@ -235,7 +235,8 @@ export async function search(props, getFunc) {
         fuzzy: 0.4,
       });
     }
-  } else if (filterMe || excludeBranches) {
+  } // no query given - result is all branches - filter if requested
+  else if (filterMe || excludeBranches) {
     result = result.filter(filterFunc);
   }
 
