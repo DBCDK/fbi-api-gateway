@@ -416,6 +416,8 @@ type Languages {
 }
 
 enum IdentifierType {
+  UPC
+  URI
   DOI
   ISBN
   ISSN
@@ -1638,6 +1640,8 @@ type Languages {
 }
 
 enum IdentifierType {
+  UPC
+  URI
   DOI
   ISBN
   ISSN

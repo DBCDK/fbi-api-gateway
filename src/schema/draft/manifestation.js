@@ -1,6 +1,20 @@
 import { parseJedSubjects } from "../../utils/utils";
 import { resolveOnlineAccess } from "./draft_utils_manifestations";
-import * as consts from "./FAKE";
+
+const IDENTIFIER_TYPES = new Set([
+  "UPC",
+  "URI",
+  "DOI",
+  "ISBN",
+  "ISSN",
+  "ISMN",
+  "MUSIC",
+  "MOVIE",
+  "PUBLIZON",
+  "NOT_SPECIFIED",
+  "ORDER_NUMBER",
+  "BARCODE",
+]);
 
 export const typeDef = `
 type TableOfContent {
@@ -232,6 +246,8 @@ type Languages {
   abstract: [Language!]
 }
 enum IdentifierType {
+  UPC
+  URI
   DOI
   ISBN
   ISSN
@@ -658,6 +674,16 @@ type ManifestationTitles {
 `;
 
 export const resolvers = {
+  Audience: {
+    ages(parent) {
+      return Array.isArray(parent?.ages) ? parent?.ages : [];
+    },
+  },
+  Identifier: {
+    type(parent) {
+      return IDENTIFIER_TYPES.has(parent.type) ? parent.type : "NOT_SPECIFIED";
+    },
+  },
   Manifestation: {
     async access(parent, args, context, info) {
       const resolved = await resolveOnlineAccess(parent.pid, context);

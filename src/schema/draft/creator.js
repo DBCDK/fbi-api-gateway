@@ -135,7 +135,10 @@ interface Creator {
 export const resolvers = {
   Person: {
     roles(parent, args, context, info) {
-      return parent?.roles || [];
+      return Array.isArray(parent?.roles) ? parent?.roles : [];
+    },
+    aliases(parent) {
+      return Array.isArray(parent?.aliases) ? parent?.aliases : [];
     },
   },
 };
