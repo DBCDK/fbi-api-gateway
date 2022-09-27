@@ -78,7 +78,7 @@ type Query {
   localizations(pids:[String!]!):Localizations
   refWorks(pid:String!):String!
   ris(pid:String!):String!
-  relatedSubjects(q:String!):[String!]
+  relatedSubjects(q:String!, limit:Int ):[String!]
 }
 
 type Mutation {
@@ -115,6 +115,7 @@ function translateFilters(filters) {
   });
   return res;
 }
+
 /**
  * Root resolvers
  */
@@ -123,13 +124,8 @@ export const resolvers = {
     async relatedSubjects(parent, args, context, info) {
       const related = await context.datasources
         .getLoader("relatedSubjects")
-        .load({
-          q: args.q,
-          context,
-        });
-
-      console.log(related, "RELATED");
-      return related;
+        .load({ q: args.q, n: args.limit });
+      return related.response;
     },
     async ris(parent, args, context, info) {
       const ris = await context.datasources.getLoader("ris").load({
