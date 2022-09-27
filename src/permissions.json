@@ -16,7 +16,8 @@
       "refWorks",
       "ris",
       "submitPeriodicaArticleOrder",
-      "library"
+      "library",
+      "relatedSubjects"
     ],
     "denyTypes": ["CheckOrderPolicy", "Availability", "SEO"]
   }
