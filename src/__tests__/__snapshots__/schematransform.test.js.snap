@@ -1144,6 +1144,7 @@ type Query {
   infomedia(id: String!): InfomediaResponse!
   refWorks(pid: String!): String!
   ris(pid: String!): String!
+  relatedSubjects(q: [String!]!, limit: Int): [String!]
 }
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
