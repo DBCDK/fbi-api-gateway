@@ -24,7 +24,7 @@ const fields = [
   "postalCode",
 ];
 
-const storeFields = [...fields, "libraryStatus"];
+const storeFields = [...fields, "libraryStatus", "pickupAllowed"];
 
 // Indexer options
 const options = {
@@ -155,9 +155,9 @@ export async function search(props, getFunc) {
     branchId,
     digitalAccessSubscriptions,
     infomediaSubscriptions,
-    status = "AKTIVE",
+    status,
+    bibdkExcludeBranches,
   } = props;
-
   if (!branches || age() > timeToLiveMS) {
     //if (true) {
     try {
@@ -173,16 +173,6 @@ export async function search(props, getFunc) {
           name: branch.branchName,
         }));
 
-        if (excludeBranches) {
-          branches = branches.filter(function (item) {
-            return (
-              digitalAccessSubscriptions[item.agencyId] ||
-              infomediaSubscriptions[item.agencyId] ||
-              item.pickupAllowed
-            );
-          });
-        }
-
         branchesMap = {};
         branches.forEach((branch) => (branchesMap[branch.id] = branch));
 
@@ -193,18 +183,26 @@ export async function search(props, getFunc) {
       fetchingPromise = null;
     }
   }
-
   // filter on requested status
-  const filterMe =
-    status !== "ALLE" ? (branch) => branch.libraryStatus === status : null;
+  const filterMe = status !== "ALLE";
+  // filter function to be used in all cases
+  const filterAndExclude = (branch) => {
+    return (
+      (bibdkExcludeBranches
+        ? digitalAccessSubscriptions[branch.agencyId] ||
+          infomediaSubscriptions[branch.agencyId] ||
+          branch.pickupAllowed
+        : true) && (filterMe ? branch.libraryStatus === status : true)
+    );
+  };
 
   let result = branches;
-
   if (q) {
+    // query given
     // prefix match
     result = index.search(q, branches, {
       ...searchOptions,
-      ...(filterMe && { filter: filterMe }),
+      ...((filterMe || bibdkExcludeBranches) && { filter: filterAndExclude }),
     });
 
     // If no match use fuzzy to find the nearest match
@@ -212,10 +210,13 @@ export async function search(props, getFunc) {
       // try fuzzy  match
       result = index.search(q, branches, {
         ...searchOptions,
-        ...(filterMe && { filter: filterMe }),
+        ...((filterMe || bibdkExcludeBranches) && { filter: filterAndExclude }),
         fuzzy: 0.4,
       });
     }
+  } // no query given - result is all branches - filter if requested
+  else if (filterMe || bibdkExcludeBranches) {
+    result = result.filter(filterAndExclude);
   }
 
   // merged to return all fields.
