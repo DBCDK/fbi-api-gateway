@@ -4,7 +4,7 @@ export async function load({ q, limit }, context) {
   console.log(q);
 
   const url = config.datasources.relatedsubjects.url;
-  let query = "?q=" + q.join(",");
+  let query = "?q=" + q.join("&=");
   if (limit) {
     query += "&n=" + limit;
   }
