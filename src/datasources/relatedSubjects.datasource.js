@@ -1,10 +1,12 @@
 import config from "../config";
 
-export async function load({ q, n }, context) {
+export async function load({ q, limit }, context) {
+  console.log(q);
+
   const url = config.datasources.relatedsubjects.url;
-  let query = "?q=" + q;
-  if (n) {
-    query += "&n=" + n;
+  let query = "?q=" + q.join(",");
+  if (limit) {
+    query += "&n=" + limit;
   }
 
   const result = await context.fetch(`${url}${query}`);

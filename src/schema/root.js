@@ -78,7 +78,7 @@ type Query {
   localizations(pids:[String!]!):Localizations
   refWorks(pid:String!):String!
   ris(pid:String!):String!
-  relatedSubjects(q:String!, limit:Int ):[String!]
+  relatedSubjects(q:[String!]!, limit:Int ):[String!]
 }
 
 type Mutation {
