@@ -158,9 +158,6 @@ export async function search(props, getFunc) {
     status,
     bibdkExcludeBranches,
   } = props;
-
-  console.log(bibdkExcludeBranches, "BIBDK");
-
   if (!branches || age() > timeToLiveMS) {
     //if (true) {
     try {
