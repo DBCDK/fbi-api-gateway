@@ -1,0 +1,14 @@
+# Related Subjects
+
+Get subjects related to the result found. This query takes an array og string and return another array of strings with subjects related to input.
+
+<InlineGraphiQL
+query={`query ($q: [String!]!, $limit: Int) {
+relatedSubjects(q: $q, limit: $limit)
+}
+`}
+variables={{
+q: ["harry","magi"],
+limit: 10
+}}
+/>
