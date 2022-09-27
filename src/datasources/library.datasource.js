@@ -155,11 +155,11 @@ export async function search(props, getFunc) {
     branchId,
     digitalAccessSubscriptions,
     infomediaSubscriptions,
-    status = "AKTIVE",
-    digitalAccess,
-    infomediaAccess,
-    pickupAllowed,
+    status,
+    bibdkExcludeBranches,
   } = props;
+
+  console.log(bibdkExcludeBranches, "BIBDK");
 
   if (!branches || age() > timeToLiveMS) {
     //if (true) {
@@ -186,27 +186,26 @@ export async function search(props, getFunc) {
       fetchingPromise = null;
     }
   }
-
   // filter on requested status
   const filterMe = status !== "ALLE";
-  // exclude branches on one or more parameters
-  const excludeBranches = digitalAccess || infomediaAccess || pickupAllowed;
-
+  // filter function to be used in all cases
   const filterAndExclude = (branch) => {
     return (
-      (digitalAccess ? digitalAccessSubscriptions[branch.agencyId] : true) &&
-      (infomediaAccess ? infomediaSubscriptions[branch.agencyId] : true) &&
-      (pickupAllowed ? branch.pickupAllowed : true) &&
-      (filterMe ? branch.libraryStatus === status : true)
+      (bibdkExcludeBranches
+        ? digitalAccessSubscriptions[branch.agencyId] ||
+          infomediaSubscriptions[branch.agencyId] ||
+          branch.pickupAllowed
+        : true) && (filterMe ? branch.libraryStatus === status : true)
     );
   };
 
   let result = branches;
   if (q) {
+    // query given
     // prefix match
     result = index.search(q, branches, {
       ...searchOptions,
-      ...((filterMe || excludeBranches) && { filter: filterAndExclude }),
+      ...((filterMe || bibdkExcludeBranches) && { filter: filterAndExclude }),
     });
 
     // If no match use fuzzy to find the nearest match
@@ -214,12 +213,12 @@ export async function search(props, getFunc) {
       // try fuzzy  match
       result = index.search(q, branches, {
         ...searchOptions,
-        ...((filterMe || excludeBranches) && { filter: filterAndExclude }),
+        ...((filterMe || bibdkExcludeBranches) && { filter: filterAndExclude }),
         fuzzy: 0.4,
       });
     }
   } // no query given - result is all branches - filter if requested
-  else if (filterMe || excludeBranches) {
+  else if (filterMe || bibdkExcludeBranches) {
     result = result.filter(filterAndExclude);
   }
 
