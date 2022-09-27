@@ -234,7 +234,7 @@ export const resolvers = {
         language: args.language,
         agencyid: args.agencyid,
         branchId: args.branchId,
-        status: args.status || "AKTIVE",
+        status: args.status || "ALLE",
         bibdkExcludeBranches: args.bibdkExcludeBranches || false,
         digitalAccessSubscriptions,
         infomediaSubscriptions,

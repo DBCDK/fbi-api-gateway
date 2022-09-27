@@ -58,7 +58,7 @@ test("library - get all", async () => {
             }
           }
         `,
-    variables: {},
+    variables: { bibdkExcludeBranches: true },
     context: { datasources: createMockedDataLoaders() },
   });
   expect(result).toMatchSnapshot();
