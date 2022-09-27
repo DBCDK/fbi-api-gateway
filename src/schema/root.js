@@ -124,7 +124,7 @@ export const resolvers = {
     async relatedSubjects(parent, args, context, info) {
       const related = await context.datasources
         .getLoader("relatedSubjects")
-        .load({ q: args.q, n: args.limit });
+        .load({ q: args.q, limit: args.limit });
       return related.response;
     },
     async ris(parent, args, context, info) {
