@@ -152,6 +152,34 @@ Compared to getting the _works_, _facets_ are more expensive to generate.
 Split the search for _works_ and _facets_ into two requests and send them in parallel. Then the _works_
 can be shown to the user as quickly as possible.
 
+## Intelligent Facets
+
+The _IntelligentFacets_ field differs from the normal _facets_ field in that it does not take any arguments.
+I.e. you do not specify the facets you want to be returned, instead it is automatically decided based on
+the end users input (the query and selected filters).
+
+<InlineGraphiQL
+  query={`query ($q: SearchQuery!, $facetLimit: Int!) {
+    search(q: $q) {
+      hitcount
+      intelligentFacets {
+        name
+        values(limit: $facetLimit) {
+          key
+          term
+          score
+        }
+      }
+    }
+  }`}
+  variables={{
+    q: {
+      all: "harry",
+    },
+    facetLimit: 5,
+  }}
+/>
+
 ## Did You Mean
 
 You can fetch a list of alternative _did you mean_ queries. The user may have misspelled
