@@ -148,6 +148,11 @@ type SearchResponse {
   facets(facets: [FacetField!]!): [FacetResult!]!
 
   """
+  Will return the facets that best match the input query and filters
+  """
+  intelligentFacets(limit: Int): [FacetResult!]!
+
+  """
   A list of alternative search queries
   """
   didYouMean: [DidYouMean!]!
@@ -189,6 +194,32 @@ export const resolvers = {
     },
   },
   SearchResponse: {
+    async intelligentFacets(parent, args, context) {
+      const limit = args?.limit || 10;
+      // Hard coded until we get the service
+      return [
+        {
+          name: "genreAndForm",
+          values: [
+            { term: "krimi", score: 284 },
+            { term: "politiromaner", score: 23 },
+            { term: "spænding", score: 16 },
+          ],
+        },
+        {
+          name: "mainLanguages",
+          values: [
+            { term: "dan", score: 1291 },
+            { term: "ger", score: 364 },
+            { term: "und", score: 220 },
+          ],
+        },
+        {
+          name: "materialTypes",
+          values: [{ term: "lydbog (net)", score: 207 }],
+        },
+      ].slice(0, limit);
+    },
     didYouMean() {
       return [
         { query: "some alternative query 1", score: 0.8 },

@@ -1248,6 +1248,9 @@ type SearchResponse {
   \\"\\"\\"
   facets(facets: [FacetField!]!): [FacetResult!]!
 
+  \\"\\"\\"Will return the facets that best match the input query and filters\\"\\"\\"
+  intelligentFacets(limit: Int): [FacetResult!]!
+
   \\"\\"\\"A list of alternative search queries\\"\\"\\"
   didYouMean: [DidYouMean!]!
 }
