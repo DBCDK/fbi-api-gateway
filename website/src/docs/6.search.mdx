@@ -159,12 +159,12 @@ I.e. you do not specify the facets you want to be returned, instead it is automa
 the end users input (the query and selected filters).
 
 <InlineGraphiQL
-  query={`query ($q: SearchQuery!, $facetLimit: Int!) {
+  query={`query ($q: SearchQuery!, $facetsLimit: Int!, $valuesLimit: Int!) {
     search(q: $q) {
       hitcount
-      intelligentFacets {
+      intelligentFacets(limit: $facetsLimit) {
         name
-        values(limit: $facetLimit) {
+        values(limit: $valuesLimit) {
           key
           term
           score
@@ -176,7 +176,8 @@ the end users input (the query and selected filters).
     q: {
       all: "harry",
     },
-    facetLimit: 5,
+    facetsLimit: 5,
+    valuesLimit: 5,
   }}
 />
 

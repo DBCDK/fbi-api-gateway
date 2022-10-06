@@ -150,7 +150,7 @@ type SearchResponse {
   """
   Will return the facets that best match the input query and filters
   """
-  intelligentFacets: [FacetResult!]!
+  intelligentFacets(limit: Int): [FacetResult!]!
 
   """
   A list of alternative search queries
@@ -195,6 +195,7 @@ export const resolvers = {
   },
   SearchResponse: {
     async intelligentFacets(parent, args, context) {
+      const limit = args?.limit || 10;
       // Hard coded until we get the service
       return [
         {
@@ -217,7 +218,7 @@ export const resolvers = {
           name: "materialTypes",
           values: [{ term: "lydbog (net)", score: 207 }],
         },
-      ];
+      ].slice(0, limit);
     },
     didYouMean() {
       return [
