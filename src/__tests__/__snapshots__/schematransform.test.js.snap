@@ -680,7 +680,7 @@ type Manifestation {
   physicalDescriptions: [PhysicalDescription!]!
 
   \\"\\"\\"The publication year of the manifestation - OBS! was datePublished\\"\\"\\"
-  publicationYear: PublicationYear!
+  publicationYear: PublicationYear! @deprecated(reason: \\"use edition.publicationYear instead.\\")
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -1899,7 +1899,7 @@ type Manifestation {
   physicalDescriptions: [PhysicalDescription!]!
 
   \\"\\"\\"The publication year of the manifestation - OBS! was datePublished\\"\\"\\"
-  publicationYear: PublicationYear!
+  publicationYear: PublicationYear! @deprecated(reason: \\"use edition.publicationYear instead.\\")
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!

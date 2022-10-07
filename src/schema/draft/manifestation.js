@@ -582,7 +582,7 @@ type Manifestation {
   """
   The publication year of the manifestation - OBS! was datePublished
   """
-  publicationYear: PublicationYear!
+  publicationYear: PublicationYear! @deprecated(reason: "use edition.publicationYear instead.")
 
   """
   Publisher of this manifestion
@@ -746,6 +746,10 @@ export const resolvers = {
           ? parent?.subjects?.dbcVerified
           : parseJedSubjects(parent?.subjects?.dbcVerified),
       };
+    },
+    // deprecated, will be removed some day
+    publicationYear(parent, args, context, info) {
+      return parent?.edition?.publicationYear || {};
     },
   },
 };

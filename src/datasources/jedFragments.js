@@ -137,7 +137,10 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
         }
         subjects {
           display
-          language
+          language {
+            display
+            isoCode
+          }
           type
         }
         timePeriods {
@@ -187,7 +190,10 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
         }
         subjects {
           display
-          language
+          language {
+            display
+            isoCode
+          }
           type
         }
         timePeriods {
@@ -339,7 +345,6 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
     }
     identifiers {
       type
-      schema_org
       value
     }
     languages {
@@ -447,7 +452,10 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         }
         subjects {
           display
-          language
+          language {
+            display
+            isoCode
+          }
           type
         }
       }
@@ -488,7 +496,10 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         }
         subjects {
           display
-          language
+          language {
+            display
+            isoCode
+          }
           type
         }
       }
@@ -528,12 +539,6 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       textVsIllustrations
     }
     pid
-    publicationYear {
-      display
-      endYear
-      frequency
-      year
-    }
     publisher
     recordCreationDate
     relatedPublications {
