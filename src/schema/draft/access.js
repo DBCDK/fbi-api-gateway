@@ -10,7 +10,8 @@ export const typeDef = `
 enum AccessTypeCode {
   PHYSICAL
   ONLINE
-  NOT_SPECIFIED
+  NOT_SPECIFIED @deprecated
+  UNKNOWN
 }
 type AccessType {
   display: String!

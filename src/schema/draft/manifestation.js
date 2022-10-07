@@ -726,6 +726,17 @@ export const resolvers = {
         })),
       ];
     },
+
+    // here is a discrepancy with fbi-api and jed-api .. FIX IT when we are allowed to
+    shelfmark(parent, args, context, info) {
+      if (parent?.shelfmark) {
+        return {
+          postfix: parent?.shelfmark?.postfix || "",
+          shelfmark: parent?.shelfmark?.shelfmark || "",
+        };
+      }
+      return null;
+    },
     subjects(parent, args, context, info) {
       return {
         all: Array.isArray(parent?.subjects?.all)

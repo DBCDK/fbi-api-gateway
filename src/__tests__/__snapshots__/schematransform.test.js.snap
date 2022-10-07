@@ -33,7 +33,8 @@ type Cover {
 enum AccessTypeCode {
   PHYSICAL
   ONLINE
-  NOT_SPECIFIED
+  NOT_SPECIFIED @deprecated
+  UNKNOWN
 }
 
 type AccessType {
@@ -1293,7 +1294,8 @@ exports[`remove all fields by type 1`] = `
 "enum AccessTypeCode {
   PHYSICAL
   ONLINE
-  NOT_SPECIFIED
+  NOT_SPECIFIED @deprecated
+  UNKNOWN
 }
 
 type AccessType {
