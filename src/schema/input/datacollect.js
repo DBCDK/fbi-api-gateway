@@ -16,6 +16,8 @@ export const typeDef = `
   }
   input DataCollectSearchInput {
     search_request: DataCollectSearchRequest!
+    search_response_works: [String!]!
+    search_offset: Int!
     session_id: String!
   }
   input DataCollectExampleInput {
