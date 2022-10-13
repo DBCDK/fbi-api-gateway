@@ -130,6 +130,8 @@ export const resolvers = {
         agencyid: res.agency,
         language: parent.language,
         limit: 100,
+        status: args.status || "ALLE",
+        bibdkExcludeBranches: args.bibdkExcludeBranches || false,
         digitalAccessSubscriptions,
         infomediaSubscriptions,
       });
