@@ -150,8 +150,10 @@ export const resolvers = {
       const userIdTypes = ["cpr", "barcode", "cardno", "customId"];
 
       // Find the userId type, exactly one will be used
-      const userIdType = userParameters.find((parameter) =>
-        userIdTypes.includes(parameter.userParameterType)
+      const userIdType = userParameters.find(
+        (parameter) =>
+          userIdTypes.includes(parameter.userParameterType) &&
+          parameter.parameterRequired
       ) || { userParameterType: "userId" };
 
       // We force some parameters to be required (for bibdk)
