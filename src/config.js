@@ -20,6 +20,12 @@ export default {
         "http://cat-inspire-1-0.mi-prod.svc.cloud.dbc.dk",
       ttl: process.env.CAT_INSPIRE_TIME_TO_LIVE_SECONDS || 60,
       prefix: process.env.CAT_INSPIRE_PREFIX || "cat-inspire-1",
+    complexsearch: {
+      url:
+        process.env.COMPLEX_SEARCH_URL ||
+        "http://cql-parser.complex-search-staging.svc.cloud.dbc.dk/api/v1",
+      ttl: process.env.COMPLEX_SEARCH_TIME_TO_LIVE_SECONDS || 60,
+      prefix: process.env.COMPLEX_SEARCH_PREFIX || "complexsearch-1",
     },
     relatedsubjects: {
       url:

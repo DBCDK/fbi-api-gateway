@@ -25,32 +25,19 @@ type ComplexSearchResponse {
   The works matching the given search query. Use offset and limit for pagination.
   """
   works(offset: Int! limit: PaginationLimit!): [Work!]!
+
+  """
+  Error message, for instance if CQL is invalid
+  """
+  errorMessage: String
 }
 `;
 
 export const resolvers = {
   ComplexSearchResponse: {
-    async hitcount(parent, args, context) {
-      const res = await context.datasources.getLoader("simplesearch").load({
-        q: { all: parent.cql },
-        filters: parent.filters,
-        profile: context.profile,
-      });
-
-      return res.hitcount;
-    },
     async works(parent, args, context) {
-      const res = await context.datasources.getLoader("simplesearch").load({
-        q: { all: parent.cql },
-        filters: parent.filters,
-        ...args,
-        profile: context.profile,
-      });
-
       const expanded = await Promise.all(
-        res.result.map(async ({ workid }) =>
-          resolveWork({ id: workid }, context)
-        )
+        parent?.works?.map(async (id) => resolveWork({ id }, context))
       );
 
       return expanded.filter((work) => !!work);
