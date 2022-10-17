@@ -749,7 +749,7 @@ export const resolvers = {
     },
     // deprecated, will be removed some day
     publicationYear(parent, args, context, info) {
-      return parent?.edition?.publicationYear || {};
+      return parent?.edition?.publicationYear || { display: "" };
     },
   },
 };
