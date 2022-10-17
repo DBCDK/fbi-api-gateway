@@ -65,13 +65,7 @@ type Query {
   """
   Get recommendations
   """
-  recommend(id: String, pid: String, faust: String, limit: Int): RecommendationResponse!
-
-  """
-  Get local recommendations for specific branch
-  """
-  localRecommend(id: String, pid: String, faust: String, limit: Int, branchId: String!): RecommendationResponse!
-
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
 
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult!
@@ -260,9 +254,6 @@ export const resolvers = {
       return args;
     },
     recommend(parent, args, context, info) {
-      return args;
-    },
-    localRecommend(parent, args, context, info) {
       return args;
     },
     async deleteOrder(parent, args, context, info) {
