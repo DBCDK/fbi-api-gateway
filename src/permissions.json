@@ -12,6 +12,7 @@
       "complexSearch",
       "localSuggest",
       "recommend",
+      "localRecommend",
       "infomedia",
       "refWorks",
       "ris",
