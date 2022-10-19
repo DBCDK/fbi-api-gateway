@@ -79,7 +79,7 @@ type Query {
   refWorks(pid:String!):String!
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ):[String!]
-  categoryInspiration: Category!
+  inspiration(language: LanguageCode, limit: Int): Inspiration!
 }
 
 type Mutation {
@@ -122,14 +122,8 @@ function translateFilters(filters) {
  */
 export const resolvers = {
   Query: {
-    async categoryInspiration(parent, args, context, info) {
-      const inspiration = await context.datasources
-        .getLoader("catInspire")
-        .load(args);
-
-      console.log("########### inspiration", inspiration);
-
-      return inspiration.response;
+    async inspiration(parent, args, context, info) {
+      return {};
     },
     async relatedSubjects(parent, args, context, info) {
       const related = await context.datasources
