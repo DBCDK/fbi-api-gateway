@@ -8,16 +8,18 @@ import config from "../config";
 
 const { url, prefix, ttl } = config.datasources.recommendations;
 
-export async function load({ pid, limit = 10, profile }) {
+export async function load({ pid, limit = 10, profile, branchId }) {
+  const body = {
+    like: [pid],
+    agencies: [profile.agency],
+    persistent_work: true,
+    limit,
+  };
+  if (branchId) {
+    body.branchid = branchId;
+  }
   try {
-    return (
-      await request.post(url).send({
-        like: [pid],
-        agencies: [profile.agency],
-        persistent_work: true,
-        limit,
-      })
-    ).body;
+    return (await request.post(url).send(body)).body;
   } catch (e) {
     log.error("Request to recommender failed." + " Message: " + e.message);
 

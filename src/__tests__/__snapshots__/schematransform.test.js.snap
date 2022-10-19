@@ -1143,7 +1143,7 @@ type Query {
   ): SuggestResponse!
 
   \\"\\"\\"Get recommendations\\"\\"\\"
-  recommend(id: String, pid: String, faust: String, limit: Int): RecommendationResponse!
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
   infomedia(id: String!): InfomediaResponse!
   refWorks(pid: String!): String!
   ris(pid: String!): String!

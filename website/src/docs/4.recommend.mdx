@@ -42,7 +42,34 @@ Results returned as pids (manifestations):
   }
 }`}
   variables={{
-  "pid": "870970-basis:28995946",
-  "limit": 10
-}}
+    pid: "870970-basis:28995946",
+    limit: 10,
+  }}
+/>
+
+## Local Recommendations
+
+This example assumes that you have an access token for Aarhus. It uses 775147 (Hasle Bibliotek) as branchId.
+
+<InlineGraphiQL
+  query={`query ($pid: String!, $limit: Int!, $branchId: String!) {
+  recommend(pid: $pid, limit: $limit, branchId: $branchId) {
+    result {
+      work {
+        workId
+        titles {
+          main
+        }
+        creators {
+          display
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    pid: "870970-basis:28995946",
+    limit: 10,
+    branchId: "775147",
+  }}
 />

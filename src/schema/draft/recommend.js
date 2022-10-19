@@ -52,6 +52,7 @@ export const resolvers = {
           pid,
           limit: parent.limit || 10,
           profile: context.profile,
+          branchId: parent.branchId,
         });
       if (recommendations?.response) {
         return recommendations.response;
