@@ -14,6 +14,11 @@ export default {
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   datasources: {
+    catInspire: {
+      url:
+        process.env.CAT_INSPIRE ||
+        "http://cat-inspire-1-0.mi-prod.svc.cloud.dbc.dk/",
+    },
     relatedsubjects: {
       url:
         process.env.RELATED_SUBJECTS ||
