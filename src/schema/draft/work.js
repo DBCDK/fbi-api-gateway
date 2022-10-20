@@ -201,6 +201,8 @@ export const resolvers = {
       ];
     },
     subjects(parent, args, context, info) {
+      console.log("fffffffffffff", parent);
+
       return {
         all: parseJedSubjects(parent?.subjects?.all),
         dbcVerified: parseJedSubjects(parent?.subjects?.dbcVerified),

@@ -47,9 +47,11 @@ export const resolvers = {
     async works(parent, args, context, info) {
       const limit = args.limit || 10;
       const expanded = await Promise.all(
-        parent.works.map(async (workid) => resolveWork({ id: workid }, context))
+        parent.works
+          .slice(0, limit)
+          .map(async (workid) => resolveWork({ id: workid }, context))
       );
-      return expanded.filter((work) => !!work).slice(0, limit);
+      return expanded.filter((work) => !!work);
     },
   },
 };
