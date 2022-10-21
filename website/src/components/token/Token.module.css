@@ -50,7 +50,7 @@
 
 .input {
   width: 100%;
-  min-width:75px;
+  min-width: 75px;
   height: var(--pt6);
   padding: 0 var(--pt3);
   border: none;
@@ -72,23 +72,23 @@
 
 /* display */
 
-.display{
-  display:flex;
-  max-width:calc(450px);
+.display {
+  display: flex;
+  max-width: calc(450px);
 }
 
 .display p {
   padding: 0 var(--pt2);
   white-space: nowrap;
   text-overflow: ellipsis;
-  overflow: hidden; 
+  overflow: hidden;
   white-space: nowrap;
 }
 
-.display i{
-margin-left:calc(var(--pt05) * -1);
-font-style: normal;
- /* outline: 2px solid white;
+.display i {
+  margin-left: calc(var(--pt05) * -1);
+  font-style: normal;
+  /* outline: 2px solid white;
  border-radius: 50%;
  outline-offset: var(--pt1); */
 }
@@ -152,12 +152,12 @@ font-style: normal;
 }
 
 .form.compact .wrap .display p {
-  max-width:calc(320px - 100px);
+  max-width: calc(320px - 100px);
   /* max-width:320px; */
 }
 
 .form.compact .input {
-  min-width:75px;
+  min-width: 75px;
   height: var(--pt5);
   /* half height */
   border-radius: calc(var(--pt5) / 2);
@@ -176,8 +176,8 @@ font-style: normal;
   min-width: var(--pt5) !important;
 }
 
-.overlay{
-  background-color:var(--primary-light) !important;
+.overlay {
+  background-color: var(--primary-light) !important;
 }
 
 @media screen and (max-width: 576px) {

@@ -1,0 +1,12 @@
+.offcanvas {
+}
+
+.body {
+}
+
+@media (max-width: 400px) {
+  .offcanvas {
+    width: 100%;
+    border-left: 0;
+  }
+}

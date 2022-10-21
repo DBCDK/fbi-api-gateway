@@ -1,1 +1,5 @@
-export { default, useModal, ModalContext } from "./Modal";
+import Pages from "./pages/";
+import Modal from "./Modal";
+
+export default Modal;
+export { Pages };

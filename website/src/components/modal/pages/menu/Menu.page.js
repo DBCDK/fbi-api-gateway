@@ -25,7 +25,10 @@ function Menu({ modal, context }) {
   const { configuration } = useConfiguration(selectedToken);
 
   const isValidToken =
-    selectedToken && configuration && Object?.keys(configuration).length && configuration.agency;
+    selectedToken &&
+    configuration &&
+    Object?.keys(configuration).length &&
+    configuration.agency;
 
   return (
     <div className={`${styles.menu}`}>
