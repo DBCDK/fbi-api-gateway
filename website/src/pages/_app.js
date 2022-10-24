@@ -15,5 +15,8 @@ function MyApp({ Component, pageProps, router }) {
 
   return <Component {...pageProps} />;
 }
+MyApp.getInitialProps = async () => {
+  return {};
+};
 
 export default MyApp;
