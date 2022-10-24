@@ -2,6 +2,21 @@ import config from "../config";
 
 const { url, ttl, prefix } = config.datasources.catInspire;
 
+export function restructureCategories(data) {
+  const categories = {};
+  if (data) {
+    Object.entries(data).forEach(
+      ([key, val]) =>
+        (categories[key] = Object.entries(val).map(([title, works]) => ({
+          title,
+          works,
+        })))
+    );
+  }
+
+  return categories;
+}
+
 /**
  * Fetch smaug configuration
  */
@@ -9,16 +24,7 @@ export async function load({}, context) {
   const res = await context.fetch(url);
   const data = await res.json();
 
-  const categories = {};
-  Object.entries(data.categories).forEach(
-    ([key, val]) =>
-      (categories[key] = Object.entries(val).map(([title, works]) => ({
-        title,
-        works,
-      })))
-  );
-
-  return categories;
+  return restructureCategories(data?.categories);
 }
 
 export const options = {
