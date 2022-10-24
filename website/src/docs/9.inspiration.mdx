@@ -1,0 +1,28 @@
+# Inspiration
+
+The following examples show how to fetch data used for inspiration.
+
+## Categories
+
+The categories field is used to retrieve works based on a given category.
+Categories contains subcategories, which can hold different subcategory titles,
+like materialTypes, platforms or _popular_ and _newest_ materials.
+
+<InlineGraphiQL
+  query={`query ($limit: Int!) {
+  inspiration {
+    categories {
+      games {
+        title
+        works(limit: $limit) {
+          workId
+          titles {
+            main
+          }
+        }
+      }
+    }
+  }
+}`}
+  variables={{ limit: 10 }}
+/>

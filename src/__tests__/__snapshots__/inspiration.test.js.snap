@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Inspiration - categories 1`] = `
+Object {
+  "data": Object {
+    "inspiration": Object {
+      "categories": Object {
+        "games": Array [
+          Object {
+            "title": "nyeste",
+            "works": Array [
+              Object {
+                "titles": Object {
+                  "main": Array [
+                    "Dummy Some Title",
+                  ],
+                },
+                "workId": "work-of:870970-basis:61629475",
+              },
+              Object {
+                "titles": Object {
+                  "main": Array [
+                    "Dummy Some Title",
+                  ],
+                },
+                "workId": "work-of:870970-basis:62413344",
+              },
+            ],
+          },
+          Object {
+            "title": "populære",
+            "works": Array [
+              Object {
+                "titles": Object {
+                  "main": Array [
+                    "Dummy Some Title",
+                  ],
+                },
+                "workId": "work-of:870970-basis:45938247",
+              },
+              Object {
+                "titles": Object {
+                  "main": Array [
+                    "Dummy Some Title",
+                  ],
+                },
+                "workId": "work-of:870970-basis:28505000",
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
+}
+`;
