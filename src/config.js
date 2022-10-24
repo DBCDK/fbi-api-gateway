@@ -14,6 +14,13 @@ export default {
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   datasources: {
+    catInspire: {
+      url:
+        process.env.CAT_INSPIRE_URL ||
+        "http://cat-inspire-1-0.mi-prod.svc.cloud.dbc.dk",
+      ttl: process.env.CAT_INSPIRE_TIME_TO_LIVE_SECONDS || 60,
+      prefix: process.env.CAT_INSPIRE_PREFIX || "cat-inspire-1",
+    },
     relatedsubjects: {
       url:
         process.env.RELATED_SUBJECTS ||
@@ -41,7 +48,7 @@ export default {
     backend: {
       url:
         process.env.BACKEND_URL ||
-        "http://bibdk-backend-www-master.frontend-prod.svc.cloud.dbc.dk/graphql",
+        "http://bibdk-backend-www-master.febib-prod.svc.cloud.dbc.dk/graphql",
       ttl: process.env.BACKEND_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.BACKEND_PREFIX || "backend-1",
     },

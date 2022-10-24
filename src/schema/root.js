@@ -78,6 +78,7 @@ type Query {
   refWorks(pid:String!):String!
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ):[String!]
+  inspiration(language: LanguageCode, limit: Int): Inspiration!
 }
 
 type Mutation {
@@ -120,6 +121,9 @@ function translateFilters(filters) {
  */
 export const resolvers = {
   Query: {
+    async inspiration(parent, args, context, info) {
+      return {};
+    },
     async relatedSubjects(parent, args, context, info) {
       const related = await context.datasources
         .getLoader("relatedSubjects")
