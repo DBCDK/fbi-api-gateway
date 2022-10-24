@@ -1,7 +1,6 @@
 import { Container, Row, Col } from "react-bootstrap";
-
+import getConfig from "next/config";
 import { useRouter } from "next/router";
-import { useModal } from "@/components/modal";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
@@ -12,10 +11,12 @@ import Button from "@/components/base/button";
 import Label from "@/components/base/label";
 import History from "@/components/history";
 
+const isChristmas = getConfig()?.publicRuntimeConfig?.isChristmas;
+import Snow from "./snow";
+
 import styles from "./Hero.module.css";
 
 export default function Hero({ className = "" }) {
-  const modal = useModal();
   const router = useRouter();
 
   const { selectedToken } = useStorage();
@@ -25,9 +26,10 @@ export default function Hero({ className = "" }) {
     selectedToken && configuration && Object?.keys(configuration).length;
 
   return (
-    <section className={`${styles.hero} ${className}`}>
+    <section className={`${styles.hero} ${className}`} id="hero">
       <div className={styles.color} />
       <div className={styles.silhouette} />
+      {isChristmas && <Snow />}
       <Container>
         <Row className={styles.row}>
           <Col>
@@ -41,7 +43,7 @@ export default function Hero({ className = "" }) {
 
         <Row className={styles.row}>
           <Col>
-            <Token id="token-input" />
+            <Token id="token-input" className={styles.token} />
             <History className={styles.history} />
           </Col>
         </Row>

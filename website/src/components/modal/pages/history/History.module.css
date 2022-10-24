@@ -1,43 +1,29 @@
+.configurations {
+  margin: 0;
+}
+
+.configurations > span {
+  padding: 0;
+}
+
 .authenticated {
   font-size: 11px;
   margin-left: var(--pt1);
   color: #6b6b6b;
   letter-spacing: 0.6px;
 }
-.history {
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-  background-color: var(--divider);
-
-  /* scroll in modal */
-  overflow-y: auto;
-}
-.label {
-  margin-top: var(--pt2);
-}
-
-.history .keys,
-.history .top {
-  padding: var(--pt2);
-  margin: 0;
-}
-
-.history .top {
-  background-color: var(--white);
-}
 
 /* item */
 .item {
   background-color: var(--white);
   margin-bottom: var(--pt2);
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .item.expired .display,
 .item.expired .date,
 .item.expired .id,
-.item.expired .token, 
+.item.expired .token,
 .item.expired .details,
 .item.expired .error {
   color: var(--text-light);
@@ -46,19 +32,19 @@
 .display,
 .date,
 .id,
-.token, 
-.details
-.error {
+.token,
+.details .error {
   padding: var(--pt2) var(--pt2) 0 var(--pt2);
 }
 
-.date p{
-  overflow:hidden;
+.date p {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.token, .details {
+.token,
+.details {
   padding: var(--pt2);
 }
 
@@ -69,9 +55,9 @@
   text-overflow: ellipsis;
 }
 
-.error{
+.error {
   color: var(--error-dark);
-  padding:0 var(--pt2);
+  padding: 0 var(--pt2);
 }
 
 .display {
@@ -104,11 +90,8 @@
 }
 
 .item hr {
-  
   margin: 0 !important;
 }
-
-
 
 .cross {
   width: var(--pt4);
@@ -163,57 +146,7 @@
   outline: 2px solid var(--text-dark);
 }
 
-.configurations h2 {
-  margin-top: var(--pt3);
-  margin-bottom: var(--pt3);
-}
-.configurations > span {
-  padding: 0;
-}
-
-.history h2,
-.createform form {
-  padding: 0;
-}
-.createform form {
-  margin-top: var(--pt1);
-  
-}
-.createform input {
-  /* background: red; */
-  border-radius: 0%;
-  width: 380px;
-  padding: var(--pt1);
-  height: var(--pt5);
-  font-size: 14px;
-  border: 1px solid gray;
-}
-.createform button {
-  margin-top: var(--pt2);
-}
-.history hr {
-  background-color: var(--divider-dark);
-  border: none;
-  height: 1px;
-  margin-top: var(--pt4);
-}
-
-.inputfield {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: var(--pt2);
-}
-.formbutton {
-  display: flex;
-  justify-content: flex-end;
-}
-
 @media (min-width: 576px) {
-  .history .keys,
-  .history .top {
-    padding: var(--pt4);
-  }
 }
 
 @media screen and (min-width: 769px) {

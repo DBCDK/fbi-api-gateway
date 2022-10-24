@@ -16,3 +16,7 @@
 .history.compact span {
   transform: scale(0.75);
 }
+
+.modal {
+  background-color: var(--divider);
+}

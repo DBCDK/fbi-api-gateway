@@ -12,6 +12,7 @@
 @import "~bootstrap/scss/_functions";
 @import "~bootstrap/scss/_variables";
 @import "~bootstrap/scss/_mixins";
+@import "~bootstrap/scss/_maps";
 
 // // // Optionals
 // @import "~bootstrap/scss/_root";
@@ -39,7 +40,7 @@
 // @import "~bootstrap/scss/_progress";
 // @import "~bootstrap/scss/_media";
 // @import "~bootstrap/scss/_list-group";
-// @import "~bootstrap/scss/_close";
+@import "~bootstrap/scss/_close";
 // @import "~bootstrap/scss/_toasts";
 // @import "~bootstrap/scss/_modal";
 // @import "~bootstrap/scss/_tooltip";
@@ -48,3 +49,4 @@
 // @import "~bootstrap/scss/_spinners";
 // @import "~bootstrap/scss/_utilities";
 // @import "~bootstrap/scss/_print";
+@import "~bootstrap/scss/_offcanvas";

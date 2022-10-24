@@ -1,27 +1,31 @@
 import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Container, Row, Col } from "react-bootstrap";
+import getConfig from "next/config";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
-
-import { useModal } from "@/components/modal";
 
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 import History from "@/components/history";
-// import TokenStatus from "@/components/tokenstatus";
 import Token from "@/components/token";
 import Profile from "@/components/profile";
 
+import Modal, { Pages } from "@/components/modal";
+
 import styles from "./Header.module.css";
+
+const isChristmas = getConfig()?.publicRuntimeConfig?.isChristmas;
 
 export default function Header() {
   const router = useRouter();
-  const modal = useModal();
   const elRef = useRef();
   const [isSticky, setIsSticky] = useState(false);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -38,7 +42,10 @@ export default function Header() {
   const { configuration } = useConfiguration(selectedToken);
 
   const isValidToken =
-    selectedToken && configuration && Object?.keys(configuration).length && configuration.agency;
+    selectedToken &&
+    configuration &&
+    Object?.keys(configuration).length &&
+    configuration.agency;
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
@@ -58,7 +65,8 @@ export default function Header() {
           <Col className={styles.left}>
             <Title className={styles.logo}>
               <span>
-                <Link href="/">FBI API</Link> 🥳
+                <Link href="/">FBI API</Link> {isChristmas ? " 🎅" : " 🥳"}
+                {/* 🥳🎅🎄 */}
               </span>
             </Title>
           </Col>
@@ -78,7 +86,7 @@ export default function Header() {
               </Link>
             </Text>
             <Text type="text5" className={`${styles.link} ${styles.more}`}>
-              <Link onClick={() => modal.push("menu")}>More</Link>
+              <Link onClick={() => setShow(true)}>More</Link>
             </Text>
             <Text type="text5" className={`${styles.link} ${styles.download}`}>
               <Link href="/schema" disabled={!isValidToken}>
@@ -93,6 +101,10 @@ export default function Header() {
           </Col>
         </Row>
       </Container>
+
+      <Modal show={show} onHide={() => setShow(false)} className={styles.modal}>
+        <Pages.Menu modal={{ isVisible: show }} />
+      </Modal>
     </header>
   );
 }

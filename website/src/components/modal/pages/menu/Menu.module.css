@@ -27,6 +27,7 @@
 
 .token {
   display: flex;
+  flex-direction: column;
   padding: 0 var(--pt2);
 }
 
@@ -35,11 +36,11 @@
   width: 100%;
 }
 
-.profiles{
-  margin:var(--pt2) 0 0 0;
+.profiles {
+  margin: var(--pt2) 0 0 0;
 }
 
-.profiles > button{
+.profiles > button {
   box-sizing: border-box;
   border: 2px solid var(--white);
   height: var(--pt6);
@@ -76,23 +77,17 @@
   padding: 0 0 var(--pt2) 0;
 }
 
-.token{
+.token {
   flex-wrap: wrap;
 }
 
-
 @media (min-width: 576px) {
-
-  .profiles{
-    margin:0 0 0 var(--pt2);
-  }
-
-  .token{
+  .token {
     flex-wrap: nowrap;
   }
 
   .menu .middle {
-    padding: var(--pt6) var(--pt4);
+    padding: var(--pt4) var(--pt4);
   }
   .menu ul {
     padding: var(--pt4);
