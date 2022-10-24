@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import getConfig from "next/config";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -16,9 +17,9 @@ import Profile from "@/components/profile";
 
 import Modal, { Pages } from "@/components/modal";
 
-const isChristmas = process.env.isChristmas;
-
 import styles from "./Header.module.css";
+
+const isChristmas = getConfig()?.publicRuntimeConfig?.isChristmas;
 
 export default function Header() {
   const router = useRouter();

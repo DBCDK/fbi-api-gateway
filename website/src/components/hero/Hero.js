@@ -1,5 +1,5 @@
 import { Container, Row, Col } from "react-bootstrap";
-
+import getConfig from "next/config";
 import { useRouter } from "next/router";
 
 import useStorage from "@/hooks/useStorage";
@@ -11,7 +11,7 @@ import Button from "@/components/base/button";
 import Label from "@/components/base/label";
 import History from "@/components/history";
 
-const isChristmas = process.env.isChristmas;
+const isChristmas = getConfig()?.publicRuntimeConfig?.isChristmas;
 import Snow from "./snow";
 
 import styles from "./Hero.module.css";
