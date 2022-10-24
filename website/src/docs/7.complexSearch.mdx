@@ -2,13 +2,21 @@
 
 Complex search has support for CQL queries.
 
-Currently, it uses simplesearch under the hood. The CQL query is handled as q.all,
-meaning you can't actually use the CQL syntax and expect to get something meaningful back.
+Try for instance
+
+`title=harry* AND creator=a*`
+
+This is work in progress:
+
+- offset/limit is not working
+- profile is not working
+- holdings filtering is not working
 
 <InlineGraphiQL
   query={`query ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!) {
   complexSearch(cql: $cql, filters: $filters) {
     hitcount
+    errorMessage
     works(offset: $offset, limit: $limit) {
       titles {
         main
@@ -17,7 +25,7 @@ meaning you can't actually use the CQL syntax and expect to get something meanin
   }
 }`}
   variables={{
-    cql: "Harry",
+    cql: "title=snemand*",
     filters: { branchId: ["775122"], status: ["OnShelf"] },
     offset: 0,
     limit: 5,

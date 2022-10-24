@@ -223,13 +223,12 @@ export const resolvers = {
       return args;
     },
     async complexSearch(parent, args, context, info) {
-      if (args.filters) {
-        const filters = translateFilters(args.filters);
+      const res = await context.datasources.getLoader("complexsearch").load({
+        cql: args.cql,
+        profile: context.profile,
+      });
 
-        return { ...args, filters };
-      }
-
-      return args;
+      return res;
     },
     async branches(parent, args, context, info) {
       const digitalAccessSubscriptions = await context.datasources
