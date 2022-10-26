@@ -155,7 +155,7 @@ export async function search(props, getFunc) {
     branchId,
     digitalAccessSubscriptions,
     infomediaSubscriptions,
-    status,
+    status = "ALLE",
     bibdkExcludeBranches,
   } = props;
   if (!branches || age() > timeToLiveMS) {
