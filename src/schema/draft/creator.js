@@ -23,6 +23,7 @@ type Role {
 
 }
 type Person implements Subject & Creator {
+  
   """
   The person's whole name in normal order
   """
@@ -67,6 +68,8 @@ type Person implements Subject & Creator {
   A list of which kinds of contributions this person made to this creation
   """
   roles: [Role!]!
+
+  type: SubjectType!
 }
 type Corporation implements Subject & Creator {
     """
@@ -113,6 +116,8 @@ type Corporation implements Subject & Creator {
     A list of which kinds of contributions this corporation made to this creation
     """
     roles: [Role!]!
+
+    type: SubjectType!
 }
 interface Creator {
   """
