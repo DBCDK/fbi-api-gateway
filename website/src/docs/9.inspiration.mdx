@@ -26,3 +26,25 @@ like materialTypes, platforms or _popular_ and _newest_ materials.
 }`}
   variables={{ limit: 10 }}
 />
+
+Subcategories can be specified, by passing a _filters_ prop to the category. The filters prop can hold multiple subcategory titles,
+like _nyeste_ and/or _populære_.
+
+<InlineGraphiQL
+  query={`query ($limit: Int!, $filters: [String!]) {
+  inspiration {
+    categories {
+      games(filters: $filters) {
+        title
+        works(limit: $limit) {
+          workId
+          titles {
+            main
+          }
+        }
+      }
+    }
+  }
+}`}
+  variables={{ limit: 1, filters: ["nyeste", "populære"] }}
+/>
