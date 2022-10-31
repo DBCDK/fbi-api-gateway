@@ -74,6 +74,10 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
           nameSort
           type
           roles {
+            function {
+              plural
+              singular
+            }
             functionCode
           }
           romanNumeral
@@ -107,6 +111,10 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
           nameSort
           number
           roles {
+            function {
+              plural
+              singular
+            }
             functionCode
           }
           sub
@@ -131,6 +139,10 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
           nameSort
           type
           roles {
+            function {
+              plural
+              singular
+            }
             functionCode
           }
           romanNumeral
@@ -160,6 +172,10 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
           nameSort
           number
           roles {
+            function {
+              plural
+              singular
+            }
             functionCode
           }
           sub
@@ -184,6 +200,10 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
           nameSort
           type
           roles {
+            function {
+              plural
+              singular
+            }
             functionCode
           }
           romanNumeral
@@ -288,6 +308,13 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         number
         sub
         year
+        roles {
+          function {
+            plural
+            singular
+          }
+          functionCode
+        }
       }
       persons {
         attributeToName
@@ -298,6 +325,13 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         nameSort
         type
         romanNumeral
+        roles {
+          function {
+            plural
+            singular
+          }
+          functionCode
+        }
       }
     }
     contributorsFromDescription
@@ -396,6 +430,13 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         number
         sub
         year
+        roles {
+          function {
+            plural
+            singular
+          }
+          functionCode
+        }
       }
       persons {
         attributeToName
@@ -406,6 +447,13 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         nameSort
         type
         romanNumeral
+        roles {
+          function {
+            plural
+            singular
+          }
+          functionCode
+        }
       }
     }
     manifestationParts {
