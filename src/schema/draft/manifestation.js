@@ -282,6 +282,11 @@ type HostPublication {
   creator: String
 
   """
+  Edition statement for the host publication
+  """
+  edition: String
+
+  """
   ISSN of the publication this manifestation can be found in
   """
   issn: String
@@ -336,6 +341,11 @@ type Printing {
   The printing number and name
   """
   printing: String!
+
+  """
+  Publisher of printing when other than the original publisher of the edition (260*b)
+  """
+  publisher: String
 
   """
   A year as displayable text and as number
@@ -624,6 +634,16 @@ type Manifestation {
   """
   tableOfContents: TableOfContent
 
+  """
+  Worktypes for this manifestations work
+  """
+  workTypes: [WorkType!]!
+
+  """
+  The year this work was originally published or produced
+  """
+  workYear: String
+
 }
 type ManifestationTitles {
   """
@@ -685,6 +705,9 @@ export const resolvers = {
     },
   },
   Manifestation: {
+    workTypes(parent) {
+      return parent?.workTypes || [];
+    },
     async access(parent, args, context, info) {
       const resolved = await resolveOnlineAccess(parent.pid, context);
       return resolved;

@@ -323,6 +323,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       isbn
       issn
       issue
+      edition
       notes
       pages
       publisher
@@ -382,6 +383,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         year
       }
       summary
+      publisher
     }
     creators {
       corporations {
@@ -515,7 +517,6 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       standard
       translated
     }
-    manifestationTypes
     materialTypes {
       general
       specific
@@ -575,5 +576,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       }
     }
     volume
+    workTypes
+    workYear
   }
 `;

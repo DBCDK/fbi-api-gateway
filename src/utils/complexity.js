@@ -18,7 +18,9 @@ import config from "../config";
 function CustomFieldEstimator({ field, childComplexity }) {
   const fieldType = field.type.toString();
   const isExpensiveArray =
-    fieldType.startsWith("[Work") || fieldType.startsWith("[Manifestation");
+    fieldType.startsWith("[Work!]") ||
+    fieldType.startsWith("[Work]") ||
+    fieldType.startsWith("[Manifestation");
 
   if (isExpensiveArray) {
     return 100 * (childComplexity || 1);
