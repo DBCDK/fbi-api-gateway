@@ -173,10 +173,14 @@ function resolveAuthor(parent) {
  */
 function resolveDate(parent) {
   return (
-    getArray(parent, "details.articleData.article.volume").map(
-      (entry) => entry.$
-    )[0] ||
-    getArray(parent, "admindata.creationDate").map((entry) => entry.$)[0]
+    parseDate(
+      getArray(parent, "details.articleData.article.volume").map(
+        (entry) => entry.$
+      )[0]
+    ) ||
+    parseDate(
+      getArray(parent, "admindata.creationDate").map((entry) => entry.$)[0]
+    )
   );
 }
 
