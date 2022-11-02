@@ -113,6 +113,57 @@ If no work is found as an identifier, null is returned at the corresponding posi
   }}
 />
 
+## Reviews (new proposal)
+
+The _workReviews_ field returns a list of reviews for the work.
+
+Note that:
+
+- When _infomediaId_ is available, you can use the id to fetch the content of the review.
+  Check out the [Infomedia section](#Infomedia).
+- The field _urls_ is a list of online locations where the review is available.
+- The field _librariansReview_ has content, when the review is created by a librarian (Materialevurdering).
+- The field _periodica_ has content, when the origin of the review is published in a periodica.
+
+<InlineGraphiQL
+  query={`query ($id: String!) {
+  work(id: $id) {
+    workId
+    titles {
+      main
+    }
+    workReviews {
+      author
+      date
+      origin
+      rating
+      infomediaId
+      urls {
+        origin
+        url
+        note
+      }
+      periodica {
+        volume
+        pages
+        hostPublication {
+          workId
+          titles {
+            main
+          }
+        }
+      }
+      librariansReview {
+        heading
+      }
+    }
+  }
+}`}
+  variables={{
+    id: "work-of:870970-basis:51701763",
+  }}
+/>
+
 ## Reviews
 
 The reviews field returns a list of reviews. Each review may be one of the following types:
