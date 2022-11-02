@@ -82,8 +82,78 @@ type LibrariansReview implements Review {
   id: String!
 }
 
+type WorkReview {
+  """
+  Author of the review
+  """
+  author: String
+
+  """
+  Date of the review in the format YYYY-MM-DD
+  """
+  date: String
+
+  """
+  When this is not null, the review can be retrieved from infomedia using the infomediaId
+  """
+  infomediaId: String
+
+  """
+  When this is not null, this review is created by a librarian, 
+  and the sections of the review are available here
+  """
+  librariansReview: [LibrariansReviewSection!]
+
+  """
+  The origin of review. E.g. 'Politiken'
+  """
+  origin: String
+
+  """
+  When this is not null, the review is located in a periodica
+  """
+  periodica: PeriodicaReviewDetails
+
+  """
+  The pid of the review
+  """
+  pid: String!
+
+  """
+  The authors rating of the work. E.g '5/6'
+  """
+  rating: String
+
+  """
+  This may contain URL's where the review can be read
+  """
+  urls: [AccessUrl!]!
+}
+
+type PeriodicaReviewDetails {
+  """
+  Specifies the volume of the periodica where the review is located
+  """
+  volume: String
+
+  """
+  Specifies which pages of the volume the review is located
+  """
+  pages: String
+
+  """
+  A reference to the host publication
+  """
+  hostPublication: Work
+}
+
 extend type Work {
   reviews: [Review!]!
+
+  """
+  The new reviews
+  """
+  workReviews: [WorkReview!]!
 }
 `;
 
@@ -128,7 +198,131 @@ function resolveRating(parent) {
   return getArray(parent, "details.reviewRatings").map((entry) => entry.$)[0];
 }
 
+function parseDate(str) {
+  if (str?.match?.(/\d{4}-\d{2}-\d{2}/)) {
+    return str;
+  }
+  return null;
+}
+
+/**
+ * Resolver for __typename
+ * @param {object} parent
+ */
+function resolveTypeName(parent) {
+  if (parent?.details?.fulltextmatvurd) {
+    return "LibrariansReview";
+  }
+  if (parent?.details?.infomedia) {
+    return "InfomediaReview";
+  }
+  if (parent?.urls?.length > 0) {
+    return "ExternalReview";
+  }
+}
+
+/**
+ * Resolver for volume
+ * @param {object} parent
+ */
+function resolveVolume(parent) {
+  const volume = getArray(parent, "details.articleData.article.volume").map(
+    (entry) => entry.$
+  )[0];
+
+  if (!parseDate(volume)) {
+    return volume;
+  }
+}
+
+/**
+ * Resolves reviews of the work
+ */
+async function resolveReviews(parent, context) {
+  // We still use old workservice for relations
+  const work = await context.datasources
+    .getLoader("workservice")
+    .load({ workId: parent.workId, profile: context.profile });
+
+  if (!work?.relations) {
+    return [];
+  }
+  let reviews = (
+    await Promise.all(
+      work.relations
+        .filter((rel) => rel.type === "review")
+        .map((review) =>
+          context.datasources.getLoader("openformat").load(review.id)
+        )
+    )
+  )
+    .filter((review) => !!review)
+    .map((review) => {
+      const parsed = {
+        author: resolveAuthor(review),
+        date: resolveDate(review),
+        volume: resolveVolume(review),
+        pages: getArray(review, "details.pagination.value")?.[0]?.$,
+        origin: resolveMedia(review),
+        rating: resolveRating(review),
+        faustOfhostPublication: getArray(
+          review,
+          "details.hostPublicationPid"
+        )?.[0]?.$,
+        urls: getArray(review, "details.onlineAccess.value.link")
+          .map((entry) => entry.$)
+          ?.map((url) => ({ origin: getBaseUrl(url), url })),
+        infomediaId: getArray(review, "details.infomedia.id")?.map?.(
+          (entry) => entry.$
+        )?.[0],
+        org: review,
+        fulltextmatvurd:
+          review?.details?.fulltextmatvurd?.value &&
+          Object.entries(review?.details?.fulltextmatvurd?.value),
+        pid: review?.admindata?.pid?.$,
+        __typename: resolveTypeName(review),
+      };
+
+      return parsed;
+    });
+  reviews = orderBy(reviews, "date", "desc");
+  reviews = uniqBy(reviews, "author");
+  return reviews;
+}
+
 export const resolvers = {
+  WorkReview: {
+    periodica(parent) {
+      if (parent?.volume || parent?.pages || parent?.faustOfhostPublication) {
+        return parent;
+      }
+    },
+    librariansReview(parent) {
+      return parent?.fulltextmatvurd
+        ?.map?.(([code, entry]) => {
+          code = code.toUpperCase();
+          return {
+            code,
+            heading: reviews.heading[code]?.da,
+            text: entry?.text?.$ || "",
+            faust: entry?.faust?.$,
+          };
+        })
+        .filter((entry) => !!reviews.heading[entry.code]);
+    },
+  },
+  PeriodicaReviewDetails: {
+    async hostPublication(parent, args, context, info) {
+      if (parent.faustOfhostPublication) {
+        const work = await resolveWork(
+          { faust: parent.faustOfhostPublication },
+          context
+        );
+        return work;
+      }
+      return null;
+    },
+  },
   InfomediaReview: {
     id(parent, args, context, info) {
       return parent.infomediaId;
@@ -162,65 +356,13 @@ export const resolvers = {
     },
   },
   Work: {
+    workReviews(parent, args, context, info) {
+      return resolveReviews(parent, context);
+    },
     async reviews(parent, args, context, info) {
-      // We still use old workservice for relations
-      const work = await context.datasources
-        .getLoader("workservice")
-        .load({ workId: parent.workId, profile: context.profile });
-
-      if (!work?.relations) {
-        return [];
-      }
-      let reviews = (
-        await Promise.all(
-          work.relations
-            .filter((rel) => rel.type === "review")
-            .map((review) =>
-              context.datasources.getLoader("openformat").load(review.id)
-            )
-        )
-      )
-        .filter((review) => !!review)
-        .map((review) => {
-          const parsed = {
-            author: resolveAuthor(review),
-            date: resolveDate(review),
-            media: resolveMedia(review),
-            rating: resolveRating(review),
-            urls: getArray(review, "details.onlineAccess.value.link")
-              .map((entry) => entry.$)
-              ?.map((url) => ({ origin: getBaseUrl(url), url })),
-            infomediaId: getArray(review, "details.infomedia.id")?.map?.(
-              (entry) => entry.$
-            )?.[0],
-            org: review,
-            fulltextmatvurd:
-              review?.details?.fulltextmatvurd?.value &&
-              Object.entries(review?.details?.fulltextmatvurd?.value),
-            pid: review?.admindata?.pid?.$,
-            __typename: review?.details?.fulltextmatvurd
-              ? "LibrariansReview"
-              : review?.details?.infomedia
-              ? "InfomediaReview"
-              : review?.urls?.length > 0
-              ? "ExternalReview"
-              : null,
-          };
-
-          parsed.__typename = review?.details?.fulltextmatvurd
-            ? "LibrariansReview"
-            : review?.details?.infomedia
-            ? "InfomediaReview"
-            : parsed.urls?.length > 0
-            ? "ExternalReview"
-            : null;
-
-          return parsed;
-        })
-        .filter((review) => review.__typename);
-      reviews = orderBy(reviews, "date", "desc");
-      reviews = uniqBy(reviews, "author");
-      return reviews;
+      return (await resolveReviews(parent, context))?.filter(
+        (review) => review?.__typename
+      );
     },
   },
 };
