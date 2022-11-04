@@ -302,17 +302,23 @@ export const resolvers = {
       }
     },
     librariansReview(parent) {
-      return parent?.fulltextmatvurd
-        ?.map?.(([code, entry]) => {
+      const sections = [];
+      parent?.fulltextmatvurd?.map?.(([code, entry]) => {
+        const entries = (Array.isArray(entry) ? entry : [entry]).map(
+          (entry) => entry
+        );
+        entries.forEach((e) => {
           code = code.toUpperCase();
-          return {
+          sections.push({
             code,
             heading: reviews.heading[code]?.da,
-            text: entry?.text?.$ || "",
-            faust: entry?.faust?.$,
-          };
-        })
-        .filter((entry) => !!reviews.heading[entry.code]);
+            text: getArray(e, "text.$").join("\n") || "",
+            faust: e?.faust?.$,
+          });
+        });
+      });
+
+      return sections.filter((entry) => !!reviews.heading[entry.code]);
     },
   },
   PeriodicaReviewDetails: {
@@ -337,19 +343,23 @@ export const resolvers = {
       return parent.pid;
     },
     sections(parent) {
-      return (
-        parent?.fulltextmatvurd
-          ?.map?.(([code, entry]) => {
-            code = code.toUpperCase();
-            return {
-              code,
-              heading: reviews.heading[code]?.da,
-              text: entry?.text?.$ || "",
-              faust: entry?.faust?.$,
-            };
-          })
-          .filter((entry) => !!reviews.heading[entry.code]) || []
-      );
+      const sections = [];
+      parent?.fulltextmatvurd?.map?.(([code, entry]) => {
+        const entries = (Array.isArray(entry) ? entry : [entry]).map(
+          (entry) => entry
+        );
+        entries.forEach((e) => {
+          code = code.toUpperCase();
+          sections.push({
+            code,
+            heading: reviews.heading[code]?.da,
+            text: getArray(e, "text.$").join("\n") || "",
+            faust: e?.faust?.$,
+          });
+        });
+      });
+
+      return sections.filter((entry) => !!reviews.heading[entry.code]);
     },
   },
   LibrariansReviewSection: {
