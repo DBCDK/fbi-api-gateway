@@ -318,7 +318,9 @@ export const resolvers = {
         });
       });
 
-      return sections.filter((entry) => !!reviews.heading[entry.code]);
+      if (sections.length) {
+        return sections.filter((entry) => !!reviews.heading[entry.code]);
+      }
     },
   },
   PeriodicaReviewDetails: {
@@ -359,7 +361,9 @@ export const resolvers = {
         });
       });
 
-      return sections.filter((entry) => !!reviews.heading[entry.code]);
+      if (sections.length) {
+        return sections.filter((entry) => !!reviews.heading[entry.code]);
+      }
     },
   },
   LibrariansReviewSection: {
