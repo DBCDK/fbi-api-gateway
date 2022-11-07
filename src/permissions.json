@@ -19,6 +19,6 @@
       "library",
       "relatedSubjects"
     ],
-    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO"]
+    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO", "WorkReview"]
   }
 }
