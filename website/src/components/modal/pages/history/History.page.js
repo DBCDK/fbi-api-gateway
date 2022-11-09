@@ -15,6 +15,18 @@ import { isEqual } from "@/components/utils";
 import styles from "./History.module.css";
 
 /**
+ * Loading version of Component
+ *
+ * @param {obj} props
+ * See propTypes for specific props and types
+ *
+ * @returns {component}
+ */
+function ItemIsLoading() {
+  return <div className={`${styles.item} ${styles.isLoading}`} />;
+}
+
+/**
  * The Component function
  *
  * @param {obj} props
@@ -177,7 +189,7 @@ function Wrap(props) {
   const { configuration, isLoading } = useConfiguration(props);
 
   if (isLoading) {
-    return "loading...";
+    return <ItemIsLoading />;
   }
 
   const isExpired = !Object.keys(configuration || {}).length;

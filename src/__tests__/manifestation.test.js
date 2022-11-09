@@ -120,10 +120,6 @@ describe("Manifestation", () => {
             let
             lix
           }
-          catalogueCodes {
-            nationalBibliography
-            otherCatalogues
-          }
           contributors {
             display
             nameSort
@@ -251,9 +247,6 @@ describe("Manifestation", () => {
             requirements
             size
             technicalInformation
-          }
-          publicationYear {
-            display
           }
           publisher
           series {

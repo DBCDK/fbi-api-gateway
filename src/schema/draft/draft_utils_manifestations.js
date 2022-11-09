@@ -36,9 +36,6 @@ export function manifestationToJed(manifestation) {
   const creators = getArray(manifestation, "details.creators.value");
   jedData.creators = jedCreators(creators);
 
-  if (manifestation.details?.catalogcode?.value?.$) {
-    jedData.catalogueCodes = jedCatalogueCodes(manifestation);
-  }
   jedData.audience = jedAudience(manifestation);
   jedData.classifications = [jedClassification(manifestation)];
   jedData.contributors = jedContributors(manifestation);
@@ -399,15 +396,6 @@ function jedClassification(manifestation) {
   }
 
   return { ...consts.FAKE_CLASSIFICATION, ...jedData };
-}
-
-function jedCatalogueCodes(manifestation) {
-  return {
-    nationalBibliography: (manifestation.details?.catalogcode?.value?.$).split(
-      " "
-    ),
-    otherCatalogues: [],
-  };
 }
 
 function jedAudience(manifestation) {

@@ -26,7 +26,7 @@ type Shelfmark {
   """
   A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935
   """
-  postfix: String!
+  postfix: String
 
   """
   The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
@@ -447,17 +447,6 @@ type Audience {
   lix: String
 }
 
-type CatalogueCodes {
-  """
-  Catalogue codes for the national bibliography 
-  """
-  nationalBibliography: [String]!
-  """
-  other catalogue codes 
-  """
-  otherCatalogues: [String]!
-}
-
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
@@ -495,10 +484,6 @@ type Manifestation {
   """
   audience: Audience
 
-  """
-  CatalogueCodes for nationalBibliography and others
-  """
-  catalogueCodes: CatalogueCodes
   """
   Contributors to the manifestation, actors, illustrators etc
   """
@@ -588,11 +573,6 @@ type Manifestation {
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   """
   physicalDescriptions: [PhysicalDescription!]!
-
-  """
-  The publication year of the manifestation - OBS! was datePublished
-  """
-  publicationYear: PublicationYear! @deprecated(reason: "use edition.publicationYear instead.")
 
   """
   Publisher of this manifestion
@@ -769,10 +749,6 @@ export const resolvers = {
           ? parent?.subjects?.dbcVerified
           : parseJedSubjects(parent?.subjects?.dbcVerified),
       };
-    },
-    // deprecated, will be removed some day
-    publicationYear(parent, args, context, info) {
-      return parent?.edition?.publicationYear || { display: "" };
     },
   },
 };
