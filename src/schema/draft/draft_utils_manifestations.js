@@ -475,6 +475,7 @@ function getProxyUrl(url, user) {
       return { proxyUrl: realUrl, loginRequired: proxyMe };
     }
   }
+
   return { proxyUrl: url, loginRequired: proxyMe };
 }
 
@@ -562,6 +563,7 @@ export async function resolveOnlineAccess(pid, context) {
           __typename: "AccessUrl",
           url: archive.url,
           origin: parseOnlineUrlToOrigin(archive.url),
+          loginRequired: false,
         });
       }
     });
