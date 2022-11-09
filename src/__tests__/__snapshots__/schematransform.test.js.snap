@@ -834,56 +834,8 @@ type LibrariansReview implements Review {
   id: String!
 }
 
-type WorkReview {
-  \\"\\"\\"Author of the review\\"\\"\\"
-  author: String
-
-  \\"\\"\\"Date of the review in the format YYYY-MM-DD\\"\\"\\"
-  date: String
-
-  \\"\\"\\"
-  When this is not null, the review can be retrieved from infomedia using the infomediaId
-  \\"\\"\\"
-  infomediaId: String
-
-  \\"\\"\\"
-  When this is not null, this review is created by a librarian, 
-  and the sections of the review are available here
-  \\"\\"\\"
-  librariansReview: [LibrariansReviewSection!]
-
-  \\"\\"\\"The origin of review. E.g. 'Politiken'\\"\\"\\"
-  origin: String
-
-  \\"\\"\\"When this is not null, the review is located in a periodica\\"\\"\\"
-  periodica: PeriodicaReviewDetails
-
-  \\"\\"\\"The pid of the review\\"\\"\\"
-  pid: String!
-
-  \\"\\"\\"The authors rating of the work. E.g '5/6'\\"\\"\\"
-  rating: String
-
-  \\"\\"\\"This may contain URL's where the review can be read\\"\\"\\"
-  urls: [AccessUrl!]!
-}
-
-type PeriodicaReviewDetails {
-  \\"\\"\\"Specifies the volume of the periodica where the review is located\\"\\"\\"
-  volume: String
-
-  \\"\\"\\"Specifies which pages of the volume the review is located\\"\\"\\"
-  pages: String
-
-  \\"\\"\\"A reference to the host publication\\"\\"\\"
-  hostPublication: Work
-}
-
 type Work {
   reviews: [Review!]!
-
-  \\"\\"\\"The new reviews\\"\\"\\"
-  workReviews: [WorkReview!]!
 
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
