@@ -29,7 +29,7 @@ export function History({ onClick, compact, disabled, className = "" }) {
       <Modal
         show={show}
         onHide={() => setShow(false)}
-        title="Your configuration"
+        title="Your configurations"
         className={styles.modal}
       >
         <Pages.History modal={{ isVisible: show }} />

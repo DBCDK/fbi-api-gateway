@@ -53,15 +53,6 @@ Object {
           },
         ],
       },
-      "catalogueCodes": Object {
-        "nationalBibliography": Array [
-          "Dummy DLF201207",
-          "Dummy BKM201207",
-        ],
-        "otherCatalogues": Array [
-          "Dummy some other catalogue",
-        ],
-      },
       "classifications": Array [
         Object {
           "code": "Dummy 86-096",
@@ -237,9 +228,6 @@ Object {
         },
       ],
       "pid": "870970-basis:26521556",
-      "publicationYear": Object {
-        "display": "Dummy 2005",
-      },
       "publisher": Array [
         "Dummy Lægeforeningen",
       ],

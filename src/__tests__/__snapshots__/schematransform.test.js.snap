@@ -240,7 +240,7 @@ type TableOfContent {
 
 type Shelfmark {
   \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
-  postfix: String!
+  postfix: String
 
   \\"\\"\\"
   The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
@@ -583,14 +583,6 @@ type Audience {
   lix: String
 }
 
-type CatalogueCodes {
-  \\"\\"\\"Catalogue codes for the national bibliography \\"\\"\\"
-  nationalBibliography: [String]!
-
-  \\"\\"\\"other catalogue codes \\"\\"\\"
-  otherCatalogues: [String]!
-}
-
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
@@ -618,9 +610,6 @@ type Manifestation {
   Different kinds of definitions of appropriate audience for this manifestation
   \\"\\"\\"
   audience: Audience
-
-  \\"\\"\\"CatalogueCodes for nationalBibliography and others\\"\\"\\"
-  catalogueCodes: CatalogueCodes
 
   \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
   contributors: [Creator!]!
@@ -691,9 +680,6 @@ type Manifestation {
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
   physicalDescriptions: [PhysicalDescription!]!
-
-  \\"\\"\\"The publication year of the manifestation - OBS! was datePublished\\"\\"\\"
-  publicationYear: PublicationYear! @deprecated(reason: \\"use edition.publicationYear instead.\\")
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -848,56 +834,8 @@ type LibrariansReview implements Review {
   id: String!
 }
 
-type WorkReview {
-  \\"\\"\\"Author of the review\\"\\"\\"
-  author: String
-
-  \\"\\"\\"Date of the review in the format YYYY-MM-DD\\"\\"\\"
-  date: String
-
-  \\"\\"\\"
-  When this is not null, the review can be retrieved from infomedia using the infomediaId
-  \\"\\"\\"
-  infomediaId: String
-
-  \\"\\"\\"
-  When this is not null, this review is created by a librarian, 
-  and the sections of the review are available here
-  \\"\\"\\"
-  librariansReview: [LibrariansReviewSection!]
-
-  \\"\\"\\"The origin of review. E.g. 'Politiken'\\"\\"\\"
-  origin: String
-
-  \\"\\"\\"When this is not null, the review is located in a periodica\\"\\"\\"
-  periodica: PeriodicaReviewDetails
-
-  \\"\\"\\"The pid of the review\\"\\"\\"
-  pid: String!
-
-  \\"\\"\\"The authors rating of the work. E.g '5/6'\\"\\"\\"
-  rating: String
-
-  \\"\\"\\"This may contain URL's where the review can be read\\"\\"\\"
-  urls: [AccessUrl!]!
-}
-
-type PeriodicaReviewDetails {
-  \\"\\"\\"Specifies the volume of the periodica where the review is located\\"\\"\\"
-  volume: String
-
-  \\"\\"\\"Specifies which pages of the volume the review is located\\"\\"\\"
-  pages: String
-
-  \\"\\"\\"A reference to the host publication\\"\\"\\"
-  hostPublication: Work
-}
-
 type Work {
   reviews: [Review!]!
-
-  \\"\\"\\"The new reviews\\"\\"\\"
-  workReviews: [WorkReview!]!
 
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
@@ -1543,7 +1481,7 @@ type TableOfContent {
 
 type Shelfmark {
   \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
-  postfix: String!
+  postfix: String
 
   \\"\\"\\"
   The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
@@ -1886,14 +1824,6 @@ type Audience {
   lix: String
 }
 
-type CatalogueCodes {
-  \\"\\"\\"Catalogue codes for the national bibliography \\"\\"\\"
-  nationalBibliography: [String]!
-
-  \\"\\"\\"other catalogue codes \\"\\"\\"
-  otherCatalogues: [String]!
-}
-
 type Manifestation {
   \\"\\"\\"Unique identification of the manifestation e.g 870970-basis:54029519\\"\\"\\"
   pid: String!
@@ -1914,9 +1844,6 @@ type Manifestation {
   Different kinds of definitions of appropriate audience for this manifestation
   \\"\\"\\"
   audience: Audience
-
-  \\"\\"\\"CatalogueCodes for nationalBibliography and others\\"\\"\\"
-  catalogueCodes: CatalogueCodes
 
   \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
   contributors: [Creator!]!
@@ -1984,9 +1911,6 @@ type Manifestation {
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
   physicalDescriptions: [PhysicalDescription!]!
-
-  \\"\\"\\"The publication year of the manifestation - OBS! was datePublished\\"\\"\\"
-  publicationYear: PublicationYear! @deprecated(reason: \\"use edition.publicationYear instead.\\")
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!

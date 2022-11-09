@@ -236,11 +236,6 @@ export const FAKE_SHELFMARK = {
   shelfmark: "Dummy some shelfmark",
 };
 
-export const FAKE_CATALOGUECODES = {
-  nationalBibliography: ["Dummy DLF201207", "Dummy BKM201207"],
-  otherCatalogues: ["Dummy some other catalogue"],
-};
-
 export const FAKE_LIST_OF_CONTENT = {
   heading: "Dummy Indhold",
   listOfContent: [
@@ -270,7 +265,6 @@ export const FAKE_MANIFESTATION_1 = {
   ],
   access: FAKE_ACCESS,
   audience: FAKE_AUDIENCE,
-  catalogueCodes: FAKE_CATALOGUECODES,
   contributors: [
     {
       ...FAKE_PERSON,
