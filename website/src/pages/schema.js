@@ -5,7 +5,7 @@ export default function Page() {
   return (
     <>
       <Head>
-        <title>FBI API 🥳 | Schema</title>
+        <title>FBI API | Schema</title>
       </Head>
       <Schema />
     </>
