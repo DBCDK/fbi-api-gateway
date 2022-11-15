@@ -62,6 +62,11 @@ export default {
     borchk: {
       url: process.env.BORCHK_URL || "https://borchk.addi.dk/2.5/",
     },
+    defaultforsider: {
+      url:
+        process.env.DEFAULTFORSIDER_URL ||
+        "http://default-forsider.febib-staging.svc.cloud.dbc.dk/",
+    },
     holdingstatus: {
       url:
         process.env.HOLDINGSTATUS_URL ||

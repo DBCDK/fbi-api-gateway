@@ -693,10 +693,31 @@ export const resolvers = {
       return resolved;
     },
     async cover(parent, args, context, info) {
-      return parent?.pid
-        ? context.datasources.getLoader("moreinfoCovers").load(parent.pid)
-        : {};
+      let coverImage;
+      if (parent?.pid) {
+        coverImage = await context.datasources
+          .getLoader("moreinfoCovers")
+          .load(parent.pid);
+        if (Object.keys(coverImage).length > 0) {
+          return coverImage;
+        }
+
+        // no coverimage has been returned - get a default one
+        const params = {
+          title: parent?.titles?.full?.[0],
+          materialType: parent?.materialTypes?.[0]?.general,
+        };
+        coverImage = await context.datasources
+          .getLoader("defaultForsider")
+          .load({
+            coverParams: [params],
+          });
+        return coverImage[0];
+      }
+      // no manifestation
+      return {};
     },
+
     creators(parent, args, context, info) {
       if (Array.isArray(parent?.creators)) {
         return parent?.creators;
