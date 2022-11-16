@@ -1,4 +1,4 @@
-import { resolveWork } from "../utils/utils";
+import { resolveWork, resolveManifestation } from "../utils/utils";
 
 /**
  * @file CatInspire type definition and resolvers
@@ -8,7 +8,12 @@ import { resolveWork } from "../utils/utils";
 export const typeDef = `
   type Category {
     title: String!
-    works(limit: Int): [Work!]!
+    result(limit: Int): [CategoryResult!]!
+  }
+
+  type CategoryResult {
+    work: Work!
+    manifestation: Manifestation!
   }
   
   type Categories {
@@ -157,14 +162,18 @@ export const resolvers = {
     title(parent) {
       return parent.title;
     },
-    async works(parent, args, context, info) {
+    result(parent, args, context, info) {
       const limit = args.limit || 10;
-      const expanded = await Promise.all(
-        parent.works
-          .slice(0, limit)
-          .map(async (workid) => resolveWork({ id: workid }, context))
-      );
-      return expanded.filter((work) => !!work);
+      return parent.result.slice(0, limit);
+    },
+  },
+
+  CategoryResult: {
+    work(parent, args, context, info) {
+      return resolveWork({ id: parent.work }, context);
+    },
+    manifestation(parent, args, context, info) {
+      return resolveManifestation({ pid: parent.pid }, context);
     },
   },
 };
