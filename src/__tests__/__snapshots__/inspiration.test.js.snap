@@ -1,52 +1,123 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Inspiration - categories 1`] = `
+exports[`Inspiration - categories with manifestations 1`] = `
 Object {
   "data": Object {
     "inspiration": Object {
       "categories": Object {
         "games": Array [
           Object {
-            "title": "nyeste",
-            "works": Array [
+            "result": Array [
               Object {
-                "titles": Object {
-                  "main": Array [
-                    "Dummy Some Title",
-                  ],
+                "manifestation": Object {
+                  "pid": "870970-basis:61629475",
+                  "titles": Object {
+                    "main": Array [
+                      "Dummy Some Title",
+                    ],
+                  },
                 },
-                "workId": "work-of:870970-basis:61629475",
               },
               Object {
-                "titles": Object {
-                  "main": Array [
-                    "Dummy Some Title",
-                  ],
+                "manifestation": Object {
+                  "pid": "870970-basis:62413344",
+                  "titles": Object {
+                    "main": Array [
+                      "Dummy Some Title",
+                    ],
+                  },
                 },
-                "workId": "work-of:870970-basis:62413344",
               },
             ],
+            "title": "nyeste",
           },
           Object {
-            "title": "populære",
-            "works": Array [
+            "result": Array [
               Object {
-                "titles": Object {
-                  "main": Array [
-                    "Dummy Some Title",
-                  ],
+                "manifestation": Object {
+                  "pid": "870970-basis:45938247",
+                  "titles": Object {
+                    "main": Array [
+                      "Dummy Some Title",
+                    ],
+                  },
                 },
-                "workId": "work-of:870970-basis:45938247",
               },
               Object {
-                "titles": Object {
-                  "main": Array [
-                    "Dummy Some Title",
-                  ],
+                "manifestation": Object {
+                  "pid": "870970-basis:28505000",
+                  "titles": Object {
+                    "main": Array [
+                      "Dummy Some Title",
+                    ],
+                  },
                 },
-                "workId": "work-of:870970-basis:28505000",
               },
             ],
+            "title": "populære",
+          },
+        ],
+      },
+    },
+  },
+}
+`;
+
+exports[`Inspiration - categories with work 1`] = `
+Object {
+  "data": Object {
+    "inspiration": Object {
+      "categories": Object {
+        "games": Array [
+          Object {
+            "result": Array [
+              Object {
+                "work": Object {
+                  "titles": Object {
+                    "main": Array [
+                      "Dummy Some Title",
+                    ],
+                  },
+                  "workId": "work-of:870970-basis:61629475",
+                },
+              },
+              Object {
+                "work": Object {
+                  "titles": Object {
+                    "main": Array [
+                      "Dummy Some Title",
+                    ],
+                  },
+                  "workId": "work-of:870970-basis:62413344",
+                },
+              },
+            ],
+            "title": "nyeste",
+          },
+          Object {
+            "result": Array [
+              Object {
+                "work": Object {
+                  "titles": Object {
+                    "main": Array [
+                      "Dummy Some Title",
+                    ],
+                  },
+                  "workId": "work-of:870970-basis:45938247",
+                },
+              },
+              Object {
+                "work": Object {
+                  "titles": Object {
+                    "main": Array [
+                      "Dummy Some Title",
+                    ],
+                  },
+                  "workId": "work-of:870970-basis:28505000",
+                },
+              },
+            ],
+            "title": "populære",
           },
         ],
       },
