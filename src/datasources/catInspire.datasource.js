@@ -7,9 +7,9 @@ export function restructureCategories(data) {
   if (data) {
     Object.entries(data).forEach(
       ([key, val]) =>
-        (categories[key] = Object.entries(val).map(([title, works]) => ({
+        (categories[key] = Object.entries(val).map(([title, result]) => ({
           title,
-          works,
+          result,
         })))
     );
   }

@@ -8,16 +8,20 @@ The categories field is used to retrieve works based on a given category.
 Categories contains subcategories, which can hold different subcategory titles,
 like materialTypes, platforms or _popular_ and _newest_ materials.
 
+The result of a category can be either a _Work_ or a _Manifestation_.
+
 <InlineGraphiQL
   query={`query ($limit: Int!) {
   inspiration {
     categories {
       games {
         title
-        works(limit: $limit) {
-          workId
-          titles {
-            main
+        result(limit: $limit) {
+          work {
+            workId
+            titles {
+              main
+            }
           }
         }
       }
@@ -36,10 +40,9 @@ like _nyeste_ and/or _populære_.
     categories {
       games(filters: $filters) {
         title
-        works(limit: $limit) {
-          workId
-          titles {
-            main
+        result(limit: $limit) {
+          manifestation {
+            pid
           }
         }
       }
