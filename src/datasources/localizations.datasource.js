@@ -22,8 +22,6 @@ function constructSoap(pids) {
     </ns1:localisationsRequest>
   </SOAP-ENV:Body></SOAP-ENV:Envelope>`;
 
-  console.log(soap, "FISKEHEST");
-
   return soap;
 }
 
@@ -96,9 +94,9 @@ export async function load({ pids }) {
   return parseResponse(res.text);
 }
 
-/*export const options = {
+export const options = {
   redis: {
     prefix,
     ttl: 60 * 15, // cache for 15 minutes
   },
-};*/
+};
