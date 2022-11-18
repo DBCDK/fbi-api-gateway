@@ -17,9 +17,12 @@ function constructSoap(pids) {
         <ns1:agencyId>DK-870970</ns1:agencyId>
         ${soappids}
         <ns1:outputType>json</ns1:outputType>
+        <ns1:role>bibdk</ns1:role>
         <ns1:mergePids>true</ns1:mergePids>
     </ns1:localisationsRequest>
   </SOAP-ENV:Body></SOAP-ENV:Envelope>`;
+
+  console.log(soap, "FISKEHEST");
 
   return soap;
 }
@@ -93,9 +96,9 @@ export async function load({ pids }) {
   return parseResponse(res.text);
 }
 
-export const options = {
+/*export const options = {
   redis: {
     prefix,
     ttl: 60 * 15, // cache for 15 minutes
   },
-};
+};*/
