@@ -41,9 +41,9 @@ type Query {
     """
     limit: Int
     """
-    Name of branch to filter by
+    Id of branch to filter by
     """
-    branch: String    
+    branchId: String    
   ): localSuggestResponse!
   
   suggest(

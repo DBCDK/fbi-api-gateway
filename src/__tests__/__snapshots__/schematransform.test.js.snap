@@ -1141,8 +1141,8 @@ type Query {
     \\"\\"\\"Number of items to return\\"\\"\\"
     limit: Int
 
-    \\"\\"\\"Name of branch to filter by\\"\\"\\"
-    branch: String
+    \\"\\"\\"Id of branch to filter by\\"\\"\\"
+    branchId: String
   ): localSuggestResponse!
   suggest(
     workType: WorkType
