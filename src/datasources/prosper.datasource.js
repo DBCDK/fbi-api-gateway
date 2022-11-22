@@ -13,7 +13,7 @@ export async function load({
   // suggestType defaults to all
   suggestType = ["creator", "subject", "title"],
   profile,
-  branch,
+  branchId,
   limit,
 }) {
   const types = suggestType.map((sug) => sug.toLowerCase());
@@ -25,7 +25,7 @@ export async function load({
       agency: profile.agency,
       rows: limit || 10,
       type: types,
-      ...(branch && { branch: branch }),
+      ...(branchId && { branchid: branchId }),
     });
 
   let body;
