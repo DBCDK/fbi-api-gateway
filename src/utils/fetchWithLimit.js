@@ -1,12 +1,8 @@
 import promiseLimit from "promise-limit";
-// import { fetch } from "undici";
-
-import { fetch, setGlobalDispatcher, Agent } from "undici";
+import { fetch } from "undici";
 
 import diagnosticsChannel from "diagnostics_channel";
 import { log } from "dbc-node-logger";
-
-setGlobalDispatcher(new Agent({ connect: { timeout: 60_000 } }));
 
 const { performance, PerformanceObserver } = require("perf_hooks");
 
