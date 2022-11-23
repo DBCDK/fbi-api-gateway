@@ -28,6 +28,13 @@ export default {
       ttl: process.env.COMPLEX_SEARCH_TIME_TO_LIVE_SECONDS || 60,
       prefix: process.env.COMPLEX_SEARCH_PREFIX || "complexsearch-1",
     },
+    defaultforsider: {
+      url:
+        process.env.DEFAULTFORSIDER_URL ||
+        "http://default-forsider.febib-staging.svc.cloud.dbc.dk/",
+      ttl: process.env.DEFAULTFORSIDER_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
+      prefix: process.env.DEFAULTFORSIDER_PREFIX || "defaultforsider-1",
+    },
     relatedsubjects: {
       url:
         process.env.RELATED_SUBJECTS ||

@@ -80,7 +80,7 @@ export async function load(pid) {
 /**
  * A DataLoader batch function
  *
- * @param {Array.<string>} keys The keys to fetch
+ * @param {Array.<string|object>} keys The keys to fetch
  */
 export async function batchLoader(keys, loadFunc) {
   try {
