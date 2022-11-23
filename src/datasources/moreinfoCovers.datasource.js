@@ -57,6 +57,7 @@ export async function load(pid) {
     images.forEach((entry) => {
       entry.forEach((cover) => {
         res[cover["@imageSize"].$] = cover.$;
+        res["origin"] = "moreinfo";
       });
     });
 
@@ -94,6 +95,7 @@ export async function batchLoader(keys, loadFunc) {
       const res = {};
       entry?.forEach((cover) => {
         res[cover["@imageSize"].$] = cover.$;
+        res["origin"] = "moreinfo";
       });
       return res;
     });

@@ -15,6 +15,7 @@ type Cover {
   detail_500: String
   thumbnail: String
   detail: String
+  origin: String
 }
 `;
 
