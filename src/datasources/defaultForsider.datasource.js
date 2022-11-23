@@ -17,14 +17,14 @@ import request from "superagent";
 import config from "../config";
 import { log } from "dbc-node-logger";
 
+const { url, ttl, prefix } = config.datasources.defaultforsider;
+
 function parseResponse(text) {
   try {
     const covers = JSON.parse(text);
     return covers?.response.map((cover) => {
       return {
-        detail: `${config.datasources.defaultforsider.url}${
-          cover?.detail || null
-        }`,
+        detail: `${url}${cover?.detail || null}`,
         thumbnail: `${config.datasources.defaultforsider.url}${
           cover?.thumbNail || null
         }`,
@@ -32,8 +32,7 @@ function parseResponse(text) {
       };
     });
   } catch (e) {
-    console.log(e, "PARSE ERROR");
-    console.log(text, "PARSE TEXT");
+    log.error(e.message);
     return {};
   }
 }
@@ -48,7 +47,6 @@ export async function load(coverParams) {
     return parseResponse(covers?.text);
   } catch (e) {
     log.error(e.message);
-    console.log(e.message, "LOAD ERROR");
   }
 }
 
@@ -63,14 +61,13 @@ export async function batchLoader(keys, loadFunc) {
     return parseResponse(covers?.text);
   } catch (e) {
     log.error(e.message);
-    console.log(e, "ERROR");
   }
 }
 
 export const options = {
   redis: {
-    prefix: "fiskehest",
-    ttl: 10,
+    prefix: prefix,
+    ttl: ttl,
     staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
   },
 };
