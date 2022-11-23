@@ -4,17 +4,21 @@ The following examples show how to fetch data used for inspiration.
 
 ## Categories
 
-The categories field is used to retrieve works based on a given category.
-Categories contains subcategories, which can hold different subcategory titles,
-like materialTypes, platforms or _popular_ and _newest_ materials.
+The categories field is used to retrieve inspirering materials based on a given category.
+Categories contains subCategories, which can hold different titles,
+like materialTypes, platforms, popular or newest materials.
 
 The result of a category can be either a _Work_ or a _Manifestation_.
 
+_Categories_ and _subCategories_ is specified in the required _filters_ argument.
+If no filters is given, the categories data will be empty.
+
 <InlineGraphiQL
-  query={`query ($limit: Int!) {
+  query={`query ($limit: Int!, $filters: [CategoryFilter!]) {
   inspiration {
-    categories {
-      games {
+    categories(filter: $filters) {
+      category
+      subCategories {
         title
         result(limit: $limit) {
           work {
@@ -28,26 +32,44 @@ The result of a category can be either a _Work_ or a _Manifestation_.
     }
   }
 }`}
-  variables={{ limit: 10 }}
+  variables={{
+    limit: 2,
+    filters: [
+      {
+        category: "fiction",
+        subCategories: ["nyeste", "populære"],
+      },
+    ],
+  }}
 />
 
-Subcategories can be specified, by passing a _filters_ argument to the category. The filters argument can hold multiple subcategory titles,
-like _nyeste_ and/or _populære_.
+Leaving the subCategories prop empty on the filters argument, will return all subCategories for a given category.
 
 <InlineGraphiQL
-  query={`query ($limit: Int!, $filters: [String!]) {
+  query={`query ($limit: Int!, $filters: [CategoryFilter!]) {
   inspiration {
-    categories {
-      games(filters: $filters) {
+    categories(filter: $filters) {
+      category
+      subCategories {
         title
         result(limit: $limit) {
           manifestation {
             pid
+            titles {
+              main
+            }
           }
         }
       }
     }
   }
 }`}
-  variables={{ limit: 1, filters: ["nyeste", "populære"] }}
+  variables={{
+    limit: 2,
+    filters: [
+      {
+        category: "games",
+      },
+    ],
+  }}
 />
