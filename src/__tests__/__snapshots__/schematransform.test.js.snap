@@ -721,6 +721,9 @@ type Manifestation {
 
   \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
   workYear: String
+
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
 }
 
 type ManifestationTitles {
@@ -775,6 +778,147 @@ type Recommendation {
 
 type RecommendationResponse {
   result: [Recommendation!]!
+}
+
+type Relations {
+  \\"\\"\\"
+  The story of this article is continued in this or these other article(s)
+  \\"\\"\\"
+  continuedIn: [Manifestation!]!
+
+  \\"\\"\\"
+  This story of this article actually started in this or these other article(s)
+  \\"\\"\\"
+  continues: [Manifestation!]!
+
+  \\"\\"\\"The contents of this articles is also discussed in these articles\\"\\"\\"
+  discussedIn: [Manifestation!]!
+
+  \\"\\"\\"The article discusses the content of these articles\\"\\"\\"
+  discusses: [Manifestation!]!
+
+  \\"\\"\\"This story is adapted in this or these movie(s)\\"\\"\\"
+  hasAdaptation: [Manifestation!]!
+
+  \\"\\"\\"The contents of this manifestation is analysed in these manifestations\\"\\"\\"
+  hasAnalysis: [Manifestation!]!
+
+  \\"\\"\\"The creator of this manifestation is portrayed in these manifestations\\"\\"\\"
+  hasCreatorDescription: [Manifestation!]!
+
+  \\"\\"\\"
+  The publisher of this manifestation has made a description of the content
+  \\"\\"\\"
+  hasDescriptionFromPublisher: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
+  hasManuscript: [Manifestation!]!
+
+  \\"\\"\\"
+  This manifestation has a 'materialevurdering' that was originally made for another manifestation, but it is still relevant (e.g. book/ebook)
+  \\"\\"\\"
+  hasReusedReview: [Manifestation!]!
+
+  \\"\\"\\"This manifestation has these reviews\\"\\"\\"
+  hasReview: [Manifestation!]!
+
+  \\"\\"\\"This movie or game has this sound track\\"\\"\\"
+  hasSoundtrack: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this or these books\\"\\"\\"
+  isAdaptationOf: [Manifestation!]!
+
+  \\"\\"\\"This manifestation is an analysis of these manifestations\\"\\"\\"
+  isAnalysisOf: [Manifestation!]!
+
+  \\"\\"\\"
+  This is a description from the original publisher of these manifestations
+  \\"\\"\\"
+  isDescriptionFromPublisherOf: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
+  isManuscriptOf: [Manifestation!]!
+
+  \\"\\"\\"
+  This 'materialevurdering' can also be used to review these relevant manifestations, even though it was originally made for another publication
+  \\"\\"\\"
+  isReusedReviewOf: [Manifestation!]!
+
+  \\"\\"\\"This manifestation is a review of these manifestations\\"\\"\\"
+  isReviewOf: [Manifestation!]!
+
+  \\"\\"\\"This sound track for a game is related to these games\\"\\"\\"
+  isSoundtrackOfGame: [Manifestation!]!
+
+  \\"\\"\\"This sound track for a movie is related to these movies\\"\\"\\"
+  isSoundtrackOfMovie: [Manifestation!]!
+
+  \\"\\"\\"This album has these tracks\\"\\"\\"
+  hasTrack: [Manifestation!]!
+
+  \\"\\"\\"This music track is part of these albums\\"\\"\\"
+  isPartOfAlbum: [Manifestation!]!
+
+  \\"\\"\\"This article or book part can be found in these manifestations\\"\\"\\"
+  isPartOfManifestation: [Manifestation!]!
+}
+
+type Work {
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
+  reviews: [Review!]!
+
+  \\"\\"\\"
+  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
+  \\"\\"\\"
+  workId: String!
+  titles: WorkTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]
+
+  \\"\\"\\"Creators\\"\\"\\"
+  creators: [Creator!]!
+
+  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
+  dk5MainEntry: DK5MainEntry
+
+  \\"\\"\\"
+  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Series for this work\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"Members of a series that this work is part of\\"\\"\\"
+  seriesMembers: [Work!]!
+
+  \\"\\"\\"
+  Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universe: Universe
+
+  \\"\\"\\"Subjects for this work\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
+  workTypes: [WorkType!]!
+
+  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
+  workYear: String
+
+  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
+  mainLanguages: [Language!]!
+
+  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
+  manifestations: Manifestations!
 }
 
 enum LibrariansReviewSectionCode {
@@ -833,62 +977,6 @@ type LibrariansReview implements Review {
 
   \\"\\"\\" This is a pid \\"\\"\\"
   id: String!
-}
-
-type Work {
-  reviews: [Review!]!
-
-  \\"\\"\\"
-  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
-  \\"\\"\\"
-  workId: String!
-  titles: WorkTitles!
-
-  \\"\\"\\"Abstract of the entity\\"\\"\\"
-  abstract: [String!]
-
-  \\"\\"\\"Creators\\"\\"\\"
-  creators: [Creator!]!
-
-  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
-  dk5MainEntry: DK5MainEntry
-
-  \\"\\"\\"
-  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  \\"\\"\\"
-  fictionNonfiction: FictionNonfiction
-
-  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  materialTypes: [MaterialType!]!
-
-  \\"\\"\\"Series for this work\\"\\"\\"
-  series: [Series!]!
-
-  \\"\\"\\"Members of a series that this work is part of\\"\\"\\"
-  seriesMembers: [Work!]!
-
-  \\"\\"\\"
-  Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
-  \\"\\"\\"
-  universe: Universe
-
-  \\"\\"\\"Subjects for this work\\"\\"\\"
-  subjects: SubjectContainer!
-
-  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
-  genreAndForm: [String!]!
-
-  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
-  workTypes: [WorkType!]!
-
-  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
-  workYear: String
-
-  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
-  mainLanguages: [Language!]!
-
-  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
-  manifestations: Manifestations!
 }
 
 type Universe {
@@ -1952,6 +2040,9 @@ type Manifestation {
 
   \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
   workYear: String
+
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
 }
 
 type ManifestationTitles {
@@ -1987,6 +2078,89 @@ type ManifestationTitles {
 
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]
+}
+
+type Relations {
+  \\"\\"\\"
+  The story of this article is continued in this or these other article(s)
+  \\"\\"\\"
+  continuedIn: [Manifestation!]!
+
+  \\"\\"\\"
+  This story of this article actually started in this or these other article(s)
+  \\"\\"\\"
+  continues: [Manifestation!]!
+
+  \\"\\"\\"The contents of this articles is also discussed in these articles\\"\\"\\"
+  discussedIn: [Manifestation!]!
+
+  \\"\\"\\"The article discusses the content of these articles\\"\\"\\"
+  discusses: [Manifestation!]!
+
+  \\"\\"\\"This story is adapted in this or these movie(s)\\"\\"\\"
+  hasAdaptation: [Manifestation!]!
+
+  \\"\\"\\"The contents of this manifestation is analysed in these manifestations\\"\\"\\"
+  hasAnalysis: [Manifestation!]!
+
+  \\"\\"\\"The creator of this manifestation is portrayed in these manifestations\\"\\"\\"
+  hasCreatorDescription: [Manifestation!]!
+
+  \\"\\"\\"
+  The publisher of this manifestation has made a description of the content
+  \\"\\"\\"
+  hasDescriptionFromPublisher: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
+  hasManuscript: [Manifestation!]!
+
+  \\"\\"\\"
+  This manifestation has a 'materialevurdering' that was originally made for another manifestation, but it is still relevant (e.g. book/ebook)
+  \\"\\"\\"
+  hasReusedReview: [Manifestation!]!
+
+  \\"\\"\\"This manifestation has these reviews\\"\\"\\"
+  hasReview: [Manifestation!]!
+
+  \\"\\"\\"This movie or game has this sound track\\"\\"\\"
+  hasSoundtrack: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this or these books\\"\\"\\"
+  isAdaptationOf: [Manifestation!]!
+
+  \\"\\"\\"This manifestation is an analysis of these manifestations\\"\\"\\"
+  isAnalysisOf: [Manifestation!]!
+
+  \\"\\"\\"
+  This is a description from the original publisher of these manifestations
+  \\"\\"\\"
+  isDescriptionFromPublisherOf: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
+  isManuscriptOf: [Manifestation!]!
+
+  \\"\\"\\"
+  This 'materialevurdering' can also be used to review these relevant manifestations, even though it was originally made for another publication
+  \\"\\"\\"
+  isReusedReviewOf: [Manifestation!]!
+
+  \\"\\"\\"This manifestation is a review of these manifestations\\"\\"\\"
+  isReviewOf: [Manifestation!]!
+
+  \\"\\"\\"This sound track for a game is related to these games\\"\\"\\"
+  isSoundtrackOfGame: [Manifestation!]!
+
+  \\"\\"\\"This sound track for a movie is related to these movies\\"\\"\\"
+  isSoundtrackOfMovie: [Manifestation!]!
+
+  \\"\\"\\"This album has these tracks\\"\\"\\"
+  hasTrack: [Manifestation!]!
+
+  \\"\\"\\"This music track is part of these albums\\"\\"\\"
+  isPartOfAlbum: [Manifestation!]!
+
+  \\"\\"\\"This article or book part can be found in these manifestations\\"\\"\\"
+  isPartOfManifestation: [Manifestation!]!
 }
 
 type NumberInSeries {

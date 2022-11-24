@@ -113,17 +113,10 @@ If no work is found as an identifier, null is returned at the corresponding posi
   }}
 />
 
-## Reviews (new proposal, experimental, will change)
+## Relations
 
-The _workReviews_ field returns a list of reviews for the work.
-
-Note that:
-
-- When _infomediaId_ is available, you can use the id to fetch the content of the review.
-  Check out the [Infomedia section](#Infomedia).
-- The field _urls_ is a list of online locations where the review is available.
-- The field _librariansReview_ has content, when the review is created by a librarian (Materialevurdering).
-- The field _periodica_ has content, when the origin of the review is published in a periodica.
+The _relations_ field can be used to look up other manifestations that are related to
+this work/manifestation.
 
 <InlineGraphiQL
   query={`query ($id: String!) {
@@ -132,29 +125,11 @@ Note that:
     titles {
       main
     }
-    workReviews {
-      author
-      date
-      origin
-      rating
-      infomediaId
-      urls {
-        origin
-        url
-        note
-      }
-      periodica {
-        volume
-        pages
-        hostPublication {
-          workId
-          titles {
-            main
-          }
+    relations {
+      isReviewOf {
+        titles {
+          main
         }
-      }
-      librariansReview {
-        heading
       }
     }
   }
