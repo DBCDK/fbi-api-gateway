@@ -248,7 +248,10 @@ export function withRedis(
       if (staleKeys.length > 0) {
         const refreshedValues = await batchFunc(staleKeys);
         staleKeys.forEach((key, idx) => {
-          if (!(refreshedValues[idx] instanceof Error)) {
+          if (
+            refreshedValues?.[idx] &&
+            !(refreshedValues[idx] instanceof Error)
+          ) {
             return setexFunc(
               createPrefixedKey(prefix, key),
               staleWhileRevalidate || ttl,
