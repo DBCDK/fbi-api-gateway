@@ -61,6 +61,7 @@ export async function batchLoader(keys, loadFunc) {
     return parseResponse(covers?.text);
   } catch (e) {
     log.error(e.message);
+    return keys.map(() => ({}));
   }
 }
 
