@@ -235,6 +235,31 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
     }
     workTypes
     workYear
+    relations {
+      continuedIn
+      continues
+      discussedIn
+      discusses
+      hasAdaptation
+      hasAnalysis
+      hasCreatorDescription
+      hasDescriptionFromPublisher
+      hasManuscript
+      hasReusedReview
+      hasReview
+      hasSoundtrack
+      isAdaptationOf
+      isAnalysisOf
+      isDescriptionFromPublisherOf
+      isManuscriptOf
+      isReusedReviewOf
+      isReviewOf
+      isSoundtrackOfGame
+      isSoundtrackOfMovie
+      hasTrack
+      isPartOfAlbum
+      isPartOfManifestation
+    }
 }`;
 
 export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on JedManifestation {
@@ -622,5 +647,30 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
     volume
     workTypes
     workYear
+    relations {
+      continuedIn
+      continues
+      discussedIn
+      discusses
+      hasAdaptation
+      hasAnalysis
+      hasCreatorDescription
+      hasDescriptionFromPublisher
+      hasManuscript
+      hasReusedReview
+      hasReview
+      hasSoundtrack
+      isAdaptationOf
+      isAnalysisOf
+      isDescriptionFromPublisherOf
+      isManuscriptOf
+      isReusedReviewOf
+      isReviewOf
+      isSoundtrackOfGame
+      isSoundtrackOfMovie
+      hasTrack
+      isPartOfAlbum
+      isPartOfManifestation
+    }
   }
 `;
