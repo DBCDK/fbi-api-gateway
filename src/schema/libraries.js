@@ -52,6 +52,12 @@ export const typeDef = `
     branchWebsiteUrl: String
     branchCatalogueUrl: String
     lookupUrl: String
+
+    """
+    When user is not logged in, this is null
+    Otherwise true or false
+    """
+    userIsBlocked: Boolean
   }
   
   type BranchResult{
@@ -69,6 +75,9 @@ export const typeDef = `
 export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
+    userIsBlocked() {
+      return true;
+    },
     async borrowerCheck(parent, args, context, info) {
       return await resolveBorrowerCheck(parent.agencyId, context);
     },
