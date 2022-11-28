@@ -5,10 +5,14 @@ import request from "superagent";
  */
 export async function load({ accessToken }) {
   const url = "https://login.bib.dk/userinfo";
-  const res = (
-    await request.get(url).set("Authorization", `Bearer ${accessToken}`)
-  ).body;
-  return res;
+  try {
+    const res = (
+      await request.get(url).set("Authorization", `Bearer ${accessToken}`)
+    ).body;
+    return res;
+  } catch (e) {
+    return null;
+  }
 }
 
 export const options = {

@@ -75,8 +75,11 @@ export const typeDef = `
 export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
-    userIsBlocked() {
-      return true;
+    async userIsBlocked(parent, args, context, info) {
+      const userInfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+      return userInfo?.attributes?.blocked;
     },
     async borrowerCheck(parent, args, context, info) {
       return await resolveBorrowerCheck(parent.agencyId, context);
