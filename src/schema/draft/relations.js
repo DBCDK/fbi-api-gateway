@@ -137,7 +137,7 @@ async function relationsResolver(parent, args, context, { fieldName }) {
     return [];
   }
   const manifestations = await Promise.all(
-    pids.map((pid) => resolveManifestation({ pid }, context))
+    pids.map(({ pid }) => resolveManifestation({ pid }, context))
   );
 
   return manifestations.filter((m) => !!m);
