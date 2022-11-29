@@ -236,29 +236,75 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
     workTypes
     workYear
     relations {
-      continuedIn
-      continues
-      discussedIn
-      discusses
-      hasAdaptation
-      hasAnalysis
-      hasCreatorDescription
-      hasDescriptionFromPublisher
-      hasManuscript
-      hasReusedReview
-      hasReview
-      hasSoundtrack
-      isAdaptationOf
-      isAnalysisOf
-      isDescriptionFromPublisherOf
-      isManuscriptOf
-      isReusedReviewOf
-      isReviewOf
-      isSoundtrackOfGame
-      isSoundtrackOfMovie
-      hasTrack
-      isPartOfAlbum
-      isPartOfManifestation
+      continuedIn {
+        pid
+      }
+      continues {
+        pid
+      }
+      discussedIn {
+        pid
+      }
+      discusses {
+        pid
+      }
+      hasAdaptation {
+        pid
+      }
+      hasAnalysis {
+        pid
+      }
+      hasCreatorDescription {
+        pid
+      }
+      hasDescriptionFromPublisher {
+        pid
+      }
+      hasManuscript {
+        pid
+      }
+      hasReusedReview {
+        pid
+      }
+      hasReview {
+        pid
+      }
+      hasSoundtrack {
+        pid
+      }
+      isAdaptationOf {
+        pid
+      }
+      isAnalysisOf {
+        pid
+      }
+      isDescriptionFromPublisherOf {
+        pid
+      }
+      isManuscriptOf {
+        pid
+      }
+      isReusedReviewOf {
+        pid
+      }
+      isReviewOf {
+        pid
+      }
+      isSoundtrackOfGame {
+        pid
+      }
+      isSoundtrackOfMovie {
+        pid
+      }
+      hasTrack {
+        pid
+      }
+      isPartOfAlbum {
+        pid
+      }
+      isPartOfManifestation {
+        pid
+      }
     }
 }`;
 
@@ -648,29 +694,75 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
     workTypes
     workYear
     relations {
-      continuedIn
-      continues
-      discussedIn
-      discusses
-      hasAdaptation
-      hasAnalysis
-      hasCreatorDescription
-      hasDescriptionFromPublisher
-      hasManuscript
-      hasReusedReview
-      hasReview
-      hasSoundtrack
-      isAdaptationOf
-      isAnalysisOf
-      isDescriptionFromPublisherOf
-      isManuscriptOf
-      isReusedReviewOf
-      isReviewOf
-      isSoundtrackOfGame
-      isSoundtrackOfMovie
-      hasTrack
-      isPartOfAlbum
-      isPartOfManifestation
+      continuedIn {
+        pid
+      }
+      continues {
+        pid
+      }
+      discussedIn {
+        pid
+      }
+      discusses {
+        pid
+      }
+      hasAdaptation {
+        pid
+      }
+      hasAnalysis {
+        pid
+      }
+      hasCreatorDescription {
+        pid
+      }
+      hasDescriptionFromPublisher {
+        pid
+      }
+      hasManuscript {
+        pid
+      }
+      hasReusedReview {
+        pid
+      }
+      hasReview {
+        pid
+      }
+      hasSoundtrack {
+        pid
+      }
+      isAdaptationOf {
+        pid
+      }
+      isAnalysisOf {
+        pid
+      }
+      isDescriptionFromPublisherOf {
+        pid
+      }
+      isManuscriptOf {
+        pid
+      }
+      isReusedReviewOf {
+        pid
+      }
+      isReviewOf {
+        pid
+      }
+      isSoundtrackOfGame {
+        pid
+      }
+      isSoundtrackOfMovie {
+        pid
+      }
+      hasTrack {
+        pid
+      }
+      isPartOfAlbum {
+        pid
+      }
+      isPartOfManifestation {
+        pid
+      }
     }
   }
 `;
