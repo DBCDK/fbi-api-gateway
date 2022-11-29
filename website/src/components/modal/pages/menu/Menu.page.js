@@ -48,17 +48,13 @@ function Menu({ modal, context }) {
       <Row as="ul">
         <Col xs={12} as="li">
           <Text type="text5" className={styles.link}>
-            <Link href="/" disabled={!isValidToken}>
-              Home
-            </Link>
+            <Link href="/">Home</Link>
           </Text>
         </Col>
 
         <Col xs={12} as="li">
           <Text type="text5" className={styles.link}>
-            <Link href="/documentation" disabled={!isValidToken}>
-              Docs
-            </Link>
+            <Link href="/documentation">Docs</Link>
           </Text>
         </Col>
 

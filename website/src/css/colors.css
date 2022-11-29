@@ -57,6 +57,8 @@ body.christmas {
   --primary: #f07470;
   --primary-dark: #ea4c46;
 
+  --secondary: #ffb5b5;
+
   --hero-gradient-primary: #dc1c13;
   --hero-gradient-secondary: #f07470;
 }

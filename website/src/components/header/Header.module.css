@@ -57,6 +57,7 @@
 .history span {
   /* icon size */
   font-size: 16px;
+  line-height: var(--pt5);
 }
 
 .history:hover,
