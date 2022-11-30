@@ -323,9 +323,11 @@ export const resolvers = {
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
         .load("");
+
       const infomediaSubscriptions = await context.datasources
         .getLoader("idp")
         .load("");
+
       const branch = (
         await context.datasources.getLoader("library").load({
           branchId: args.input.pickUpBranch,
