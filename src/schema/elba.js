@@ -15,7 +15,13 @@ export const typeDef = `
  }
 
  type ElbaServices {
-   placeCopyRequest(input: CopyRequestInput!): CopyRequestResponse!
+   placeCopyRequest(input: CopyRequestInput!, 
+    
+    """
+    If this is true, the copy request will not be send to the elba service
+    Use it for testing
+    """
+    dryRun: Boolean): CopyRequestResponse!
  }
 
 input CopyRequestInput {
@@ -25,30 +31,22 @@ input CopyRequestInput {
     """
     pid: String!
 
-    pickUpBranch: String!
+    pickUpBranch: String
+    agencyId: String
 
     userName: String,
     userMail: String
     publicationTitle: String
     publicationDate: String
-    publicationYear: String
-    volume: String
-    author: String
-    title: String
-    pagination: String
-    dbcOrderId: String
-    userLoanerId: String
+    publicationYearOfComponent: String
+    volumeOfComponent: String
+    authorOfComponent: String
+    titleOfComponent: String
+    pagesOfComponent: String
     userInterestDate: String
-    agencyId: String
     pickUpAgencySubdivision: String
-    issue: String
+    issueOfComponent: String
     openURL: String
-     
-    """
-    If this is true, the copy request will not be send to the elba service
-    Use it for testing
-    """
-    dryRun: Boolean
 }
 
  extend type Mutation {
@@ -64,7 +62,7 @@ export const resolvers = {
   },
   ElbaServices: {
     async placeCopyRequest(parent, args, context, info) {
-      const { pid, userName, userMail, agencyId } = args.input;
+      const { pid, userName, userMail } = args.input;
 
       // Basic user information
       const userData = await context.datasources.getLoader("user").load({
@@ -78,6 +76,8 @@ export const resolvers = {
 
       const user = { ...userData, ...userInfo?.attributes };
 
+      console.log("user", user);
+
       // Ensure a pair of email and name can be set
       if (!((userName || user.name) && (userMail || user.mail))) {
         return {
@@ -90,39 +90,10 @@ export const resolvers = {
         .getLoader("statsbiblioteketSubscribers")
         .load("");
 
-      // Fetch list of infomedia subscribers
-      const infomediaSubscriptions = await context.datasources
-        .getLoader("idp")
-        .load("");
-
-      // Check that users municipalityAgencyId is a digitalAccess subscriber
-      const matches = await context.datasources.getLoader("library").load({
-        branchId: user.municipalityAgencyId,
-        digitalAccessSubscriptions,
-        infomediaSubscriptions,
-      });
-
-      const branch = matches.result[0];
-
-      if (!branch) {
+      if (!digitalAccessSubscriptions[user.municipalityAgencyId]) {
         return {
           status: "ERROR_INVALID_PICKUP_BRANCH",
         };
-      }
-
-      // check if matching branch has borchk configured
-      const hasBorrowerCheck = await resolveBorrowerCheck(
-        branch.agencyId,
-        context
-      );
-
-      // If branch has borrowerCheck, we require the user to be authenticated via that agency
-      if (hasBorrowerCheck) {
-        if (!context?.smaug?.user?.id) {
-          return {
-            status: "ERROR_UNAUTHORIZED_USER",
-          };
-        }
       }
 
       // Pid must be a manifestation with a valid issn (valid journal)
@@ -148,7 +119,9 @@ export const resolvers = {
           ...args.input,
           userName: userName || user.name,
           userMail: userMail || user.mail,
-          agencyId: agencyId || branch.agencyId,
+          agencyId: user.municipalityAgencyId,
+          pickupBranch: user.agency,
+          dryRun: args.dryRun,
         });
 
       // Then send order
