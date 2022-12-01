@@ -1,4 +1,5 @@
-import { resolveBorrowerCheck, resolveOnlineAccess } from "../utils/utils";
+import { resolveOnlineAccess } from "../utils/utils";
+import { log } from "dbc-node-logger";
 
 export const typeDef = `
 
@@ -31,13 +32,10 @@ input CopyRequestInput {
     """
     pid: String!
 
-    pickUpBranch: String
-    agencyId: String
-
     userName: String,
     userMail: String
     publicationTitle: String
-    publicationDate: String
+    publicationDateOfComponent: String
     publicationYearOfComponent: String
     volumeOfComponent: String
     authorOfComponent: String
@@ -76,8 +74,6 @@ export const resolvers = {
 
       const user = { ...userData, ...userInfo?.attributes };
 
-      console.log("user", user);
-
       // Ensure a pair of email and name can be set
       if (!((userName || user.name) && (userMail || user.mail))) {
         return {
@@ -92,7 +88,7 @@ export const resolvers = {
 
       if (!digitalAccessSubscriptions[user.municipalityAgencyId]) {
         return {
-          status: "ERROR_INVALID_PICKUP_BRANCH",
+          status: "ERROR_AGENCY_NOT_SUBSCRIBED",
         };
       }
 
@@ -113,19 +109,19 @@ export const resolvers = {
         };
       }
 
-      await context.datasources
-        .getLoader("statsbiblioteketSubmitArticleOrder")
-        .load({
-          ...args.input,
-          userName: userName || user.name,
-          userMail: userMail || user.mail,
-          agencyId: user.municipalityAgencyId,
-          pickupBranch: user.agency,
-          dryRun: args.dryRun,
-        });
-
       // Then send order
       try {
+        await context.datasources
+          .getLoader("statsbiblioteketSubmitArticleOrder")
+          .load({
+            ...args.input,
+            userName: userName || user.name,
+            userMail: userMail || user.mail,
+            agencyId: user.municipalityAgencyId,
+            pickUpBranch: user.agency,
+            dryRun: args.dryRun,
+          });
+
         log.info("Periodica article order succes", {
           args,
           accessToken: context.accessToken,
@@ -133,15 +129,11 @@ export const resolvers = {
 
         return { status: "OK" };
       } catch (e) {
-        return { status: "OK" };
-
         log.error("Periodica article order failed", e);
         return {
           status: "ERROR_PID_NOT_RESERVABLE",
         };
       }
-
-      return "OK";
     },
   },
 };

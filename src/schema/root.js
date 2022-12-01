@@ -83,7 +83,7 @@ type Query {
 
 type Mutation {
   data_collect(input: DataCollectInput!): String!
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!): PeriodicaArticleOrderResponse!
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
@@ -408,6 +408,7 @@ export const resolvers = {
           .load({
             ...args.input,
             agencyId: branch.agencyId,
+            dryRun: args.dryRun,
           });
         log.info("Periodica article order succes", {
           args,

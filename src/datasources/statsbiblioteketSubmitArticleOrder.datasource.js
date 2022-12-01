@@ -11,51 +11,48 @@ const map = {
   pickUpBranch: "pickupAgencyId",
   userLoanerId: "user_loaner_id",
   userInterestDate: "user_interest_date",
+
+  // deprecated in future
+  volume: "volumeOfComponent",
+  pagination: "pagesOfComponent",
 };
 
 const whitelist = [
+  "user",
+  "password",
+  "dbcOrderId",
   "pid",
-  "pickUpBranch",
+  "userLoanerId",
   "userName",
   "userMail",
+  "userInterestDate",
+  "pickUpBranch",
   "agencyId",
-  "publicationDateOfComponent",
+  "pickUpAgencySubdivision",
+  "publicationTitle",
   "authorOfComponent",
   "titleOfComponent",
-  "publicationTitle",
+  "publicationDateOfComponent",
   "publicationYearOfComponent",
-  "dbcOrderId",
-  "userLoanerId",
-  "userInterestDate",
-  "pickUpAgencySubdivision",
   "issueOfComponent",
-  "openURL",
-  "pagesOfComponent",
   "volumeOfComponent",
+  // volume deprecated in future
+  "volume",
+  "pagesOfComponent",
+  // pagination deprecated in future
+  "pagination",
+  "openURL",
 ];
 
 function createRequestString(input) {
-  const { volume, pagination, pagesOfComponent, volumeOfComponent } = input;
   const params = { ...input, user, password };
 
-  // Set new params (remove in future) // //
-  if (volume) {
-    params.volumeOfComponent = volumeOfComponent || volume;
-    // remove duplicate (remove in future)
-    delete params.volume;
-  }
-  if (pagination) {
-    params.pagesOfComponent = pagesOfComponent || pagination;
-    // remove duplicate (remove in future)
-    delete params.pagination;
-  }
-  // // // // // // // // // // // // // //
-
   let stringParams = "";
-  Object.entries(params).forEach(([key, value]) => {
-    if (whitelist.includes(key)) {
-      key = map[key] || key;
-      stringParams += `<${key}>${value}</${key}>`;
+  whitelist.forEach((key) => {
+    if (params[key]) {
+      stringParams += `<${map[key] || key}>${params[key]}</${
+        map[key] || key
+      }>\n`;
     }
   });
 
@@ -81,11 +78,9 @@ export async function load(params) {
   const endpoint = `${url}/elba-webservices/services/placecopyrequest`;
 
   if (params.dryRun) {
-    console.log({ dryRun: true, requestString });
+    log.info("Elba service dryRun", { dryRunMessage: requestString });
     return { status: "OK" };
   }
-
-  return null;
 
   const res = proxy
     ? request
@@ -97,6 +92,8 @@ export async function load(params) {
         .post(endpoint)
         .set("Content-Type", "application/xml")
         .send(requestString);
+
+  console.log("ffffffffffffffff res", { res });
 
   return res;
 }
