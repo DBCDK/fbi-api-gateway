@@ -47,23 +47,23 @@ const whitelist = [
 function createRequestString(input) {
   const params = { ...input, user, password };
 
-  let stringParams = "";
+  let stringParams = ``;
   whitelist.forEach((key) => {
     if (params[key]) {
       stringParams += `<${map[key] || key}>${params[key]}</${
         map[key] || key
-      }>\n`;
+      }> \n`;
     }
   });
 
   return `
-    <?xml version="1.0"?>
-      <placeCopyRequest xmlns="http://statsbiblioteket.dk/xws/elba-placecopyrequest-schema">
-        ${stringParams}
-      </placeCopyRequest>`
+  <?xml version="1.0"?>
+  <placeCopyRequest xmlns="http://statsbiblioteket.dk/xws/elba-placecopyrequest-schema">
+  ${stringParams}
+  </placeCopyRequest>`
     .split(/\r?\n/)
-    .filter((line) => !!line.trim())
-    .join("\n");
+    .join("\n")
+    .trim();
 }
 
 /**
@@ -93,38 +93,5 @@ export async function load(params) {
         .set("Content-Type", "application/xml")
         .send(requestString);
 
-  console.log("ffffffffffffffff res", { res });
-
   return res;
 }
-
-// return `
-//     <?xml version="1.0"?>
-//       <placeCopyRequest xmlns="http://statsbiblioteket.dk/xws/elba-placecopyrequest-schema">
-//         <ws_user>${user}</ws_user>
-//         <ws_password>${password}</ws_password>
-//         <pid>${pid}</pid>
-//         <agencyId>${agencyId}</agencyId>
-//         <pickupAgencyId>${pickUpBranch}</pickupAgencyId>
-//         <userName>${userName}</userName>
-//         <userMail>${userMail}</userMail>
-//         ${
-//           authorOfComponent
-//             ? `<authorOfComponent>${authorOfComponent}</authorOfComponent>`
-//             : ""
-//         }
-//         ${
-//           titleOfComponent
-//             ? `<titleOfComponent>${titleOfComponent}</titleOfComponent>`
-//             : ""
-//         }
-//         ${
-//           publicationDateOfComponent
-//             ? `<publicationDateOfComponent>${publicationDateOfComponent}</publicationDateOfComponent>`
-//             : ""
-//         }
-//         ${volume ? `<volumeOfComponent>${volume}</volumeOfComponent>` : ""}
-//         ${
-//           pagination ? `<pagesOfComponent>${pagination}</pagesOfComponent>` : ""
-//         }
-//       </placeCopyRequest>`
