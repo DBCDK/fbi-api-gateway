@@ -5,18 +5,19 @@ import config from "../config";
 const { url, user, password } = config.datasources.statsbiblioteket;
 const proxy = config.dmzproxy.url;
 
+// map fbi-api key-names to elba-service keys
 const map = {
   user: "ws_user",
   password: "ws_password",
   pickUpBranch: "pickupAgencyId",
   userLoanerId: "user_loaner_id",
   userInterestDate: "user_interest_date",
-
-  // deprecated in future
+  // keys deprecated in future:
   volume: "volumeOfComponent",
   pagination: "pagesOfComponent",
 };
 
+// list ordered by elba-service xsd
 const whitelist = [
   "user",
   "password",

@@ -762,7 +762,7 @@ type ManifestationTitles {
 }
 
 type Mutation {
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!): PeriodicaArticleOrderResponse!
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
 }
 
 type Recommendation {

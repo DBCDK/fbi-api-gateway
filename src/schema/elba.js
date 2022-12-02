@@ -67,8 +67,6 @@ export const resolvers = {
         accessToken: context.accessToken,
       });
 
-      console.log("bbbbbbbbbbb userData", userData);
-
       // Detailed user informations (e.g. municipalityAgencyId)
       const userInfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
@@ -78,6 +76,13 @@ export const resolvers = {
 
       // Ensure a pair of email and name can be set
       if (!((userName || user.name) && (userMail || user.mail))) {
+        return {
+          status: "ERROR_UNAUTHORIZED_USER",
+        };
+      }
+
+      // Ensure user has municipalityAgencyId
+      if (!user.municipalityAgencyId) {
         return {
           status: "ERROR_UNAUTHORIZED_USER",
         };

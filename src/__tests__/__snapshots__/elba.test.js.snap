@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PeriodicaArticleOrder, manifestation not part of statsbibliotek journal should give error 1`] = `
+Object {
+  "data": Object {
+    "elba": Object {
+      "placeCopyRequest": Object {
+        "status": "ERROR_PID_NOT_RESERVABLE",
+      },
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, missing mail in user, but given in input, order success 1`] = `
+Object {
+  "data": Object {
+    "elba": Object {
+      "placeCopyRequest": Object {
+        "status": "OK",
+      },
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, missing mail on user and input, should give error 1`] = `
+Object {
+  "data": Object {
+    "elba": Object {
+      "placeCopyRequest": Object {
+        "status": "ERROR_UNAUTHORIZED_USER",
+      },
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, municiapalityAgencyId not subscribed, should give error 1`] = `
+Object {
+  "data": Object {
+    "elba": Object {
+      "placeCopyRequest": Object {
+        "status": "ERROR_AGENCY_NOT_SUBSCRIBED",
+      },
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, no municiapalityAgencyId, should give error 1`] = `
+Object {
+  "data": Object {
+    "elba": Object {
+      "placeCopyRequest": Object {
+        "status": "ERROR_UNAUTHORIZED_USER",
+      },
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, order success 1`] = `
+Object {
+  "data": Object {
+    "elba": Object {
+      "placeCopyRequest": Object {
+        "status": "OK",
+      },
+    },
+  },
+}
+`;
+
+exports[`PeriodicaArticleOrder, userName and userMail set in input, order success 1`] = `
+Object {
+  "data": Object {
+    "elba": Object {
+      "placeCopyRequest": Object {
+        "status": "OK",
+      },
+    },
+  },
+}
+`;
