@@ -762,7 +762,8 @@ type ManifestationTitles {
 }
 
 type Mutation {
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!): PeriodicaArticleOrderResponse!
+  elba: ElbaServices!
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
 }
 
 type Recommendation {
@@ -1181,6 +1182,48 @@ type WorkTitles {
 
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]
+}
+
+enum CopyRequestStatus {
+  OK
+  ERROR_UNAUTHORIZED_USER
+  ERROR_AGENCY_NOT_SUBSCRIBED
+  ERROR_INVALID_PICKUP_BRANCH
+  ERROR_PID_NOT_RESERVABLE
+}
+
+type CopyRequestResponse {
+  status: CopyRequestStatus!
+}
+
+type ElbaServices {
+  placeCopyRequest(
+    input: CopyRequestInput!
+
+    \\"\\"\\"
+    If this is true, the copy request will not be send to the elba service
+    Use it for testing
+    \\"\\"\\"
+    dryRun: Boolean
+  ): CopyRequestResponse!
+}
+
+input CopyRequestInput {
+  \\"\\"\\"The pid of an article or periodica\\"\\"\\"
+  pid: String!
+  userName: String
+  userMail: String
+  publicationTitle: String
+  publicationDateOfComponent: String
+  publicationYearOfComponent: String
+  volumeOfComponent: String
+  authorOfComponent: String
+  titleOfComponent: String
+  pagesOfComponent: String
+  userInterestDate: String
+  pickUpAgencySubdivision: String
+  issueOfComponent: String
+  openURL: String
 }
 
 enum LanguageCode {

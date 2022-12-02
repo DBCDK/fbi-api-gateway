@@ -1,0 +1,35 @@
+# Elba services
+
+## Digital artikelservice
+
+Some materials are available as a Digital copy. These can be ordered via the _placeCopyRequest_ field from the Elba service.
+
+Use of the service will require the users municipality to be a Digital artikelservice subscriber. Users municipalityAgencyId is extracted from the provided token.
+
+The only required field is _pid_. Other fields are optional.
+
+The users name and email will also be extracted from token. Setting _userName_ and _userMail_ in the input argument, will override these.
+
+If the dryRun argument is set to true. The actual service will never get called, but will return a status "OK".
+
+The returned _status_ can be one of the following:
+
+- _OK_
+- _ERROR_UNAUTHORIZED_USER_
+- _ERROR_AGENCY_NOT_SUBSCRIBED_
+- _ERROR_PID_NOT_RESERVABLE_
+
+<InlineGraphiQL
+  query={`mutation ($input: CopyRequestInput!) {
+  elba {
+    placeCopyRequest(input: $input, dryRun: true) {
+      status
+    }
+  }
+}`}
+  variables={{
+    input: {
+      pid: "870971-tsart:72561945",
+    },
+  }}
+/>
