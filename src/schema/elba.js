@@ -129,14 +129,14 @@ export const resolvers = {
             dryRun: args.dryRun,
           });
 
-        log.info("Periodica article order succes", {
+        log.info("Elba: Periodica article order succes", {
           args,
           accessToken: context.accessToken,
         });
 
         return { status: "OK" };
       } catch (e) {
-        log.error("Periodica article order failed", e);
+        log.error("Elba: Periodica article order failed", e);
         return {
           status: "ERROR_PID_NOT_RESERVABLE",
         };

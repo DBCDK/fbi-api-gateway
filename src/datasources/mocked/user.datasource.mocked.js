@@ -15,7 +15,6 @@ const data = {
   DUMMY_TOKEN_UNSUBSCRIPED_MUNICIPALITY: {
     ...DEFAULT,
   },
-  // missing props
   DUMMY_TOKEN_NO_MAIL: {
     ...DEFAULT,
     mail: undefined,
