@@ -30,6 +30,11 @@
 .content section p {
   margin: var(--pt2) 0;
 }
+
+.content section ul li p {
+  margin: var(--pt1) 0;
+}
+
 .content section h1 {
   margin: var(--pt4) 0 var(--pt2) 0;
 }
