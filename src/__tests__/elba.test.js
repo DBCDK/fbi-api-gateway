@@ -11,6 +11,28 @@ mutation ($input: CopyRequestInput!) {
   }   
 `;
 
+test("PeriodicaArticleOrder, unauthenticated token, should give error", async () => {
+  const result = await performTestQuery({
+    query,
+    variables: {
+      input: {
+        pid: "870971-avis:34591016",
+      },
+    },
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "DUMMY_TOKEN",
+      smaug: {
+        user: {
+          uniqueId: null,
+        },
+      },
+    },
+  });
+
+  expect(result).toMatchSnapshot();
+});
+
 test("PeriodicaArticleOrder, municiapalityAgencyId not subscribed, should give error", async () => {
   const result = await performTestQuery({
     query,
@@ -24,8 +46,7 @@ test("PeriodicaArticleOrder, municiapalityAgencyId not subscribed, should give e
       accessToken: "DUMMY_TOKEN_UNSUBSCRIPED_MUNICIPALITY",
       smaug: {
         user: {
-          id: "1234561234",
-          agency: "100200",
+          uniqueId: "1234561234",
         },
       },
     },
@@ -47,8 +68,7 @@ test("PeriodicaArticleOrder, no municiapalityAgencyId, should give error", async
       accessToken: "DUMMY_TOKEN_NO_MUNICIPALITY",
       smaug: {
         user: {
-          id: "1234561234",
-          agency: "100200",
+          uniqueId: "1234561234",
         },
       },
     },
@@ -70,8 +90,7 @@ test("PeriodicaArticleOrder, manifestation not part of statsbibliotek journal sh
       accessToken: "DUMMY_TOKEN",
       smaug: {
         user: {
-          id: "1234561234",
-          agency: "100200",
+          uniqueId: "1234561234",
         },
       },
     },
@@ -93,8 +112,7 @@ test("PeriodicaArticleOrder, missing mail on user and input, should give error",
       accessToken: "DUMMY_TOKEN_NO_MAIL",
       smaug: {
         user: {
-          id: "1234561234",
-          agency: "100200",
+          uniqueId: "1234561234",
         },
       },
     },
@@ -115,6 +133,11 @@ test("PeriodicaArticleOrder, missing mail in user, but given in input, order suc
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MAIL",
+      smaug: {
+        user: {
+          uniqueId: "1234561234",
+        },
+      },
     },
   });
 
@@ -136,8 +159,7 @@ test("PeriodicaArticleOrder, userName and userMail set in input, order success",
       accessToken: "DUMMY_TOKEN",
       smaug: {
         user: {
-          id: "1234561234",
-          agency: "100200",
+          uniqueId: "1234561234",
         },
       },
     },
@@ -159,8 +181,7 @@ test("PeriodicaArticleOrder, order success", async () => {
       accessToken: "DUMMY_TOKEN",
       smaug: {
         user: {
-          id: "1234561234",
-          agency: "100200",
+          uniqueId: "1234561234",
         },
       },
     },

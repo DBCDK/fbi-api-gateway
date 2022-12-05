@@ -5,7 +5,7 @@ export const typeDef = `
 
  enum CopyRequestStatus {
    OK
-   ERROR_UNAUTHORIZED_USER
+   ERROR_UNAUTHENTICATED_USER
    ERROR_AGENCY_NOT_SUBSCRIBED
    ERROR_INVALID_PICKUP_BRANCH
    ERROR_PID_NOT_RESERVABLE
@@ -62,29 +62,50 @@ export const resolvers = {
     async placeCopyRequest(parent, args, context, info) {
       const { pid, userName, userMail } = args.input;
 
-      // Basic user information
-      const userData = await context.datasources.getLoader("user").load({
-        accessToken: context.accessToken,
-      });
+      // token is not authenticated
+      if (!context?.smaug?.user?.uniqueId) {
+        return {
+          status: "ERROR_UNAUTHENTICATED_USER",
+        };
+      }
+
+      // Basic user information (e.g. name, email)
+      let userData;
+      try {
+        userData = await context.datasources.getLoader("user").load({
+          accessToken: context.accessToken,
+        });
+      } catch (e) {
+        return {
+          status: "ERROR_UNAUTHENTICATED_USER",
+        };
+      }
 
       // Detailed user informations (e.g. municipalityAgencyId)
-      const userInfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
+      let userInfo;
+      try {
+        userInfo = await context.datasources.getLoader("userinfo").load({
+          accessToken: context.accessToken,
+        });
+      } catch (e) {
+        return {
+          status: "ERROR_UNAUTHENTICATED_USER",
+        };
+      }
 
       const user = { ...userData, ...userInfo?.attributes };
 
       // Ensure a pair of email and name can be set
       if (!((userName || user.name) && (userMail || user.mail))) {
         return {
-          status: "ERROR_UNAUTHORIZED_USER",
+          status: "ERROR_UNAUTHENTICATED_USER",
         };
       }
 
       // Ensure user has municipalityAgencyId
       if (!user.municipalityAgencyId) {
         return {
-          status: "ERROR_UNAUTHORIZED_USER",
+          status: "ERROR_UNAUTHENTICATED_USER",
         };
       }
 
