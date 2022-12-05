@@ -42,6 +42,40 @@ test("Inspiration - get both 'nyeste' and 'populære' in 'fiction' and 'games'",
   expect(result).toMatchSnapshot();
 });
 
+test("Inspiration - 'populære' should sort before 'nyeste' in 'fiction'", async () => {
+  const result = await performTestQuery({
+    query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
+      inspiration {
+        categories(filter: $filters) {
+          category
+          subCategories {
+            title
+            result(limit: $limit) {
+              work {
+                workId
+                titles {
+                  main
+                }
+              }
+            }
+          }
+        }
+      }
+    }`,
+    variables: {
+      filters: [
+        {
+          category: "fiction",
+          subCategories: ["populære", "nyeste"],
+        },
+      ],
+      limit: 5,
+    },
+    context: { datasources: createMockedDataLoaders() },
+  });
+  expect(result).toMatchSnapshot();
+});
+
 test("Inspiration - only get 'nyeste' in 'fiction'", async () => {
   const result = await performTestQuery({
     query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
