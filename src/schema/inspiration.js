@@ -53,7 +53,9 @@ export const resolvers = {
         if (subCategories?.length) {
           return {
             category,
-            subCategories: data.filter((c) => subCategories.includes(c.title)),
+            subCategories: subCategories.map((sub) =>
+              data.find(({ title }) => title === sub)
+            ),
           };
         }
 

@@ -1,5 +1,71 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Inspiration - 'populære' should sort before 'nyeste' in 'fiction' 1`] = `
+Object {
+  "data": Object {
+    "inspiration": Object {
+      "categories": Array [
+        Object {
+          "category": "fiction",
+          "subCategories": Array [
+            Object {
+              "result": Array [
+                Object {
+                  "work": Object {
+                    "titles": Object {
+                      "main": Array [
+                        "Dummy Some Title",
+                      ],
+                    },
+                    "workId": "work-of:870970-basis:52557240",
+                  },
+                },
+                Object {
+                  "work": Object {
+                    "titles": Object {
+                      "main": Array [
+                        "Dummy Some Title",
+                      ],
+                    },
+                    "workId": "work-of:870970-basis:06162533",
+                  },
+                },
+              ],
+              "title": "populære",
+            },
+            Object {
+              "result": Array [
+                Object {
+                  "work": Object {
+                    "titles": Object {
+                      "main": Array [
+                        "Dummy Some Title",
+                      ],
+                    },
+                    "workId": "work-of:870970-basis:04778502",
+                  },
+                },
+                Object {
+                  "work": Object {
+                    "titles": Object {
+                      "main": Array [
+                        "Dummy Some Title",
+                      ],
+                    },
+                    "workId": "work-of:870970-basis:134131039",
+                  },
+                },
+              ],
+              "title": "nyeste",
+            },
+          ],
+        },
+      ],
+    },
+  },
+}
+`;
+
 exports[`Inspiration - Empty subCategories array returns all subCategories in 'fiction' 1`] = `
 Object {
   "data": Object {
