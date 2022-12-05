@@ -1,16 +1,16 @@
 # Elba services
 
-## Digital artikelservice
+## Order Digital Copy of Article
 
-Some materials are available as a Digital copy. These can be ordered via the _placeCopyRequest_ field from the Elba service.
+Some materials are available as a digital copy. These can be ordered via the _placeCopyRequest_ field from the Elba service.
 
-Use of the service will require the users municipality to be a Digital artikelservice subscriber. Users municipalityAgencyId is extracted from the provided token.
+Use of the service will require the users municipality to be subscribed to the Elba service. Users municipalityAgencyId is extracted from the provided token.
 
 The only required field is _pid_. Other fields are optional.
 
 The users name and email will also be extracted from token. Setting _userName_ and _userMail_ in the input argument, will override these.
 
-If the dryRun argument is set to true. The actual service will never get called, but will return a status "OK".
+If the dryRun argument is set to true. The Elba service will never get called, but will return a status "OK".
 
 The returned _status_ can be one of the following:
 
