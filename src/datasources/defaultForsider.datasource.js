@@ -65,10 +65,10 @@ export async function batchLoader(keys, loadFunc) {
   }
 }
 
-export const options = {
-  redis: {
-    prefix: prefix,
-    ttl: ttl,
-    staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
-  },
-};
+// export const options = {
+//   redis: {
+//     prefix: prefix,
+//     ttl: ttl,
+//     staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
+//   },
+// };

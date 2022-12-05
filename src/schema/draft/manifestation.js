@@ -702,10 +702,14 @@ export const resolvers = {
           return coverImage;
         }
 
+        // Maybe the smaug client has a custom color palette
+        const colors = context.smaug.defaultForsider?.colors;
+
         // no coverimage has been returned - get a default one
         const params = {
           title: parent?.titles?.main?.[0],
           materialType: parent?.materialTypes?.[0]?.specific,
+          colors,
         };
         coverImage = await context.datasources
           .getLoader("defaultForsider")
