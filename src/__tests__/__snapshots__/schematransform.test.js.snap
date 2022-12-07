@@ -1330,6 +1330,7 @@ enum FacetField {
   fictionNonfiction
   subjects
   creators
+  canAlwaysBeLoaned
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -1349,6 +1350,7 @@ input SearchFilters {
   location: [String!]
   sublocation: [String!]
   status: [HoldingsStatus!]
+  canAlwaysBeLoaned: [String!]
 }
 
 enum HoldingsStatus {
