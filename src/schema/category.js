@@ -36,7 +36,6 @@ export const resolvers = {
     },
     async result(parent, args, context, info) {
       const limit = args.limit || 10;
-
       const result = await Promise.all(
         parent.result.slice(0, limit).map(async (entry) => {
           const work = await resolveWork({ id: entry.work }, context);
@@ -47,7 +46,6 @@ export const resolvers = {
           return { work, manifestation };
         })
       );
-
       return result.filter(
         ({ work, manifestation }) => !!work && !!manifestation
       );

@@ -20,7 +20,6 @@ export default function Token({
   // useToken custom hook
   const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
-  // console.log({ selectedToken });
   // internal state
   const [state, setState] = useState({
     value: "",
@@ -50,11 +49,18 @@ export default function Token({
   const isAuthenticated = !!configuration?.uniqueId;
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
- 
+
   const emptyConfiguration = Object.keys(configuration || {}).length === 0;
   const _errorToken = !selectedToken?.token && "😬 This is not a valid token!";
-  const _errorMissingConfig = selectedToken?.token && !emptyConfiguration && !configuration?.agency && "😬 Missing client configuration!";
-  const _errorNoConfig = selectedToken?.token && emptyConfiguration && "😬 Invalid or expired token!"
+  const _errorMissingConfig =
+    selectedToken?.token &&
+    !emptyConfiguration &&
+    !configuration?.agency &&
+    "😬 Missing client configuration!";
+  const _errorNoConfig =
+    selectedToken?.token &&
+    emptyConfiguration &&
+    "😬 Invalid or expired token!";
 
   const hasError = _errorToken || _errorMissingConfig || _errorNoConfig;
 
@@ -134,7 +140,9 @@ export default function Token({
         show={!state.focus && state.value && hasError}
         container={containerRef}
       >
-        <Text type="text2">{_errorToken || _errorMissingConfig || _errorNoConfig}</Text>
+        <Text type="text2">
+          {_errorToken || _errorMissingConfig || _errorNoConfig}
+        </Text>
       </Overlay>
     </form>
   );
