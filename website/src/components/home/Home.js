@@ -81,8 +81,12 @@ export default function Home() {
           <Col>
             <Text type="text5">DBC DIGITAL</Text>
             <Text type="text3" className={styles.email}>
-              <Link onClick={(e) => e.preventDefault()} keepActive>
-                dbc@dbc.dk
+              <Link
+                href="mailto:kundeservice@dbc.dk"
+                target="_blank"
+                keepActive
+              >
+                kundeservice@dbc.dk
               </Link>
             </Text>
           </Col>
