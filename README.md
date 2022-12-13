@@ -7,6 +7,9 @@ The development environment may be set up using npm.
 
 ### npm
  - `npm install` installs dependencies.
+ - `cd website`
+ - `npm install`
+ - `cd ..`
  - `npm run dev` starts a dev server.
  - `npm test` runs jest tests.
 
