@@ -5,7 +5,7 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, prefix, ttl, token } = config.datasources.facets;
+const { url, prefix, ttl, token, firstHits } = config.datasources.facets;
 
 export async function load({ q, filters = {}, facets = [], profile }) {
   const { agency, name } = profile;
@@ -15,6 +15,7 @@ export async function load({ q, filters = {}, facets = [], profile }) {
     "access-token": token,
     debug: false,
     agency,
+    "facets.first_hits": firstHits,
     profile: name,
   };
 
