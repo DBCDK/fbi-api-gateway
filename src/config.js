@@ -151,7 +151,7 @@ export default {
       prefix: process.env.FACETS_PREFIX || "facets-1",
       token: process.env.FACETS_TOKEN,
       ttl: process.env.FACETS_TIME_TO_LIVE_SECONDS || 10,
-      first_hits: process.env.FACETS_FIRST_HITS || 200,
+      firstHits: process.env.FACETS_FIRST_HITS || 200,
     },
     openplatform: {
       url: process.env.OPENPLATFORM_URL || "https://openplatform.dbc.dk/v3",
