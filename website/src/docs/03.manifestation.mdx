@@ -5,8 +5,6 @@ manifestations within the same type of material. A physical book, which is publi
 different cover illustrations or minor text edits, will be regarded as a different
 manifestation, but will still be a part of the same work.
 
-Covers are provided by the moreinfo service.
-
 ## Basic Example
 
 A basic example fetching often-used fields.
@@ -176,6 +174,26 @@ the content of the article through the [Infomedia](#Infomedia) type.
   variables={{
     pid: ["870971-avis:36707321"],
   }}
+/>
+
+## Manifestation covers
+
+
+Covers are provided by the moreinfo service. If no covers are provided a default one is generated from the
+materialtype and title of the manifestation. The source of the cover is given in the origin field.
+
+<InlineGraphiQL
+query={`query ($faust: [String!]!) {
+manifestations(faust: $faust) {    
+titles {
+main
+}
+cover{detail origin}
+}
+}`}
+variables={{
+faust: ["40754563", "61965815"],
+}}
 />
 
 ## Shelf information
