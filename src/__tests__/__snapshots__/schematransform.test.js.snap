@@ -720,7 +720,7 @@ type Manifestation {
   workTypes: [WorkType!]!
 
   \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
-  workYear: String
+  workYear: PublicationYear
 
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
@@ -913,7 +913,7 @@ type Work {
   workTypes: [WorkType!]!
 
   \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
-  workYear: String
+  workYear: PublicationYear
 
   \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
   mainLanguages: [Language!]!
@@ -1036,6 +1036,7 @@ interface Subject {
 type SubjectText implements Subject {
   type: SubjectType!
   display: String!
+  language: Language
 }
 
 type TimePeriod implements Subject {
@@ -2084,7 +2085,7 @@ type Manifestation {
   workTypes: [WorkType!]!
 
   \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
-  workYear: String
+  workYear: PublicationYear
 
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
@@ -2257,6 +2258,7 @@ interface Subject {
 type SubjectText implements Subject {
   type: SubjectType!
   display: String!
+  language: Language
 }
 
 type TimePeriod implements Subject {
