@@ -234,7 +234,12 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
       translated
     }
     workTypes
-    workYear
+    workYear {
+      display
+      year
+      endYear
+      frequency
+    }
     relations {
       continuedIn {
         pid
@@ -315,7 +320,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       display
     }
     access {
-      accessUrl {
+      accessUrls {
         note
         origin
         url
@@ -528,7 +533,9 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       type
       parts {
         creatorsFromDescription
-        title
+        title {
+          display
+        }
       }
     }
     subjects {
@@ -692,7 +699,12 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
     }
     volume
     workTypes
-    workYear
+    workYear {
+      display
+      year
+      endYear
+      frequency
+    }
     relations {
       continuedIn {
         pid
