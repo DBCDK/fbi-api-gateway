@@ -683,6 +683,11 @@ export const resolvers = {
       return IDENTIFIER_TYPES.has(parent.type) ? parent.type : "NOT_SPECIFIED";
     },
   },
+  ManifestationPart: {
+    title(parent) {
+      return parent?.title?.display || "";
+    }
+  },
   Manifestation: {
     workTypes(parent) {
       return parent?.workTypes || [];
