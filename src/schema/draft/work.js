@@ -116,7 +116,7 @@ type Work {
   """
   The year this work was originally published or produced
   """
-  workYear: String
+  workYear: PublicationYear
 
   """
   The main language(s) of the work's content

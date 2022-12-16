@@ -622,8 +622,7 @@ type Manifestation {
   """
   The year this work was originally published or produced
   """
-  workYear: String
-
+  workYear: PublicationYear
 }
 type ManifestationTitles {
   """
