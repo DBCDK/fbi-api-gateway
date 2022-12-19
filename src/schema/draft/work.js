@@ -49,6 +49,11 @@ type DK5MainEntry {
   Main DK5 classification code
   """
   code: String!
+  
+  """
+  The dk5Heading for the classification
+  """
+  dk5Heading: String!
 }
 type Work {
   """

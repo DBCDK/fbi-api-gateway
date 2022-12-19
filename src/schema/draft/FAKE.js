@@ -346,6 +346,7 @@ export const FAKE_WORKTITLES = {
 export const FAKE_DK5MAINENTRY = {
   display: "Dummy some dk5 display",
   code: "Dummy some dk5 code",
+  dk5Heading: "Dummy some dk5 heading",
 };
 
 export const FAKE_WORK = {

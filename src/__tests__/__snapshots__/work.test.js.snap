@@ -20,6 +20,7 @@ Object {
       "dk5MainEntry": Object {
         "code": "Dummy some dk5 code",
         "display": "Dummy some dk5 display",
+        "dk5Heading": "Dummy some dk5 heading",
       },
       "fictionNonfiction": Object {
         "code": "FICTION",

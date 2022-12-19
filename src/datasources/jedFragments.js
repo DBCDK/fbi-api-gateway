@@ -4,6 +4,7 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
     dk5MainEntry {
       code
       display
+      dk5Heading
     }
     fictionNonfiction {
       code
