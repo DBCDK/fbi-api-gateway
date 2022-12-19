@@ -688,6 +688,9 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       readThisWhenever
       title
     }
+    universe {
+      title
+    }
     shelfmark {
       postfix
       shelfmark

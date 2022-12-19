@@ -605,6 +605,11 @@ type Manifestation {
   series: [Series!]!
 
   """
+  Universe for this work
+  """
+  universe: Universe
+
+  """
   Information about on which shelf in the library this manifestation can be found
   """
   shelfmark: Shelfmark

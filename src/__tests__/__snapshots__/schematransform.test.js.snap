@@ -383,6 +383,11 @@ type ManifestationPart {
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
   \\"\\"\\"
   creatorsFromDescription: [String!]!
+
+  \\"\\"\\"
+  The playing time for this specific part (i.e. the duration of a music track) 
+  \\"\\"\\"
+  playingTime: String
 }
 
 type ManifestationParts {
@@ -699,6 +704,9 @@ type Manifestation {
   \\"\\"\\"Series for this work\\"\\"\\"
   series: [Series!]!
 
+  \\"\\"\\"Universe for this work\\"\\"\\"
+  universe: Universe
+
   \\"\\"\\"
   Information about on which shelf in the library this manifestation can be found
   \\"\\"\\"
@@ -988,7 +996,7 @@ type LibrariansReview implements Review {
 
 type Universe {
   \\"\\"\\"
-  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Universe
+  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
   title: String!
 }
@@ -1147,6 +1155,9 @@ type DK5MainEntry {
 
   \\"\\"\\"Main DK5 classification code\\"\\"\\"
   code: String!
+
+  \\"\\"\\"The dk5Heading for the classification\\"\\"\\"
+  dk5Heading: String!
 }
 
 enum WorkType {
@@ -1764,6 +1775,11 @@ type ManifestationPart {
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
   \\"\\"\\"
   creatorsFromDescription: [String!]!
+
+  \\"\\"\\"
+  The playing time for this specific part (i.e. the duration of a music track) 
+  \\"\\"\\"
+  playingTime: String
 }
 
 type ManifestationParts {
@@ -2070,6 +2086,9 @@ type Manifestation {
   \\"\\"\\"Series for this work\\"\\"\\"
   series: [Series!]!
 
+  \\"\\"\\"Universe for this work\\"\\"\\"
+  universe: Universe
+
   \\"\\"\\"
   Information about on which shelf in the library this manifestation can be found
   \\"\\"\\"
@@ -2219,6 +2238,13 @@ type Relations {
 
   \\"\\"\\"This article or book part can be found in these manifestations\\"\\"\\"
   isPartOfManifestation: [Manifestation!]!
+}
+
+type Universe {
+  \\"\\"\\"
+  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
+  \\"\\"\\"
+  title: String!
 }
 
 type NumberInSeries {
