@@ -184,7 +184,7 @@ export const FAKE_MANIFESTATION_PARTS = {
   heading: "Dummy Indhold:",
   parts: [
     {
-      title: "Dummy Bouquet royal",
+      title: { display: "Dummy Bouquet royal" },
       creators: [
         {
           __typename: "Person",
@@ -358,7 +358,12 @@ export const FAKE_WORK = {
   universe: { title: "Dummy Some Universe" },
   genreAndForm: ["Dummy some genre"],
   workTypes: ["LITERATURE"],
-  workYear: "Dummy 1950",
+  workYear: {
+      display: "Dummy",
+      year: 1950,
+      endYear: 1951,
+      frequency: 1
+  },
   mainLanguages: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
   subjects: FAKE_SUBJECTS,
   manifestations: {

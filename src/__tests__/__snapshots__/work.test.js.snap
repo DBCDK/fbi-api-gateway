@@ -124,7 +124,12 @@ Object {
       "workTypes": Array [
         "LITERATURE",
       ],
-      "workYear": "Dummy 1950",
+      "workYear": Object {
+        "display": "Dummy",
+        "endYear": 1951,
+        "frequency": "1",
+        "year": 1950,
+      },
     },
   },
 }

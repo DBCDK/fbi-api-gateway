@@ -133,7 +133,12 @@ describe("Work", () => {
           }
           genreAndForm
           workTypes
-          workYear
+          workYear {
+            display
+            year
+            endYear
+            frequency
+          }
           mainLanguages {
             display
             isoCode
