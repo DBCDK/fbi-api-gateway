@@ -193,6 +193,7 @@ Object {
             "creatorsFromDescription": Array [
               "Dummy arr.: Peter Ettrup Larsen",
             ],
+            "playingTime": "Dummy playing time",
             "subjects": null,
             "title": "Dummy Bouquet royal",
           },

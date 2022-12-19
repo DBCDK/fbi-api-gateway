@@ -197,6 +197,11 @@ type ManifestationPart {
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
   """
   creatorsFromDescription: [String!]!
+  
+  """
+  The playing time for this specific part (i.e. the duration of a music track) 
+  """
+  playingTime: String
 }
 type ManifestationParts {
   """

@@ -205,6 +205,7 @@ export const FAKE_MANIFESTATION_PARTS = {
           display: "Dummy Klaver og strygere. Orgel og strygere",
         },
       ],
+      playingTime: "Dummy playing time",
     },
   ],
 };
