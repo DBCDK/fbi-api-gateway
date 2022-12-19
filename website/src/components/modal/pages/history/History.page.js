@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import Collapse from "react-bootstrap/Collapse";
 
@@ -27,6 +27,30 @@ function ItemIsLoading() {
 }
 
 /**
+ *
+ * @param {*} param0
+ * @returns
+ */
+
+function ExpandButton({ onClick, open }) {
+  const crossClass = open ? styles.less : styles.more;
+
+  return (
+    <button
+      className={`${styles.cross} ${crossClass}`}
+      onClick={onClick}
+      aria-controls="example-collapse-text"
+      aria-expanded={open}
+    >
+      <div>
+        <span />
+        <span />
+      </div>
+    </button>
+  );
+}
+
+/**
  * The Component function
  *
  * @param {obj} props
@@ -48,6 +72,7 @@ function Item({
 
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
+  const [distance, setDistance] = useState(false);
 
   // update state on modal close
   // useEffect(() => {
@@ -69,13 +94,118 @@ function Item({
 
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = isExpired ? styles.expired : "";
-  const crossClass = open ? styles.less : styles.more;
 
   const agency = configuration?.agency;
 
+  const exapandedClass = open ? styles.expanded : "";
+
+  const elRef = useRef();
+
+  if (isExpired) {
+    return (
+      <div ref={elRef} className={`${styles.item} ${styles.expired} `}>
+        <div className={styles.content} style={{ top: `${distance}px` }}>
+          <div className={styles.display}>
+            <div>
+              <Text type="text4">{ExpiredDisplay}</Text>
+              <Text type="text1">{token}</Text>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  useEffect(() => {
+    if (elRef.current?.offsetTop) {
+      setDistance(elRef.current.offsetTop);
+    }
+  }, [elRef.current?.offsetTop]);
+
+  return (
+    <div
+      ref={elRef}
+      className={`${styles.item} ${expiredClass} ${inUseClass} ${exapandedClass}`}
+    >
+      <div className={styles.content} style={{ top: `${distance}px` }}>
+        <div className={styles.display}>
+          <Text type="text4">{displayName}</Text>
+          <Text className={styles.authentication}>
+            {`This token is ${authenticated ? "AUTHENTICATED" : "ANONYMOUS"}`}
+          </Text>
+          <ExpandButton onClick={() => setOpen(!open)} open={open} />
+        </div>
+        <Collapse in={open} id={`details-collapse-${token}`}>
+          <div id="example-collapse-text">
+            <div className={styles.date}>
+              <Text type="text4">Submitted at</Text>
+              <Text type="text1">{date}</Text>
+            </div>
+
+            <div className={styles.expire}>
+              <Text type="text4">Expiration date</Text>
+              <Text type="text1">Some date</Text>
+            </div>
+
+            <div className={styles.token}>
+              <Text type="text4">Access token</Text>
+              <Text type="text1">{token}</Text>
+            </div>
+
+            <div className={styles.user}>
+              <Text type="text4">Name</Text>
+              <Text type="text1">Some name</Text>
+            </div>
+
+            <div className={styles.clientId}>
+              <Text type="text4">ClientID</Text>
+              <Text type="text1">{clientId}</Text>
+            </div>
+
+            <div className={styles.details}>
+              <div>
+                <Text type="text4">Agency</Text>
+                <Text type="text1">{agency || "Missing 😔"}</Text>
+              </div>
+              <div>
+                <Text type="text4">Profile</Text>
+                <Text type="text1">{profile || "None 😔"}</Text>
+              </div>
+            </div>
+          </div>
+        </Collapse>
+        <div className={styles.bottom}>
+          <hr />
+          <div className={styles.buttons}>
+            <Button
+              className={styles.remove}
+              size="small"
+              onClick={() => {
+                removeHistoryItem(token, profile);
+                setRemoved(true);
+              }}
+              secondary
+            >
+              Remove
+            </Button>
+            <Button
+              className={styles.use}
+              disabled={isExpired}
+              size="small"
+              onClick={() => setSelectedToken(token, profile)}
+              primary
+            >
+              {inUse ? "I'm in use" : "Use"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <Collapse in={!removed} id={`container-collapse-${token}`}>
-      <Col xs={12} className={`${styles.item} ${expiredClass} ${inUseClass}`}>
+      <Col xs={12} className={``}>
         <Row>
           <Col xs={12} className={styles.display}>
             <Text type="text4">
