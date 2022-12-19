@@ -56,7 +56,8 @@ Object {
       "classifications": Array [
         Object {
           "code": "Dummy 86-096",
-          "display": "Dummy Skønlitteratur",
+          "display": "Dummy 86-096, Skønlitteratur",
+          "dk5Heading": "Dummy Skønlitteratur",
           "entryType": "NATIONAL_BIBLIOGRAPHY_ENTRY",
           "system": "Dummy DK5",
         },

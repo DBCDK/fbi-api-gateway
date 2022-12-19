@@ -541,6 +541,9 @@ type Classification {
   \\"\\"\\"The classification code\\"\\"\\"
   code: String!
 
+  \\"\\"\\"The dk5Heading for the classification (DK5 only)\\"\\"\\"
+  dk5Heading: String
+
   \\"\\"\\"Descriptive text for the classification code (DK5 only)\\"\\"\\"
   display: String!
 
@@ -1918,6 +1921,9 @@ enum EntryType {
 type Classification {
   \\"\\"\\"The classification code\\"\\"\\"
   code: String!
+
+  \\"\\"\\"The dk5Heading for the classification (DK5 only)\\"\\"\\"
+  dk5Heading: String
 
   \\"\\"\\"Descriptive text for the classification code (DK5 only)\\"\\"\\"
   display: String!

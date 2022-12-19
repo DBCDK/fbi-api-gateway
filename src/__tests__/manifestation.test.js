@@ -132,6 +132,7 @@ describe("Manifestation", () => {
           creatorsFromDescription
           classifications {
             code
+            dk5Heading
             display
             entryType
             system
