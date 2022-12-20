@@ -43,12 +43,23 @@ Object {
             "pid": "Dummy some-pid-2",
           },
         ],
+        "bestRepresentation": Object {
+          "pid": "Dummy some-pid-1",
+        },
         "first": Object {
           "pid": "Dummy some-pid-1",
         },
         "latest": Object {
           "pid": "Dummy some-pid-2",
         },
+        "mostRelevant": Array [
+          Object {
+            "pid": "Dummy some-pid-2",
+          },
+          Object {
+            "pid": "Dummy some-pid-1",
+          },
+        ],
       },
       "materialTypes": Array [
         Object {
