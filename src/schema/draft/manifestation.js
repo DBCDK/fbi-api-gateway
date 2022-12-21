@@ -467,6 +467,7 @@ type Manifestations {
   latest: Manifestation!
   all: [Manifestation!]!
   bestRepresentation: Manifestation!
+  mostRelevant: [Manifestation!]!
 }
 type Manifestation {
   """

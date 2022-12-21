@@ -145,6 +145,12 @@ describe("Work", () => {
             isoCode
           }
           manifestations {
+            bestRepresentation {
+              pid
+            }
+            mostRelevant {
+              pid
+            }
             first {
               pid
             }
