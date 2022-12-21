@@ -157,6 +157,11 @@ Object {
             "isoCode": "Dummy dan",
           },
         ],
+        "notes": Array [
+          "Dummy dansk",
+          "dummy english",
+          "dummy german",
+        ],
         "original": Array [
           Object {
             "display": "Dummy dansk",
