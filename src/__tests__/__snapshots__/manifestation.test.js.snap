@@ -61,6 +61,13 @@ Object {
           "entryType": "NATIONAL_BIBLIOGRAPHY_ENTRY",
           "system": "Dummy DK5",
         },
+        Object {
+          "code": "Dummy 86-096 additional",
+          "display": "Dummy 86-096, Skønlitteratur additional",
+          "dk5Heading": "Dummy Skønlitteratur additional",
+          "entryType": "NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY",
+          "system": "Dummy DK5 additional",
+        },
       ],
       "contributors": Array [
         Object {

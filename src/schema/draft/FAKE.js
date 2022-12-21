@@ -134,6 +134,13 @@ export const FAKE_CLASSIFICATION = {
   display: "Dummy 86-096, Skønlitteratur",
   entryType: "NATIONAL_BIBLIOGRAPHY_ENTRY",
 };
+export const FAKE_CLASSIFICATION_1 = {
+  system: "Dummy DK5 additional",
+  code: "Dummy 86-096 additional",
+  dk5Heading: "Dummy Skønlitteratur additional",
+  display: "Dummy 86-096, Skønlitteratur additional",
+  entryType: "NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY",
+};
 
 export const FAKE_EDITION = {
   note: "Dummy note",
@@ -285,7 +292,7 @@ export const FAKE_MANIFESTATION_1 = {
   contributorsFromDescription: ["Dummy på dansk ved Vivi Berendt"],
   creators: [FAKE_PERSON, FAKE_CORPORATION],
   creatorsFromDescription: ["Dummy tekst af William Warren"],
-  classifications: [FAKE_CLASSIFICATION],
+  classifications: [FAKE_CLASSIFICATION, FAKE_CLASSIFICATION_1],
   edition: FAKE_EDITION,
   latestPrinting: FAKE_LATEST_PRINTING,
   fictionNonfiction: { display: "Dummy skønlitteratur", code: "FICTION" },
