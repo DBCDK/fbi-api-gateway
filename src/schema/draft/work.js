@@ -213,19 +213,18 @@ export const resolvers = {
     },
     async manifestations(parent, args, context, info) {
       const manifestations = parent?.manifestations;
-      const all = parent?.manifestations?.all || [];
-      const first =
-        manifestations?.all?.find((m) => m.pid === manifestations.first) ||
-        manifestations?.all[0];
-      const latest =
-        manifestations?.all?.find((m) => m.pid === manifestations.latest) ||
-        manifestations?.all[0];
+      const first = manifestations?.first || manifestations?.all?.[0];
+      const latest = manifestations?.latest || manifestations?.all?.[0];
+      const all = manifestations?.all || [];
+      const bestRepresentation = manifestations?.bestRepresentations?.[0] || manifestations?.all?.[0];
+      const mostRelevant = manifestations?.mostRelevant || manifestations?.all;
 
       return {
         first,
         latest,
-        bestRepresentation: latest,
         all,
+        bestRepresentation,
+        mostRelevant,
       };
     },
   },
