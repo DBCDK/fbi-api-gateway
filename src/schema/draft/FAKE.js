@@ -180,6 +180,7 @@ export const FAKE_HOST_PUBLICATION = {
 };
 
 export const FAKE_LANGUAGES = {
+  notes: ["Dummy dansk", "dummy english", "dummy german"],
   main: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
   original: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
   parallel: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],

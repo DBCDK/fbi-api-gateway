@@ -184,6 +184,7 @@ describe("Manifestation", () => {
             value
           }
           languages {
+            notes
             main {
               display
               isoCode

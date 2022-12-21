@@ -125,7 +125,6 @@ enum NoteType {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
   DISSERTATION
-  LANGUAGE
   MUSICAL_ENSEMBLE_OR_CAST
   NOT_SPECIFIED
   OCCASION_FOR_PUBLICATION
@@ -220,6 +219,11 @@ type ManifestationParts {
   type: ManifestationPartType!
 }
 type Languages {
+  """
+  Notes of the languages that describe subtitles, spoken/written (original, dubbed/synchonized), visual interpretation, parallel (notes are written in Danish)
+  """
+  notes: [String!]
+
   """
   Main language of this manifestation
   """
