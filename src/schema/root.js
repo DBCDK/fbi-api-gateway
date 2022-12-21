@@ -400,25 +400,15 @@ export const resolvers = {
       }
 
       // Then send order
-      try {
-        await context.datasources
-          .getLoader("statsbiblioteketSubmitArticleOrder")
-          .load({
-            ...args.input,
-            agencyId: branch.agencyId,
-            dryRun: args.dryRun,
-          });
-        log.info("Periodica article order succes", {
-          args,
-          accessToken: context.accessToken,
+      const res = await context.datasources
+        .getLoader("statsbiblioteketSubmitArticleOrder")
+        .load({
+          ...args.input,
+          agencyId: branch.agencyId,
+          dryRun: args.dryRun,
         });
-        return { status: "OK" };
-      } catch (e) {
-        log.error("Periodica article order failed", e);
-        return {
-          status: "ERROR_PID_NOT_RESERVABLE",
-        };
-      }
+
+      return res;
     },
     async submitOrder(parent, args, context, info) {
       const digitalAccessSubscriptions = await context.datasources

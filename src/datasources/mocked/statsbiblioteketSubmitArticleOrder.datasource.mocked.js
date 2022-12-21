@@ -1,3 +1,3 @@
 export async function load(props) {
-  return "OK";
+  return { status: "OK" };
 }
