@@ -500,6 +500,11 @@ type Manifestation {
   Different kinds of definitions of appropriate audience for this manifestation
   """
   audience: Audience
+  
+  """
+  Classification codes for this manifestation from any classification system
+  """
+  classifications: [Classification!]!
 
   """
   Contributors to the manifestation, actors, illustrators etc
@@ -527,9 +532,9 @@ type Manifestation {
   creatorsFromDescription: [String!]!
   
   """
-  Classification codes for this manifestation from any classification system
+  The year for the publication of the first edition for this work 
   """
-  classifications: [Classification!]!
+  dateFirstEdition: PublicationYear
 
   """
   Edition details for this manifestation

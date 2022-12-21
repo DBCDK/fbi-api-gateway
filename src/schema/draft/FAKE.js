@@ -293,6 +293,12 @@ export const FAKE_MANIFESTATION_1 = {
   creators: [FAKE_PERSON, FAKE_CORPORATION],
   creatorsFromDescription: ["Dummy tekst af William Warren"],
   classifications: [FAKE_CLASSIFICATION, FAKE_CLASSIFICATION_1],
+  dateFirstEdition: {
+      display: "Dummy first edition",
+      year: 1950,
+      endYear: 1950,
+      frequency: 1
+  },
   edition: FAKE_EDITION,
   latestPrinting: FAKE_LATEST_PRINTING,
   fictionNonfiction: { display: "Dummy skønlitteratur", code: "FICTION" },
@@ -331,6 +337,12 @@ export const FAKE_MANIFESTATION_1 = {
   subjects: FAKE_SUBJECTS,
   volume: "Dummy Bind 2",
   tableOfContents: FAKE_LIST_OF_CONTENT,
+  workYear: {
+    display: "Dummy",
+    year: 1950,
+    endYear: 1951,
+    frequency: 1
+  }
 };
 
 export const FAKE_MANIFESTATION_2 = {
