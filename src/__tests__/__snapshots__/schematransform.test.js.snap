@@ -625,6 +625,11 @@ type Manifestation {
   \\"\\"\\"
   audience: Audience
 
+  \\"\\"\\"
+  Classification codes for this manifestation from any classification system
+  \\"\\"\\"
+  classifications: [Classification!]!
+
   \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
   contributors: [Creator!]!
 
@@ -646,10 +651,8 @@ type Manifestation {
   \\"\\"\\"
   creatorsFromDescription: [String!]!
 
-  \\"\\"\\"
-  Classification codes for this manifestation from any classification system
-  \\"\\"\\"
-  classifications: [Classification!]!
+  \\"\\"\\"The year for the publication of the first edition for this work \\"\\"\\"
+  dateFirstEdition: PublicationYear
 
   \\"\\"\\"Edition details for this manifestation\\"\\"\\"
   edition: Edition
@@ -2011,6 +2014,11 @@ type Manifestation {
   \\"\\"\\"
   audience: Audience
 
+  \\"\\"\\"
+  Classification codes for this manifestation from any classification system
+  \\"\\"\\"
+  classifications: [Classification!]!
+
   \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
   contributors: [Creator!]!
 
@@ -2029,10 +2037,8 @@ type Manifestation {
   \\"\\"\\"
   creatorsFromDescription: [String!]!
 
-  \\"\\"\\"
-  Classification codes for this manifestation from any classification system
-  \\"\\"\\"
-  classifications: [Classification!]!
+  \\"\\"\\"The year for the publication of the first edition for this work \\"\\"\\"
+  dateFirstEdition: PublicationYear
 
   \\"\\"\\"Edition details for this manifestation\\"\\"\\"
   edition: Edition
