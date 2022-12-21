@@ -41,15 +41,6 @@ export async function load({
   return body.response;
 }
 
-/**
- * The status function
- *
- * @throws Will throw error if service is down
- */
-export async function status(loadFunc) {
-  await loadFunc({ q: "hest" });
-}
-
 export const options = {
   redis: {
     prefix,

@@ -9,5 +9,5 @@ export async function load({ q, limit }, context) {
   }
 
   const result = await context.fetch(`${url}${query}`);
-  return await result.json();
+  return result.body;
 }

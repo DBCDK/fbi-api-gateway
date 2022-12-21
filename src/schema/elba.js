@@ -138,30 +138,17 @@ export const resolvers = {
       }
 
       // Then send order
-      try {
-        await context.datasources
-          .getLoader("statsbiblioteketSubmitArticleOrder")
-          .load({
-            ...args.input,
-            userName: userName || user.name,
-            userMail: userMail || user.mail,
-            agencyId: user.municipalityAgencyId,
-            pickUpBranch: user.agency,
-            dryRun: args.dryRun,
-          });
 
-        log.info("Elba: Periodica article order succes", {
-          args,
-          accessToken: context.accessToken,
+      return await context.datasources
+        .getLoader("statsbiblioteketSubmitArticleOrder")
+        .load({
+          ...args.input,
+          userName: userName || user.name,
+          userMail: userMail || user.mail,
+          agencyId: user.municipalityAgencyId,
+          pickUpBranch: user.agency,
+          dryRun: args.dryRun,
         });
-
-        return { status: "OK" };
-      } catch (e) {
-        log.error("Elba: Periodica article order failed", e);
-        return {
-          status: "ERROR_PID_NOT_RESERVABLE",
-        };
-      }
     },
   },
 };

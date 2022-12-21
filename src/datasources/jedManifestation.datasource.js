@@ -1,4 +1,3 @@
-import request from "superagent";
 import config from "../config";
 import { MANIFESTATION_FIELDS_FRAGMENT } from "./jedFragments";
 
@@ -16,11 +15,14 @@ ${MANIFESTATION_FIELDS_FRAGMENT}`;
  * @param {Object} params
  * @param {string} params.workId id of the work
  */
-export async function load({ pid, profile }) {
+export async function load({ pid, profile }, context) {
   return (
-    await request.post(url).send({
-      query: WORK_QUERY,
-      variables: { id: pid, profile: `${profile.agency}-${profile.name}` },
+    await context.fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        query: WORK_QUERY,
+        variables: { id: pid, profile: `${profile.agency}-${profile.name}` },
+      }),
     })
   ).body;
 }

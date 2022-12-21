@@ -1,9 +1,7 @@
 import { log } from "dbc-node-logger";
-import request from "superagent";
 import config from "../config";
 
 const { url, user, password } = config.datasources.statsbiblioteket;
-const proxy = config.dmzproxy.url;
 
 // map fbi-api key-names to elba-service keys
 const map = {
@@ -74,7 +72,7 @@ function createRequestString(input) {
  * @param {string} params.pickUpBranch
  * @param {object} params.user
  */
-export async function load(params) {
+export async function load(params, context) {
   const requestString = createRequestString(params);
   const endpoint = `${url}/elba-webservices/services/placecopyrequest`;
 
@@ -83,16 +81,27 @@ export async function load(params) {
     return { status: "OK" };
   }
 
-  const res = proxy
-    ? request
-        .post(endpoint)
-        .proxy(proxy)
-        .set("Content-Type", "application/xml")
-        .send(requestString)
-    : request
-        .post(endpoint)
-        .set("Content-Type", "application/xml")
-        .send(requestString);
+  const res = await context?.fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/xml",
+    },
+    body: requestString,
+    enableProxy: true,
+  });
 
-  return res;
+  if (res.status === 200) {
+    log.info("Elba: Periodica article order succes", {
+      args,
+      accessToken: context.accessToken,
+    });
+    return { status: "OK" };
+  }
+
+  log.error("Elba: Periodica article order failed", {
+    error: JSON.stringify(res),
+  });
+  return {
+    status: "ERROR_PID_NOT_RESERVABLE",
+  };
 }

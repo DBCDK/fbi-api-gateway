@@ -7,7 +7,7 @@ import config from "../config";
 
 const { url, prefix, ttl, token, firstHits } = config.datasources.facets;
 
-export async function load({ q, filters = {}, facets = [], profile }) {
+export async function load({ q, filters = {}, facets = [], profile }, context) {
   const { agency, name } = profile;
   // get parsed arguments for query
   // static parameters for the search
@@ -27,7 +27,9 @@ export async function load({ q, filters = {}, facets = [], profile }) {
     ...statics,
   };
 
-  const res = (await request.post(url).send(query)).body;
+  const res = (
+    await context.fetch(url, { method: "POST", body: JSON.stringify(query) })
+  ).body;
 
   // parse
   return Object.entries(res.facets).map(([name, facetResult]) => {

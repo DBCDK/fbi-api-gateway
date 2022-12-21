@@ -12,5 +12,5 @@ export async function load({ pid, profile }, context) {
     `${url}?workId=work-of:${pid}&agencyId=${profile.agency}=&profile=${profile.name}`
   );
 
-  return (await res.json())?.work?.workId;
+  return res.body?.work?.workId;
 }

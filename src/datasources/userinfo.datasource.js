@@ -3,16 +3,14 @@ import request from "superagent";
 /**
  * Fetch user info
  */
-export async function load({ accessToken }) {
+export async function load({ accessToken }, context) {
   const url = "https://login.bib.dk/userinfo";
-  try {
-    const res = (
-      await request.get(url).set("Authorization", `Bearer ${accessToken}`)
-    ).body;
-    return res;
-  } catch (e) {
-    return null;
-  }
+  const res = await context?.fetch(url, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    allowedErrorStatusCodes: [401],
+  });
+
+  return res.body;
 }
 
 export const options = {

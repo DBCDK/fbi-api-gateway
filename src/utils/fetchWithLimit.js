@@ -3,6 +3,14 @@ import { fetch } from "undici";
 
 import diagnosticsChannel from "diagnostics_channel";
 import { log } from "dbc-node-logger";
+import { ProxyAgent } from "undici";
+import config from "../config";
+
+// A proxy dispatcher, used for fetch requests
+// that must go through the proxy
+const proxyDispatcher = config.dmzproxy.url
+  ? new ProxyAgent(config.dmzproxy.url)
+  : null;
 
 const { performance, PerformanceObserver } = require("perf_hooks");
 
@@ -78,16 +86,113 @@ diagnosticsChannel
     }
   });
 
+const stats = {};
+let prevStats;
+export function getStats() {
+  // Make a copy so we don't mess with original
+  const copy = JSON.parse(JSON.stringify(stats));
+
+  const res = Object.values(copy).map((entry) => {
+    return { ...entry, prevErrors: prevStats?.[entry.service]?.errors || 0 };
+  });
+
+  prevStats = copy;
+
+  return res;
+
+  // Return a copy of stats
+  // return JSON.parse(JSON.stringify(stats));
+}
+function insertStats(name, status, error) {
+  if (!stats[name]) {
+    stats[name] = { service: name, status: {}, errors: 0 };
+  }
+  if (!stats[name].status[status]) {
+    stats[name].status[status] = 0;
+  }
+  if (error) {
+    stats[name].errors++;
+  }
+  stats[name].status[status]++;
+}
+
+function setAllowedErrorStatusCodes(name, codes) {
+  if (!stats[name]) {
+    stats[name] = { service: name, status: {}, errors: 0 };
+  }
+  stats[name].allowedErrorStatusCodes = codes;
+}
+
 /**
  * Returns a fetch function that is concurrency limited.
  *
  * This is useful for avoiding a single incoming request consuming
  * too many resources, by making 1000s of outgoing HTTP requests in parallel.
+ *
+ * And it handles errors (logging, and counting)
  */
 export function createFetchWithConcurrencyLimit(concurrency) {
   const limit = promiseLimit(concurrency);
-  function fetchWithLimit(url, options) {
-    return limit(() => fetch(url, options));
-  }
-  return fetchWithLimit;
+
+  // This function makes the datasource name available to
+  // the fetch function via closure.
+  return function createFetchWithName(name) {
+    // The actual fetch function, that handles errors
+    function fetchWithLimit(url, options) {
+      return limit(async () => {
+        try {
+          // Retrieve the options for this request
+          const fetchOptions = { ...options };
+          const allowedErrorStatusCodes =
+            options?.allowedErrorStatusCodes || [];
+          const enableProxy = options?.enableProxy;
+          delete fetchOptions.allowedErrorStatusCodes;
+          delete fetchOptions.enableProxy;
+
+          setAllowedErrorStatusCodes(name, allowedErrorStatusCodes);
+
+          // Set proxy if required
+          if (enableProxy && proxyDispatcher) {
+            fetchOptions.dispatcher = proxyDispatcher;
+          }
+
+          // Perform the request
+          const res = await fetch(url, fetchOptions);
+
+          // Check that the response status code is what we expect
+          // for this particular data source
+          if (!res.ok && !allowedErrorStatusCodes.includes(res.status)) {
+            insertStats(name, res.status, true);
+            log.error(`Datasource error, ${name}`, {
+              error: `Unexpected status ${
+                res.status
+              }, expected one of ${allowedErrorStatusCodes.join(", ")}`,
+            });
+          } else {
+            insertStats(name, res.status);
+          }
+
+          // Return the body as either plain text or an object
+          const text = await res.text();
+          try {
+            return { status: res.status, body: JSON.parse(text), ok: res.ok };
+          } catch (parseError) {
+            return { status: res.status, body: text, ok: res.ok };
+          }
+        } catch (e) {
+          // Some network error occured
+
+          log.error(`Datasource error, ${name}`, {
+            error: String(e),
+            cause: JSON.stringify(e?.cause),
+          });
+
+          insertStats(name, e?.cause?.code, true);
+
+          return { status: e?.cause?.code, body: null, ok: false };
+        }
+      });
+    }
+    return fetchWithLimit;
+  };
 }

@@ -103,13 +103,16 @@ function createNeedBeforeDate() {
   return dateStr;
 }
 
-async function postSoap(soap) {
-  const res = await request
-    .post(url)
-    .set("Content-Type", "text/xml")
-    .send(soap);
+async function postSoap(soap, context) {
+  const res = await context?.fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/xml",
+    },
+    body: soap,
+  });
 
-  return res.text;
+  return res.body;
 }
 
 /**
@@ -119,7 +122,7 @@ async function postSoap(soap) {
  * @param {func} postSoapFunc
  * @returns
  */
-export async function processRequest(input, postSoapFunc) {
+export async function processRequest(input, postSoapFunc, context) {
   // If id is found the user is authenticated via some agency
   // otherwise the token is anonymous
   const userIdFromToken = input.smaug.user.id;
@@ -177,7 +180,7 @@ export async function processRequest(input, postSoapFunc) {
 
   const soap = constructSoap(parameters);
 
-  const text = await postSoapFunc(soap);
+  const text = await postSoapFunc(soap, context);
 
   let parsed;
   parseString(
@@ -222,6 +225,6 @@ export async function processRequest(input, postSoapFunc) {
  * @param input
  * @return {Promise<*>}
  */
-export async function load(input) {
-  return await processRequest(input, postSoap);
+export async function load(input, context) {
+  return await processRequest(input, postSoap, context);
 }

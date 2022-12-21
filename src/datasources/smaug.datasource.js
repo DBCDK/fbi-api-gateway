@@ -5,9 +5,11 @@ import config from "../config";
  */
 export async function load({ accessToken }, context) {
   const res = await context.fetch(
-    `${config.datasources.smaug.url}/configuration?token=${accessToken}`
+    `${config.datasources.smaug.url}/configuration?token=${accessToken}`,
+    { allowedErrorStatusCodes: [404] }
   );
-  return await res.json();
+
+  return res.body;
 }
 
 export const options = {

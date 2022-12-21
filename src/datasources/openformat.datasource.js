@@ -28,7 +28,7 @@ export async function load(pid, context) {
     method: "POST",
     body: formData,
   });
-  return (await res.json())?.formatResponse?.customDisplay?.[0]?.manifestation;
+  return res?.body?.formatResponse?.customDisplay?.[0]?.manifestation;
 }
 
 /**

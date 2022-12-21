@@ -19,9 +19,8 @@ import { log } from "dbc-node-logger";
 
 const { url, ttl, prefix } = config.datasources.defaultforsider;
 
-function parseResponse(text) {
+function parseResponse(covers) {
   try {
-    const covers = JSON.parse(text);
     return covers?.response.map((cover) => {
       return {
         detail: `${url}${cover?.detail || null}`,
@@ -37,32 +36,20 @@ function parseResponse(text) {
   }
 }
 
-/**
- * Fetch default cover (GET)
- */
-export async function load(coverParams) {
-  const url = config.datasources.defaultforsider.url + "defaultcover";
-  try {
-    const covers = await request.get(url).query(coverParams);
-    return parseResponse(covers?.text);
-  } catch (e) {
-    log.error(e.message);
-  }
-}
-
-export async function batchLoader(keys, loadFunc) {
+export async function batchLoader(keys, context) {
   const url = config.datasources.defaultforsider.url + "defaultcover/";
 
-  try {
-    const covers = await request
-      .post(url)
-      .set("Content-Type", "application/json")
-      .send(keys);
-    return parseResponse(covers?.text);
-  } catch (e) {
-    log.error(e.message);
+  const covers = await context.fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(keys),
+  });
+
+  if (!covers.ok) {
     return keys.map(() => ({}));
   }
+
+  return parseResponse(covers?.body);
 }
 
 // export const options = {
