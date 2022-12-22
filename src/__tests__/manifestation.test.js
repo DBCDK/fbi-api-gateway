@@ -284,6 +284,12 @@ describe("Manifestation", () => {
             }
             dbcVerified {
               display
+              ... on SubjectText {
+                language {
+                  display
+                  isoCode
+                }
+              }
             }
           }
           volume
