@@ -266,6 +266,10 @@ export const FAKE_LIST_OF_CONTENT = {
   ],
 };
 
+const FAKE_OWNER_WORK = {
+  workId: "work-of:870970-basis:54029519"
+}
+
 export const FAKE_MANIFESTATION_1 = {
   pid: "Dummy some-pid-1",
   titles: FAKE_MANIFESTATION_TITLE,
@@ -315,6 +319,7 @@ export const FAKE_MANIFESTATION_1 = {
   manifestationParts: FAKE_MANIFESTATION_PARTS,
   materialTypes: [FAKE_MATERIALTYPE],
   notes: [FAKE_NOTES],
+  ownerWork: FAKE_OWNER_WORK,
   relatedPublications: [
     {
       heading: "Dummy Tidligere titel:",
@@ -372,7 +377,7 @@ export const FAKE_DK5MAINENTRY = {
 };
 
 export const FAKE_WORK = {
-  workId: "work-of:870970-basis:54029519",
+  workId: FAKE_OWNER_WORK.workId,
   titles: FAKE_WORKTITLES,
   abstract: ["Dummy The abstract"],
   creators: [FAKE_PERSON, FAKE_CORPORATION],

@@ -237,6 +237,9 @@ describe("Manifestation", () => {
             heading
             display
           }
+          ownerWork {
+            workId
+          }
           relatedPublications {
             heading
             title

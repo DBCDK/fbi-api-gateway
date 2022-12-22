@@ -233,6 +233,9 @@ Object {
           "type": "NOT_SPECIFIED",
         },
       ],
+      "ownerWork": Object {
+        "workId": "work-of:870970-basis:54029519",
+      },
       "physicalDescriptions": Array [
         Object {
           "accompanyingMaterial": null,
