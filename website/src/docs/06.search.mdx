@@ -72,6 +72,13 @@ This example searches for _hopper_ as title, _hesteavl_ as subject, and _carl_ a
         subjects {
           dbcVerified {
             display
+            ... on SubjectText {
+              language {
+                display
+                isoCode
+              }
+            }
+            type
           }
         }
       }
