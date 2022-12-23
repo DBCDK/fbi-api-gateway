@@ -1,5 +1,4 @@
 import { log } from "dbc-node-logger";
-import request from "superagent";
 import config from "../config";
 
 const {
@@ -44,49 +43,21 @@ function createMultiRequest(pids) {
 </mi:moreInfoRequest>`;
 }
 
-// @TODO - handle net archive also - moreInfoResponse.identifierInformation.netArchive
-export async function load(pid) {
-  try {
-    const images = (
-      await request.post(url).field("xml", createRequest(pid))
-    ).body.moreInfoResponse.identifierInformation
-      .map((entry) => entry.coverImage)
-      .filter((entry) => entry);
-
-    const res = {};
-    images.forEach((entry) => {
-      entry.forEach((cover) => {
-        res[cover["@imageSize"].$] = cover.$;
-        res["origin"] = "moreinfo";
-      });
-    });
-
-    return res;
-  } catch (e) {
-    if (e.status !== 404) {
-      log.error(`Request to moreinfo failed for pid ${pid}`, {
-        error: String(e),
-        stacktrace: e.stack,
-      });
-      return {
-        ok: false,
-        message: String(e),
-      };
-    }
-
-    return {};
-  }
-}
-
 /**
  * A DataLoader batch function
  *
  * @param {Array.<string|object>} keys The keys to fetch
  */
-export async function batchLoader(keys, loadFunc) {
+export async function batchLoader(keys, context) {
   try {
     const images = (
-      await request.post(url).field("xml", createMultiRequest(keys))
+      await context.fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: "&xml=" + createMultiRequest(keys),
+      })
     ).body.moreInfoResponse.identifierInformation.map(
       (entry) => entry.coverImage
     );
@@ -112,18 +83,6 @@ export async function batchLoader(keys, loadFunc) {
     }
 
     return keys.map(() => ({}));
-  }
-}
-
-/**
- * The status function
- *
- * @throws Will throw error if service is down
- */
-export async function status(loadFunc) {
-  const test = await loadFunc("870970-basis:51877330");
-  if (test.ok === false) {
-    throw { message: test.message };
   }
 }
 

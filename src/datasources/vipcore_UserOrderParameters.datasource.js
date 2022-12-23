@@ -3,12 +3,13 @@ import config from "../config";
 
 const { url, ttl } = config.datasources.vipcore;
 
-export async function load(agencyId) {
-  return (
-    await request.get(
-      `${url}/service/${agencyId}/userOrderParameters?trackingId=betabib`
-    )
-  ).body.userOrderParameters;
+export async function load(agencyId, context) {
+  const res = await context?.fetch(
+    `${url}/service/${agencyId}/userOrderParameters?trackingId=betabib`,
+    { allowedErrorStatusCodes: [404] }
+  );
+
+  return res.body.userOrderParameters;
 }
 
 export const options = {

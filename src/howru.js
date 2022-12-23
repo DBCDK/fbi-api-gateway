@@ -2,6 +2,7 @@ import _ from "lodash";
 import config from "./config";
 import { datasources } from "./datasourceLoader";
 import { status as redisStatus } from "./datasources/redis.datasource";
+import { getStats } from "./utils/fetchWithLimit";
 
 // Create upSince timestamp
 let upSince = new Date();
@@ -53,9 +54,21 @@ async function howru(req, res) {
     })
   );
 
-  // Loop through service results, to determine if all is ok
+  // Loop through service status check results, to determine if all is ok
   let ok = true;
   results.forEach((service) => {
+    if (!service.ok) {
+      ok = false;
+      res.status(500);
+    }
+  });
+
+  // loop through http stats and check if all is ok
+  const httpStats = getStats().map((service) => ({
+    ...service,
+    ok: service.errors === service.prevErrors,
+  }));
+  httpStats.forEach((service) => {
     if (!service.ok) {
       ok = false;
       res.status(500);
@@ -66,6 +79,7 @@ async function howru(req, res) {
     ok,
     upSince,
     services: results,
+    httpStats,
     config: omitDeep(config, omitKeys),
   });
 }

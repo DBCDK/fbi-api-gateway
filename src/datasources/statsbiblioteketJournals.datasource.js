@@ -1,44 +1,19 @@
-import request from "superagent";
-
 import config from "../config";
-import { log } from "dbc-node-logger";
-require("superagent-proxy")(request);
 
-export async function load() {
-  const proxy = config.dmzproxy.url;
+export async function load(_key, context) {
+  const res = await context?.fetch(
+    `${config.datasources.statsbiblioteket.url}/copydanws/journals`,
+    { headers: { Accept: "application/json" }, enableProxy: true }
+  );
 
-  try {
-    let res = proxy
-      ? (
-          await request
-            .get(
-              `${config.datasources.statsbiblioteket.url}/copydanws/journals`
-            )
-            .proxy(proxy)
-            .set("Accept", "application/json")
-        ).body
-      : (
-          await request
-            .get(
-              `${config.datasources.statsbiblioteket.url}/copydanws/journals`
-            )
-            .set("Accept", "application/json")
-        ).body;
+  const body = res.body;
 
-    const journalsMap = res.journals.journal.reduce((map, journal) => {
-      map[journal.issn] = 1;
-      return map;
-    }, {});
+  const journalsMap = body?.journals?.journal?.reduce((map, journal) => {
+    map[journal.issn] = 1;
+    return map;
+  }, {});
 
-    return journalsMap;
-  } catch (e) {
-    log.error(
-      "Request statsbiblioteket failed : " +
-        config.datasources.statsbiblioteket.url +
-        " message: " +
-        e.message
-    );
-  }
+  return journalsMap || {};
 }
 
 export const options = {

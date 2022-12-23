@@ -22,7 +22,7 @@ export function restructureCategories(data) {
  */
 export async function load({}, context) {
   const res = await context.fetch(url);
-  const data = await res.json();
+  const data = res.body;
 
   return restructureCategories(data?.categories);
 }

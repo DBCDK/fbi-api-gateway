@@ -1,3 +1,4 @@
+import { log } from "dbc-node-logger";
 import config from "../config";
 import {
   MANIFESTATION_FIELDS_FRAGMENT,
@@ -38,7 +39,7 @@ export async function load({ workId, profile }, context) {
     }),
   });
 
-  return await res.json();
+  return res.body;
 }
 
 export const options = {

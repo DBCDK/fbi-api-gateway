@@ -18,6 +18,7 @@ test("user - get basic data", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      smaug: { user: { uniqueId: "some-unique-id" } },
     },
   });
   expect(result).toMatchSnapshot();
@@ -45,6 +46,7 @@ test("user - get agency danish", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      smaug: { user: { uniqueId: "some-unique-id" } },
     },
   });
   expect(result).toMatchSnapshot();
@@ -72,6 +74,7 @@ test("user - get agency english", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      smaug: { user: { uniqueId: "some-unique-id" } },
     },
   });
   expect(result).toMatchSnapshot();
@@ -93,6 +96,7 @@ test("user - get loans", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      smaug: { user: { uniqueId: "some-unique-id" } },
     },
   });
   expect(result).toMatchSnapshot();
@@ -116,6 +120,7 @@ test("user - get orders", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      smaug: { user: { uniqueId: "some-unique-id" } },
     },
   });
   expect(result).toMatchSnapshot();
@@ -140,6 +145,7 @@ test("user - get debt", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      smaug: { user: { uniqueId: "some-unique-id" } },
     },
   });
   expect(result).toMatchSnapshot();

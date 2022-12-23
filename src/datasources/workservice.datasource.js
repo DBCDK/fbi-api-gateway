@@ -10,7 +10,8 @@ const { url, ttl, prefix } = config.datasources.work;
  */
 export async function load({ workId, profile }, context) {
   const res = await context?.fetch(
-    `${url}?workId=${workId}&agencyId=${profile.agency}=&profile=${profile.name}&includeRelations=true`
+    `${url}?workId=${workId}&agencyId=${profile.agency}=&profile=${profile.name}&includeRelations=true`,
+    { allowedErrorStatusCodes: [403, 404] }
   );
 
   return (await res.json())?.work;
@@ -36,21 +37,6 @@ export async function batchLoader(keys, context) {
         return null;
       }
     })
-  );
-}
-
-/**
- * The status function
- *
- * @throws Will throw error if service is down
- */
-export async function status() {
-  await load(
-    {
-      workId: "work-of:870970-basis:51877330",
-      profile: { agency: "190101", name: "default" },
-    },
-    { fetch }
   );
 }
 

@@ -2,18 +2,14 @@
  * @file Simple search
  */
 
-import request from "superagent";
 import config from "../config";
 
 const { url, prefix, ttl, token } = config.datasources.simplesearch;
 
-export async function load({
-  q,
-  filters = {},
-  limit = 10,
-  offset = 0,
-  profile,
-}) {
+export async function load(
+  { q, filters = {}, limit = 10, offset = 0, profile },
+  context
+) {
   const { agency, name } = profile;
 
   // get parsed arguments for query
@@ -35,7 +31,10 @@ export async function load({
   };
 
   // do the request
-  const response = (await request.post(url).send(query)).body;
+
+  const response = (
+    await context.fetch(url, { method: "POST", body: JSON.stringify(query) })
+  ).body;
 
   // Get hitcount
   const hitcount = response.hits;

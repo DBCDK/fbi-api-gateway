@@ -8,46 +8,37 @@ import request from "superagent";
 import config from "../config";
 
 const { url, prefix, ttl, token } = config.datasources.prosper;
-export async function load({
-  q,
-  // suggestType defaults to all
-  suggestType = ["creator", "subject", "title"],
-  profile,
-  branchId,
-  limit,
-}) {
+export async function load(
+  {
+    q,
+    // suggestType defaults to all
+    suggestType = ["creator", "subject", "title"],
+    profile,
+    branchId,
+    limit,
+  },
+  context
+) {
   const types = suggestType.map((sug) => sug.toLowerCase());
-  const result = await request
-    .post(url)
-    .set("Authorization", `bearer ${token}`)
-    .send({
+
+  const res = await context.fetch(url, {
+    method: "POST",
+    headers: { Authorization: `bearer ${token}` },
+    body: JSON.stringify({
       q: q,
       agency: profile.agency,
       rows: limit || 10,
       type: types,
       ...(branchId && { branchid: branchId }),
-    });
+    }),
+  });
 
-  let body;
-  try {
-    body = JSON.parse(result.text);
-  } catch (e) {
-    body = result.body;
-  }
+  const body = res.body;
 
   if (Array.isArray(body)) {
     return body;
   }
   return body.response;
-}
-
-/**
- * The status function
- *
- * @throws Will throw error if service is down
- */
-export async function status(loadFunc) {
-  await loadFunc({ q: "hest" });
 }
 
 export const options = {

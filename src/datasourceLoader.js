@@ -39,7 +39,7 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
       return;
     }
     const { load, options, batchLoader, status } = require(file.path);
-    if (!load) {
+    if (!load && !batchLoader) {
       return;
     }
 
@@ -140,7 +140,7 @@ export default function createDataLoaders(uuid) {
     if (!result[name]) {
       result[name] = setupDataloader(nameToDatasource[name], {
         track,
-        fetch: fetchWithConcurrencyLimit,
+        fetch: (url, options) => fetchWithConcurrencyLimit(url, options, name),
         trackingId: uuid,
       })?.loader;
     }

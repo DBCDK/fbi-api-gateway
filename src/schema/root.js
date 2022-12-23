@@ -21,7 +21,7 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
-  user: User!
+  user: User
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
@@ -208,6 +208,9 @@ export const resolvers = {
       return { ...args };
     },
     async user(parent, args, context, info) {
+      if (!context?.smaug?.user?.uniqueId) {
+        return null;
+      }
       return { ...args };
     },
     async work(parent, args, context, info) {
@@ -397,25 +400,15 @@ export const resolvers = {
       }
 
       // Then send order
-      try {
-        await context.datasources
-          .getLoader("statsbiblioteketSubmitArticleOrder")
-          .load({
-            ...args.input,
-            agencyId: branch.agencyId,
-            dryRun: args.dryRun,
-          });
-        log.info("Periodica article order succes", {
-          args,
-          accessToken: context.accessToken,
+      const res = await context.datasources
+        .getLoader("statsbiblioteketSubmitArticleOrder")
+        .load({
+          ...args.input,
+          agencyId: branch.agencyId,
+          dryRun: args.dryRun,
         });
-        return { status: "OK" };
-      } catch (e) {
-        log.error("Periodica article order failed", e);
-        return {
-          status: "ERROR_PID_NOT_RESERVABLE",
-        };
-      }
+
+      return res;
     },
     async submitOrder(parent, args, context, info) {
       const digitalAccessSubscriptions = await context.datasources

@@ -14,8 +14,9 @@ export async function load({ cql, offset, limit, profile }, context) {
       cqlQuery: cql,
       pagination: { offset, limit },
     }),
+    allowedErrorStatusCodes: [400],
   });
-  const json = await res.json();
+  const json = res.body;
   return {
     errorMessage: json?.errorMessage,
     works: json?.workdIds || [],

@@ -9,8 +9,9 @@ const { url } = config.datasources.work;
  */
 export async function load({ pid, profile }, context) {
   const res = await context?.fetch(
-    `${url}?workId=work-of:${pid}&agencyId=${profile.agency}=&profile=${profile.name}`
+    `${url}?workId=work-of:${pid}&agencyId=${profile.agency}=&profile=${profile.name}`,
+    { allowedErrorStatusCodes: [404] }
   );
 
-  return (await res.json())?.work?.workId;
+  return res.body?.work?.workId;
 }

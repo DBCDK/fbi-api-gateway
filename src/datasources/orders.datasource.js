@@ -4,12 +4,16 @@ import config from "../config";
 /**
  * Fetch user info
  */
-export async function load({ accessToken }) {
+export async function load({ accessToken }, context) {
   const url = config.datasources.openplatform.url + "/user";
+
   return (
-    await request.post(url).send({
-      access_token: accessToken,
-      userinfo: ["userOrder"],
+    await context.fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        access_token: accessToken,
+        userinfo: ["userOrder"],
+      }),
     })
   ).body.data;
 }
