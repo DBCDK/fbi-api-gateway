@@ -140,7 +140,7 @@ export default function createDataLoaders(uuid) {
     if (!result[name]) {
       result[name] = setupDataloader(nameToDatasource[name], {
         track,
-        fetch: fetchWithConcurrencyLimit(name),
+        fetch: (url, options) => fetchWithConcurrencyLimit(url, options, name),
         trackingId: uuid,
       })?.loader;
     }

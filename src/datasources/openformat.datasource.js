@@ -31,15 +31,6 @@ export async function load(pid, context) {
   return res?.body?.formatResponse?.customDisplay?.[0]?.manifestation;
 }
 
-/**
- * The status function
- *
- * @throws Will throw error if service is down
- */
-export async function status(loadFunc) {
-  await loadFunc("870970-basis:51877330", { fetch });
-}
-
 export const options = {
   redis: {
     prefix,

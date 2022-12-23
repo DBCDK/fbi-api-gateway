@@ -86,41 +86,72 @@ diagnosticsChannel
     }
   });
 
-const stats = {};
-let prevStats;
+/**
+ * Factory function that creates object for collecting
+ * HTTP metrics
+ */
+function createHTTPStats() {
+  const stats = {};
+  let prevStats;
+
+  /**
+   * Creates entry in stats object for a service
+   * if it does not already exist
+   */
+  function createStatsEntry(name, status) {
+    if (!stats[name]) {
+      stats[name] = { service: name, status: {}, errors: 0 };
+    }
+    if (status && !stats[name].status[status]) {
+      stats[name].status[status] = 0;
+    }
+  }
+
+  return {
+    insertStats(name, res) {
+      const { ok, status } = res;
+
+      createStatsEntry(name, status);
+
+      stats[name].status[status]++;
+
+      const { allowedErrorStatusCodes } = stats[name];
+
+      if (!ok && !allowedErrorStatusCodes.includes(status)) {
+        stats[name].errors++;
+        log.error(`Datasource error, ${name}`, {
+          error: `Disallowed error status ${status}, expected one of ${allowedErrorStatusCodes.join(
+            ", "
+          )}`,
+        });
+      }
+    },
+    setAllowedErrorStatusCodes(name, codes) {
+      createStatsEntry(name);
+      stats[name].allowedErrorStatusCodes = codes;
+    },
+    getStats() {
+      // Make a copy so we don't mess with original
+      const copy = JSON.parse(JSON.stringify(stats));
+
+      const res = Object.values(copy).map((entry) => {
+        return {
+          ...entry,
+          prevErrors: prevStats?.[entry.service]?.errors || 0,
+        };
+      });
+
+      prevStats = copy;
+
+      return res;
+    },
+  };
+}
+
+const httpStats = createHTTPStats();
+
 export function getStats() {
-  // Make a copy so we don't mess with original
-  const copy = JSON.parse(JSON.stringify(stats));
-
-  const res = Object.values(copy).map((entry) => {
-    return { ...entry, prevErrors: prevStats?.[entry.service]?.errors || 0 };
-  });
-
-  prevStats = copy;
-
-  return res;
-
-  // Return a copy of stats
-  // return JSON.parse(JSON.stringify(stats));
-}
-function insertStats(name, status, error) {
-  if (!stats[name]) {
-    stats[name] = { service: name, status: {}, errors: 0 };
-  }
-  if (!stats[name].status[status]) {
-    stats[name].status[status] = 0;
-  }
-  if (error) {
-    stats[name].errors++;
-  }
-  stats[name].status[status]++;
-}
-
-function setAllowedErrorStatusCodes(name, codes) {
-  if (!stats[name]) {
-    stats[name] = { service: name, status: {}, errors: 0 };
-  }
-  stats[name].allowedErrorStatusCodes = codes;
+  return httpStats.getStats();
 }
 
 /**
@@ -134,65 +165,47 @@ function setAllowedErrorStatusCodes(name, codes) {
 export function createFetchWithConcurrencyLimit(concurrency) {
   const limit = promiseLimit(concurrency);
 
-  // This function makes the datasource name available to
-  // the fetch function via closure.
-  return function createFetchWithName(name) {
-    // The actual fetch function, that handles errors
-    function fetchWithLimit(url, options) {
-      return limit(async () => {
-        try {
-          // Retrieve the options for this request
-          const fetchOptions = { ...options };
-          const allowedErrorStatusCodes =
-            options?.allowedErrorStatusCodes || [];
-          const enableProxy = options?.enableProxy;
-          delete fetchOptions.allowedErrorStatusCodes;
-          delete fetchOptions.enableProxy;
+  // The actual fetch function, that handles errors
+  return function fetchWithLimit(url, options, name) {
+    return limit(async () => {
+      // Retrieve the options for this request
+      const fetchOptions = { ...options };
+      const allowedErrorStatusCodes = options?.allowedErrorStatusCodes || [];
+      const enableProxy = options?.enableProxy;
+      delete fetchOptions.allowedErrorStatusCodes;
+      delete fetchOptions.enableProxy;
 
-          setAllowedErrorStatusCodes(name, allowedErrorStatusCodes);
+      httpStats.setAllowedErrorStatusCodes(name, allowedErrorStatusCodes);
 
-          // Set proxy if required
-          if (enableProxy && proxyDispatcher) {
-            fetchOptions.dispatcher = proxyDispatcher;
-          }
+      // Set proxy if required
+      if (enableProxy && proxyDispatcher) {
+        fetchOptions.dispatcher = proxyDispatcher;
+      }
 
-          // Perform the request
-          const res = await fetch(url, fetchOptions);
+      // Holds the fetch result
+      let res;
 
-          // Check that the response status code is what we expect
-          // for this particular data source
-          if (!res.ok && !allowedErrorStatusCodes.includes(res.status)) {
-            insertStats(name, res.status, true);
-            log.error(`Datasource error, ${name}`, {
-              error: `Unexpected status ${
-                res.status
-              }, expected one of ${allowedErrorStatusCodes.join(", ")}`,
-            });
-          } else {
-            insertStats(name, res.status);
-          }
+      try {
+        // Perform the request
+        res = await fetch(url, fetchOptions);
+      } catch (e) {
+        // Some network error occured
 
-          // Return the body as either plain text or an object
-          const text = await res.text();
-          try {
-            return { status: res.status, body: JSON.parse(text), ok: res.ok };
-          } catch (parseError) {
-            return { status: res.status, body: text, ok: res.ok };
-          }
-        } catch (e) {
-          // Some network error occured
+        httpStats.insertStats(name, { ok: false, status: e?.cause?.code });
 
-          log.error(`Datasource error, ${name}`, {
-            error: String(e),
-            cause: JSON.stringify(e?.cause),
-          });
+        return { status: e?.cause?.code, body: null, ok: false };
+      }
 
-          insertStats(name, e?.cause?.code, true);
+      // Collect HTTP metric
+      httpStats.insertStats(name, res);
 
-          return { status: e?.cause?.code, body: null, ok: false };
-        }
-      });
-    }
-    return fetchWithLimit;
+      // Return the body as either plain text or an object
+      const text = await res.text();
+      try {
+        return { status: res.status, body: JSON.parse(text), ok: res.ok };
+      } catch (parseError) {
+        return { status: res.status, body: text, ok: res.ok };
+      }
+    });
   };
 }
