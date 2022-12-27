@@ -233,6 +233,9 @@ Object {
           "type": "NOT_SPECIFIED",
         },
       ],
+      "ownerWork": Object {
+        "workId": "work-of:870970-basis:54029519",
+      },
       "physicalDescriptions": Array [
         Object {
           "accompanyingMaterial": null,
@@ -334,6 +337,10 @@ Object {
         "dbcVerified": Array [
           Object {
             "display": "Dummy Some fictional subject",
+            "language": Object {
+              "display": "Dummy dansk",
+              "isoCode": "dum dan",
+            },
           },
           Object {
             "display": "Dummy 1950-1980",

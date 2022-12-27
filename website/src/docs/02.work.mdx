@@ -34,6 +34,13 @@ In the following example, often-used fields are fetched in the simplest way poss
     subjects {
       dbcVerified {
         display
+        ... on SubjectText {
+          language {
+            display
+            isoCode
+          }
+        }
+        type
       }
     }
     workYear

@@ -237,6 +237,9 @@ describe("Manifestation", () => {
             heading
             display
           }
+          ownerWork {
+            workId
+          }
           relatedPublications {
             heading
             title
@@ -281,6 +284,12 @@ describe("Manifestation", () => {
             }
             dbcVerified {
               display
+              ... on SubjectText {
+                language {
+                  display
+                  isoCode
+                }
+              }
             }
           }
           volume

@@ -692,6 +692,9 @@ type Manifestation {
   \\"\\"\\"Notes about the manifestation\\"\\"\\"
   notes: [Note!]!
 
+  \\"\\"\\"The work that this manifestation is part of\\"\\"\\"
+  ownerWork: Work!
+
   \\"\\"\\"
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   \\"\\"\\"
@@ -2001,6 +2004,14 @@ type Audience {
   lix: String
 }
 
+type Manifestations {
+  first: Manifestation!
+  latest: Manifestation!
+  all: [Manifestation!]!
+  bestRepresentation: Manifestation!
+  mostRelevant: [Manifestation!]!
+}
+
 type Manifestation {
   \\"\\"\\"Unique identification of the manifestation e.g 870970-basis:54029519\\"\\"\\"
   pid: String!
@@ -2081,6 +2092,9 @@ type Manifestation {
 
   \\"\\"\\"Notes about the manifestation\\"\\"\\"
   notes: [Note!]!
+
+  \\"\\"\\"The work that this manifestation is part of\\"\\"\\"
+  ownerWork: Work!
 
   \\"\\"\\"
   Notes about relations to this book/periodical/journal, - like previous names or related journals
@@ -2257,6 +2271,170 @@ type Relations {
   isPartOfManifestation: [Manifestation!]!
 }
 
+type Work {
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
+  reviews: [Review!]!
+
+  \\"\\"\\"The new reviews\\"\\"\\"
+  workReviews: [WorkReview!]!
+
+  \\"\\"\\"
+  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
+  \\"\\"\\"
+  workId: String!
+  titles: WorkTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]
+
+  \\"\\"\\"Creators\\"\\"\\"
+  creators: [Creator!]!
+
+  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
+  dk5MainEntry: DK5MainEntry
+
+  \\"\\"\\"
+  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Series for this work\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"Members of a series that this work is part of\\"\\"\\"
+  seriesMembers: [Work!]!
+
+  \\"\\"\\"
+  Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universe: Universe
+
+  \\"\\"\\"Subjects for this work\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
+  workTypes: [WorkType!]!
+
+  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
+  workYear: PublicationYear
+
+  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
+  mainLanguages: [Language!]!
+
+  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
+  manifestations: Manifestations!
+}
+
+enum LibrariansReviewSectionCode {
+  ALL
+  ABOUT
+  DESCRIPTION
+  EVALUATION
+  OTHER
+  LIBRARY
+  USE
+  OLDDESCRIPTION
+  COMPARE
+  CONCLUSION
+}
+
+type LibrariansReviewSection {
+  \\"\\"\\"a code indicating the content type of the section\\"\\"\\"
+  code: LibrariansReviewSectionCode!
+
+  \\"\\"\\"The heading of the section\\"\\"\\"
+  heading: String
+
+  \\"\\"\\"A piece of text, maybe mentioning a work at the end.\\"\\"\\"
+  text: String!
+
+  \\"\\"\\"
+  The work the text is refering to. When work is null, the text does not refer to a work.
+  \\"\\"\\"
+  work: Work
+}
+
+interface Review {
+  author: String
+  date: String
+}
+
+type ExternalReview implements Review {
+  author: String
+  date: String
+  rating: String
+  urls: [AccessUrl!]!
+}
+
+type InfomediaReview implements Review {
+  author: String
+  date: String
+  origin: String
+  rating: String
+  id: String!
+}
+
+type LibrariansReview implements Review {
+  author: String
+  date: String
+  sections: [LibrariansReviewSection!]!
+
+  \\"\\"\\" This is a pid \\"\\"\\"
+  id: String!
+}
+
+type WorkReview {
+  \\"\\"\\"Author of the review\\"\\"\\"
+  author: String
+
+  \\"\\"\\"Date of the review in the format YYYY-MM-DD\\"\\"\\"
+  date: String
+
+  \\"\\"\\"
+  When this is not null, the review can be retrieved from infomedia using the infomediaId
+  \\"\\"\\"
+  infomediaId: String
+
+  \\"\\"\\"
+  When this is not null, this review is created by a librarian, 
+  and the sections of the review are available here
+  \\"\\"\\"
+  librariansReview: [LibrariansReviewSection!]
+
+  \\"\\"\\"The origin of review. E.g. 'Politiken'\\"\\"\\"
+  origin: String
+
+  \\"\\"\\"When this is not null, the review is located in a periodica\\"\\"\\"
+  periodica: PeriodicaReviewDetails
+
+  \\"\\"\\"The pid of the review\\"\\"\\"
+  pid: String!
+
+  \\"\\"\\"The authors rating of the work. E.g '5/6'\\"\\"\\"
+  rating: String
+
+  \\"\\"\\"This may contain URL's where the review can be read\\"\\"\\"
+  urls: [AccessUrl!]!
+}
+
+type PeriodicaReviewDetails {
+  \\"\\"\\"Specifies the volume of the periodica where the review is located\\"\\"\\"
+  volume: String
+
+  \\"\\"\\"Specifies which pages of the volume the review is located\\"\\"\\"
+  pages: String
+
+  \\"\\"\\"A reference to the host publication\\"\\"\\"
+  hostPublication: Work
+}
+
 type Universe {
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -2386,6 +2564,17 @@ type FictionNonfiction {
   code: FictionNonfictionCode!
 }
 
+type DK5MainEntry {
+  \\"\\"\\"Displayable main DK5 classification\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Main DK5 classification code\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"The dk5Heading for the classification\\"\\"\\"
+  dk5Heading: String!
+}
+
 enum WorkType {
   ANALYSIS
   ARTICLE
@@ -2401,6 +2590,31 @@ enum WorkType {
   REVIEW
   SHEETMUSIC
   TRACK
+}
+
+type WorkTitles {
+  \\"\\"\\"The main title(s) of the work\\"\\"\\"
+  main: [String!]!
+
+  \\"\\"\\"The full title(s) of the work including subtitles etc\\"\\"\\"
+  full: [String!]!
+
+  \\"\\"\\"Titles (in other languages) parallel to the main 'title' of the work\\"\\"\\"
+  parallel: [String!]!
+
+  \\"\\"\\"The sorted title of the entity\\"\\"\\"
+  sort: String!
+
+  \\"\\"\\"
+  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
+  \\"\\"\\"
+  original: [String!]
+
+  \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
+  standard: String
+
+  \\"\\"\\"Danish translation of the main title\\"\\"\\"
+  translated: [String!]
 }
 
 type Query {

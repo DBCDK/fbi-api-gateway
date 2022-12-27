@@ -589,6 +589,11 @@ type Manifestation {
   Notes about the manifestation
   """
   notes: [Note!]!
+  
+  """
+  The work that this manifestation is part of
+  """
+  ownerWork: Work!
 
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals
