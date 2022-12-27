@@ -390,9 +390,10 @@ type Edition {
   publicationYear: PublicationYear
 }
 enum EntryType {
+  ADDITIONAL_ENTRY
   MAIN_ENTRY
   NATIONAL_BIBLIOGRAPHY_ENTRY
-  ADDITIONAL_ENTRY
+  NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY
 }
 type Classification {
   """
