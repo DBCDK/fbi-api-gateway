@@ -217,6 +217,7 @@ describe("Manifestation", () => {
                 display
               }
               creatorsFromDescription
+              playingTime
             }
             type
           }

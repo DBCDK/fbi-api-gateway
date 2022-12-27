@@ -96,6 +96,7 @@ describe("Work", () => {
           dk5MainEntry {
             display
             code
+            dk5Heading
           }
           fictionNonfiction {
             display
