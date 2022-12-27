@@ -394,12 +394,17 @@ type Classification {
   The classification code
   """
   code: String!
+  
+  """
+  The dk5Heading for the classification (DK5 only)
+  """
+  dk5Heading: String
 
   """
   Descriptive text for the classification code (DK5 only)
   """
   display: String!
-
+ 
   """
   For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
   """

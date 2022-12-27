@@ -130,7 +130,8 @@ export const FAKE_AUDIENCE = {
 export const FAKE_CLASSIFICATION = {
   system: "Dummy DK5",
   code: "Dummy 86-096",
-  display: "Dummy Skønlitteratur",
+  dk5Heading: "Dummy Skønlitteratur",
+  display: "Dummy 86-096, Skønlitteratur",
   entryType: "NATIONAL_BIBLIOGRAPHY_ENTRY",
 };
 

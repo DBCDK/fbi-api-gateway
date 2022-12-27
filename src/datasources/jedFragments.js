@@ -364,6 +364,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
     }
     classifications {
       code
+      dk5Heading
       display
       entryType
       system
