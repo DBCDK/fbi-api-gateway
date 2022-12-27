@@ -55,9 +55,20 @@ export const FAKE_PERSON = {
 };
 
 export const FAKE_ACCESS = {
-  __typename: "AccessUrl",
-  origin: "Dummy DBC Webarkiv",
-  url: "Dummy https://moreinfo.dbc.dk",
+  accessUrls: [
+    {
+      note: "Findes også på internettet",
+      origin: null,
+      url: "http://infolink2003.elbo.dk/DVT/dokumenter/doc/15271.pdf",
+    },
+  ],
+  dbcWebArchive: false,
+  digitalArticleService: { issn: "0902-1620" },
+  ereol: [],
+  infomediaService: null,
+  interLibraryLoanIsPossible: false,
+  openUrl:
+    '_BASEURL_url_ctx_fmt=info:ofi/fmt:kev:mtx:ctx&ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:journal&rft.atitle=Staldkrampe+%28"shivering"%29+hos+hest&rft.aulast=Albæk+Andersen&rft.aufirst=Susanne&rft.auinit=S&rft.jtitle=Dansk+veterinærtidsskrift&rft.date=2014&rft.volume=97&rft.issue=10&rft.pages=22-24&rft.spage=22&rft.epage=24&rft.issn=0106-6854&rft.genre=article&rfr_id=info:sid/dbc.dk:870971-tsart',
 };
 
 export const FAKE_CORPORATION = {
@@ -275,8 +286,8 @@ export const FAKE_LIST_OF_CONTENT = {
 };
 
 const FAKE_OWNER_WORK = {
-  workId: "work-of:870970-basis:54029519"
-}
+  workId: "work-of:870970-basis:54029519",
+};
 
 export const FAKE_MANIFESTATION_1 = {
   pid: "Dummy some-pid-1",
@@ -307,10 +318,10 @@ export const FAKE_MANIFESTATION_1 = {
   creatorsFromDescription: ["Dummy tekst af William Warren"],
   classifications: [FAKE_CLASSIFICATION, FAKE_CLASSIFICATION_1],
   dateFirstEdition: {
-      display: "Dummy first edition",
-      year: 1950,
-      endYear: 1950,
-      frequency: 1
+    display: "Dummy first edition",
+    year: 1950,
+    endYear: 1950,
+    frequency: 1,
   },
   edition: FAKE_EDITION,
   latestPrinting: FAKE_LATEST_PRINTING,
@@ -355,8 +366,8 @@ export const FAKE_MANIFESTATION_1 = {
     display: "Dummy",
     year: 1950,
     endYear: 1951,
-    frequency: 1
-  }
+    frequency: 1,
+  },
 };
 
 export const FAKE_MANIFESTATION_2 = {
@@ -397,10 +408,10 @@ export const FAKE_WORK = {
   genreAndForm: ["Dummy some genre"],
   workTypes: ["LITERATURE"],
   workYear: {
-      display: "Dummy",
-      year: 1950,
-      endYear: 1951,
-      frequency: 1
+    display: "Dummy",
+    year: 1950,
+    endYear: 1951,
+    frequency: 1,
   },
   mainLanguages: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
   subjects: FAKE_SUBJECTS,

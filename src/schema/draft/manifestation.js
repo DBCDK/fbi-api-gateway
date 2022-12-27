@@ -1,5 +1,4 @@
 import { parseJedSubjects } from "../../utils/utils";
-import { resolveOnlineAccess } from "./draft_utils_manifestations";
 
 const IDENTIFIER_TYPES = new Set([
   "UPC",
@@ -722,15 +721,11 @@ export const resolvers = {
   ManifestationPart: {
     title(parent) {
       return parent?.title?.display || "";
-    }
+    },
   },
   Manifestation: {
     workTypes(parent) {
       return parent?.workTypes || [];
-    },
-    async access(parent, args, context, info) {
-      const resolved = await resolveOnlineAccess(parent.pid, context);
-      return resolved;
     },
     async cover(parent, args, context, info) {
       let coverImage;

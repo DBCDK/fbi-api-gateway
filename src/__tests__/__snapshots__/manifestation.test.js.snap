@@ -9,8 +9,13 @@ Object {
       ],
       "access": Array [
         Object {
-          "__typename": "InterLibraryLoan",
-          "loanIsPossible": false,
+          "__typename": "AccessUrl",
+          "origin": "infolink2003.elbo.dk",
+          "url": "http://infolink2003.elbo.dk/DVT/dokumenter/doc/15271.pdf",
+        },
+        Object {
+          "__typename": "DigitalArticleService",
+          "issn": "09021620",
         },
       ],
       "accessTypes": Array [

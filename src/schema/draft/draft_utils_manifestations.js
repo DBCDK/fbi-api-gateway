@@ -16,7 +16,7 @@
  */
 
 import * as consts from "./FAKE";
-import { getArray } from "../../utils/utils";
+import { getArray, resolveManifestation } from "../../utils/utils";
 import { collectSubFields } from "@graphql-tools/utils";
 import translations from "../../utils/translations.json";
 
@@ -462,7 +462,7 @@ function parseForMunicipalityNumber(agencyId) {
  * @param user
  * @returns {*}
  */
-function getProxyUrl(url, user) {
+export function getProxyUrl(url, user) {
   // check if we should proxy this url - for now it is ebookcentral and ebscohost
   const proxyMe =
     url.indexOf("ebookcentral") !== -1 || url.indexOf("ebscohost") !== -1;
@@ -490,76 +490,41 @@ function getProxyUrl(url, user) {
  * @param context
  * @returns {Promise<*>}
  */
-export async function resolveOnlineAccess(pid, context) {
-  const result = [];
-  // Get onlineAccess from openformat (UrlReferences)
-  const manifestation = await context.datasources
-    .getLoader("openformat")
-    .load(pid);
+export async function resolveAccess(manifestation, context) {
+  // We parse the access structure from JED, and convert it
+  // to the union type structure.
+  // At some point we may choose to follow the structure of JED closely,
+  // but it has to be coordinated with stakeholders
 
-  // online access with url
-  const data = getArray(manifestation, "details.onlineAccess");
-  data.forEach((entry) => {
-    if (entry.value) {
-      // hold origin
-      const Origin = parseOnlineUrlToOrigin(
-        (entry.value.link && entry.value.link.$) || ""
-      );
+  const parent =
+    typeof manifestation === "object"
+      ? manifestation
+      : await resolveManifestation({ pid: manifestation }, context);
 
-      // hold url
-      const { proxyUrl, loginRequired } = getProxyUrl(
-        (entry.value.link && entry.value.link.$) || "",
-        context.smaug?.user
-      );
+  const res = [];
 
-      result.push({
-        __typename: "AccessUrl",
-        origin: Origin,
-        url: proxyUrl,
-        note: (entry.value.note && entry.value.note.$) || "",
-        loginRequired: loginRequired,
-        //accessType: (entry.accessUrlDisplay && entry.accessUrlDisplay.$) || "",
-      });
-    }
+  parent?.access?.accessUrls?.forEach((entry) => {
+    const { proxyUrl, loginRequired } = getProxyUrl(
+      entry.url || "",
+      context.smaug?.user
+    );
+    res.push({
+      __typename: "AccessUrl",
+      origin: parseOnlineUrlToOrigin(entry.url),
+      url: proxyUrl,
+      loginRequired,
+      note: entry.note,
+    });
   });
 
-  // infomedia access
-  let infomedia =
-    (manifestation &&
-      manifestation.details &&
-      manifestation.details.infomedia &&
-      manifestation.details.infomedia.id) ||
-    null;
-
-  if (infomedia) {
-    if (!Array.isArray(infomedia)) {
-      infomedia = [infomedia];
-    }
-    infomedia.forEach((id) => {
-      if (id.$) {
-        result.push({
-          __typename: "InfomediaService",
-          id: id.$ || "",
-        });
-      }
-    });
-  }
-
-  // werarchive
-  let webarchive =
-    (manifestation &&
-      manifestation.details &&
-      manifestation.details.webarchive &&
-      manifestation.details.webarchive.$) ||
-    null;
-  if (webarchive) {
+  if (parent?.access?.dbcWebArchive) {
     const archives = await context.datasources
       .getLoader("moreinfoWebarchive")
-      .load(manifestation.admindata.pid.$);
+      .load(parent.pid);
 
     archives.forEach((archive) => {
       if (archive.url) {
-        result.push({
+        res.push({
           __typename: "AccessUrl",
           url: archive.url,
           origin: parseOnlineUrlToOrigin(archive.url),
@@ -569,37 +534,46 @@ export async function resolveOnlineAccess(pid, context) {
     });
   }
 
-  // Digital article service
-  const articleIssn =
-    getArray(manifestation, "details.articleIssn.value").map(
-      (entry) => entry.$
-    )[0] ||
-    getArray(manifestation, "details.issn.value").map((entry) => entry.$)[0];
+  parent?.access?.ereol?.forEach((entry) => {
+    res.push({
+      __typename: "Ereol",
+      origin: entry.origin,
+      url: entry.url,
+      canAlwaysBeLoaned: entry.canAlwaysBeLoaned,
+      note: entry.note,
+    });
+  });
 
-  if (articleIssn) {
+  if (parent?.access?.infomediaService?.id) {
+    res.push({
+      __typename: "InfomediaService",
+      id: parent.access.infomediaService.id,
+    });
+  }
+
+  if (parent?.access?.digitalArticleService?.issn) {
     const journals = await context.datasources
       .getLoader("statsbiblioteketJournals")
       .load("");
-    const articleissn = articleIssn.replace(/[^a-z\d]/gi, "");
+    const articleissn = parent.access.digitalArticleService.issn.replace(
+      /[^a-z\d]/gi,
+      ""
+    );
     const hasJournal = journals && journals[articleissn];
     if (hasJournal) {
-      result.push({
+      res.push({
         __typename: "DigitalArticleService",
         issn: articleissn,
-        subscribed: true,
       });
     }
   }
 
-  // ILL
-  const requestbutton = manifestation?.admindata?.requestButton?.$;
-  result.push({
-    __typename: "InterLibraryLoan",
-    loanIsPossible: requestbutton === "true",
-  });
+  if (parent?.access?.interLibraryLoanIsPossible) {
+    res.push({ __typename: "InterLibraryLoan", loanIsPossible: true });
+  }
 
   // Return array containing all types of access
-  return _sortOnlineAccess(result);
+  return _sortOnlineAccess(res);
 }
 
 /**
@@ -609,7 +583,7 @@ export async function resolveOnlineAccess(pid, context) {
  *  A parsed string eg. "DBC Webarkiv" or name of host eg. "infolink2003.elbo.dk"
  *
  * */
-function parseOnlineUrlToOrigin(url) {
+export function parseOnlineUrlToOrigin(url) {
   const parsedUrl = new URL(url);
   if (parsedUrl["host"] === "moreinfo.addi.dk") {
     return "DBC Webarkiv";

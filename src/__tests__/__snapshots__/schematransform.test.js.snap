@@ -59,6 +59,9 @@ type Ereol {
   Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
   \\"\\"\\"
   canAlwaysBeLoaned: Boolean!
+
+  \\"\\"\\"Notes for the resource\\"\\"\\"
+  note: String
 }
 
 type AccessUrl {
@@ -1495,6 +1498,9 @@ type Ereol {
   Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
   \\"\\"\\"
   canAlwaysBeLoaned: Boolean!
+
+  \\"\\"\\"Notes for the resource\\"\\"\\"
+  note: String
 }
 
 type AccessUrl {
