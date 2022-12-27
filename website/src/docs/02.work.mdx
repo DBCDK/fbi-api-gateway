@@ -272,6 +272,23 @@ including the work itself.
   }}
 />
 
+## Universe
+
+Some works may be part of a universe, like the "Harry Potter Universe" in this example.
+
+<InlineGraphiQL
+  query={`query ($workId: String!) {
+  work(id: $workId) {
+    universe {
+      title
+    }
+  }
+}`}
+  variables={{
+    workId: "work-of:870970-basis:27267912",
+  }}
+/>
+
 ## Translations
 
 Some metadata may be available in English. Specify a language and we will
