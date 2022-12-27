@@ -78,6 +78,10 @@ export const FAKE_SUBJECTS = {
     {
       __typename: "SubjectText",
       type: "TOPIC",
+      language: {
+        display: "Dummy dansk",
+        isoCode: "dum dan",
+      },
       display: "Dummy Some fictional subject",
     },
     {
@@ -92,6 +96,10 @@ export const FAKE_SUBJECTS = {
     {
       __typename: "SubjectText",
       type: "TOPIC",
+      language: {
+        display: "Dummy dansk",
+        isoCode: "dum dan",
+      },
       display: "Dummy Some fictional subject",
     },
     {
