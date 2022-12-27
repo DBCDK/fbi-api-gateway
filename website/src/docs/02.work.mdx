@@ -230,8 +230,6 @@ that some but not all of these reviews include a rating.
 A work may be part of one or more series. The example below fetches the series title
 as well as some information about how the work itself fits inside the series.
 
-⚠️ Note that fake data is returned at this point.
-
 <InlineGraphiQL
   query={`query ($workId: String!) {
   work(id: $workId) {
@@ -269,6 +267,23 @@ including the work itself.
 }`}
   variables={{
     workId: "work-of:870970-basis:52557240",
+  }}
+/>
+
+## Universe
+
+Some works may be part of a universe, like the "Harry Potter Universe" in this example.
+
+<InlineGraphiQL
+  query={`query ($workId: String!) {
+  work(id: $workId) {
+    universe {
+      title
+    }
+  }
+}`}
+  variables={{
+    workId: "work-of:870970-basis:27267912",
   }}
 />
 

@@ -3,7 +3,7 @@ import { resolveWork } from "../../utils/utils";
 export const typeDef = `
 type Universe {
   """
-  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Universe
+  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   """
   title: String!
 }

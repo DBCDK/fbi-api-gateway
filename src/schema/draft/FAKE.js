@@ -318,6 +318,7 @@ export const FAKE_MANIFESTATION_1 = {
   publisher: ["Dummy Lægeforeningen"],
   recordCreationDate: "Dummy 19830414",
   series: [FAKE_POPULAR_SERIES, FAKE_GENERAL_SERIES],
+  universe: { title: "Dummy some universe 1" },
   shelfmark: FAKE_SHELFMARK,
   source: ["Dummy some source"],
   subjects: FAKE_SUBJECTS,
