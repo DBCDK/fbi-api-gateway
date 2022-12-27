@@ -410,6 +410,12 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
     }
     contributorsFromDescription
     creatorsFromDescription
+    dateFirstEdition {
+      display
+      endYear
+      frequency
+      year
+    }
     edition {
       contributors
       edition

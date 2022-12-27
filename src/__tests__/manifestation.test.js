@@ -137,6 +137,12 @@ describe("Manifestation", () => {
             entryType
             system
           }
+          dateFirstEdition {
+            display
+            year
+            endYear
+            frequency
+          }
           edition {
             summary
             edition

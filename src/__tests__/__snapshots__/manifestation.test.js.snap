@@ -99,6 +99,12 @@ Object {
       "creatorsFromDescription": Array [
         "Dummy tekst af William Warren",
       ],
+      "dateFirstEdition": Object {
+        "display": "Dummy first edition",
+        "endYear": 1950,
+        "frequency": "1",
+        "year": 1950,
+      },
       "edition": Object {
         "contributors": Array [],
         "edition": "Dummy 3. i.e. 2 udgave",
