@@ -1,15 +1,19 @@
 import request from "superagent";
 import config from "../config";
-import { MANIFESTATION_FIELDS_FRAGMENT } from "./jedFragments";
+import { MANIFESTATION_FIELDS_FRAGMENT, WORK_FIELDS_FRAGMENT } from "./jedFragments";
 
 const { url, ttl, prefix } = config.datasources.jed;
 
 const WORK_QUERY = `query ($id: String) {
   manifestation(id: $id) {
     ...manifestationFields
+    ownerWork {
+      ...workFields
+    }
   }
 }
-${MANIFESTATION_FIELDS_FRAGMENT}`;
+${MANIFESTATION_FIELDS_FRAGMENT}
+${WORK_FIELDS_FRAGMENT}`;
 
 /**
  * Fetches a work from the JED service

@@ -472,6 +472,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         display
         isoCode
       }
+      notes
       original {
         display
         isoCode
