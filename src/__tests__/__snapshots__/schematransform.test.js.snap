@@ -518,6 +518,9 @@ type Edition {
   \\"\\"\\"
   summary: String!
 
+  \\"\\"\\"A note about this specific edition\\"\\"\\"
+  note: String
+
   \\"\\"\\"The edition number and name\\"\\"\\"
   edition: String
 
@@ -1893,6 +1896,9 @@ type Edition {
   Properties 'edition', 'contributorsToEdition' and 'publicationYear' as one string, e.g.: '3. udgave, revideret af Hugin Eide, 2005'
   \\"\\"\\"
   summary: String!
+
+  \\"\\"\\"A note about this specific edition\\"\\"\\"
+  note: String
 
   \\"\\"\\"The edition number and name\\"\\"\\"
   edition: String

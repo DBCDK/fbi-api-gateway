@@ -365,6 +365,11 @@ type Edition {
   summary: String!
   
   """
+  A note about this specific edition
+  """
+  note: String
+  
+  """
   The edition number and name
   """
   edition: String

@@ -135,6 +135,7 @@ export const FAKE_CLASSIFICATION = {
 };
 
 export const FAKE_EDITION = {
+  note: "Dummy note",
   summary: "Dummy 3. i.e. 2 udgave, 2005",
   edition: "Dummy 3. i.e. 2 udgave",
   contributors: [],

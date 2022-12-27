@@ -418,6 +418,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         year
       }
       summary
+      note
     }
     fictionNonfiction {
       code
