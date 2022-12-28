@@ -55,9 +55,20 @@ export const FAKE_PERSON = {
 };
 
 export const FAKE_ACCESS = {
-  __typename: "AccessUrl",
-  origin: "Dummy DBC Webarkiv",
-  url: "Dummy https://moreinfo.dbc.dk",
+  accessUrls: [
+    {
+      note: "Findes også på internettet",
+      origin: null,
+      url: "http://infolink2003.elbo.dk/DVT/dokumenter/doc/15271.pdf",
+    },
+  ],
+  dbcWebArchive: false,
+  digitalArticleService: { issn: "0902-1620" },
+  ereol: [],
+  infomediaService: null,
+  interLibraryLoanIsPossible: false,
+  openUrl:
+    '_BASEURL_url_ctx_fmt=info:ofi/fmt:kev:mtx:ctx&ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:journal&rft.atitle=Staldkrampe+%28"shivering"%29+hos+hest&rft.aulast=Albæk+Andersen&rft.aufirst=Susanne&rft.auinit=S&rft.jtitle=Dansk+veterinærtidsskrift&rft.date=2014&rft.volume=97&rft.issue=10&rft.pages=22-24&rft.spage=22&rft.epage=24&rft.issn=0106-6854&rft.genre=article&rfr_id=info:sid/dbc.dk:870971-tsart',
 };
 
 export const FAKE_CORPORATION = {
@@ -78,6 +89,10 @@ export const FAKE_SUBJECTS = {
     {
       __typename: "SubjectText",
       type: "TOPIC",
+      language: {
+        display: "Dummy dansk",
+        isoCode: "dum dan",
+      },
       display: "Dummy Some fictional subject",
     },
     {
@@ -92,6 +107,10 @@ export const FAKE_SUBJECTS = {
     {
       __typename: "SubjectText",
       type: "TOPIC",
+      language: {
+        display: "Dummy dansk",
+        isoCode: "dum dan",
+      },
       display: "Dummy Some fictional subject",
     },
     {
@@ -130,11 +149,20 @@ export const FAKE_AUDIENCE = {
 export const FAKE_CLASSIFICATION = {
   system: "Dummy DK5",
   code: "Dummy 86-096",
-  display: "Dummy Skønlitteratur",
+  dk5Heading: "Dummy Skønlitteratur",
+  display: "Dummy 86-096, Skønlitteratur",
   entryType: "NATIONAL_BIBLIOGRAPHY_ENTRY",
+};
+export const FAKE_CLASSIFICATION_1 = {
+  system: "Dummy DK5 additional",
+  code: "Dummy 86-096 additional",
+  dk5Heading: "Dummy Skønlitteratur additional",
+  display: "Dummy 86-096, Skønlitteratur additional",
+  entryType: "NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY",
 };
 
 export const FAKE_EDITION = {
+  note: "Dummy note",
   summary: "Dummy 3. i.e. 2 udgave, 2005",
   edition: "Dummy 3. i.e. 2 udgave",
   contributors: [],
@@ -171,6 +199,7 @@ export const FAKE_HOST_PUBLICATION = {
 };
 
 export const FAKE_LANGUAGES = {
+  notes: ["Dummy dansk", "dummy english", "dummy german"],
   main: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
   original: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
   parallel: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
@@ -184,7 +213,7 @@ export const FAKE_MANIFESTATION_PARTS = {
   heading: "Dummy Indhold:",
   parts: [
     {
-      title: "Dummy Bouquet royal",
+      title: { display: "Dummy Bouquet royal" },
       creators: [
         {
           __typename: "Person",
@@ -203,6 +232,7 @@ export const FAKE_MANIFESTATION_PARTS = {
           display: "Dummy Klaver og strygere. Orgel og strygere",
         },
       ],
+      playingTime: "Dummy playing time",
     },
   ],
 };
@@ -255,6 +285,10 @@ export const FAKE_LIST_OF_CONTENT = {
   ],
 };
 
+const FAKE_OWNER_WORK = {
+  workId: "work-of:870970-basis:54029519",
+};
+
 export const FAKE_MANIFESTATION_1 = {
   pid: "Dummy some-pid-1",
   titles: FAKE_MANIFESTATION_TITLE,
@@ -282,7 +316,13 @@ export const FAKE_MANIFESTATION_1 = {
   contributorsFromDescription: ["Dummy på dansk ved Vivi Berendt"],
   creators: [FAKE_PERSON, FAKE_CORPORATION],
   creatorsFromDescription: ["Dummy tekst af William Warren"],
-  classifications: [FAKE_CLASSIFICATION],
+  classifications: [FAKE_CLASSIFICATION, FAKE_CLASSIFICATION_1],
+  dateFirstEdition: {
+    display: "Dummy first edition",
+    year: 1950,
+    endYear: 1950,
+    frequency: 1,
+  },
   edition: FAKE_EDITION,
   latestPrinting: FAKE_LATEST_PRINTING,
   fictionNonfiction: { display: "Dummy skønlitteratur", code: "FICTION" },
@@ -298,6 +338,7 @@ export const FAKE_MANIFESTATION_1 = {
   manifestationParts: FAKE_MANIFESTATION_PARTS,
   materialTypes: [FAKE_MATERIALTYPE],
   notes: [FAKE_NOTES],
+  ownerWork: FAKE_OWNER_WORK,
   relatedPublications: [
     {
       heading: "Dummy Tidligere titel:",
@@ -315,11 +356,18 @@ export const FAKE_MANIFESTATION_1 = {
   publisher: ["Dummy Lægeforeningen"],
   recordCreationDate: "Dummy 19830414",
   series: [FAKE_POPULAR_SERIES, FAKE_GENERAL_SERIES],
+  universe: { title: "Dummy some universe 1" },
   shelfmark: FAKE_SHELFMARK,
   source: ["Dummy some source"],
   subjects: FAKE_SUBJECTS,
   volume: "Dummy Bind 2",
   tableOfContents: FAKE_LIST_OF_CONTENT,
+  workYear: {
+    display: "Dummy",
+    year: 1950,
+    endYear: 1951,
+    frequency: 1,
+  },
 };
 
 export const FAKE_MANIFESTATION_2 = {
@@ -344,10 +392,11 @@ export const FAKE_WORKTITLES = {
 export const FAKE_DK5MAINENTRY = {
   display: "Dummy some dk5 display",
   code: "Dummy some dk5 code",
+  dk5Heading: "Dummy some dk5 heading",
 };
 
 export const FAKE_WORK = {
-  workId: "work-of:870970-basis:54029519",
+  workId: FAKE_OWNER_WORK.workId,
   titles: FAKE_WORKTITLES,
   abstract: ["Dummy The abstract"],
   creators: [FAKE_PERSON, FAKE_CORPORATION],
@@ -358,14 +407,20 @@ export const FAKE_WORK = {
   universe: { title: "Dummy Some Universe" },
   genreAndForm: ["Dummy some genre"],
   workTypes: ["LITERATURE"],
-  workYear: "Dummy 1950",
+  workYear: {
+    display: "Dummy",
+    year: 1950,
+    endYear: 1951,
+    frequency: 1,
+  },
   mainLanguages: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
   subjects: FAKE_SUBJECTS,
   manifestations: {
-    bestRepresentation: FAKE_MANIFESTATION_1.pid,
-    first: FAKE_MANIFESTATION_1.pid,
-    latest: FAKE_MANIFESTATION_2.pid,
+    first: FAKE_MANIFESTATION_1,
+    latest: FAKE_MANIFESTATION_2,
     all: [FAKE_MANIFESTATION_1, FAKE_MANIFESTATION_2],
+    bestRepresentation: FAKE_MANIFESTATION_2,
+    mostRelevant: [FAKE_MANIFESTATION_2, FAKE_MANIFESTATION_1],
   },
 };
 

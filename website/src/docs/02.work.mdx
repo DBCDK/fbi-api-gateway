@@ -34,6 +34,13 @@ In the following example, often-used fields are fetched in the simplest way poss
     subjects {
       dbcVerified {
         display
+        ... on SubjectText {
+          language {
+            display
+            isoCode
+          }
+        }
+        type
       }
     }
     workYear
@@ -141,6 +148,73 @@ this work/manifestation.
 
 ## Reviews
 
+This example shows how to get the reviews of a work.
+
+A review is just a _Manifestation_, meaning we can use the access field to get a list of
+possible ways to access the content of the review. Check out access examples [here](#Manifestation-Access).
+
+Note that if the review is created by a librarian (materialevurdering), the actual sections of the
+review is available in the field _reviewByLibrarians_.
+
+<InlineGraphiQL
+  query={`query ($id: String!) {
+  work(id: $id) {
+    workId
+    titles {
+      main
+    }
+    relations {
+      hasReview {
+        pid
+        creators {
+          display
+        }
+        access {
+          __typename
+          ... on InfomediaService {
+            id
+          }
+          ... on DigitalArticleService {
+            issn
+          }
+        }
+        hostPublication {
+          title
+          issue
+        }
+        physicalDescriptions {
+          summary
+        }
+        review {
+          rating
+          reviewByLibrarians {
+            content
+            heading
+            type
+            manifestations {
+              ownerWork {
+                workId
+                titles {
+                  main
+                }
+                creators {
+                  display
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    id: "work-of:870970-basis:51701763",
+  }}
+/>
+
+## Reviews (old)
+
 The reviews field returns a list of reviews. Each review may be one of the following types:
 
 - `InfomediaReview` includes an ID that can be used to look up the actual
@@ -230,8 +304,6 @@ that some but not all of these reviews include a rating.
 A work may be part of one or more series. The example below fetches the series title
 as well as some information about how the work itself fits inside the series.
 
-⚠️ Note that fake data is returned at this point.
-
 <InlineGraphiQL
   query={`query ($workId: String!) {
   work(id: $workId) {
@@ -269,6 +341,23 @@ including the work itself.
 }`}
   variables={{
     workId: "work-of:870970-basis:52557240",
+  }}
+/>
+
+## Universe
+
+Some works may be part of a universe, like the "Harry Potter Universe" in this example.
+
+<InlineGraphiQL
+  query={`query ($workId: String!) {
+  work(id: $workId) {
+    universe {
+      title
+    }
+  }
+}`}
+  variables={{
+    workId: "work-of:870970-basis:27267912",
   }}
 />
 

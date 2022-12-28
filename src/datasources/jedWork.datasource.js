@@ -11,9 +11,19 @@ const WORK_QUERY = `query ($id: String) {
   work(id: $id) {
     ...workFields
     manifestations {
-      first
-      latest
+      first {
+        ...manifestationFields
+      }
+      latest {
+        ...manifestationFields
+      }
       all {
+        ...manifestationFields
+      }
+      bestRepresentations {
+        ...manifestationFields
+      }
+      mostRelevant {
         ...manifestationFields
       }
     }

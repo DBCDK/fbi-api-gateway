@@ -132,9 +132,16 @@ describe("Manifestation", () => {
           creatorsFromDescription
           classifications {
             code
+            dk5Heading
             display
             entryType
             system
+          }
+          dateFirstEdition {
+            display
+            year
+            endYear
+            frequency
           }
           edition {
             summary
@@ -177,6 +184,7 @@ describe("Manifestation", () => {
             value
           }
           languages {
+            notes
             main {
               display
               isoCode
@@ -216,6 +224,7 @@ describe("Manifestation", () => {
                 display
               }
               creatorsFromDescription
+              playingTime
             }
             type
           }
@@ -227,6 +236,9 @@ describe("Manifestation", () => {
             type
             heading
             display
+          }
+          ownerWork {
+            workId
           }
           relatedPublications {
             heading
@@ -272,6 +284,12 @@ describe("Manifestation", () => {
             }
             dbcVerified {
               display
+              ... on SubjectText {
+                language {
+                  display
+                  isoCode
+                }
+              }
             }
           }
           volume

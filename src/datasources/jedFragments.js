@@ -4,6 +4,7 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
     dk5MainEntry {
       code
       display
+      dk5Heading
     }
     fictionNonfiction {
       code
@@ -234,7 +235,12 @@ export const WORK_FIELDS_FRAGMENT = `fragment workFields on JedWork {
       translated
     }
     workTypes
-    workYear
+    workYear {
+      display
+      year
+      endYear
+      frequency
+    }
     relations {
       continuedIn {
         pid
@@ -315,10 +321,11 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       display
     }
     access {
-      accessUrl {
+      accessUrls {
         note
         origin
         url
+        type
       }
       dbcWebArchive
       digitalArticleService {
@@ -359,6 +366,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
     }
     classifications {
       code
+      dk5Heading
       display
       entryType
       system
@@ -403,6 +411,12 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
     }
     contributorsFromDescription
     creatorsFromDescription
+    dateFirstEdition {
+      display
+      endYear
+      frequency
+      year
+    }
     edition {
       contributors
       edition
@@ -413,6 +427,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         year
       }
       summary
+      note
     }
     fictionNonfiction {
       code
@@ -458,6 +473,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         display
         isoCode
       }
+      notes
       original {
         display
         isoCode
@@ -528,7 +544,10 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       type
       parts {
         creatorsFromDescription
-        title
+        title {
+          display
+        }
+        playingTime
       }
     }
     subjects {
@@ -665,6 +684,15 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       url
       urlText
     }
+    review {
+      rating
+      reviewByLibrarians {
+        content
+        heading
+        pidList
+        type
+      }
+    }
     series {
       alternativeTitles
       isPopular
@@ -675,6 +703,9 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       parallelTitles
       readThisFirst
       readThisWhenever
+      title
+    }
+    universe {
       title
     }
     shelfmark {
@@ -692,7 +723,12 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
     }
     volume
     workTypes
-    workYear
+    workYear {
+      display
+      year
+      endYear
+      frequency
+    }
     relations {
       continuedIn {
         pid

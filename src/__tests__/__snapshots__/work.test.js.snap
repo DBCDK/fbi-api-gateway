@@ -20,6 +20,7 @@ Object {
       "dk5MainEntry": Object {
         "code": "Dummy some dk5 code",
         "display": "Dummy some dk5 display",
+        "dk5Heading": "Dummy some dk5 heading",
       },
       "fictionNonfiction": Object {
         "code": "FICTION",
@@ -43,12 +44,23 @@ Object {
             "pid": "Dummy some-pid-2",
           },
         ],
+        "bestRepresentation": Object {
+          "pid": "Dummy some-pid-1",
+        },
         "first": Object {
           "pid": "Dummy some-pid-1",
         },
         "latest": Object {
           "pid": "Dummy some-pid-2",
         },
+        "mostRelevant": Array [
+          Object {
+            "pid": "Dummy some-pid-2",
+          },
+          Object {
+            "pid": "Dummy some-pid-1",
+          },
+        ],
       },
       "materialTypes": Array [
         Object {
@@ -124,7 +136,12 @@ Object {
       "workTypes": Array [
         "LITERATURE",
       ],
-      "workYear": "Dummy 1950",
+      "workYear": Object {
+        "display": "Dummy",
+        "endYear": 1951,
+        "frequency": "1",
+        "year": 1950,
+      },
     },
   },
 }

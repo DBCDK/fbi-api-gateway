@@ -1,10 +1,8 @@
 import {
-  getBaseUrl,
-  getDigitalArticleAccessStatus,
-  getInfomediaAccessStatus,
-  resolveOnlineAccess,
-} from "../../utils/utils";
-import * as consts from "./FAKE";
+  getProxyUrl,
+  parseOnlineUrlToOrigin,
+  resolveAccess,
+} from "./draft_utils_manifestations";
 
 export const typeDef = `
 enum AccessTypeCode {
@@ -12,6 +10,14 @@ enum AccessTypeCode {
   ONLINE
   NOT_SPECIFIED @deprecated
   UNKNOWN
+}
+enum AccessUrlType {
+  IMAGE
+  OTHER
+  RESOURCE
+  SAMPLE
+  TABLE_OF_CONTENTS
+  THUMBNAIL
 }
 type AccessType {
   display: String!
@@ -32,6 +38,11 @@ type Ereol {
   Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
   """
   canAlwaysBeLoaned: Boolean!
+
+  """
+  Notes for the resource
+  """
+  note: String
 }
 type AccessUrl {
   """
@@ -53,6 +64,11 @@ type AccessUrl {
   If the resource requires login
   """
   loginRequired: Boolean!
+
+  """
+  The type of content that can be found at this URL
+  """
+  type: AccessUrlType
 }
 type InterLibraryLoan {
   """
@@ -75,4 +91,10 @@ type DigitalArticleService {
 union Access = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 `;
 
-export const resolvers = {};
+export const resolvers = {
+  Manifestation: {
+    async access(parent, args, context, info) {
+      return resolveAccess(parent, context);
+    },
+  },
+};

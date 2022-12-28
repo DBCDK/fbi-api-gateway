@@ -8,10 +8,10 @@ import { createHistogram } from "../utils/monitor";
 import {
   resolveBorrowerCheck,
   resolveManifestation,
-  resolveOnlineAccess,
   resolveWork,
 } from "../utils/utils";
 import translations from "../utils/translations.json";
+import { resolveAccess } from "./draft/draft_utils_manifestations";
 
 /**
  * The root type definitions
@@ -386,7 +386,7 @@ export const resolvers = {
       // Pid must be a manifestation with a valid issn (valid journal)
       let issn;
       try {
-        const onlineAccess = await resolveOnlineAccess(args.input.pid, context);
+        const onlineAccess = await resolveAccess(args.input.pid, context);
         issn = onlineAccess.find((entry) => entry.issn);
       } catch (e) {
         return {

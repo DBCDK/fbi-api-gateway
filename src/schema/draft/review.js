@@ -1,5 +1,10 @@
 import { orderBy, uniqBy } from "lodash";
-import { getArray, getBaseUrl, resolveWork } from "../../utils/utils";
+import {
+  getArray,
+  getBaseUrl,
+  resolveManifestation,
+  resolveWork,
+} from "../../utils/utils";
 import { workToJed } from "./draft_utils";
 import * as consts from "./FAKE";
 
@@ -154,6 +159,36 @@ extend type Work {
   The new reviews
   """
   workReviews: [WorkReview!]!
+}
+
+
+enum ReviewElementType {
+  ABSTRACT
+  ACQUISITION_RECOMMENDATIONS
+  AUDIENCE
+  CONCLUSION
+  DESCRIPTION
+  EVALUATION
+  SIMILAR_MATERIALS
+}
+type ReviewElement {
+  content: String
+  heading: String
+  manifestations: [Manifestation]
+  type: ReviewElementType
+}
+
+type ManifestationReview {
+  rating: String
+  reviewByLibrarians: [ReviewElement]
+}
+
+extend type Manifestation {
+
+  """
+  Some review data, if this manifestation is a review
+  """
+  review: ManifestationReview
 }
 `;
 
@@ -381,6 +416,17 @@ export const resolvers = {
       return (await resolveReviews(parent, context))?.filter(
         (review) => review?.__typename
       );
+    },
+  },
+  ReviewElement: {
+    async manifestations(parent, args, context, info) {
+      const manifestations = Promise.all(
+        parent?.pidList?.map((pid) => {
+          return resolveManifestation({ pid }, context);
+        })
+      );
+
+      return manifestations;
     },
   },
 };

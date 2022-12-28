@@ -9,8 +9,13 @@ Object {
       ],
       "access": Array [
         Object {
-          "__typename": "InterLibraryLoan",
-          "loanIsPossible": false,
+          "__typename": "AccessUrl",
+          "origin": "infolink2003.elbo.dk",
+          "url": "http://infolink2003.elbo.dk/DVT/dokumenter/doc/15271.pdf",
+        },
+        Object {
+          "__typename": "DigitalArticleService",
+          "issn": "09021620",
         },
       ],
       "accessTypes": Array [
@@ -56,9 +61,17 @@ Object {
       "classifications": Array [
         Object {
           "code": "Dummy 86-096",
-          "display": "Dummy Skønlitteratur",
+          "display": "Dummy 86-096, Skønlitteratur",
+          "dk5Heading": "Dummy Skønlitteratur",
           "entryType": "NATIONAL_BIBLIOGRAPHY_ENTRY",
           "system": "Dummy DK5",
+        },
+        Object {
+          "code": "Dummy 86-096 additional",
+          "display": "Dummy 86-096, Skønlitteratur additional",
+          "dk5Heading": "Dummy Skønlitteratur additional",
+          "entryType": "NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY",
+          "system": "Dummy DK5 additional",
         },
       ],
       "contributors": Array [
@@ -91,6 +104,12 @@ Object {
       "creatorsFromDescription": Array [
         "Dummy tekst af William Warren",
       ],
+      "dateFirstEdition": Object {
+        "display": "Dummy first edition",
+        "endYear": 1950,
+        "frequency": "1",
+        "year": 1950,
+      },
       "edition": Object {
         "contributors": Array [],
         "edition": "Dummy 3. i.e. 2 udgave",
@@ -143,6 +162,11 @@ Object {
             "isoCode": "Dummy dan",
           },
         ],
+        "notes": Array [
+          "Dummy dansk",
+          "dummy english",
+          "dummy german",
+        ],
         "original": Array [
           Object {
             "display": "Dummy dansk",
@@ -192,6 +216,7 @@ Object {
             "creatorsFromDescription": Array [
               "Dummy arr.: Peter Ettrup Larsen",
             ],
+            "playingTime": "Dummy playing time",
             "subjects": null,
             "title": "Dummy Bouquet royal",
           },
@@ -213,6 +238,9 @@ Object {
           "type": "NOT_SPECIFIED",
         },
       ],
+      "ownerWork": Object {
+        "workId": "work-of:870970-basis:54029519",
+      },
       "physicalDescriptions": Array [
         Object {
           "accompanyingMaterial": null,
@@ -314,6 +342,10 @@ Object {
         "dbcVerified": Array [
           Object {
             "display": "Dummy Some fictional subject",
+            "language": Object {
+              "display": "Dummy dansk",
+              "isoCode": "dum dan",
+            },
           },
           Object {
             "display": "Dummy 1950-1980",

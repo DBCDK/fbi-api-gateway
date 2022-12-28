@@ -96,6 +96,7 @@ describe("Work", () => {
           dk5MainEntry {
             display
             code
+            dk5Heading
           }
           fictionNonfiction {
             display
@@ -133,12 +134,23 @@ describe("Work", () => {
           }
           genreAndForm
           workTypes
-          workYear
+          workYear {
+            display
+            year
+            endYear
+            frequency
+          }
           mainLanguages {
             display
             isoCode
           }
           manifestations {
+            bestRepresentation {
+              pid
+            }
+            mostRelevant {
+              pid
+            }
             first {
               pid
             }

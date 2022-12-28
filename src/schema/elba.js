@@ -1,5 +1,5 @@
-import { resolveOnlineAccess } from "../utils/utils";
 import { log } from "dbc-node-logger";
+import { resolveAccess } from "./draft/draft_utils_manifestations";
 
 export const typeDef = `
 
@@ -123,7 +123,7 @@ export const resolvers = {
       // Pid must be a manifestation with a valid issn (valid journal)
       let issn;
       try {
-        const onlineAccess = await resolveOnlineAccess(pid, context);
+        const onlineAccess = await resolveAccess(pid, context);
         issn = onlineAccess.find((entry) => entry.issn);
       } catch (e) {
         return {

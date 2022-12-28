@@ -1,5 +1,4 @@
 import { parseJedSubjects } from "../../utils/utils";
-import { resolveOnlineAccess } from "./draft_utils_manifestations";
 
 const IDENTIFIER_TYPES = new Set([
   "UPC",
@@ -125,7 +124,6 @@ enum NoteType {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
   DISSERTATION
-  LANGUAGE
   MUSICAL_ENSEMBLE_OR_CAST
   NOT_SPECIFIED
   OCCASION_FOR_PUBLICATION
@@ -197,6 +195,11 @@ type ManifestationPart {
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
   """
   creatorsFromDescription: [String!]!
+  
+  """
+  The playing time for this specific part (i.e. the duration of a music track) 
+  """
+  playingTime: String
 }
 type ManifestationParts {
   """
@@ -215,6 +218,11 @@ type ManifestationParts {
   type: ManifestationPartType!
 }
 type Languages {
+  """
+  Notes of the languages that describe subtitles, spoken/written (original, dubbed/synchonized), visual interpretation, parallel (notes are written in Danish)
+  """
+  notes: [String!]
+
   """
   Main language of this manifestation
   """
@@ -365,6 +373,11 @@ type Edition {
   summary: String!
   
   """
+  A note about this specific edition
+  """
+  note: String
+  
+  """
   The edition number and name
   """
   edition: String
@@ -380,21 +393,27 @@ type Edition {
   publicationYear: PublicationYear
 }
 enum EntryType {
+  ADDITIONAL_ENTRY
   MAIN_ENTRY
   NATIONAL_BIBLIOGRAPHY_ENTRY
-  ADDITIONAL_ENTRY
+  NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY
 }
 type Classification {
   """
   The classification code
   """
   code: String!
+  
+  """
+  The dk5Heading for the classification (DK5 only)
+  """
+  dk5Heading: String
 
   """
   Descriptive text for the classification code (DK5 only)
   """
   display: String!
-
+ 
   """
   For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
   """
@@ -452,6 +471,7 @@ type Manifestations {
   latest: Manifestation!
   all: [Manifestation!]!
   bestRepresentation: Manifestation!
+  mostRelevant: [Manifestation!]!
 }
 type Manifestation {
   """
@@ -483,6 +503,11 @@ type Manifestation {
   Different kinds of definitions of appropriate audience for this manifestation
   """
   audience: Audience
+  
+  """
+  Classification codes for this manifestation from any classification system
+  """
+  classifications: [Classification!]!
 
   """
   Contributors to the manifestation, actors, illustrators etc
@@ -510,9 +535,9 @@ type Manifestation {
   creatorsFromDescription: [String!]!
   
   """
-  Classification codes for this manifestation from any classification system
+  The year for the publication of the first edition for this work 
   """
-  classifications: [Classification!]!
+  dateFirstEdition: PublicationYear
 
   """
   Edition details for this manifestation
@@ -563,6 +588,11 @@ type Manifestation {
   Notes about the manifestation
   """
   notes: [Note!]!
+  
+  """
+  The work that this manifestation is part of
+  """
+  ownerWork: Work!
 
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals
@@ -588,6 +618,11 @@ type Manifestation {
   Series for this work
   """
   series: [Series!]!
+
+  """
+  Universe for this work
+  """
+  universe: Universe
 
   """
   Information about on which shelf in the library this manifestation can be found
@@ -622,8 +657,7 @@ type Manifestation {
   """
   The year this work was originally published or produced
   """
-  workYear: String
-
+  workYear: PublicationYear
 }
 type ManifestationTitles {
   """
@@ -684,13 +718,14 @@ export const resolvers = {
       return IDENTIFIER_TYPES.has(parent.type) ? parent.type : "NOT_SPECIFIED";
     },
   },
+  ManifestationPart: {
+    title(parent) {
+      return parent?.title?.display || "";
+    },
+  },
   Manifestation: {
     workTypes(parent) {
       return parent?.workTypes || [];
-    },
-    async access(parent, args, context, info) {
-      const resolved = await resolveOnlineAccess(parent.pid, context);
-      return resolved;
     },
     async cover(parent, args, context, info) {
       let coverImage;

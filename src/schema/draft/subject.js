@@ -10,6 +10,7 @@ interface Subject {
 type SubjectText implements Subject {
   type: SubjectType!
   display: String!
+  language: Language
 }
 type TimePeriod implements Subject {
   type: SubjectType!
