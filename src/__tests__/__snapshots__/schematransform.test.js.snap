@@ -765,6 +765,9 @@ type Manifestation {
 
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
+
+  \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
+  review: ManifestationReview
 }
 
 type ManifestationTitles {
@@ -1019,6 +1022,28 @@ type LibrariansReview implements Review {
 
   \\"\\"\\" This is a pid \\"\\"\\"
   id: String!
+}
+
+enum ReviewElementType {
+  ABSTRACT
+  ACQUISITION_RECOMMENDATIONS
+  AUDIENCE
+  CONCLUSION
+  DESCRIPTION
+  EVALUATION
+  SIMILAR_MATERIALS
+}
+
+type ReviewElement {
+  content: String
+  heading: String
+  manifestations: [Manifestation]
+  type: ReviewElementType
+}
+
+type ManifestationReview {
+  rating: String
+  reviewByLibrarians: [ReviewElement]
 }
 
 type Universe {
@@ -2181,6 +2206,9 @@ type Manifestation {
 
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
+
+  \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
+  review: ManifestationReview
 }
 
 type ManifestationTitles {
@@ -2463,6 +2491,28 @@ type PeriodicaReviewDetails {
 
   \\"\\"\\"A reference to the host publication\\"\\"\\"
   hostPublication: Work
+}
+
+enum ReviewElementType {
+  ABSTRACT
+  ACQUISITION_RECOMMENDATIONS
+  AUDIENCE
+  CONCLUSION
+  DESCRIPTION
+  EVALUATION
+  SIMILAR_MATERIALS
+}
+
+type ReviewElement {
+  content: String
+  heading: String
+  manifestations: [Manifestation]
+  type: ReviewElementType
+}
+
+type ManifestationReview {
+  rating: String
+  reviewByLibrarians: [ReviewElement]
 }
 
 type Universe {

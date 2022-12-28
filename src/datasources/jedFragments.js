@@ -684,6 +684,15 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       url
       urlText
     }
+    review {
+      rating
+      reviewByLibrarians {
+        content
+        heading
+        pidList
+        type
+      }
+    }
     series {
       alternativeTitles
       isPopular
