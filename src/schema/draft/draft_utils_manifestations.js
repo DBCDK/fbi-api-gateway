@@ -514,6 +514,7 @@ export async function resolveAccess(manifestation, context) {
       url: proxyUrl,
       loginRequired,
       note: entry.note,
+      type: entry.type,
     });
   });
 
@@ -529,6 +530,7 @@ export async function resolveAccess(manifestation, context) {
           url: archive.url,
           origin: parseOnlineUrlToOrigin(archive.url),
           loginRequired: false,
+          type: "RESOURCE",
         });
       }
     });

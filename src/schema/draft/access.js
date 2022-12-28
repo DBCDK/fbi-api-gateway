@@ -11,6 +11,14 @@ enum AccessTypeCode {
   NOT_SPECIFIED @deprecated
   UNKNOWN
 }
+enum AccessUrlType {
+  IMAGE
+  OTHER
+  RESOURCE
+  SAMPLE
+  TABLE_OF_CONTENTS
+  THUMBNAIL
+}
 type AccessType {
   display: String!
   code: AccessTypeCode!
@@ -56,6 +64,11 @@ type AccessUrl {
   If the resource requires login
   """
   loginRequired: Boolean!
+
+  """
+  The type of content that can be found at this URL
+  """
+  type: AccessUrlType
 }
 type InterLibraryLoan {
   """

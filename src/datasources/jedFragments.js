@@ -325,6 +325,7 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
         note
         origin
         url
+        type
       }
       dbcWebArchive
       digitalArticleService {
