@@ -1,6 +1,7 @@
 import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
 import { get, uniq } from "lodash";
+import { log } from "dbc-node-logger";
 
 export async function performTestQuery({
   query,
@@ -280,6 +281,10 @@ export async function resolveWork(args, context) {
   });
 
   if (!w?.data?.work) {
+    // log for debugging - see BIBDK2021-1256
+    log.error("WORKID NOT FOUND in jed-presentation service", {
+      workId: id,
+    });
     return null;
   }
 
