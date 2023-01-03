@@ -14,7 +14,7 @@ export async function load({ workId, profile }, context) {
     { allowedErrorStatusCodes: [403, 404] }
   );
 
-  return (await res.json())?.work;
+  return res?.body?.work;
 }
 
 /**
