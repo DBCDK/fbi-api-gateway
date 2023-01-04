@@ -1,5 +1,8 @@
 import config from "../config";
-import { MANIFESTATION_FIELDS_FRAGMENT, WORK_FIELDS_FRAGMENT } from "./jedFragments";
+import {
+  MANIFESTATION_FIELDS_FRAGMENT,
+  WORK_FIELDS_FRAGMENT,
+} from "./jedFragments";
 
 const { url, ttl, prefix } = config.datasources.jed;
 

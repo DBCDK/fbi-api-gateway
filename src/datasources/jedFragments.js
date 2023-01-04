@@ -543,6 +543,42 @@ export const MANIFESTATION_FIELDS_FRAGMENT = `fragment manifestationFields on Je
       heading
       type
       parts {
+        creators{
+          corporations {
+            type
+            display
+            location
+            main
+            nameSort
+            number
+            roles {
+              function {
+                plural
+                singular
+              }
+              functionCode
+            }
+            sub
+            year
+          }
+          persons {
+            display
+            attributeToName
+            birthYear
+            firstName
+            lastName
+            nameSort
+            type
+            roles {
+              function {
+                plural
+                singular
+              }
+              functionCode
+            }
+            romanNumeral
+          }
+        }
         creatorsFromDescription
         title {
           display
