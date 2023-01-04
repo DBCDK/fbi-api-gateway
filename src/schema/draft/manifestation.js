@@ -723,7 +723,24 @@ export const resolvers = {
       return parent?.title?.display || "";
     },
     creators(parent) {
-      return parent?.creators || [];
+      if (Array.isArray(parent?.creators)) {
+        return parent?.creators;
+      }
+      if (!parent?.creators) {
+        return [];
+      }
+
+      // Handle difference in structure from JED service
+      return [
+        ...parent?.creators?.persons?.map((person) => ({
+          ...person,
+          __typename: "Person",
+        })),
+        ...parent?.creators?.corporations?.map((person) => ({
+          ...person,
+          __typename: "Corporation",
+        })),
+      ];
     },
   },
   Manifestation: {
