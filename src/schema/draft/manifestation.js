@@ -722,6 +722,9 @@ export const resolvers = {
     title(parent) {
       return parent?.title?.display || "";
     },
+    creators(parent) {
+      return parent?.creators || [];
+    },
   },
   Manifestation: {
     workTypes(parent) {
