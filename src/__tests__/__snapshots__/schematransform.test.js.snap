@@ -22,6 +22,18 @@ type ComplexSearchResponse {
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
+
+  \\"\\"\\"the query being executed\\"\\"\\"
+  solrQuery: String
+
+  \\"\\"\\"filter applied to the query\\"\\"\\"
+  solrFilter: String
+
+  \\"\\"\\"Time to tokenize query\\"\\"\\"
+  tokenizerDurationInMs: Int
+
+  \\"\\"\\"Time for execution on solr\\"\\"\\"
+  solrExecutionDurationInMs: Int
 }
 
 type Cover {
