@@ -18,10 +18,15 @@ export async function load({ cql, offset, limit, profile }, context) {
     allowedErrorStatusCodes: [400],
   });
   const json = res.body;
+
   return {
     errorMessage: json?.errorMessage,
     works: json?.workdIds || [],
     hitcount: json?.numFound || 0,
+    solrQuery: json?.solrQuery || "",
+    tokenizerDurationInMs: json?.tokenizerDurationInMs || 0,
+    solrExecutionDurationInMs: json?.solrExecutionDurationInMs || 0,
+    solrFilter: json?.solrFilter || "",
   };
 }
 
