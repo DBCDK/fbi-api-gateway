@@ -62,7 +62,7 @@ type PhysicalDescription {
   """
   Number of units, like 3 cassettes, or 1 score etc.
   """
-  numberOfUnits: Int
+  numberOfUnits: String
 
   """
   The playing time of the manifestation (e.g 2 hours 5 minutes)
