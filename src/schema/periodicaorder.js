@@ -24,6 +24,7 @@ export const typeDef = `
    ERROR_AGENCY_NOT_SUBSCRIBED
    ERROR_INVALID_PICKUP_BRANCH
    ERROR_PID_NOT_RESERVABLE
+   ERROR_NO_NAME_OR_EMAIL
  }
  type PeriodicaArticleOrderResponse {
    status: PeriodicaArticleOrderStatus!
