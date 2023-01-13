@@ -5,7 +5,11 @@ import Collapse from "react-bootstrap/Collapse";
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 
-import { dateTimeConverter } from "@/components/utils";
+import {
+  dateTimeConverter,
+  dateConverter,
+  timeConverter,
+} from "@/components/utils";
 import Text from "@/components/base/text";
 import Title from "@/components/base/title";
 import Button from "@/components/base/button";
@@ -85,19 +89,24 @@ function Item({
   //   setOpen(inUse);
   // }, [selectedToken]);
 
-  const ExpiredDisplay = "This token is expired 😔";
-
   const displayName = configuration?.displayName;
   const clientId = configuration?.clientId;
   const authenticated = !!configuration?.uniqueId;
-  const date = dateTimeConverter(timestamp);
+  const submitted = {
+    date: dateConverter(timestamp),
+    time: timeConverter(timestamp),
+  };
+  const expires = {
+    date: dateConverter(configuration?.expires),
+    time: timeConverter(configuration?.expires),
+  };
+
+  const user = configuration.user;
 
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = isExpired ? styles.expired : "";
-
-  const agency = configuration?.agency;
-
   const exapandedClass = open ? styles.expanded : "";
+  const exapandedClassGlobal = open ? "expanded" : "";
 
   const elRef = useRef();
 
@@ -107,7 +116,7 @@ function Item({
         <div className={styles.content} style={{ top: `${distance}px` }}>
           <div className={styles.display}>
             <div>
-              <Text type="text4">{ExpiredDisplay}</Text>
+              <Text type="text4">This token is expired 😔</Text>
               <Text type="text1">{token}</Text>
             </div>
           </div>
@@ -125,55 +134,106 @@ function Item({
   return (
     <div
       ref={elRef}
-      className={`${styles.item} ${expiredClass} ${inUseClass} ${exapandedClass}`}
+      className={`${styles.item} ${expiredClass} ${inUseClass} ${exapandedClass} ${exapandedClassGlobal}`}
     >
       <div className={styles.content} style={{ top: `${distance}px` }}>
         <div className={styles.display}>
-          <Text type="text4">{displayName}</Text>
+          <Text
+            type={open ? "text6" : "text4"}
+            className={styles.display}
+            style={{
+              color: open ? configuration?.logoColor : "var(--text-dark)",
+            }}
+          >
+            {displayName}
+          </Text>
           <Text className={styles.authentication}>
-            {`This token is ${authenticated ? "AUTHENTICATED" : "ANONYMOUS"}`}
+            {`This token is ${
+              authenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
+            }`}
           </Text>
           <ExpandButton onClick={() => setOpen(!open)} open={open} />
         </div>
-        <Collapse in={open} id={`details-collapse-${token}`}>
-          <div id="example-collapse-text">
-            <div className={styles.date}>
-              <Text type="text4">Submitted at</Text>
-              <Text type="text1">{date}</Text>
-            </div>
+        <div className={styles.collapsed}>
+          <div className={styles.submitted}>
+            <Text type="text4">Submitted at</Text>
+            <Text type="text1">
+              {submitted.date} <span>{submitted.time}</span>
+            </Text>
+          </div>
 
-            <div className={styles.expire}>
-              <Text type="text4">Expiration date</Text>
-              <Text type="text1">Some date</Text>
-            </div>
+          <div className={styles.expires}>
+            <Text type="text4">Expiration date</Text>
+            <Text type="text1">
+              {expires.date} <span>{expires.time}</span>
+            </Text>
+          </div>
 
-            <div className={styles.token}>
-              <Text type="text4">Access token</Text>
-              <Text type="text1">{token}</Text>
-            </div>
+          <div className={styles.token}>
+            <Text type="text4">Access token</Text>
+            <Text type="text1">{token}</Text>
+          </div>
 
-            <div className={styles.user}>
-              <Text type="text4">Name</Text>
-              <Text type="text1">Some name</Text>
-            </div>
+          <div className={styles.clientId}>
+            <Text type="text4">ClientID</Text>
+            <Text type="text1">{clientId}</Text>
+          </div>
 
-            <div className={styles.clientId}>
-              <Text type="text4">ClientID</Text>
-              <Text type="text1">{clientId}</Text>
+          <div className={styles.details}>
+            <div>
+              <Text type="text4">Agency</Text>
+              <Text type="text1">{configuration?.agency || "Missing 😔"}</Text>
             </div>
-
-            <div className={styles.details}>
-              <div>
-                <Text type="text4">Agency</Text>
-                <Text type="text1">{agency || "Missing 😔"}</Text>
-              </div>
-              <div>
-                <Text type="text4">Profile</Text>
-                <Text type="text1">{profile || "None 😔"}</Text>
-              </div>
+            <div>
+              <Text type="text4">Profile</Text>
+              <Text type="text1">{profile || "None 😔"}</Text>
             </div>
           </div>
-        </Collapse>
+
+          <hr className={styles.divider} />
+
+          {authenticated && (
+            <div className={styles.user}>
+              <div className={styles.name}>
+                <Text type="text4">Name</Text>
+                <Text type="text1">{user?.name}</Text>
+              </div>
+              <div className={styles.mail}>
+                <Text type="text4">Mail</Text>
+                <Text type="text1">{user?.mail}</Text>
+              </div>
+              {typeof user?.blocked !== "undefined" && (
+                <div className={styles.blocked}>
+                  <Text type="text4">Blocked</Text>
+                  <Text type="text1">{JSON.stringify(user?.blocked)}</Text>
+                </div>
+              )}
+              {user?.municipalityAgencyId && (
+                <div className={styles.municipalityAgencyId}>
+                  <Text type="text4">MunicipalityAgencyId</Text>
+                  <Text type="text1">{user?.municipalityAgencyId}</Text>
+                </div>
+              )}
+              <div className={styles.agencies}>
+                <Text type="text4">Agencies</Text>
+                {user.agencies.map((a, i) => (
+                  <Text as="span" type="text1">
+                    {a.agencyId + " "}
+                  </Text>
+                ))}
+              </div>
+
+              <div className={styles.notes}>
+                <Text type="text4">Agencies</Text>
+                {user.agencies.map((a, i) => (
+                  <Text as="span" type="text1">
+                    {a.agencyId + " "}
+                  </Text>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
         <div className={styles.bottom}>
           <hr />
           <div className={styles.buttons}>
