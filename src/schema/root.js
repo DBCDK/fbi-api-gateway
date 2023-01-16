@@ -83,7 +83,6 @@ type Query {
 
 type Mutation {
   data_collect(input: DataCollectInput!): String!
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
@@ -313,102 +312,6 @@ export const resolvers = {
       log.info(JSON.stringify(data), { type: "data" });
 
       return "OK";
-    },
-    async submitPeriodicaArticleOrder(parent, args, context, info) {
-      let { userName, userMail } = args.input;
-
-      // Fetch and check existence of branch
-      const digitalAccessSubscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-
-      const infomediaSubscriptions = await context.datasources
-        .getLoader("idp")
-        .load("");
-
-      const branch = (
-        await context.datasources.getLoader("library").load({
-          branchId: args.input.pickUpBranch,
-          digitalAccessSubscriptions,
-          infomediaSubscriptions,
-        })
-      ).result[0];
-
-      if (!branch) {
-        return {
-          status: "ERROR_INVALID_PICKUP_BRANCH",
-        };
-      }
-
-      const hasBorrowerCheck = await resolveBorrowerCheck(
-        branch.agencyId,
-        context
-      );
-
-      // If branch has borrowerCheck, we require the user to be authenticated via that agency
-      if (hasBorrowerCheck) {
-        if (!context.smaug || !context.smaug.user || !context.smaug.user.id) {
-          return {
-            status: "ERROR_UNAUTHORIZED_USER",
-          };
-        }
-        const agencyId = context.smaug.user.agency;
-        if (branch.agencyId !== agencyId) {
-          return {
-            status: "ERROR_INVALID_PICKUP_BRANCH",
-          };
-        }
-
-        // We need users name and email
-        const user = await context.datasources.getLoader("user").load({
-          accessToken: context.accessToken,
-        });
-        userName = user.name ? user.name : userMail;
-        userMail = user.mail ? user.mail : userMail;
-      }
-
-      if (!userName || !userMail) {
-        return {
-          status: "ERROR_NO_NAME_OR_EMAIL",
-        };
-      }
-
-      // Agency must be subscribed
-      const subscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-      if (!subscriptions[branch.agencyId]) {
-        return {
-          status: "ERROR_AGENCY_NOT_SUBSCRIBED",
-        };
-      }
-
-      // Pid must be a manifestation with a valid issn (valid journal)
-      let issn;
-      try {
-        const onlineAccess = await resolveAccess(args.input.pid, context);
-        issn = onlineAccess.find((entry) => entry.issn);
-      } catch (e) {
-        return {
-          status: "ERROR_PID_NOT_RESERVABLE",
-        };
-      }
-      if (!issn) {
-        return {
-          status: "ERROR_PID_NOT_RESERVABLE",
-        };
-      }
-
-      // Then send order
-      const res = await context.datasources
-        .getLoader("statsbiblioteketSubmitArticleOrder")
-        .load({
-          ...args.input,
-          agencyId: branch.agencyId,
-          dryRun: args.dryRun,
-        });
-
-      return res;
     },
     async submitOrder(parent, args, context, info) {
       const digitalAccessSubscriptions = await context.datasources
