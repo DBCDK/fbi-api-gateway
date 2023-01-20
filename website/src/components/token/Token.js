@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import Spinner from "react-bootstrap/Spinner";
 
 import Overlay from "@/components/base/overlay";
 
@@ -19,7 +20,7 @@ export default function Token({
 }) {
   // useToken custom hook
   const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const { configuration, isLoading } = useConfiguration(selectedToken);
   // internal state
   const [state, setState] = useState({
     value: "",
@@ -51,14 +52,18 @@ export default function Token({
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 
   const emptyConfiguration = Object.keys(configuration || {}).length === 0;
+
   const _errorToken = !selectedToken?.token && "😬 This is not a valid token!";
+
   const _errorMissingConfig =
     selectedToken?.token &&
-    !emptyConfiguration &&
-    !configuration?.agency &&
+    !isLoading &&
+    (emptyConfiguration || !configuration?.agency) &&
     "😬 Missing client configuration!";
+
   const _errorNoConfig =
     selectedToken?.token &&
+    !isLoading &&
     emptyConfiguration &&
     "😬 Invalid or expired token!";
 
@@ -69,6 +74,7 @@ export default function Token({
   const focusState = hasFocus ? styles.active : styles.inActive;
   const valueState = hasValue ? styles.value : styles.empty;
   const displayState = hasDisplay ? styles.display : "";
+  const loadingState = isLoading ? styles.isLoading : "";
 
   return (
     <form
@@ -87,7 +93,7 @@ export default function Token({
       }}
     >
       <div
-        className={`${styles.wrap} ${valueState} ${displayState} ${focusState}`}
+        className={`${styles.wrap} ${valueState} ${displayState} ${focusState} ${loadingState}`}
       >
         {hasDisplay && (
           <div className={styles.display}>
@@ -97,6 +103,11 @@ export default function Token({
             </Text>
           </div>
         )}
+
+        {isLoading && (
+          <Spinner className={styles.spinner} animation="border" size="sm" />
+        )}
+
         <input
           aria-label="inputfield for access token"
           ref={inputRef}

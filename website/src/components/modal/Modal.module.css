@@ -6,6 +6,10 @@
   padding-bottom: 0;
 }
 
+.body:has(:global(.expanded)) {
+  overflow: hidden;
+}
+
 @media (max-width: 400px) {
   .offcanvas {
     width: 100%;

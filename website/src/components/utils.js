@@ -26,6 +26,10 @@ export function dateConverter(timestamp) {
   return time;
 }
 
+export const toTimestamp = (strDate) => {
+  return new Date(strDate).getTime();
+};
+
 export function timeConverter(timestamp) {
   var a = new Date(timestamp);
   var hour = a.getHours() < 10 ? "0" + a.getHours() : a.getHours();
