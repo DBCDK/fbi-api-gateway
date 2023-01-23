@@ -105,7 +105,9 @@ export default function Token({
         )}
 
         {isLoading && (
-          <Spinner className={styles.spinner} animation="border" size="sm" />
+          <div className={styles.spinner}>
+            <Spinner animation="border" size="sm" />
+          </div>
         )}
 
         <input
