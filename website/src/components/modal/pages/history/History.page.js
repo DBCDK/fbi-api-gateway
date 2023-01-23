@@ -261,22 +261,26 @@ function Item({
             </div>
           </div>
 
-          {authenticated && <hr className={styles.divider} />}
+          {authenticated && user && <hr className={styles.divider} />}
 
-          {authenticated && (
+          {authenticated && user && (
             <div className={styles.user}>
               <div>
                 <Text type="text4">Token user details</Text>
               </div>
 
-              <div className={styles.name}>
-                <Text type="text4">Name</Text>
-                <Text type="text1">{user?.name}</Text>
-              </div>
-              <div className={styles.mail}>
-                <Text type="text4">Mail</Text>
-                <Text type="text1">{user?.mail}</Text>
-              </div>
+              {user?.name && (
+                <div className={styles.name}>
+                  <Text type="text4">Name</Text>
+                  <Text type="text1">{user?.name}</Text>
+                </div>
+              )}
+              {user?.mail && (
+                <div className={styles.mail}>
+                  <Text type="text4">Mail</Text>
+                  <Text type="text1">{user?.mail}</Text>
+                </div>
+              )}
               {typeof user?.blocked !== "undefined" && (
                 <div className={styles.blocked}>
                   <Text type="text4">Blocked</Text>
@@ -289,14 +293,16 @@ function Item({
                   <Text type="text1">{user?.municipalityAgencyId}</Text>
                 </div>
               )}
-              <div className={styles.agencies}>
-                <Text type="text4">User agencies</Text>
-                {user.agencies.map((a, i) => (
-                  <Text as="span" type="text1">
-                    {a.agencyId + " "}
-                  </Text>
-                ))}
-              </div>
+              {user?.agencies?.length > 0 && (
+                <div className={styles.agencies}>
+                  <Text type="text4">User agencies</Text>
+                  {user?.agencies?.map((a, i) => (
+                    <Text as="span" type="text1">
+                      {a.agencyId + " "}
+                    </Text>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
