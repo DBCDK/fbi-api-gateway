@@ -103,7 +103,7 @@ export async function load(params, context) {
   /** pjo 12/1/23 - service now returns 204 - No content **/
   if (res.status === 200 || res.status === 204) {
     log.info("Elba: Periodica article order succes", {
-      args,
+      params,
       accessToken: context.accessToken,
     });
     return { status: "OK" };
