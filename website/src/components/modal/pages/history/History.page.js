@@ -252,7 +252,7 @@ function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
                 <div className={styles.agencies}>
                   <Text type="text4">User agencies</Text>
                   {agencies?.map((a, i) => (
-                    <Text as="span" type="text1">
+                    <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
                       {a.agencyId + " "}
                     </Text>
                   ))}
