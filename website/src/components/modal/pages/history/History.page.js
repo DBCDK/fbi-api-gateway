@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import Collapse from "react-bootstrap/Collapse";
+import uniqBy from "lodash/uniqBy";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
@@ -96,7 +97,6 @@ function Item({
   inUse,
   configuration,
   isExpired,
-  scrollY,
   // isVisible,
 }) {
   const { setSelectedToken, removeHistoryItem } = useStorage();
@@ -122,58 +122,18 @@ function Item({
 
   const user = configuration.user;
 
+  const agencies = uniqBy(user?.agencies, "agencyId");
+
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = isExpired ? styles.expired : "";
   const missingConfigClass = missingConfiguration ? styles.missingConfig : "";
   const exapandedClass = open ? styles.expanded : "";
   const exapandedClassGlobal = open ? "expanded" : "";
+  const removedClass = removed ? styles.removed : "";
 
   const expireStatusClass = getExpirationClass(configuration?.expires);
 
   const elRef = useRef();
-
-  if (isExpired) {
-    return (
-      <div
-        ref={elRef}
-        className={`${styles.item} ${styles.expired} ${expireStatusClass}`}
-      >
-        <div className={styles.content} style={{ top: `${distance}px` }}>
-          <div className={styles.display}>
-            <div>
-              <Text type="text4">This token is expired 😔</Text>
-              <Text type="text1">{token}</Text>
-            </div>
-          </div>
-          <div className={styles.bottom}>
-            <hr />
-            <div className={styles.buttons}>
-              <Button
-                className={styles.remove}
-                size="small"
-                onClick={() => {
-                  removeHistoryItem(token, profile);
-                  setRemoved(true);
-                }}
-                secondary
-              >
-                Remove
-              </Button>
-              <Button
-                className={styles.use}
-                disabled={isExpired}
-                size="small"
-                onClick={() => {}}
-                primary
-              >
-                {inUse ? "I'm in use" : "Use"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   useEffect(() => {
     if (elRef.current?.offsetTop + 2) {
@@ -185,7 +145,7 @@ function Item({
   return (
     <div
       ref={elRef}
-      className={`${styles.item} ${expiredClass} ${expireStatusClass} ${inUseClass} ${exapandedClass} ${exapandedClassGlobal} ${missingConfigClass}`}
+      className={`${styles.item} ${expiredClass} ${expireStatusClass} ${inUseClass} ${exapandedClass} ${exapandedClassGlobal} ${missingConfigClass} ${removedClass}`}
     >
       <div
         className={styles.content}
@@ -194,30 +154,35 @@ function Item({
         }}
       >
         <div className={styles.display}>
-          <Text
-            type={open ? "text6" : "text4"}
-            className={styles.display}
-            style={
-              {
-                // color: open ? configuration?.logoColor : "var(--text-dark)",
-              }
-            }
-          >
-            {displayName}
-          </Text>
-          <Text className={styles.authentication}>
-            {`This token is ${
-              authenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
-            }`}
-          </Text>
+          {removed || isExpired ? (
+            <div>
+              {removed ? (
+                <Text type="text4">This token was removed 🗑️</Text>
+              ) : (
+                <Text type="text4">This token is expired 😔</Text>
+              )}
+              <Text type="text1">{token}</Text>
+            </div>
+          ) : (
+            <>
+              <Text type={open ? "text6" : "text4"} className={styles.display}>
+                {displayName}
+              </Text>
+              <Text className={styles.authentication}>
+                {`This token is ${
+                  authenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
+                }`}
+              </Text>
 
-          {missingConfiguration && (
-            <Text type="text4" className={styles.missingConfigWarn}>
-              Client has missing configuration 😵‍💫
-            </Text>
+              {missingConfiguration && (
+                <Text type="text4" className={styles.missingConfigWarn}>
+                  Client has missing configuration 😵‍💫
+                </Text>
+              )}
+
+              <ExpandButton onClick={() => setOpen(!open)} open={open} />
+            </>
           )}
-
-          <ExpandButton onClick={() => setOpen(!open)} open={open} />
         </div>
         <div className={styles.collapsed}>
           <div className={styles.submitted}>
@@ -265,8 +230,8 @@ function Item({
 
           {authenticated && user && (
             <div className={styles.user}>
-              <div>
-                <Text type="text4">Token user details</Text>
+              <div className={styles.heading}>
+                <Text type="text1">Token user details</Text>
               </div>
 
               {user?.name && (
@@ -293,10 +258,10 @@ function Item({
                   <Text type="text1">{user?.municipalityAgencyId}</Text>
                 </div>
               )}
-              {user?.agencies?.length > 0 && (
+              {agencies?.length > 0 && (
                 <div className={styles.agencies}>
                   <Text type="text4">User agencies</Text>
-                  {user?.agencies?.map((a, i) => (
+                  {agencies?.map((a, i) => (
                     <Text as="span" type="text1">
                       {a.agencyId + " "}
                     </Text>
@@ -314,7 +279,9 @@ function Item({
               size="small"
               onClick={() => {
                 removeHistoryItem(token, profile);
-                setRemoved(true);
+                setOpen(false);
+                const delay = open ? 500 : 0;
+                setTimeout(() => setRemoved(true), delay);
               }}
               secondary
             >
@@ -381,10 +348,10 @@ function History({ modal }) {
   return (
     <Row className={styles.configurations}>
       {!state?.length && <span>You have no configurations yet 🥹 ...</span>}
-      {state?.map((h) => {
+      {state?.map((h, i) => {
         return (
           <Wrap
-            key={JSON.stringify(h)}
+            key={`${h.token}-${i}`}
             isVisible={modal.isVisible}
             inUse={isEqual(selectedToken, h)}
             {...h}
