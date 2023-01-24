@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { Container, Row, Col } from "react-bootstrap";
-import Collapse from "react-bootstrap/Collapse";
+import { useState, useEffect, useRef } from "react";
+import { Row } from "react-bootstrap";
 import uniqBy from "lodash/uniqBy";
 
 import useStorage from "@/hooks/useStorage";
@@ -8,7 +7,6 @@ import useConfiguration from "@/hooks/useConfiguration";
 
 import { dateConverter, timeConverter, toTimestamp } from "@/components/utils";
 import Text from "@/components/base/text";
-import Title from "@/components/base/title";
 import Button from "@/components/base/button";
 
 import { isEqual } from "@/components/utils";
@@ -90,15 +88,7 @@ function ExpandButton({ onClick, open }) {
  * @returns {component}
  */
 
-function Item({
-  token,
-  profile,
-  timestamp,
-  inUse,
-  configuration,
-  isExpired,
-  // isVisible,
-}) {
+function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
   const { setSelectedToken, removeHistoryItem } = useStorage();
 
   const [open, setOpen] = useState(false);
