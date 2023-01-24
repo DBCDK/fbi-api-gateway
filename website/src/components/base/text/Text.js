@@ -14,16 +14,19 @@ function Text({
   className = "",
   type = "text2",
   style,
+  as = "p",
   ...props
 }) {
+  const As = as;
+
   return (
-    <p
+    <As
       className={`${styles.text} ${styles[type]} ${className}`}
       style={style}
       {...props}
     >
       {children}
-    </p>
+    </As>
   );
 }
 

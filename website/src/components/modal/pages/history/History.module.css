@@ -1,98 +1,192 @@
 .configurations {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  position: relative;
 }
 
-.configurations > span {
+.item {
+  width: 100%;
+  height: 175px;
+  margin-bottom: var(--pt2);
   padding: 0;
+
+  transition-duration: 0.3s;
+
+  /* transition: height 0.2s, max-height 0.2s linear 0.2s;*/
 }
 
-.authenticated {
+.content {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  padding: var(--pt2);
+  width: 100%;
+  height: 175px;
+  transition: top 0.3s, height 0.2s, width 0.3s, margin 0.3s, box-shadow 0.3s,
+    border-width 0.2s, z-index 0s linear 0.3s;
+  background-color: var(--white);
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+
+  border-top: 2px solid transparent;
+}
+
+/* .item:not(.expanded).expire-less-than-5-days .content { */
+.item.expire-less-than-5-days .content {
+  border-color: var(--error);
+}
+
+/* .item:not(.expanded).expire-less-than-15-days .content { */
+.item.expire-less-than-15-days .content {
+  border-color: var(--warning-dark);
+}
+
+/* .item:not(.expanded).expire-more-or-eq-to-15-days .content { */
+.item.expire-more-or-eq-to-15-days .content {
+  border-color: var(--success-dark);
+}
+
+.content .collapsed {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s, padding 0.2s linear 0s;
+}
+
+.item.expanded .content {
+  width: calc(100% + var(--pt4));
+  margin: 0 calc(var(--pt2) * -1);
+  /* 53 is the size of the offcanvas header */
+  height: calc(100vh - 53px);
+
+  /* top: 0 !important; */
+  /* position:fixed; */
+  border-width: 4px;
+
+  z-index: 2;
+  transition: top 0.3s, height 0.3s, width 0.3s, margin 0.3s, box-shadow 0.3s,
+    border-width 0.2s, z-index 0s linear 0s;
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+}
+
+.item.expanded .content .collapsed {
+  padding: var(--pt2) 0;
+  max-height: 100vh;
+  transition: max-height 0.3s, padding 0.2s linear 0s;
+}
+
+.display p {
+  transition: font-size 0.25s, color 0.25s linear 0s;
+}
+
+.authentication {
   font-size: 11px;
-  margin-left: var(--pt1);
-  color: #6b6b6b;
+  color: var(--text-light);
   letter-spacing: 0.6px;
 }
 
-/* item */
-.item {
-  background-color: var(--white);
-  margin-bottom: var(--pt2);
-  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+.missingConfigWarn {
+  color: var(--error);
+  margin: var(--pt1) 0;
 }
 
-.item.expired .display,
-.item.expired .date,
-.item.expired .id,
-.item.expired .token,
-.item.expired .details,
-.item.expired .error {
+.item.expanded .missingConfigWarn {
+  display: none;
+}
+
+.content .collapsed > div,
+.content .collapsed .user > div {
+  margin-bottom: var(--pt1);
+}
+
+/* expires */
+
+.submitted span,
+.expires span {
+  font-size: 12px;
   color: var(--text-light);
+  letter-spacing: 0.6px;
+  font-family: var(--font-mono-regular);
 }
 
-.display,
-.date,
-.id,
-.token,
-.details .error {
-  padding: var(--pt2) var(--pt2) 0 var(--pt2);
-}
-
-.date p {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.token,
-.details {
-  padding: var(--pt2);
-}
-
-.token p,
-.id p {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.error {
-  color: var(--error-dark);
-  padding: 0 var(--pt2);
-}
-
-.display {
+.expires > div {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  /* background-color: var(--divider); */
-  padding: var(--pt1) var(--pt1) 0 var(--pt2) !important;
 }
 
-.buttons {
-  padding: var(--pt1) var(--pt2);
+.expires .indicator {
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  margin-right: var(--pt1);
+}
+
+.indicator.expire-less-than-5-days {
+  background-color: var(--error);
+}
+
+.indicator.expire-less-than-15-days {
+  background-color: var(--warning-dark);
+}
+
+.indicator.expire-more-or-eq-to-15-days {
+  background-color: var(--success-dark);
+}
+
+.details {
+  display: flex;
+}
+
+.details > div {
+  width: 50%;
+}
+
+.item.missingConfig .details > div p:last-child {
+  color: var(--error);
+  font-family: var(--font-mono-semibold);
+}
+
+.divider {
+  margin: var(--pt2) 0;
+}
+
+.heading p {
+  font-size: 12px;
+}
+
+.user {
+  margin-top: var(--pt1);
+}
+
+.item .content .bottom {
+  margin-top: auto;
+}
+
+.item .content .buttons {
+  padding: var(--pt2) 0 0 0;
   display: flex;
   justify-content: flex-end;
+  margin-top: auto;
 }
 
-.buttons .use {
+.item .content .buttons .use {
   margin-left: var(--pt1);
 }
 
-.item.inUse .use {
+.item.inUse .content .buttons .use {
   color: var(--text-dark);
   background-color: var(--primary-dark);
 }
 
-.item.inUse .use:hover,
-.item.inUse .use:focus-visible {
+.item.inUse .content .buttons .use:hover,
+.item.inUse .content .buttons .use:focus-visible {
   background-color: var(--text-dark);
   color: var(--white);
 }
 
-.item hr {
-  margin: 0 !important;
-}
-
+/* cross */
 .cross {
   width: var(--pt4);
   height: var(--pt4);
@@ -100,13 +194,20 @@
   cursor: pointer;
   color: var(--text-light);
   transition: transform 0.2s, background-color 0.3s;
-  position: relative;
+  position: absolute;
+  top: var(--pt1);
+  right: var(--pt1);
   border-radius: 50%;
   background-color: white;
+}
 
+.cross div {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
 }
 
 .cross span {
@@ -146,22 +247,60 @@
   outline: 2px solid var(--text-dark);
 }
 
+/* expired */
+
+.item.expired .display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-light);
+}
+
+.item.expired .display div {
+  text-align: center;
+}
+
+.item.expired .display p:last-child {
+  font-size: 12px;
+  margin-top: var(--pt05);
+}
+
+/* removed */
+.item.removed .content {
+  border-color: transparent;
+  box-shadow: none;
+  background-color: var(--divider);
+}
+
+.item.removed .display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-light);
+}
+
+.item.removed .display div {
+  text-align: center;
+}
+
+.item.removed .display p:last-child {
+  font-size: 12px;
+  margin-top: var(--pt05);
+}
+
+.item.removed .bottom {
+  display: none;
+}
+
 /* loading */
-
-.item.isLoading {
-}
-
-@media (min-width: 576px) {
-}
-
-@media screen and (min-width: 769px) {
-}
 
 .item.isLoading {
   pointer-events: none;
   cursor: default;
 
-  height: 170px;
+  height: 175px;
 
   display: inline-block;
 

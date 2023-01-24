@@ -14,13 +14,16 @@ export default function Modal({
       placement="end"
       onHide={onHide}
       className={`${styles.offcanvas} ${className}`}
+      onScroll={(e) => setDistance(e.target.scrollY)}
     >
       {title && (
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>{title}</Offcanvas.Title>
         </Offcanvas.Header>
       )}
-      <Offcanvas.Body className={styles.body}>{children}</Offcanvas.Body>
+      <Offcanvas.Body id="modal" className={styles.body}>
+        {children}
+      </Offcanvas.Body>
     </Offcanvas>
   );
 }

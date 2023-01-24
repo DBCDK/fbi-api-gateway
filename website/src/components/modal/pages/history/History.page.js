@@ -1,18 +1,47 @@
-import { useState, useEffect } from "react";
-import { Container, Row, Col } from "react-bootstrap";
-import Collapse from "react-bootstrap/Collapse";
+import { useState, useEffect, useRef } from "react";
+import { Row } from "react-bootstrap";
+import uniqBy from "lodash/uniqBy";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 
-import { dateTimeConverter } from "@/components/utils";
+import { dateConverter, timeConverter, toTimestamp } from "@/components/utils";
 import Text from "@/components/base/text";
-import Title from "@/components/base/title";
 import Button from "@/components/base/button";
 
 import { isEqual } from "@/components/utils";
 
 import styles from "./History.module.css";
+
+/**
+ * Expiration status
+ *
+ * @param {string} expirationdate
+ * See propTypes for specific props and types
+ *
+ * @returns {obj}
+ */
+function getExpirationClass(date) {
+  const expires = toTimestamp(date);
+  const now = toTimestamp(new Date());
+  const diff = expires - now;
+
+  const days = Math.ceil(diff / (1000 * 3600 * 24)) || 0;
+
+  if (days < 5) {
+    return styles["expire-less-than-5-days"];
+  }
+
+  if (days < 15) {
+    return styles["expire-less-than-15-days"];
+  }
+
+  if (days >= 15) {
+    return styles["expire-more-or-eq-to-15-days"];
+  }
+
+  return "";
+}
 
 /**
  * Loading version of Component
@@ -27,6 +56,30 @@ function ItemIsLoading() {
 }
 
 /**
+ *
+ * @param {*} param0
+ * @returns
+ */
+
+function ExpandButton({ onClick, open }) {
+  const crossClass = open ? styles.less : styles.more;
+
+  return (
+    <button
+      className={`${styles.cross} ${crossClass}`}
+      onClick={onClick}
+      aria-controls="example-collapse-text"
+      aria-expanded={open}
+    >
+      <div>
+        <span />
+        <span />
+      </div>
+    </button>
+  );
+}
+
+/**
  * The Component function
  *
  * @param {obj} props
@@ -35,124 +88,190 @@ function ItemIsLoading() {
  * @returns {component}
  */
 
-function Item({
-  token,
-  profile,
-  timestamp,
-  inUse,
-  configuration,
-  isExpired,
-  // isVisible,
-}) {
+function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
   const { setSelectedToken, removeHistoryItem } = useStorage();
 
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
-
-  // update state on modal close
-  // useEffect(() => {
-  //   if (!isVisible) {
-  //     setTimeout(() => setOpen(inUse), 200);
-  //   }
-  // }, [isVisible]);
-
-  // useEffect(() => {
-  //   setOpen(inUse);
-  // }, [selectedToken]);
-
-  const ExpiredDisplay = "This token is expired 😔";
+  const [distance, setDistance] = useState(false);
 
   const displayName = configuration?.displayName;
   const clientId = configuration?.clientId;
   const authenticated = !!configuration?.uniqueId;
-  const date = dateTimeConverter(timestamp);
+  const missingConfiguration = !profile || !configuration.agency;
+  const submitted = {
+    date: dateConverter(timestamp),
+    time: timeConverter(timestamp),
+  };
+  const expires = {
+    date: dateConverter(configuration?.expires),
+    time: timeConverter(configuration?.expires),
+  };
+
+  const containerScrollY = document.getElementById("modal")?.scrollTop;
+
+  const user = configuration.user;
+
+  const agencies = uniqBy(user?.agencies, "agencyId");
 
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = isExpired ? styles.expired : "";
-  const crossClass = open ? styles.less : styles.more;
+  const missingConfigClass = missingConfiguration ? styles.missingConfig : "";
+  const exapandedClass = open ? styles.expanded : "";
+  const exapandedClassGlobal = open ? "expanded" : "";
+  const removedClass = removed ? styles.removed : "";
 
-  const agency = configuration?.agency;
+  const expireStatusClass = getExpirationClass(configuration?.expires);
+
+  const elRef = useRef();
+
+  useEffect(() => {
+    if (elRef.current?.offsetTop + 2) {
+      // + 2 is the expiration status border (not included in the offsetTop)
+      setDistance(elRef.current.offsetTop + 2);
+    }
+  }, [elRef.current?.offsetTop]);
 
   return (
-    <Collapse in={!removed} id={`container-collapse-${token}`}>
-      <Col xs={12} className={`${styles.item} ${expiredClass} ${inUseClass}`}>
-        <Row>
-          <Col xs={12} className={styles.display}>
-            <Text type="text4">
-              {isExpired ? (
-                ExpiredDisplay
+    <div
+      ref={elRef}
+      className={`${styles.item} ${expiredClass} ${expireStatusClass} ${inUseClass} ${exapandedClass} ${exapandedClassGlobal} ${missingConfigClass} ${removedClass}`}
+    >
+      <div
+        className={styles.content}
+        style={{
+          top: open ? `${containerScrollY}px` : `${distance}px`,
+        }}
+      >
+        <div className={styles.display}>
+          {removed || isExpired ? (
+            <div>
+              {removed ? (
+                <Text type="text4">This token was removed 🗑️</Text>
               ) : (
-                <>
-                  {displayName}
-                  <span className={styles.authenticated}>
-                    {authenticated ? "AUTHENTICATED" : "ANONYMOUS"}
-                  </span>
-                </>
+                <Text type="text4">This token is expired 😔</Text>
               )}
-            </Text>
-
-            <button
-              className={`${styles.cross} ${crossClass}`}
-              onClick={() => setOpen(!open)}
-              aria-controls="example-collapse-text"
-              aria-expanded={open}
-            >
-              <span />
-              <span />
-              {/* <Title type="title5">{open ? "-" : "+"}</Title> */}
-            </button>
-          </Col>
-
-          {!isExpired && (!agency || !profile) && (
-            <Col xs={12} className={styles.error}>
-              <Text type="text1">
-                😬 This token has missing client configuration!
+              <Text type="text1">{token}</Text>
+            </div>
+          ) : (
+            <>
+              <Text type={open ? "text6" : "text4"} className={styles.display}>
+                {displayName}
               </Text>
-            </Col>
-          )}
+              <Text className={styles.authentication}>
+                {`This token is ${
+                  authenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
+                }`}
+              </Text>
 
-          <Collapse in={open} id={`details-collapse-${token}`}>
-            <Row id="example-collapse-text">
-              <Col xs={12} className={styles.date}>
-                <Text type="text4">Submitted at</Text>
-                <Text type="text1">{date}</Text>
-              </Col>
-              <Col xs={12} className={styles.date}>
-                <Text type="text4">Access token</Text>
-                <Text type="text1">{token}</Text>
-              </Col>
-              {!isExpired && (
-                <Col xs={12} className={styles.id}>
-                  <Text type="text4">ClientID</Text>
-                  <Text type="text1">{clientId}</Text>
-                </Col>
+              {missingConfiguration && (
+                <Text type="text4" className={styles.missingConfigWarn}>
+                  Client has missing configuration 😵‍💫
+                </Text>
               )}
-            </Row>
-          </Collapse>
 
-          <Col xs={12} className={styles.details}>
-            <Row>
-              <Col xs={6}>
-                <Text type="text4">Agency</Text>
-                <Text type="text1">{agency || "Missing 😔"}</Text>
-              </Col>
-              <Col xs={6}>
-                <Text type="text4">Profile</Text>
-                <Text type="text1">{profile || "None 😔"}</Text>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+              <ExpandButton onClick={() => setOpen(!open)} open={open} />
+            </>
+          )}
+        </div>
+        <div className={styles.collapsed}>
+          <div className={styles.submitted}>
+            <Text type="text4">Submitted at</Text>
+            <Text type="text1">
+              {submitted.date} <span>{submitted.time}</span>
+            </Text>
+          </div>
 
-        <Row>
+          <div className={`${styles.expires} `}>
+            <Text type="text4">Expiration date</Text>
+            <div>
+              <i className={`${styles.indicator} ${expireStatusClass}`} />
+              <Text type="text1">
+                {expires.date}
+                <span>{expires.time}</span>
+              </Text>
+            </div>
+          </div>
+
+          <div className={styles.token}>
+            <Text type="text4">Access token</Text>
+            <Text type="text1">{token}</Text>
+          </div>
+
+          <div className={styles.clientId}>
+            <Text type="text4">ClientID</Text>
+            <Text type="text1">{clientId}</Text>
+          </div>
+
+          <div className={styles.details}>
+            <div>
+              <Text type="text4">Agency</Text>
+              <Text type="text1">
+                {configuration?.agency || "Missing 😵‍💫"}
+              </Text>
+            </div>
+            <div>
+              <Text type="text4">Profile</Text>
+              <Text type="text1">{profile || "None 😵‍💫"}</Text>
+            </div>
+          </div>
+
+          {authenticated && user && <hr className={styles.divider} />}
+
+          {authenticated && user && (
+            <div className={styles.user}>
+              <div className={styles.heading}>
+                <Text type="text1">Token user details</Text>
+              </div>
+
+              {user?.name && (
+                <div className={styles.name}>
+                  <Text type="text4">Name</Text>
+                  <Text type="text1">{user?.name}</Text>
+                </div>
+              )}
+              {user?.mail && (
+                <div className={styles.mail}>
+                  <Text type="text4">Mail</Text>
+                  <Text type="text1">{user?.mail}</Text>
+                </div>
+              )}
+              {typeof user?.blocked !== "undefined" && (
+                <div className={styles.blocked}>
+                  <Text type="text4">Blocked</Text>
+                  <Text type="text1">{JSON.stringify(user?.blocked)}</Text>
+                </div>
+              )}
+              {user?.municipalityAgencyId && (
+                <div className={styles.municipalityAgencyId}>
+                  <Text type="text4">MunicipalityAgencyId</Text>
+                  <Text type="text1">{user?.municipalityAgencyId}</Text>
+                </div>
+              )}
+              {agencies?.length > 0 && (
+                <div className={styles.agencies}>
+                  <Text type="text4">User agencies</Text>
+                  {agencies?.map((a, i) => (
+                    <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
+                      {a.agencyId + " "}
+                    </Text>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <div className={styles.bottom}>
           <hr />
-          <Col className={styles.buttons}>
+          <div className={styles.buttons}>
             <Button
               className={styles.remove}
               size="small"
               onClick={() => {
                 removeHistoryItem(token, profile);
-                setRemoved(true);
+                setOpen(false);
+                const delay = open ? 500 : 0;
+                setTimeout(() => setRemoved(true), delay);
               }}
               secondary
             >
@@ -162,20 +281,17 @@ function Item({
               className={styles.use}
               disabled={isExpired}
               size="small"
-              onClick={() => {
-                setSelectedToken(token, profile);
-              }}
+              onClick={() => setSelectedToken(token, profile)}
               primary
             >
               {inUse ? "I'm in use" : "Use"}
             </Button>
-          </Col>
-        </Row>
-      </Col>
-    </Collapse>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
-
 /**
  * The Component function
  *
@@ -208,7 +324,7 @@ function Wrap(props) {
  * @returns {component}
  */
 
-function History({ modal, context }) {
+function History({ modal }) {
   const { history, selectedToken } = useStorage();
   const [state, setState] = useState(history);
 
@@ -222,10 +338,10 @@ function History({ modal, context }) {
   return (
     <Row className={styles.configurations}>
       {!state?.length && <span>You have no configurations yet 🥹 ...</span>}
-      {state?.map((h) => {
+      {state?.map((h, i) => {
         return (
           <Wrap
-            key={JSON.stringify(h)}
+            key={`${h.token}-${i}`}
             isVisible={modal.isVisible}
             inUse={isEqual(selectedToken, h)}
             {...h}

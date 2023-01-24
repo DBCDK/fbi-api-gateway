@@ -1,6 +1,6 @@
 .text {
   font-family: var(--font-mono-regular);
-  display: block;
+
   /* letter-spacing: 0.2px; */
 
   /* Bootstrap default override */
