@@ -22,6 +22,18 @@ type ComplexSearchResponse {
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
+
+  \\"\\"\\"the query being executed\\"\\"\\"
+  solrQuery: String
+
+  \\"\\"\\"filter applied to the query\\"\\"\\"
+  solrFilter: String
+
+  \\"\\"\\"Time to tokenize query\\"\\"\\"
+  tokenizerDurationInMs: Int
+
+  \\"\\"\\"Time for execution on solr\\"\\"\\"
+  solrExecutionDurationInMs: Int
 }
 
 type Cover {
@@ -285,7 +297,7 @@ type PhysicalDescription {
   numberOfPages: Int
 
   \\"\\"\\"Number of units, like 3 cassettes, or 1 score etc.\\"\\"\\"
-  numberOfUnits: Int
+  numberOfUnits: String
 
   \\"\\"\\"The playing time of the manifestation (e.g 2 hours 5 minutes)\\"\\"\\"
   playingTime: String
@@ -1125,6 +1137,12 @@ enum SubjectType {
   TITLE
   FILM_NATIONALITY
   LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+
+  \\"\\"\\"
+  added for manifestation.parts.creators/person - they get a type from small-rye
+  \\"\\"\\"
+  PERSON
+  CORPORATION
 }
 
 type Range {
@@ -1320,6 +1338,7 @@ enum PeriodicaArticleOrderStatus {
   ERROR_AGENCY_NOT_SUBSCRIBED
   ERROR_INVALID_PICKUP_BRANCH
   ERROR_PID_NOT_RESERVABLE
+  ERROR_NO_NAME_OR_EMAIL
 }
 
 type PeriodicaArticleOrderResponse {
@@ -1729,7 +1748,7 @@ type PhysicalDescription {
   numberOfPages: Int
 
   \\"\\"\\"Number of units, like 3 cassettes, or 1 score etc.\\"\\"\\"
-  numberOfUnits: Int
+  numberOfUnits: String
 
   \\"\\"\\"The playing time of the manifestation (e.g 2 hours 5 minutes)\\"\\"\\"
   playingTime: String
@@ -2594,6 +2613,12 @@ enum SubjectType {
   TITLE
   FILM_NATIONALITY
   LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+
+  \\"\\"\\"
+  added for manifestation.parts.creators/person - they get a type from small-rye
+  \\"\\"\\"
+  PERSON
+  CORPORATION
 }
 
 type Range {

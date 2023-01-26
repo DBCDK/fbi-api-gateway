@@ -30,6 +30,23 @@ type ComplexSearchResponse {
   Error message, for instance if CQL is invalid
   """
   errorMessage: String
+
+  """
+  the query being executed
+  """  
+  solrQuery: String
+  """
+  filter applied to the query
+  """
+  solrFilter: String
+  """
+  Time to tokenize query
+  """
+  tokenizerDurationInMs: Int
+  """
+  Time for execution on solr
+  """
+  solrExecutionDurationInMs: Int
 }
 `;
 
@@ -53,6 +70,53 @@ export const resolvers = {
       });
       return res?.errorMessage;
     },
+    async solrFilter(parent, args, context) {
+      const res = await context.datasources.getLoader("complexsearch").load({
+        ...args,
+        offset: args.offset || 0,
+        limit: args.limit || 10,
+        cql: parent.cql,
+        profile: context.profile,
+      });
+
+      return res?.solrFilter;
+    },
+    async solrQuery(parent, args, context) {
+      const res = await context.datasources.getLoader("complexsearch").load({
+        ...args,
+        offset: args.offset || 0,
+        limit: args.limit || 10,
+        cql: parent.cql,
+        profile: context.profile,
+      });
+
+      return res?.solrQuery;
+    },
+
+    async solrExecutionDurationInMs(parent, args, context) {
+      const res = await context.datasources.getLoader("complexsearch").load({
+        ...args,
+        offset: args.offset || 0,
+        limit: args.limit || 10,
+        cql: parent.cql,
+        profile: context.profile,
+      });
+
+      return res?.solrExecutionDurationInMs;
+    },
+
+    async tokenizerDurationInMs(parent, args, context) {
+      const res = await context.datasources.getLoader("complexsearch").load({
+        ...args,
+        offset: args.offset || 0,
+        limit: args.limit || 10,
+        cql: parent.cql,
+        profile: context.profile,
+      });
+
+      return res?.tokenizerDurationInMs;
+    },
+
     async works(parent, args, context) {
       const res = await context.datasources.getLoader("complexsearch").load({
         ...args,

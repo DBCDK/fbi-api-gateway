@@ -62,7 +62,7 @@ type PhysicalDescription {
   """
   Number of units, like 3 cassettes, or 1 score etc.
   """
-  numberOfUnits: Int
+  numberOfUnits: String
 
   """
   The playing time of the manifestation (e.g 2 hours 5 minutes)
@@ -721,6 +721,26 @@ export const resolvers = {
   ManifestationPart: {
     title(parent) {
       return parent?.title?.display || "";
+    },
+    creators(parent) {
+      if (Array.isArray(parent?.creators)) {
+        return parent?.creators;
+      }
+      if (!parent?.creators) {
+        return [];
+      }
+
+      // Handle difference in structure from JED service
+      return [
+        ...parent?.creators?.persons?.map((person) => ({
+          ...person,
+          __typename: "Person",
+        })),
+        ...parent?.creators?.corporations?.map((person) => ({
+          ...person,
+          __typename: "Corporation",
+        })),
+      ];
     },
   },
   Manifestation: {

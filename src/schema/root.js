@@ -369,7 +369,7 @@ export const resolvers = {
 
       if (!userName || !userMail) {
         return {
-          status: "ERROR_UNAUTHORIZED_USER",
+          status: "ERROR_NO_NAME_OR_EMAIL",
         };
       }
 

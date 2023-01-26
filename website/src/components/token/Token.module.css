@@ -46,6 +46,13 @@
   cursor: pointer;
 }
 
+.wrap.isLoading {
+}
+
+.spinner {
+  margin: 0 var(--pt2);
+}
+
 /* input */
 
 .input {

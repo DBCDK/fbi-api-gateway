@@ -1,3 +1,13 @@
+/*
+@file - submit an article to statsbiblioteket- it is a soap xml service
+
+see https://webservice.statsbiblioteket.dk/elba-webservices/
+
+some parameters are mandatory (minOccurs="1" maxOccurs="1") but are not implemented
+here - if schema validation is enabled at a later time this request will fail.
+
+eg. <xsd:element name="originRequester" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+ */
 import { log } from "dbc-node-logger";
 import config from "../config";
 
@@ -90,9 +100,10 @@ export async function load(params, context) {
     enableProxy: true,
   });
 
-  if (res.status === 200) {
+  /** pjo 12/1/23 - service now returns 204 - No content **/
+  if (res.status === 200 || res.status === 204) {
     log.info("Elba: Periodica article order succes", {
-      args,
+      params,
       accessToken: context.accessToken,
     });
     return { status: "OK" };
