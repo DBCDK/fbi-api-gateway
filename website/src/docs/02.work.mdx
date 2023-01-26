@@ -154,7 +154,13 @@ A review is just a _Manifestation_, meaning we can use the access field to get a
 possible ways to access the content of the review. Check out access examples [here](#Manifestation-Access).
 
 Note that if the review is created by a librarian (materialevurdering), the actual sections of the
-review is available in the field _reviewByLibrarians_.
+review is available on the manifestation at the path _review.reviewByLibrarians_.
+
+A librarians review may refer to different manifestations. It is possible to insert links to these manifestations
+located at your site. The field _review.reviewByLibrarians.contentSubstitute_ may contain pids that need to be substituted.
+Relevant manifestations are found at the field _review.reviewByLibrarians.manifestations_, and you can get whatever
+data you need to generate the links. If links are not required, use the field _review.reviewByLibrarians.content_, which
+does not require substitution.
 
 <InlineGraphiQL
   query={`query ($id: String!) {
@@ -189,6 +195,7 @@ review is available in the field _reviewByLibrarians_.
           rating
           reviewByLibrarians {
             content
+            contentSubstitute
             heading
             type
             manifestations {
