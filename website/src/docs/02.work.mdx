@@ -156,12 +156,6 @@ possible ways to access the content of the review. Check out access examples [he
 Note that if the review is created by a librarian (materialevurdering), the actual sections of the
 review is available on the manifestation at the path _review.reviewByLibrarians_.
 
-A librarians review may refer to different manifestations. It is possible to insert links to these manifestations
-located at your site. The field _review.reviewByLibrarians.contentSubstitute_ may contain pids that need to be substituted.
-Relevant manifestations are found at the field _review.reviewByLibrarians.manifestations_, and you can get whatever
-data you need to generate the links. If links are not required, use the field _review.reviewByLibrarians.content_, which
-does not require substitution.
-
 <InlineGraphiQL
   query={`query ($id: String!) {
   work(id: $id) {
@@ -199,14 +193,9 @@ does not require substitution.
             heading
             type
             manifestations {
-              ownerWork {
-                workId
-                titles {
-                  main
-                }
-                creators {
-                  display
-                }
+              pid
+              titles {
+                main
               }
             }
           }
@@ -217,6 +206,46 @@ does not require substitution.
 }`}
   variables={{
     id: "work-of:870970-basis:51701763",
+  }}
+/>
+
+<br />
+<br />
+
+### Librarians Review
+
+A librarians review may refer to different manifestations. It is possible to insert links to these manifestations
+located at your site. The field _review.reviewByLibrarians.contentSubstitute_ may contain pids that need to be substituted.
+Relevant manifestations are found at the field _review.reviewByLibrarians.manifestations_, and you can get whatever
+data you need to generate the links. If links are not required, use the field _review.reviewByLibrarians.content_, which
+does not require substitution.
+
+<InlineGraphiQL
+  query={`query ($pid: String!) {
+  manifestation(pid: $pid) {
+    pid
+    titles {
+      main
+    }
+    review {
+      rating
+      reviewByLibrarians {
+        content
+        contentSubstitute
+        heading
+        type
+        manifestations {
+          pid
+          titles {
+            main
+          }
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    pid: "870976-anmeld:129103779",
   }}
 />
 
