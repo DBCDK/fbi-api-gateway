@@ -1,11 +1,14 @@
 {
   "facets": {
     "accessTypes": {
-      "physical": {
+      "PHYSICAL": {
         "da": "Fysisk"
       },
-      "online": {
+      "ONLINE": {
         "da": "Digital"
+      },
+      "UNKNOWN": {
+        "da": "Ukendt"
       }
     },
     "fictionNonfiction": {
