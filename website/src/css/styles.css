@@ -3,6 +3,7 @@
 *
 */
 
+@import "./graphiql-react.css";
 @import "./graphiql.css";
 @import "./colors.css";
 @import "./fonts.css";
@@ -35,18 +36,18 @@
   align-items: center;
 }
 
-.popover{
+.popover {
   max-width: 350px;
-  z-index:10;
+  z-index: 10;
 }
 
-.popover.compact{
-  margin-top:var(--pt2);
+.popover.compact {
+  margin-top: var(--pt2);
 }
 
 @media screen and (max-width: 1200px) {
-  .popover.compact{
-   display:none;
+  .popover.compact {
+    display: none;
   }
 }
 

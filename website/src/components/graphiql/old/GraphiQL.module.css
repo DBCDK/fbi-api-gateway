@@ -1,0 +1,107 @@
+.graphiql :global(.graphiql-container) {
+  height: calc(100vh - 68px);
+}
+.inlinegraphiql {
+  height: 486px;
+}
+.inlinegraphiql :global(.topBarWrap) {
+  display: none;
+  content-visibility: none;
+}
+.inlinegraphiql :global(.graphiql-container) {
+  height: 350px;
+  padding: var(--pt3) var(--pt3) var(--pt3) 0;
+  background-color: var(--divider);
+  /* border-radius: var(--pt2); */
+}
+.inlinegraphiql .dummycontainer {
+  height: 350px;
+  background-color: var(--divider);
+}
+.inlinegraphiql :global(.secondary-editor) {
+  /* display: none; */
+}
+.inlinegraphiql :global(.CodeMirror-hints) {
+  z-index: 1000;
+}
+.inlinegraphiql :global(.editorWrap) {
+  overflow-x: visible;
+}
+
+.inlinegraphiql :global(.graphiql-container .secondary-editor-title) {
+  background: var(--divider);
+  color: var(--text-dark);
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+}
+
+.inlinegraphiql :global(.CodeMirror-gutters) {
+  border-right: none;
+  background-color: var(--divider);
+}
+.inlinegraphiql
+  :global(.graphiql-container .result-window .CodeMirror-gutters) {
+  background-color: var(--divider);
+}
+
+.inlinegraphiql :global(.graphiql-container .resultWrap) {
+  border-left: none;
+}
+
+.inlinegraphiql {
+  margin: var(--pt5) 0 0 0;
+}
+
+.button {
+  margin: 0 var(--pt2) var(--pt2) 0;
+}
+
+.button.run {
+  background-color: var(--primary-dark);
+}
+
+.curl {
+  margin: var(--pt2) 0;
+  max-width: 100%;
+  background-color: var(--divider);
+  border-radius: unset;
+  cursor: pointer !important;
+}
+
+.buttons {
+  display: flex;
+}
+
+.open {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* scrollbar */
+
+.inlinegraphiql * {
+  /* firefox */
+  scrollbar-color: var(--primary-dark) transparent;
+}
+
+/* width */
+.inlinegraphiql *::-webkit-scrollbar {
+  width: var(--pt1);
+  height: var(--pt1);
+}
+
+/* Track */
+.inlinegraphiql *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+.inlinegraphiql *::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--pt05);
+}
+
+/* Handle on hover */
+.inlinegraphiql *::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}

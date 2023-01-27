@@ -8,9 +8,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@graphiql/react": "^0.15.0",
     "@mdx-js/react": "^2.0.0",
     "bootstrap": "^5.2.2",
-    "graphiql": "^1.5.17",
+    "graphiql": "^2.0.0",
     "graphql": "^16.3.0",
     "graphql-voyager": "^1.0.0-rc.31",
     "isomorphic-unfetch": "^3.1.0",

@@ -66,10 +66,6 @@ function generateGraphiqlURL(parameters) {
 }
 
 export function InlineGraphiQL({ query, variables }) {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
   const { selectedToken } = useStorage();
   const instanceRef = useRef();
 
@@ -92,20 +88,6 @@ export function InlineGraphiQL({ query, variables }) {
     query: editQuery,
     variables: editVariables,
   });
-
-  const fetcher = async (graphQLParams) => {
-    const data = await fetch(url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `bearer ${selectedToken?.token}`,
-      },
-      body: JSON.stringify(graphQLParams),
-      credentials: "same-origin",
-    });
-    return data.json().catch(() => data.text());
-  };
 
   // When the selected token has changed, we unmount graphiql
   // and mounts the dummy container. Graphiql will be reinstantiated
@@ -165,9 +147,21 @@ export function InlineGraphiQL({ query, variables }) {
       />
 
       {schema && !showDummyContainer && (
-        <_GraphiQL
+        <GraphiQLFix
           schema={schema}
-          fetcher={fetcher}
+          fetcher={async (graphQLParams) => {
+            const data = await fetch(url, {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: `bearer ${selectedToken?.token}`,
+              },
+              body: JSON.stringify(graphQLParams),
+              credentials: "same-origin",
+            });
+            return data.json().catch(() => data.text());
+          }}
           query={query}
           onEditQuery={(str) => setEditQuery(str)}
           onEditVariables={(str) => setEditVariables(str)}
@@ -206,10 +200,6 @@ export function InlineGraphiQL({ query, variables }) {
 }
 
 export default function GraphiQL() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
   const { selectedToken } = useStorage();
   const { schema } = useSchema(selectedToken);
   const url = useGraphQLUrl(selectedToken);
@@ -242,27 +232,24 @@ export default function GraphiQL() {
     router.replace({ query: parameters });
   }
 
-  const fetcher = async (graphQLParams) => {
-    const data = await fetch(url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `bearer ${selectedToken?.token}`,
-      },
-      body: JSON.stringify(graphQLParams),
-      credentials: "same-origin",
-    });
-    return data.json().catch(() => data.text());
-  };
-
   return (
     <div className={styles.graphiql}>
       <Header />
-
-      <_GraphiQL
+      <GraphiQLFix
         schema={schema}
-        fetcher={fetcher}
+        fetcher={async (graphQLParams) => {
+          const data = await fetch(url, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `bearer ${selectedToken?.token}`,
+            },
+            body: JSON.stringify(graphQLParams),
+            credentials: "same-origin",
+          });
+          return data.json().catch(() => data.text());
+        }}
         onMount={(instance) => {
           // autoclose history section (history tab bug)
           // keep this, but for now, bug solved in css
@@ -293,28 +280,28 @@ export default function GraphiQL() {
 
 // https://graphiql-test.netlify.app/typedoc/modules/graphiql.html#graphiqlprops
 
-// class GraphiQLFix extends _GraphiQL {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       ...this.state,
-//       secondaryEditorHeight:
-//         props.secondaryEditorHeight || this.state.secondaryEditorHeight,
-//     };
-//   }
+class GraphiQLFix extends _GraphiQL {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...this.state,
+      secondaryEditorHeight:
+        props.secondaryEditorHeight || this.state.secondaryEditorHeight,
+    };
+  }
 
-//   componentDidMount() {
-//     if (this.props.onMount) {
-//       this.props.onMount(this);
-//     }
-//     super.componentDidMount();
-//   }
+  componentDidMount() {
+    if (this.props.onMount) {
+      this.props.onMount(this);
+    }
+    super.componentDidMount();
+  }
 
-//   componentDidUpdate(...args) {
-//     const editor = this.getQueryEditor();
-//     if (editor && this.state.schema) {
-//       editor.state.lint.linterOptions.schema = this.state.schema;
-//     }
-//     return super.componentDidUpdate(...args);
-//   }
-// }
+  componentDidUpdate(...args) {
+    const editor = this.getQueryEditor();
+    if (editor && this.state.schema) {
+      editor.state.lint.linterOptions.schema = this.state.schema;
+    }
+    return super.componentDidUpdate(...args);
+  }
+}
