@@ -553,14 +553,16 @@ export async function resolveAccess(manifestation, context) {
     });
   }
 
-  if (parent?.access?.digitalArticleService?.issn) {
+  // Get the issn for this article or periodica
+  const issn =
+    parent?.access?.digitalArticleService?.issn ||
+    parent?.identifiers?.find?.((id) => id.type === "ISSN")?.value;
+
+  if (issn) {
     const journals = await context.datasources
       .getLoader("statsbiblioteketJournals")
       .load("");
-    const articleissn = parent.access.digitalArticleService.issn.replace(
-      /[^a-z\d]/gi,
-      ""
-    );
+    const articleissn = issn.replace(/[^a-z\d]/gi, "");
     const hasJournal = journals && journals[articleissn];
     if (hasJournal) {
       res.push({
