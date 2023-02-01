@@ -275,12 +275,12 @@ export async function resolveWork(args, context) {
     return null;
   }
 
-  const w = await context.datasources.getLoader("jedWork").load({
-    workId: id,
+  const w = await context.datasources.getLoader("jedRecord").load({
+    id,
     profile: context.profile,
   });
 
-  if (!w?.data?.work) {
+  if (!w) {
     // log for debugging - see BIBDK2021-1256
     log.error("WORKID NOT FOUND in jed-presentation service", {
       workId: id,
@@ -288,7 +288,7 @@ export async function resolveWork(args, context) {
     return null;
   }
 
-  return w?.data?.work;
+  return w;
 }
 
 export async function resolveManifestation(args, context) {
@@ -304,16 +304,16 @@ export async function resolveManifestation(args, context) {
     return null;
   }
 
-  const res = await context.datasources.getLoader("jedManifestation").load({
-    pid,
+  const m = await context.datasources.getLoader("jedRecord").load({
+    id: pid,
     profile: context.profile,
   });
 
-  if (!res?.data?.manifestation) {
+  if (!m) {
     return null;
   }
 
-  return res?.data?.manifestation;
+  return m;
 }
 
 /**

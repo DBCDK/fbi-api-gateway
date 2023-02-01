@@ -1,4 +1,4 @@
-import { parseJedSubjects } from "../../utils/utils";
+import { parseJedSubjects, resolveWork } from "../../utils/utils";
 
 const IDENTIFIER_TYPES = new Set([
   "UPC",
@@ -826,6 +826,9 @@ export const resolvers = {
           ? parent?.subjects?.dbcVerified
           : parseJedSubjects(parent?.subjects?.dbcVerified),
       };
+    },
+    ownerWork(parent, args, context, info) {
+      return resolveWork({ pid: parent.pid }, context);
     },
   },
 };
