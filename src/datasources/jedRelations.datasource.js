@@ -21,6 +21,6 @@ export async function batchLoader(keys, context) {
 export const options = {
   redis: {
     prefix,
-    ttl,
+    ttl: `rel-${ttl}`,
   },
 };
