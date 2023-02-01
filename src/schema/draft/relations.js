@@ -1,4 +1,4 @@
-import { resolveManifestation } from "../../utils/utils";
+import { resolveManifestation, resolveWork } from "../../utils/utils";
 
 export const typeDef = `
 type Relations {
@@ -137,7 +137,7 @@ async function relationsResolver(parent, args, context, { fieldName }) {
     return [];
   }
   const manifestations = await Promise.all(
-    pids.map(({ pid }) => resolveManifestation({ pid }, context))
+    pids.map((pid) => resolveManifestation({ pid }, context))
   );
 
   return manifestations.filter((m) => !!m);
@@ -170,12 +170,19 @@ export const resolvers = {
   },
   Work: {
     async relations(parent, args, context, info) {
-      return parent?.relations || {};
+      const workWithRelations = await context.datasources
+        .getLoader("jedRelations")
+        .load({ id: parent.workId, profile: context.profile });
+
+      return workWithRelations?.relations || {};
     },
   },
   Manifestation: {
     async relations(parent, args, context, info) {
-      return parent?.relations || {};
+      const manifestationWithRelations = await context.datasources
+        .getLoader("jedRelations")
+        .load({ id: parent.pid, profile: context.profile });
+      return manifestationWithRelations?.relations || {};
     },
   },
 };
