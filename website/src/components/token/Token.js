@@ -58,16 +58,17 @@ export default function Token({
   const _errorMissingConfig =
     selectedToken?.token &&
     !isLoading &&
-    (emptyConfiguration || !configuration?.agency) &&
+    !emptyConfiguration &&
+    !configuration?.agency &&
     "😬 Missing client configuration!";
 
-  const _errorNoConfig =
+  const _errorExpired =
     selectedToken?.token &&
     !isLoading &&
     emptyConfiguration &&
     "😬 Invalid or expired token!";
 
-  const hasError = _errorToken || _errorMissingConfig || _errorNoConfig;
+  const hasError = _errorToken || _errorMissingConfig || _errorExpired;
 
   // custom class'
   const compactSize = compact ? styles.compact : "";
@@ -154,7 +155,7 @@ export default function Token({
         container={containerRef}
       >
         <Text type="text2">
-          {_errorToken || _errorMissingConfig || _errorNoConfig}
+          {_errorToken || _errorExpired || _errorMissingConfig}
         </Text>
       </Overlay>
     </form>

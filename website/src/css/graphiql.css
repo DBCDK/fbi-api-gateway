@@ -902,6 +902,7 @@ button.graphiql-button {
 }
 .graphiql-tabs {
   display: flex;
+  align-items: center;
   overflow-y: auto;
   padding: var(--px-12);
 }
@@ -2255,6 +2256,8 @@ button.graphiql-toolbar-menu {
 }
 /* The button to add a new tab */
 button.graphiql-tab-add {
+  z-index: 99;
+  padding: var(--px-8);
   margin-left: var(--px-12);
 }
 button.graphiql-tab-add > svg {
@@ -2265,11 +2268,15 @@ button.graphiql-tab-add > svg {
 }
 /* The right-hand-side of the session header */
 .graphiql-container .graphiql-session-header-right {
+  margin-right: var(--px-8);
+
   align-items: center;
   display: flex;
 }
 /* The GraphiQL logo */
 .graphiql-container .graphiql-logo {
+  display: none;
+
   color: hsla(var(--color-neutral), 0.6);
   font-size: var(--font-size-h4);
   font-weight: var(--font-weight-medium);
@@ -2412,6 +2419,11 @@ button.graphiql-tab-add > svg {
     transform: rotate(360deg);
   }
 }
+
+reach-portal * {
+  box-sizing: content-box;
+}
+
 /* The header of the settings dialog */
 reach-portal .graphiql-dialog-header {
   align-items: center;

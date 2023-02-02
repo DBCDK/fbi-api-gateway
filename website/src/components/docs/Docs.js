@@ -9,7 +9,7 @@ import useConfiguration from "@/hooks/useConfiguration";
 import useDocuments from "@/hooks/useDocuments";
 import useStorage from "@/hooks/useStorage";
 
-import { InlineGraphiQL } from "@/components/graphiql/GraphiQL";
+import { InlineGraphiQL } from "@/components/graphiql";
 
 import Header from "@/components/header";
 import Menu from "@/components/menu";

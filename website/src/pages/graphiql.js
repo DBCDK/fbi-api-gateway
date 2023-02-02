@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-import GraphiQL from "@/components/graphiql";
+import { GraphiQL } from "@/components/graphiql";
 
 export default function Page(props) {
   return (
