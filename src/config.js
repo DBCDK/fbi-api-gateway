@@ -47,7 +47,7 @@ export default {
     },
     jed: {
       url:
-        "http://jed-presentation-0-8-service.cisterne.svc.cloud.dbc.dk/graphql" ||
+        "http://jed-presentation-0-8-0-1-service.cisterne.svc.cloud.dbc.dk" ||
         process.env.JED_URL,
       ttl: process.env.JED_TIME_TO_LIVE_SECONDS || 60 * 10,
       prefix: process.env.JED_PREFIX || "jed-1",

@@ -1,6 +1,7 @@
 import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
 import { get, uniq } from "lodash";
+import { log } from "dbc-node-logger";
 
 export async function performTestQuery({
   query,
@@ -274,8 +275,8 @@ export async function resolveWork(args, context) {
     return null;
   }
 
-  const w = await context.datasources.getLoader("jedWork").load({
-    workId: id,
+  const w = await context.datasources.getLoader("jedRecord").load({
+    id,
     profile: context.profile,
   });
 
@@ -295,16 +296,16 @@ export async function resolveManifestation(args, context) {
     return null;
   }
 
-  const res = await context.datasources.getLoader("jedManifestation").load({
-    pid,
+  const m = await context.datasources.getLoader("jedRecord").load({
+    id: pid,
     profile: context.profile,
   });
 
-  if (!res?.data?.manifestation) {
+  if (!m) {
     return null;
   }
 
-  return res?.data?.manifestation;
+  return m;
 }
 
 /**
