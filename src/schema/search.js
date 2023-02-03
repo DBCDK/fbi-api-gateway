@@ -1,5 +1,6 @@
 import translations from "../utils/translations.json";
 import { resolveWork } from "../utils/utils";
+import { log } from "dbc-node-logger";
 
 /**
  * define a searchquery
@@ -245,9 +246,16 @@ export const resolvers = {
       });
 
       const expanded = await Promise.all(
-        res.result.map(async ({ workid }) =>
-          resolveWork({ id: workid }, context)
-        )
+        res.result.map(async ({ workid }) => {
+          const work = await resolveWork({ id: workid }, context);
+          if (!work) {
+            // log for debugging - see BIBDK2021-1256
+            log.error("WORKID NOT FOUND in jed-presentation service", {
+              workId: workid,
+            });
+          }
+          return work;
+        })
       );
 
       return expanded.filter((work) => !!work);
