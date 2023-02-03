@@ -280,7 +280,7 @@ export async function resolveWork(args, context) {
     profile: context.profile,
   });
 
-  return w?.data?.work;
+  return w;
 }
 
 export async function resolveManifestation(args, context) {
