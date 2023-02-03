@@ -19,7 +19,15 @@ import Modal, { Pages } from "@/components/modal";
 
 import styles from "./Header.module.css";
 
-const isChristmas = getConfig()?.publicRuntimeConfig?.isChristmas;
+const theme = getConfig()?.publicRuntimeConfig?.theme;
+
+let logo = "🥳";
+if (theme === "christmas") {
+  logo = "🎅";
+}
+if (theme === "easter") {
+  logo = "🐤";
+}
 
 export default function Header() {
   const router = useRouter();
@@ -65,8 +73,7 @@ export default function Header() {
           <Col className={styles.left}>
             <Title className={styles.logo}>
               <span>
-                <Link href="/">FBI API</Link> {isChristmas ? " 🎅" : " 🥳"}
-                {/* 🥳🎅🎄 */}
+                <Link href="/">FBI API</Link> {logo}
               </span>
             </Title>
           </Col>

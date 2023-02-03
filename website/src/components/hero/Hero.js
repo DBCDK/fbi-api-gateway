@@ -11,7 +11,9 @@ import Button from "@/components/base/button";
 import Label from "@/components/base/label";
 import History from "@/components/history";
 
-const isChristmas = getConfig()?.publicRuntimeConfig?.isChristmas;
+const theme = getConfig()?.publicRuntimeConfig?.theme;
+const isChristmas = theme === "christmas";
+
 import Snow from "./snow";
 
 import styles from "./Hero.module.css";

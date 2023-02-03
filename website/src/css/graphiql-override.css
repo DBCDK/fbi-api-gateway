@@ -1,0 +1,7 @@
+.graphiql-container .graphiql-session-header-right {
+  margin-right: var(--px-16);
+}
+
+.graphiql-container .graphiql-logo {
+  display: none;
+}

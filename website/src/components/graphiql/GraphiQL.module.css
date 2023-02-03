@@ -1,8 +1,8 @@
-.graphiql :global(.graphiql-container) * {
-  /* override resize.css */
-  box-sizing: content-box;
-}
-
 .graphiql :global(.graphiql-container) {
   height: calc(100vh - 68px);
+}
+
+.graphiql :global(button.graphiql-execute-button) {
+  border-radius: 50%;
+  background-color: var(--primary-dark);
 }

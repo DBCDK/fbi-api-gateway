@@ -1,24 +1,22 @@
 .link {
-  display:inline-block;
+  display: inline-block;
   color: var(--text-dark);
   text-decoration: none;
   cursor: pointer;
 
   /* used for the ::before */
   position: relative;
-  
 }
 .link.underline {
   text-decoration: underline;
   text-underline-offset: var(--pt05);
 }
 
-.link.underline:focus-visible{
+.link.underline:focus-visible {
   color: var(--primary-dark);
 }
 
 .link.keepActive {
-  /* color: var(--accent); */
   color: var(--primary-dark);
 }
 

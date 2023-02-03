@@ -5,7 +5,7 @@ module.exports = {
     defaultLocale: "en",
   },
   publicRuntimeConfig: {
-    isChristmas: process.env.WEBSITE_THEME === "christmas",
+    theme: process.env.WEBSITE_THEME || "default",
   },
   async redirects() {
     return [

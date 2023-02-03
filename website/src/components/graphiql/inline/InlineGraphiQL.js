@@ -83,10 +83,6 @@ function generateGraphiqlURL(parameters) {
  */
 
 export function InlineGraphiQL({ query, variables }) {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
   const { tabs, activeTabIndex } = useEditorContext({
     nonNull: true,
   });
@@ -197,12 +193,25 @@ export function InlineGraphiQL({ query, variables }) {
 }
 
 export default function Wrap(props) {
-  const { query, variables } = props;
-
   const { selectedToken } = useStorage();
   const { schema } = useSchema(selectedToken);
-
   const url = useGraphQLUrl(selectedToken);
+
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    setShow(true);
+  }, []);
+
+  if (!show) {
+    return null;
+  }
+
+  // if (typeof window === "undefined") {
+  //   return null;
+  // }
+
+  const { query, variables } = props;
 
   const fetcher = async (graphQLParams) => {
     const data = await fetch(url, {

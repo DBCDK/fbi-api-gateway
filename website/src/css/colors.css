@@ -17,23 +17,15 @@ body {
   --hero-gradient-primary: #ffafcc;
   --hero-gradient-secondary: #a2d2ff;
 
-  /* Scheme */
+  /* primary */
   --primary: #ffafcc;
   --primary-light: #ffc8dd;
   --primary-dark: #f48ba9;
 
-  /* e535ab graphql */
-
-  /* #dc1c13
- #EA4C46
- #f07470 */
-
+  /* secondary */
   --secondary: #a2d2ff;
   --secondary-light: #bde0fe;
   --secondary-dark: #86cbed;
-
-  --accent: #936ed4;
-  --accent-light: #cdb4db;
 
   /* text */
   --text-dark: #212121;
@@ -45,14 +37,37 @@ body {
   --divider-dark: #bdbdbd;
 
   /* Alerts */
-  --error: #f44336;
-  --error-dark: #d32f2f;
-  --warning: #ffeb3b;
-  --warning-dark: #fbc02d;
-  --info: #2196f3;
-  --info-dark: #1976d2;
-  --success: #4caf50;
-  --success-dark: #388e3c;
+  --error: #e57373;
+  --info: #64b5f6;
+  --warning-dark: #ffd54f;
+  --success-dark: #81c784;
+}
+
+body {
+  /* primary */
+  --primary: #f48fb1;
+  --primary-light: #f8bbd0;
+  --primary-dark: #f06292;
+
+  /* secondary */
+  --secondary: #80deea;
+  --secondary-light: #b2ebf2;
+  --secondary-dark: #4dd0e1;
+
+  /* gradient */
+  --hero-gradient-primary: #f48fb1;
+  --hero-gradient-secondary: #80deea;
+}
+
+body.easter {
+  --primary: #ffca28;
+  --primary-dark: #ffa726;
+
+  --secondary: #ff8a65;
+  --secondary-light: #ffab91;
+
+  --hero-gradient-primary: #ffe082;
+  --hero-gradient-secondary: #ffa726;
 }
 
 body.christmas {

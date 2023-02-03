@@ -330,6 +330,9 @@
     U+FEFF, U+FFFD;
 }
 
+.graphiql-container * {
+  box-sizing: border-box;
+}
 .graphiql-container,
 .CodeMirror-info,
 .CodeMirror-lint-tooltip,
@@ -343,6 +346,11 @@ reach-portal {
   --color-error: 13, 93%, 58%;
   --color-neutral: 219, 28%, 32%;
   --color-base: 219, 28%, 100%;
+  --alpha-secondary: 0.76;
+  --alpha-tertiary: 0.5;
+  --alpha-background-heavy: 0.15;
+  --alpha-background-medium: 0.1;
+  --alpha-background-light: 0.07;
   --font-family: "Roboto", sans-serif;
   --font-family-mono: "Fira Code", monospace;
   --font-size-hint: 0.75rem;
@@ -371,7 +379,7 @@ reach-portal {
     0px 1.34018px 4.46726px rgba(59, 76, 106, 0.0774939),
     0px 0.399006px 1.33002px rgba(59, 76, 106, 0.0525061);
   --popover-border: none;
-  --sidebar-width: 44px;
+  --sidebar-width: 60px;
   --toolbar-width: 40px;
   --session-header-height: 51px;
 }
@@ -425,7 +433,7 @@ body.graphiql-dark reach-portal {
 }
 :is(.graphiql-container, .CodeMirror-info, .CodeMirror-lint-tooltip, reach-portal)
   input::placeholder {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
 }
 :is(.graphiql-container, .CodeMirror-info, .CodeMirror-lint-tooltip, reach-portal)
   a {
@@ -441,15 +449,18 @@ button.graphiql-un-styled {
   border-radius: var(--border-radius-4);
   cursor: pointer;
 }
+:is(.graphiql-un-styled, button.graphiql-un-styled):hover {
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
+}
 :is(.graphiql-un-styled, button.graphiql-un-styled):active {
-  background-color: hsla(var(--color-neutral), 0.07);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-medium));
 }
 :is(.graphiql-un-styled, button.graphiql-un-styled):focus {
-  outline: hsla(var(--color-neutral), 0.15) auto 1px;
+  outline: hsla(var(--color-neutral), var(--alpha-background-heavy)) auto 1px;
 }
 .graphiql-button,
 button.graphiql-button {
-  background-color: hsla(var(--color-neutral), 0.07);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
   border: none;
   border-radius: var(--border-radius-4);
   color: hsla(var(--color-neutral), 1);
@@ -457,20 +468,21 @@ button.graphiql-button {
   font-size: var(--font-size-body);
   padding: var(--px-8) var(--px-12);
 }
+:is(.graphiql-button, button.graphiql-button):hover,
 :is(.graphiql-button, button.graphiql-button):active {
-  background-color: hsla(var(--color-neutral), 0.1);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-medium));
 }
 :is(.graphiql-button, button.graphiql-button):focus {
-  outline: hsla(var(--color-neutral), 0.15) auto 1px;
+  outline: hsla(var(--color-neutral), var(--alpha-background-heavy)) auto 1px;
 }
 .graphiql-button-success:is(.graphiql-button, button.graphiql-button) {
-  background-color: hsla(var(--color-success), 0.15);
+  background-color: hsla(var(--color-success), var(--alpha-background-heavy));
 }
 .graphiql-button-error:is(.graphiql-button, button.graphiql-button) {
-  background-color: hsla(var(--color-error), 0.15);
+  background-color: hsla(var(--color-error), var(--alpha-background-heavy));
 }
 .graphiql-button-group {
-  background-color: hsla(var(--color-neutral), 0.07);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
   border-radius: calc(var(--border-radius-4) + var(--px-4));
   display: flex;
   padding: var(--px-4);
@@ -478,8 +490,12 @@ button.graphiql-button {
 .graphiql-button-group > button.graphiql-button {
   background-color: transparent;
 }
+.graphiql-button-group > button.graphiql-button:hover {
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
+}
 .graphiql-button-group > button.graphiql-button.active {
   background-color: hsl(var(--color-base));
+  cursor: default;
 }
 .graphiql-button-group > * + * {
   margin-left: var(--px-8);
@@ -505,7 +521,7 @@ button.graphiql-button {
 }
 [data-reach-dialog-overlay] {
   align-items: center;
-  background-color: hsla(var(--color-neutral), 0.15);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-heavy));
   display: flex;
   justify-content: center;
   z-index: 10;
@@ -523,7 +539,7 @@ button.graphiql-button {
   width: unset;
 }
 .graphiql-dialog-close > svg {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   display: block;
   height: var(--px-12);
   padding: var(--px-12);
@@ -693,7 +709,7 @@ button.graphiql-button {
 [data-reach-menu-item][data-current-nav],
 [data-reach-listbox-option]:hover,
 [data-reach-menu-item]:hover {
-  background-color: hsla(var(--color-neutral), 0.07);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
   color: inherit;
 }
 [data-reach-listbox-option]:not(:first-child),
@@ -790,7 +806,7 @@ button.graphiql-button {
 :is(.graphiql-markdown-description, .CodeMirror-hint-information-description, .CodeMirror-info
     .info-description)
   blockquote {
-  border-left: 1.5px solid hsla(var(--color-neutral), 0.4);
+  border-left: 1.5px solid hsla(var(--color-neutral), var(--alpha-tertiary));
 }
 :is(.graphiql-markdown-description, .CodeMirror-hint-information-description, .CodeMirror-info
     .info-description)
@@ -798,7 +814,7 @@ button.graphiql-button {
 :is(.graphiql-markdown-description, .CodeMirror-hint-information-description, .CodeMirror-info
     .info-description)
   pre {
-  background-color: hsla(var(--color-neutral), 0.07);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
   color: hsla(var(--color-neutral), 1);
 }
 :is(.graphiql-markdown-description, .CodeMirror-hint-information-description, .CodeMirror-info
@@ -823,7 +839,7 @@ button.graphiql-button {
 :is(.graphiql-markdown-deprecation, .CodeMirror-hint-information-deprecation-reason, .CodeMirror-info
     .info-deprecation)
   pre {
-  background-color: hsla(var(--color-warning), 0.15);
+  background-color: hsla(var(--color-warning), var(--alpha-background-heavy));
 }
 :is(.graphiql-markdown-deprecation, .CodeMirror-hint-information-deprecation-reason, .CodeMirror-info
     .info-deprecation)
@@ -835,7 +851,7 @@ button.graphiql-button {
 }
 .CodeMirror-hint-information-deprecation,
 .CodeMirror-info .info-deprecation {
-  background-color: hsla(var(--color-warning), 0.07);
+  background-color: hsla(var(--color-warning), var(--alpha-background-light));
   border: 1px solid hsl(var(--color-warning));
   border-radius: var(--border-radius-4);
   color: hsl(var(--color-warning));
@@ -861,7 +877,7 @@ button.graphiql-button {
   animation: rotation 0.8s linear 0s infinite;
   border: 4px solid transparent;
   border-radius: 100%;
-  border-top: 4px solid hsla(var(--color-neutral), 0.4);
+  border-top: 4px solid hsla(var(--color-neutral), var(--alpha-tertiary));
   content: "";
   display: inline-block;
   height: 46px;
@@ -902,8 +918,7 @@ button.graphiql-button {
 }
 .graphiql-tabs {
   display: flex;
-  align-items: center;
-  overflow-y: auto;
+  overflow-x: auto;
   padding: var(--px-12);
 }
 .graphiql-tabs > :not(:first-child) {
@@ -912,7 +927,7 @@ button.graphiql-button {
 .graphiql-tab {
   align-items: stretch;
   border-radius: var(--border-radius-8);
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   display: flex;
 }
 .graphiql-tab > button.graphiql-tab-close {
@@ -924,7 +939,7 @@ button.graphiql-button {
   visibility: unset;
 }
 .graphiql-tab.graphiql-tab-active {
-  background-color: hsla(var(--color-neutral), 0.15);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-heavy));
   color: hsla(var(--color-neutral), 1);
 }
 button.graphiql-tab-button {
@@ -950,7 +965,7 @@ button.graphiql-tab-close > svg {
 }
 .graphiql-history-item {
   border-radius: var(--border-radius-4);
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   display: flex;
   font-size: var(--font-size-inline-code);
   font-family: var(--font-family-mono);
@@ -958,13 +973,13 @@ button.graphiql-tab-close > svg {
 }
 .graphiql-history-item:hover {
   color: hsla(var(--color-neutral), 1);
-  background-color: hsla(var(--color-neutral), 0.07);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
 }
 .graphiql-history-item:not(:first-child) {
   margin-top: var(--px-4);
 }
 .graphiql-history-item.editable {
-  background-color: hsla(var(--color-primary), 0.1);
+  background-color: hsla(var(--color-primary), var(--alpha-background-medium));
 }
 .graphiql-history-item.editable > input {
   background: transparent;
@@ -976,14 +991,14 @@ button.graphiql-tab-close > svg {
   width: 100%;
 }
 .graphiql-history-item.editable > input::placeholder {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
 }
 .graphiql-history-item.editable > button {
   color: hsl(var(--color-primary));
   padding: 0 var(--px-10);
 }
 .graphiql-history-item.editable > button:active {
-  background-color: hsla(var(--color-primary), 0.15);
+  background-color: hsla(var(--color-primary), var(--alpha-background-heavy));
 }
 .graphiql-history-item.editable > button:focus {
   outline: hsl(var(--color-primary)) auto 1px;
@@ -1000,7 +1015,7 @@ button.graphiql-history-item-label {
 }
 button.graphiql-history-item-action {
   align-items: center;
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   display: flex;
   padding: var(--px-8) var(--px-6);
 }
@@ -1034,7 +1049,7 @@ a.graphiql-doc-explorer-type-name:focus {
   color: hsl(var(--color-secondary));
 }
 .graphiql-doc-explorer-argument-deprecation {
-  background-color: hsla(var(--color-warning), 0.07);
+  background-color: hsla(var(--color-warning), var(--alpha-background-light));
   border: 1px solid hsl(var(--color-warning));
   border-radius: var(--border-radius-4);
   color: hsl(var(--color-warning));
@@ -1045,7 +1060,7 @@ a.graphiql-doc-explorer-type-name:focus {
   font-weight: var(--font-weight-medium);
 }
 .graphiql-doc-explorer-deprecation {
-  background-color: hsla(var(--color-warning), 0.07);
+  background-color: hsla(var(--color-warning), var(--alpha-background-light));
   border: 1px solid hsl(var(--color-warning));
   border-radius: var(--px-4);
   color: hsl(var(--color-warning));
@@ -1112,7 +1127,7 @@ a.graphiql-doc-explorer-type-name:focus {
   font-weight: 700;
 }
 [data-reach-combobox] {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
 }
 [data-reach-combobox]:not([data-state="idle"]) {
   border: var(--popover-border);
@@ -1128,7 +1143,7 @@ a.graphiql-doc-explorer-type-name:focus {
 }
 .graphiql-doc-explorer-search-input {
   align-items: center;
-  background-color: hsla(var(--color-neutral), 0.07);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
   border-radius: var(--border-radius-4);
   display: flex;
   padding: var(--px-8) var(--px-12);
@@ -1147,7 +1162,8 @@ a.graphiql-doc-explorer-type-name:focus {
   border: none;
   border-bottom-left-radius: var(--border-radius-4);
   border-bottom-right-radius: var(--border-radius-4);
-  border-top: 1px solid hsla(var(--color-neutral), 0.15);
+  border-top: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
   max-height: 400px;
   overflow-y: auto;
   position: relative;
@@ -1158,20 +1174,20 @@ a.graphiql-doc-explorer-type-name:focus {
 }
 [data-reach-combobox-option] {
   border-radius: var(--border-radius-4);
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   overflow-x: hidden;
   padding: var(--px-8) var(--px-12);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 [data-reach-combobox-option][data-highlighted] {
-  background-color: hsla(var(--color-neutral), 0.07);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
 }
 [data-reach-combobox-option]:hover {
-  background-color: hsla(var(--color-neutral), 0.1);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-medium));
 }
 [data-reach-combobox-option][data-highlighted]:hover {
-  background-color: hsla(var(--color-neutral), 0.15);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-heavy));
 }
 [data-reach-combobox-option] + [data-reach-combobox-option] {
   margin-top: var(--px-4);
@@ -1186,14 +1202,14 @@ a.graphiql-doc-explorer-type-name:focus {
   color: hsl(var(--color-secondary));
 }
 .graphiql-doc-explorer-search-divider {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   font-size: var(--font-size-hint);
   font-weight: var(--font-weight-medium);
   margin-top: var(--px-8);
   padding: var(--px-8) var(--px-12);
 }
 .graphiql-doc-explorer-search-empty {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   padding: var(--px-8) var(--px-12);
 }
 a.graphiql-doc-explorer-field-name {
@@ -1223,6 +1239,10 @@ a.graphiql-doc-explorer-field-name:focus {
 .graphiql-doc-explorer-header:focus-within .graphiql-doc-explorer-title {
   visibility: hidden;
 }
+.graphiql-doc-explorer-header:focus-within
+  .graphiql-doc-explorer-back:not(:focus) {
+  color: transparent;
+}
 .graphiql-doc-explorer-header-content {
   display: flex;
   flex-direction: column;
@@ -1246,7 +1266,7 @@ a.graphiql-doc-explorer-field-name:focus {
 }
 a.graphiql-doc-explorer-back {
   align-items: center;
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   display: flex;
   text-decoration: none;
 }
@@ -1254,7 +1274,7 @@ a.graphiql-doc-explorer-back:hover {
   text-decoration: underline;
 }
 a.graphiql-doc-explorer-back:focus {
-  outline: hsla(var(--color-neutral), 0.6) auto 1px;
+  outline: hsla(var(--color-neutral), var(--alpha-secondary)) auto 1px;
 }
 a.graphiql-doc-explorer-back:focus + .graphiql-doc-explorer-title {
   visibility: unset;
@@ -1276,11 +1296,11 @@ a.graphiql-doc-explorer-back > svg {
   margin-top: var(--px-8);
 }
 .graphiql-doc-explorer-content > * {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   margin-top: var(--px-20);
 }
 .graphiql-doc-explorer-error {
-  background-color: hsla(var(--color-error), 0.15);
+  background-color: hsla(var(--color-error), var(--alpha-background-heavy));
   border: 1px solid hsl(var(--color-error));
   border-radius: var(--border-radius-8);
   color: hsl(var(--color-error));
@@ -1700,7 +1720,7 @@ span.CodeMirror-selectedtext {
   border: none;
 }
 .cm-s-graphiql {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
 }
 .cm-s-graphiql .cm-keyword {
   color: hsl(var(--color-primary));
@@ -1709,7 +1729,7 @@ span.CodeMirror-selectedtext {
   color: hsl(var(--color-tertiary));
 }
 .cm-s-graphiql .cm-punctuation {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
 }
 .cm-s-graphiql .cm-variable {
   color: hsl(var(--color-secondary));
@@ -1729,9 +1749,7 @@ span.CodeMirror-selectedtext {
 .cm-s-graphiql .cm-string-2 {
   color: hsl(var(--color-secondary));
 }
-.cm-s-graphiql .cm-attribute {
-  color: hsl(var(--color-info));
-}
+.cm-s-graphiql .cm-attribute,
 .cm-s-graphiql .cm-meta {
   color: hsl(var(--color-tertiary));
 }
@@ -1741,24 +1759,28 @@ span.CodeMirror-selectedtext {
 .cm-s-graphiql .cm-qualifier {
   color: hsl(var(--color-secondary));
 }
-.cm-s-graphiql .cm-comment,
+.cm-s-graphiql .cm-comment {
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
+}
 .cm-s-graphiql .cm-ws {
-  color: hsla(var(--color-neutral), 0.4);
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
 }
 .cm-s-graphiql .cm-invalidchar {
   color: hsl(var(--color-error));
 }
 .cm-s-graphiql .CodeMirror-cursor {
-  border-left: 2px solid hsla(var(--color-neutral), 0.6);
+  border-left: 2px solid hsla(var(--color-neutral), var(--alpha-secondary));
 }
-.cm-s-graphiql .CodeMirror-linenumber,
+.cm-s-graphiql .CodeMirror-linenumber {
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
+}
 div.CodeMirror span.CodeMirror-matchingbracket,
 div.CodeMirror span.CodeMirror-nonmatchingbracket {
-  color: hsla(var(--color-neutral), 0.4);
+  color: hsl(var(--color-warning));
 }
 .CodeMirror-selected,
 .CodeMirror-focused .CodeMirror-selected {
-  background: hsla(var(--color-neutral), 0.15);
+  background: hsla(var(--color-neutral), var(--alpha-background-heavy));
 }
 .CodeMirror-dialog {
   background: inherit;
@@ -1771,12 +1793,14 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   z-index: 6;
 }
 .CodeMirror-dialog-top {
-  border-bottom: 1px solid hsla(var(--color-neutral), 0.15);
+  border-bottom: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
   padding-bottom: var(--px-12);
   top: 0;
 }
 .CodeMirror-dialog-bottom {
-  border-top: 1px solid hsla(var(--color-neutral), 0.15);
+  border-top: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
   bottom: 0;
   padding-top: var(--px-12);
 }
@@ -1784,7 +1808,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   display: none;
 }
 .CodeMirror-dialog input {
-  border: 1px solid hsla(var(--color-neutral), 0.15);
+  border: 1px solid hsla(var(--color-neutral), var(--alpha-background-heavy));
   border-radius: var(--border-radius-4);
   padding: var(--px-4);
 }
@@ -1792,7 +1816,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   outline: hsl(var(--color-primary)) solid 2px;
 }
 .cm-searching {
-  background-color: hsla(var(--color-warning), 0.07);
+  background-color: hsla(var(--color-warning), var(--alpha-background-light));
   padding-bottom: 1.5px;
   padding-top: 0.5px;
 }
@@ -1831,7 +1855,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 }
 .CodeMirror-foldgutter-open,
 .CodeMirror-foldgutter-folded {
-  color: hsla(var(--color-neutral), 0.4);
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
 }
 .CodeMirror-foldgutter-open:after,
 .CodeMirror-foldgutter-folded:after {
@@ -1843,7 +1867,9 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   width: 100%;
 }
 .graphiql-editor.hidden {
+  left: -9999px;
   position: absolute;
+  top: -9999px;
   visibility: hidden;
 }
 .CodeMirror-lint-markers {
@@ -2046,7 +2072,7 @@ li.CodeMirror-hint-active {
 }
 .CodeMirror-hint {
   border-radius: var(--border-radius-4);
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   grid-column: 1 / 2;
   margin: var(--px-4);
   padding: var(--px-6) var(--px-8) !important;
@@ -2055,14 +2081,15 @@ li.CodeMirror-hint-active {
   margin-top: 0;
 }
 li.CodeMirror-hint-active {
-  background: hsla(var(--color-primary), 0.1);
+  background: hsla(var(--color-primary), var(--alpha-background-medium));
   color: hsl(var(--color-primary));
 }
 .CodeMirror-hint-information {
-  border-left: 1px solid hsla(var(--color-neutral), 0.15);
+  border-left: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
   grid-column: 2 / 3;
   grid-row: 1 / 99999;
-  max-height: calc(264px - 2 * var(--px-12));
+  max-height: 264px;
   overflow: auto;
   padding: var(--px-12);
 }
@@ -2075,9 +2102,9 @@ li.CodeMirror-hint-active {
   font-weight: var(--font-weight-medium);
 }
 .CodeMirror-hint-information-type-name-pill {
-  border: 1px solid hsla(var(--color-neutral), 0.4);
+  border: 1px solid hsla(var(--color-neutral), var(--alpha-tertiary));
   border-radius: var(--border-radius-4);
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   margin-left: var(--px-6);
   padding: var(--px-4);
 }
@@ -2089,7 +2116,7 @@ li.CodeMirror-hint-active {
   text-decoration: underline dotted;
 }
 .CodeMirror-hint-information-description {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   margin-top: var(--px-12);
 }
 .CodeMirror-info {
@@ -2105,6 +2132,7 @@ li.CodeMirror-hint-active {
   padding: var(--px-12);
   position: fixed;
   transition: opacity 0.15s;
+  z-index: 10;
 }
 .CodeMirror-info a {
   color: inherit;
@@ -2126,14 +2154,14 @@ li.CodeMirror-hint-active {
   font-weight: var(--font-weight-medium);
 }
 .CodeMirror-info .type-name-pill {
-  border: 1px solid hsla(var(--color-neutral), 0.4);
+  border: 1px solid hsla(var(--color-neutral), var(--alpha-tertiary));
   border-radius: var(--border-radius-4);
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   margin-left: var(--px-6);
   padding: var(--px-4);
 }
 .CodeMirror-info .info-description {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   margin-top: var(--px-12);
   overflow: hidden;
 }
@@ -2154,16 +2182,18 @@ li.CodeMirror-hint-active {
   }
   15%,
   85% {
-    background-color: hsla(var(--color-warning), 0.07);
+    background-color: hsla(var(--color-warning), var(--alpha-background-light));
   }
 }
 button.graphiql-toolbar-button {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: var(--toolbar-width);
   width: var(--toolbar-width);
 }
 button.graphiql-toolbar-button.error {
-  background: hsla(var(--color-error), 0.15);
+  background: hsla(var(--color-error), var(--alpha-background-heavy));
 }
 .graphiql-execute-button-wrapper {
   position: relative;
@@ -2176,6 +2206,9 @@ button.graphiql-execute-button {
   height: var(--toolbar-width);
   padding: 0;
   width: var(--toolbar-width);
+}
+button.graphiql-execute-button:hover {
+  background-color: hsla(var(--color-primary), 0.9);
 }
 button.graphiql-execute-button:active {
   background-color: hsla(var(--color-primary), 0.8);
@@ -2214,10 +2247,18 @@ button.graphiql-toolbar-menu {
   padding: var(--px-8);
   width: var(--sidebar-width);
 }
+.graphiql-container .graphiql-sidebar .graphiql-sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-8);
+}
 .graphiql-container .graphiql-sidebar button {
-  color: hsla(var(--color-neutral), 0.6);
-  height: var(--sidebar-width);
-  width: var(--sidebar-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
+  height: calc(var(--sidebar-width) - (2 * var(--px-8)));
+  width: calc(var(--sidebar-width) - (2 * var(--px-8)));
 }
 .graphiql-container .graphiql-sidebar button.active {
   color: hsla(var(--color-neutral), 1);
@@ -2226,18 +2267,18 @@ button.graphiql-toolbar-menu {
   margin-top: var(--px-4);
 }
 .graphiql-container .graphiql-sidebar button > svg {
-  height: calc(var(--sidebar-width) - (2 * var(--px-12)));
-  padding: var(--px-12);
-  width: calc(var(--sidebar-width) - (2 * var(--px-12)));
+  height: var(--px-20);
+  width: var(--px-20);
 }
 /* The main content, i.e. everything except the sidebar */
 .graphiql-container .graphiql-main {
   display: flex;
   flex: 1;
+  min-width: 0;
 }
 /* The current session and tabs */
 .graphiql-container .graphiql-sessions {
-  background-color: hsla(var(--color-neutral), 0.07);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
   /* Adding the 8px of padding to the inner border radius of the query editor */
   border-radius: calc(var(--border-radius-12) + var(--px-8));
   display: flex;
@@ -2246,6 +2287,7 @@ button.graphiql-toolbar-menu {
   max-height: 100%;
   margin: var(--px-16);
   margin-left: 0;
+  min-width: 0;
 }
 /* The session header containing tabs and the logo */
 .graphiql-container .graphiql-session-header {
@@ -2256,31 +2298,34 @@ button.graphiql-toolbar-menu {
 }
 /* The button to add a new tab */
 button.graphiql-tab-add {
-  z-index: 99;
-  padding: var(--px-8);
-  margin-left: var(--px-12);
+  height: 100%;
+  padding: 0 var(--px-4);
 }
 button.graphiql-tab-add > svg {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   display: block;
   height: var(--px-16);
   width: var(--px-16);
 }
+.graphiql-add-tab-wrapper {
+  padding: var(--px-12) 0;
+}
 /* The right-hand-side of the session header */
 .graphiql-container .graphiql-session-header-right {
-  margin-right: var(--px-8);
-
-  align-items: center;
+  align-items: stretch;
   display: flex;
 }
 /* The GraphiQL logo */
 .graphiql-container .graphiql-logo {
-  display: none;
-
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
   font-size: var(--font-size-h4);
   font-weight: var(--font-weight-medium);
   padding: var(--px-12) var(--px-16);
+}
+/* Undo default link styling for the default GraphiQL logo link */
+.graphiql-container .graphiql-logo .graphiql-logo-link {
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
+  text-decoration: none;
 }
 /* The editor of the session */
 .graphiql-container .graphiql-session {
@@ -2292,6 +2337,7 @@ button.graphiql-tab-add > svg {
 .graphiql-container .graphiql-editors {
   background-color: hsl(var(--color-base));
   border-radius: calc(var(--border-radius-12));
+  box-shadow: var(--popover-box-shadow);
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -2301,7 +2347,8 @@ button.graphiql-tab-add > svg {
 }
 /* The query editor and the toolbar */
 .graphiql-container .graphiql-query-editor {
-  border-bottom: 1px solid hsla(var(--color-neutral), 0.15);
+  border-bottom: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
   display: flex;
   flex: 1;
   padding: var(--px-16);
@@ -2321,10 +2368,9 @@ button.graphiql-tab-add > svg {
 }
 /* The toolbar icons */
 .graphiql-toolbar-icon {
-  color: hsla(var(--color-neutral), 0.4);
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
   display: block;
   height: calc(var(--toolbar-width) - (var(--px-8) * 2));
-  padding: var(--px-8);
   width: calc(var(--toolbar-width) - (var(--px-8) * 2));
 }
 /* The tab bar for editor tools */
@@ -2336,7 +2382,7 @@ button.graphiql-tab-add > svg {
   padding: var(--px-8);
 }
 .graphiql-container .graphiql-editor-tools button {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
 }
 .graphiql-container .graphiql-editor-tools button.active {
   color: hsla(var(--color-neutral), 1);
@@ -2357,6 +2403,17 @@ button.graphiql-tab-add > svg {
   flex: 1;
   padding: var(--px-16);
 }
+/**
+     * The way CodeMirror editors are styled they overflow their containing
+     * element. For some OS-browser-combinations this might cause overlap issues,
+     * setting the position of this to `relative` makes sure this element will
+     * always be on top of any editors.
+     */
+.graphiql-container .graphiql-toolbar,
+.graphiql-container .graphiql-editor-tools,
+.graphiql-container .graphiql-editor-tool {
+  position: relative;
+}
 /* The response view */
 .graphiql-container .graphiql-response {
   --editor-background: transparent;
@@ -2372,13 +2429,14 @@ button.graphiql-tab-add > svg {
 }
 /* The footer below the response view */
 .graphiql-container .graphiql-footer {
-  border-top: 1px solid hsla(var(--color-neutral), 0.15);
+  border-top: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
 }
 /* The plugin container */
 .graphiql-container .graphiql-plugin {
-  border-left: 1px solid hsla(var(--color-neutral), 0.15);
+  border-left: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
   flex: 1;
-  max-width: calc(100% - 2 * var(--px-16));
   overflow-y: auto;
   padding: var(--px-16);
 }
@@ -2388,7 +2446,8 @@ button.graphiql-tab-add > svg {
   cursor: col-resize;
 }
 .graphiql-container .graphiql-horizontal-drag-bar:hover::after {
-  border: var(--px-2) solid hsla(var(--color-neutral), 0.15);
+  border: var(--px-2) solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
   border-radius: var(--border-radius-2);
   content: "";
   display: block;
@@ -2399,12 +2458,11 @@ button.graphiql-tab-add > svg {
   top: 37.5%;
   width: 0;
 }
-/* Generic icon style */
 .graphiql-container .graphiql-chevron-icon {
-  color: hsla(var(--color-neutral), 0.4);
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
   display: block;
   height: var(--px-12);
-  padding: var(--px-12);
+  margin: var(--px-12);
   width: var(--px-12);
 }
 /* Generic spin animation */
@@ -2419,11 +2477,6 @@ button.graphiql-tab-add > svg {
     transform: rotate(360deg);
   }
 }
-
-reach-portal * {
-  box-sizing: content-box;
-}
-
 /* The header of the settings dialog */
 reach-portal .graphiql-dialog-header {
   align-items: center;
@@ -2439,7 +2492,8 @@ reach-portal .graphiql-dialog-title {
 /* A section inside the settings dialog */
 reach-portal .graphiql-dialog-section {
   align-items: center;
-  border-top: 1px solid hsla(var(--color-neutral), 0.15);
+  border-top: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
   display: flex;
   justify-content: space-between;
   padding: var(--px-24);
@@ -2454,19 +2508,19 @@ reach-portal .graphiql-dialog-section-title {
 }
 /* The section caption in the settings dialog */
 reach-portal .graphiql-dialog-section-caption {
-  color: hsla(var(--color-neutral), 0.6);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
 }
 reach-portal .graphiql-table {
   border-collapse: collapse;
   width: 100%;
 }
 reach-portal .graphiql-table :is(th, td) {
-  border: 1px solid hsla(var(--color-neutral), 0.15);
+  border: 1px solid hsla(var(--color-neutral), var(--alpha-background-heavy));
   padding: var(--px-8) var(--px-12);
 }
 /* A single key the short-key dialog */
 reach-portal .graphiql-key {
-  background-color: hsla(var(--color-neutral), 0.1);
+  background-color: hsla(var(--color-neutral), var(--alpha-background-medium));
   border-radius: var(--border-radius-4);
   padding: var(--px-4);
 }
