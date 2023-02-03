@@ -280,14 +280,6 @@ export async function resolveWork(args, context) {
     profile: context.profile,
   });
 
-  if (!w) {
-    // log for debugging - see BIBDK2021-1256
-    log.error("WORKID NOT FOUND in jed-presentation service", {
-      workId: id,
-    });
-    return null;
-  }
-
   return w;
 }
 
