@@ -8,6 +8,8 @@ import {
   usePrettifyEditors,
 } from "@graphiql/react";
 
+import { generateCurl } from "@/components/utils";
+
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useIntersection from "@/hooks/useIntersection";
@@ -98,21 +100,23 @@ export function InlineGraphiQL({ query, variables }) {
   // This is used for lazy loading
   const [showDummyContainer, setShowDummyContainer] = useState(true);
 
-  const curlRef = useRef();
-  const url = useGraphQLUrl();
+  const [isReady, setIsReady] = useState(false);
 
+  const curlRef = useRef();
   const [showCopy, setShowCopy] = useState(false);
   const [editQuery, setEditQuery] = useState(query);
   const [editVariables, setEditVariables] = useState(variables);
 
-  const curl_vars = editVariables?.replace?.(/\s+/g, " ");
-  const curl_query = editQuery?.replace(/\s+/g, " ");
-  const curl = `curl -H "Authorization: bearer ${selectedToken?.token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
+  const curl = generateCurl({ query: editQuery, variables: editVariables });
 
   const graphiqlUrl = generateGraphiqlURL({
     query: editQuery,
     variables: editVariables,
   });
+
+  useEffect(() => {
+    setIsReady(true);
+  }, []);
 
   // When the selected token has changed, we unmount graphiql
   // and mounts the dummy container. Graphiql will be reinstantiated
@@ -121,13 +125,17 @@ export function InlineGraphiQL({ query, variables }) {
     setShowDummyContainer(true);
   }, [selectedToken]);
 
+  const tab = tabs[activeTabIndex];
   useEffect(() => {
-    const tab = tabs[activeTabIndex];
-    if (!tab.response && !!tab.query && !isFetching) {
-      prettifyEditors();
-      run();
+    if (isReady) {
+      if (!tab.response && tab.query && !isFetching) {
+        try {
+          prettifyEditors();
+          run();
+        } catch (err) {}
+      }
     }
-  }, [tabs]);
+  }, [tab, isReady]);
 
   return (
     <div className={styles.inlinegraphiql}>
@@ -206,10 +214,6 @@ export default function Wrap(props) {
   if (!show) {
     return null;
   }
-
-  // if (typeof window === "undefined") {
-  //   return null;
-  // }
 
   const { query, variables } = props;
 

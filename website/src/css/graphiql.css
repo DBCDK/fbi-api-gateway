@@ -330,9 +330,6 @@
     U+FEFF, U+FFFD;
 }
 
-.graphiql-container * {
-  box-sizing: border-box;
-}
 .graphiql-container,
 .CodeMirror-info,
 .CodeMirror-lint-tooltip,

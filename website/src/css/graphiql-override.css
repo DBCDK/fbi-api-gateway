@@ -1,7 +1,63 @@
+.graphiql-container * {
+  box-sizing: border-box;
+}
+reach-portal * {
+  box-sizing: content-box;
+}
+
 .graphiql-container .graphiql-session-header-right {
   margin-right: var(--px-16);
 }
 
 .graphiql-container .graphiql-logo {
   display: none;
+}
+
+/* container design */
+
+.graphiql-container .graphiql-editors {
+  border-radius: 0;
+}
+
+.graphiql-container .graphiql-sessions {
+  border-radius: 0;
+}
+
+.graphiql-toolbar button.graphiql-un-styled,
+.graphiql-sidebar button.graphiql-un-styled {
+  border-radius: 50%;
+}
+
+button.graphiql-un-styled .graphiql-toolbar-icon {
+  width: var(--pt2);
+  height: var(--pt2);
+}
+
+/* scrollbar */
+
+.graphiql-container * {
+  /* firefox */
+  scrollbar-color: var(--primary-dark) transparent;
+}
+
+/* width */
+.graphiql-container *::-webkit-scrollbar {
+  width: var(--pt1);
+  height: var(--pt1);
+}
+
+/* Track */
+.graphiql-container *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+.graphiql-container *::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--pt05);
+}
+
+/* Handle on hover */
+.graphiql-container *::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
 }

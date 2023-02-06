@@ -1,8 +1,68 @@
+.graphiql .curl {
+  margin-top: auto;
+}
+
+.graphiql .curl .button p {
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
+  font-style: italic;
+  font-size: 12px;
+}
+
 .graphiql :global(.graphiql-container) {
   height: calc(100vh - 68px);
+}
+
+.graphiql .graphiql-container .graphiql-sessions {
+  margin: 0;
 }
 
 .graphiql :global(button.graphiql-execute-button) {
   border-radius: 50%;
   background-color: var(--primary-dark);
+}
+
+.graphiql :global(button.graphiql-execute-button):focus {
+  outline: none;
+}
+
+.graphiql :global(button.graphiql-execute-button):focus-visible,
+.graphiql :global(button.graphiql-execute-button):hover {
+  background-color: var(--text-dark);
+}
+
+.graphiql :global(.graphiql-toolbar) {
+  display: flex;
+  flex-direction: column;
+}
+
+.graphiql :global(button.graphiql-toolbar-button.error) {
+  background-color: var(--error);
+}
+
+.graphiql :global(button.graphiql-toolbar-button.error .graphiql-toolbar-icon) {
+  color: var(--white);
+}
+
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button):focus-visible,
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button):hover {
+  background-color: #2c3546;
+}
+
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button:focus-visible > svg),
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button:hover > svg) {
+  color: var(--primary-dark);
+}
+
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button):focus {
+  outline: hsla(var(--color-neutral), var(--alpha-background-heavy)) auto 1px;
 }

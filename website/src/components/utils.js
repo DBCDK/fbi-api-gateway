@@ -1,3 +1,6 @@
+import useStorage from "@/hooks/useStorage";
+import { useGraphQLUrl } from "@/hooks/useSchema";
+
 var months = [
   "Jan",
   "Feb",
@@ -46,4 +49,13 @@ export function isToken(token) {
 
 export function isEqual(token1, token2) {
   return token1?.token === token2?.token && token1?.profile === token2?.profile;
+}
+
+export function generateCurl({ query, variables }) {
+  const { selectedToken } = useStorage();
+  const url = useGraphQLUrl(selectedToken);
+
+  const curl_vars = variables?.replace?.(/\s+/g, " ");
+  const curl_query = query?.replace(/\s+/g, " ");
+  return `curl -H "Authorization: bearer ${selectedToken?.token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
 }

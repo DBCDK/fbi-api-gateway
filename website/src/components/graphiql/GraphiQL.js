@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { GraphiQLInterface } from "graphiql";
 import {
@@ -6,7 +6,14 @@ import {
   useExecutionContext,
   useEditorContext,
   usePrettifyEditors,
+  useSchemaContext,
+  ToolbarButton,
 } from "@graphiql/react";
+
+import { generateCurl } from "@/components/utils";
+
+import Text from "@/components/base/text";
+import Overlay from "@/components/base/overlay";
 
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
@@ -15,24 +22,64 @@ import Header from "@/components/header";
 
 import styles from "./GraphiQL.module.css";
 
-export function GraphiQL({ onEditQuery, onEditVariables, onTabChange }) {
+function CurlButton({ onClick }) {
+  const curlRef = useRef();
+  const [showCopy, setShowCopy] = useState(false);
+
+  return (
+    <span ref={curlRef} className={styles.curl}>
+      <ToolbarButton
+        className={styles.button}
+        onClick={() => {
+          onClick();
+          setShowCopy(true);
+          setTimeout(() => setShowCopy(false), 2000);
+        }}
+        label="Copy curl"
+      >
+        <Text type="text1">curl</Text>
+      </ToolbarButton>
+      <Overlay show={navigator?.clipboard && showCopy} container={curlRef}>
+        <Text type="text1">Copied to clipboard 📋</Text>
+      </Overlay>
+    </span>
+  );
+}
+
+export function GraphiQL({
+  onEditQuery,
+  onEditVariables,
+  onTabChange,
+  toolbar,
+}) {
   const { tabs, activeTabIndex } = useEditorContext({
     nonNull: true,
   });
 
   const { run, isFetching } = useExecutionContext({
+    caller: GraphiQL,
     nonNull: true,
   });
 
   const prettifyEditors = usePrettifyEditors();
 
+  const tab = tabs[activeTabIndex];
+
+  const [isReady, setIsReady] = useState(false);
   useEffect(() => {
-    const tab = tabs[activeTabIndex];
-    if (!tab.response && tab.query && !isFetching) {
-      prettifyEditors?.();
-      run?.();
+    setIsReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (isReady) {
+      if (!tab.response && tab.query && !isFetching) {
+        try {
+          prettifyEditors();
+          run();
+        } catch (err) {}
+      }
     }
-  }, [tabs[activeTabIndex]]);
+  }, [tab, isReady]);
 
   useEffect(() => {
     onTabChange(tabs[activeTabIndex]);
@@ -46,7 +93,7 @@ export function GraphiQL({ onEditQuery, onEditVariables, onTabChange }) {
         onEditVariables={onEditVariables}
         defaultEditorToolsVisibility="variables"
         isHeadersEditorEnabled={false}
-        // toolbar={{ additionalContent: "hest" }}
+        toolbar={toolbar}
       />
     </div>
   );
@@ -59,6 +106,10 @@ export default function Wrap() {
 
   const router = useRouter();
 
+  const parameters = { ...router.query };
+
+  const curl = generateCurl(parameters);
+
   const [show, setShow] = useState(false);
   useEffect(() => {
     setShow(true);
@@ -66,8 +117,6 @@ export default function Wrap() {
   if (!show) {
     return null;
   }
-
-  const parameters = { ...router.query };
 
   const fetcher = async (graphQLParams) => {
     const data = await fetch(url, {
@@ -113,8 +162,15 @@ export default function Wrap() {
       operationName={parameters.operationName}
     >
       <GraphiQL
-        onEditQuery={onEditQuery}
-        onEditVariables={onEditVariables}
+        toolbar={{
+          additionalContent: [
+            <CurlButton
+              onClick={() => navigator?.clipboard?.writeText?.(curl)}
+            />,
+          ],
+        }}
+        onEditQuery={(newQuery) => onEditQuery(newQuery)}
+        onEditVariables={(newVariables) => onEditVariables(newVariables)}
         onTabChange={onTabChange}
       />
     </GraphiQLProvider>
