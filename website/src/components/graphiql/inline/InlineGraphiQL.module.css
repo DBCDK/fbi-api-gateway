@@ -68,6 +68,10 @@
   border-left: none;
 }
 
+.inlinegraphiql :global(.graphiql-container .graphiql-editor-tool) {
+  padding-top: 0;
+}
+
 .inlinegraphiql {
   margin: var(--pt5) 0 0 0;
 }

@@ -6,7 +6,6 @@ import {
   useExecutionContext,
   useEditorContext,
   usePrettifyEditors,
-  useSchemaContext,
   ToolbarButton,
 } from "@graphiql/react";
 
@@ -108,7 +107,11 @@ export default function Wrap() {
 
   const parameters = { ...router.query };
 
-  const curl = generateCurl(parameters);
+  const curl = generateCurl({
+    ...parameters,
+    url,
+    token: selectedToken?.token,
+  });
 
   const [show, setShow] = useState(false);
   useEffect(() => {
@@ -165,6 +168,7 @@ export default function Wrap() {
         toolbar={{
           additionalContent: [
             <CurlButton
+              key="copy-curl-btn"
               onClick={() => navigator?.clipboard?.writeText?.(curl)}
             />,
           ],

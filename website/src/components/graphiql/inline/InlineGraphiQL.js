@@ -84,7 +84,12 @@ function generateGraphiqlURL(parameters) {
  * @returns
  */
 
-export function InlineGraphiQL({ query, variables }) {
+export function InlineGraphiQL({
+  query,
+  variables,
+  onEditQuery,
+  onEditVariables,
+}) {
   const { tabs, activeTabIndex } = useEditorContext({
     nonNull: true,
   });
@@ -96,6 +101,7 @@ export function InlineGraphiQL({ query, variables }) {
   const prettifyEditors = usePrettifyEditors();
 
   const { selectedToken } = useStorage();
+  const url = useGraphQLUrl(selectedToken);
 
   // This is used for lazy loading
   const [showDummyContainer, setShowDummyContainer] = useState(true);
@@ -104,14 +110,17 @@ export function InlineGraphiQL({ query, variables }) {
 
   const curlRef = useRef();
   const [showCopy, setShowCopy] = useState(false);
-  const [editQuery, setEditQuery] = useState(query);
-  const [editVariables, setEditVariables] = useState(variables);
 
-  const curl = generateCurl({ query: editQuery, variables: editVariables });
+  const curl = generateCurl({
+    url,
+    token: selectedToken?.token,
+    query,
+    variables,
+  });
 
   const graphiqlUrl = generateGraphiqlURL({
-    query: editQuery,
-    variables: editVariables,
+    query,
+    variables,
   });
 
   useEffect(() => {
@@ -174,8 +183,8 @@ export function InlineGraphiQL({ query, variables }) {
 
       {!showDummyContainer && (
         <GraphiQLInterface
-          onEditQuery={(str) => setEditQuery(str)}
-          onEditVariables={(str) => setEditVariables(str)}
+          onEditQuery={onEditQuery}
+          onEditVariables={onEditVariables}
           isHeadersEditorEnabled={false}
         />
       )}
@@ -205,7 +214,11 @@ export default function Wrap(props) {
   const { schema } = useSchema(selectedToken);
   const url = useGraphQLUrl(selectedToken);
 
+  const { query: initialQuery, variables: initialVariabels } = props;
+
   const [show, setShow] = useState(false);
+  const [query, setQuery] = useState(initialQuery);
+  const [variables, setVariables] = useState(initialVariabels);
 
   useEffect(() => {
     setShow(true);
@@ -214,8 +227,6 @@ export default function Wrap(props) {
   if (!show) {
     return null;
   }
-
-  const { query, variables } = props;
 
   const fetcher = async (graphQLParams) => {
     const data = await fetch(url, {
@@ -235,11 +246,16 @@ export default function Wrap(props) {
     <GraphiQLProvider
       fetcher={fetcher}
       schema={schema}
-      query={query}
+      query={initialQuery}
       storage={noStorage}
-      variables={variables ? JSON.stringify(variables) : ""}
+      variables={initialVariabels ? JSON.stringify(initialVariabels) : ""}
     >
-      <InlineGraphiQL {...props} />
+      <InlineGraphiQL
+        query={query}
+        variables={variables}
+        onEditVariables={setVariables}
+        onEditQuery={setQuery}
+      />
     </GraphiQLProvider>
   );
 }

@@ -43,20 +43,25 @@ body {
   --success-dark: #81c784;
 }
 
+/* https://materialui.co/colors/ */
+
 body {
   /* primary */
-  --primary: #f48fb1;
   --primary-light: #f8bbd0;
+  --primary: #f48fb1;
   --primary-dark: #f06292;
 
   /* secondary */
-  --secondary: #80deea;
-  --secondary-light: #b2ebf2;
-  --secondary-dark: #4dd0e1;
+  --secondary-light: #b3e5fc;
+  --secondary: #81d4fa;
+  --secondary-dark: #64b5f6;
 
   /* gradient */
-  --hero-gradient-primary: #f48fb1;
-  --hero-gradient-secondary: #80deea;
+  --hero-gradient-primary: #ff80ab;
+  --hero-gradient-secondary: #80d8ff;
+
+  --hero-gradient-primary: #f8bbd0;
+  --hero-gradient-secondary: #b3e5fc;
 }
 
 body.easter {
