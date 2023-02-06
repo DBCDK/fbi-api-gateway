@@ -34,7 +34,7 @@ function CurlButton({ onClick }) {
           setShowCopy(true);
           setTimeout(() => setShowCopy(false), 2000);
         }}
-        label="Copy curl"
+        label="Copy request as curl"
       >
         <Text type="text1">curl</Text>
       </ToolbarButton>

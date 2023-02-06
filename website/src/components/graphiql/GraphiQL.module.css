@@ -1,5 +1,5 @@
 .graphiql .curl {
-  margin-top: auto;
+  margin-top: var(--pt1);
 }
 
 .graphiql .curl .button p {
