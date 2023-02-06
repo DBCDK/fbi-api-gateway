@@ -9,6 +9,8 @@ export const typeDef = `
    ERROR_AGENCY_NOT_SUBSCRIBED
    ERROR_INVALID_PICKUP_BRANCH
    ERROR_PID_NOT_RESERVABLE
+   ERROR_NO_NAME_OR_EMAIL
+   ERROR_NO_MUNICIPALITY
  }
 
  type CopyRequestResponse {
@@ -98,14 +100,14 @@ export const resolvers = {
       // Ensure a pair of email and name can be set
       if (!((userName || user.name) && (userMail || user.mail))) {
         return {
-          status: "ERROR_UNAUTHENTICATED_USER",
+          status: "ERROR_NO_NAME_OR_EMAIL",
         };
       }
 
       // Ensure user has municipalityAgencyId
       if (!user.municipalityAgencyId) {
         return {
-          status: "ERROR_UNAUTHENTICATED_USER",
+          status: "ERROR_NO_MUNICIPALITY",
         };
       }
 
@@ -138,7 +140,6 @@ export const resolvers = {
       }
 
       // Then send order
-
       return await context.datasources
         .getLoader("statsbiblioteketSubmitArticleOrder")
         .load({
