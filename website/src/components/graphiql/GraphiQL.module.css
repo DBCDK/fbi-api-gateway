@@ -12,7 +12,7 @@
   height: calc(100vh - 68px);
 }
 
-.graphiql .graphiql-container .graphiql-sessions {
+.graphiql :global(.graphiql-container .graphiql-sessions) {
   margin: 0;
 }
 
