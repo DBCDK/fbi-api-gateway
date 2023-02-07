@@ -90,6 +90,7 @@
 
 .button.run {
   background-color: var(--primary-dark);
+  color: white;
 }
 
 .curl {
