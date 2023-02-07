@@ -26,6 +26,7 @@ test("PeriodicaArticleOrder, unauthenticated token, should give error", async ()
         user: {
           uniqueId: null,
         },
+        digitalArticleService: { originRequester: "bibdk" },
       },
     },
   });
@@ -48,6 +49,7 @@ test("PeriodicaArticleOrder, municiapalityAgencyId not subscribed, should give e
         user: {
           uniqueId: "1234561234",
         },
+        digitalArticleService: { originRequester: "bibdk" },
       },
     },
   });
@@ -70,6 +72,7 @@ test("PeriodicaArticleOrder, no municiapalityAgencyId, should give error", async
         user: {
           uniqueId: "1234561234",
         },
+        digitalArticleService: { originRequester: "bibdk" },
       },
     },
   });
@@ -92,6 +95,7 @@ test("PeriodicaArticleOrder, manifestation not part of statsbibliotek journal sh
         user: {
           uniqueId: "1234561234",
         },
+        digitalArticleService: { originRequester: "bibdk" },
       },
     },
   });
@@ -114,6 +118,7 @@ test("PeriodicaArticleOrder, missing mail on user and input, should give error",
         user: {
           uniqueId: "1234561234",
         },
+        digitalArticleService: { originRequester: "bibdk" },
       },
     },
   });
@@ -137,6 +142,7 @@ test("PeriodicaArticleOrder, missing mail in user, but given in input, order suc
         user: {
           uniqueId: "1234561234",
         },
+        digitalArticleService: { originRequester: "bibdk" },
       },
     },
   });
@@ -161,6 +167,7 @@ test("PeriodicaArticleOrder, userName and userMail set in input, order success",
         user: {
           uniqueId: "1234561234",
         },
+        digitalArticleService: { originRequester: "bibdk" },
       },
     },
   });
@@ -169,6 +176,29 @@ test("PeriodicaArticleOrder, userName and userMail set in input, order success",
 });
 
 test("PeriodicaArticleOrder, order success", async () => {
+  const result = await performTestQuery({
+    query,
+    variables: {
+      input: {
+        pid: "870971-avis:34591016",
+      },
+    },
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "DUMMY_TOKEN",
+      smaug: {
+        user: {
+          uniqueId: "1234561234",
+        },
+        digitalArticleService: { originRequester: "bibdk" },
+      },
+    },
+  });
+
+  expect(result).toMatchSnapshot();
+});
+
+test("PeriodicaArticleOrder, originRequester missing from smaug configuration", async () => {
   const result = await performTestQuery({
     query,
     variables: {
