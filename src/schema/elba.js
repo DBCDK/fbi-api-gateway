@@ -147,8 +147,6 @@ export const resolvers = {
         };
       }
 
-      console.log(context.smaug?.digitalArticleService?.originRequester);
-
       // Then send order
 
       return await context.datasources
