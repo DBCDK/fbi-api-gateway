@@ -72,6 +72,18 @@ Object {
 }
 `;
 
+exports[`PeriodicaArticleOrder, originRequester missing from smaug configuration 1`] = `
+Object {
+  "data": Object {
+    "elba": Object {
+      "placeCopyRequest": Object {
+        "status": "ERROR_MISSING_CLIENT_CONFIGURATION",
+      },
+    },
+  },
+}
+`;
+
 exports[`PeriodicaArticleOrder, unauthenticated token, should give error 1`] = `
 Object {
   "data": Object {

@@ -9,6 +9,7 @@ export const typeDef = `
    ERROR_AGENCY_NOT_SUBSCRIBED
    ERROR_INVALID_PICKUP_BRANCH
    ERROR_PID_NOT_RESERVABLE
+   ERROR_MISSING_CLIENT_CONFIGURATION
  }
 
  type CopyRequestResponse {
@@ -66,6 +67,15 @@ export const resolvers = {
       if (!context?.smaug?.user?.uniqueId) {
         return {
           status: "ERROR_UNAUTHENTICATED_USER",
+        };
+      }
+
+      const originRequester =
+        context?.smaug?.digitalArticleService?.originRequester;
+
+      if (!originRequester) {
+        return {
+          status: "ERROR_MISSING_CLIENT_CONFIGURATION",
         };
       }
 
@@ -137,6 +147,8 @@ export const resolvers = {
         };
       }
 
+      console.log(context.smaug?.digitalArticleService?.originRequester);
+
       // Then send order
 
       return await context.datasources
@@ -148,6 +160,7 @@ export const resolvers = {
           agencyId: user.municipalityAgencyId,
           pickUpBranch: user.agency,
           dryRun: args.dryRun,
+          originRequester,
         });
     },
   },
