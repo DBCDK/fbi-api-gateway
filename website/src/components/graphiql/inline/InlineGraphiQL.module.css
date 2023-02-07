@@ -1,0 +1,104 @@
+.inlinegraphiql :global(.graphiql-container) * {
+  /* override resize.css */
+  box-sizing: content-box;
+}
+
+.inlinegraphiql :global(.graphiql-sidebar),
+.inlinegraphiql :global(.graphiql-session-header) {
+  display: none;
+}
+
+.inlinegraphiql :global(.graphiql-container .graphiql-sessions) {
+  margin-left: var(--px-16);
+}
+
+.inlinegraphiql :global(.graphiql-container .graphiql-session) {
+  padding: 0;
+}
+
+.inlinegraphiql :global(.graphiql-container .graphiql-editors.full-height) {
+  margin-top: 0;
+}
+
+.inlinegraphiql :global(.graphiql-toolbar) {
+  display: none;
+}
+
+.inlinegraphiql {
+  /* height: 486px; */
+  /* height: 536px; */
+}
+
+.inlinegraphiql :global(.topBarWrap) {
+  display: none;
+  content-visibility: none;
+}
+
+.inlinegraphiql :global(.graphiql-container) {
+  height: 400px;
+  padding: 0;
+  background-color: var(--divider);
+  /* border-radius: var(--pt2); */
+}
+.inlinegraphiql .dummycontainer {
+  height: 400px;
+  background-color: var(--divider);
+}
+
+.inlinegraphiql :global(.CodeMirror-hints) {
+  z-index: 1000;
+}
+
+.inlinegraphiql :global(.editorWrap) {
+  overflow-x: visible;
+}
+
+.inlinegraphiql :global(.graphiql-container .graphiql-sessions) {
+  background-color: transparent;
+}
+
+.inlinegraphiql :global(.graphiql-container .secondary-editor-title) {
+  background: var(--divider);
+  color: var(--text-dark);
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+}
+
+.inlinegraphiql :global(.graphiql-container .resultWrap) {
+  border-left: none;
+}
+
+.inlinegraphiql :global(.graphiql-container .graphiql-editor-tool) {
+  padding-top: 0;
+}
+
+.inlinegraphiql {
+  margin: var(--pt5) 0 0 0;
+}
+
+.button {
+  box-sizing: border-box;
+  margin: 0 var(--pt2) var(--pt2) 0;
+}
+
+.button.run {
+  background-color: var(--primary-dark);
+}
+
+.curl {
+  box-sizing: border-box;
+  margin: var(--pt2) 0;
+  max-width: 100%;
+  background-color: var(--divider);
+  border-radius: unset;
+  cursor: pointer !important;
+}
+
+.buttons {
+  display: flex;
+}
+
+.open {
+  margin-left: auto;
+  margin-right: 0;
+}

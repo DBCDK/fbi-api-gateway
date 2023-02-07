@@ -1,6 +1,4 @@
-import { useRouter } from "next/router";
 import fetch from "isomorphic-unfetch";
-import { useMemo } from "react";
 import useSWR from "swr";
 
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql";

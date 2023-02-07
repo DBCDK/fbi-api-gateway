@@ -1,107 +1,68 @@
+.graphiql .curl {
+  margin-top: var(--pt1);
+}
+
+.graphiql .curl .button p {
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
+  font-style: italic;
+  font-size: 12px;
+}
+
 .graphiql :global(.graphiql-container) {
   height: calc(100vh - 68px);
 }
-.inlinegraphiql {
-  height: 486px;
-}
-.inlinegraphiql :global(.topBarWrap) {
-  display: none;
-  content-visibility: none;
-}
-.inlinegraphiql :global(.graphiql-container) {
-  height: 350px;
-  padding: var(--pt3) var(--pt3) var(--pt3) 0;
-  background-color: var(--divider);
-  /* border-radius: var(--pt2); */
-}
-.inlinegraphiql .dummycontainer {
-  height: 350px;
-  background-color: var(--divider);
-}
-.inlinegraphiql :global(.secondary-editor) {
-  /* display: none; */
-}
-.inlinegraphiql :global(.CodeMirror-hints) {
-  z-index: 1000;
-}
-.inlinegraphiql :global(.editorWrap) {
-  overflow-x: visible;
+
+.graphiql :global(.graphiql-container .graphiql-sessions) {
+  margin: 0;
 }
 
-.inlinegraphiql :global(.graphiql-container .secondary-editor-title) {
-  background: var(--divider);
-  color: var(--text-dark);
-  border-top: 1px solid var(--divider);
-  border-bottom: 1px solid var(--divider);
-}
-
-.inlinegraphiql :global(.CodeMirror-gutters) {
-  border-right: none;
-  background-color: var(--divider);
-}
-.inlinegraphiql
-  :global(.graphiql-container .result-window .CodeMirror-gutters) {
-  background-color: var(--divider);
-}
-
-.inlinegraphiql :global(.graphiql-container .resultWrap) {
-  border-left: none;
-}
-
-.inlinegraphiql {
-  margin: var(--pt5) 0 0 0;
-}
-
-.button {
-  margin: 0 var(--pt2) var(--pt2) 0;
-}
-
-.button.run {
+.graphiql :global(button.graphiql-execute-button) {
+  border-radius: 50%;
   background-color: var(--primary-dark);
 }
 
-.curl {
-  margin: var(--pt2) 0;
-  max-width: 100%;
-  background-color: var(--divider);
-  border-radius: unset;
-  cursor: pointer !important;
+.graphiql :global(button.graphiql-execute-button):focus {
+  outline: none;
 }
 
-.buttons {
+.graphiql :global(button.graphiql-execute-button):focus-visible,
+.graphiql :global(button.graphiql-execute-button):hover {
+  background-color: var(--text-dark);
+}
+
+.graphiql :global(.graphiql-toolbar) {
   display: flex;
+  flex-direction: column;
 }
 
-.open {
-  margin-left: auto;
-  margin-right: 0;
+.graphiql :global(button.graphiql-toolbar-button.error) {
+  background-color: var(--error);
 }
 
-/* scrollbar */
-
-.inlinegraphiql * {
-  /* firefox */
-  scrollbar-color: var(--primary-dark) transparent;
+.graphiql :global(button.graphiql-toolbar-button.error .graphiql-toolbar-icon) {
+  color: var(--white);
 }
 
-/* width */
-.inlinegraphiql *::-webkit-scrollbar {
-  width: var(--pt1);
-  height: var(--pt1);
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button):focus-visible,
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button):hover {
+  background-color: #2c3546;
 }
 
-/* Track */
-.inlinegraphiql *::-webkit-scrollbar-track {
-  background: transparent;
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button:focus-visible > svg),
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button:hover > svg) {
+  color: var(--primary-dark);
 }
 
-/* Handle */
-.inlinegraphiql *::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: var(--pt05);
-}
-
-/* Handle on hover */
-.inlinegraphiql *::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-dark);
+:global(body.graphiql-dark)
+  .graphiql
+  :global(button.graphiql-execute-button):focus {
+  outline: hsla(var(--color-neutral), var(--alpha-background-heavy)) auto 1px;
 }

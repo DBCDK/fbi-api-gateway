@@ -19,7 +19,15 @@ import Modal, { Pages } from "@/components/modal";
 
 import styles from "./Header.module.css";
 
-const isChristmas = getConfig()?.publicRuntimeConfig?.isChristmas;
+const theme = getConfig()?.publicRuntimeConfig?.theme;
+
+let logo = "🥳";
+if (theme === "christmas") {
+  logo = "🎅";
+}
+if (theme === "easter") {
+  logo = "🐤";
+}
 
 export default function Header() {
   const router = useRouter();
@@ -49,15 +57,17 @@ export default function Header() {
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
+  const isSchema = router.pathname === "/schema";
 
   const indexStyles = isIndex ? styles.index : "";
   const documentationStyles = isDocumentation ? styles.documentation : "";
+  const schemaStyles = isSchema ? styles.schema : "";
 
   const stickyClass = isSticky ? styles.sticky : "";
 
   return (
     <header
-      className={`${styles.top} ${stickyClass} ${indexStyles} ${documentationStyles}`}
+      className={`${styles.top} ${stickyClass} ${indexStyles} ${documentationStyles} ${schemaStyles}`}
       ref={elRef}
     >
       <Container fluid>
@@ -65,8 +75,7 @@ export default function Header() {
           <Col className={styles.left}>
             <Title className={styles.logo}>
               <span>
-                <Link href="/">FBI API</Link> {isChristmas ? " 🎅" : " 🥳"}
-                {/* 🥳🎅🎄 */}
+                <Link href="/">FBI API</Link> {logo}
               </span>
             </Title>
           </Col>

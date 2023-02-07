@@ -1,4 +1,8 @@
+.wrapper * {
+  box-sizing: content-box;
+}
+
 .wrapper {
   position: relative;
-  height: calc(100vh - var(--pt8));
+  height: calc(100vh - var(--pt9));
 }

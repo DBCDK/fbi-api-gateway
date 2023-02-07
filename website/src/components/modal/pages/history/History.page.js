@@ -108,7 +108,8 @@ function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
     time: timeConverter(configuration?.expires),
   };
 
-  const containerScrollY = document.getElementById("modal")?.scrollTop;
+  const modal = document.getElementById("modal");
+  const containerScrollY = modal?.scrollTop;
 
   const user = configuration.user;
 
@@ -327,6 +328,7 @@ function Wrap(props) {
 function History({ modal }) {
   const { history, selectedToken } = useStorage();
   const [state, setState] = useState(history);
+  const [isScrolled, setIsScrolled] = useState(null);
 
   // update history on modal close
   useEffect(() => {
@@ -335,8 +337,26 @@ function History({ modal }) {
     }
   }, [modal.isVisible, history]);
 
+  useEffect(() => {
+    function handleScroll(e) {
+      const isTop = e.target.scrollTop === 0;
+      if (isTop !== isScrolled) {
+        setIsScrolled(!isTop);
+      }
+    }
+
+    const body = document.getElementById("modal");
+
+    if (body) {
+      body.addEventListener("scroll", handleScroll, { passive: true });
+      () => body.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
+  const isScrolledClass = isScrolled ? "scrolled" : "";
+
   return (
-    <Row className={styles.configurations}>
+    <Row className={`${styles.configurations} ${isScrolledClass}`}>
       {!state?.length && <span>You have no configurations yet 🥹 ...</span>}
       {state?.map((h, i) => {
         return (
