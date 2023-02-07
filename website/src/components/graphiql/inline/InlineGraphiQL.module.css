@@ -3,6 +3,13 @@
   box-sizing: content-box;
 }
 
+.inlinegraphiql :global(.graphiql-container),
+.inlinegraphiql :global(.CodeMirror-info),
+.inlinegraphiql :global(.CodeMirror-lint-tooltip),
+.inlinegraphiql :global(reach-portal) {
+  font-size: 12px !important;
+}
+
 .inlinegraphiql :global(.graphiql-sidebar),
 .inlinegraphiql :global(.graphiql-session-header) {
   display: none;
