@@ -23,6 +23,7 @@ const map = {
   // keys deprecated in future:
   volume: "volumeOfComponent",
   pagination: "pagesOfComponent",
+  originRequester: "originRequester",
 };
 
 // list ordered by elba-service xsd
@@ -51,6 +52,7 @@ const whitelist = [
   // pagination deprecated in future
   "pagination",
   "openURL",
+  "originRequester",
 ];
 
 function createRequestString(input) {
