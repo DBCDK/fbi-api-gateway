@@ -57,15 +57,17 @@ export default function Header() {
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
+  const isSchema = router.pathname === "/schema";
 
   const indexStyles = isIndex ? styles.index : "";
   const documentationStyles = isDocumentation ? styles.documentation : "";
+  const schemaStyles = isSchema ? styles.schema : "";
 
   const stickyClass = isSticky ? styles.sticky : "";
 
   return (
     <header
-      className={`${styles.top} ${stickyClass} ${indexStyles} ${documentationStyles}`}
+      className={`${styles.top} ${stickyClass} ${indexStyles} ${documentationStyles} ${schemaStyles}`}
       ref={elRef}
     >
       <Container fluid>
