@@ -31,22 +31,20 @@
   display: none;
 }
 
-.inlinegraphiql {
-  /* height: 486px; */
-  /* height: 536px; */
-}
-
 .inlinegraphiql :global(.topBarWrap) {
   display: none;
   content-visibility: none;
 }
 
+:global(body:not(.graphiql-dark)) .inlinegraphiql :global(.graphiql-container) {
+  background-color: var(--divider);
+}
+
 .inlinegraphiql :global(.graphiql-container) {
   height: 400px;
   padding: 0;
-  background-color: var(--divider);
-  /* border-radius: var(--pt2); */
 }
+
 .inlinegraphiql .dummycontainer {
   height: 400px;
   background-color: var(--divider);
