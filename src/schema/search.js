@@ -230,7 +230,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return res?.map(({ display: query, score }) => ({ query, score }));
+      return res?.map(({ query, score }) => ({ query, score }));
     },
     async hitcount(parent, args, context) {
       const res = await context.datasources.getLoader("simplesearch").load({
