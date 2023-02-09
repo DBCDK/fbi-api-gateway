@@ -1503,7 +1503,7 @@ type SearchResponse {
   intelligentFacets(limit: Int): [FacetResult!]!
 
   \\"\\"\\"A list of alternative search queries\\"\\"\\"
-  didYouMean: [DidYouMean!]!
+  didYouMean(limit: Int): [DidYouMean!]!
 }
 
 type DidYouMean {

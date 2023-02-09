@@ -158,7 +158,7 @@ type SearchResponse {
   """
   A list of alternative search queries
   """
-  didYouMean: [DidYouMean!]!
+  didYouMean(limit: Int ): [DidYouMean!]!
 }
 
 type DidYouMean {
@@ -223,12 +223,14 @@ export const resolvers = {
         },
       ].slice(0, limit);
     },
-    didYouMean() {
-      return [
-        { query: "some alternative query 1", score: 0.8 },
-        { query: "some alternative query 2", score: 0.65 },
-        { query: "some alternative query 3", score: 0.2 },
-      ];
+    async didYouMean(parent, args, context) {
+      const res = await context.datasources.getLoader("didYouMean").load({
+        ...parent,
+        ...args,
+        profile: context.profile,
+      });
+
+      return res?.map(({ display: query, score }) => ({ query, score }));
     },
     async hitcount(parent, args, context) {
       const res = await context.datasources.getLoader("simplesearch").load({
