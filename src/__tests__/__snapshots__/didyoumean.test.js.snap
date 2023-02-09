@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Get 3 results from did you mean service 1`] = `
+Object {
+  "data": Object {
+    "search": Object {
+      "didYouMean": Array [
+        Object {
+          "query": "Anders Matthesen",
+          "score": 1.0312077993008424,
+        },
+        Object {
+          "query": "Anders Mathiesen",
+          "score": 0.9398803754066467,
+        },
+        Object {
+          "query": "Anders Mathiasen",
+          "score": 0.9387356948225403,
+        },
+      ],
+    },
+  },
+}
+`;
