@@ -20,27 +20,27 @@ export async function load({ limit = 5 }) {
     response: [
       {
         match: "anders matthesen",
-        display: "Anders Matthesen",
+        query: "Anders Matthesen",
         score: 1.0312077993008424,
       },
       {
         match: "anders mathiesen",
-        display: "Anders Mathiesen",
+        query: "Anders Mathiesen",
         score: 0.9398803754066467,
       },
       {
         match: "anders mathiasen",
-        display: "Anders Mathiasen",
+        query: "Anders Mathiasen",
         score: 0.9387356948225403,
       },
       {
         match: "anders matthensen",
-        display: "Anders Matthensen",
+        query: "Anders Matthensen",
         score: 0.9317854186357116,
       },
       {
         match: "anders hedman",
-        display: "Anders Hedman",
+        query: "Anders Hedman",
         score: 0.9013658265267944,
       },
     ],
