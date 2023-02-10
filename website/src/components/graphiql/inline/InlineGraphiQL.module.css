@@ -36,8 +36,12 @@
   content-visibility: none;
 }
 
-:global(body:not(.graphiql-dark)) .inlinegraphiql :global(.graphiql-container) {
-  background-color: var(--divider);
+@media (prefers-color-scheme: light) {
+  :global(body:not(.graphiql-dark))
+    .inlinegraphiql
+    :global(.graphiql-container) {
+    background-color: var(--divider);
+  }
 }
 
 .inlinegraphiql :global(.graphiql-container) {
@@ -88,7 +92,6 @@
 
 .button.run {
   background-color: var(--primary-dark);
-  color: white;
 }
 
 .curl {

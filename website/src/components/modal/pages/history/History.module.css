@@ -176,7 +176,6 @@
 }
 
 .item.inUse .content .buttons .use {
-  color: var(--white);
   background-color: var(--primary-dark);
 }
 
