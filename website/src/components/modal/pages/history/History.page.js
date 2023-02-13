@@ -354,10 +354,13 @@ function History({ modal }) {
   }, []);
 
   const isScrolledClass = isScrolled ? "scrolled" : "";
+  const noConfigurationsClass = state?.length ? "" : styles.noConfigurations;
 
   return (
-    <Row className={`${styles.configurations} ${isScrolledClass}`}>
-      {!state?.length && <span>You have no configurations yet 🥹 ...</span>}
+    <Row
+      className={`${styles.configurations} ${noConfigurationsClass} ${isScrolledClass}`}
+    >
+      {!state?.length && <span>You have no configurations yet 🥹</span>}
       {state?.map((h, i) => {
         return (
           <Wrap
