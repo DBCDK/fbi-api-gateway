@@ -126,8 +126,7 @@ export default function Wrap() {
     if (!selectedToken?.token) {
       return {
         statusCode: 403,
-        message:
-          "Invalid client configuration. Missing agency in configuration for client.",
+        message: "Unauthorized",
       };
     }
     const data = await fetch(url, {
@@ -141,7 +140,7 @@ export default function Wrap() {
       credentials: "same-origin",
     });
 
-    return data.json().catch(() => data.text());
+    return data.json().catch((e) => data.text(e));
   };
 
   function onEditQuery(newQuery) {
