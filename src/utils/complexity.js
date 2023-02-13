@@ -32,8 +32,6 @@ function CustomFieldEstimator({ field, childComplexity }) {
  * I.e. it calculates complexity before query execution
  *
  * It should be added as an entry in the validationRules
- * option in express-graphql.
- * https://github.com/graphql/express-graphql
  *
  * We use the graphql-query-complexity for creating the rule
  * https://github.com/slicknode/graphql-query-complexity

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { GraphiQLInterface } from "graphiql";
+
 import {
   GraphiQLProvider,
   useExecutionContext,
@@ -122,6 +123,13 @@ export default function Wrap() {
   }
 
   const fetcher = async (graphQLParams) => {
+    if (!selectedToken?.token) {
+      return {
+        statusCode: 403,
+        message:
+          "Invalid client configuration. Missing agency in configuration for client.",
+      };
+    }
     const data = await fetch(url, {
       method: "POST",
       headers: {
@@ -132,6 +140,7 @@ export default function Wrap() {
       body: JSON.stringify(graphQLParams),
       credentials: "same-origin",
     });
+
     return data.json().catch(() => data.text());
   };
 
