@@ -5,7 +5,14 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, prefix, ttl, token, firstHits } = config.datasources.facets;
+const {
+  url,
+  prefix,
+  ttl,
+  token,
+  firstHits,
+  disableFuzzySearch,
+} = config.datasources.facets;
 
 export async function load({ q, filters = {}, facets = [], profile }, context) {
   const { agency, name } = profile;
@@ -24,7 +31,7 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
     q,
     filters,
     facets,
-    disable_fuzzy_search: false,
+    disable_fuzzy_search: disableFuzzySearch,
     ...statics,
   };
 
