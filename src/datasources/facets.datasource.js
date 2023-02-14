@@ -24,6 +24,7 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
     q,
     filters,
     facets,
+    disable_fuzzy_search: false,
     ...statics,
   };
 
