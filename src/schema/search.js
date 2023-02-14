@@ -274,17 +274,18 @@ export const resolvers = {
       args.facets.forEach((key) => {
         const values = parent?.filters?.[key] || [];
         const facet = res.find((obj) => obj.name === key);
-        const copy = { ...facet, values: [] };
+        const copy = { name: key, ...facet, values: [] };
         values.forEach((value) => {
           // get selected term props
-          const selected = facet.values.find((obj) => obj.term === value);
+          const selected = facet?.values.find((obj) => obj.term === value);
           // Push to copy values
           // If the selected value is missing a count (because it does not exist in the return data (res)) count will be set to null
           copy.values.push({ term: value, count: selected?.count || null });
         });
 
         // Remove values from res that has already been added in copy.values
-        const trimmed = facet.values.filter((v) => !values.includes(v.term));
+        const trimmed =
+          facet?.values?.filter((v) => !values.includes(v.term)) || [];
 
         // sort the selected terms
         copy.values.sort((a, b) => {
