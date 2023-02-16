@@ -9,11 +9,13 @@ import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
 import cors from "cors";
-import { graphqlHTTP, getGraphQLParams } from "express-graphql";
-import { parse, getOperationAST, print } from "graphql";
+//
+import { createHandler } from "graphql-http/lib/use/express";
+//
+import { parse, getOperationAST } from "graphql";
 import config from "./config";
 import howruHandler from "./howru";
-import { metrics, observeDuration, count } from "./utils/monitor";
+import { metrics, observeDuration } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
 import { v4 as uuid } from "uuid";
@@ -112,7 +114,7 @@ promExporterApp.listen(9599, () => {
   app.post("/:profile/graphql", async (req, res, next) => {
     // Get graphQL params
     try {
-      const graphQLParams = await getGraphQLParams(req);
+      const graphQLParams = req.body;
       const document = parse(graphQLParams.query);
       const ast = getOperationAST(document);
       req.queryVariables = graphQLParams.variables;
@@ -199,37 +201,23 @@ promExporterApp.listen(9599, () => {
   }
 
   // Setup route handler for GraphQL
-  app.post(
-    "/:profile/graphql",
-    graphqlHTTP(async (request, response, graphQLParams) => {
-      return {
-        schema: await getExecutableSchema({
-          clientPermissions: request?.smaug?.gateway,
-          hasAccessToken: !!request.accessToken,
-        }),
-        // graphiql: { headerEditorEnabled: true, shouldPersistHeaders: true },
-        extensions: ({ document, context, result }) => {
-          if (document && document.definitions && !result.errors) {
-            count("query_success");
-          } else {
-            count("query_error");
-            request.graphQLErrors = result.errors;
-          }
-        },
-        validationRules: [
-          validateComplexity({
-            query: graphQLParams.query,
-            variables: graphQLParams.variables,
-          }),
-        ],
-      };
-    })
-  );
+  app.post("/:profile/graphql", async (req, res) => {
+    const schema = await getExecutableSchema({
+      clientPermissions: req?.smaug?.gateway,
+      hasAccessToken: !!req.accessToken,
+    });
 
-  // route handler for livelinessprobe
-  // app.get("/", function (req, res) {
-  //   res.send("hello world");
-  // });
+    const { query, variables } = req.body;
+
+    const handler = createHandler({
+      schema,
+      validationRules: [validateComplexity({ query, variables })],
+      context: req,
+    });
+
+    return handler(req, res);
+  });
+
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
 

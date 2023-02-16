@@ -4,6 +4,13 @@
   flex-direction: column;
   flex-wrap: nowrap;
   position: relative;
+  justify-content: center;
+}
+
+.configurations.noConfigurations {
+  height: 100%;
+  text-align: center;
+  color: var(--text-light);
 }
 
 .item {
