@@ -13,20 +13,6 @@ background: linear-gradient(45deg, rgba(255,175,204,1) 25%, rgba(162,210,255,1) 
 */
 
 body {
-  /* gradient */
-  --hero-gradient-primary: #ffafcc;
-  --hero-gradient-secondary: #a2d2ff;
-
-  /* primary */
-  --primary: #ffafcc;
-  --primary-light: #ffc8dd;
-  --primary-dark: #f48ba9;
-
-  /* secondary */
-  --secondary: #a2d2ff;
-  --secondary-light: #bde0fe;
-  --secondary-dark: #86cbed;
-
   /* text */
   --text-dark: #212121;
   --text-light: #757575;
@@ -57,9 +43,6 @@ body {
   --secondary-dark: #64b5f6;
 
   /* gradient */
-  --hero-gradient-primary: #ff80ab;
-  --hero-gradient-secondary: #80d8ff;
-
   --hero-gradient-primary: #f8bbd0;
   --hero-gradient-secondary: #b3e5fc;
 }
@@ -83,4 +66,73 @@ body.christmas {
 
   --hero-gradient-primary: #dc1c13;
   --hero-gradient-secondary: #f07470;
+}
+
+/* 
+* Dark theme
+*/
+
+body {
+  --dark: #212a3b;
+  --dark-light: #2c3546;
+}
+
+/* selected dark theme */
+body.graphiql-dark {
+  --white: var(--dark);
+
+  /* text */
+  --text-dark: #bdbdbd;
+  --text-light: #757575;
+
+  --primary-light: #f48fb1;
+  --primary: #f06292;
+  --primary-dark: #ec407a;
+
+  /* secondary */
+  --secondary-light: #81d4fa;
+  --secondary: #4fc3f7;
+  --secondary-dark: #29b6f6;
+
+  /* gradient */
+  --hero-gradient-primary: var(--dark);
+  --hero-gradient-secondary: var(--dark);
+}
+body.graphiql-dark {
+  background-color: var(--dark-light);
+  color: var(--text-dark);
+}
+body.graphiql-dark code {
+  background-color: var(--dark);
+  color: #70bcff;
+}
+
+/* system dark theme */
+@media (prefers-color-scheme: dark) {
+  body:not(.graphiql-light) {
+    --white: var(--dark);
+
+    --text-dark: #bdbdbd;
+    --text-light: #757575;
+
+    --primary-light: #f48fb1;
+    --primary: #f06292;
+    --primary-dark: #ec407a;
+
+    --secondary-light: #81d4fa;
+    --secondary: #4fc3f7;
+    --secondary-dark: #29b6f6;
+
+    --hero-gradient-primary: var(--dark);
+    --hero-gradient-secondary: var(--dark);
+  }
+
+  body:not(.graphiql-light) {
+    background-color: var(--dark-light);
+    color: var(--text-dark);
+  }
+  body:not(.graphiql-light) code {
+    background-color: var(--dark);
+    color: #70bcff;
+  }
 }

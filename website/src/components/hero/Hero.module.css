@@ -14,16 +14,6 @@
 }
 
 .color {
-  /* background: rgb(255, 175, 204);
-  background: linear-gradient(
-    75deg,
-    #a2d2ff,
-    #ffafcc,
-    #a2d2ff,
-    #ffafcc
-  ); */
-
-  background: #dc1c13;
   background: linear-gradient(
     75deg,
     var(--hero-gradient-primary),
@@ -36,14 +26,6 @@
   z-index: -1;
   background-size: 400% 100%;
   animation: gradient 60s infinite;
-  /* background-image: linear-gradient(
-    to right,
-    #ffafcc,
-    #efb6e5,
-    #d7c0f6,
-    #bbc9ff,
-    #a2d2ff
-  ); */
 }
 
 .silhouette {
@@ -134,5 +116,45 @@
 @media screen and (max-width: 1200px) {
   .history {
     display: none;
+  }
+}
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.graphiql-dark) .title {
+  color: var(--text-dark);
+}
+:global(body.graphiql-dark) .go,
+:global(body.graphiql-dark) .history {
+  background-color: var(--dark-light);
+}
+:global(body.graphiql-dark) .token div {
+  outline: 2px solid var(--text-light);
+  background-color: var(--text-light) !important;
+}
+:global(body.graphiql-dark) .token input {
+  outline: 2px solid var(--text-light);
+  background-color: var(--dark) !important;
+}
+
+/* system theme theme */
+@media (prefers-color-scheme: dark) {
+  :global(body:not(.graphiql-light)) .title {
+    color: var(--text-dark);
+  }
+  :global(body:not(.graphiql-light)) .go,
+  :global(body:not(.graphiql-light)) .history {
+    background-color: var(--dark-light);
+  }
+  :global(body:not(.graphiql-light)) .token div {
+    outline: 2px solid var(--text-light);
+    background-color: var(--text-light) !important;
+  }
+  :global(body:not(.graphiql-light)) .token input {
+    outline: 2px solid var(--text-light);
+    background-color: var(--dark) !important;
   }
 }

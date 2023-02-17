@@ -2,6 +2,7 @@ import styles from "./schema.module.css";
 import { printSchema } from "./printer";
 import { buildSchema } from "graphql";
 import { useMemo } from "react";
+
 export default function Schema({ children }) {
   const schemaHtml = useMemo(() => {
     if (typeof children === "string") {

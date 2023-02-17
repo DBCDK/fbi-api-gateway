@@ -5,13 +5,6 @@
   z-index: 99;
   padding: var(--pt1) 0;
   background-color: var(--white);
-  /* background: rgb(255, 175, 204);
-  background: linear-gradient(
-    45deg,
-    rgba(162, 210, 255, 1) 25%,
-    rgba(255, 175, 204, 1) 75%
-  ); */
-  /* background: var(--primary-dark); */
   border-bottom: 4px solid var(--primary-dark);
 
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.25);
@@ -28,12 +21,10 @@
 }
 
 .token {
-  /* background-color: var(--primary-dark); */
   box-sizing: content-box;
   align-self: center;
   border: 2px solid var(--primary-dark);
   border-radius: var(--pt5);
-  /* transform: scale(0.85); */
 }
 
 .token > div:first-child {
@@ -165,5 +156,26 @@
   }
 }
 
-@media screen and (max-width: 768px) {
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.graphiql-dark) .top {
+  background: var(--dark);
+}
+
+:global(body.graphiql-dark) .top.index {
+  background: var(--dark-light);
+}
+
+/* system dark theme */
+@media (prefers-color-scheme: dark) {
+  :global(body:not(.graphiql-light)) .top {
+    background: var(--dark);
+  }
+
+  :global(body:not(.graphiql-light)) .top.index {
+    background: var(--dark-light);
+  }
 }

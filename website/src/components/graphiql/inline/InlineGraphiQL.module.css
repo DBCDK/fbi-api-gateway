@@ -36,14 +36,6 @@
   content-visibility: none;
 }
 
-@media (prefers-color-scheme: light) {
-  :global(body:not(.graphiql-dark))
-    .inlinegraphiql
-    :global(.graphiql-container) {
-    background-color: var(--divider);
-  }
-}
-
 .inlinegraphiql :global(.graphiql-container) {
   height: 400px;
   padding: 0;
@@ -110,4 +102,44 @@
 .open {
   margin-left: auto;
   margin-right: 0;
+}
+
+@media (prefers-color-scheme: light) {
+  :global(body:not(.graphiql-dark))
+    .inlinegraphiql
+    :global(.graphiql-container) {
+    background-color: var(--divider);
+  }
+}
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.graphiql-dark)
+  .inlinegraphiql
+  :global(.graphiql-container .graphiql-editors *) {
+  background-color: var(--dark-light);
+}
+:global(body.graphiql-dark) .inlinegraphiql .curl {
+  background-color: var(--dark);
+}
+:global(body.graphiql-dark) .button.run {
+  color: var(--dark);
+}
+
+/* system dark theme */
+@media (prefers-color-scheme: dark) {
+  :global(body:not(.graphiql-light))
+    .inlinegraphiql
+    :global(.graphiql-container .graphiql-editors *) {
+    background-color: var(--dark-light);
+  }
+  :global(body:not(.graphiql-light)) .inlinegraphiql .curl {
+    background-color: var(--dark);
+  }
+  :global(body:not(.graphiql-light)) .button.run {
+    color: var(--dark);
+  }
 }

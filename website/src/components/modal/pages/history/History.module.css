@@ -204,7 +204,7 @@
   top: var(--pt1);
   right: var(--pt1);
   border-radius: 50%;
-  background-color: white;
+  background-color: var(--white);
 }
 
 .cross div {
@@ -338,5 +338,42 @@
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
+  }
+}
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.graphiql-dark) .item .content .buttons .use,
+:global(body.graphiql-dark) .item.inUse .content .buttons .use {
+  color: var(--dark);
+}
+:global(body.graphiql-dark) .cross {
+  background-color: var(--dark-light);
+}
+:global(body.graphiql-dark) .cross:hover {
+  background-color: var(--text-dark);
+}
+
+:global(body.graphiql-dark) .item.removed .content {
+  background-color: var(--dark-light);
+}
+
+/* system dark theme */
+@media (prefers-color-scheme: dark) {
+  :global(body:not(.graphiql-light)) .item .content .buttons .use,
+  :global(body:not(.graphiql-light)) .item.inUse .content .buttons .use {
+    color: var(--dark);
+  }
+  :global(body:not(.graphiql-light)) .cross {
+    background-color: var(--dark-light);
+  }
+  :global(body:not(.graphiql-light)) .cross:hover {
+    background-color: var(--text-dark);
+  }
+  :global(body:not(.graphiql-light)) .item.removed .content {
+    background-color: var(--dark-light);
   }
 }

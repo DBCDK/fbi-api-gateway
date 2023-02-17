@@ -20,3 +20,19 @@
 .modal {
   background-color: var(--divider);
 }
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.graphiql-dark) .modal {
+  background-color: var(--dark-light);
+}
+
+/* system dark theme */
+@media (prefers-color-scheme: dark) {
+  :global(body:not(.graphiql-light)) .modal {
+    background-color: var(--dark-light);
+  }
+}

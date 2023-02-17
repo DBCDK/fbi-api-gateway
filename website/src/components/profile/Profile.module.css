@@ -4,9 +4,8 @@
 
 .toggle {
   border: 2px solid var(--primary-dark);
-
   height: var(--pt5);
-  background-color: transparent;
+  background-color: var(--white);
   font-family: var(--font-mono-regular);
   transition-duration: 0.35s;
   display: inline-block;
@@ -39,8 +38,8 @@
 
 .item.selected {
   font-family: var(--font-sans-bold);
-  color: var(--primary-dark);
-  border-left: 2px solid black;
+  color: var(--primary-dark) !important;
+  border-left: 2px solid var(--text-dark);
 }
 
 .item:focus-visible {
@@ -49,9 +48,36 @@
 }
 
 .item:hover {
-  color: var(--primary-dark);
+  color: var(--primary-dark) !important;
   background-color: transparent;
 }
 
-@media screen and (max-width: 576px) {
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.graphiql-dark) .toggle {
+  color: var(--text-dark);
+  background-color: var(--dark);
+}
+:global(body.graphiql-dark) .menu {
+  background-color: var(--dark-light);
+}
+:global(body.graphiql-dark) .item {
+  color: var(--text-dark);
+}
+
+/* system dark default */
+@media (prefers-color-scheme: dark) {
+  :global(body:not(.graphiql-light)) .toggle {
+    color: var(--text-dark);
+    background-color: var(--dark);
+  }
+  :global(body:not(.graphiql-light)) .menu {
+    background-color: var(--dark-light);
+  }
+  :global(body:not(.graphiql-light)) .item {
+    color: var(--text-dark);
+  }
 }

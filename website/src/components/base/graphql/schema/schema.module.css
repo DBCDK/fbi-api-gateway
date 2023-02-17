@@ -6,14 +6,46 @@
   margin-top: 32px;
 }
 .schema :global(.graphql-keyword) {
-  color: #cf222e;
+  color: #d60590;
 }
 .schema :global(.graphql-type-name),
 .schema :global(.graphql-enum-name),
 .schema :global(.graphql-input-name) {
-  color: #0550ae;
+  color: #007deb;
 }
 
 .schema :global(.graphql-description) {
-  color: #0a3069;
+  color: #009fb8;
+}
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.graphiql-dark) .schema {
+  background: var(--dark);
+}
+:global(body.graphiql-dark) .schema :global(.graphql-type-name),
+:global(body.graphiql-dark) .schema :global(.graphql-enum-name),
+:global(body.graphiql-dark) .schema :global(.graphql-input-name) {
+  color: #70bcff;
+}
+:global(body.graphiql-dark) .schema :global(.graphql-description) {
+  color: #00c2e0;
+}
+
+/* system dark theme */
+@media (prefers-color-scheme: dark) {
+  :global(body:not(.graphiql-light)) .schema {
+    background: var(--dark);
+  }
+  :global(body:not(.graphiql-light)) .schema :global(.graphql-type-name),
+  :global(body:not(.graphiql-light)) .schema :global(.graphql-enum-name),
+  :global(body:not(.graphiql-light)) .schema :global(.graphql-input-name) {
+    color: #70bcff;
+  }
+  :global(body:not(.graphiql-light)) .schema :global(.graphql-description) {
+    color: #00c2e0;
+  }
 }
