@@ -10,6 +10,7 @@
   transition-duration: 0.35s;
   display: inline-block;
   box-sizing: content-box;
+  cursor: pointer;
 
   /* half height */
   border-radius: var(--pt5);
@@ -19,8 +20,11 @@
   padding: 0 var(--pt2);
 }
 
-.toggle:focus-visible {
+.toggle:focus-visible,
+.toggle:hover {
   border: 2px solid var(--text-dark);
+  background-color: var(--text-dark);
+  color: var(--white);
 }
 
 .toggle::after {
@@ -44,7 +48,6 @@
 
 .item:focus-visible {
   outline: 2px solid var(--text-dark);
-  background-color: transparent;
 }
 
 .item:hover {
@@ -60,6 +63,13 @@
 :global(body.graphiql-dark) .toggle {
   color: var(--text-dark);
   background-color: var(--dark);
+  border: 2px solid var(--text-light);
+}
+:global(body.graphiql-dark) .toggle:hover,
+:global(body.graphiql-dark) .toggle:focus-visible {
+  color: var(--dark);
+  background-color: var(--text-light);
+  border: 2px solid var(--text-light);
 }
 :global(body.graphiql-dark) .menu {
   background-color: var(--dark-light);
@@ -73,6 +83,13 @@
   :global(body:not(.graphiql-light)) .toggle {
     color: var(--text-dark);
     background-color: var(--dark);
+    border: 2px solid var(--text-dark);
+  }
+  :global(body:not(.graphiql-light)) .toggle:hover,
+  :global(body:not(.graphiql-light)) .toggle:focus-visible {
+    color: var(--dark);
+    background-color: var(--text-dark);
+    border: 2px solid var(--text-dark);
   }
   :global(body:not(.graphiql-light)) .menu {
     background-color: var(--dark-light);

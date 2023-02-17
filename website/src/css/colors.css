@@ -46,7 +46,6 @@ body {
   --hero-gradient-primary: #f8bbd0;
   --hero-gradient-secondary: #b3e5fc;
 }
-
 body.easter {
   --primary: #ffca28;
   --primary-dark: #ffa726;
@@ -57,7 +56,6 @@ body.easter {
   --hero-gradient-primary: #ffe082;
   --hero-gradient-secondary: #ffa726;
 }
-
 body.christmas {
   --primary: #f07470;
   --primary-dark: #ea4c46;
@@ -83,7 +81,7 @@ body.graphiql-dark {
 
   /* text */
   --text-dark: #bdbdbd;
-  --text-light: #757575;
+  --text-light: #616161;
 
   --primary-light: #f48fb1;
   --primary: #f06292;
@@ -107,13 +105,29 @@ body.graphiql-dark code {
   color: #70bcff;
 }
 
+body.graphiql-dark.easter {
+  --primary: #ffca28;
+  --primary-dark: #ffa726;
+
+  --secondary: #aed581;
+  --secondary-light: #a5d6a7;
+}
+
+body.graphiql-dark.christmas {
+  --primary: #f07470;
+  --primary-dark: #ea4c46;
+
+  --secondary: #ffffff;
+  --secondary-light: #ffffff;
+}
+
 /* system dark theme */
 @media (prefers-color-scheme: dark) {
   body:not(.graphiql-light) {
     --white: var(--dark);
 
     --text-dark: #bdbdbd;
-    --text-light: #757575;
+    --text-light: #616161;
 
     --primary-light: #f48fb1;
     --primary: #f06292;
@@ -134,5 +148,21 @@ body.graphiql-dark code {
   body:not(.graphiql-light) code {
     background-color: var(--dark);
     color: #70bcff;
+  }
+
+  body.easter {
+    --primary: #ffca28;
+    --primary-dark: #ffa726;
+
+    --secondary: #aed581;
+    --secondary-light: #a5d6a7;
+  }
+
+  body.christmas {
+    --primary: #e53935;
+    --primary-dark: #d32f2f;
+
+    --secondary: #ffffff;
+    --secondary-light: #ffffff;
   }
 }

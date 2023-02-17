@@ -128,6 +128,9 @@
 :global(body.graphiql-dark) .button.run {
   color: var(--dark);
 }
+:global(body.graphiql-dark) .dummycontainer {
+  background-color: var(--dark);
+}
 
 /* system dark theme */
 @media (prefers-color-scheme: dark) {
@@ -141,5 +144,8 @@
   }
   :global(body:not(.graphiql-light)) .button.run {
     color: var(--dark);
+  }
+  :global(body:not(.graphiql-light)) .dummycontainer {
+    background-color: var(--dark);
   }
 }

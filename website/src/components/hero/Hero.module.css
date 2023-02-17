@@ -131,13 +131,13 @@
 :global(body.graphiql-dark) .history {
   background-color: var(--dark-light);
 }
-:global(body.graphiql-dark) .token div {
-  outline: 2px solid var(--text-light);
-  background-color: var(--text-light) !important;
+:global(body.graphiql-dark) .token > div {
+  outline: 2px solid var(--text-dark);
+  background-color: var(--text-dark) !important;
 }
 :global(body.graphiql-dark) .token input {
   outline: 2px solid var(--text-light);
-  background-color: var(--dark) !important;
+  background-color: var(--dark-light) !important;
 }
 
 /* system theme theme */
@@ -149,12 +149,12 @@
   :global(body:not(.graphiql-light)) .history {
     background-color: var(--dark-light);
   }
-  :global(body:not(.graphiql-light)) .token div {
-    outline: 2px solid var(--text-light);
-    background-color: var(--text-light) !important;
+  :global(body:not(.graphiql-light)) .token > div {
+    outline: 2px solid var(--text-dark);
+    background-color: var(--text-dark) !important;
   }
   :global(body:not(.graphiql-light)) .token input {
     outline: 2px solid var(--text-light);
-    background-color: var(--dark) !important;
+    background-color: var(--dark-light) !important;
   }
 }

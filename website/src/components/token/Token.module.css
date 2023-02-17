@@ -130,8 +130,11 @@
 
 .clear:focus-visible {
   transform: translateX(0);
-  color: var(--white) !important;
   background-color: var(--text-dark) !important;
+}
+
+.clear:focus-visible p {
+  color: var(--white);
 }
 
 /* compact */
