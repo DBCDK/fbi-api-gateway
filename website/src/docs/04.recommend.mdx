@@ -5,7 +5,7 @@ Get work or manifestation recommendations based on a pid.
 Results returned as workIds (works)
 
 <InlineGraphiQL
-  query={`query ($pid: String!, $limit: Int!) {
+  query={`query Example_WorkRecommendations ($pid: String!, $limit: Int!) {
   recommend(pid: $pid, limit: $limit) {
     result {
       work {
@@ -29,7 +29,7 @@ Results returned as workIds (works)
 Results returned as pids (manifestations):
 
 <InlineGraphiQL
-  query={`query ($pid: String!, $limit: Int!) {
+  query={`query Example_ManifestationRecommendations ($pid: String!, $limit: Int!) {
   recommend(pid: $pid, limit: $limit) {
     result {
       manifestation {
@@ -52,7 +52,7 @@ Results returned as pids (manifestations):
 This example assumes that you have an access token for Aarhus. It uses 775147 (Hasle Bibliotek) as branchId.
 
 <InlineGraphiQL
-  query={`query ($pid: String!, $limit: Int!, $branchId: String!) {
+  query={`query Example_LocalRecommendations ($pid: String!, $limit: Int!, $branchId: String!) {
   recommend(pid: $pid, limit: $limit, branchId: $branchId) {
     result {
       work {

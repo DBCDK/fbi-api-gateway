@@ -10,7 +10,7 @@ manifestation, but will still be a part of the same work.
 A basic example fetching often-used fields.
 
 <InlineGraphiQL
-  query={`query ($pid: String!) {
+  query={`query Example_BasicManifestation ($pid: String!) {
   manifestation(pid: $pid) {
     titles {
       main
@@ -46,7 +46,7 @@ A manifestation is identified by a _pid_ or _faust_, and either of them can be u
 fetch a work.
 
 <InlineGraphiQL
-  query={`query ($pid: String!) {
+  query={`query Example_ManifestationByPid ($pid: String!) {
   manifestation(pid: $pid) {
     titles {
       main
@@ -59,7 +59,7 @@ fetch a work.
 />
 
 <InlineGraphiQL
-  query={`query ($faust: String!) {
+  query={`query Example_ManifestationByFaust ($faust: String!) {
   manifestation(faust: $faust) {
     titles {
       main
@@ -81,7 +81,7 @@ The order of the manifestations will match the order of the identifiers provided
 If a manifestation provides no identifier, null is returned at the corresponding position.
 
 <InlineGraphiQL
-  query={`query ($faust: [String!]!) {
+  query={`query Example_MultipleManifestations ($faust: [String!]!) {
       manifestations(faust: $faust) {
         titles {
             main
@@ -184,7 +184,7 @@ Covers are provided by the moreinfo service. If no covers are provided a default
 materialtype and title of the manifestation. The source of the cover is given in the origin field.
 
 <InlineGraphiQL
-  query={`query ($faust: [String!]!) {
+  query={`query Example_ManifestationCovers ($faust: [String!]!) {
 manifestations(faust: $faust) {    
 titles {
 main
@@ -204,7 +204,7 @@ This would be common shelfmark information and would not be based on the shelf i
 from a specific library.
 
 <InlineGraphiQL
-  query={`query($faust: String!) {
+  query={`query Example_ShelfInformations ($faust: String!) {
             manifestation(faust: $faust) {
             shelfmark {
                 postfix
