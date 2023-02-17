@@ -1,15 +1,14 @@
 # BIBDK Help examples
+
 This is bibdk specific stuff! :blush: This is how one may search for help texts.
 
-<InlineGraphiQL 
-  query={
-    `query ($q: String!) {
+<InlineGraphiQL
+  query={`query Example_Help ($q: String!) {
       help(q: $q) {
         result {
           title
         }
       }
-    }`
-  } 
-  variables={{q: "bestil"}}
+    }`}
+  variables={{ q: "bestil" }}
 />

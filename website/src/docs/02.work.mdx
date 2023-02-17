@@ -21,7 +21,7 @@ detailed fields like “lastname”, “nameSort” and “birthYear” are avai
 In the following example, often-used fields are fetched in the simplest way possible.
 
 <InlineGraphiQL
-  query={`query ($id: String!) {
+  query={`query Example_BasicWork ($id: String!) {
   work(id: $id) {
     workId
     titles {
@@ -68,7 +68,7 @@ A work is identified by a _work id_, _pid_, or _faust_, and either of them can b
 fetch a work.
 
 <InlineGraphiQL
-  query={`query ($faust: String!) {
+  query={`query Example_WorkByFaust ($faust: String!) {
       work(faust: $faust) {
         workId
       }
@@ -79,7 +79,7 @@ fetch a work.
 />
 
 <InlineGraphiQL
-  query={`query ($pid: String!) {
+  query={`query Example_WorkByPid ($pid: String!) {
       work(pid: $pid) {
         workId
       }
@@ -90,7 +90,7 @@ fetch a work.
 />
 
 <InlineGraphiQL
-  query={`query ($id: String!) {
+  query={`query Example_WorkById ($id: String!) {
       work(id: $id) {
         workId
       }
@@ -110,7 +110,7 @@ The order of these works will match the order of the identifiers that are provid
 If no work is found as an identifier, null is returned at the corresponding position.
 
 <InlineGraphiQL
-  query={`query ($faust: [String!]!) {
+  query={`query Example_MultipleWorks ($faust: [String!]!) {
       works(faust: $faust) {
         workId
       }
@@ -126,7 +126,7 @@ The _relations_ field can be used to look up other manifestations that are relat
 this work/manifestation.
 
 <InlineGraphiQL
-  query={`query ($id: String!) {
+  query={`query Example_WorkRelations ($id: String!) {
   work(id: $id) {
     workId
     titles {
@@ -157,7 +157,7 @@ Note that if the review is created by a librarian (materialevurdering), the actu
 review is available on the manifestation at the path _review.reviewByLibrarians_.
 
 <InlineGraphiQL
-  query={`query ($id: String!) {
+  query={`query Example_WorkReviews ($id: String!) {
   work(id: $id) {
     workId
     titles {
@@ -221,7 +221,7 @@ data you need to generate the links. If links are not required, use the field _r
 does not require substitution.
 
 <InlineGraphiQL
-  query={`query ($pid: String!) {
+  query={`query Example_LibrariansReview ($pid: String!) {
   manifestation(pid: $pid) {
     pid
     titles {
@@ -266,7 +266,7 @@ The following example shows a librarians review with a reference to an external 
 (in the last section of the response).
 
 <InlineGraphiQL
-  query={`query ($id: String!) {
+  query={`query Example_Deprecated_ReviewsWithReference ($id: String!) {
   work(id: $id) {
     workId
     titles {
@@ -306,7 +306,7 @@ In the following example you will find both external and infomedia reviews. Note
 that some but not all of these reviews include a rating.
 
 <InlineGraphiQL
-  query={`query ($id: String!) {
+  query={`query Example_Deprecated_Reviews ($id: String!) {
   work(id: $id) {
     workId
     titles {
@@ -341,7 +341,7 @@ A work may be part of one or more series. The example below fetches the series t
 as well as some information about how the work itself fits inside the series.
 
 <InlineGraphiQL
-  query={`query ($workId: String!) {
+  query={`query Example_WorkSeries ($workId: String!) {
   work(id: $workId) {
     series {
     	title
@@ -366,7 +366,7 @@ Fetch all the members (works) of a series that the referenced work is a member o
 including the work itself.
 
 <InlineGraphiQL
-  query={`query ($workId: String!) {
+  query={`query Example_SeriesMembers ($workId: String!) {
   work(id: $workId) {
     seriesMembers {
       titles {
@@ -385,7 +385,7 @@ including the work itself.
 Some works may be part of a universe, like the "Harry Potter Universe" in this example.
 
 <InlineGraphiQL
-  query={`query ($workId: String!) {
+  query={`query Example_WorkUniverse ($workId: String!) {
   work(id: $workId) {
     universe {
       title
@@ -405,7 +405,7 @@ translate data where possible.
 Only fields named _display_, _summary_ etc. may contain translations.
 
 <InlineGraphiQL
-  query={`query ($workId: String!, $language: LanguageCode) {
+  query={`query Example_WorkTranslations ($workId: String!, $language: LanguageCode) {
     work(id: $workId, language: $language) {
       mainLanguages {
         display
