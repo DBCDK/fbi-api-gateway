@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+// import { useEffect, useState } from "react";
 import getConfig from "next/config";
 import Head from "next/head";
 
@@ -16,34 +17,34 @@ if (theme === "easter") {
 }
 
 function MyApp({ Component, pageProps, router }) {
-  const [ready, setReady] = useState(false);
+  // const [ready, setReady] = useState(false);
 
   useEffect(() => {
     document.body.classList?.add(theme);
   });
 
-  useEffect(() => {
-    if (!ready) {
-      setReady(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!ready) {
+  //     setReady(true);
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    if (ready) {
-      // Add class if system has darkmode enabled
-      function setTheme(system) {
-        const action = system.matches ? "add" : "remove";
-        document.body.classList?.[action]("system-dark");
-      }
+  // useEffect(() => {
+  //   if (ready) {
+  //     // Add class if system has darkmode enabled
+  //     function setTheme(system) {
+  //       const action = system.matches ? "add" : "remove";
+  //       document.body.classList?.[action]("system-dark");
+  //     }
 
-      const system = window?.matchMedia("(prefers-color-scheme: dark)");
-      setTheme(system);
+  //     const system = window?.matchMedia("(prefers-color-scheme: dark)");
+  //     setTheme(system);
 
-      system.addEventListener("change", (e) => {
-        setTheme(e);
-      });
-    }
-  }, [ready]);
+  //     system.addEventListener("change", (e) => {
+  //       setTheme(e);
+  //     });
+  //   }
+  // }, [ready]);
 
   return (
     <>
