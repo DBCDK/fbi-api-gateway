@@ -23,29 +23,14 @@
 */
 
 /* selected dark theme */
-:global(body.graphiql-dark) .schema {
+:global(body.dark) .schema {
   background: var(--dark);
 }
-:global(body.graphiql-dark) .schema :global(.graphql-type-name),
-:global(body.graphiql-dark) .schema :global(.graphql-enum-name),
-:global(body.graphiql-dark) .schema :global(.graphql-input-name) {
+:global(body.dark) .schema :global(.graphql-type-name),
+:global(body.dark) .schema :global(.graphql-enum-name),
+:global(body.dark) .schema :global(.graphql-input-name) {
   color: #70bcff;
 }
-:global(body.graphiql-dark) .schema :global(.graphql-description) {
+:global(body.dark) .schema :global(.graphql-description) {
   color: #00c2e0;
-}
-
-/* system dark theme */
-@media (prefers-color-scheme: dark) {
-  :global(body:not(.graphiql-light)) .schema {
-    background: var(--dark);
-  }
-  :global(body:not(.graphiql-light)) .schema :global(.graphql-type-name),
-  :global(body:not(.graphiql-light)) .schema :global(.graphql-enum-name),
-  :global(body:not(.graphiql-light)) .schema :global(.graphql-input-name) {
-    color: #70bcff;
-  }
-  :global(body:not(.graphiql-light)) .schema :global(.graphql-description) {
-    color: #00c2e0;
-  }
 }

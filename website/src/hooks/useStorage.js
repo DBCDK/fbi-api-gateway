@@ -1,5 +1,4 @@
 import useSWR from "swr";
-import { isEqual } from "@/components/utils";
 
 export default function useStorage() {
   const { data: history, mutate: mutateHistory } = useSWR("history", (key) =>

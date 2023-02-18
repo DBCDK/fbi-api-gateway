@@ -117,35 +117,17 @@
 */
 
 /* selected dark theme */
-:global(body.graphiql-dark)
+:global(body.dark)
   .inlinegraphiql
   :global(.graphiql-container .graphiql-editors *) {
   background-color: var(--dark-light);
 }
-:global(body.graphiql-dark) .inlinegraphiql .curl {
+:global(body.dark) .inlinegraphiql .curl {
   background-color: var(--dark);
 }
-:global(body.graphiql-dark) .button.run {
+:global(body.dark) .button.run {
   color: var(--dark);
 }
-:global(body.graphiql-dark) .dummycontainer {
+:global(body.dark) .dummycontainer {
   background-color: var(--dark);
-}
-
-/* system dark theme */
-@media (prefers-color-scheme: dark) {
-  :global(body:not(.graphiql-light))
-    .inlinegraphiql
-    :global(.graphiql-container .graphiql-editors *) {
-    background-color: var(--dark-light);
-  }
-  :global(body:not(.graphiql-light)) .inlinegraphiql .curl {
-    background-color: var(--dark);
-  }
-  :global(body:not(.graphiql-light)) .button.run {
-    color: var(--dark);
-  }
-  :global(body:not(.graphiql-light)) .dummycontainer {
-    background-color: var(--dark);
-  }
 }

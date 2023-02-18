@@ -26,13 +26,6 @@
 */
 
 /* selected dark theme */
-:global(body.graphiql-dark) .modal {
+:global(body.dark) .modal {
   background-color: var(--dark-light);
-}
-
-/* system dark theme */
-@media (prefers-color-scheme: dark) {
-  :global(body:not(.graphiql-light)) .modal {
-    background-color: var(--dark-light);
-  }
 }

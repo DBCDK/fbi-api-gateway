@@ -76,7 +76,7 @@ body {
 }
 
 /* selected dark theme */
-body.graphiql-dark {
+body.dark {
   --white: var(--dark);
 
   /* text */
@@ -96,16 +96,16 @@ body.graphiql-dark {
   --hero-gradient-primary: var(--dark);
   --hero-gradient-secondary: var(--dark);
 }
-body.graphiql-dark {
+body.dark {
   background-color: var(--dark-light);
   color: var(--text-dark);
 }
-body.graphiql-dark code {
+body.dark code {
   background-color: var(--dark);
   color: #70bcff;
 }
 
-body.graphiql-dark.easter {
+body.dark.easter {
   --primary: #ffca28;
   --primary-dark: #ffa726;
 
@@ -113,56 +113,10 @@ body.graphiql-dark.easter {
   --secondary-light: #a5d6a7;
 }
 
-body.graphiql-dark.christmas {
+body.dark.christmas {
   --primary: #f07470;
   --primary-dark: #ea4c46;
 
   --secondary: #ffffff;
   --secondary-light: #ffffff;
-}
-
-/* system dark theme */
-@media (prefers-color-scheme: dark) {
-  body:not(.graphiql-light) {
-    --white: var(--dark);
-
-    --text-dark: #bdbdbd;
-    --text-light: #616161;
-
-    --primary-light: #f48fb1;
-    --primary: #f06292;
-    --primary-dark: #ec407a;
-
-    --secondary-light: #81d4fa;
-    --secondary: #4fc3f7;
-    --secondary-dark: #29b6f6;
-
-    --hero-gradient-primary: var(--dark);
-    --hero-gradient-secondary: var(--dark);
-  }
-
-  body:not(.graphiql-light) {
-    background-color: var(--dark-light);
-    color: var(--text-dark);
-  }
-  body:not(.graphiql-light) code {
-    background-color: var(--dark);
-    color: #70bcff;
-  }
-
-  body.easter {
-    --primary: #ffca28;
-    --primary-dark: #ffa726;
-
-    --secondary: #aed581;
-    --secondary-light: #a5d6a7;
-  }
-
-  body.christmas {
-    --primary: #e53935;
-    --primary-dark: #d32f2f;
-
-    --secondary: #ffffff;
-    --secondary-light: #ffffff;
-  }
 }

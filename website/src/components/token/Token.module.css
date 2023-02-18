@@ -206,51 +206,25 @@
 */
 
 /* selected dark theme */
-:global(body.graphiql-dark) .display p {
+:global(body.dark) .display p {
   color: var(--dark);
 }
-:global(body.graphiql-dark) .input {
+:global(body.dark) .input {
   background-color: var(--dark);
   color: var(--text-dark);
 }
-:global(body.graphiql-dark) .clear {
+:global(body.dark) .clear {
   background-color: var(--dark) !important;
   border: var(--pt05) solid var(--dark-light);
 }
-:global(body.graphiql-dark) .clear p {
+:global(body.dark) .clear p {
   color: var(--text-dark);
 }
-:global(body.graphiql-dark) .clear:focus-visible,
-:global(body.graphiql-dark) .clear:hover {
+:global(body.dark) .clear:focus-visible,
+:global(body.dark) .clear:hover {
   background-color: var(--text-dark) !important;
 }
-:global(body.graphiql-dark) .clear:focus-visible p,
-:global(body.graphiql-dark) .clear:hover p {
+:global(body.dark) .clear:focus-visible p,
+:global(body.dark) .clear:hover p {
   color: var(--dark-light) !important;
-}
-
-/* system dark theme */
-@media (prefers-color-scheme: dark) {
-  :global(body:not(.graphiql-light)) .display p {
-    color: var(--dark);
-  }
-  :global(body:not(.graphiql-light)) .input {
-    background-color: var(--dark);
-    color: var(--text-dark);
-  }
-  :global(body:not(.graphiql-light)) .clear {
-    background-color: var(--dark) !important;
-    border: var(--pt05) solid var(--dark-light);
-  }
-  :global(body:not(.graphiql-light)) .clear p {
-    color: var(--text-dark);
-  }
-  :global(body:not(.graphiql-light)) .clear:focus-visible,
-  :global(body:not(.graphiql-light)) .clear:hover {
-    background-color: var(--text-dark) !important;
-  }
-  :global(body:not(.graphiql-light)) .clear:focus-visible p,
-  :global(body:not(.graphiql-light)) .clear:hover p {
-    color: var(--dark-light) !important;
-  }
 }

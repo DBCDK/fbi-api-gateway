@@ -60,41 +60,20 @@
 */
 
 /* selected dark theme */
-:global(body.graphiql-dark) .toggle {
+:global(body.dark) .toggle {
   color: var(--text-dark);
   background-color: var(--dark);
   border: 2px solid var(--text-light);
 }
-:global(body.graphiql-dark) .toggle:hover,
-:global(body.graphiql-dark) .toggle:focus-visible {
+:global(body.dark) .toggle:hover,
+:global(body.dark) .toggle:focus-visible {
   color: var(--dark);
   background-color: var(--text-light);
   border: 2px solid var(--text-light);
 }
-:global(body.graphiql-dark) .menu {
+:global(body.dark) .menu {
   background-color: var(--dark-light);
 }
-:global(body.graphiql-dark) .item {
+:global(body.dark) .item {
   color: var(--text-dark);
-}
-
-/* system dark default */
-@media (prefers-color-scheme: dark) {
-  :global(body:not(.graphiql-light)) .toggle {
-    color: var(--text-dark);
-    background-color: var(--dark);
-    border: 2px solid var(--text-dark);
-  }
-  :global(body:not(.graphiql-light)) .toggle:hover,
-  :global(body:not(.graphiql-light)) .toggle:focus-visible {
-    color: var(--dark);
-    background-color: var(--text-dark);
-    border: 2px solid var(--text-dark);
-  }
-  :global(body:not(.graphiql-light)) .menu {
-    background-color: var(--dark-light);
-  }
-  :global(body:not(.graphiql-light)) .item {
-    color: var(--text-dark);
-  }
 }

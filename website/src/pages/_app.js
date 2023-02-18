@@ -1,7 +1,9 @@
 import { useEffect } from "react";
-// import { useEffect, useState } from "react";
+import { useState } from "react";
 import getConfig from "next/config";
 import Head from "next/head";
+
+import useTheme from "@/hooks/useTheme";
 
 import "@/scss/custom-bootstrap.scss";
 import "@/css/styles.css";
@@ -17,34 +19,48 @@ if (theme === "easter") {
 }
 
 function MyApp({ Component, pageProps, router }) {
-  // const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(false);
+  const { theme: selected, isLoading } = useTheme();
 
   useEffect(() => {
     document.body.classList?.add(theme);
   });
 
-  // useEffect(() => {
-  //   if (!ready) {
-  //     setReady(true);
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!ready) {
+      setReady(true);
+    }
+  }, []);
 
-  // useEffect(() => {
-  //   if (ready) {
-  //     // Add class if system has darkmode enabled
-  //     function setTheme(system) {
-  //       const action = system.matches ? "add" : "remove";
-  //       document.body.classList?.[action]("system-dark");
-  //     }
+  useEffect(() => {
+    if (ready) {
+      if (!isLoading) {
+        // Add class if system has darkmode enabled
+        function setTheme(mode) {
+          if (mode === "dark") {
+            document.body.classList?.add("dark");
+            document.body.classList?.remove("light");
+          }
+          if (mode === "light") {
+            document.body.classList?.remove("dark");
+            document.body.classList?.add("light");
+          }
+        }
 
-  //     const system = window?.matchMedia("(prefers-color-scheme: dark)");
-  //     setTheme(system);
+        const matchMedia = window?.matchMedia("(prefers-color-scheme: dark)");
+        const system = matchMedia.matches ? "dark" : "light";
 
-  //     system.addEventListener("change", (e) => {
-  //       setTheme(e);
-  //     });
-  //   }
-  // }, [ready]);
+        setTheme(selected || system);
+
+        matchMedia.addEventListener("change", (e) => {
+          console.log("e", e);
+
+          const system = e.matches ? "dark" : "light";
+          setTheme(selected || system);
+        });
+      }
+    }
+  }, [ready, selected, isLoading]);
 
   return (
     <>

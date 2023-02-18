@@ -160,42 +160,20 @@
 * Dark theme
 */
 
-/* selected dark theme */
-:global(body.graphiql-dark) .top {
-  background: var(--dark);
+:global(body.dark) .top {
+  background-color: var(--dark);
 }
-:global(body.graphiql-dark) .top.index {
-  background: var(--dark-light);
+:global(body.dark) .top.index {
+  background-color: var(--dark-light);
 }
-:global(body.graphiql-dark) .token,
-:global(body.graphiql-dark) .history {
+:global(body.dark) .token,
+:global(body.dark) .history {
   border: 2px solid var(--text-light);
 }
-:global(body.graphiql-dark) .token button {
+:global(body.dark) .token button {
   border: 2px solid var(--dark);
   background-color: var(--dark-light) !important;
 }
-:global(body.graphiql-dark) .token > div:first-child {
-  background-color: var(--text-dark) !important;
-}
-
-/* system dark theme */
-@media (prefers-color-scheme: dark) {
-  :global(body:not(.graphiql-light)) .top {
-    background: var(--dark);
-  }
-  :global(body:not(.graphiql-light)) .top.index {
-    background: var(--dark-light);
-  }
-  :global(body:not(.graphiql-light)) .token,
-  :global(body:not(.graphiql-light)) .history {
-    border: 2px solid var(--text-dark);
-  }
-  :global(body:not(.graphiql-light)) .token button {
-    border: 2px solid var(--dark);
-    background-color: var(--dark-light) !important;
-  }
-  :global(body:not(.graphiql-light)) .token > div:first-child {
-    background-color: var(--text-dark) !important;
-  }
+:global(body.dark) .token > div:first-child {
+  background-color: var(--text-light) !important;
 }
