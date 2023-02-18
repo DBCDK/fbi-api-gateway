@@ -15,7 +15,7 @@ on the corresponding _term_.
 The following example gets suggestions for all agencies.
 
 <InlineGraphiQL
-  query={`query ($q: String!) {
+  query={`query Example_Suggestions ($q: String!) {
   suggest(q: $q) {
     result {
       type
@@ -43,7 +43,7 @@ The value of _branchId_ is a string that must be the id of one of the branches.
 This example assumes that you have an access token for Aarhus.
 
 <InlineGraphiQL
-  query={`query ($q: String!, $branchId: String!) {
+  query={`query Example_LocalSuggestions ($q: String!, $branchId: String!) {
   localSuggest(q: $q, branchId: $branchId) {
     result {
       type

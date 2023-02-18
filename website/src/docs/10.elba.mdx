@@ -21,7 +21,7 @@ The returned _status_ can be one of the following:
 - _ERROR_MISSING_CLIENT_CONFIGURATION_
 
 <InlineGraphiQL
-  query={`mutation ($input: CopyRequestInput!) {
+  query={`mutation Example_ElbaPlaceCopyRequest ($input: CopyRequestInput!) {
   elba {
     placeCopyRequest(input: $input, dryRun: true) {
       status

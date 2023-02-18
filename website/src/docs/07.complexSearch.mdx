@@ -13,7 +13,7 @@ This is work in progress:
 - holdings filtering is not working
 
 <InlineGraphiQL
-  query={`query ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!) {
+  query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!) {
   complexSearch(cql: $cql, filters: $filters) {
     hitcount
     errorMessage
