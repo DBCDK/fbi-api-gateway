@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import getConfig from "next/config";
 import Head from "next/head";
 
@@ -20,7 +19,7 @@ if (theme === "easter") {
 
 function MyApp({ Component, pageProps, router }) {
   const [ready, setReady] = useState(false);
-  const { theme: selected, isLoading } = useTheme();
+  const { theme: selected, setTheme, isLoading } = useTheme();
 
   useEffect(() => {
     document.body.classList?.add(theme);
@@ -35,18 +34,6 @@ function MyApp({ Component, pageProps, router }) {
   useEffect(() => {
     if (ready) {
       if (!isLoading) {
-        // Add class if system has darkmode enabled
-        function setTheme(mode) {
-          if (mode === "dark") {
-            document.body.classList?.add("dark");
-            document.body.classList?.remove("light");
-          }
-          if (mode === "light") {
-            document.body.classList?.remove("dark");
-            document.body.classList?.add("light");
-          }
-        }
-
         const matchMedia = window?.matchMedia("(prefers-color-scheme: dark)");
         const system = matchMedia.matches ? "dark" : "light";
 

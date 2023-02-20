@@ -192,6 +192,11 @@
   color: var(--white);
 }
 
+.item.expanded hr {
+  margin-left: calc(var(--pt2) * -1);
+  width: calc(100% + var(--pt4));
+}
+
 /* cross */
 .cross {
   width: var(--pt4);
@@ -358,4 +363,7 @@
 }
 :global(body.dark) .item.removed .content {
   background-color: var(--dark-light);
+}
+:global(body.dark) .item hr {
+  border-color: var(--dark);
 }

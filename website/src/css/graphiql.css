@@ -381,6 +381,10 @@ reach-portal {
   --session-header-height: 51px;
 }
 @media (prefers-color-scheme: dark) {
+  body:not(.light) .graphiql-container,
+  body:not(.light) .CodeMirror-info,
+  body:not(.light) .CodeMirror-lint-tooltip,
+  body:not(.light) reach-portal,
   body:not(.graphiql-light) .graphiql-container,
   body:not(.graphiql-light) .CodeMirror-info,
   body:not(.graphiql-light) .CodeMirror-lint-tooltip,
@@ -398,6 +402,10 @@ reach-portal {
     --popover-border: 1px solid hsl(var(--color-neutral));
   }
 }
+body.dark .graphiql-container,
+body.dark .CodeMirror-info,
+body.dark .CodeMirror-lint-tooltip,
+body.dark reach-portal,
 body.graphiql-dark .graphiql-container,
 body.graphiql-dark .CodeMirror-info,
 body.graphiql-dark .CodeMirror-lint-tooltip,

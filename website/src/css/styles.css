@@ -46,6 +46,16 @@
   margin-top: var(--pt2);
 }
 
+em {
+  word-break: break-all;
+}
+
+@media (min-width: 576px) {
+  em {
+    word-break: unset;
+  }
+}
+
 @media screen and (max-width: 1200px) {
   .popover.compact {
     display: none;

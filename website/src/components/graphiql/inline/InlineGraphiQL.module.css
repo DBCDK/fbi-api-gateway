@@ -99,16 +99,26 @@
   display: flex;
 }
 
+.buttons .button:last-child {
+  display: none;
+}
+
 .open {
   margin-left: auto;
   margin-right: 0;
 }
 
 @media (prefers-color-scheme: light) {
-  :global(body:not(.graphiql-dark))
+  :global(body:not(.dark, .graphiql-dark))
     .inlinegraphiql
     :global(.graphiql-container) {
     background-color: var(--divider);
+  }
+}
+
+@media (min-width: 576px) {
+  .buttons .button:last-child {
+    display: unset;
   }
 }
 

@@ -13,8 +13,6 @@ export default function useTheme() {
     (key) => localStorage.getItem(key) || null
   );
 
-  console.log("theme", theme);
-
   const setTheme = (value) => {
     if (ENUM_VALUES[value]) {
       // store
@@ -26,6 +24,8 @@ export default function useTheme() {
     if (value === null) {
       _removeTheme();
     }
+
+    _syncTheme(value);
   };
 
   const _removeTheme = () => {
@@ -33,6 +33,23 @@ export default function useTheme() {
     localStorage.removeItem(KEY_NAME);
     // mutate
     mutateHistory(null);
+  };
+
+  const _syncTheme = (value) => {
+    console.log("_syncTheme", { value, theme });
+
+    if (value === null) {
+      document.body.classList?.remove("dark", "graphiql-dark");
+      document.body.classList?.remove("light", "graphiql-light");
+    }
+    if (value === "dark") {
+      document.body.classList?.add("dark", "graphiql-dark");
+      document.body.classList?.remove("light", "graphiql-light");
+    }
+    if (value === "light") {
+      document.body.classList?.remove("dark", "graphiql-dark");
+      document.body.classList?.add("light", "graphiql-light");
+    }
   };
 
   return {

@@ -132,6 +132,27 @@
   padding: 0;
 }
 
+/* hack */
+.modal :global(.offcanvas-header) {
+  position: absolute;
+  width: 100%;
+}
+
+.darkmode {
+  display: none;
+
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  padding: var(--pt2);
+}
+
+@media (min-width: 1200px) {
+  .darkmode {
+    display: flex;
+  }
+}
+
 @media screen and (max-width: 1200px) {
   .links {
     padding: 0;

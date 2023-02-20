@@ -17,6 +17,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin: auto;
 }
 
 .wrap.inActive.value {
@@ -227,4 +228,11 @@
 :global(body.dark) .clear:focus-visible p,
 :global(body.dark) .clear:hover p {
   color: var(--dark-light) !important;
+}
+
+@media screen and (max-width: 576px) {
+  :global(body.dark) .wrap.inActive.value .clear {
+    background-color: var(--dark) !important;
+    color: var(--text-dark) !important;
+  }
 }
