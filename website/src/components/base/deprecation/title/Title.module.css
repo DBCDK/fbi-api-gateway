@@ -1,0 +1,15 @@
+.deprecation {
+  color: var(--text-light);
+  letter-spacing: 1.2px;
+}
+
+.icon {
+  margin: 0 var(--pt1);
+}
+
+:global(#container h2) .deprecation {
+}
+
+:global(#menu li) .deprecation {
+  font-size: 12px;
+}

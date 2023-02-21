@@ -7,12 +7,12 @@ import Docs from "@/components/docs";
 
 const components = {
   h1: ({ children }) => (
-    <Title type="title6" tag="h1">
+    <Title type="title6" as="h1">
       {children}
     </Title>
   ),
   h2: ({ children }) => (
-    <Title type="title4" tag="h2">
+    <Title type="title4" as="h2">
       {children}
     </Title>
   ),

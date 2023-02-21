@@ -48,7 +48,7 @@ export function Menu({ sections, active, onClick, isScrolling }) {
   }, [active, sections, isScrolling]);
 
   return (
-    <Row as="ul" className={styles.menu}>
+    <Row as="ul" className={styles.menu} id="menu">
       {/* <Col xs={12}>
         <Input className={styles.input} />
       </Col> */}
@@ -96,6 +96,10 @@ export function Menu({ sections, active, onClick, isScrolling }) {
                         className={`${styles.items} ${styles.subitems}`}
                       >
                         {s.subHeadings.map((s) => {
+                          if (s.text === "Reviews ☢️ (Deprecated)") {
+                            console.log("s.subHeadings", s);
+                          }
+
                           const isActive = s.id === active;
                           const activeClass = isActive ? styles.active : "";
                           const tagClass = styles[s.tag] || "";
@@ -115,7 +119,9 @@ export function Menu({ sections, active, onClick, isScrolling }) {
                                     }
                                   }}
                                 >
-                                  {s.text}
+                                  <span
+                                    dangerouslySetInnerHTML={{ __html: s.html }}
+                                  />
                                 </Link>
                               </Text>
                             </Col>
@@ -141,24 +147,33 @@ function getHeadings(el) {
     const top = el.offsetTop;
     // const height = el.offsetHeight;
     const tag = el.tagName.toLowerCase();
-    const text = el.textContent;
-    const raw = text.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, "");
+    const text = el.innerText;
+    const html = el.innerHTML;
+    // const raw = text.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, "");
     const label = text?.toLowerCase().replace(/\s+/g, "-");
     const id = `${top}-${tag}-${label}`;
-    return { tag, text, raw, top, id };
+    return { tag, html, text, top, id };
   }
 
   const arr = [];
   headings.forEach((h1) => {
     const parent = h1.parentNode;
     const sectionId = parent.getAttribute("id");
-    const { tag, text, top, id: headingId } = extract(h1);
+    const { tag, html, text, top, id: headingId } = extract(h1);
     const subHeadings = parent.querySelectorAll("h2");
     const subs = [];
     subHeadings.forEach((h2) =>
       subs.push({ ...extract(h2), headingId, sectionId })
     );
-    arr.push({ tag, text, top, id: headingId, sectionId, subHeadings: subs });
+    arr.push({
+      tag,
+      html,
+      text,
+      top,
+      id: headingId,
+      sectionId,
+      subHeadings: subs,
+    });
   });
 
   return arr;
@@ -234,6 +249,7 @@ export default function Wrap(props) {
       scrollTo({ top: el.top, callback: () => setIsScrolling(false) });
     }
   }, [router, flattenSections]);
+
   return (
     <Menu
       sections={sections}

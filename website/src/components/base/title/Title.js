@@ -13,16 +13,16 @@ import styles from "./Title.module.css";
 export const Title = ({
   children = "im a title",
   className = "",
-  tag = "h1",
+  as = "h1",
   type = "title4",
   ...props
 }) => {
-  const Tag = tag;
+  const As = as;
 
   return (
-    <Tag className={`${styles.title} ${styles[type]} ${className}`} {...props}>
+    <As className={`${styles.title} ${styles[type]} ${className}`} {...props}>
       {children}
-    </Tag>
+    </As>
   );
 };
 
