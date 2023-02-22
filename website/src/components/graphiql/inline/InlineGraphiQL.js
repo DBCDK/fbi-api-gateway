@@ -147,11 +147,11 @@ export function InlineGraphiQL({
   }, [tab, isReady]);
 
   return (
-    <div className={styles.inlinegraphiql}>
-      <div className={styles.buttons}>
+    <div className={`${styles.inlinegraphiql} inlinegraphiql`}>
+      <div className={`${styles.buttons} buttons`}>
         <Button
           size="small"
-          className={`${styles.button} ${styles.run}`}
+          className={`${styles.button} ${styles.run} run-btn`}
           onClick={() => !isFetching && run()}
         >
           Run 🏃 {/*🚀*/}
@@ -193,7 +193,7 @@ export function InlineGraphiQL({
         elRef={curlRef}
         value={curl}
         readOnly={true}
-        className={styles.curl}
+        className={`${styles.curl} curl-input`}
         onClick={(e) => {
           e.target.select();
           navigator?.clipboard?.writeText?.(e.target.value);

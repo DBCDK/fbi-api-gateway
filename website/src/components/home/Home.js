@@ -19,7 +19,7 @@ export default function Home() {
         <Row>
           <Col>
             <Text className={styles.text}>Hello! You have found the</Text>
-            <Title tag="h1" type="title6" className={styles.title}>
+            <Title as="h1" type="title6" className={styles.title}>
               FBI API
             </Title>
           </Col>
@@ -27,7 +27,7 @@ export default function Home() {
 
         <Row className={styles.content}>
           <Col>
-            <Title tag="h2" type="title1" className={styles.title}>
+            <Title as="h2" type="title1" className={styles.title}>
               What is this?
             </Title>
             <Text className={styles.text}>
@@ -57,7 +57,7 @@ export default function Home() {
 
         <Row className={styles.content}>
           <Col>
-            <Title tag="h2" type="title1" className={styles.title}>
+            <Title as="h2" type="title1" className={styles.title}>
               Explore the API
             </Title>
             <Text className={styles.text}>

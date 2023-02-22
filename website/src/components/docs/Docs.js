@@ -1,6 +1,4 @@
-import { useRef, useState, useEffect } from "react";
-
-import debounce from "lodash/debounce";
+import { useState } from "react";
 
 import { Container, Row, Col } from "react-bootstrap";
 import { MDXRemote } from "next-mdx-remote";
@@ -10,13 +8,17 @@ import useDocuments from "@/hooks/useDocuments";
 import useStorage from "@/hooks/useStorage";
 
 import { InlineGraphiQL } from "@/components/graphiql";
+import {
+  DeprecationBox,
+  DeprecationTitle,
+} from "@/components/base/deprecation";
 
 import Header from "@/components/header";
 import Menu from "@/components/menu";
 
 import styles from "./Docs.module.css";
 
-const customComponents = { InlineGraphiQL };
+const customComponents = { InlineGraphiQL, DeprecationBox, DeprecationTitle };
 
 export default function Docs() {
   const { docs } = useDocuments();

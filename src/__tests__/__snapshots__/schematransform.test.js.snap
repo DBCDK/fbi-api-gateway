@@ -923,7 +923,7 @@ type Relations {
 type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
-  reviews: [Review!]!
+  reviews: [Review!]! @deprecated(reason: \\"Use 'Work.relations.hasReview'\\")
 
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
@@ -2363,7 +2363,7 @@ type Relations {
 type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
-  reviews: [Review!]!
+  reviews: [Review!]! @deprecated(reason: \\"Use 'Work.relations.hasReview'\\")
 
   \\"\\"\\"The new reviews\\"\\"\\"
   workReviews: [WorkReview!]!
