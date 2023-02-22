@@ -13,7 +13,7 @@
 
 .deprecation {
   background-color: #fff8e1;
-  padding: var(--pt2);
+  padding: var(--pt3);
   border-left: var(--pt05) solid #ffe082;
 }
 
@@ -26,7 +26,7 @@
 .info {
   display: flex;
   justify-content: space-between;
-  padding: var(--pt2) 0 var(--pt2) var(--pt3);
+  padding: var(--pt3) 0 var(--pt3) var(--pt3);
 }
 
 .deprecation > p:first-of-type {
