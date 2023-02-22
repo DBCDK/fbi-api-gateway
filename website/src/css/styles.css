@@ -60,10 +60,6 @@ code {
   line-break: anywhere;
 }
 
-.deprecated {
-  font-size: 12px;
-}
-
 @media screen and (min-width: 1400px) {
   .container,
   .container-fluid {

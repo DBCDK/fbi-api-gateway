@@ -12,7 +12,6 @@
 */
 
 .deprecation {
-  /* background-color: var(--warning-dark); */
   background-color: #fff8e1;
   padding: var(--pt2);
   border-left: var(--pt05) solid #ffe082;

@@ -96,10 +96,6 @@ export function Menu({ sections, active, onClick, isScrolling }) {
                         className={`${styles.items} ${styles.subitems}`}
                       >
                         {s.subHeadings.map((s) => {
-                          if (s.text === "Reviews ☢️ (Deprecated)") {
-                            console.log("s.subHeadings", s);
-                          }
-
                           const isActive = s.id === active;
                           const activeClass = isActive ? styles.active : "";
                           const tagClass = styles[s.tag] || "";
