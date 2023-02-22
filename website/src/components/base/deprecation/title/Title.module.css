@@ -1,6 +1,12 @@
+.wrap {
+  display: flex;
+  align-items: center;
+}
+
 .deprecation {
   color: var(--text-light);
   letter-spacing: 1.2px;
+  line-height: 12px;
 }
 
 .icon {

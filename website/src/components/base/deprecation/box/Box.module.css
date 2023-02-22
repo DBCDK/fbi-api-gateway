@@ -30,6 +30,10 @@
   padding: var(--pt2) 0 var(--pt2) var(--pt3);
 }
 
+.deprecation > p:first-of-type {
+  margin-top: 0;
+}
+
 .info div p span {
   margin-left: var(--pt1);
   font-size: 12px;
@@ -48,17 +52,18 @@
   margin-top: 0 !important;
 }
 
+/* inline graphiql */
 .deprecation :global(.graphiql-editors) * {
   background-color: #fff8e1 !important;
 }
 .deprecation :global(.graphiql-container),
 .deprecation :global(.curl-input) {
-  background-color: #ffecb3 !important;
+  background-color: var(--white) !important;
 }
 
-/* inline graphiql */
+/* inline graphiql buttons */
 .deprecation :global(.inlinegraphiql > .buttons button) {
-  background-color: #ffecb3 !important;
+  background-color: var(--white) !important;
 }
 .deprecation :global(.inlinegraphiql > .buttons .run-btn) {
   background-color: #ffca28 !important;
