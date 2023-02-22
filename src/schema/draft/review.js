@@ -153,7 +153,7 @@ type PeriodicaReviewDetails {
 }
 
 extend type Work {
-  reviews: [Review!]!
+  reviews: [Review!]! @deprecated(reason: "Use 'Work.relations.hasReview'")
 
   """
   The new reviews

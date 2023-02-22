@@ -12,11 +12,14 @@
       }
     },
     "fictionNonfiction": {
-      "fiktion": {
+      "FICTION": {
         "da": "Skønlitteratur"
       },
-      "nonfiktion": {
+      "NONFICTION": {
         "da": "Faglitteratur"
+      },
+      "NOT_SPECIFIED": {
+        "da": "Ikke angivet"
       }
     },
     "mainLanguages": {

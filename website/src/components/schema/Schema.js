@@ -21,7 +21,7 @@ export default function Wrap() {
       <Layout className={styles.container}>
         <Row>
           <Col>
-            <Title tag="h1" type="title6" className={styles.title}>
+            <Title as="h1" type="title6" className={styles.title}>
               GraphQL Schema
             </Title>
             <Text>

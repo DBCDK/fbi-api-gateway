@@ -1,0 +1,73 @@
+/* 
+50 #FFF8E1
+100 #FFECB3
+200 #FFE082
+300 #FFD54F
+400 #FFCA28
+500 #FFC107
+600 #FFB300
+700 #FFA000
+800 #FF8F00
+900 #FF6F00
+*/
+
+.deprecation {
+  background-color: #fff8e1;
+  padding: var(--pt3);
+  border-left: var(--pt05) solid #ffe082;
+}
+
+.warning,
+.deprecated,
+.expires {
+  margin: 0 !important;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--pt3) 0 var(--pt3) var(--pt3);
+}
+
+.deprecation > p:first-of-type {
+  margin-top: 0;
+}
+
+.info div p span {
+  margin-left: var(--pt1);
+  font-size: 12px;
+}
+
+.deprecation code {
+  background-color: #ffecb3;
+}
+
+.deprecation a:hover,
+.deprecation a:focus-visible {
+  color: #ffa000 !important;
+}
+
+.deprecation > h2 {
+  margin-top: 0 !important;
+}
+
+/* inline graphiql */
+.deprecation :global(.graphiql-editors) * {
+  background-color: #fff8e1 !important;
+}
+.deprecation :global(.graphiql-container),
+.deprecation :global(.curl-input) {
+  background-color: var(--white) !important;
+}
+
+/* inline graphiql buttons */
+.deprecation :global(.inlinegraphiql > .buttons button) {
+  background-color: var(--white) !important;
+}
+.deprecation :global(.inlinegraphiql > .buttons .run-btn) {
+  background-color: #ffca28 !important;
+}
+.deprecation
+  :global(.inlinegraphiql > .buttons button:is(:hover, :focus-visible)) {
+  background-color: #ffa000 !important;
+}

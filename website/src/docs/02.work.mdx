@@ -249,7 +249,14 @@ does not require substitution.
   }}
 />
 
-## Reviews (old)
+## <DeprecationTitle>Reviews</DeprecationTitle>
+
+<DeprecationBox deprecated="01/03-2023" expires="01/06-2023">
+  Field `reviews` is now deprecated and will be removed in future. The field is
+  replaced by a new `hasReview` field witch can be access on the
+  `Work.relations` field. See the [Reviews](#Reviews) documentation for further
+  details and examples.
+</DeprecationBox>
 
 The reviews field returns a list of reviews. Each review may be one of the following types:
 
