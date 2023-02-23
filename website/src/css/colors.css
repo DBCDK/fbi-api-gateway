@@ -65,6 +65,15 @@ body.christmas {
   --hero-gradient-primary: #dc1c13;
   --hero-gradient-secondary: #f07470;
 }
+body.halloween {
+  --primary: #ff8a65;
+  --primary-dark: #ff7043;
+
+  --secondary: #ffb74d;
+
+  --hero-gradient-primary: #ff5722;
+  --hero-gradient-secondary: #ff8a65;
+}
 
 /* 
 * Dark theme
@@ -119,4 +128,11 @@ body.dark.christmas {
 
   --secondary: #ffffff;
   --secondary-light: #ffffff;
+}
+body.dark.halloween {
+  --primary: #ff7043;
+  --primary-dark: #ff5722;
+
+  --secondary: #ffb74d;
+  --secondary-light: #ffcc80;
 }

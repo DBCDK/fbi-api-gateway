@@ -16,6 +16,9 @@ if (theme === "christmas") {
 if (theme === "easter") {
   favIcon = "🐤";
 }
+if (theme === "halloween") {
+  favIcon = "🎃";
+}
 
 function MyApp({ Component, pageProps, router }) {
   const [ready, setReady] = useState(false);

@@ -30,6 +30,9 @@ if (theme === "christmas") {
 if (theme === "easter") {
   logo = "🐤";
 }
+if (theme === "halloween") {
+  logo = "🎃";
+}
 
 export default function Header() {
   const router = useRouter();
