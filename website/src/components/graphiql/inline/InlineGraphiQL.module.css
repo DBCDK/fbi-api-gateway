@@ -108,12 +108,10 @@
   margin-right: 0;
 }
 
-@media (prefers-color-scheme: light) {
-  :global(body:not(.dark, .graphiql-dark))
-    .inlinegraphiql
-    :global(.graphiql-container) {
-    background-color: var(--divider);
-  }
+:global(body:not(.dark, .graphiql-dark))
+  .inlinegraphiql
+  :global(.graphiql-container) {
+  background-color: var(--divider);
 }
 
 @media (min-width: 576px) {

@@ -25,19 +25,17 @@ export default function useTheme() {
       _removeTheme();
     }
 
-    _syncTheme(value);
+    syncTheme(value);
   };
 
   const _removeTheme = () => {
     // store
     localStorage.removeItem(KEY_NAME);
     // mutate
-    mutateHistory(null);
+    mutateTheme(null);
   };
 
-  const _syncTheme = (value) => {
-    console.log("_syncTheme", { value, theme });
-
+  const syncTheme = (value = theme) => {
     if (value === null) {
       document.body.classList?.remove("dark", "graphiql-dark");
       document.body.classList?.remove("light", "graphiql-light");
@@ -55,6 +53,7 @@ export default function useTheme() {
   return {
     theme,
     setTheme,
+    syncTheme,
     isLoading: typeof theme === "undefined" && !error,
   };
 }

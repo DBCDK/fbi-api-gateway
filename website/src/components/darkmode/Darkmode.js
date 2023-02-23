@@ -14,6 +14,7 @@ export function Darkmode({ theme, onClick, className = "" }) {
         type="switch"
         id="custom-switch"
         checked={isDark}
+        className={styles.switch}
         onClick={() => onClick(isDark ? "light" : "dark")}
       />
       <span>🌛</span>

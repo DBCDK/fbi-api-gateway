@@ -15,6 +15,7 @@ import History from "@/components/history";
 import Token from "@/components/token";
 import Profile from "@/components/profile";
 import Darkmode from "@/components/darkmode";
+import Theme from "@/components/theme";
 
 import Modal, { Pages } from "@/components/modal";
 
@@ -111,7 +112,8 @@ export default function Header() {
             <History className={styles.history} />
           </Col>
         </Row>
-        <Darkmode className={styles.darkmode} />
+        {/* <Darkmode className={styles.darkmode} /> */}
+        <Theme className={styles.darkmode} />
       </Container>
 
       <Modal
