@@ -39,7 +39,7 @@ export function Theme({ theme, onClick, className = "" }) {
           >
             <Dropdown.Item
               className={styles.item}
-              onClick={() => onClick(label === "system" ? null : label)}
+              onClick={() => onClick(label)}
             >
               {icon}
             </Dropdown.Item>

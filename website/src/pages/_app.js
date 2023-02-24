@@ -21,34 +21,9 @@ if (theme === "halloween") {
 }
 
 function MyApp({ Component, pageProps, router }) {
-  const [ready, setReady] = useState(false);
-  const { theme: selected, setTheme, syncTheme, isLoading } = useTheme();
-
   useEffect(() => {
     document.body.classList?.add(theme);
   });
-
-  useEffect(() => {
-    if (!ready) {
-      setReady(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (ready) {
-      if (!isLoading) {
-        const matchMedia = window?.matchMedia("(prefers-color-scheme: dark)");
-
-        const system = matchMedia.matches ? "dark" : "light";
-        selected ? setTheme(selected) : syncTheme(system);
-
-        matchMedia.addEventListener("change", (e) => {
-          const system = e.matches ? "dark" : "light";
-          selected ? setTheme(selected) : syncTheme(system);
-        });
-      }
-    }
-  }, [ready, selected, isLoading]);
 
   return (
     <>
