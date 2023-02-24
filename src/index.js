@@ -64,7 +64,7 @@ promExporterApp.listen(9599, () => {
   // which specify a monitor name.
   app.post("/:profile/graphql", async (req, res, next) => {
     const start = process.hrtime();
-    res.once("finish", async () => {
+    res.once("finish", () => {
       const elapsed = process.hrtime(start);
       const seconds = elapsed[0] + elapsed[1] / 1e9;
 
