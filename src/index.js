@@ -118,6 +118,11 @@ promExporterApp.listen(9599, () => {
    * Middleware for validating access token, and fetching smaug configuration
    */
   app.post("/:profile/graphql", async (req, res, next) => {
+    // Get bearer token from authorization header
+    req.accessToken =
+      req.headers.authorization &&
+      req.headers.authorization.replace(/bearer /i, "");
+
     // Get graphQL params
     try {
       const graphQLParams = req.body;
@@ -131,11 +136,6 @@ promExporterApp.listen(9599, () => {
       // Check if query is introspection query
       req.isIntrospectionQuery = isIntrospectionQuery(ast);
     } catch (e) {}
-
-    // Get bearer token from authorization header
-    req.accessToken =
-      req.headers.authorization &&
-      req.headers.authorization.replace(/bearer /i, "");
 
     // Fetch Smaug client configuration
     try {
