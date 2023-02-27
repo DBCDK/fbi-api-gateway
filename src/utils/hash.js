@@ -7,6 +7,9 @@ import crypto from "crypto";
  * @returns {string} hashed value
  */
 export default function createHash(value) {
+  if (!value) {
+    return "";
+  }
   // initialize hash function
   const shasum = crypto.createHash("sha256");
   // encode token
