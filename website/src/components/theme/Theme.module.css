@@ -9,7 +9,7 @@
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
 }
 
-.toggle:is(:hover, :active) {
+.toggle:is(:hover, :focus-visible) {
   box-shadow: unset;
   background-color: var(--text-dark);
   border: 2px solid var(--text-dark);
@@ -60,43 +60,18 @@
 * Dark theme
 */
 
-:global(body.dark) .toggle {
+:global(body.dark) .toggle,
+:global(body.dark) .item {
   background-color: var(--dark-light);
+  border: 2px solid var(--text-light);
+}
+
+:global(body.dark) .toggle:is(:hover, :focus-visible),
+:global(body.dark) .item:is(:hover, :focus-visible) {
+  background-color: var(--text-light);
+  border: 2px solid var(--text-light);
 }
 
 :global(body.dark) .item {
   color: var(--text-dark);
 }
-
-/* .toggle {
-  width: var(--pt5);
-  height: var(--pt5);
-  border-radius: 50%;
-
-  background-color: var(--white);
-  border: 2px solid var(--primary);
-}
-
-.toggle::before {
-  display: none !important;
-}
-
-.menu {
-  border: 1px solid var(--text-light);
-} */
-
-/* 
-* Dark theme
-*/
-
-/* :global(body.dark) .toggle {
-  background-color: var(--dark-light);
-}
-
-:global(body.dark) .menu {
-  background-color: var(--dark);
-}
-
-:global(body.dark) .item {
-  color: var(--text-dark);
-} */
