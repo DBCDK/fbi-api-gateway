@@ -6,6 +6,8 @@ import { log } from "dbc-node-logger";
 import { getExecutableSchema } from "./schemaLoader";
 import express from "express";
 
+import createHash from "./utils/hash";
+
 import { createProxyMiddleware } from "http-proxy-middleware";
 
 import cors from "cors";
@@ -78,6 +80,8 @@ promExporterApp.listen(9599, () => {
       }
       const userAgent = req.get("User-Agent");
 
+      const accessTokenHash = createHash(req.accessToken);
+
       // detailed logging for SLA
       log.info("TRACK", {
         clientId: req?.smaug?.app?.clientId,
@@ -91,6 +95,8 @@ promExporterApp.listen(9599, () => {
         userAgent,
         userAgentIsBot: isbot(userAgent),
         ip: req?.smaug?.app?.ips?.[0],
+        isAuthenticatedToken: !!req.smaug?.user?.uniqueId,
+        accessTokenHash,
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
