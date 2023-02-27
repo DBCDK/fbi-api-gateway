@@ -813,6 +813,11 @@ type ManifestationTitles {
   \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
   standard: String
 
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
+
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]
 }
@@ -1278,6 +1283,11 @@ type WorkTitles {
 
   \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
   standard: String
+
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
 
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]
@@ -2273,6 +2283,11 @@ type ManifestationTitles {
   \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
   standard: String
 
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
+
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]
 }
@@ -2740,6 +2755,11 @@ type WorkTitles {
 
   \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
   standard: String
+
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
 
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]
