@@ -14,7 +14,8 @@
 .deprecation {
   background-color: #fff8e1;
   padding: var(--pt3);
-  border-left: var(--pt05) solid #ffe082;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+  /* border-left: var(--pt05) solid #ffe082; */
 }
 
 .warning,

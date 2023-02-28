@@ -62,6 +62,41 @@ Press `CTRL+SPACE` to autocomplete inside GraphiQL.
 Another tool that we included is _Voyager_, which gives a bird's-eye view of the
 GraphQL schema. See how different types are connected and zoom in for more details.
 
+## Deprecation
+
+FBI-API is a versionless API, which enables the continuous addition of new types and fields to the API. However, this also means that data models can change, and fields can be renamed, moved, or removed, resulting in breaking changes.
+
+To handle deprecations, when a field or type is deprecated, it will be clearly flagged in the schema and the documentation examples.
+
+Deprecation details includes:
+
+- Deprecation date
+- Expiration date
+- Reason
+- Alternative options
+
+Furthermore, if an entire section in the documentation, with its own heading or subheading, is deprecated, the section title will be flagged deprecated to alert users.
+
+FBI-API ensures that users are informed of any potential deprecations and can smoothly transition to alternative options.
+
+> <DeprecationTitle>ExampleHeading</DeprecationTitle>
+
+Furthermore a deprecation box including detailed information about the deprecation will be shown.
+
+> <DeprecationBox deprecated="01/01-2099" expires="01/01-2100">
+>   Some deprecation example ...
+> </DeprecationBox>
+
+History for deprecated fields (caused breaking changes) can be found in the [changelog](#Changelog)
+
+## Changelog
+
+The changelog table contains a comprehensive list of both recent and previous deprecated fields that may cause breaking changes to the API. This information enables users to stay informed about any deprecations that may affect their use of the API and take appropriate action to mitigate any potential issues.
+
+<br />
+
+<DeprecationHistory />
+
 ## Feedback
 
 If you have any ideas on how to improve the developer experience, don't hesitate to contact us at [kundeservice@dbc.dk](mailto:kundeservice@dbc.dk).

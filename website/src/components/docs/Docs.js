@@ -10,7 +10,9 @@ import useStorage from "@/hooks/useStorage";
 import { InlineGraphiQL } from "@/components/graphiql";
 import {
   DeprecationBox,
+  DeprecationBorder,
   DeprecationTitle,
+  DeprecationHistory,
 } from "@/components/base/deprecation";
 
 import Header from "@/components/header";
@@ -18,7 +20,13 @@ import Menu from "@/components/menu";
 
 import styles from "./Docs.module.css";
 
-const customComponents = { InlineGraphiQL, DeprecationBox, DeprecationTitle };
+const customComponents = {
+  InlineGraphiQL,
+  DeprecationBox,
+  DeprecationBorder,
+  DeprecationTitle,
+  DeprecationHistory,
+};
 
 export default function Docs() {
   const { docs } = useDocuments();

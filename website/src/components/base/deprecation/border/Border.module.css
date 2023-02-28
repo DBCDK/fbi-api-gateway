@@ -1,0 +1,47 @@
+/* 
+50 #FFF8E1
+100 #FFECB3
+200 #FFE082
+300 #FFD54F
+400 #FFCA28
+500 #FFC107
+600 #FFB300
+700 #FFA000
+800 #FF8F00
+900 #FF6F00
+*/
+
+.border {
+  border-left: var(--pt05) solid #ffe082;
+  padding: var(--pt3);
+}
+
+/* styles override */
+
+.border code {
+  background-color: #ffecb3;
+}
+
+.border a:hover,
+.border a:focus-visible {
+  color: #ffa000 !important;
+}
+
+/* inline graphiql */
+.border :global(.graphiql-container),
+.border :global(.curl-input) {
+  background-color: #fff8e1 !important;
+  --primary: #ffe082;
+  --primary-dark: #ffca28;
+}
+
+/* inline graphiql buttons */
+.border :global(.inlinegraphiql > .buttons button) {
+  background-color: var(--white) !important;
+}
+.border :global(.inlinegraphiql > .buttons .run-btn) {
+  background-color: #ffca28 !important;
+}
+.border :global(.inlinegraphiql > .buttons button:is(:hover, :focus-visible)) {
+  background-color: #ffa000 !important;
+}

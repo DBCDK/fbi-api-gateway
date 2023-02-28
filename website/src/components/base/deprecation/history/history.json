@@ -1,0 +1,44 @@
+[
+  {
+    "field": "Work.reviews",
+    "reason": "Replaced by Work.relations.hasReview",
+    "deprecated": "01/03-2023",
+    "expired": "01/06-2023"
+  },
+  {
+    "field": "Example 4",
+    "reason": "...",
+    "deprecated": "01/01-2026",
+    "expired": "01/02-2027"
+  },
+  {
+    "field": "Example 1",
+    "reason": "...",
+    "deprecated": "01/02-2023",
+    "expired": "01/05-2023"
+  },
+  {
+    "field": "Example 2",
+    "reason": "...",
+    "deprecated": "01/01-2020",
+    "expired": "01/05-2020"
+  },
+  {
+    "field": "Example 3",
+    "reason": "...",
+    "deprecated": "25/12-2023",
+    "expired": "25/02-2024"
+  },
+  {
+    "field": "Example 1",
+    "reason": "...",
+    "deprecated": "01/01-2023",
+    "expired": "01/02-2023"
+  },
+  {
+    "field": "Example 5",
+    "reason": "...",
+    "deprecated": "01/01-2026",
+    "expired": "01/02-2027"
+  }
+]
