@@ -122,7 +122,7 @@ export default function Wrap() {
     return null;
   }
 
-  const fetcher = async (graphQLParams) => {
+  const fetcher = async ({ query, variables = {} }) => {
     if (!selectedToken?.token) {
       return {
         statusCode: 403,
@@ -136,7 +136,7 @@ export default function Wrap() {
         "Content-Type": "application/json",
         Authorization: `bearer ${selectedToken?.token}`,
       },
-      body: JSON.stringify(graphQLParams),
+      body: JSON.stringify({ query, variables }),
       credentials: "same-origin",
     });
 

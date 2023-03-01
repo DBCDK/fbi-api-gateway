@@ -213,7 +213,7 @@ export default function Wrap(props) {
     return <DummyContainer inView={() => setShow(true)} show={true} />;
   }
 
-  const fetcher = async (graphQLParams) => {
+  const fetcher = async ({ query, variables = {} }) => {
     const data = await fetch(url, {
       method: "POST",
       headers: {
@@ -221,7 +221,7 @@ export default function Wrap(props) {
         "Content-Type": "application/json",
         Authorization: `bearer ${selectedToken?.token}`,
       },
-      body: JSON.stringify(graphQLParams),
+      body: JSON.stringify({ query, variables }),
       credentials: "same-origin",
     });
     return data.json().catch(() => data.text());
