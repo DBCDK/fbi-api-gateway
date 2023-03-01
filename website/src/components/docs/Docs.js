@@ -12,7 +12,7 @@ import {
   DeprecationBox,
   DeprecationBorder,
   DeprecationTitle,
-  DeprecationHistory,
+  Changelog,
 } from "@/components/base/deprecation";
 
 import Header from "@/components/header";
@@ -25,7 +25,7 @@ const customComponents = {
   DeprecationBox,
   DeprecationBorder,
   DeprecationTitle,
-  DeprecationHistory,
+  Changelog,
 };
 
 export default function Docs() {

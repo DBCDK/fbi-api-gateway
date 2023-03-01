@@ -16,8 +16,13 @@
   padding: var(--pt3);
 }
 
-/* styles override */
+/* remove border on deprecationBox child */
 
+.border > :global(.deprecation-box) {
+  border: none;
+}
+
+/* styles override */
 .border code {
   background-color: #ffecb3;
 }

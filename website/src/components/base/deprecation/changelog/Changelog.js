@@ -3,9 +3,9 @@ import Table from "react-bootstrap/Table";
 
 import { daysBetween } from "@/components/utils";
 
-import data from "./history.json";
+import data from "./data.json";
 
-import styles from "./History.module.css";
+import styles from "./Changelog.module.css";
 
 /**
  *
@@ -67,7 +67,7 @@ function getStatusClass({ expired, deprecated }) {
   }
 }
 
-export default function History() {
+export default function Changelog() {
   // Expired fields
   const expired = useMemo(
     () =>

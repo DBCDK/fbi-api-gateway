@@ -58,3 +58,6 @@ type SomeType {
 ```
 
 The field/type can still be accessed and user of the API will still get the requested data, but the subject will no longer be auto suggested and will get highlighted as deprecated when used.
+
+### Changelog
+Add the deprecated type or field to the changelog, this can be done by adding an object to the changelog data array and fill in the deprecation details. The changelog `data.json` file can be found in the `components/base/deprecation/changelog`. 
