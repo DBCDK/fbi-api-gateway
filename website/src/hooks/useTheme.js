@@ -51,19 +51,19 @@ export default function useTheme() {
   /**
    * Set theme value [dark/light/system]
    */
-  const setTheme = (value) => {
+  function setTheme(value) {
     if (ENUM_VALUES[value]) {
       // store
       localStorage.setItem(KEY_NAME, value);
       // mutate
       mutateTheme(value);
     }
-  };
+  }
 
   /**
    * sync theme to body as class
    */
-  const syncTheme = (value) => {
+  function syncTheme(value) {
     if (value === "dark") {
       document.body.classList?.add("dark", "graphiql-dark");
       document.body.classList?.remove("light", "graphiql-light");
@@ -72,7 +72,7 @@ export default function useTheme() {
       document.body.classList?.remove("dark", "graphiql-dark");
       document.body.classList?.add("light", "graphiql-light");
     }
-  };
+  }
 
   return {
     theme,
