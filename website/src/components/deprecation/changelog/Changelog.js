@@ -47,7 +47,7 @@ function reformatUTC(str) {
  * @param {string} param.expired
  * @param {string} param.deprecated
  *
- * @returns {string
+ * @returns {string}
  */
 function getStatusClass({ expired, deprecated }) {
   const expDays = daysBetween(localDateToUTC(expired), reformatUTC(new Date()));
@@ -104,10 +104,13 @@ export default function Changelog() {
 
       <tbody className={styles.body}>
         {expirering.map((d, idx) => (
-          <tr className={styles[getStatusClass(d)]}>
+          <tr
+            key={`expirering-${d.field}-${idx}`}
+            className={styles[getStatusClass(d)]}
+          >
             <td>{idx + 1}</td>
-            {Object.values(d).map((v) => (
-              <td>{v}</td>
+            {Object.values(d).map((v, idx) => (
+              <td key={`${v}-${idx}`}>{v}</td>
             ))}
           </tr>
         ))}
@@ -123,10 +126,13 @@ export default function Changelog() {
 
           <tbody className={styles.body}>
             {expired.map((d, idx) => (
-              <tr className={styles[getStatusClass(d)]}>
+              <tr
+                key={`expired-${d.field}-${idx}`}
+                className={styles[getStatusClass(d)]}
+              >
                 <td>{idx + 1}</td>
-                {Object.values(d).map((v) => (
-                  <td>{v}</td>
+                {Object.values(d).map((v, idx) => (
+                  <td key={`${v}-${idx}`}>{v}</td>
                 ))}
               </tr>
             ))}

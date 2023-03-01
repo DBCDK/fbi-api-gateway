@@ -13,7 +13,7 @@ import {
   DeprecationBorder,
   DeprecationTitle,
   Changelog,
-} from "@/components/base/deprecation";
+} from "@/components/deprecation";
 
 import Header from "@/components/header";
 import Menu from "@/components/menu";
