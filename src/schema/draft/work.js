@@ -181,6 +181,11 @@ type WorkTitles {
   standard: String
 
   """
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  """
+  titlePlusLanguage: String
+
+  """
   Danish translation of the main title
   """
   translated: [String!]
@@ -216,7 +221,8 @@ export const resolvers = {
       const first = manifestations?.first || manifestations?.all?.[0];
       const latest = manifestations?.latest || manifestations?.all?.[0];
       const all = manifestations?.all || [];
-      const bestRepresentation = manifestations?.bestRepresentations?.[0] || manifestations?.all?.[0];
+      const bestRepresentation =
+        manifestations?.bestRepresentations?.[0] || manifestations?.all?.[0];
       const mostRelevant = manifestations?.mostRelevant || manifestations?.all;
 
       return {

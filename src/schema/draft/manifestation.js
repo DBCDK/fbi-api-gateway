@@ -701,6 +701,11 @@ type ManifestationTitles {
   standard: String
 
   """
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  """
+  titlePlusLanguage: String
+
+  """
   Danish translation of the main title
   """
   translated: [String!]
