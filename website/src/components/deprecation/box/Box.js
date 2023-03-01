@@ -5,7 +5,7 @@ import styles from "./Box.module.css";
 
 export default function Box({ children, deprecated, expires }) {
   return (
-    <div className={styles.deprecation}>
+    <div className={`${styles.deprecation} deprecation-box`}>
       <div className={styles.info}>
         <Text className={styles.warning} type="text5">
           Deprecation Warning! ☢️

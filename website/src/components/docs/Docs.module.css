@@ -27,6 +27,17 @@
   max-width: 720px;
 }
 
+.content section > ul,
+.content section > ol {
+  padding-left: var(--pt2);
+}
+
+.content section blockquote {
+  padding: var(--pt2) var(--pt2) var(--pt2) var(--pt4);
+  border-left: 4px solid var(--divider);
+  margin: var(--pt4) 0 var(--pt4) var(--pt4);
+}
+
 .content section p {
   margin: var(--pt2) 0;
 }

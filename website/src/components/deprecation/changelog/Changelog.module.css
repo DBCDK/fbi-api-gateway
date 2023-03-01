@@ -1,0 +1,47 @@
+.table {
+  border-spacing: 0;
+  font-size: 14px;
+  margin-top: var(--pt4);
+}
+
+.table:first-child {
+  margin-top: 0;
+}
+
+.body {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* table header */
+.table td,
+.table th {
+  padding: var(--pt2);
+}
+.table th {
+  text-align: left;
+}
+
+/* striped */
+.table tr {
+  background-color: var(--divider);
+}
+.table tr:nth-child(2n),
+.table thead tr {
+  background-color: var(--white);
+}
+
+.separator {
+  height: var(--pt8);
+  vertical-align: bottom;
+}
+
+/* expiration status class */
+.table tr.expire-more-or-eq-to-90-days td:last-child {
+  border-right: 3px solid var(--success-dark);
+}
+.table tr.expire-more-or-eq-to-15-days td:last-child {
+  border-right: 3px solid var(--warning-dark);
+}
+.table tr.expire-less-than-15-days td:last-child {
+  border-right: 3px solid var(--error);
+}

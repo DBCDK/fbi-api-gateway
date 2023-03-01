@@ -5,7 +5,7 @@ import uniqBy from "lodash/uniqBy";
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 
-import { dateConverter, timeConverter, toTimestamp } from "@/components/utils";
+import { dateConverter, timeConverter, daysBetween } from "@/components/utils";
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 
@@ -22,20 +22,14 @@ import styles from "./History.module.css";
  * @returns {obj}
  */
 function getExpirationClass(date) {
-  const expires = toTimestamp(date);
-  const now = toTimestamp(new Date());
-  const diff = expires - now;
-
-  const days = Math.ceil(diff / (1000 * 3600 * 24)) || 0;
+  const days = daysBetween(date, new Date());
 
   if (days < 5) {
     return styles["expire-less-than-5-days"];
   }
-
   if (days < 15) {
     return styles["expire-less-than-15-days"];
   }
-
   if (days >= 15) {
     return styles["expire-more-or-eq-to-15-days"];
   }
