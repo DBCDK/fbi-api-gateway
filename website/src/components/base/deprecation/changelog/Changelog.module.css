@@ -9,7 +9,7 @@
 }
 
 .body {
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* table header */
@@ -35,24 +35,13 @@
   vertical-align: bottom;
 }
 
-/* status */
-
-.status {
-  display: inline-block;
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  margin-right: var(--pt1);
+/* expiration status class */
+.table tr.expire-more-or-eq-to-90-days td:last-child {
+  border-right: 3px solid var(--success-dark);
 }
-
-.status.expire-more-or-eq-to-90-days {
-  background-color: var(--success-dark);
+.table tr.expire-more-or-eq-to-15-days td:last-child {
+  border-right: 3px solid var(--warning-dark);
 }
-
-.status.expire-more-or-eq-to-15-days {
-  background-color: var(--warning-dark);
-}
-
-.status.expire-less-than-15-days {
-  background-color: var(--error);
+.table tr.expire-less-than-15-days td:last-child {
+  border-right: 3px solid var(--error);
 }

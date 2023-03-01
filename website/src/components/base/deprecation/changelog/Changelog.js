@@ -47,7 +47,7 @@ function reformatUTC(str) {
  * @param {string} param.expired
  * @param {string} param.deprecated
  *
- * @returns {JSX}
+ * @returns {string
  */
 function getStatusClass({ expired, deprecated }) {
   const expDays = daysBetween(localDateToUTC(expired), reformatUTC(new Date()));
@@ -57,13 +57,13 @@ function getStatusClass({ expired, deprecated }) {
   );
 
   if (depDays >= 0 || expDays >= 90) {
-    return styles["expire-more-or-eq-to-90-days"];
+    return "expire-more-or-eq-to-90-days";
   }
   if (expDays >= 15) {
-    return styles["expire-more-or-eq-to-15-days"];
+    return "expire-more-or-eq-to-15-days";
   }
   if (expDays < 15) {
-    return styles["expire-less-than-15-days"];
+    return "expire-less-than-15-days";
   }
 }
 
@@ -99,43 +99,40 @@ export default function Changelog() {
           <th>Reason</th>
           <th>Deprecated</th>
           <th>Expires/Expired</th>
-          <th></th>
         </tr>
       </thead>
 
       <tbody className={styles.body}>
         {expirering.map((d, idx) => (
-          <tr>
+          <tr className={styles[getStatusClass(d)]}>
             <td>{idx + 1}</td>
             {Object.values(d).map((v) => (
               <td>{v}</td>
             ))}
-            <td>
-              <span className={`${styles.status} ${getStatusClass(d)}`} />
-            </td>
           </tr>
         ))}
       </tbody>
 
-      <br />
+      {expired.length > 0 && (
+        <>
+          <br />
 
-      <tr className={styles.separator}>
-        <td colSpan={6}> Expired: </td>
-      </tr>
+          <tr className={styles.separator}>
+            <td colSpan={5}> Expired: </td>
+          </tr>
 
-      <tbody className={styles.body}>
-        {expired.map((d, idx) => (
-          <tr>
-            <td>{idx + 1}</td>
-            {Object.values(d).map((v) => (
-              <td>{v}</td>
+          <tbody className={styles.body}>
+            {expired.map((d, idx) => (
+              <tr className={styles[getStatusClass(d)]}>
+                <td>{idx + 1}</td>
+                {Object.values(d).map((v) => (
+                  <td>{v}</td>
+                ))}
+              </tr>
             ))}
-            <td>
-              <span className={`${styles.status} ${getStatusClass(d)}`} />
-            </td>
-          </tr>
-        ))}
-      </tbody>
+          </tbody>
+        </>
+      )}
     </Table>
   );
 }

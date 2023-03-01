@@ -35,7 +35,7 @@
 .content section blockquote {
   padding: var(--pt2) var(--pt2) var(--pt2) var(--pt4);
   border-left: 4px solid var(--divider);
-  margin-left: var(--pt4);
+  margin: var(--pt4) 0 var(--pt4) var(--pt4);
 }
 
 .content section p {
