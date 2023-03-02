@@ -93,10 +93,17 @@ This example searches for _hopper_ as title, _hesteavl_ as subject, and _carl_ a
 
 ## Faceted Search and Filters
 
+<DeprecationBox deprecated="15/03-2023" expires="15/06-2023">
+  Please note that `FacetField.materialTypes` and `SearchFilters.materialTypes`
+  is deprecated and will be removed. Use the new fields
+  `FacetField.materialTypesSpecific` and `SearchFilters.materialTypesSpecific`
+  instead.
+</DeprecationBox>
+
 Faceted search seeks to provide an improved overview by clustering the search result into
 categories. This allows for the user to incrementally customize and narrow down the search result.
 
-The following example is a search for _andersen_ where facet categories _mainLanguages_ and _materialTypes_
+The following example is a search for _andersen_ where facet categories _mainLanguages_ and _materialTypesSpecific_
 are returned.
 
 <InlineGraphiQL
@@ -117,7 +124,7 @@ are returned.
       all: "harry",
     },
     facetLimit: 5,
-    facets: ["mainLanguages", "materialTypes"],
+    facets: ["mainLanguages", "materialTypesSpecific"],
   }}
 />
 
@@ -143,7 +150,7 @@ is applied resulting in an updated facet result.
     },
     filters: { mainLanguages: ["Svensk"] },
     facetLimit: 5,
-    facets: ["mainLanguages", "materialTypes"],
+    facets: ["mainLanguages", "materialTypesSpecific"],
   }}
 />
 
