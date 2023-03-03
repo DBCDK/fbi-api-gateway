@@ -40,6 +40,26 @@
 
   border: 1px solid var(--text-dark);
   background-color: var(--white);
+  transform: scale(0);
+  animation: scale 0.3s forwards;
+}
+
+.item:nth-child(2) {
+  animation: scale 0.3s forwards 0.1s;
+}
+
+.item:last-child {
+  animation: scale 0.3s forwards 0.2s;
+}
+
+@keyframes scale {
+  from {
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
+  }
 }
 
 .item:hover {

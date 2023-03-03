@@ -22,12 +22,13 @@
 }
 
 /* striped */
-.table tr {
+.table tbody tr {
   background-color: var(--divider);
 }
+
 .table tr:nth-child(2n),
 .table thead tr {
-  background-color: var(--white);
+  background-color: transparent;
 }
 
 .separator {
@@ -44,4 +45,17 @@
 }
 .table tr.expire-less-than-15-days td:last-child {
   border-right: 3px solid var(--error);
+}
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .table tbody tr {
+  background-color: var(--dark);
+}
+
+:global(body.dark) .table tr:nth-child(2n) {
+  background-color: transparent;
 }

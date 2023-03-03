@@ -80,6 +80,5 @@
 /* selected dark theme */
 :global(body.dark) .deprecation {
   background-color: var(--dark);
-  padding: var(--pt3);
   border-left: var(--pt05) solid #ffa000;
 }

@@ -22,9 +22,18 @@ export function Theme({ theme, onClick, className = "" }) {
       align="end"
       drop="up-centered"
     >
-      <Dropdown.Toggle className={styles.toggle} id="dropdown-theme-select">
-        {isSelected?.icon}
-      </Dropdown.Toggle>
+      <OverlayTrigger
+        placement="left"
+        overlay={
+          <Tooltip className={styles.tooltip} id={`tooltip-theme`}>
+            {"Theme"}
+          </Tooltip>
+        }
+      >
+        <Dropdown.Toggle className={styles.toggle} id="dropdown-theme-select">
+          {isSelected?.icon}
+        </Dropdown.Toggle>
+      </OverlayTrigger>
 
       <Dropdown.Menu className={styles.menu}>
         {themes.map(({ label, icon }) => (
