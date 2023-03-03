@@ -207,10 +207,11 @@ export const resolvers = {
         .load({
           ...parent,
           ...args,
+          limit: 50,
           profile: context.profile,
         });
 
-      return res?.facets || [];
+      return res?.facets?.slice(0, args.limit || 10) || [];
     },
     async didYouMean(parent, args, context) {
       const res = await context.datasources.getLoader("didYouMean").load({
