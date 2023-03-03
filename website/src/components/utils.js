@@ -30,6 +30,11 @@ export const toTimestamp = (strDate) => {
   return new Date(strDate).getTime();
 };
 
+export function daysBetween(date1, date2) {
+  const diff = toTimestamp(date1) - toTimestamp(date2);
+  return Math.ceil(diff / (1000 * 3600 * 24)) || 0;
+}
+
 export function timeConverter(timestamp) {
   var a = new Date(timestamp);
   var hour = a.getHours() < 10 ? "0" + a.getHours() : a.getHours();

@@ -813,6 +813,11 @@ type ManifestationTitles {
   \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
   standard: String
 
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
+
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]
 }
@@ -1279,6 +1284,11 @@ type WorkTitles {
   \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
   standard: String
 
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
+
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]
 }
@@ -1424,6 +1434,7 @@ enum FacetField {
   workTypes
   mainLanguages
   materialTypes
+  materialTypesGeneral
   fictionalCharacters
   genreAndForm
   childrenOrAdults
@@ -1444,6 +1455,7 @@ input SearchFilters {
   genreAndForm: [String!]
   mainLanguages: [String!]
   materialTypes: [String!]
+  materialTypesGeneral: [String!]
   subjects: [String!]
   workTypes: [String!]
   branchId: [String!]
@@ -2273,6 +2285,11 @@ type ManifestationTitles {
   \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
   standard: String
 
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
+
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]
 }
@@ -2740,6 +2757,11 @@ type WorkTitles {
 
   \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
   standard: String
+
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
 
   \\"\\"\\"Danish translation of the main title\\"\\"\\"
   translated: [String!]

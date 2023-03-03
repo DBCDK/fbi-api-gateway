@@ -52,11 +52,13 @@ function DummyContainer({ inView, show }) {
     }
   }, [dummyContainerInView]);
   return (
-    <div
-      className={styles.dummycontainer}
-      ref={dummyContainerRef}
-      style={{ display: show ? "block" : "none" }}
-    />
+    <div className={styles.inlinegraphiql}>
+      <div
+        className={styles.dummycontainer}
+        ref={dummyContainerRef}
+        style={{ display: show ? "block" : "none" }}
+      />
+    </div>
   );
 }
 
@@ -103,9 +105,6 @@ export function InlineGraphiQL({
   const { selectedToken } = useStorage();
   const url = useGraphQLUrl(selectedToken);
 
-  // This is used for lazy loading
-  const [showDummyContainer, setShowDummyContainer] = useState(true);
-
   const [isReady, setIsReady] = useState(false);
 
   const curlRef = useRef();
@@ -126,13 +125,6 @@ export function InlineGraphiQL({
   useEffect(() => {
     setIsReady(true);
   }, []);
-
-  // When the selected token has changed, we unmount graphiql
-  // and mounts the dummy container. Graphiql will be reinstantiated
-  // when the dummy container is in the viewport again
-  useEffect(() => {
-    setShowDummyContainer(true);
-  }, [selectedToken]);
 
   const tab = tabs[activeTabIndex];
   useEffect(() => {
@@ -176,18 +168,11 @@ export function InlineGraphiQL({
         </Button>
       </div>
 
-      <DummyContainer
-        inView={() => setShowDummyContainer(false)}
-        show={showDummyContainer}
+      <GraphiQLInterface
+        onEditQuery={onEditQuery}
+        onEditVariables={onEditVariables}
+        isHeadersEditorEnabled={false}
       />
-
-      {!showDummyContainer && (
-        <GraphiQLInterface
-          onEditQuery={onEditQuery}
-          onEditVariables={onEditVariables}
-          isHeadersEditorEnabled={false}
-        />
-      )}
 
       <Input
         elRef={curlRef}
@@ -221,14 +206,14 @@ export default function Wrap(props) {
   const [variables, setVariables] = useState(initialVariabels);
 
   useEffect(() => {
-    setShow(true);
-  }, []);
+    setShow(false);
+  }, [selectedToken]);
 
-  if (!show) {
-    return null;
+  if (!show || !schema) {
+    return <DummyContainer inView={() => setShow(true)} show={true} />;
   }
 
-  const fetcher = async (graphQLParams) => {
+  const fetcher = async ({ query, variables = {} }) => {
     const data = await fetch(url, {
       method: "POST",
       headers: {
@@ -236,7 +221,7 @@ export default function Wrap(props) {
         "Content-Type": "application/json",
         Authorization: `bearer ${selectedToken?.token}`,
       },
-      body: JSON.stringify(graphQLParams),
+      body: JSON.stringify({ query, variables }),
       credentials: "same-origin",
     });
     return data.json().catch(() => data.text());

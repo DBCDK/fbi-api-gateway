@@ -50,6 +50,7 @@ enum FacetField {
   workTypes
   mainLanguages
   materialTypes
+  materialTypesGeneral
   fictionalCharacters
   genreAndForm
   childrenOrAdults
@@ -72,6 +73,7 @@ input SearchFilters {
   genreAndForm: [String!]
   mainLanguages: [String!]
   materialTypes: [String!]
+  materialTypesGeneral: [String!]
   subjects: [String!]
   workTypes: [String!]
 
