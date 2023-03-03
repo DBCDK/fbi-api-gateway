@@ -19,10 +19,23 @@ export async function load(
     options: { "include-phonetic-creator": false },
     debug: false,
   };
+
+  // REMOVE WHEN SERVICE SUPPORTS materialTypesSpecific
+  const _filters = { ...filters };
+  if (_filters.materialTypesSpecific) {
+    if (!_filters.materialTypes) {
+      _filters.materialTypes = _filters.materialTypesSpecific;
+    }
+    delete _filters.materialTypesSpecific;
+  }
+  // // // // // // // // // // // // // // // // // //
+
   // merge variables and statics
   const query = {
     q,
-    filters,
+    // CHANGE BACK WHEN SERVICE SUPPORTS materialTypesSpecific
+    filters: _filters,
+    // // // // // // // // // // // // // // // // // //
     start: offset,
     rows: limit,
     ...statics,

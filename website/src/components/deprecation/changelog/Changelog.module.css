@@ -20,6 +20,9 @@
 .table th {
   text-align: left;
 }
+.table td {
+  vertical-align: middle;
+}
 
 /* striped */
 .table tr {
