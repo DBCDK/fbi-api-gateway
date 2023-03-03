@@ -44,7 +44,7 @@ export async function load({ q, filters = {}, profile, limit = 10 }, context) {
 
 export const options = {
   redis: {
-    prefix,
+    prefix: "intelligent-" + prefix,
     ttl,
   },
 };
