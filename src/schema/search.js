@@ -202,30 +202,15 @@ export const resolvers = {
   },
   SearchResponse: {
     async intelligentFacets(parent, args, context) {
-      const limit = args?.limit || 10;
-      // Hard coded until we get the service
-      return [
-        {
-          name: "genreAndForm",
-          values: [
-            { term: "krimi", score: 284 },
-            { term: "politiromaner", score: 23 },
-            { term: "spænding", score: 16 },
-          ],
-        },
-        {
-          name: "mainLanguages",
-          values: [
-            { term: "dan", score: 1291 },
-            { term: "ger", score: 364 },
-            { term: "und", score: 220 },
-          ],
-        },
-        {
-          name: "materialTypes",
-          values: [{ term: "lydbog (net)", score: 207 }],
-        },
-      ].slice(0, limit);
+      const res = await context.datasources
+        .getLoader("intelligentFacets")
+        .load({
+          ...parent,
+          ...args,
+          profile: context.profile,
+        });
+
+      return res?.facets || [];
     },
     async didYouMean(parent, args, context) {
       const res = await context.datasources.getLoader("didYouMean").load({
