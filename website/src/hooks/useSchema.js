@@ -23,7 +23,9 @@ export default function useSchema(token) {
         "Content-Type": "application/json",
         Authorization: `bearer ${token?.token}`,
       },
-      body: JSON.stringify({ query: getIntrospectionQuery() }),
+      body: JSON.stringify({
+        query: getIntrospectionQuery({ inputValueDeprecation: true }),
+      }),
     });
 
     if (response.status !== 200) {
