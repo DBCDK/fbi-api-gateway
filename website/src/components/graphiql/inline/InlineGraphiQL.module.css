@@ -111,7 +111,6 @@
 
 .inlinegraphiql.dummy {
   pointer-events: none;
-  /* height: 536px; */
 }
 
 .inlinegraphiql.dummy .interface {
