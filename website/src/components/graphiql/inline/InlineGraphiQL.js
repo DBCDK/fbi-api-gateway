@@ -40,24 +40,48 @@ const noStorage = {
  * @param {boolean} props.show
  * @returns {component}
  */
-function DummyContainer({ inView, show }) {
+function DummyContainer({ inView }) {
   const dummyContainerRef = useRef();
   const dummyContainerInView = useIntersection(
     dummyContainerRef.current,
     "0px"
   );
+
   useEffect(() => {
     if (dummyContainerInView) {
       inView?.(true);
     }
   }, [dummyContainerInView]);
+
   return (
-    <div className={styles.inlinegraphiql}>
-      <div
-        className={styles.dummycontainer}
-        ref={dummyContainerRef}
-        style={{ display: show ? "block" : "none" }}
-      />
+    <div
+      className={`${styles.inlinegraphiql} inlinegraphiql ${styles.dummy} dummy`}
+      ref={dummyContainerRef}
+    >
+      <div className={`${styles.buttons} buttons`}>
+        <Button
+          size="small"
+          className={`${styles.button} ${styles.run} run-btn`}
+        >
+          Run 🏃
+        </Button>
+        <Button
+          secondary
+          size="small"
+          className={`${styles.button} ${styles.prettify}`}
+        >
+          Prettify ✨
+        </Button>
+        <Button
+          secondary
+          size="small"
+          className={`${styles.button} ${styles.open}`}
+        >
+          Open in GraphiQL 🛰️
+        </Button>
+      </div>
+      <div className={`${styles.interface} interface`} />
+      <Input value={""} className={`${styles.curl} curl-input`} />
     </div>
   );
 }
