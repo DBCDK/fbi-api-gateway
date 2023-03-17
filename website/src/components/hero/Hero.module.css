@@ -14,16 +14,7 @@
 }
 
 .color {
-  /* background: rgb(255, 175, 204);
-  background: linear-gradient(
-    75deg,
-    #a2d2ff,
-    #ffafcc,
-    #a2d2ff,
-    #ffafcc
-  ); */
-
-  background: #dc1c13;
+  background: var(--hero-gradient-primary);
   background: linear-gradient(
     75deg,
     var(--hero-gradient-primary),
@@ -32,18 +23,10 @@
     var(--hero-gradient-secondary)
   );
 
-  /* opacity:0.9; */
+  /* opacity: 0.9; */
   z-index: -1;
   background-size: 400% 100%;
   animation: gradient 60s infinite;
-  /* background-image: linear-gradient(
-    to right,
-    #ffafcc,
-    #efb6e5,
-    #d7c0f6,
-    #bbc9ff,
-    #a2d2ff
-  ); */
 }
 
 .silhouette {

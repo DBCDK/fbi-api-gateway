@@ -13,8 +13,10 @@ import History from "@/components/history";
 
 const theme = getConfig()?.publicRuntimeConfig?.theme;
 const isChristmas = theme === "christmas";
+const isEaster = theme === "easter";
 
 import Snow from "./snow";
+import Chicken from "./chicken";
 
 import styles from "./Hero.module.css";
 
@@ -32,6 +34,7 @@ export default function Hero({ className = "" }) {
       <div className={styles.color} />
       <div className={styles.silhouette} />
       {isChristmas && <Snow />}
+      {isEaster && <Chicken />}
       <Container>
         <Row className={styles.row}>
           <Col>
