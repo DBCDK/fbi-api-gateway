@@ -218,7 +218,6 @@
 .cloud2 {
   top: 10%;
   animation: cloud 30s -4s infinite linear;
-  opacity: 1;
 }
 .cloud3 {
   top: 25%;
