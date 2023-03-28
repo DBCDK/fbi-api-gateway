@@ -127,7 +127,7 @@
 
 .inlinegraphiql.dummy .buttons button {
   background-color: var(--divider) !important;
-  color: transparent;
+  color: transparent !important;
 }
 
 /* 
@@ -146,6 +146,8 @@
 :global(body.dark) .button.run {
   color: var(--dark);
 }
-:global(body.dark) .dummycontainer {
-  background-color: var(--dark);
+:global(body.dark) .inlinegraphiql.dummy .interface,
+:global(body.dark) .inlinegraphiql.dummy .buttons button,
+:global(body.dark) .inlinegraphiql.dummy .curl {
+  background-color: var(--dark) !important;
 }
