@@ -1,0 +1,243 @@
+.container *,
+.container *:before,
+.container *:after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 150%;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.chick {
+  position: absolute;
+  right: 30%;
+  top: 58%;
+  transform: scale(0.6);
+}
+@media screen and (min-width: 576px) {
+  .chick {
+    top: 53%;
+  }
+}
+
+.body {
+  position: absolute;
+  height: 65px;
+  width: 100px;
+  background-color: #ffec02;
+  border-radius: 100px 100px 0 0;
+  top: -2px;
+  animation: body-walk 0.8s infinite;
+}
+@keyframes body-walk {
+  50% {
+    top: 7px;
+  }
+}
+.body:before {
+  content: "";
+  position: absolute;
+  height: 80px;
+  width: 150px;
+  background-color: #ffec02;
+  top: 65px;
+  right: 0;
+  border-radius: 15px 0 150px 150px;
+}
+.wing {
+  height: 37px;
+  width: 74px;
+  background-color: #ffce00;
+  position: absolute;
+  top: 55px;
+  left: -40px;
+  border-radius: 10px 10px 74px 74px;
+  transform-origin: right;
+  animation: wing 1s infinite;
+}
+@keyframes wing {
+  50% {
+    transform: rotate(10deg);
+  }
+}
+.beak {
+  position: absolute;
+  background-color: #f17c00;
+  height: 40px;
+  width: 40px;
+  border-radius: 5px;
+  top: 30px;
+  left: 68px;
+  transform: skewX(30deg) rotate(-25deg);
+  z-index: -1;
+}
+.left-leg,
+.right-leg {
+  height: 50px;
+  width: 13px;
+  background-color: #f17c00;
+  position: absolute;
+  top: 100px;
+  left: 35px;
+  transform-origin: top;
+  transform: rotate(-45deg);
+  animation: walk 1s infinite;
+  z-index: -1;
+}
+.left-leg:before,
+.right-leg:before {
+  content: "";
+  position: absolute;
+  height: 13px;
+  width: 40px;
+  background-color: #f17c00;
+  right: -20px;
+  top: 50px;
+  border-radius: 40px;
+}
+.right-leg {
+  animation-delay: 0.5s;
+}
+@keyframes walk {
+  33.33% {
+    transform: translateY(20px) rotate(0deg);
+  }
+  66.66% {
+    transform: translate(-25px, 10px) rotate(30deg);
+  }
+}
+.eye {
+  background-color: #1c1c1c;
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  top: 32px;
+  left: 65px;
+  border-radius: 20px;
+  transform-origin: bottom;
+  animation: blink 12.5s infinite;
+}
+@keyframes blink {
+  25%,
+  35% {
+    height: 20px;
+    top: 32px;
+  }
+  30% {
+    height: 1px;
+    top: 40px;
+  }
+}
+.blush {
+  background-color: rgba(241, 124, 0, 0.5);
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  top: 48px;
+  left: 46px;
+}
+.feather {
+  height: 35px;
+  width: 12px;
+  border-radius: 35px;
+  background-color: #ffec02;
+  position: absolute;
+  left: 30px;
+  top: -20px;
+  transform: rotate(-15deg);
+}
+.feather:before {
+  content: "";
+  position: absolute;
+  height: 25px;
+  width: 12px;
+  background-color: #ffec02;
+  top: 5px;
+  left: 10px;
+  border-radius: 25px;
+  transform: rotate(25deg);
+}
+.shadow {
+  background-color: rgba(0, 0, 0, 0.1);
+  height: 18px;
+  width: 110px;
+  position: absolute;
+  margin: auto;
+  left: -20px;
+  top: 175px;
+  z-index: -2;
+  border-radius: 20px;
+  animation: shadow 1s infinite;
+}
+@keyframes shadow {
+  50% {
+    transform: scaleX(1.13);
+  }
+}
+.cloud {
+  background-color: #ffffff;
+  height: 35px;
+  width: 120px;
+  border-radius: 120px;
+  position: absolute;
+  z-index: -3;
+  right: -130px;
+  opacity: 0.75;
+}
+.cloud:before {
+  position: absolute;
+  content: "";
+  background-color: #ffffff;
+  height: 65px;
+  width: 65px;
+  border-radius: 50%;
+  bottom: 10px;
+  left: 15px;
+}
+.cloud:after {
+  position: absolute;
+  content: "";
+  background-color: #ffffff;
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  bottom: 10px;
+  right: 10px;
+}
+
+.cloud2 {
+  top: 10%;
+  animation: cloud 30s -4s infinite linear;
+}
+.cloud3 {
+  top: 25%;
+  animation: cloud 30s -10s infinite linear;
+}
+.cloud4 {
+  top: 20%;
+  animation: cloud 30s -18s infinite linear;
+}
+.cloud1 {
+  top: 40%;
+  animation: cloud 30s -24s infinite linear;
+}
+.cloud5 {
+  top: 55%;
+  animation: cloud 30s -14s infinite linear;
+}
+
+@keyframes cloud {
+  100% {
+    transform: translateX(calc(-100vw - 130px));
+  }
+}

@@ -20,7 +20,8 @@
 
 /* inline graphiql */
 .border :global(.graphiql-container),
-.border :global(.curl-input) {
+.border :global(.curl-input),
+.border :global(.interface) {
   background-color: #fff8e1 !important;
   --primary: #ffe082;
   --primary-dark: #ffca28;
@@ -35,6 +36,11 @@
 }
 .border :global(.inlinegraphiql > .buttons button:is(:hover, :focus-visible)) {
   background-color: #ffa000 !important;
+}
+
+/* dummy loading version of inline graphiql */
+.border :global(.inlinegraphiql.dummy > .buttons button) {
+  background-color: #fff8e1 !important;
 }
 
 /* 

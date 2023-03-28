@@ -2,8 +2,8 @@
  * @file Facets
  */
 
-import request from "superagent";
 import config from "../config";
+import uniq from "lodash/uniq";
 
 const {
   url,
@@ -26,11 +26,30 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
     profile: name,
   };
 
+  // REMOVE WHEN SERVICE SUPPORTS materialTypesSpecific // // // // // // // //
+  // facets
+  const _facets = [...facets];
+  const materialTypesSpecificIdx = _facets.indexOf("materialTypesSpecific");
+  if (materialTypesSpecificIdx > -1) {
+    _facets.splice(materialTypesSpecificIdx, 1, "materialTypes");
+  }
+  // filters
+  const _filters = { ...filters };
+  if (_filters.materialTypesSpecific) {
+    if (!_filters.materialTypes) {
+      _filters.materialTypes = _filters.materialTypesSpecific;
+    }
+    delete _filters.materialTypesSpecific;
+  }
+  // // // // // // // // // // // // // // // // // // // // // // // // // //
+
   // merge variables and statics
   const query = {
     q,
-    filters,
-    facets,
+    // CHANGE BACK WHEN SERVICE SUPPORTS materialTypesSpecific
+    filters: _filters,
+    facets: uniq(_facets),
+    // // // // // // // // // // // // // // // // // // // //
     disable_fuzzy_search: disableFuzzySearch,
     ...statics,
   };
@@ -39,7 +58,12 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
     await context.fetch(url, { method: "POST", body: JSON.stringify(query) })
   ).body;
 
-  // parse
+  // REMOVE WHEN SERVICE SUPPORTS materialTypesSpecific
+  if (materialTypesSpecificIdx > -1) {
+    res.facets.materialTypesSpecific = res.facets.materialTypes;
+  }
+  // // // // // // // // // // // // // // // // // //
+
   return Object.entries(res.facets).map(([name, facetResult]) => {
     return {
       name,

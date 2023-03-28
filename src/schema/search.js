@@ -49,8 +49,9 @@ The supported facet fields
 enum FacetField {
   workTypes
   mainLanguages
-  materialTypes
+  materialTypes @deprecated(reason: "Use 'FacetField.materialTypesSpecific'")
   materialTypesGeneral
+  materialTypesSpecific 
   fictionalCharacters
   genreAndForm
   childrenOrAdults
@@ -72,8 +73,9 @@ input SearchFilters {
   fictionalCharacters: [String!]
   genreAndForm: [String!]
   mainLanguages: [String!]
-  materialTypes: [String!]
+  materialTypes: [String!] @deprecated(reason: "Use 'SearchFilters.materialTypesSpecific'")
   materialTypesGeneral: [String!]
+  materialTypesSpecific: [String!]
   subjects: [String!]
   workTypes: [String!]
 
@@ -200,30 +202,16 @@ export const resolvers = {
   },
   SearchResponse: {
     async intelligentFacets(parent, args, context) {
-      const limit = args?.limit || 10;
-      // Hard coded until we get the service
-      return [
-        {
-          name: "genreAndForm",
-          values: [
-            { term: "krimi", score: 284 },
-            { term: "politiromaner", score: 23 },
-            { term: "spænding", score: 16 },
-          ],
-        },
-        {
-          name: "mainLanguages",
-          values: [
-            { term: "dan", score: 1291 },
-            { term: "ger", score: 364 },
-            { term: "und", score: 220 },
-          ],
-        },
-        {
-          name: "materialTypes",
-          values: [{ term: "lydbog (net)", score: 207 }],
-        },
-      ].slice(0, limit);
+      const res = await context.datasources
+        .getLoader("intelligentFacets")
+        .load({
+          ...parent,
+          ...args,
+          limit: 50,
+          profile: context.profile,
+        });
+
+      return res?.facets?.slice(0, args.limit || 10) || [];
     },
     async didYouMean(parent, args, context) {
       const res = await context.datasources.getLoader("didYouMean").load({

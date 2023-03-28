@@ -41,11 +41,6 @@
   padding: 0;
 }
 
-.inlinegraphiql .dummycontainer {
-  height: 536px;
-  background-color: var(--divider);
-}
-
 .inlinegraphiql :global(.CodeMirror-hints) {
   z-index: 1000;
 }
@@ -118,6 +113,21 @@
   .buttons .button:last-child {
     display: unset;
   }
+}
+
+/* dummy */
+.inlinegraphiql.dummy {
+  pointer-events: none;
+}
+
+.inlinegraphiql.dummy .interface {
+  height: 400px;
+  background-color: var(--divider);
+}
+
+.inlinegraphiql.dummy .buttons button {
+  background-color: var(--divider) !important;
+  color: transparent;
 }
 
 /* 
