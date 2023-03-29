@@ -715,7 +715,11 @@ type ManifestationTitles {
 export const resolvers = {
   Audience: {
     ages(parent) {
-      return Array.isArray(parent?.ages) ? parent?.ages : [];
+      return parent?.ages
+        ? !Array.isArray(parent?.ages)
+          ? [parent.ages]
+          : parent.ages
+        : [];
     },
   },
   Identifier: {
