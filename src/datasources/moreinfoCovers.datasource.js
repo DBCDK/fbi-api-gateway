@@ -1,5 +1,5 @@
 import { log } from "dbc-node-logger";
-import { config } from "../config";
+import config from "../config";
 
 const {
   authenticationUser,
@@ -8,7 +8,7 @@ const {
   url,
   ttl,
   prefix,
-} = config().datasources.moreinfo;
+} = config.datasources.moreinfo;
 
 function createRequest(pid) {
   return `<mi:moreInfoRequest xmlns:mi="http://oss.dbc.dk/ns/moreinfo">
