@@ -10,6 +10,8 @@ export async function load(
   { q, filters = {}, limit = 10, offset = 0, profile },
   context
 ) {
+  console.log("########### simplesearch => context", context);
+
   const { agency, name } = profile;
 
   // get parsed arguments for query

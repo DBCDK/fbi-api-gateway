@@ -126,7 +126,7 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
  * Will instantiate dataloaders from datasources.
  * This should be done for every incoming GraphQL request
  */
-export default function createDataLoaders(uuid) {
+export default function createDataLoaders(uuid, _config = {}) {
   const result = {};
   const track = trackMe().start(uuid);
 
@@ -142,6 +142,7 @@ export default function createDataLoaders(uuid) {
         track,
         fetch: (url, options) => fetchWithConcurrencyLimit(url, options, name),
         trackingId: uuid,
+        config: _config,
       })?.loader;
     }
     return result[name];

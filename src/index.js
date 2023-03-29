@@ -20,6 +20,7 @@ import howruHandler from "./howru";
 import { metrics, observeDuration } from "./utils/monitor";
 import validateComplexity from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
+import { createFetchWithConcurrencyLimit } from "./utils/fetchWithLimit";
 import { v4 as uuid } from "uuid";
 import isbot from "isbot";
 
@@ -107,14 +108,6 @@ promExporterApp.listen(9599, () => {
   });
 
   /**
-   * Middleware for initializing dataloaders
-   */
-  app.post("/:profile/graphql", async (req, res, next) => {
-    req.datasources = createDataLoaders(uuid());
-    next();
-  });
-
-  /**
    * Middleware for validating access token, and fetching smaug configuration
    */
   app.post("/:profile/graphql", async (req, res, next) => {
@@ -141,9 +134,10 @@ promExporterApp.listen(9599, () => {
     try {
       req.smaug =
         req.accessToken &&
-        (await req.datasources.getLoader("smaug").load({
+        (await createDataLoaders(uuid()).getLoader("smaug").load({
           accessToken: req.accessToken,
         }));
+
       req.smaug.app.ips = (req.ips.length && req.ips) || [req.ip];
 
       // Agency of the smaug client
@@ -195,6 +189,24 @@ promExporterApp.listen(9599, () => {
   });
 
   /**
+   * Middleware for initializing custom config
+   */
+  app.post("/:profile/graphql", async (req, res, next) => {
+    const smaug = req.smaug;
+
+    console.log("############# Middleware for initializing custom config", {
+      smaug,
+      config,
+    });
+
+    const merged = { ...config };
+
+    req.datasources = createDataLoaders(uuid(), merged);
+
+    next();
+  });
+
+  /**
    * Check if operation is introspection
    * @param {*} operation
    * @returns
@@ -207,7 +219,7 @@ promExporterApp.listen(9599, () => {
   }
 
   // Setup route handler for GraphQL
-  app.post("/:profile/graphql", async (req, res) => {
+  app.post("/:profile/graphql", async (req, res, next) => {
     const schema = await getExecutableSchema({
       clientPermissions: req?.smaug?.gateway,
       hasAccessToken: !!req.accessToken,
