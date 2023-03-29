@@ -215,8 +215,6 @@ promExporterApp.listen(9599, () => {
 
     const { query, variables } = req.body;
 
-    //console.log(req, "REQ INDEX");
-
     const handler = createHandler({
       schema,
       validationRules: [validateComplexity({ query, variables })],
