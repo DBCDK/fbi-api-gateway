@@ -57,7 +57,7 @@ pipeline {
        stage("Update staging version number") {
 			agent {
 				docker {
-					label 'devel10-head'
+					label 'devel11'
 					image "docker-dbc.artifacts.dbccloud.dk/build-env:latest"
 					alwaysPull true
 				}
