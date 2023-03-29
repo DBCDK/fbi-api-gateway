@@ -715,7 +715,14 @@ type ManifestationTitles {
 export const resolvers = {
   Audience: {
     ages(parent) {
-      return Array.isArray(parent?.ages) ? parent?.ages : [];
+      console.log(parent?.ages, "AGES");
+
+      //return Array.isArray(parent?.ages) ? parent?.ages : [];
+      return parent?.ages
+        ? !Array.isArray(parent?.ages)
+          ? [parent.ages]
+          : parent.ages
+        : [];
     },
   },
   Identifier: {
@@ -753,10 +760,13 @@ export const resolvers = {
       return parent?.workTypes || [];
     },
     async cover(parent, args, context, info) {
+      console.log(context.smaug, "SMAUG");
       let coverImage;
+
+      // here we lose the context - datasources do not hold it
       if (parent?.pid) {
         coverImage = await context.datasources
-          .getLoader("moreinfoCovers")
+          .getLoader("moreinfoCovers", context)
           .load(parent.pid);
         if (Object.keys(coverImage).length > 0) {
           return coverImage;

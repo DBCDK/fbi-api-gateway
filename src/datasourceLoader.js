@@ -136,12 +136,14 @@ export default function createDataLoaders(uuid) {
   );
   // Gets a loader by name.
   // A loader will be initialized first time it is called
-  function getLoader(name) {
+  function getLoader(name, context) {
+    console.log(context?.smaug, "GETLOADER CONTEXT");
     if (!result[name]) {
       result[name] = setupDataloader(nameToDatasource[name], {
         track,
         fetch: (url, options) => fetchWithConcurrencyLimit(url, options, name),
         trackingId: uuid,
+        smaug: context?.smaug,
       })?.loader;
     }
     return result[name];

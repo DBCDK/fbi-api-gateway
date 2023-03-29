@@ -1,4 +1,6 @@
-export default {
+export const config = () => settings;
+
+const settings = {
   app: {
     id: process.env.APP_ID || "bibliotekdk-next-api",
   },
@@ -216,3 +218,4 @@ export default {
     },
   },
 };
+export default settings;

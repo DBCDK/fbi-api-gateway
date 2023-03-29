@@ -1,5 +1,5 @@
 import { log } from "dbc-node-logger";
-import config from "../config";
+import { config } from "../config";
 
 const {
   authenticationUser,
@@ -8,7 +8,7 @@ const {
   url,
   ttl,
   prefix,
-} = config.datasources.moreinfo;
+} = config().datasources.moreinfo;
 
 function createRequest(pid) {
   return `<mi:moreInfoRequest xmlns:mi="http://oss.dbc.dk/ns/moreinfo">
@@ -49,6 +49,7 @@ function createMultiRequest(pids) {
  * @param {Array.<string|object>} keys The keys to fetch
  */
 export async function batchLoader(keys, context) {
+  console.log(context, "MOREINFO CONTEXT");
   try {
     const images = (
       await context.fetch(url, {
@@ -86,10 +87,10 @@ export async function batchLoader(keys, context) {
   }
 }
 
-export const options = {
+/*export const options = {
   redis: {
     prefix,
     ttl,
     staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
   },
-};
+};*/
