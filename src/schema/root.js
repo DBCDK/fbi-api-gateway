@@ -422,7 +422,7 @@ export const resolvers = {
         accessToken: context.accessToken,
         smaug: context.smaug,
         branch: (
-          await context.datasources.getLoader("library").load({
+          await context.datasources.getLoader("library", context).load({
             branchId: args.input.pickUpBranch,
             digitalAccessSubscriptions,
             infomediaSubscriptions,

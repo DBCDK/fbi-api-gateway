@@ -715,14 +715,7 @@ type ManifestationTitles {
 export const resolvers = {
   Audience: {
     ages(parent) {
-      console.log(parent?.ages, "AGES");
-
-      //return Array.isArray(parent?.ages) ? parent?.ages : [];
-      return parent?.ages
-        ? !Array.isArray(parent?.ages)
-          ? [parent.ages]
-          : parent.ages
-        : [];
+      return Array.isArray(parent?.ages) ? parent?.ages : [];
     },
   },
   Identifier: {
@@ -760,10 +753,9 @@ export const resolvers = {
       return parent?.workTypes || [];
     },
     async cover(parent, args, context, info) {
-      console.log(context.smaug, "SMAUG");
       let coverImage;
 
-      // here we lose the context - datasources do not hold it
+      // pass context to dataloader - that way a datasource can use smaug configuration .. or not
       if (parent?.pid) {
         coverImage = await context.datasources
           .getLoader("moreinfoCovers", context)
