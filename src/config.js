@@ -214,5 +214,10 @@ export default {
       ttl: process.env.INFOMEDIA_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.INFOMEDIA_PREFIX || "infomedia-1",
     },
+    linkcheck: {
+      url:
+        process.env.LINKCHECK_URL ||
+        "http://link-check-service.de-prod.svc.cloud.dbc.dk/api/v1",
+    },
   },
 };
