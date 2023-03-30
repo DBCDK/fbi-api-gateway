@@ -145,6 +145,7 @@
   right: 0;
   bottom: 0;
   padding: var(--pt2);
+  z-index: 1;
 }
 
 @media (min-width: 1200px) {
