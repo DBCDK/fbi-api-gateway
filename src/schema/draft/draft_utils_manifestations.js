@@ -588,11 +588,15 @@ export async function resolveAccess(manifestation, context) {
  *
  * */
 export function parseOnlineUrlToOrigin(url) {
-  const parsedUrl = new URL(url);
-  if (parsedUrl["host"] === "moreinfo.addi.dk") {
-    return "DBC Webarkiv";
-  } else {
-    return (parsedUrl["host"] && parsedUrl["host"]) || "";
+  try {
+    const parsedUrl = new URL(url);
+    if (parsedUrl["host"] === "moreinfo.addi.dk") {
+      return "DBC Webarkiv";
+    } else {
+      return (parsedUrl["host"] && parsedUrl["host"]) || "";
+    }
+  } catch (e) {
+    return "";
   }
 }
 
