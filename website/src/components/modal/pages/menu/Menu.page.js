@@ -8,7 +8,6 @@ import Profile from "@/components/profile";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 import Label from "@/components/base/label";
-import Darkmode from "@/components/darkmode";
 
 import styles from "./Menu.module.css";
 
@@ -83,12 +82,6 @@ function Menu({ modal, context }) {
               View GraphQL Schema
             </Link>
           </Text>
-        </Col>
-      </Row>
-      <hr />
-      <Row as="ul">
-        <Col xs={12} as="li">
-          <Darkmode className={styles.darkmode} />
         </Col>
       </Row>
     </div>
