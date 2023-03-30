@@ -107,14 +107,6 @@ promExporterApp.listen(9599, () => {
   });
 
   /**
-   * Middleware for initializing dataloaders
-   */
-  app.post("/:profile/graphql", async (req, res, next) => {
-    req.datasources = createDataLoaders(uuid());
-    next();
-  });
-
-  /**
    * Middleware for validating access token, and fetching smaug configuration
    */
   app.post("/:profile/graphql", async (req, res, next) => {
@@ -141,7 +133,7 @@ promExporterApp.listen(9599, () => {
     try {
       req.smaug =
         req.accessToken &&
-        (await req.datasources.getLoader("smaug").load({
+        (await createDataLoaders(uuid()).getLoader("smaug").load({
           accessToken: req.accessToken,
         }));
       req.smaug.app.ips = (req.ips.length && req.ips) || [req.ip];
@@ -191,6 +183,14 @@ promExporterApp.listen(9599, () => {
       }
     }
 
+    next();
+  });
+
+  /**
+   * Middleware for initializing dataloaders with settings from smaug
+   */
+  app.post("/:profile/graphql", async (req, res, next) => {
+    req.datasources = createDataLoaders(uuid(), req.smaug);
     next();
   });
 

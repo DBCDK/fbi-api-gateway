@@ -126,7 +126,7 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
  * Will instantiate dataloaders from datasources.
  * This should be done for every incoming GraphQL request
  */
-export default function createDataLoaders(uuid) {
+export default function createDataLoaders(uuid, smaugConfig) {
   const result = {};
   const track = trackMe().start(uuid);
 
@@ -143,7 +143,7 @@ export default function createDataLoaders(uuid) {
         fetch: (url, options) => fetchWithConcurrencyLimit(url, options, name),
         trackingId: uuid,
         // we pass smaug configuration for datasource if context is given
-        smaug: context?.smaug,
+        smaug: smaugConfig,
       })?.loader;
     }
     return result[name];
