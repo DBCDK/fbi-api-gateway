@@ -24,18 +24,12 @@ function createRequest(pid) {
 </mi:moreInfoRequest>`;
 }
 
-function createMultiRequest(pids, netpunkt) {
+function createMultiRequest(pids) {
   return `<mi:moreInfoRequest xmlns:mi="http://oss.dbc.dk/ns/moreinfo">
   <mi:authentication>
-      <mi:authenticationUser>${
-        netpunkt?.user || authenticationUser
-      }</mi:authenticationUser>
-      <mi:authenticationGroup>${
-        netpunkt?.group || authenticationGroup
-      }</mi:authenticationGroup>
-      <mi:authenticationPassword>${
-        netpunkt?.password || authenticationPassword
-      }</mi:authenticationPassword>
+      <mi:authenticationUser>${authenticationUser}</mi:authenticationUser>
+      <mi:authenticationGroup>${authenticationGroup}</mi:authenticationGroup>
+      <mi:authenticationPassword>${authenticationPassword}</mi:authenticationPassword>
   </mi:authentication>
   
   ${pids
@@ -55,15 +49,14 @@ function createMultiRequest(pids, netpunkt) {
  * @param {Array.<string|object>} keys The keys to fetch
  */
 export async function batchLoader(keys, context) {
-  const realUrl = context?.smaug?.urlOverrides?.moreinfo || url;
   try {
     const images = (
-      await context.fetch(realUrl, {
+      await context.fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: "&xml=" + createMultiRequest(keys, context?.smaug?.netpunkt),
+        body: "&xml=" + createMultiRequest(keys),
       })
     ).body.moreInfoResponse.identifierInformation.map(
       (entry) => entry.coverImage
