@@ -19,16 +19,17 @@ export const typeDef = `
  }
  
  type LinkCheckService {
-    checks(urls: [String!]!): [LinkCheckResponse!]!
+    checks(urls: [String!]): [LinkCheckResponse!]!
  }
- 
- `;
+  `;
 
 export const resolvers = {
   LinkCheckService: {
     async checks(parent, args, context, info) {
-      const res = await context.datasources.getLoader("linkcheck").load(args);
-      return res;
+      if (args.urls.length > 0) {
+        return await context.datasources.getLoader("linkcheck").load(args);
+      }
+      return [];
     },
   },
 };

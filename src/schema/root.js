@@ -26,7 +26,7 @@ type Query {
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
-  linkCheck(urls: [String!]): LinkCheckService!
+  linkCheck: LinkCheckService!
 
   localSuggest(
     """
