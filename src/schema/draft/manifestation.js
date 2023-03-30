@@ -715,7 +715,11 @@ type ManifestationTitles {
 export const resolvers = {
   Audience: {
     ages(parent) {
-      return Array.isArray(parent?.ages) ? parent?.ages : [];
+      return parent?.ages
+        ? !Array.isArray(parent?.ages)
+          ? [parent.ages]
+          : parent.ages
+        : [];
     },
   },
   Identifier: {
@@ -754,11 +758,9 @@ export const resolvers = {
     },
     async cover(parent, args, context, info) {
       let coverImage;
-
-      // pass context to dataloader - that way a datasource can use smaug configuration .. or not
       if (parent?.pid) {
         coverImage = await context.datasources
-          .getLoader("moreinfoCovers", context)
+          .getLoader("moreinfoCovers")
           .load(parent.pid);
         if (Object.keys(coverImage).length > 0) {
           return coverImage;
