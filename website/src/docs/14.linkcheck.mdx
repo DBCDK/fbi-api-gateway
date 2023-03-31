@@ -1,0 +1,31 @@
+# LinkCheck
+
+## Checks
+
+Validates a given list of urls, by returning an individual url `status`. Urls known by the service will return a cached status. Cached statuses are continuously checked on new requests.
+
+The returned _status_ can be one of the following:
+
+- _OK_
+- _BROKEN_
+- _INVALID_
+- _GONE_
+
+The field `brokenSince` will return a timestamp for when the link was first marked as _BROKEN_ or _GONE_. The `lastCheckedAt` field, will return a timestamp for when the url was last checked.
+
+<InlineGraphiQL
+  query={`
+  query Example_LinkCheck($urls: [String!]) {
+    linkCheck {
+        checks(urls: $urls) {
+        url
+        status
+        lastCheckedAt
+        brokenSince
+        }
+    }
+}`}
+  variables={{
+    urls: ["http://example.com", "http://example.com/foo"],
+  }}
+/>

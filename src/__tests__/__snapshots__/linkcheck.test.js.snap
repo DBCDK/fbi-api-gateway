@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Get 2 url check responses 1`] = `
+Object {
+  "data": Object {
+    "linkCheck": Object {
+      "checks": Array [
+        Object {
+          "brokenSince": 2023-03-22T06:47:20.000Z,
+          "lastCheckedAt": 2023-03-27T06:49:50.000Z,
+          "status": "GONE",
+          "url": "http://example.com/foo",
+        },
+        Object {
+          "brokenSince": null,
+          "lastCheckedAt": 2023-03-31T08:19:30.000Z,
+          "status": "OK",
+          "url": "http://example.com",
+        },
+      ],
+    },
+  },
+}
+`;
