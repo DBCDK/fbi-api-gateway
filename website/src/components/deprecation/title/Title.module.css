@@ -13,9 +13,15 @@
   margin: 0 var(--pt1);
 }
 
-:global(#container h2) .deprecation {
-}
-
 :global(#menu li) .deprecation {
   font-size: 12px;
+}
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .deprecation {
+  color: var(--text-dark);
 }

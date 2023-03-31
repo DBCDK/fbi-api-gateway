@@ -1,4 +1,4 @@
-import { Container, Row, Col } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
@@ -35,11 +35,11 @@ function Menu({ modal, context }) {
       <Row className={styles.middle}>
         <Col>
           <Label for="token-input">
-            <Text type="text5">FBI API token</Text>
+            <Text type="text1">FBI API token</Text>
           </Label>
           <Row>
             <Col className={styles.token}>
-              <Token className={styles.input} />
+              <Token className={styles.input} compact />
               <Profile className={styles.profiles} />
             </Col>
           </Row>

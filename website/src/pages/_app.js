@@ -1,6 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import getConfig from "next/config";
 import Head from "next/head";
+
+import useTheme from "@/hooks/useTheme";
 
 import "@/scss/custom-bootstrap.scss";
 import "@/css/styles.css";
@@ -13,6 +15,9 @@ if (theme === "christmas") {
 }
 if (theme === "easter") {
   favIcon = "🐤";
+}
+if (theme === "halloween") {
+  favIcon = "🎃";
 }
 
 function MyApp({ Component, pageProps, router }) {

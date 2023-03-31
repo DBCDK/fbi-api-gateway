@@ -17,6 +17,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin: auto;
 }
 
 .wrap.inActive.value {
@@ -96,9 +97,6 @@
 .display i {
   margin-left: calc(var(--pt05) * -1);
   font-style: normal;
-  /* outline: 2px solid white;
- border-radius: 50%;
- outline-offset: var(--pt1); */
 }
 
 /* clear button */
@@ -133,8 +131,11 @@
 
 .clear:focus-visible {
   transform: translateX(0);
-  color: var(--white) !important;
   background-color: var(--text-dark) !important;
+}
+
+.clear:focus-visible p {
+  color: var(--white);
 }
 
 /* compact */
@@ -197,6 +198,41 @@
   .wrap.inActive.value .clear {
     transform: translateX(0);
     background-color: var(--primary-dark) !important;
+    color: var(--text-dark) !important;
+  }
+}
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .display p {
+  color: var(--dark);
+}
+:global(body.dark) .input {
+  background-color: var(--dark);
+  color: var(--text-dark);
+}
+:global(body.dark) .clear {
+  background-color: var(--dark) !important;
+  border: var(--pt05) solid var(--dark-light);
+}
+:global(body.dark) .clear p {
+  color: var(--text-dark);
+}
+:global(body.dark) .clear:focus-visible,
+:global(body.dark) .clear:hover {
+  background-color: var(--text-dark) !important;
+}
+:global(body.dark) .clear:focus-visible p,
+:global(body.dark) .clear:hover p {
+  color: var(--dark-light) !important;
+}
+
+@media screen and (max-width: 576px) {
+  :global(body.dark) .wrap.inActive.value .clear {
+    background-color: var(--dark) !important;
     color: var(--text-dark) !important;
   }
 }

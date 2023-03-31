@@ -5,7 +5,7 @@
 
 /* remove border on deprecationBox child */
 .border > :global(.deprecation-box) {
-  border: none;
+  border: none !important;
 }
 
 /* styles override */
@@ -41,4 +41,19 @@
 /* dummy loading version of inline graphiql */
 .border :global(.inlinegraphiql.dummy > .buttons button) {
   background-color: #fff8e1 !important;
+}
+
+/* 
+* Dark theme
+*/
+:global(body.dark) .border {
+  border-left: var(--pt05) solid #ffa000;
+}
+
+/* selected dark theme */
+:global(body.dark) .border :global(.graphiql-container),
+:global(body.dark) .border :global(.curl-input) {
+  background-color: var(--dark) !important;
+  --primary: #ffe082;
+  --primary-dark: #ffa000;
 }

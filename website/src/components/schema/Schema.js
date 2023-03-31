@@ -7,6 +7,7 @@ import { Col, Row } from "react-bootstrap";
 import useStorage from "@/hooks/useStorage";
 import useSchema from "@/hooks/useSchema";
 import Schema from "@/components/base/graphql/schema/Schema";
+import Link from "@/components/base/link";
 
 import styles from "./Schema.module.css";
 
@@ -29,13 +30,14 @@ export default function Wrap() {
               describes which data can be retrieved. All calls to FBI API are
               validated and executed against the schema. Learn about the GraphQL
               schema definition language{" "}
-              <a
+              <Link
                 href="https://graphql.org/learn/schema/"
                 target="_blank"
                 rel="noreferrer"
+                underline
               >
                 here
-              </a>
+              </Link>
               .
             </Text>
             <Schema>{schemaStr}</Schema>

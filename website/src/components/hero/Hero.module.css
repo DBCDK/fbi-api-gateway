@@ -119,3 +119,24 @@
     display: none;
   }
 }
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .title {
+  color: var(--text-dark);
+}
+:global(body.dark) .go,
+:global(body.dark) .history {
+  background-color: var(--dark-light);
+}
+:global(body.dark) .token > div {
+  outline: 2px solid var(--text-light);
+  background-color: var(--text-light) !important;
+}
+:global(body.dark) .token input {
+  outline: 2px solid var(--text-light);
+  background-color: var(--dark-light) !important;
+}

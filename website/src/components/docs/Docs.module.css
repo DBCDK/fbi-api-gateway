@@ -70,13 +70,12 @@
     padding: var(--pt10) 0 var(--pt15) 0;
   }
 }
-/* 
-@media screen and (max-width: calc(1400px + 64px)) {
-  .wrap .menu {
-    padding: 0 var(--pt4);
-  }
 
-  .wrap .content {
-    padding: 0 var(--pt2) var(--pt15) var(--pt2);
-  }
-} */
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .content section blockquote {
+  border-color: var(--dark);
+}

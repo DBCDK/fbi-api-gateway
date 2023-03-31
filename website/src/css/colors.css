@@ -13,20 +13,6 @@ background: linear-gradient(45deg, rgba(255,175,204,1) 25%, rgba(162,210,255,1) 
 */
 
 body {
-  /* gradient */
-  --hero-gradient-primary: #ffafcc;
-  --hero-gradient-secondary: #a2d2ff;
-
-  /* primary */
-  --primary: #ffafcc;
-  --primary-light: #ffc8dd;
-  --primary-dark: #f48ba9;
-
-  /* secondary */
-  --secondary: #a2d2ff;
-  --secondary-light: #bde0fe;
-  --secondary-dark: #86cbed;
-
   /* text */
   --text-dark: #212121;
   --text-light: #757575;
@@ -57,13 +43,9 @@ body {
   --secondary-dark: #64b5f6;
 
   /* gradient */
-  --hero-gradient-primary: #ff80ab;
-  --hero-gradient-secondary: #80d8ff;
-
   --hero-gradient-primary: #f8bbd0;
   --hero-gradient-secondary: #b3e5fc;
 }
-
 body.easter {
   --primary: #ffca28;
   --primary-dark: #ffa726;
@@ -74,7 +56,6 @@ body.easter {
   --hero-gradient-primary: #ffe082;
   --hero-gradient-secondary: #ffa726;
 }
-
 body.christmas {
   --primary: #f07470;
   --primary-dark: #ea4c46;
@@ -83,4 +64,75 @@ body.christmas {
 
   --hero-gradient-primary: #dc1c13;
   --hero-gradient-secondary: #f07470;
+}
+body.halloween {
+  --primary: #ff8a65;
+  --primary-dark: #ff7043;
+
+  --secondary: #ffb74d;
+
+  --hero-gradient-primary: #ff5722;
+  --hero-gradient-secondary: #ff8a65;
+}
+
+/* 
+* Dark theme
+*/
+
+body {
+  --dark: #212a3b;
+  --dark-light: #2c3546;
+}
+
+/* selected dark theme */
+body.dark {
+  --white: var(--dark);
+
+  /* text */
+  --text-dark: #bdbdbd;
+  --text-light: #616161;
+
+  --primary-light: #f48fb1;
+  --primary: #f06292;
+  --primary-dark: #ec407a;
+
+  /* secondary */
+  --secondary-light: #81d4fa;
+  --secondary: #4fc3f7;
+  --secondary-dark: #29b6f6;
+
+  /* gradient */
+  --hero-gradient-primary: var(--dark);
+  --hero-gradient-secondary: var(--dark);
+}
+body.dark {
+  background-color: var(--dark-light);
+  color: var(--text-dark);
+}
+body.dark code {
+  background-color: var(--dark);
+  color: #70bcff;
+}
+
+body.dark.easter {
+  --primary: #ffca28;
+  --primary-dark: #ffa726;
+
+  --secondary: #aed581;
+  --secondary-light: #a5d6a7;
+}
+
+body.dark.christmas {
+  --primary: #f07470;
+  --primary-dark: #ea4c46;
+
+  --secondary: #ffffff;
+  --secondary-light: #ffffff;
+}
+body.dark.halloween {
+  --primary: #ff7043;
+  --primary-dark: #ff5722;
+
+  --secondary: #ffb74d;
+  --secondary-light: #ffcc80;
 }

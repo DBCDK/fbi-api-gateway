@@ -61,3 +61,8 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
 .graphiql-container *::-webkit-scrollbar-thumb:hover {
   background: var(--primary-dark);
 }
+
+/* hide settings in graphiql editor */
+.graphiql-sidebar-section:last-child button:last-child {
+  display: none;
+}

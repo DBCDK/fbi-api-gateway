@@ -6,9 +6,6 @@
   overflow-y: auto;
 }
 
-.title {
-}
-
 .menu .middle {
   background-color: var(--primary-dark);
   padding: var(--pt6) var(--pt2);
@@ -33,7 +30,7 @@
 
 .token .input,
 .token .input > div {
-  width: 100%;
+  width: 100% !important;
 }
 
 .profiles {
@@ -94,5 +91,28 @@
   }
 }
 
-@media screen and (min-width: 993px) {
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .menu {
+  background-color: var(--dark);
+}
+:global(body.dark) .menu hr {
+  border-color: var(--dark);
+}
+:global(body.dark) .middle label {
+  color: var(--text-dark);
+}
+:global(body.dark) .menu .middle {
+  background-color: var(--dark-light);
+}
+:global(body.dark) .input > div {
+  outline: 2px solid var(--text-light);
+  background-color: var(--text-light) !important;
+}
+:global(body.dark) .input input {
+  outline: 2px solid var(--text-light);
+  background-color: var(--dark-light) !important;
 }
