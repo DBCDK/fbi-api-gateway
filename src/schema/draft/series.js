@@ -64,9 +64,22 @@ export const resolvers = {
         profile: context.profile,
       });
 
+      // this is a temporary fix for serieservice v2 -
+      // http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/series-members
+      //
+      // serieservice v1 outputs an array of workIds .. eg [workId, woriId ,,,]
+      // serieservice v2 outputs an array of elements - almost of type Series
+      // but only almost - eg [Series, Series, .. ]
+      // TODO check output with typeDef
+      //
+      // for now simply grap the workids of the first serie element and go on
+      // as nothing happened
       if (data && data.series) {
+        const workids = data.series[0].works?.map((work) => {
+          return work.persistentWorkId;
+        });
         const works = await Promise.all(
-          data.series.slice(0, 100).map(async (id) => {
+          workids.slice(0, 100).map(async (id) => {
             return resolveWork({ id }, context);
           })
         );
