@@ -14,3 +14,15 @@
   padding: var(--pt1) var(--pt2);
   white-space: nowrap;
 }
+
+/* selected dark theme */
+:global(body.graphiql-dark) .body {
+  color: var(--dark);
+}
+
+/* system dark theme */
+@media (prefers-color-scheme: dark) {
+  :global(body:not(.graphiql-light)) .body {
+    color: var(--dark);
+  }
+}

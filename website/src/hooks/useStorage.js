@@ -1,5 +1,4 @@
 import useSWR from "swr";
-import { isEqual } from "@/components/utils";
 
 export default function useStorage() {
   const { data: history, mutate: mutateHistory } = useSWR("history", (key) =>
@@ -16,7 +15,7 @@ export default function useStorage() {
   // If user has not explicitly selected a token
   // we use the first one from history if one exists
   if (!selectedToken) {
-    selectedToken = history?.[0];
+    // selectedToken = history?.[0];
   }
 
   const isToken = (token) => {

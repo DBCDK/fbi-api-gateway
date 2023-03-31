@@ -6,14 +6,31 @@
   margin-top: 32px;
 }
 .schema :global(.graphql-keyword) {
-  color: #cf222e;
+  color: #d60590;
 }
 .schema :global(.graphql-type-name),
 .schema :global(.graphql-enum-name),
 .schema :global(.graphql-input-name) {
-  color: #0550ae;
+  color: #007deb;
 }
 
 .schema :global(.graphql-description) {
-  color: #0a3069;
+  color: #009fb8;
+}
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .schema {
+  background: var(--dark);
+}
+:global(body.dark) .schema :global(.graphql-type-name),
+:global(body.dark) .schema :global(.graphql-enum-name),
+:global(body.dark) .schema :global(.graphql-input-name) {
+  color: #70bcff;
+}
+:global(body.dark) .schema :global(.graphql-description) {
+  color: #00c2e0;
 }

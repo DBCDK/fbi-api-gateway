@@ -72,3 +72,13 @@
   :global(.inlinegraphiql > .buttons button:is(:hover, :focus-visible)) {
   background-color: #ffa000 !important;
 }
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .deprecation {
+  background-color: var(--dark);
+  border-left: var(--pt05) solid #ffa000;
+}

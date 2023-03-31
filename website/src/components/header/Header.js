@@ -14,6 +14,8 @@ import Link from "@/components/base/link";
 import History from "@/components/history";
 import Token from "@/components/token";
 import Profile from "@/components/profile";
+import Darkmode from "@/components/darkmode";
+import Theme from "@/components/theme";
 
 import Modal, { Pages } from "@/components/modal";
 
@@ -27,6 +29,9 @@ if (theme === "christmas") {
 }
 if (theme === "easter") {
   logo = "🐤";
+}
+if (theme === "halloween") {
+  logo = "🎃";
 }
 
 export default function Header() {
@@ -103,15 +108,23 @@ export default function Header() {
               </Link>
             </Text>
           </Col>
+
           <Col className={styles.middle}>
             {!isIndex && <Token className={styles.token} compact />}
             <Profile className={styles.profiles} />
             <History className={styles.history} />
           </Col>
         </Row>
+        {/* <Darkmode className={styles.darkmode} /> */}
+        <Theme className={styles.darkmode} />
       </Container>
 
-      <Modal show={show} onHide={() => setShow(false)} className={styles.modal}>
+      <Modal
+        show={show}
+        onHide={() => setShow(false)}
+        title=" "
+        className={styles.modal}
+      >
         <Pages.Menu modal={{ isVisible: show }} />
       </Modal>
     </header>

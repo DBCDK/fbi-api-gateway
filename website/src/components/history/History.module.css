@@ -20,3 +20,17 @@
 .modal {
   background-color: var(--divider);
 }
+
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .modal {
+  background-color: var(--dark-light);
+}
+
+:global(body.dark) .history:hover,
+:global(body.dark) .history:focus-visible {
+  background-color: var(--text-light);
+}

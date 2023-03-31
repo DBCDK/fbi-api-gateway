@@ -4,13 +4,13 @@
 
 .toggle {
   border: 2px solid var(--primary-dark);
-
   height: var(--pt5);
-  background-color: transparent;
+  background-color: var(--white);
   font-family: var(--font-mono-regular);
   transition-duration: 0.35s;
   display: inline-block;
   box-sizing: content-box;
+  cursor: pointer;
 
   /* half height */
   border-radius: var(--pt5);
@@ -20,8 +20,11 @@
   padding: 0 var(--pt2);
 }
 
-.toggle:focus-visible {
+.toggle:focus-visible,
+.toggle:hover {
   border: 2px solid var(--text-dark);
+  background-color: var(--text-dark);
+  color: var(--white);
 }
 
 .toggle::after {
@@ -39,19 +42,38 @@
 
 .item.selected {
   font-family: var(--font-sans-bold);
-  color: var(--primary-dark);
-  border-left: 2px solid black;
+  color: var(--primary-dark) !important;
+  border-left: 2px solid var(--text-dark);
 }
 
 .item:focus-visible {
   outline: 2px solid var(--text-dark);
-  background-color: transparent;
 }
 
 .item:hover {
-  color: var(--primary-dark);
+  color: var(--primary-dark) !important;
   background-color: transparent;
 }
 
-@media screen and (max-width: 576px) {
+/* 
+* Dark theme
+*/
+
+/* selected dark theme */
+:global(body.dark) .toggle {
+  color: var(--text-dark);
+  background-color: var(--dark);
+  border: 2px solid var(--text-light);
+}
+:global(body.dark) .toggle:hover,
+:global(body.dark) .toggle:focus-visible {
+  color: var(--dark);
+  background-color: var(--text-light);
+  border: 2px solid var(--text-light);
+}
+:global(body.dark) .menu {
+  background-color: var(--dark-light);
+}
+:global(body.dark) .item {
+  color: var(--text-dark);
 }

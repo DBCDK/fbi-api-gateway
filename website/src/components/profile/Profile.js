@@ -1,12 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
 
 import Dropdown from "react-bootstrap/Dropdown";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
-
-import Button from "@/components/base/button";
-import Text from "@/components/base/text";
 
 import styles from "./Profile.module.css";
 
