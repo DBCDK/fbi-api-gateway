@@ -18,7 +18,8 @@
       "submitPeriodicaArticleOrder",
       "elba",
       "library",
-      "relatedSubjects"
+      "relatedSubjects",
+      "linkCheck"
     ],
     "denyTypes": ["CheckOrderPolicy", "Availability", "SEO", "WorkReview"]
   }

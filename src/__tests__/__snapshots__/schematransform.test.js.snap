@@ -1,7 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`default schema transform 1`] = `
-"\\"\\"\\"Search Filters\\"\\"\\"
+"\\"\\"\\"
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the \`date-time\` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+\\"\\"\\"
+scalar DateTime
+
+\\"\\"\\"Search Filters\\"\\"\\"
 input ComplexSearchFilters {
   branchId: [String!]
   department: [String!]
@@ -1341,6 +1346,24 @@ enum LanguageCode {
   en
 }
 
+enum LinkCheckStatus {
+  OK
+  BROKEN
+  INVALID
+  GONE
+}
+
+type LinkCheckResponse {
+  url: String!
+  status: LinkCheckStatus!
+  lastCheckedAt: DateTime
+  brokenSince: DateTime
+}
+
+type LinkCheckService {
+  checks(urls: [String!]): [LinkCheckResponse!]!
+}
+
 input PeriodicaArticleOrder {
   \\"\\"\\"The pid of an article or periodica\\"\\"\\"
   pid: String!
@@ -1374,6 +1397,7 @@ type Query {
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
+  linkCheck: LinkCheckService!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!

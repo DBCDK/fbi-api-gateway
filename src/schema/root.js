@@ -26,6 +26,7 @@ type Query {
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
+  linkCheck: LinkCheckService!
 
   localSuggest(
     """
@@ -226,6 +227,9 @@ export const resolvers = {
       return args;
     },
     async complexSearch(parent, args, context, info) {
+      return args;
+    },
+    async linkCheck(parent, args, context, info) {
       return args;
     },
     async branches(parent, args, context, info) {
