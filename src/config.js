@@ -218,6 +218,8 @@ export default {
       url:
         process.env.LINKCHECK_URL ||
         "http://link-check-service.de-prod.svc.cloud.dbc.dk/api/v1",
+      prefix: process.env.LINKCHECK_PREFIX || "linkcheck-1",
+      ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
     },
   },
 };

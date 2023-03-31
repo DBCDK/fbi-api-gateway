@@ -29,10 +29,10 @@ export async function load({ urls }, context) {
   return restructureLinkStates(res.body.linkStates);
 }
 
-// export const options = {
-//   redis: {
-//     prefix,
-//     ttl,
-//     staleWhileRevalidate: 60 * 60 * 24, // 24 hours
-//   },
-// };
+export const options = {
+  redis: {
+    prefix,
+    ttl,
+    staleWhileRevalidate: 60 * 60 * 24,
+  },
+};
