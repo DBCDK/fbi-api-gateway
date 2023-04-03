@@ -211,7 +211,11 @@ export const resolvers = {
           profile: context.profile,
         });
 
-      return res?.facets?.slice(0, args.limit || 10) || [];
+      return (
+        (Array.isArray(res?.facets) &&
+          res?.facets?.slice(0, args.limit || 10)) ||
+        []
+      );
     },
     async didYouMean(parent, args, context) {
       const res = await context.datasources.getLoader("didYouMean").load({
