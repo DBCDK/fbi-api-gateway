@@ -87,7 +87,7 @@ export const resolvers = {
         return null;
       }
       const article = await fetchArticle(parent, context);
-      if (article.error) {
+      if (!article || article.error) {
         return null;
       }
       return article;
