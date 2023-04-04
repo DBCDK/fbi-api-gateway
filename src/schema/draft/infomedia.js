@@ -75,6 +75,12 @@ export const resolvers = {
         return "BORROWER_NOT_LOGGED_IN";
       }
       const article = await fetchArticle(parent, context);
+      // quickfix - there is no article - this is the best error message
+      // i can find for now - TODO better error message
+      if (!article) {
+        return "ERROR_IN_REQUEST";
+      }
+
       if (article.error) {
         if (!errors.includes(article.error)) {
           return "INTERNAL_SERVER_ERROR";
