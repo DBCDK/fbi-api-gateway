@@ -10,7 +10,7 @@ export async function batchLoader(keys, context) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      includeRelations: false,
+      includeRelations: true,
       profile: `${keys?.[0]?.profile.agency}-${keys?.[0]?.profile.name}`,
       ids: keys.map((entry) => entry.id),
     }),
