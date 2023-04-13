@@ -9,6 +9,7 @@ export function load({ id }) {
         "870971-anmeld:37860409": {
           ...consts.FAKE_MANIFESTATION_1,
           pid: id,
+          workId: `work-of:${id}`,
           access: {
             accessUrls: [],
             dbcWebArchive: false,
@@ -22,6 +23,7 @@ export function load({ id }) {
       }[id] || {
         ...consts.FAKE_MANIFESTATION_1,
         pid: id,
+        workId: `work-of:${id}`,
       }
     );
   }
