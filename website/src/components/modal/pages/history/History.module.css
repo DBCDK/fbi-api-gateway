@@ -353,8 +353,18 @@
 /* selected dark theme */
 :global(body.dark) .item .content .buttons .use,
 :global(body.dark) .item.inUse .content .buttons .use {
-  color: var(--dark);
+  background-color: var(--dark-light);
 }
+
+:global(body.dark) .item .content .buttons .use:is(:hover, :focus-visible),
+:global(body.dark)
+  .item.inUse
+  .content
+  .buttons
+  .use:is(:hover, :focus-visible) {
+  background-color: var(--text-dark);
+}
+
 :global(body.dark) .cross {
   background-color: var(--dark-light);
 }

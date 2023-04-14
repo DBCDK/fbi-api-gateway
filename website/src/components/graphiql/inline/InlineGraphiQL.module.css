@@ -146,6 +146,8 @@
 :global(body.dark) .button.run {
   color: var(--dark);
 }
+
+/* dummy container */
 :global(body.dark) .inlinegraphiql.dummy .interface,
 :global(body.dark) .inlinegraphiql.dummy .buttons button,
 :global(body.dark) .inlinegraphiql.dummy .curl {
