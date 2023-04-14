@@ -837,7 +837,10 @@ export const resolvers = {
       };
     },
     ownerWork(parent, args, context, info) {
-      return resolveWork({ pid: parent.pid }, context);
+      const work = { ...parent };
+      // ownerWork is not included in the JED rest endpoint (workId is used instead)
+      work.ownerWork = parent?.workId;
+      return work;
     },
   },
 };
