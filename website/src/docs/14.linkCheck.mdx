@@ -6,10 +6,10 @@ Validates a given list of urls, by returning an individual url `status`. Urls kn
 
 The returned _status_ can be one of the following:
 
-- _OK_
-- _BROKEN_
-- _INVALID_
-- _GONE_
+- _**OK**_ - Reflects HTTP status 1xx, 2xx and 3xx
+- _**BROKEN**_ - Reflects status 4xx and 5xx
+- _**GONE**_ - An url has been _BROKEN_ for more than 5 days
+- _**INVALID**_ - Not a valid url
 
 The field `brokenSince` will return a timestamp for when the link was first marked as _BROKEN_ or _GONE_. The `lastCheckedAt` field, will return a timestamp for when the url was last checked.
 
