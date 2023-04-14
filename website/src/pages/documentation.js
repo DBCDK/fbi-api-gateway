@@ -19,7 +19,7 @@ const components = {
   p: ({ children }) => <Text type="text2">{children}</Text>,
   li: ({ children }) => (
     <li>
-      <Text type="text2">{children}</Text>
+      <Text type="text1">{children}</Text>
     </li>
   ),
   a: ({ children, href }) => (
