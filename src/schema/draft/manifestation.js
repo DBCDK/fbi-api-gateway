@@ -1,4 +1,4 @@
-import { parseJedSubjects, resolveWork } from "../../utils/utils";
+import { parseJedSubjects, resolveManifestation } from "../../utils/utils";
 
 const IDENTIFIER_TYPES = new Set([
   "UPC",
@@ -836,11 +836,25 @@ export const resolvers = {
           : parseJedSubjects(parent?.subjects?.dbcVerified),
       };
     },
-    ownerWork(parent, args, context, info) {
-      const work = { ...parent };
-      // ownerWork is not included in the JED rest endpoint (workId is used instead)
-      work.ownerWork = parent?.workId;
-      return work;
+    async ownerWork(parent, args, context, info) {
+      const manifestation = { ...parent };
+      if (manifestation.workId) {
+        // ownerWork is not included in the JED rest endpoint (workId is used instead)
+        manifestation.ownerWork = parent?.workId;
+        return manifestation;
+      }
+
+      // TODO: this can be removed when JED rest supports workId on work.manifestations
+
+      // WorkId is not yet a part of the work.manifestations.
+      // In the JED rest endpoint workId is only given when requesting a single manifestation.
+      // We retrieve the WorkId by calling the JED rest endpoint with a single manifestation.
+      const newManifestation = await resolveManifestation(
+        { pid: parent.pid },
+        context
+      );
+      newManifestation.ownerWork = newManifestation?.workId;
+      return newManifestation;
     },
   },
 };
