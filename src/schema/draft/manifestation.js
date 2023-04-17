@@ -1,4 +1,5 @@
 import { parseJedSubjects, resolveManifestation } from "../../utils/utils";
+import { log } from "dbc-node-logger";
 
 const IDENTIFIER_TYPES = new Set([
   "UPC",
@@ -853,7 +854,25 @@ export const resolvers = {
         { pid: parent.pid },
         context
       );
-      newManifestation.ownerWork = newManifestation?.workId;
+
+      // Debug error - No manifestation found for pid
+      if (!newManifestation) {
+        log.error("NO MANIFESTATION FOUND in jed-presentation service", {
+          pid: parent.pid,
+        });
+      }
+
+      // Debug error - No workId found on manifestation
+      if (newManifestation && !newManifestation?.workId) {
+        log.error("NO MANIFESTATION.WORKID FOUND in jed-presentation service", {
+          pid: parent.pid,
+        });
+      }
+
+      if (newManifestation) {
+        newManifestation.ownerWork = newManifestation.workId;
+      }
+
       return newManifestation;
     },
   },

@@ -47,33 +47,17 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
 
 /* width */
 .graphiql-container *::-webkit-scrollbar {
-  width: var(--pt1);
-  height: var(--pt1);
+  display: none;
 }
 
-/* Track */
-.graphiql-container *::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* Handle */
-.graphiql-container *::-webkit-scrollbar-thumb {
-  background: transparent;
-}
-
-/* Handle on hover */
-.graphiql-container *::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-dark);
-}
-
-.CodeMirror-hscrollbar .CodeMirror-vscrollbar {
-  /* firefox */
-  scrollbar-color: var(--primary-dark) transparent;
+.CodeMirror-sizer {
+  margin-right: var(--pt2);
 }
 
 /* width */
 .CodeMirror-hscrollbar::-webkit-scrollbar,
 .CodeMirror-vscrollbar::-webkit-scrollbar {
+  display: block;
   width: var(--pt1);
   height: var(--pt1);
 }
