@@ -35,6 +35,11 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
 
 /* scrollbar */
 
+.CodeMirror-scroll {
+  margin-right: 0;
+}
+
+.graphiql-container *,
 .graphiql-container * {
   /* firefox */
   scrollbar-color: var(--primary-dark) transparent;
@@ -53,14 +58,46 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
 
 /* Handle */
 .graphiql-container *::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: var(--pt05);
+  background: transparent;
 }
 
 /* Handle on hover */
 .graphiql-container *::-webkit-scrollbar-thumb:hover {
   background: var(--primary-dark);
 }
+
+.CodeMirror-hscrollbar .CodeMirror-vscrollbar {
+  /* firefox */
+  scrollbar-color: var(--primary-dark) transparent;
+}
+
+/* width */
+.CodeMirror-hscrollbar::-webkit-scrollbar,
+.CodeMirror-vscrollbar::-webkit-scrollbar {
+  width: var(--pt1);
+  height: var(--pt1);
+}
+
+/* Track */
+.CodeMirror-hscrollbar::-webkit-scrollbar-track,
+.CodeMirror-vscrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+.CodeMirror-hscrollbar::-webkit-scrollbar-thumb,
+.CodeMirror-vscrollbar::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--pt05);
+}
+
+/* Handle on hover */
+.CodeMirror-hscrollbar::-webkit-scrollbar-thumb:hover,
+.CodeMirror-vscrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+/* settings panel */
 
 /* hide settings in graphiql editor */
 .graphiql-sidebar-section:last-child button:last-child {
