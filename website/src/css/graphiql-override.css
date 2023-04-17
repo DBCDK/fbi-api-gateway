@@ -39,7 +39,6 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
   margin-right: 0;
 }
 
-.graphiql-container *,
 .graphiql-container * {
   /* firefox */
   scrollbar-color: var(--primary-dark) transparent;
