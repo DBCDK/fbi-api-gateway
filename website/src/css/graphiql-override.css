@@ -35,6 +35,10 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
 
 /* scrollbar */
 
+.CodeMirror-scroll {
+  margin-right: 0;
+}
+
 .graphiql-container * {
   /* firefox */
   scrollbar-color: var(--primary-dark) transparent;
@@ -42,25 +46,41 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
 
 /* width */
 .graphiql-container *::-webkit-scrollbar {
+  display: none;
+}
+
+.CodeMirror-sizer {
+  margin-right: var(--pt2);
+}
+
+/* width */
+.CodeMirror-hscrollbar::-webkit-scrollbar,
+.CodeMirror-vscrollbar::-webkit-scrollbar {
+  display: block;
   width: var(--pt1);
   height: var(--pt1);
 }
 
 /* Track */
-.graphiql-container *::-webkit-scrollbar-track {
+.CodeMirror-hscrollbar::-webkit-scrollbar-track,
+.CodeMirror-vscrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 
 /* Handle */
-.graphiql-container *::-webkit-scrollbar-thumb {
+.CodeMirror-hscrollbar::-webkit-scrollbar-thumb,
+.CodeMirror-vscrollbar::-webkit-scrollbar-thumb {
   background: var(--primary);
   border-radius: var(--pt05);
 }
 
 /* Handle on hover */
-.graphiql-container *::-webkit-scrollbar-thumb:hover {
+.CodeMirror-hscrollbar::-webkit-scrollbar-thumb:hover,
+.CodeMirror-vscrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--primary-dark);
 }
+
+/* settings panel */
 
 /* hide settings in graphiql editor */
 .graphiql-sidebar-section:last-child button:last-child {
