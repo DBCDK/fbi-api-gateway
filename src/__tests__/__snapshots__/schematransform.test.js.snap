@@ -355,6 +355,8 @@ enum NoteType {
   ORIGINAL_VERSION
   REFERENCES
   RESTRICTIONS_ON_USE
+  TYPE_OF_SCORE
+  FREQUENCY
 }
 
 enum ChildOrAdultCode {
@@ -1850,6 +1852,8 @@ enum NoteType {
   ORIGINAL_VERSION
   REFERENCES
   RESTRICTIONS_ON_USE
+  TYPE_OF_SCORE
+  FREQUENCY
 }
 
 enum ChildOrAdultCode {
