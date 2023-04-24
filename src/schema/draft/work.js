@@ -221,13 +221,6 @@ export const resolvers = {
         dbcVerified: parseJedSubjects(parent?.subjects?.dbcVerified),
       };
     },
-    async series(parent, args, context, info) {
-      const data = await context.datasources.getLoader("series").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
-      return data;
-    },
     async manifestations(parent, args, context, info) {
       const manifestations = parent?.manifestations;
       const first = manifestations?.first || manifestations?.all?.[0];
