@@ -97,6 +97,11 @@ type Work {
   Members of a series that this work is part of
   """
   seriesMembers: [Work!]!
+  
+  """
+  A full serie with serie information and works
+  """
+  seriesAndWorks: [SeriesAndWorks!]!
 
   """
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
@@ -215,6 +220,13 @@ export const resolvers = {
         all: parseJedSubjects(parent?.subjects?.all),
         dbcVerified: parseJedSubjects(parent?.subjects?.dbcVerified),
       };
+    },
+    async series(parent, args, context, info) {
+      const data = await context.datasources.getLoader("series").load({
+        workId: parent.workId,
+        profile: context.profile,
+      });
+      return data;
     },
     async manifestations(parent, args, context, info) {
       const manifestations = parent?.manifestations;
