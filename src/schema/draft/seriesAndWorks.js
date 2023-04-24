@@ -74,7 +74,7 @@ export const resolvers = {
     },
   },
   SerieWork: {
-    async work(parent, args, context, info) {
+    work(parent, args, context, info) {
       return resolveWork({ id: parent.persistentWorkId }, context);
     },
   },
