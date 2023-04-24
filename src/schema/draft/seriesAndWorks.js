@@ -69,9 +69,6 @@ export const resolvers = {
     },
   },
   SeriesAndWorks: {
-    seriesDescription(parent, args, context, info) {
-      return parent.seriesDescription;
-    },
     serieWorks(parent, args, context, info) {
       return parent.works;
     },
