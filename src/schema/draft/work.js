@@ -99,11 +99,6 @@ type Work {
   seriesMembers: [Work!]!
   
   """
-  A full serie with serie information and works
-  """
-  seriesAndWorks: [SeriesAndWorks!]!
-
-  """
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
   """
   universe: Universe
