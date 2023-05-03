@@ -115,9 +115,9 @@ export default {
     series: {
       url:
         process.env.SERIES_URL ||
-        "http://series-service.cisterne.svc.cloud.dbc.dk/api/v1/series-members",
+        "http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/series-members",
       ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
-      prefix: process.env.SERIES_PREFIX || "seriesservice-1",
+      prefix: process.env.SERIES_PREFIX || "seriesservice-2",
     },
     redis: {
       host: process.env.REDIS_HOST || "127.0.0.1",
