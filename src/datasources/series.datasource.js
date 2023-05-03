@@ -18,10 +18,10 @@ export async function load({ workId, trackingId = null, profile }, context) {
   return res;
 }
 
-/*export const options = {
+export const options = {
   redis: {
     prefix,
     ttl,
     staleWhileRevalidate: 60 * 60 * 48, // 48 hours
   },
-};*/
+};
