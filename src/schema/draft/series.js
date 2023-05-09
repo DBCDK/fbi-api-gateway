@@ -159,5 +159,11 @@ export const resolvers = {
 
       return temp;
     },
+
   },
+  SerieWork:{
+   work(parent, args, context, info){
+      return resolveWork({ id: parent.persistentWorkId }, context);
+    }
+  }
 };
