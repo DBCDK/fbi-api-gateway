@@ -52,8 +52,8 @@ export default {
     },
     jed: {
       url:
-        "http://jed-presentation-0-8-0-1-service.cisterne.svc.cloud.dbc.dk" ||
-        process.env.JED_URL,
+        process.env.JED_URL ||
+        "http://jed-presentation-0-8-0-1-service.cisterne.svc.cloud.dbc.dk",
       ttl: process.env.JED_TIME_TO_LIVE_SECONDS || 60 * 10,
       prefix: process.env.JED_PREFIX || "jed-1",
     },
@@ -104,13 +104,6 @@ export default {
       serviceRequester: process.env.OPENORDER_SERVICEREQUESTER,
       ttl: process.env.OPENORDER_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.OPENORDER_PREFIX || "openorder-1",
-    },
-    work: {
-      url:
-        process.env.WORKSERVICE_URL ||
-        "http://work-presentation-service.cisterne.svc.cloud.dbc.dk/api/work-presentation",
-      ttl: process.env.WORKSERVICE_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
-      prefix: process.env.WORKSERVICE_PREFIX || "workservice-11",
     },
     series: {
       url:

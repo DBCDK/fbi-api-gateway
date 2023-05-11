@@ -292,21 +292,19 @@ function resolveVolume(parent) {
  * Resolves reviews of the work
  */
 async function resolveReviews(parent, context) {
-  // We still use old workservice for relations
   const work = await context.datasources
-    .getLoader("workservice")
-    .load({ workId: parent.workId, profile: context.profile });
+    .getLoader("jedRelations")
+    .load({ id: parent.workId, profile: context.profile });
 
   if (!work?.relations) {
     return [];
   }
+
   let reviews = (
     await Promise.all(
-      work.relations
-        .filter((rel) => rel.type === "review")
-        .map((review) =>
-          context.datasources.getLoader("openformat").load(review.id)
-        )
+      work.relations.hasReview.map((pid) =>
+        context.datasources.getLoader("openformat").load(pid)
+      )
     )
   )
     .filter((review) => !!review)
@@ -340,6 +338,7 @@ async function resolveReviews(parent, context) {
     });
   reviews = orderBy(reviews, "date", "desc");
   reviews = uniqBy(reviews, "author");
+
   return reviews;
 }
 

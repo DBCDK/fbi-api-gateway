@@ -267,6 +267,7 @@ export async function resolveWork(args, context) {
       .getLoader("faustToWorkId")
       .load({ faust: args.faust, profile: context.profile });
   } else if (args.pid) {
+    // get the owner workId from pid
     id = await context.datasources
       .getLoader("pidToWorkId")
       .load({ pid: args.pid, profile: context.profile });

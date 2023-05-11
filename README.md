@@ -47,7 +47,7 @@ Time for data to live in the Redis cache in seconds. Default is 86400.
 - **MOREINFO_PREFIX**
 The prefix to be used for keys in the Redis cache. This may be changed to invalidate entries. Default is moreinfo-1. 
 - **OPENFORMAT_URL**
-The workservice URL. Default is http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
+The openformat URL. Default is http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
 - **OPENFORMAT_TIME_TO_LIVE_SECONDS**
 Time for data to live in the Redis cache in seconds. Default is 86400.
 - **OPENFORMAT_PREFIX**
@@ -60,13 +60,3 @@ The Redis port. Default is 6379.
 The prefix to be used for entire application. Change this and all entries are invalidated. Default is bibdk-api-1.
 - **REDIS_ENABLED**
 Default is true.
-- **WORKSERVICE_URL**
-The workservice URL. Default is http://work-presentation-service.cisterne.svc.cloud.dbc.dk/api/work-presentation
-- **WORKSERVICE_AGENCY_ID**
-The agency id
-- **WORKSERVICE_PROFILE**
-The profile
-- **WORKSERVICE_TIME_TO_LIVE_SECONDS**
-Time for data to live in the Redis cache in seconds. Default is 86400.
-- **WORKSERVICE_PREFIX**
-The prefix to be used for keys in the Redis cache. This may be changed to invalidate entries. Default is workservice-1. 
