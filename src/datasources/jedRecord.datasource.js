@@ -16,6 +16,7 @@ export async function batchLoader(keys, context) {
       ids: keys.map((entry) => entry.id),
     }),
   });
+
   return keys.map((k) => res.body.records[k.id]);
 }
 

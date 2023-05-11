@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url } = config.datasources.work;
+const { url } = config.datasources["jed-1-0"];
 
 /**
  * Fetches a work id, based on a pid
@@ -8,10 +8,9 @@ const { url } = config.datasources.work;
  * is created at some point.
  */
 export async function load({ pid, profile }, context) {
-  const res = await context?.fetch(
-    `${url}?workId=work-of:${pid}&agencyId=${profile.agency}=&profile=${profile.name}`,
-    { allowedErrorStatusCodes: [404] }
+  const res = await context.fetch(
+    `${url}/api/v1/fbi-api/manifestation?id=${pid}&profile=${profile.agency}-${profile.name}&includeRelations=false`
   );
 
-  return res.body?.work?.workId;
+  return res.body?.workId;
 }
