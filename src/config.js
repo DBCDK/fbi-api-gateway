@@ -110,13 +110,6 @@ export default {
       ttl: process.env.OPENORDER_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.OPENORDER_PREFIX || "openorder-1",
     },
-    work: {
-      url:
-        process.env.WORKSERVICE_URL ||
-        "http://work-presentation-service.cisterne.svc.cloud.dbc.dk/api/work-presentation",
-      ttl: process.env.WORKSERVICE_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
-      prefix: process.env.WORKSERVICE_PREFIX || "workservice-11",
-    },
     series: {
       url:
         process.env.SERIES_URL ||
