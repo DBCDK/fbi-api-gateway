@@ -57,11 +57,6 @@ export default {
       ttl: process.env.JED_TIME_TO_LIVE_SECONDS || 60 * 10,
       prefix: process.env.JED_PREFIX || "jed-1",
     },
-    "jed-1-0": {
-      url: "http://jed-presentation-1-0-service.cisterne.svc.cloud.dbc.dk",
-      ttl: process.env.JED_TIME_TO_LIVE_SECONDS || 60 * 10,
-      prefix: process.env.JED_PREFIX || "jed-1",
-    },
     openformat: {
       url:
         process.env.OPENFORMAT_URL ||

@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url } = config.datasources["jed-1-0"];
+const { url } = config.datasources.jed;
 
 /**
  * Fetches a work id, based on a pid
