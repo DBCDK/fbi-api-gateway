@@ -1,4 +1,3 @@
-import request from "superagent";
 import config from "../config";
 
 /**
@@ -10,10 +9,13 @@ export async function load({ accessToken }, context) {
   return (
     await context.fetch(url, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         access_token: accessToken,
         userinfo: ["userOrder"],
       }),
     })
-  ).body.data;
+  ).body?.data;
 }
