@@ -1,15 +1,20 @@
-import request from "superagent";
 import config from "../config";
-
 /**
  * Fetch user info
  */
-export async function load({ accessToken }) {
-  const url = config.datasources.openplatform.url + "/user";
-  return (
-    await request.post(url).send({
-      access_token: accessToken,
-      userinfo: ["userFiscal"],
-    })
-  ).body.data;
+export async function load({ accessToken }, context) {
+    const url = config.datasources.openplatform.url + "/user";
+
+    return (
+        await context.fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                access_token: accessToken,
+                userinfo: ["userFiscal"],
+            }),
+        })
+    ).body?.data;
 }

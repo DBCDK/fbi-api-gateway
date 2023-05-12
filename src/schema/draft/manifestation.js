@@ -841,6 +841,7 @@ export const resolvers = {
     },
     async ownerWork(parent, args, context, info) {
       const manifestation = { ...parent };
+
       if (manifestation.workId) {
         // ownerWork is not included in the JED rest endpoint (workId is used instead)
         manifestation.ownerWork = parent?.workId;
