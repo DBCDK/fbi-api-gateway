@@ -1,13 +1,18 @@
 import request from "superagent";
 import config from "../config";
+import {log} from "dbc-node-logger";
 
-const { url, prefix } = config.datasources.holdingstatus;
+const { url, prefix } = config.datasources.holdingsservice;
 
 /**
  * Constructs soap request to perform holdings request
  * @param {array} parameters
  * @returns {string} soap request string
  */
+
+
+
+/*
 function constructSoap(pids) {
   const soappids = pids.map((pid) => `<ns1:pid>${pid}</ns1:pid>`).join("");
 
@@ -81,10 +86,31 @@ function checkpids(pids) {
   });
   return fullPids;
 }
+*/
 
-export async function load({ pids }) {
+// TODO - holdingsitems
+export async function load({  pids }) {
+  try {
+    const response = await request.get(url+"localizations").query({
+      agencyId: 870970,
+      role:"bibdk",
+      pid: pids,
+      mergePids:true
+    });
+    console.log(response, "RESPONSE")
+    console.log(response?.body?.localizations, "LOCALIZATION RESPONSE");
+    return {count:response.body.localizations[0].agency.length, agencies:response.body.localizations[0].agency};
+  } catch (e) {
+    log.error("Request to holdingsservice failed." + " Message: " + e.message);
+    console.log(e, "ERROR");
+    // @TODO what to return here
+  }
+}
+
+/*export async function load({ pids }) {
   const realpids = checkpids(pids);
 
+  const query =
   const soap = constructSoap(realpids);
   const res = await request
     .post(url)
@@ -92,11 +118,12 @@ export async function load({ pids }) {
     .send(soap);
 
   return parseResponse(res.text);
-}
+}*/
 
-export const options = {
+
+/*export const options = {
   redis: {
     prefix,
     ttl: 60 * 15, // cache for 15 minutes
   },
-};
+};*/
