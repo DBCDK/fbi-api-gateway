@@ -25,8 +25,9 @@ function parseResponse(details, agencyId) {
 
   const responders = details.responderDetailed || [];
 
-  console.log(JSON.stringify(responders, null, 4), "RESPODERS");
+  console.log(JSON.stringify(details, null, 4), "RESPODERS");
 
+  // this one goes wront ..
   for (const [key, value] of Object.entries(responders)) {
     localholdings.push({
       localHoldingsId: value.localItemId || "",
