@@ -330,6 +330,7 @@ export const resolvers = {
           const locals = holdingsitems?.completeItems?.filter(
             (item) => item.bibliographicRecordId === localHoldingsId
           );
+
           if (locals) {
             locals.forEach((local) => {
               const merged = {

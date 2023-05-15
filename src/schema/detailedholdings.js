@@ -39,10 +39,10 @@ type Status{
 export const resolvers = {
   DetailedHoldings: {
     holdingItems(parent, args, context, info) {
-      //console.log(parent, "HOLDINGSITEMS PARENT");
+      console.log(JSON.stringify(parent, null, 4));
 
       // .. this on is empty
-      return parent.agencyHoldings;
+      return parent.holdingstatus;
     },
     expectedDelivery(parent, args, context, info) {
       // return newest delivery date
@@ -106,13 +106,13 @@ export const resolvers = {
       return parent.branchId;
     },
     willLend(parent, args, context, info) {
-      return parent.policy;
+      return parent.willLend;
     },
     expectedDelivery(parent, args, context, info) {
       return parent.expectedDelivery;
     },
     localHoldingsId(parent, args, context, info) {
-      return parent.localItemId;
+      return parent.localHoldingsId;
     },
     circulationRule(parent, args, context, info) {
       return parent.circulationRule;
