@@ -38,14 +38,11 @@ type Status{
 
 export const resolvers = {
   DetailedHoldings: {
-    count(parent, args, context, info) {
-      return parent.holdingstatus.length || 0;
-    },
-    branchId(parent, args, context, info) {
-      return parent.branchId;
-    },
     holdingItems(parent, args, context, info) {
-      return parent.holdingstatus;
+      //console.log(parent, "HOLDINGSITEMS PARENT");
+
+      // .. this on is empty
+      return parent.agencyHoldings;
     },
     expectedDelivery(parent, args, context, info) {
       // return newest delivery date
@@ -89,9 +86,6 @@ export const resolvers = {
 
       return statusobject;
     },
-    agencyHoldings(parent, args, context, info) {
-      return parent.agencyHoldings;
-    },
   },
   AgencyHolding: {
     localisationPid(parent, args, context, info) {
@@ -112,13 +106,13 @@ export const resolvers = {
       return parent.branchId;
     },
     willLend(parent, args, context, info) {
-      return parent.willLend;
+      return parent.policy;
     },
     expectedDelivery(parent, args, context, info) {
       return parent.expectedDelivery;
     },
     localHoldingsId(parent, args, context, info) {
-      return parent.localHoldingsId;
+      return parent.localItemId;
     },
     circulationRule(parent, args, context, info) {
       return parent.circulationRule;

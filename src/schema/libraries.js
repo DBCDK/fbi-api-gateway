@@ -273,6 +273,7 @@ export const resolvers = {
       // combine agencyHoldings and uniHoldings
       const localHoldings = { ...uniHoldings, ...agencyHoldings };
 
+      /*console.log(JSON.stringify(localHoldings, null, 4), "LOCALHOLDINGS");*/
       const localids =
         localHoldings &&
         localHoldings.holdingItems &&
@@ -294,6 +295,10 @@ export const resolvers = {
           agencyId: parent.agencyId,
         });
 
+      /*console.log(
+        JSON.stringify(detailedHoldings, null, 4),
+        "DETAILED HOLDINGS"
+      );*/
       // NOTICE .. if we are not allowed to use itemholdings -> remove next block
       // of code
       /** START HOLDING ITEMS **/
