@@ -4,6 +4,8 @@ import { log } from "dbc-node-logger";
 const { url, prefix } = config.datasources.holdingsservice;
 
 function parseResponse(details, agencyId) {
+  console.log(JSON.stringify(details, null, 4), "DETAILS");
+
   const localholdings = [];
   // catch errors
   if (details.error) {
@@ -25,8 +27,6 @@ function parseResponse(details, agencyId) {
 
   const responders = details.responderDetailed || [];
 
-  console.log(JSON.stringify(details, null, 4), "RESPODERS");
-
   // this one goes wront ..
   for (const [key, value] of Object.entries(responders)) {
     localholdings.push({
@@ -35,8 +35,6 @@ function parseResponse(details, agencyId) {
       expectedDelivery: value.expectedDelivery || "",
     });
   }
-
-  console.log(localholdings, "LOCALHOLDINGS");
 
   return {
     count: responders?.length,
