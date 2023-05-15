@@ -39,9 +39,6 @@ type Status{
 export const resolvers = {
   DetailedHoldings: {
     holdingItems(parent, args, context, info) {
-      console.log(JSON.stringify(parent, null, 4));
-
-      // .. this on is empty
       return parent.holdingstatus;
     },
     expectedDelivery(parent, args, context, info) {
