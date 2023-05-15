@@ -30,9 +30,9 @@ function parseResponse(details, agencyId) {
   // this one goes wront ..
   for (const [key, value] of Object.entries(responders)) {
     localholdings.push({
-      localHoldingsId: value.localItemId || "",
-      willLend: value.policy || "",
-      expectedDelivery: value.expectedDelivery || "",
+      localHoldingsId: value.holdingsItem?.[0]?.localItemId || "",
+      willLend: value.holdingsItem?.[0]?.policy || "",
+      expectedDelivery: value.holdingsItem?.[0]?.expectedDelivery || "",
     });
   }
 

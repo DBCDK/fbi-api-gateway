@@ -288,8 +288,6 @@ export const resolvers = {
         return { holdingstatus: [], holdingsitems: null };
       }
 
-      console.log(localids, "LOCAL");
-
       // check - localids are ok ! :)
 
       // get detailed holdings from openholdingsstatus.
@@ -300,10 +298,10 @@ export const resolvers = {
           agencyId: parent.agencyId,
         });
 
-      /*console.log(
+      console.log(
         JSON.stringify(detailedHoldings, null, 4),
         "DETAILED HOLDINGS"
-      );*/
+      );
       // NOTICE .. if we are not allowed to use itemholdings -> remove next block
       // of code
       /** START HOLDING ITEMS **/
