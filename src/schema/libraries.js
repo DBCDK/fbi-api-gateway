@@ -287,6 +287,9 @@ export const resolvers = {
         // ressource - make an answer for detailedHoldings to handle.
         return { holdingstatus: [], holdingsitems: null };
       }
+
+      console.log(localids, "LOCAL");
+
       // get detailed holdings from openholdingsstatus.
       const detailedHoldings = await context.datasources
         .getLoader("detailedholdings")
