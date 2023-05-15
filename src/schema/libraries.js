@@ -290,6 +290,8 @@ export const resolvers = {
 
       console.log(localids, "LOCAL");
 
+      // check - localids are ok ! :)
+
       // get detailed holdings from openholdingsstatus.
       const detailedHoldings = await context.datasources
         .getLoader("detailedholdings")
