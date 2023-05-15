@@ -4,8 +4,6 @@ import { log } from "dbc-node-logger";
 const { url, prefix } = config.datasources.holdingsservice;
 
 function parseResponse(details, agencyId) {
-  console.log(JSON.stringify(details, null, 4), "DETAILS");
-
   const localholdings = [];
   // catch errors
   if (details.error) {
@@ -20,13 +18,7 @@ function parseResponse(details, agencyId) {
     }
   }
 
-  /*console.log(
-    JSON.stringify(details.responderDetailed, null, 4),
-    "RESPONDERS DETAILED"
-  );*/
-
   const responders = details.responderDetailed || [];
-
   // this one goes wront ..
   for (const [key, value] of Object.entries(responders)) {
     localholdings.push({
@@ -81,9 +73,9 @@ export async function load({ localIds, agencyId }, context) {
   }
 }
 
-/*export const options = {
+export const options = {
   redis: {
     prefix,
     ttl: 60 * 15, // cache for 15 minutes
   },
-};*/
+};
