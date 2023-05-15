@@ -38,12 +38,6 @@ type Status{
 
 export const resolvers = {
   DetailedHoldings: {
-    count(parent, args, context, info) {
-      return parent.holdingstatus.length || 0;
-    },
-    branchId(parent, args, context, info) {
-      return parent.branchId;
-    },
     holdingItems(parent, args, context, info) {
       return parent.holdingstatus;
     },
@@ -88,9 +82,6 @@ export const resolvers = {
       });
 
       return statusobject;
-    },
-    agencyHoldings(parent, args, context, info) {
-      return parent.agencyHoldings;
     },
   },
   AgencyHolding: {

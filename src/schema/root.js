@@ -162,6 +162,7 @@ export const resolvers = {
         .load({
           pids: pids,
         });
+
       return localizations;
     },
     howru(parent, args, context, info) {

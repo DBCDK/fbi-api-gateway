@@ -272,7 +272,6 @@ export const resolvers = {
         localizations.agencies.find((lok) => lok.agencyId === parent.branchId);
       // combine agencyHoldings and uniHoldings
       const localHoldings = { ...uniHoldings, ...agencyHoldings };
-
       const localids =
         localHoldings &&
         localHoldings.holdingItems &&
@@ -286,6 +285,9 @@ export const resolvers = {
         // ressource - make an answer for detailedHoldings to handle.
         return { holdingstatus: [], holdingsitems: null };
       }
+
+      // check - localids are ok ! :)
+
       // get detailed holdings from openholdingsstatus.
       const detailedHoldings = await context.datasources
         .getLoader("detailedholdings")
@@ -294,11 +296,7 @@ export const resolvers = {
           agencyId: parent.agencyId,
         });
 
-      // NOTICE .. if we are not allowed to use itemholdings -> remove next block
-      // of code
       /** START HOLDING ITEMS **/
-
-      /** NEW ENDPOINT  **/
       let holdingsitems;
       try {
         // get holdingitems
@@ -322,6 +320,7 @@ export const resolvers = {
           const locals = holdingsitems?.completeItems?.filter(
             (item) => item.bibliographicRecordId === localHoldingsId
           );
+
           if (locals) {
             locals.forEach((local) => {
               const merged = {

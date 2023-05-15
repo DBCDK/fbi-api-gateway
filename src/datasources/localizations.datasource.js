@@ -1,73 +1,11 @@
-import request from "superagent";
 import config from "../config";
+import { log } from "dbc-node-logger";
 
-const { url, prefix } = config.datasources.holdingstatus;
+const { url, prefix } = config.datasources.holdingsservice;
 
-/**
- * Constructs soap request to perform holdings request
- * @param {array} parameters
- * @returns {string} soap request string
- */
-function constructSoap(pids) {
-  const soappids = pids.map((pid) => `<ns1:pid>${pid}</ns1:pid>`).join("");
-
-  let soap = `<?xml version="1.0" encoding="UTF-8"?>
-  <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/openholdingstatus"><SOAP-ENV:Body>
-    <ns1:localisationsRequest>
-        <ns1:agencyId>DK-870970</ns1:agencyId>
-        ${soappids}
-        <ns1:outputType>json</ns1:outputType>
-        <ns1:role>bibdk</ns1:role>
-        <ns1:mergePids>true</ns1:mergePids>
-    </ns1:localisationsRequest>
-  </SOAP-ENV:Body></SOAP-ENV:Envelope>`;
-
-  return soap;
-}
-
-export function parseResponse(text) {
-  const obj = JSON.parse(text);
-
-  let count =
-    (obj.localisationsResponse &&
-      obj.localisationsResponse.localisations[0] &&
-      obj.localisationsResponse.localisations[0].agency &&
-      obj.localisationsResponse.localisations[0].agency.length) ||
-    0;
-
-  if (count > 0) {
-    const allagencies = obj.localisationsResponse.localisations[0].agency;
-    const agencyMap = [];
-
-    // agency may have more than one holding - make an agency unique with a
-    // holding array
-    for (const [key, value] of Object.entries(allagencies)) {
-      const holding = {
-        localizationPid:
-          (value.localisationPid && value.localisationPid.$) || "",
-        codes: (value.codes && value.codes.$) || "",
-        localIdentifier:
-          (value.localIdentifier && value.localIdentifier.$) || "",
-        agencyId: (value.agencyId && value.agencyId.$) || "",
-      };
-      // check if agency is already in map
-      const index = agencyMap.findIndex(
-        (agency) => agency.agencyId === value.agencyId.$
-      );
-      if (index > -1) {
-        // already in map - push holding
-        agencyMap[index].holdingItems.push(holding);
-      } else {
-        // new in map - push initial object
-        agencyMap.push({ agencyId: value.agencyId.$, holdingItems: [holding] });
-      }
-    }
-    return { count: agencyMap.length, agencies: agencyMap };
-  } else {
-    return { count: count };
-  }
-}
-
+/*
+.. This one was used for old datasource ... it prepends a pid with 870970-basis .. but why oh why ..
+keep it for now - a pid which is actually a faust might show up and this function will be justified
 function checkpids(pids) {
   const prepend = "870970-basis:";
   const fullPids = [];
@@ -81,17 +19,61 @@ function checkpids(pids) {
   });
   return fullPids;
 }
+*/
+function parseResponse(localizations) {
+  let count = localizations[0].agency.length;
+  const agencies = localizations[0].agency;
 
-export async function load({ pids }) {
-  const realpids = checkpids(pids);
+  if (count > 0) {
+    const agencyMap = [];
+    // agency may have more than one holding - make an agency unique with a
+    // holding array
+    for (const [key, value] of Object.entries(agencies)) {
+      const holding = {
+        localizationPid: value.localizationPid || "",
+        codes: value.codes || "",
+        localIdentifier: value.localIdentifier || "",
+        agencyId: value.agencyId || "",
+      };
+      // check if agency is already in map
+      const index = agencyMap.findIndex(
+        (agency) => agency.agencyId === value.agencyId
+      );
+      if (index > -1) {
+        // already in map - push holding
+        agencyMap[index].holdingItems.push(holding);
+      } else {
+        // new in map - push initial object
+        agencyMap.push({ agencyId: value.agencyId, holdingItems: [holding] });
+      }
+    }
+    return { count: agencyMap.length, agencies: agencyMap };
+  } else {
+    return { count: count };
+  }
+}
 
-  const soap = constructSoap(realpids);
-  const res = await request
-    .post(url)
-    .set("Content-Type", "text/xml")
-    .send(soap);
+// TODO - holdingsitems
+export async function load({ pids }, context) {
+  try {
+    const response = await context.fetch(url + "localizations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        agencyId: 870970,
+        role: "bibdk",
+        pid: pids,
+        mergePids: true,
+      }),
+    });
 
-  return parseResponse(res.text);
+    return parseResponse(response?.body?.localizations);
+  } catch (e) {
+    log.error("Request to holdingsservice failed." + " Message: " + e.message);
+    // @TODO what to return here
+  }
 }
 
 export const options = {
