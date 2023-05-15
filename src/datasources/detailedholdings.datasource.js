@@ -19,7 +19,6 @@ function parseResponse(details, agencyId) {
   }
 
   const responders = details.responderDetailed || [];
-  // this one goes wront ..
   for (const [key, value] of Object.entries(responders)) {
     localholdings.push({
       localHoldingsId: value.holdingsItem?.[0]?.localItemId || "",
@@ -68,7 +67,6 @@ export async function load({ localIds, agencyId }, context) {
     return parseResponse(response?.body, agencyId);
   } catch (e) {
     log.error("Request to holdingsservice failed." + " Message: " + e.message);
-    console.log(e, "ERROR");
     // @TODO what to return here
   }
 }
