@@ -1,5 +1,5 @@
 import config from "../config";
-import {log} from "dbc-node-logger";
+import { log } from "dbc-node-logger";
 
 const { url, prefix } = config.datasources.holdingsservice;
 
@@ -20,26 +20,24 @@ function checkpids(pids) {
   return fullPids;
 }
 */
-function parseResponse(localizations){
+function parseResponse(localizations) {
   let count = localizations[0].agency.length;
   const agencies = localizations[0].agency;
-  
+
   if (count > 0) {
     const agencyMap = [];
     // agency may have more than one holding - make an agency unique with a
     // holding array
     for (const [key, value] of Object.entries(agencies)) {
       const holding = {
-        localizationPid:
-            value.localizationPid  || "",
-        codes: value.codes  || "",
-        localIdentifier:
-            value.localIdentifier  || "",
+        localizationPid: value.localizationPid || "",
+        codes: value.codes || "",
+        localIdentifier: value.localIdentifier || "",
         agencyId: value.agencyId || "",
       };
       // check if agency is already in map
       const index = agencyMap.findIndex(
-          (agency) => agency.agencyId === value.agencyId
+        (agency) => agency.agencyId === value.agencyId
       );
       if (index > -1) {
         // already in map - push holding
@@ -55,9 +53,8 @@ function parseResponse(localizations){
   }
 }
 
-
 // TODO - holdingsitems
-export async function load({  pids }, context) {
+export async function load({ pids }, context) {
   try {
     const response = await context.fetch(url + "localizations", {
       method: "POST",
@@ -68,9 +65,9 @@ export async function load({  pids }, context) {
         agencyId: 870970,
         role: "bibdk",
         pid: pids,
-        mergePids: true
-      })
-    })
+        mergePids: true,
+      }),
+    });
 
     return parseResponse(response?.body?.localizations);
   } catch (e) {
@@ -80,9 +77,9 @@ export async function load({  pids }, context) {
   }
 }
 
-/*export const options = {
+export const options = {
   redis: {
     prefix,
     ttl: 60 * 15, // cache for 15 minutes
   },
-};*/
+};
