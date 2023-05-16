@@ -20,9 +20,9 @@ function checkpids(pids) {
   return fullPids;
 }
 */
-function parseResponse(localizations) {
-  let count = localizations[0].agency.length;
-  const agencies = localizations[0].agency;
+export function parseResponse(localizations) {
+  let count = localizations?.[0]?.agency.length;
+  const agencies = localizations?.[0]?.agency;
 
   if (count > 0) {
     const agencyMap = [];
@@ -68,6 +68,8 @@ export async function load({ pids }, context) {
         mergePids: true,
       }),
     });
+
+    console.log(JSON.stringify(response, null, 4));
 
     return parseResponse(response?.body?.localizations);
   } catch (e) {
