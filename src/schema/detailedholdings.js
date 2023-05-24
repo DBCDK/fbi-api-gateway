@@ -41,6 +41,9 @@ export const resolvers = {
     holdingItems(parent, args, context, info) {
       return parent.holdingstatus;
     },
+    count(parent, args, context, info) {
+      return parent?.count || 0;
+    },
     expectedDelivery(parent, args, context, info) {
       // return newest delivery date
       return new Date().toJSON().slice(0, 10).replace(/-/g, "/");
