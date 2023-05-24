@@ -153,11 +153,23 @@ export const resolvers = {
       );
     },
     async pickUpBranch(parent, args, context, info) {
-      const res = await context.datasources.getLoader("branch").load({
-        branchId: parent.pickUpAgency,
-        accessToken: context.accessToken,
+      const digitalAccessSubscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+      const infomediaSubscriptions = await context.datasources
+        .getLoader("idp")
+        .load("");
+
+      const libraries = await context.datasources.getLoader("library").load({
+        branchId: parent.pickUpAgency?.replace(/\D/g, ""),
+        limit: 1,
+        status: "ALLE",
+        bibdkExcludeBranches: false,
+        digitalAccessSubscriptions,
+        infomediaSubscriptions,
       });
-      return res[0];
+
+      return libraries?.result?.[0];
     },
     status(parent, args, context, info) {
       // Map status to enum
