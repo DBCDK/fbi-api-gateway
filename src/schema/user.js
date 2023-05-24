@@ -120,20 +120,13 @@ export const resolvers = {
       const res = await context.datasources.getLoader("user").load({
         accessToken: context.accessToken,
       });
-      const digitalAccessSubscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-      const infomediaSubscriptions = await context.datasources
-        .getLoader("idp")
-        .load("");
+
       return await context.datasources.getLoader("library").load({
         agencyid: res.agency,
         language: parent.language,
         limit: 100,
         status: args.status || "ALLE",
         bibdkExcludeBranches: args.bibdkExcludeBranches || false,
-        digitalAccessSubscriptions,
-        infomediaSubscriptions,
       });
     },
   },
@@ -153,20 +146,8 @@ export const resolvers = {
       );
     },
     async pickUpBranch(parent, args, context, info) {
-      const digitalAccessSubscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-      const infomediaSubscriptions = await context.datasources
-        .getLoader("idp")
-        .load("");
-
       const libraries = await context.datasources.getLoader("library").load({
         branchId: parent.pickUpAgency?.replace(/\D/g, ""),
-        limit: 1,
-        status: "ALLE",
-        bibdkExcludeBranches: false,
-        digitalAccessSubscriptions,
-        infomediaSubscriptions,
       });
 
       return libraries?.result?.[0];
