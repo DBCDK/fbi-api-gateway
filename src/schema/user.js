@@ -39,7 +39,7 @@ type Order {
   status: OrderStatus!
   pickUpBranch: Branch!
   orderDate: DateTime!
-  pickUpExpiryDate: DateTime!
+  pickUpExpiryDate: DateTime
   manifestation: Manifestation!
 }
 type Debt {
@@ -82,12 +82,14 @@ export const resolvers = {
       const res = await context.datasources.getLoader("loans").load({
         accessToken: context.accessToken,
       });
+
       return res.loans;
     },
     async orders(parent, args, context, info) {
       const res = await context.datasources.getLoader("orders").load({
         accessToken: context.accessToken,
       });
+
       return res.orders;
     },
     async postalCode(parent, args, context, info) {
@@ -139,18 +141,12 @@ export const resolvers = {
   },
   Loan: {
     manifestation(parent, args, context, info) {
-      return resolveManifestation(
-        { pid: `870970-basis:${parent.titleId}` },
-        context
-      );
+      return resolveManifestation({ faust: parent.titleId }, context);
     },
   },
   Order: {
     manifestation(parent, args, context, info) {
-      return resolveManifestation(
-        { pid: `870970-basis:${parent.titleId}` },
-        context
-      );
+      return resolveManifestation({ faust: parent.titleId }, context);
     },
     async pickUpBranch(parent, args, context, info) {
       const res = await context.datasources.getLoader("branch").load({
