@@ -18,11 +18,39 @@ type NumberInSeries {
   """
   number: [Int!]
 }
+
+type SerieWork {
+  """
+  The number of work in the series as a number (as text)
+  """
+  numberInSeries: String!
+  
+  """
+  Work of a serieWork
+  """
+  work: Work!
+  
+  """
+  Information about whether this work in the series should be read first
+  """
+  readThisFirst: Boolean
+  
+  """
+  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
+  """
+  readThisWhenever: Boolean  
+}
+
 type Series {
   """
   The title of the series
   """
   title: String!
+  
+  """
+  Description of the series
+  """
+  seriesDescription: String
 
   """
   A alternative title to the main 'title' of the series
@@ -52,29 +80,90 @@ type Series {
   """
   Whether this is a popular series or general series
   """
-  isPopular: Boolean
+  isPopular: Boolean  
+  
+  """
+  Members of this serie. 
+  """
+  members:[SerieWork!]! 
 }
 `;
 
 export const resolvers = {
   Work: {
+    // for backward compatibility -> serieservice v1 -> remove when deprecated
     async seriesMembers(parent, args, context, info) {
       const data = await context.datasources.getLoader("series").load({
         workId: parent.workId,
         profile: context.profile,
       });
 
-      if (data && data.series) {
+      // grab persistentWorkId from the first serie found on serieservice v2
+      if (data && data.series && data.series?.[0].works) {
         const works = await Promise.all(
-          data.series.slice(0, 100).map(async (id) => {
-            return resolveWork({ id }, context);
+          data.series[0].works.slice(0, 100).map(async (work) => {
+            return resolveWork({ id: work.persistentWorkId }, context);
           })
         );
-
-        return works.filter((work) => !!work);
+        return works;
       }
 
       return [];
     },
+
+    // Use the new serie service v2
+    async series(parent, args, context, info) {
+      const data = await context.datasources.getLoader("series").load({
+        workId: parent.workId,
+        profile: context.profile,
+      });
+
+      return (data && data.series) || [];
+    },
   },
+
+  // We need to resolve for backward compatibility
+  Series: {
+    members(parent, args, context, info) {
+      return parent.works;
+    },
+    title(parent, args, context, info) {
+      return parent.seriesTitle;
+    },
+    // we need resolvers here since the next attributes are needed on series level for
+    // current work. Look through members of the series to find the attributes
+    numberInSeries(parent, args, context, info) {
+      const workId = info?.variableValues?.workId || null;
+      const serieNumber = workId
+        ? parent.works.find((work) => work.persistentWorkId === workId)
+            .numberInSeries
+        : 0;
+
+      return { display: serieNumber.toString(), number: [serieNumber] };
+    },
+    readThisFirst(parent, args, context, info) {
+      const workId = info?.variableValues?.workId || null;
+      const temp = workId
+        ? parent.works.find((work) => work.persistentWorkId === workId)
+            .readThisFirst
+        : null;
+
+      return temp;
+    },
+    readThisWhenever(parent, args, context, info) {
+      const workId = info?.variableValues?.workId || null;
+      const temp = workId
+        ? parent.works.find((work) => work.persistentWorkId === workId)
+            .readThisWhenever
+        : null;
+
+      return temp;
+    },
+
+  },
+  SerieWork:{
+   work(parent, args, context, info){
+      return resolveWork({ id: parent.persistentWorkId }, context);
+    }
+  }
 };

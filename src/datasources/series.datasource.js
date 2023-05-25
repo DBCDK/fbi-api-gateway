@@ -14,6 +14,7 @@ export async function load({ workId, trackingId = null, profile }, context) {
   if (res.status === 404) {
     return null;
   }
+
   return res;
 }
 

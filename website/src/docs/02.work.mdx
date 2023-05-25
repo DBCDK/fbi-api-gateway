@@ -348,21 +348,28 @@ that some but not all of these reviews include a rating.
 
 ## Series
 
-A work may be part of one or more series. The example below fetches the series title
-as well as some information about how the work itself fits inside the series.
+A work may be part of one or more series. The example below fetches the series title,
+some information about how the work itself fits inside the series and all members of the serie as works.
 
 <InlineGraphiQL
   query={`query Example_WorkSeries ($workId: String!) {
   work(id: $workId) {
     series {
     	title
-      isPopular
       numberInSeries {
         display
         number
       }
       readThisFirst
       readThisWhenever
+      members {
+              work {
+                workId
+                titles {
+                  full
+                }
+              }
+            }
     }
   }
 }`}
@@ -371,7 +378,18 @@ as well as some information about how the work itself fits inside the series.
   }}
 />
 
-## Series Members
+
+## <DeprecationTitle>Series Members</DeprecationTitle>
+
+<DeprecationBorder>
+  <DeprecationBox deprecated="27/05-2023" expires="01/09-2023">
+    Please note that Field `Work.seriesMembers` is deprecated and will be removed. Use
+    `Work.series.members` instead. See [series](#Series) documentation
+    for details.
+  </DeprecationBox>
+
+<br />
+
 
 Fetch all the members (works) of a series that the referenced work is a member of,
 including the work itself.
@@ -390,6 +408,7 @@ including the work itself.
     workId: "work-of:870970-basis:52557240",
   }}
 />
+</DeprecationBorder>
 
 ## Universe
 
