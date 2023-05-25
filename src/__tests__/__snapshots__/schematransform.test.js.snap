@@ -1098,9 +1098,28 @@ type NumberInSeries {
   number: [Int!]
 }
 
+type SerieWork {
+  \\"\\"\\"The number of work in the series as a number (as text)\\"\\"\\"
+  numberInSeries: String!
+
+  \\"\\"\\"Work of a serieWork\\"\\"\\"
+  work: Work!
+
+  \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
+  readThisFirst: Boolean
+
+  \\"\\"\\"
+  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
+  \\"\\"\\"
+  readThisWhenever: Boolean
+}
+
 type Series {
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
+
+  \\"\\"\\"Description of the series\\"\\"\\"
+  seriesDescription: String
 
   \\"\\"\\"A alternative title to the main 'title' of the series\\"\\"\\"
   alternativeTitles: [String!]!
@@ -1123,6 +1142,9 @@ type Series {
 
   \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
   isPopular: Boolean
+
+  \\"\\"\\"Members of this serie. \\"\\"\\"
+  members: [SerieWork!]!
 }
 
 interface Subject {
@@ -2620,9 +2642,28 @@ type NumberInSeries {
   number: [Int!]
 }
 
+type SerieWork {
+  \\"\\"\\"The number of work in the series as a number (as text)\\"\\"\\"
+  numberInSeries: String!
+
+  \\"\\"\\"Work of a serieWork\\"\\"\\"
+  work: Work!
+
+  \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
+  readThisFirst: Boolean
+
+  \\"\\"\\"
+  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
+  \\"\\"\\"
+  readThisWhenever: Boolean
+}
+
 type Series {
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
+
+  \\"\\"\\"Description of the series\\"\\"\\"
+  seriesDescription: String
 
   \\"\\"\\"A alternative title to the main 'title' of the series\\"\\"\\"
   alternativeTitles: [String!]!
@@ -2645,6 +2686,9 @@ type Series {
 
   \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
   isPopular: Boolean
+
+  \\"\\"\\"Members of this serie. \\"\\"\\"
+  members: [SerieWork!]!
 }
 
 interface Subject {

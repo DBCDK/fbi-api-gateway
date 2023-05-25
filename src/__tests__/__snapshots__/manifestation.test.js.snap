@@ -134,9 +134,6 @@ Object {
         ],
         "pages": "Dummy 140-145",
         "publisher": "Dummy Some Publisher",
-        "series": Object {
-          "title": "Dummy Some Series",
-        },
         "summary": "Dummy Årsskrift / Carlsbergfondet, 2006",
         "title": "Dummy Årsskrift / Carlsbergfondet",
         "year": Object {
@@ -279,42 +276,6 @@ Object {
           ],
           "url": null,
           "urlText": null,
-        },
-      ],
-      "series": Array [
-        Object {
-          "alternativeTitles": Array [
-            "Dummy Some Series, parallel title",
-            "Dummy Some Series, another parallel title",
-          ],
-          "isPopular": true,
-          "numberInSeries": Object {
-            "display": "Dummy number one",
-            "number": Array [
-              1,
-            ],
-          },
-          "parallelTitles": Array [],
-          "readThisFirst": true,
-          "readThisWhenever": false,
-          "title": "Dummy Some Series",
-        },
-        Object {
-          "alternativeTitles": Array [],
-          "isPopular": false,
-          "numberInSeries": Object {
-            "display": "Dummy number one",
-            "number": Array [
-              1,
-            ],
-          },
-          "parallelTitles": Array [
-            "Dummy  Some Series, parallel title",
-            "Dummy Some Series, another parallel title",
-          ],
-          "readThisFirst": null,
-          "readThisWhenever": null,
-          "title": "Dummy Some Series",
         },
       ],
       "shelfmark": Object {

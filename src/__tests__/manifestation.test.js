@@ -171,9 +171,7 @@ describe("Manifestation", () => {
             notes
             pages
             publisher
-            series {
-              title
-            }
+            
             year {
               display
             }
@@ -261,18 +259,7 @@ describe("Manifestation", () => {
             technicalInformation
           }
           publisher
-          series {
-            title
-            alternativeTitles
-            parallelTitles
-            numberInSeries {
-              display
-              number
-            }
-            readThisFirst
-            readThisWhenever
-            isPopular
-          }
+          
           shelfmark {
             postfix
             shelfmark

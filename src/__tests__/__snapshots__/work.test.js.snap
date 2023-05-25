@@ -68,42 +68,7 @@ Object {
           "specific": "Dummy bog",
         },
       ],
-      "series": Array [
-        Object {
-          "alternativeTitles": Array [
-            "Dummy Some Series, parallel title",
-            "Dummy Some Series, another parallel title",
-          ],
-          "isPopular": true,
-          "numberInSeries": Object {
-            "display": "Dummy number one",
-            "number": Array [
-              1,
-            ],
-          },
-          "parallelTitles": Array [],
-          "readThisFirst": true,
-          "readThisWhenever": false,
-          "title": "Dummy Some Series",
-        },
-        Object {
-          "alternativeTitles": Array [],
-          "isPopular": false,
-          "numberInSeries": Object {
-            "display": "Dummy number one",
-            "number": Array [
-              1,
-            ],
-          },
-          "parallelTitles": Array [
-            "Dummy  Some Series, parallel title",
-            "Dummy Some Series, another parallel title",
-          ],
-          "readThisFirst": null,
-          "readThisWhenever": null,
-          "title": "Dummy Some Series",
-        },
-      ],
+      "series": Array [],
       "seriesMembers": Array [],
       "subjects": Object {
         "all": Array [],
