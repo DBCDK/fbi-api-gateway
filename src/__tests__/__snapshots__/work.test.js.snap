@@ -68,8 +68,48 @@ Object {
           "specific": "Dummy bog",
         },
       ],
-      "series": Array [],
-      "seriesMembers": Array [],
+      "series": Array [
+        Object {
+          "alternativeTitles": Array [],
+          "isPopular": null,
+          "numberInSeries": Object {
+            "display": "0",
+            "number": Array [
+              0,
+            ],
+          },
+          "parallelTitles": Array [],
+          "readThisFirst": false,
+          "readThisWhenever": false,
+          "title": "De syv søstre-serien",
+        },
+      ],
+      "seriesMembers": Array [
+        Object {
+          "workId": "work-of:870970-basis:52557240",
+        },
+        Object {
+          "workId": "work-of:870970-basis:52970628",
+        },
+        Object {
+          "workId": "work-of:870970-basis:53280749",
+        },
+        Object {
+          "workId": "work-of:870970-basis:53802001",
+        },
+        Object {
+          "workId": "work-of:870970-basis:54189141",
+        },
+        Object {
+          "workId": "work-of:870970-basis:46656172",
+        },
+        Object {
+          "workId": "work-of:870970-basis:38500775",
+        },
+        Object {
+          "workId": "work-of:870970-basis:134823658",
+        },
+      ],
       "subjects": Object {
         "all": Array [],
         "dbcVerified": Array [],
