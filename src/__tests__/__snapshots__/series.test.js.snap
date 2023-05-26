@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`series - get series from workId 1`] = `
+Object {
+  "data": Object {
+    "work": Object {
+      "series": Array [
+        Object {
+          "members": Array [
+            Object {
+              "numberInSeries": "1",
+              "work": Object {
+                "workId": "work-of:870970-basis:52557240",
+              },
+            },
+            Object {
+              "numberInSeries": "2",
+              "work": Object {
+                "workId": "work-of:870970-basis:52970628",
+              },
+            },
+            Object {
+              "numberInSeries": "3",
+              "work": Object {
+                "workId": "work-of:870970-basis:53280749",
+              },
+            },
+            Object {
+              "numberInSeries": "4",
+              "work": Object {
+                "workId": "work-of:870970-basis:53802001",
+              },
+            },
+            Object {
+              "numberInSeries": "5",
+              "work": Object {
+                "workId": "work-of:870970-basis:54189141",
+              },
+            },
+            Object {
+              "numberInSeries": "6",
+              "work": Object {
+                "workId": "work-of:870970-basis:46656172",
+              },
+            },
+            Object {
+              "numberInSeries": "7",
+              "work": Object {
+                "workId": "work-of:870970-basis:38500775",
+              },
+            },
+            Object {
+              "numberInSeries": "8",
+              "work": Object {
+                "workId": "work-of:870970-basis:134823658",
+              },
+            },
+          ],
+          "numberInSeries": Object {
+            "display": "7",
+            "number": Array [
+              7,
+            ],
+          },
+          "readThisFirst": false,
+          "readThisWhenever": false,
+          "title": "De syv søstre-serien",
+        },
+      ],
+    },
+  },
+}
+`;
