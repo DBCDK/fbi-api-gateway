@@ -23,7 +23,7 @@ type User {
 type Loan {
   dueDate:	DateTime!
   loanId:	String!
-  manifestation: Manifestation!
+  manifestation: Manifestation
 }
 enum OrderStatus {
   ACTIVE
@@ -36,11 +36,15 @@ enum OrderStatus {
 }
 type Order {
   orderId: String!,
+  orderType: String
   status: OrderStatus!
   pickUpBranch: Branch!
+  holdQueuePosition: String
   orderDate: DateTime!
+  creator: String
+  title: String
   pickUpExpiryDate: DateTime
-  manifestation: Manifestation!
+  manifestation: Manifestation
 }
 type Debt {
   amount: String!
