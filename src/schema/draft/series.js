@@ -134,36 +134,38 @@ export const resolvers = {
     // current work. Look through members of the series to find the attributes
     numberInSeries(parent, args, context, info) {
       const workId = info?.variableValues?.workId || null;
+
       const serieNumber = workId
         ? parent.works.find((work) => work.persistentWorkId === workId)
-            .numberInSeries
+            ?.numberInSeries
         : 0;
-
-      return { display: serieNumber.toString(), number: [serieNumber] };
+      return {
+        display: serieNumber?.toString() || "0",
+        number: [serieNumber || 0],
+      };
     },
     readThisFirst(parent, args, context, info) {
       const workId = info?.variableValues?.workId || null;
       const temp = workId
         ? parent.works.find((work) => work.persistentWorkId === workId)
-            .readThisFirst
+            ?.readThisFirst
         : null;
 
-      return temp;
+      return temp || 0;
     },
     readThisWhenever(parent, args, context, info) {
       const workId = info?.variableValues?.workId || null;
       const temp = workId
         ? parent.works.find((work) => work.persistentWorkId === workId)
-            .readThisWhenever
+            ?.readThisWhenever
         : null;
 
-      return temp;
+      return temp || 0;
     },
-
   },
-  SerieWork:{
-   work(parent, args, context, info){
+  SerieWork: {
+    work(parent, args, context, info) {
       return resolveWork({ id: parent.persistentWorkId }, context);
-    }
-  }
+    },
+  },
 };
