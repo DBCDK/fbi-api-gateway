@@ -149,7 +149,7 @@ export default {
       prefix: process.env.FACETS_PREFIX || "facets-1",
       token: process.env.FACETS_TOKEN,
       ttl: process.env.FACETS_TIME_TO_LIVE_SECONDS || 10,
-      firstHits: process.env.FACETS_FIRST_HITS || 200,
+      firstHits: process.env.FACETS_FIRST_HITS || 500,
       disableFuzzySearch:
         process.env.FACETS_DISABLE_FUZZY_SEARCH === "false" ? false : true,
     },
