@@ -78,7 +78,10 @@ function schemaLoader() {
     }
   });
 
-  return { typeDefs: mergeTypeDefs(allTypeDefs), resolvers: allResolvers };
+  return {
+    typeDefs: mergeTypeDefs(allTypeDefs),
+    resolvers: allResolvers,
+  };
 }
 
 /**

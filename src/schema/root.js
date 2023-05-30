@@ -17,14 +17,26 @@ import { resolveAccess } from "./draft/draft_utils_manifestations";
  * The root type definitions
  */
 export const typeDef = `
+
+"""
+Complexity directive to evaluate query complexity 
+"""
+directive @complexity(
+  # The complexity value for the field
+  value: Int!
+
+  # Optional multipliers
+  multipliers: [String!]
+) on FIELD_DEFINITION
+
 type Query {
-  manifestation(pid: String, faust: String): Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
+  manifestation(pid: String, faust: String): Manifestation @complexity(value: 10)
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]! @complexity(value: 10, multipliers: ["faust", "pid"])
   monitor(name: String!): String!
   user: User
   work(id: String, faust: String, pid: String, language: LanguageCode): Work
-  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
+  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]! 
+  search(q: SearchQuery!, filters: SearchFilters): SearchResponse! 
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
   linkCheck: LinkCheckService!
 
@@ -66,7 +78,7 @@ type Query {
   """
   Get recommendations
   """
-  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 10, multipliers: ["limit"])
 
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult!

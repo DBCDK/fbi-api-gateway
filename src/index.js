@@ -10,6 +10,13 @@ import createHash from "./utils/hash";
 
 import { createProxyMiddleware } from "http-proxy-middleware";
 
+import {
+  getComplexity,
+  simpleEstimator,
+  directiveEstimator,
+  createComplexityRule,
+} from "graphql-query-complexity";
+
 import cors from "cors";
 //
 import { createHandler } from "graphql-http/lib/use/express";
@@ -18,7 +25,7 @@ import { parse, getOperationAST } from "graphql";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration } from "./utils/monitor";
-import validateComplexity from "./utils/complexity";
+import validateComplexity, { customFieldEstimator } from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
 import { v4 as uuid } from "uuid";
 import isbot from "isbot";
@@ -214,6 +221,28 @@ promExporterApp.listen(9599, () => {
     });
 
     const { query, variables } = req.body;
+
+    try {
+      const complexity = getComplexity({
+        estimators: [
+          directiveEstimator(),
+          simpleEstimator({
+            defaultComplexity: 1,
+          }),
+        ],
+        schema,
+        query: parse(query),
+        variables,
+      });
+
+      console.log("#############", {
+        complexity,
+        isIntrospect: !!req.isIntrospectionQuery,
+      });
+    } catch (e) {
+      // Log error in case complexity cannot be calculated (invalid query, misconfiguration, etc.)
+      console.error("Could not calculate complexity", e.message);
+    }
 
     const handler = createHandler({
       schema,

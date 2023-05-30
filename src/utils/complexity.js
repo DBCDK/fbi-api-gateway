@@ -1,5 +1,9 @@
 import { log } from "dbc-node-logger";
-import queryComplexity from "graphql-query-complexity";
+import queryComplexity, {
+  directiveEstimator,
+  simpleEstimator,
+  createComplexityRule,
+} from "graphql-query-complexity";
 
 import config from "../config";
 
@@ -15,8 +19,11 @@ import config from "../config";
  * @param {GraphQLField<any, any>} params.field
  * @param {number} params.childComplexity
  */
-function CustomFieldEstimator({ field, childComplexity }) {
+export function customFieldEstimator({ field, childComplexity }) {
   const fieldType = field.type.toString();
+
+  console.log("fieldType", fieldType);
+
   const isExpensiveArray =
     fieldType.startsWith("[Work!]") ||
     fieldType.startsWith("[Work]") ||
@@ -42,10 +49,22 @@ function CustomFieldEstimator({ field, childComplexity }) {
  */
 export default function validateComplexity({ query, variables }) {
   return queryComplexity({
-    estimators: [CustomFieldEstimator],
+    estimators: [customFieldEstimator],
+    // return createComplexityRule({
+    //   estimators: [
+    //     directiveEstimator(),
+    //     simpleEstimator({
+    //       defaultComplexity: 1,
+    //     }),
+    //   ],
     maximumComplexity: config.query.maxComplexity,
     variables,
     onComplete: (complexity) => {
+      console.log(
+        "complexitycomplexitycomplexitycomplexitycomplexitycomplexitycomplexity",
+        complexity
+      );
+
       if (complexity > config.query.maxComplexity) {
         log.error("Query exceeded complexity limit", {
           complexity,

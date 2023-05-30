@@ -480,7 +480,7 @@ type Manifestation {
   """
   Unique identification of the manifestation e.g 870970-basis:54029519
   """
-  pid: String!
+  pid: String! @complexity(value: 5)
 
   """
   Different kinds of titles for this work
