@@ -100,6 +100,11 @@ type RelatedPublication {
   Title of the related periodical/journal
   """
   title: [String!]!
+
+  """
+  Faust of the related publication
+  """
+  faust: String
   
   """
   ISSN of the related periodical/journal/publication
@@ -134,6 +139,7 @@ enum NoteType {
   RESTRICTIONS_ON_USE
   TYPE_OF_SCORE
   FREQUENCY
+  EDITION
 }
 enum ChildOrAdultCode {
   FOR_CHILDREN

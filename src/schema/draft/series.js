@@ -6,6 +6,11 @@ type Universe {
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   """
   title: String!
+
+  """
+  A alternative title to the main 'title' of the universe
+  """
+  alternativeTitles: [String!]!
 }
 type NumberInSeries {
   """
@@ -139,6 +144,7 @@ export const resolvers = {
         ? parent.works.find((work) => work.persistentWorkId === workId)
             ?.numberInSeries
         : 0;
+
       return {
         display: serieNumber?.toString() || "0",
         number: [serieNumber || 0],
