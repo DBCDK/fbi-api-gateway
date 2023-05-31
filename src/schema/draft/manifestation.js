@@ -854,35 +854,12 @@ export const resolvers = {
         return manifestation;
       }
 
-      // TODO: this can be removed when JED rest supports workId on work.manifestations
-
-      // WorkId is not yet a part of the work.manifestations.
-      // In the JED rest endpoint workId is only given when requesting a single manifestation.
-      // We retrieve the WorkId by calling the JED rest endpoint with a single manifestation.
-      const newManifestation = await resolveManifestation(
-        { pid: parent.pid },
-        context
-      );
-
-      // Debug error - No manifestation found for pid
-      if (!newManifestation) {
-        log.error("NO MANIFESTATION FOUND in jed-presentation service", {
-          pid: parent.pid,
-        });
-      }
-
       // Debug error - No workId found on manifestation
-      if (newManifestation && !newManifestation?.workId) {
-        log.error("NO MANIFESTATION.WORKID FOUND in jed-presentation service", {
-          pid: parent.pid,
-        });
-      }
+      log.error("NO MANIFESTATION.WORKID FOUND in jed-presentation service", {
+        pid: parent.pid,
+      });
 
-      if (newManifestation) {
-        newManifestation.ownerWork = newManifestation.workId;
-      }
-
-      return newManifestation;
+      return null;
     },
   },
 };
