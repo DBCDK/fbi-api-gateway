@@ -72,12 +72,7 @@ Object {
         Object {
           "alternativeTitles": Array [],
           "isPopular": null,
-          "numberInSeries": Object {
-            "display": "0",
-            "number": Array [
-              0,
-            ],
-          },
+          "numberInSeries": null,
           "parallelTitles": Array [],
           "readThisFirst": false,
           "readThisWhenever": false,
