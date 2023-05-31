@@ -139,6 +139,7 @@ export default function createDataLoaders(uuid) {
   function getLoader(name) {
     if (!result[name]) {
       result[name] = setupDataloader(nameToDatasource[name], {
+        getLoader,
         track,
         fetch: (url, options) => fetchWithConcurrencyLimit(url, options, name),
         trackingId: uuid,

@@ -246,6 +246,16 @@ export async function search(props, getFunc) {
   };
 }
 
-export async function load(props) {
-  return search(props, doRequest);
+export async function load(props, { getLoader }) {
+  // We need to fetch digital access and infomedia subscriptions
+  // for all agencies, in order to build the search index
+  const digitalAccessSubscriptions = await getLoader(
+    "statsbiblioteketSubscribers"
+  ).load("");
+  const infomediaSubscriptions = await getLoader("idp").load("");
+
+  return search(
+    { ...props, digitalAccessSubscriptions, infomediaSubscriptions },
+    doRequest
+  );
 }

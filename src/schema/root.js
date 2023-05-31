@@ -234,12 +234,6 @@ export const resolvers = {
       return args;
     },
     async branches(parent, args, context, info) {
-      const digitalAccessSubscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-      const infomediaSubscriptions = await context.datasources
-        .getLoader("idp")
-        .load("");
       return await context.datasources.getLoader("library").load({
         q: args.q,
         limit: args.limit,
@@ -249,8 +243,6 @@ export const resolvers = {
         branchId: args.branchId,
         status: args.status || "ALLE",
         bibdkExcludeBranches: args.bibdkExcludeBranches || false,
-        digitalAccessSubscriptions,
-        infomediaSubscriptions,
       });
     },
     async suggest(parent, args, context, info) {
@@ -322,20 +314,9 @@ export const resolvers = {
     async submitPeriodicaArticleOrder(parent, args, context, info) {
       let { userName, userMail } = args.input;
 
-      // Fetch and check existence of branch
-      const digitalAccessSubscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-
-      const infomediaSubscriptions = await context.datasources
-        .getLoader("idp")
-        .load("");
-
       const branch = (
         await context.datasources.getLoader("library").load({
           branchId: args.input.pickUpBranch,
-          digitalAccessSubscriptions,
-          infomediaSubscriptions,
         })
       ).result[0];
 
@@ -416,12 +397,6 @@ export const resolvers = {
       return res;
     },
     async submitOrder(parent, args, context, info) {
-      const digitalAccessSubscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-      const infomediaSubscriptions = await context.datasources
-        .getLoader("idp")
-        .load("");
       const input = {
         ...args.input,
         accessToken: context.accessToken,
@@ -429,8 +404,6 @@ export const resolvers = {
         branch: (
           await context.datasources.getLoader("library").load({
             branchId: args.input.pickUpBranch,
-            digitalAccessSubscriptions,
-            infomediaSubscriptions,
           })
         ).result[0],
       };
