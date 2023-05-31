@@ -23,7 +23,7 @@ type SerieWork {
   """
   The number of work in the series as a number (as text)
   """
-  numberInSeries: String!
+  numberInSeries: String
   
   """
   Work of a serieWork
@@ -135,10 +135,17 @@ export const resolvers = {
     numberInSeries(parent, args, context, info) {
       const workId = info?.variableValues?.workId || null;
 
-      const serieNumber = workId
-        ? parent.works.find((work) => work.persistentWorkId === workId)
-            ?.numberInSeries
-        : 0;
+      const work = parent.works.find(
+        (work) => work.persistentWorkId === workId
+      );
+
+      const serieNumber = work?.numberInSeries;
+
+      // No serieNumber data available
+      if (typeof serieNumber === "undefined") {
+        return null;
+      }
+
       return {
         display: serieNumber?.toString() || "0",
         number: [serieNumber || 0],
