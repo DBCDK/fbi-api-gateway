@@ -16,5 +16,11 @@
     "reason": "Replaced by FacetField.materialTypesSpecific",
     "deprecated": "15/03-2023",
     "expired": "15/06-2023"
+  },  
+  {
+    "field": "Work.seriesMembers",
+    "reason": "Replaced by Work.series.members",
+    "deprecated": "01/06-2023",
+    "expired": "01/09-2023"
   }
 ]
