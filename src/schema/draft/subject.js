@@ -6,16 +6,26 @@ interface Subject {
   The type of subject - 'location', 'time period' etc., 'topic' if not specific kind of subject term
   """
   type: SubjectType!
+
+  """
+  Language of the subject - contains display and isoCode 
+  """
+  language: Language
+
+  local: Boolean
 }
 type SubjectText implements Subject {
   type: SubjectType!
   display: String!
   language: Language
+  local: Boolean
 }
 type TimePeriod implements Subject {
   type: SubjectType!
   period: Range! 
   display: String!
+  language: Language
+  local: Boolean
 }
 enum SubjectType {
   TOPIC

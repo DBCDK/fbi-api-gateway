@@ -70,6 +70,9 @@ type Person implements Subject & Creator {
   roles: [Role!]!
 
   type: SubjectType!
+
+  language: Language
+  local: Boolean
 }
 type Corporation implements Subject & Creator {
     """
@@ -118,6 +121,9 @@ type Corporation implements Subject & Creator {
     roles: [Role!]!
 
     type: SubjectType!
+
+    language: Language
+    local: Boolean
 }
 interface Creator {
   """

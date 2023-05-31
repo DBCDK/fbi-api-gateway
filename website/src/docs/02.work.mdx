@@ -351,6 +351,9 @@ that some but not all of these reviews include a rating.
 A work may be part of one or more series. The example below fetches the series title,
 some information about how the work itself fits inside the series and all members of the serie as works.
 
+Currently series is divided into two main categories, `PUBLISHER_SERIES` and `REGULAR_SERIES`.
+This Series field will only return `REGULAR_SERIES`.
+
 <InlineGraphiQL
   query={`query Example_WorkSeries ($workId: String!) {
   work(id: $workId) {
@@ -378,7 +381,6 @@ some information about how the work itself fits inside the series and all member
   }}
 />
 
-
 ## <DeprecationTitle>Series Members</DeprecationTitle>
 
 <DeprecationBorder>
@@ -389,7 +391,6 @@ some information about how the work itself fits inside the series and all member
   </DeprecationBox>
 
 <br />
-
 
 Fetch all the members (works) of a series that the referenced work is a member of,
 including the work itself.
