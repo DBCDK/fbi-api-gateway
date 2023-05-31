@@ -1111,7 +1111,7 @@ type NumberInSeries {
 
 type SerieWork {
   \\"\\"\\"The number of work in the series as a number (as text)\\"\\"\\"
-  numberInSeries: String!
+  numberInSeries: String
 
   \\"\\"\\"Work of a serieWork\\"\\"\\"
   work: Work!
@@ -2673,7 +2673,7 @@ type NumberInSeries {
 
 type SerieWork {
   \\"\\"\\"The number of work in the series as a number (as text)\\"\\"\\"
-  numberInSeries: String!
+  numberInSeries: String
 
   \\"\\"\\"Work of a serieWork\\"\\"\\"
   work: Work!
