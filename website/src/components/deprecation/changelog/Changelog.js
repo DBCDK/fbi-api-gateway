@@ -73,7 +73,7 @@ export default function Changelog() {
     () =>
       [...data]
         .filter(
-          ({ expired }) => reformatUTC(new Date()) > localDateToUTC(expired)
+          ({ expired }) => reformatUTC(new Date()) >= localDateToUTC(expired)
         )
         .sort((a, b) => localDateToUTC(b.expired) - localDateToUTC(a.expired)),
     [data]
@@ -84,7 +84,7 @@ export default function Changelog() {
     () =>
       [...data]
         .filter(
-          ({ expired }) => reformatUTC(new Date()) <= localDateToUTC(expired)
+          ({ expired }) => reformatUTC(new Date()) < localDateToUTC(expired)
         )
         .sort((a, b) => localDateToUTC(a.expired) - localDateToUTC(b.expired)),
     [data]

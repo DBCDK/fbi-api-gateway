@@ -189,6 +189,53 @@ type WorkTitles {
   Danish translation of the main title
   """
   translated: [String!]
+
+  """
+  detailed title for tv series 
+  """
+  tvSeries: TvSeries
+}
+
+type TvSeries {
+  """
+  Title of the tv serie
+  """
+  title: String
+
+  """
+  Dansih translated title of the tv serie
+  """
+  danishLaunchTitle: String
+
+  """
+  Detailed information about the episode
+  """
+  episode: TvSeriesDetails
+
+  """
+  Episode titles
+  """
+  episodeTitles: [String!]
+
+  """
+  Detailed information about the disc
+  """
+  disc: TvSeriesDetails
+
+  """
+  Detailed information about the season
+  """
+  season: TvSeriesDetails
+
+  """
+  Detailed information about the volume
+  """
+  volume: TvSeriesDetails
+}
+
+type TvSeriesDetails {
+  display: String
+  numbers: [Int!]
 }
 `;
 

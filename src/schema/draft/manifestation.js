@@ -718,7 +718,12 @@ type ManifestationTitles {
   Danish translation of the main title
   """
   translated: [String!]
-}
+
+  """
+  detailed title for tv series 
+  """
+  tvSeries: TvSeries
+  }
 `;
 
 export const resolvers = {

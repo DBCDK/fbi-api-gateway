@@ -135,26 +135,15 @@ export const resolvers = {
     title(parent, args, context, info) {
       return parent.seriesTitle;
     },
-    // we need resolvers here since the next attributes are needed on series level for
-    // current work. Look through members of the series to find the attributes
-    numberInSeries(parent, args, context, info) {
-      const workId = info?.variableValues?.workId || null;
-
-      const work = parent.works.find(
-        (work) => work.persistentWorkId === workId
-      );
-
-      const serieNumber = work?.numberInSeries;
-
-      // No serieNumber data available
-      if (typeof serieNumber === "undefined") {
-        return null;
-      }
-
-      return {
-        display: serieNumber?.toString() || "0",
-        number: [serieNumber || 0],
-      };
+    /* 
+      we need resolvers here since the old series field returned numberInSeries 
+      from JED data as an Object (display {string} + numbers {[Int]}) 
+      This can be removed when deprecated in future.
+    */
+    async numberInSeries(parent, args, context, info) {
+      const vars = info?.variableValues;
+      const work = await resolveWork({ ...vars, id: vars.workId }, context);
+      return work.series.find((s) => s.numberInSeries)?.numberInSeries;
     },
     readThisFirst(parent, args, context, info) {
       const workId = info?.variableValues?.workId || null;

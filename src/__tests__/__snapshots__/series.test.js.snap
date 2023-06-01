@@ -57,9 +57,9 @@ Object {
             },
           ],
           "numberInSeries": Object {
-            "display": "7",
+            "display": "Dummy number one",
             "number": Array [
-              7,
+              1,
             ],
           },
           "readThisFirst": false,
