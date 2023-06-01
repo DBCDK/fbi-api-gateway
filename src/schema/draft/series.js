@@ -123,7 +123,23 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return (data && data.series) || [];
+      // Extend every serie in the series array with extra fields
+      // These are resolved here because of the need of the correct workId
+      // resolvers include ReadThisFirst, readThisWhenever og numberInSeries
+      return data.series.map((serie) => {
+        const match = serie.works?.find(
+          ({ persistentWorkId }) => persistentWorkId === parent.workId
+        );
+
+        const readThisFirst = match?.readThisFirst;
+        const readThisWhenever = match?.readThisWhenever;
+        // NumberInSeries is returned from JED because of the structure
+        const numberInSeries = parent.series?.find(
+          (serie) => serie.numberInSeries
+        )?.numberInSeries;
+
+        return { numberInSeries, readThisFirst, readThisWhenever, ...serie };
+      });
     },
   },
 
@@ -135,33 +151,20 @@ export const resolvers = {
     title(parent, args, context, info) {
       return parent.seriesTitle;
     },
-    /* 
-      we need resolvers here since the old series field returned numberInSeries 
-      from JED data as an Object (display {string} + numbers {[Int]}) 
-      This can be removed when deprecated in future.
-    */
-    async numberInSeries(parent, args, context, info) {
-      const vars = info?.variableValues;
-      const work = await resolveWork({ ...vars, id: vars.workId }, context);
-      return work.series.find((s) => s.numberInSeries)?.numberInSeries;
+    numberInSeries(parent, args, context, info) {
+      return parent.numberInSeries || null;
     },
     readThisFirst(parent, args, context, info) {
-      const workId = info?.variableValues?.workId || null;
-      const temp = workId
-        ? parent.works.find((work) => work.persistentWorkId === workId)
-            ?.readThisFirst
-        : null;
-
-      return temp || 0;
+      if (typeof parent.readThisFirst === "undefined") {
+        return null;
+      }
+      return parent.readThisFirst;
     },
     readThisWhenever(parent, args, context, info) {
-      const workId = info?.variableValues?.workId || null;
-      const temp = workId
-        ? parent.works.find((work) => work.persistentWorkId === workId)
-            ?.readThisWhenever
-        : null;
-
-      return temp || 0;
+      if (typeof parent.readThisWhenever === "undefined") {
+        return null;
+      }
+      return parent.readThisWhenever;
     },
   },
   SerieWork: {
