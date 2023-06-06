@@ -12,8 +12,10 @@ export async function load({ cql, offset, limit, profile }, context) {
     body: JSON.stringify({
       cqlQuery: cql,
       pagination: { offset, limit },
-      agency: profile.agency,
-      profile: profile.name,
+      searchProfile: {
+        agency: profile.agency,
+        profile: profile.name,
+      },
     }),
     allowedErrorStatusCodes: [400],
   });
