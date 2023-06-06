@@ -106,7 +106,7 @@ export const resolvers = {
       // grab persistentWorkId from the first serie found on serieservice v2
       if (data && data.series && data.series?.[0].works) {
         const works = await Promise.all(
-          data.series[0].works.slice(0, 100).map(async (work) => {
+          data.series?.[0]?.works?.slice(0, 100).map(async (work) => {
             return resolveWork({ id: work.persistentWorkId }, context);
           })
         );
@@ -126,20 +126,22 @@ export const resolvers = {
       // Extend every serie in the series array with extra fields
       // These are resolved here because of the need of the correct workId
       // resolvers include ReadThisFirst, readThisWhenever og numberInSeries
-      return data.series.map((serie) => {
-        const match = serie.works?.find(
-          ({ persistentWorkId }) => persistentWorkId === parent.workId
-        );
+      return (
+        data?.series?.map((serie) => {
+          const match = serie.works?.find(
+            ({ persistentWorkId }) => persistentWorkId === parent.workId
+          );
 
-        const readThisFirst = match?.readThisFirst;
-        const readThisWhenever = match?.readThisWhenever;
-        // NumberInSeries is returned from JED because of the structure
-        const numberInSeries = parent.series?.find(
-          (serie) => serie.numberInSeries
-        )?.numberInSeries;
+          const readThisFirst = match?.readThisFirst;
+          const readThisWhenever = match?.readThisWhenever;
+          // NumberInSeries is returned from JED because of the structure
+          const numberInSeries = parent.series?.find(
+            (serie) => serie.numberInSeries
+          )?.numberInSeries;
 
-        return { numberInSeries, readThisFirst, readThisWhenever, ...serie };
-      });
+          return { numberInSeries, readThisFirst, readThisWhenever, ...serie };
+        }) || []
+      );
     },
   },
 
