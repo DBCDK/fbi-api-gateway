@@ -71,7 +71,7 @@ Object {
       "series": Array [
         Object {
           "alternativeTitles": Array [],
-          "isPopular": null,
+          "isPopular": true,
           "numberInSeries": Object {
             "display": "Dummy number one",
             "number": Array [
