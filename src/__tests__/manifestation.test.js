@@ -279,6 +279,12 @@ describe("Manifestation", () => {
               }
             }
           }
+          series {
+            title
+            numberInSeries {
+              number
+            }
+          }          
           volume
           tableOfContents {
             heading

@@ -278,6 +278,16 @@ Object {
           "urlText": null,
         },
       ],
+      "series": Array [
+        Object {
+          "numberInSeries": Object {
+            "number": Array [
+              1,
+            ],
+          },
+          "title": "De syv søstre-serien",
+        },
+      ],
       "shelfmark": Object {
         "postfix": "Dummy some postfix",
         "shelfmark": "Dummy some shelfmark",
