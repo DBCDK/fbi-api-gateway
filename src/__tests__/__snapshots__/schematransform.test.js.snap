@@ -1135,7 +1135,7 @@ type Series {
   title: String!
 
   \\"\\"\\"Description of the series\\"\\"\\"
-  seriesDescription: String
+  description: String
 
   \\"\\"\\"A alternative title to the main 'title' of the series\\"\\"\\"
   alternativeTitles: [String!]!
@@ -2733,7 +2733,7 @@ type Series {
   title: String!
 
   \\"\\"\\"Description of the series\\"\\"\\"
-  seriesDescription: String
+  description: String
 
   \\"\\"\\"A alternative title to the main 'title' of the series\\"\\"\\"
   alternativeTitles: [String!]!
