@@ -139,7 +139,17 @@ export const resolvers = {
             (serie) => serie.numberInSeries
           )?.numberInSeries;
 
-          return { numberInSeries, readThisFirst, readThisWhenever, ...serie };
+          //
+          const isPopular = parent.series?.find((serie) => serie.isPopular)
+            ?.isPopular;
+
+          return {
+            numberInSeries,
+            readThisFirst,
+            readThisWhenever,
+            isPopular,
+            ...serie,
+          };
         }) || []
       );
     },
