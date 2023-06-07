@@ -624,12 +624,12 @@ type Manifestation {
   recordCreationDate: String!
 
   """
-  Series for this work
+  Series for this manifestation
   """
   series: [Series!]!
 
   """
-  Universe for this work
+  Universe for this manifestation
   """
   universe: Universe
 
@@ -664,7 +664,7 @@ type Manifestation {
   workTypes: [WorkType!]!
 
   """
-  The year this work was originally published or produced
+  The year this manifestation was originally published or produced
   """
   workYear: PublicationYear
 }
@@ -675,7 +675,7 @@ type ManifestationTitles {
   main: [String!]!
 
   """
-  The full title(s) of the work including subtitles etc
+  The full title(s) of the manifestation including subtitles etc
   """
   full: [String!]!
 
@@ -700,7 +700,7 @@ type ManifestationTitles {
   original: [String!]
 
   """
-  Titles (in other languages) parallel to the main 'title' of the work
+  Titles (in other languages) parallel to the main 'title' of the manifestation
   """
   parallel: [String!]!
 
