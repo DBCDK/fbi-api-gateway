@@ -123,35 +123,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      // Extend every serie in the series array with extra fields
-      // These are resolved here because of the need of the correct workId
-      // resolvers include ReadThisFirst, readThisWhenever og numberInSeries
-      return (
-        data?.series?.map((serie) => {
-          const match = serie.works?.find(
-            ({ persistentWorkId }) => persistentWorkId === parent.workId
-          );
-
-          const readThisFirst = match?.readThisFirst;
-          const readThisWhenever = match?.readThisWhenever;
-          // NumberInSeries is returned from JED because of the structure
-          const numberInSeries = parent.series?.find(
-            (serie) => serie.numberInSeries
-          )?.numberInSeries;
-
-          //
-          const isPopular = parent.series?.find((serie) => serie.isPopular)
-            ?.isPopular;
-
-          return {
-            numberInSeries,
-            readThisFirst,
-            readThisWhenever,
-            isPopular,
-            ...serie,
-          };
-        }) || []
-      );
+      return resolveSeries(data, parent);
     },
   },
 
@@ -184,4 +156,46 @@ export const resolvers = {
       return resolveWork({ id: parent.persistentWorkId }, context);
     },
   },
+  Manifestation: {
+    async series(parent, args, context, info) {
+      const data = await context.datasources.getLoader("series").load({
+        workId: parent.workId,
+        profile: context.profile,
+      });
+
+      return resolveSeries(data, parent);
+    },
+  },
 };
+
+// Extend every serie in the series array with extra fields
+// These are resolved here because of the need of the correct workId
+// resolvers include ReadThisFirst, readThisWhenever og numberInSeries
+function resolveSeries(data, parent) {
+  return (
+    data?.series?.map((serie) => {
+      const match = serie.works?.find(
+        ({ persistentWorkId }) => persistentWorkId === parent.workId
+      );
+
+      const readThisFirst = match?.readThisFirst;
+      const readThisWhenever = match?.readThisWhenever;
+      // NumberInSeries is returned from JED because of the structure
+      const numberInSeries = parent.series?.find(
+        (serie) => serie.numberInSeries
+      )?.numberInSeries;
+
+      //
+      const isPopular = parent.series?.find((serie) => serie.isPopular)
+        ?.isPopular;
+
+      return {
+        numberInSeries,
+        readThisFirst,
+        readThisWhenever,
+        isPopular,
+        ...serie,
+      };
+    }) || []
+  );
+}
