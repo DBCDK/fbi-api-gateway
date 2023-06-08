@@ -77,6 +77,7 @@ Object {
       "address": "Borgmesterskoven 45",
       "culrMail": "some@mail.com",
       "mail": "test@dbc.dk",
+      "municipalityAgencyId": "715100",
       "name": "Freja Damgaard",
       "postalCode": "8660",
     },

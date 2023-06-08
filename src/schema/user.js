@@ -13,6 +13,7 @@ type User {
   name: String!
   address: String
   postalCode: String
+  municipalityAgencyId: String
   mail: String
   culrMail: String
   agency(language: LanguageCode): BranchResult!
@@ -75,6 +76,12 @@ export const resolvers = {
         accessToken: context.accessToken,
       });
       return res.address;
+    },
+    async municipalityAgencyId(parent, args, context, info) {
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+      return userinfo?.attributes?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
       const res = await context.datasources.getLoader("debt").load({
