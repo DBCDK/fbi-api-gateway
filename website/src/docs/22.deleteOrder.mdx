@@ -1,0 +1,15 @@
+# BIBDK Delete Order
+
+Delete an order which has been placed with the submitOrder mutation.
+
+It is possible to delete an order at any agency the user is registered.
+
+<InlineGraphiQL
+  query={`mutation cancelOrder($orderId: String!, $agencyId: String!) {
+  deleteOrder(orderId: $orderId, agencyId: $agencyId, dryRun: true) {
+    deleted
+    error
+  }
+}`}
+  variables={{ orderId: "78434523", agencyId: "715100" }}
+/>

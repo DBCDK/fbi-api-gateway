@@ -96,6 +96,9 @@ export default {
       ttl: process.env.MOREINFO_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.MOREINFO_PREFIX || "moreinfo-2",
     },
+    openuserstatus: {
+      url: process.env.OPENUSERSTATUS_URL,
+    },
     openorder: {
       url: process.env.OPENORDER_URL,
       authenticationUser: process.env.OPENORDER_USER,
