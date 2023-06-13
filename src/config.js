@@ -16,7 +16,7 @@ export default {
   datasources: {
     ocn2pid: {
       url:
-        process.env.OCN_TO_PID ||
+        process.env.OCN_TO_PID_URL ||
         "http://ocn2pid.addi.dk/ocn2pid/ocn-collection/",
     },
     didyoumean: {
