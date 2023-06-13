@@ -14,6 +14,11 @@ export default {
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   datasources: {
+    ocn2pid: {
+      url:
+        process.env.OCN_TO_PID ||
+        "https://ocn2pid.addi.dk/ocn2pid/ocn-collection/",
+    },
     didyoumean: {
       url:
         process.env.DID_YOU_MEAN_URL ||
