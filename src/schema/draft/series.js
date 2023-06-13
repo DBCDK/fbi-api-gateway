@@ -55,7 +55,7 @@ type Series {
   """
   Description of the series
   """
-  seriesDescription: String
+  description: String
 
   """
   A alternative title to the main 'title' of the series
@@ -134,6 +134,9 @@ export const resolvers = {
     },
     title(parent, args, context, info) {
       return parent.seriesTitle;
+    },
+    description(parent, args, context, info) {
+      return parent.seriesDescription;
     },
     numberInSeries(parent, args, context, info) {
       return parent.numberInSeries || null;
