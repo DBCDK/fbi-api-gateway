@@ -271,6 +271,14 @@ export async function resolveWork(args, context) {
     id = await context.datasources
       .getLoader("pidToWorkId")
       .load({ pid: args.pid, profile: context.profile });
+    // get ownerwork from worldcat id .. via pidtowork
+  } else if (args.oclc) {
+    const pid = await context.datasources
+      .getLoader("oclcNumberToPid")
+      .load({ oclc: args.oclc });
+    id = await context.datasources
+      .getLoader("pidToWorkId")
+      .load({ pid: pid, profile: context.profile });
   }
   if (!id) {
     return null;
