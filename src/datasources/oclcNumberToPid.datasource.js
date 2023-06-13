@@ -9,6 +9,7 @@ function parseForPid(xml) {
     return matches[1] || null;
   } catch (e) {
     console.log(e.message);
+    return null;
   }
 }
 
