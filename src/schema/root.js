@@ -22,7 +22,7 @@ type Query {
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
   user: User
-  work(id: String, faust: String, pid: String, language: LanguageCode): Work
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
