@@ -64,7 +64,7 @@ In the following example, often-used fields are fetched in the simplest way poss
 
 ## Work Identifiers
 
-A work is identified by a _work id_, _pid_, or _faust_, and either of them can be used to
+A work is identified by a _work id_, _pid_, or _faust_. It can also be found with an _oclc_ (identifier from library of congress) and either of them can be used to
 fetch a work.
 
 <InlineGraphiQL
@@ -114,8 +114,7 @@ fetch a work.
 ## Fetch List of Works
 
 It is possible to fetch multiple works in a single request by providing
-a list of identifiers. The identifiers may be _a list of work ids_, _a list of pids_,
-or _a list of fausts_.
+a list of identifiers. The identifiers may be _a list of work ids_, _a list of pids_, _a list of fausts_ or _a list of oclc_.
 
 The order of these works will match the order of the identifiers that are provided.
 If no work is found as an identifier, null is returned at the corresponding position.
