@@ -196,7 +196,7 @@ export const resolvers = {
         );
       } else if (args.oclc) {
         return Promise.all(
-          args.oclc.map((pid) => resolveWork({ oclc }, context))
+          args.oclc.map((oclc) => resolveWork({ oclc }, context))
         );
       }
       return [];
