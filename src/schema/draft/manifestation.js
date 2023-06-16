@@ -206,6 +206,11 @@ type ManifestationPart {
   creatorsFromDescription: [String!]!
   
   """
+  Contributors from description - additional contributor to this entry
+  """
+  contributorsFromDescription: [String!]!
+  
+  """
   The playing time for this specific part (i.e. the duration of a music track) 
   """
   playingTime: String
