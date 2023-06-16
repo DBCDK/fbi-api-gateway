@@ -23,7 +23,7 @@ type Query {
   monitor(name: String!): String!
   user: User
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
-  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
+  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
   linkCheck: LinkCheckService!
@@ -193,6 +193,10 @@ export const resolvers = {
       } else if (args.pid) {
         return Promise.all(
           args.pid.map((pid) => resolveWork({ pid }, context))
+        );
+      } else if (args.oclc) {
+        return Promise.all(
+          args.oclc.map((oclc) => resolveWork({ oclc }, context))
         );
       }
       return [];

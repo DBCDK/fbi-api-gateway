@@ -1,4 +1,4 @@
-import { resolveWork } from "../../utils/utils";
+import { resolveSeries, resolveWork } from "../../utils/utils";
 
 export const typeDef = `
 type Universe {
@@ -170,35 +170,3 @@ export const resolvers = {
     },
   },
 };
-
-// Extend every serie in the series array with extra fields
-// These are resolved here because of the need of the correct workId
-// resolvers include ReadThisFirst, readThisWhenever og numberInSeries
-function resolveSeries(data, parent) {
-  return (
-    data?.series?.map((serie) => {
-      const match = serie.works?.find(
-        ({ persistentWorkId }) => persistentWorkId === parent.workId
-      );
-
-      const readThisFirst = match?.readThisFirst;
-      const readThisWhenever = match?.readThisWhenever;
-      // NumberInSeries is returned from JED because of the structure
-      const numberInSeries = parent.series?.find(
-        (serie) => serie.numberInSeries
-      )?.numberInSeries;
-
-      //
-      const isPopular = parent.series?.find((serie) => serie.isPopular)
-        ?.isPopular;
-
-      return {
-        numberInSeries,
-        readThisFirst,
-        readThisWhenever,
-        isPopular,
-        ...serie,
-      };
-    }) || []
-  );
-}
