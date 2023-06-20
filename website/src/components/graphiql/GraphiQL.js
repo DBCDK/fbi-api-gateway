@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { GraphiQLInterface } from "graphiql";
 
+import Progress from "@/components/base/progress";
+
 import {
   GraphiQLProvider,
   useExecutionContext,
@@ -18,9 +20,27 @@ import Overlay from "@/components/base/overlay";
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 
+import useComplexity from "@/hooks/useComplexity";
+
 import Header from "@/components/header";
 
 import styles from "./GraphiQL.module.css";
+
+function ComplexityButton({ value, limit }) {
+  // Percentage of limit
+  const percentage = Math.round((value / limit) * 100);
+
+  return (
+    <span className={styles.complexity}>
+      <ToolbarButton
+        className={styles.button}
+        label={`Query complexity (limit: ${limit})`}
+      >
+        <Progress.Circle stop={percentage} value={value} />
+      </ToolbarButton>
+    </span>
+  );
+}
 
 function CurlButton({ onClick }) {
   const curlRef = useRef();
@@ -108,6 +128,11 @@ export default function Wrap() {
 
   const parameters = { ...router.query };
 
+  const { complexity, limit } = useComplexity({
+    token: selectedToken?.token,
+    ...parameters,
+  });
+
   const curl = generateCurl({
     ...parameters,
     url,
@@ -178,6 +203,11 @@ export default function Wrap() {
             <CurlButton
               key="copy-curl-btn"
               onClick={() => navigator?.clipboard?.writeText?.(curl)}
+            />,
+            <ComplexityButton
+              value={complexity}
+              limit={limit}
+              key="complexity-btn"
             />,
           ],
         }}

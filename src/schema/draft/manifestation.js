@@ -478,10 +478,11 @@ type Audience {
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
-  all: [Manifestation!]!
-  bestRepresentation: Manifestation!
-  mostRelevant: [Manifestation!]!
+  all: [Manifestation!]! @complexity(value: 50)
+  bestRepresentation: Manifestation! 
+  mostRelevant: [Manifestation!]! @complexity(value: 25)
 }
+
 type Manifestation {
   """
   Unique identification of the manifestation e.g 870970-basis:54029519

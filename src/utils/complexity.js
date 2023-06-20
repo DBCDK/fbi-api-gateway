@@ -1,5 +1,11 @@
 import { log } from "dbc-node-logger";
-import queryComplexity from "graphql-query-complexity";
+import { parse } from "graphql";
+
+import queryComplexity, {
+  getComplexity,
+  simpleEstimator,
+  directiveEstimator,
+} from "graphql-query-complexity";
 
 import config from "../config";
 
@@ -15,7 +21,7 @@ import config from "../config";
  * @param {GraphQLField<any, any>} params.field
  * @param {number} params.childComplexity
  */
-function CustomFieldEstimator({ field, childComplexity }) {
+function customFieldEstimator({ field, childComplexity }) {
   const fieldType = field.type.toString();
   const isExpensiveArray =
     fieldType.startsWith("[Work!]") ||
@@ -40,9 +46,9 @@ function CustomFieldEstimator({ field, childComplexity }) {
  * @param {string} params.query
  * @param {object} params.variables
  */
-export default function validateComplexity({ query, variables }) {
+export function validateComplexity({ query, variables }) {
   return queryComplexity({
-    estimators: [CustomFieldEstimator],
+    estimators: [customFieldEstimator],
     maximumComplexity: config.query.maxComplexity,
     variables,
     onComplete: (complexity) => {
@@ -55,4 +61,42 @@ export default function validateComplexity({ query, variables }) {
       }
     },
   });
+}
+
+// function customEstimator({
+//   type,
+//   field,
+//   node,
+//   args,
+//   childComplexity,
+//   context,
+// }) {}
+
+/**
+ *
+ * @param {*} params.query
+ * @param {*} params.variables
+ * @param {object} params.schema
+ */
+
+export function getQueryComplexity({ query, variables, schema }) {
+  console.log("##############", { query, variables });
+
+  try {
+    return getComplexity({
+      estimators: [
+        directiveEstimator(),
+        // customEstimator,
+        simpleEstimator({
+          defaultComplexity: 1,
+        }),
+      ],
+      schema,
+      query: parse(query),
+      variables,
+    });
+  } catch (e) {
+    // Log error in case complexity cannot be calculated (invalid query, misconfiguration, etc.)
+    console.error("Could not calculate complexity", e.message);
+  }
 }
