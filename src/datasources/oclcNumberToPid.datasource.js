@@ -2,7 +2,12 @@ import config from "../config";
 
 const { url } = config.datasources.ocn2pid;
 
-function parseForPid(xml) {
+/**
+ * Find the pid in given xml
+ *
+ * @param xml
+ */
+export function parseForPid(xml) {
   const regex = /<pid value="([\s\S]*?)">/g;
   try {
     const matches = xml.matchAll(regex);
