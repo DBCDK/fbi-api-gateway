@@ -2,11 +2,20 @@ import config from "../config";
 
 const { url } = config.datasources.ocn2pid;
 
-function parseForPid(xml) {
+/**
+ * Find the pid in given xml
+ *
+ * @param xml
+ */
+export function parseForPid(xml) {
   const regex = /<pid value="([\s\S]*?)">/g;
   try {
-    const matches = regex.exec(xml);
-    return matches[1] || null;
+    const matches = xml.matchAll(regex);
+    const pids = [];
+    for (let match of matches) {
+      pids.push(match[1]);
+    }
+    return pids.find((pid) => pid.startsWith("870970")) || pids[0] || null;
   } catch (e) {
     console.log(e.message);
     return null;
