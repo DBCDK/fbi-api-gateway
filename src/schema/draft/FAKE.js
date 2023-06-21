@@ -234,6 +234,50 @@ export const FAKE_MANIFESTATION_PARTS = {
       ],
       playingTime: "Dummy playing time",
     },
+    {
+      title: { display: "Dummy Banker Loyal" },
+      creators: [
+        {
+          __typename: "Person",
+          display: "Dummy A. C. Handerson",
+          nameSort: "Dummy Handerson, A.C.",
+          firstName: "Dummy A. C.",
+          lastName: "Dummy Handerson",
+          roles: [],
+        },
+      ],
+      creatorsFromDescription: ["Dummy arr.: Don Alderson Drumf"],
+      classifications: [
+        {
+          system: "DK5",
+          code: "Dummy 88.424",
+          display: "Dummy Saxofon og blæsere. Trompet og blæsere",
+        },
+      ],
+      playingTime: "Dummy long playing time",
+    },
+    {
+      title: { forSearchIndexOnly: "Dummy forSearchIndexOnly" },
+      creators: [
+        {
+          __typename: "Person",
+          display: "Dummy Search Index Only",
+          nameSort: "Dummy Only, Search Index",
+          firstName: "Dummy Search Index",
+          lastName: "Dummy Only",
+          roles: [],
+        },
+      ],
+      creatorsFromDescription: ["Dummy arr.: Benny Strompet"],
+      classifications: [
+        {
+          system: "DK5",
+          code: "Dummy 88.424",
+          display: "Dummy Trommer og slaginstrumenter. Bongo og slaginstrumenter",
+        },
+      ],
+      playingTime: "Dummy wasteful playing time",
+    },
   ],
 };
 
