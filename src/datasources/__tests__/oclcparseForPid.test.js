@@ -114,6 +114,4 @@ test("Parse xml from ocn2Pid webservice", async () => {
   // we expect null
   expected = null;
   expect(actual).toEqual(expected);
-
-  expect("fisk").toEqual("hest");
 });
