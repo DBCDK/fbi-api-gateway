@@ -7,53 +7,104 @@ import styles from "./Circle.module.css";
  * @param {*} param0
  * @returns
  */
+function getStateColor({ value, states }) {
+  const sorted = Object.fromEntries(Object.entries(states).sort());
+
+  let color;
+  Object.entries(sorted).forEach(([k, v]) => {
+    if (k <= value) {
+      color = v;
+    }
+  });
+
+  return color;
+}
+
+/**
+ *
+ * @param {*} param0
+ * @returns
+ */
 
 export default function Circle({
-  start = 0,
-  stop = 0,
   value = null,
-  speed = 10,
+  limit = 360,
+  speed = 1,
+  states = {
+    0: "var(--primary)",
+  },
   className = "",
 }) {
-  const [progress, setProgress] = useState(start);
-
-  console.log("hest", { start, stop, value, progress });
+  const [timer, setTimer] = useState(0);
+  const [direction, setDirection] = useState();
+  const interval = useRef();
 
   useEffect(() => {
-    // mounted
-    if (stop) {
-      // ensure stop is a valid int
-      if (!isNaN(stop)) {
-        const interval = setInterval(() => {
-          console.log("hund", { progress, stop });
+    console.log("effect 1", { timer, value, direction });
 
-          if (progress < stop) {
-            setProgress(progress++);
-          }
+    function handleTimer() {
+      interval.current = setInterval(() => {
+        const hest = Math.round(value / 100) || 1;
 
-          if (progress > stop) {
-            setProgress(progress--);
-          }
+        console.log("hest", hest);
 
-          if (progress === stop) {
-            clearInterval(interval);
-          }
-        }, speed);
+        setTimer((count) => (timer < value ? count + hest : count - hest));
+      }, speed);
+    }
+
+    // always cleanup on value change
+    clearInterval(interval.current);
+
+    if (value) {
+      setDirection(timer < value ? "ADD" : "SUB");
+      handleTimer();
+    }
+    // reset timer
+    else {
+      setTimer(0);
+    }
+  }, [value]);
+
+  useEffect(() => {
+    console.log("effect 2", { timer, value, direction });
+
+    if (interval.current) {
+      const done =
+        (direction === "ADD" && timer >= value) ||
+        (direction === "SUB" && timer <= value);
+
+      if (done) {
+        clearInterval(interval.current);
+        setTimer(value);
       }
     }
-  }, [stop]);
+  }, [timer]);
+
+  // Set error on missing value
+  const ERR = !value && "😵‍💫";
+
+  const errorClass = !!ERR ? styles.err : "";
 
   // Progress degress
-  const deg = (progress / 100) * 360;
+  const deg = (timer / 1000) * 360;
+
+  // Percentage of limit
+  const percentage = Math.round((timer / limit) * 100);
+
+  // custom class
+  const color = getStateColor({ value: percentage, states });
 
   // Set inline dynamic style
   const objStyles = {
-    background: `conic-gradient(var(--primary) ${deg}deg, transparent 0deg)`,
+    background: `conic-gradient(${color} ${deg}deg, transparent 0deg)`,
   };
 
   return (
-    <div className={`${styles.bar} ${className}`} style={objStyles}>
-      <span className={styles.value}>{value || progress}</span>
+    <div
+      className={`${styles.bar} ${errorClass} ${className}`}
+      style={objStyles}
+    >
+      <span className={styles.value}>{ERR || timer}</span>
     </div>
   );
 }

@@ -27,8 +27,23 @@
   margin-top: 0;
 }
 
-.inlinegraphiql :global(.graphiql-toolbar) {
+.inlinegraphiql :global(.graphiql-toolbar) > button {
   display: none;
+}
+
+.inlinegraphiql :global(.graphiql-toolbar) {
+  margin: 0;
+}
+
+.inlinegraphiql :global(.graphiql-toolbar) .complexity {
+  width: 40px;
+  height: 40px;
+
+  position: absolute;
+  bottom: calc(var(--pt1) * -1);
+  right: calc(var(--pt1) * -1);
+
+  display: flex !important;
 }
 
 .inlinegraphiql :global(.topBarWrap) {

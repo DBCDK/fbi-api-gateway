@@ -5,6 +5,7 @@
 import { log } from "dbc-node-logger";
 import { getExecutableSchema } from "./schemaLoader";
 import express from "express";
+import request from "superagent";
 
 import createHash from "./utils/hash";
 
@@ -20,6 +21,7 @@ import howruHandler from "./howru";
 import { metrics, observeDuration } from "./utils/monitor";
 import { validateComplexity, getQueryComplexity } from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
+
 import { v4 as uuid } from "uuid";
 import isbot from "isbot";
 
@@ -225,8 +227,6 @@ promExporterApp.listen(9599, () => {
 
     const { query, variables } = req.body;
 
-    console.log("zzzzzzzzzzzzzzzzzzzz", { query, variables });
-
     // Set incomming query complexity
     req.queryComplexity = getQueryComplexity({ query, variables, schema });
 
@@ -242,14 +242,20 @@ promExporterApp.listen(9599, () => {
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
 
-  // Query complexity endpoint
-  app.get("/complexity", async (req, res) => {
-    console.log("HHHHHHHHHHHHHHHIIIIIIIIIIIIIIIIIITTTTTTTTT");
+  /**
+   * Query complexity endpoint
+   * POST request
+   * token set as bearer header (Not required)
+   * query {string} and variables {string} set as body params.
+   */
+  app.post("/complexity", async (req, res) => {
+    // get AccessToken from header
+    const token = req.headers.authorization?.replace(/bearer /i, "");
 
-    // Get query params
-    const { query, variables, token } = req.query;
+    // Get body params
+    const { query, variables } = req.body;
 
-    // Try to parse variables
+    // Try to parse variables to json
     let parsedVariables;
     try {
       parsedVariables = JSON.parse(variables);
@@ -257,19 +263,25 @@ promExporterApp.listen(9599, () => {
       return res.send({ complexity: null });
     }
 
-    // Fetch configuration from smaug
-    let smaug = {};
-    // if (token) {
-    //   smaug = await req.datasources.getLoader("smaug").load({
-    //     accessToken: token,
-    //   });
-    // }
+    // Get client permissions from smuag
+    let clientPermissions;
+    try {
+      const url = config.datasources.smaug.url;
+      const smaug = (
+        await request.get(`${url}/configuration`).query({
+          token,
+        })
+      ).body;
+
+      // Set token client permissions
+      clientPermissions = smaug?.gateway;
+    } catch (e) {
+      // No valid accessToken
+    }
 
     const schema = await getExecutableSchema({
-      clientPermissions: {
-        admin: true,
-      },
-      hasAccessToken: !!token,
+      clientPermissions,
+      hasAccessToken: !!(clientPermissions && token),
     });
 
     // // Set incomming query complexity
@@ -279,11 +291,7 @@ promExporterApp.listen(9599, () => {
       schema,
     });
 
-    console.log("qqqqqqqqqqqq queryComplexity", queryComplexity);
-
     res.send({ complexity: queryComplexity });
-
-    // return handler(req, res);
   });
 
   app.use(proxy);

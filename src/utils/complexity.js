@@ -80,8 +80,6 @@ export function validateComplexity({ query, variables }) {
  */
 
 export function getQueryComplexity({ query, variables, schema }) {
-  console.log("##############", { query, variables });
-
   try {
     return getComplexity({
       estimators: [

@@ -26,17 +26,28 @@ import Header from "@/components/header";
 
 import styles from "./GraphiQL.module.css";
 
-function ComplexityButton({ value, limit }) {
-  // Percentage of limit
-  const percentage = Math.round((value / limit) * 100);
+export function ComplexityButton({ value, limit, className }) {
+  console.log("graphql value", value, Math.round((value / limit) * 100));
 
   return (
-    <span className={styles.complexity}>
-      <ToolbarButton
-        className={styles.button}
-        label={`Query complexity (limit: ${limit})`}
-      >
-        <Progress.Circle stop={percentage} value={value} />
+    <span className={`${styles.complexity} ${className}`}>
+      <ToolbarButton className={styles.button} label="Query complexity">
+        <Progress.Circle
+          value={value}
+          limit={limit}
+          states={{
+            0: "var(--success-dark)",
+            50: "var(--warning-dark)",
+            100: "var(--error)",
+          }}
+          // stop={percentage}
+          // value={value}
+          // states={{
+          //   0: "var(--success-dark)",
+          //   50: "var(--warning-dark)",
+          //   100: "var(--error)",
+          // }}
+        />
       </ToolbarButton>
     </span>
   );

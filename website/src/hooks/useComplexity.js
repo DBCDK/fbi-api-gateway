@@ -3,11 +3,17 @@ import useSWR from "swr";
 
 import { isToken } from "@/components/utils";
 
-const fetcher = async (url) => {
-  console.log("url", url);
-
+const fetcherHest = async (url, { token, query, variables }) => {
   const response = await fetch(url, {
-    method: "GET",
+    method: "POST",
+    headers: {
+      Authorization: `bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query,
+      variables,
+    }),
   });
 
   if (response.status !== 200) {
@@ -18,14 +24,17 @@ const fetcher = async (url) => {
 };
 
 export default function useComplexity({ token, query, variables }) {
-  console.log("useComplexity f", { query, variables });
-
-  const url = `/complexity?token=${token}&query=${query}&variables=${variables}`;
+  const url = `/complexity`;
   const isValid = isToken(token);
+  const params = { token, query, variables };
 
-  const { data, error } = useSWR(isValid && url, fetcher, {
-    fallback: {},
-  });
+  const { data, error } = useSWR(
+    [url, params],
+    (url, params) => fetcherHest(url, params),
+    {
+      fallback: {},
+    }
+  );
 
   console.log({ data, error });
 
