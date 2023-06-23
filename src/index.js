@@ -255,14 +255,6 @@ promExporterApp.listen(9599, () => {
     // Get body params
     const { query, variables } = req.body;
 
-    // Try to parse variables to json
-    let parsedVariables;
-    try {
-      parsedVariables = JSON.parse(variables);
-    } catch (e) {
-      return res.send({ complexity: null });
-    }
-
     // Get client permissions from smuag
     let clientPermissions;
     try {
@@ -276,7 +268,7 @@ promExporterApp.listen(9599, () => {
       // Set token client permissions
       clientPermissions = smaug?.gateway;
     } catch (e) {
-      // No valid accessToken
+      // No valid accessToken - fallbacks to default schema (introspect)
     }
 
     const schema = await getExecutableSchema({
@@ -287,7 +279,7 @@ promExporterApp.listen(9599, () => {
     // // Set incomming query complexity
     const queryComplexity = getQueryComplexity({
       query,
-      variables: parsedVariables,
+      variables,
       schema,
     });
 

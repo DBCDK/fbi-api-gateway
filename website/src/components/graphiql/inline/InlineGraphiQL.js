@@ -229,7 +229,7 @@ export default function Wrap(props) {
   const { schema } = useSchema(selectedToken);
   const url = useGraphQLUrl(selectedToken);
 
-  const { query: initialQuery, variables: initialVariabels } = props;
+  const { query: initialQuery, variables: initialVariabels = "" } = props;
 
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState(initialQuery);

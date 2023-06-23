@@ -3,7 +3,37 @@ import useSWR from "swr";
 
 import { isToken } from "@/components/utils";
 
-const fetcherHest = async (url, { token, query, variables }) => {
+// parse function - parse string variables to json
+function parseVariables(variables) {
+  // return if already object
+  if (typeof variables === "object") {
+    return variables;
+  }
+
+  // Parse string variables to json
+  try {
+    return JSON.parse(variables);
+  } catch (e) {
+    //  allow empty variables (if none set)
+    if (variables === "") {
+      return {};
+    }
+    // variables is not valid json
+    else {
+      return null;
+    }
+  }
+}
+
+// Fetcher
+const fetcher = async (url, { token, query, variables }) => {
+  const parsedVariables = parseVariables(variables);
+
+  // variables is not valid json
+  if (!parsedVariables) {
+    return {};
+  }
+
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -12,7 +42,7 @@ const fetcherHest = async (url, { token, query, variables }) => {
     },
     body: JSON.stringify({
       query,
-      variables,
+      variables: parsedVariables,
     }),
   });
 
@@ -30,13 +60,11 @@ export default function useComplexity({ token, query, variables }) {
 
   const { data, error } = useSWR(
     [url, params],
-    (url, params) => fetcherHest(url, params),
+    (url, params) => fetcher(url, params),
     {
       fallback: {},
     }
   );
-
-  console.log({ data, error });
 
   return (
     {

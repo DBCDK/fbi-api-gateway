@@ -4,34 +4,43 @@ import styles from "./Circle.module.css";
 
 /**
  *
- * @param {*} param0
+ * @param {object} params
+ * @param {int} params.timer current progress time
+ * @param {int} params.limit max limit
+ * @param {object} params.states state settings
  * @returns
  */
-function getStateColor({ value, states }) {
-  const sorted = Object.fromEntries(Object.entries(states).sort());
+function getStateColor({ timer, limit, states }) {
+  // Percentage of limit
+  const percentage = Math.round((timer / limit) * 100);
 
+  const sorted = Object.fromEntries(Object.entries(states).sort());
   let color;
   Object.entries(sorted).forEach(([k, v]) => {
-    if (k <= value) {
-      color = v;
+    if (k <= percentage) {
+      color = v.color;
     }
   });
-
   return color;
 }
 
 /**
  *
- * @param {*} param0
+ * @param {object} params
+ * @param {int} params.value target value
+ * @param {int} params.limit max limit
+ * @param {int} params.speed interval speed
+ * @param {object} params.states state settings
+ * @param {any} params.className target value
  * @returns
  */
 
 export default function Circle({
   value = null,
   limit = 360,
-  speed = 1,
+  speed = 100,
   states = {
-    0: "var(--primary)",
+    0: { color: "var(--primary)" },
   },
   className = "",
 }) {
@@ -40,15 +49,13 @@ export default function Circle({
   const interval = useRef();
 
   useEffect(() => {
-    console.log("effect 1", { timer, value, direction });
-
     function handleTimer() {
       interval.current = setInterval(() => {
-        const hest = Math.round(value / 100) || 1;
-
-        console.log("hest", hest);
-
-        setTimer((count) => (timer < value ? count + hest : count - hest));
+        // calc distance between start/stop
+        const dist = Math.abs(value - timer);
+        // acc is used for accelerating on long distance between start/stop
+        const acc = Math.round(dist / 100) || 1;
+        setTimer((count) => (timer < value ? count + acc : count - acc));
       }, speed);
     }
 
@@ -59,16 +66,15 @@ export default function Circle({
       setDirection(timer < value ? "ADD" : "SUB");
       handleTimer();
     }
-    // reset timer
+    // reset timer if given value is undefined
     else {
       setTimer(0);
     }
   }, [value]);
 
   useEffect(() => {
-    console.log("effect 2", { timer, value, direction });
-
     if (interval.current) {
+      // adds or substracts depending on direction
       const done =
         (direction === "ADD" && timer >= value) ||
         (direction === "SUB" && timer <= value);
@@ -81,18 +87,15 @@ export default function Circle({
   }, [timer]);
 
   // Set error on missing value
-  const ERR = !value && "😵‍💫";
+  const ERR = !value && "...";
 
   const errorClass = !!ERR ? styles.err : "";
 
   // Progress degress
   const deg = (timer / 1000) * 360;
 
-  // Percentage of limit
-  const percentage = Math.round((timer / limit) * 100);
-
-  // custom class
-  const color = getStateColor({ value: percentage, states });
+  // Custom class
+  const color = getStateColor({ timer, limit, states });
 
   // Set inline dynamic style
   const objStyles = {
