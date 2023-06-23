@@ -51,6 +51,10 @@ export function validateComplexity({ query, variables }) {
     estimators: [customFieldEstimator],
     maximumComplexity: config.query.maxComplexity,
     variables,
+    createError: (max, actual) =>
+      new GraphQLError(
+        `Query is too complex: ${actual}. Maximum allowed complexity: ${max}`
+      ),
     onComplete: (complexity) => {
       if (complexity > config.query.maxComplexity) {
         log.error("Query exceeded complexity limit", {
@@ -92,6 +96,10 @@ export function getQueryComplexity({ query, variables, schema }) {
       schema,
       query: parse(query),
       variables,
+      createError: (max, actual) =>
+        new GraphQLError(
+          `Query is too complex: ${actual}. Maximum allowed complexity: ${max}`
+        ),
     });
   } catch (e) {
     // Log error in case complexity cannot be calculated (invalid query, misconfiguration, etc.)

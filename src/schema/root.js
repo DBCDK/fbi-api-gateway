@@ -37,7 +37,7 @@ type Query {
   works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust"])
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
-  linkCheck: LinkCheckService!
+  linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
 
   localSuggest(
     """
@@ -51,7 +51,7 @@ type Query {
     """
     Number of items to return
     """
-    limit: Int
+    limit: Int 
     """
     Id of branch to filter by
     """
@@ -72,25 +72,25 @@ type Query {
     Number of items to return
     """
     limit: Int
-  ): SuggestResponse! @complexity(value: 2, multipliers: ["limit"])
+  ): SuggestResponse! @complexity(value: 3, multipliers: ["limit"])
 
   """
   Get recommendations
   """
-  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 2, multipliers: ["limit"])
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
 
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult!
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult! @complexity(value: 5, multipliers: ["limit"])
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomedia(id: String!): InfomediaResponse!
   session: Session
   howru:String
-  localizations(pids:[String!]!):Localizations
+  localizations(pids:[String!]!): Localizations @complexity(value: 50, multipliers: ["pids"])
   refWorks(pid:String!):String!
   ris(pid:String!):String!
-  relatedSubjects(q:[String!]!, limit:Int ):[String!]
-  inspiration(language: LanguageCode, limit: Int): Inspiration!
+  relatedSubjects(q:[String!]!, limit:Int ):[String!] @complexity(value: 3, multipliers: ["q, limit"])
+  inspiration(language: LanguageCode, limit: Int): Inspiration! @complexity(value: 5, multipliers: ["limit"])
 }
 
 type Mutation {
