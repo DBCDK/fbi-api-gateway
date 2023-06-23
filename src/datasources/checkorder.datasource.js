@@ -20,3 +20,20 @@ export async function load({ pid, pickupBranch, accessToken }, context) {
 
   return policy?.body || null;
 }
+
+/**
+ * The status function
+ *
+ * @throws Will throw error if service is down
+ */
+
+// export async function status(loadFunc) {
+//   await loadFunc({pid: "870970-basis:51877330", pickupBranch: "710100"});
+// }
+
+export const options = {
+  redis: {
+    prefix: "checkorder-1",
+    ttl: 5,
+  },
+};
