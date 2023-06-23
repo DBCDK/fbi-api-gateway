@@ -746,6 +746,11 @@ export const resolvers = {
       return IDENTIFIER_TYPES.has(parent.type) ? parent.type : "NOT_SPECIFIED";
     },
   },
+  ManifestationParts: {
+    parts(parent) {
+      return parent?.parts?.filter((part) => !Object.hasOwn(part.title, "forSearchIndexOnly"))
+    }
+  },
   ManifestationPart: {
     title(parent) {
       return parent?.title?.display || "";

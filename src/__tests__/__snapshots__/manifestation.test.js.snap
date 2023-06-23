@@ -217,6 +217,24 @@ Object {
             "subjects": null,
             "title": "Dummy Bouquet royal",
           },
+          Object {
+            "classifications": Array [
+              Object {
+                "code": "Dummy 88.424",
+              },
+            ],
+            "creators": Array [
+              Object {
+                "display": "Dummy A. C. Handerson",
+              },
+            ],
+            "creatorsFromDescription": Array [
+              "Dummy arr.: Don Alderson Drumf",
+            ],
+            "playingTime": "Dummy long playing time",
+            "subjects": null,
+            "title": "Dummy Banker Loyal",
+          },
         ],
         "type": "MUSIC_TRACKS",
       },
