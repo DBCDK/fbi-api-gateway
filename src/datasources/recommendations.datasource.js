@@ -18,16 +18,14 @@ export async function load({ pid, limit = 10, profile, branchId }, context) {
     body.branchid = branchId;
   }
 
-  console.log("fffffffffffff", JSON.stringify(body));
-
   return (
     await context.fetch(url, { method: "POST", body: JSON.stringify(body) })
   ).body;
 }
 
-// export const options = {
-//   redis: {
-//     prefix,
-//     ttl,
-//   },
-// };
+export const options = {
+  redis: {
+    prefix,
+    ttl,
+  },
+};

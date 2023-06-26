@@ -18,8 +18,6 @@ import {
 import Progress from "@/components/base/progress";
 import { ComplexityTable } from "@/components/complexity";
 
-console.log(ComplexityTable);
-
 import Header from "@/components/header";
 import Menu from "@/components/menu";
 
