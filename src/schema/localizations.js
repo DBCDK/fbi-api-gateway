@@ -4,11 +4,11 @@
 export const typeDef = `
 type Localizations {
   count: Int
-  agencies: [holdingAgency] @complexity(value: 50)
+  agencies: [holdingAgency]
 }
 type holdingAgency{
   agencyId: String
-  holdingItems: [holdingsItem] @complexity(value: 50)
+  holdingItems: [holdingsItem]
 }
 type holdingsItem {
   localizationPid: String

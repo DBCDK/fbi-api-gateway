@@ -86,11 +86,11 @@ type Query {
   infomedia(id: String!): InfomediaResponse!
   session: Session
   howru:String
-  localizations(pids:[String!]!): Localizations @complexity(value: 50, multipliers: ["pids"])
+  localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
   refWorks(pid:String!):String!
   ris(pid:String!):String!
-  relatedSubjects(q:[String!]!, limit:Int ):[String!] @complexity(value: 3, multipliers: ["q, limit"])
-  inspiration(language: LanguageCode, limit: Int): Inspiration! @complexity(value: 5, multipliers: ["limit"])
+  relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
+  inspiration(language: LanguageCode, limit: Int): Inspiration! 
 }
 
 type Mutation {

@@ -602,7 +602,7 @@ type Manifestation {
   """
   The work that this manifestation is part of
   """
-  ownerWork: Work!
+  ownerWork: Work! @complexity(value: 5)
 
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals

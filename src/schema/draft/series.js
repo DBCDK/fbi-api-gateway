@@ -33,7 +33,7 @@ type SerieWork {
   """
   Work of a serieWork
   """
-  work: Work!
+  work: Work! @complexity(value: 5)
   
   """
   Information about whether this work in the series should be read first
