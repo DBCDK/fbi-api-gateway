@@ -81,13 +81,6 @@ promExporterApp.listen(9599, () => {
         );
       }
 
-      if (!req.isIntrospectionQuery) {
-        console.log("..............", {
-          queryComplexity: req.queryComplexity,
-          // isIntrospectionQuery: req.isIntrospectionQuery,
-        });
-      }
-
       const userAgent = req.get("User-Agent");
 
       const accessTokenHash = createHash(req.accessToken);

@@ -27,8 +27,6 @@ import Header from "@/components/header";
 import styles from "./GraphiQL.module.css";
 
 export function ComplexityButton({ value, limit, className }) {
-  console.log("value", value);
-
   return (
     <span className={`${styles.complexity} ${className}`}>
       <ToolbarButton className={styles.button} label="Query complexity">

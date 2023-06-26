@@ -15,6 +15,11 @@ import {
   Changelog,
 } from "@/components/deprecation";
 
+import Progress from "@/components/base/progress";
+import { ComplexityTable } from "@/components/complexity";
+
+console.log(ComplexityTable);
+
 import Header from "@/components/header";
 import Menu from "@/components/menu";
 
@@ -26,6 +31,8 @@ const customComponents = {
   DeprecationBorder,
   DeprecationTitle,
   Changelog,
+  Progress,
+  ComplexityTable,
 };
 
 export default function Docs() {

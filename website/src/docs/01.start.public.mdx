@@ -62,6 +62,29 @@ Press `CTRL+SPACE` to autocomplete inside GraphiQL.
 Another tool that we included is _Voyager_, which gives a bird's-eye view of the
 GraphQL schema. See how different types are connected and zoom in for more details.
 
+## Query complexity
+
+When making an API request for data, a complexity value will be computed by considering the query fields.
+Certain fields have a higher cost associated with querying them compared to others.
+
+Queries with a complexity value _below 500_ will be classified as simple queries, while those _above 500_ will be considered complex queries.
+
+If the complexity value of the query surpasses _1000_, the query will be **rejected**.
+
+A visualization of the measured query complexity can be found in the bottom right corner of the graphiql query editor.
+This visualization live updates as the query changes, giving the developer an idea of the query costs.
+
+>         <Progress.Circle
+>          value={650}
+>          limit={1000}
+>          speed={10}
+>          states={{
+>            0: { color: "var(--success-dark)" },
+>            50: { color: "var(--warning-dark)" },
+>            100: { color: "var(--error)" },
+>          }}
+>        />
+
 ## Deprecation
 
 FBI-API is a versionless API, which enables the continuous addition of new types and fields to the API. However, this also means that data models can change, and fields can be renamed, moved, or removed, resulting in breaking changes.
