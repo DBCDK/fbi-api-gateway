@@ -1,5 +1,5 @@
 import { log } from "dbc-node-logger";
-import { parse } from "graphql";
+import { parse, GraphQLError } from "graphql";
 
 import queryComplexity, {
   getComplexity,
@@ -8,6 +8,8 @@ import queryComplexity, {
 } from "graphql-query-complexity";
 
 import config from "../config";
+
+// THIS WILL BE DEPRECATED IN FUTURE
 
 /**
  * A custom field estimator
@@ -46,15 +48,59 @@ function customFieldEstimator({ field, childComplexity }) {
  * @param {string} params.query
  * @param {object} params.variables
  */
+
+const OLD_BUT_STILL_USED_MAX_COMPLEXITY = 100000;
+
 export function validateComplexity({ query, variables }) {
   return queryComplexity({
-    estimators: [customFieldEstimator],
-    maximumComplexity: config.query.maxComplexity,
+    estimators: [
+      // directiveEstimator(),
+      // simpleEstimator({
+      //   defaultComplexity: 1,
+      // }),
+      customFieldEstimator,
+    ],
+    maximumComplexity: OLD_BUT_STILL_USED_MAX_COMPLEXITY,
     variables,
-    createError: (max, actual) =>
-      new GraphQLError(
+    onComplete: (complexity) => {
+      if (complexity > OLD_BUT_STILL_USED_MAX_COMPLEXITY) {
+        log.error("Query exceeded complexity limit", {
+          complexity,
+          query,
+          maxComplexity: OLD_BUT_STILL_USED_MAX_COMPLEXITY,
+        });
+      }
+    },
+  });
+}
+
+// THIS WILL BE DEPRECATED IN FUTURE - END
+
+/**
+ * Function to build the content for the estimator functions
+ *
+ * @param {*} params.query
+ * @param {*} params.variables
+ * @param {object} params.schema
+ * @returns {object}
+ */
+export function buildQueryComplexity({ schema, query, variables }) {
+  return {
+    estimators: [
+      directiveEstimator(),
+      simpleEstimator({
+        defaultComplexity: 1,
+      }),
+    ],
+    schema,
+    maximumComplexity: config.query.maxComplexity,
+    query: parse(query),
+    variables,
+    createError: (max, actual) => {
+      return new GraphQLError(
         `Query is too complex: ${actual}. Maximum allowed complexity: ${max}`
-      ),
+      );
+    },
     onComplete: (complexity) => {
       if (complexity > config.query.maxComplexity) {
         log.error("Query exceeded complexity limit", {
@@ -64,7 +110,7 @@ export function validateComplexity({ query, variables }) {
         });
       }
     },
-  });
+  };
 }
 
 // function customEstimator({
@@ -77,30 +123,35 @@ export function validateComplexity({ query, variables }) {
 // }) {}
 
 /**
+ * Future complexity estimator (returns validation function)
  *
  * @param {*} params.query
  * @param {*} params.variables
  * @param {object} params.schema
+ * @returns {funciton}
  */
 
-export function getQueryComplexity({ query, variables, schema }) {
+export function validateQueryComplexity(params) {
   try {
-    return getComplexity({
-      estimators: [
-        directiveEstimator(),
-        // customEstimator,
-        simpleEstimator({
-          defaultComplexity: 1,
-        }),
-      ],
-      schema,
-      query: parse(query),
-      variables,
-      createError: (max, actual) =>
-        new GraphQLError(
-          `Query is too complex: ${actual}. Maximum allowed complexity: ${max}`
-        ),
-    });
+    return queryComplexity(buildQueryComplexity(params));
+  } catch (e) {
+    // Log error in case complexity cannot be calculated (invalid query, misconfiguration, etc.)
+    console.error("Could not calculate complexity", e.message);
+  }
+}
+
+/**
+ * Future complexity estimator (returns complexity value)
+ *
+ * @param {*} params.query
+ * @param {*} params.variables
+ * @param {object} params.schema
+ * @returns {int}
+ */
+
+export function getQueryComplexity(params) {
+  try {
+    return getComplexity(buildQueryComplexity(params));
   } catch (e) {
     // Log error in case complexity cannot be calculated (invalid query, misconfiguration, etc.)
     console.error("Could not calculate complexity", e.message);

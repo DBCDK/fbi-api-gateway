@@ -226,6 +226,10 @@ promExporterApp.listen(9599, () => {
     const handler = createHandler({
       schema,
       validationRules: [validateComplexity({ query, variables })],
+      formatError: (err) => {
+        console.log("format error");
+        return err;
+      },
       context: req,
     });
 
