@@ -206,6 +206,11 @@ type ManifestationPart {
   creatorsFromDescription: [String!]!
   
   """
+  Contributors from description - additional contributor to this entry
+  """
+  contributorsFromDescription: [String!]!
+  
+  """
   The playing time for this specific part (i.e. the duration of a music track) 
   """
   playingTime: String
@@ -741,6 +746,11 @@ export const resolvers = {
     type(parent) {
       return IDENTIFIER_TYPES.has(parent.type) ? parent.type : "NOT_SPECIFIED";
     },
+  },
+  ManifestationParts: {
+    parts(parent) {
+      return parent?.parts?.filter((part) => !Object.hasOwn(part.title, "forSearchIndexOnly"))
+    }
   },
   ManifestationPart: {
     title(parent) {

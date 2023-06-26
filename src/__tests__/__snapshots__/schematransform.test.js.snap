@@ -428,6 +428,9 @@ type ManifestationPart {
   \\"\\"\\"
   creatorsFromDescription: [String!]!
 
+  \\"\\"\\"Contributors from description - additional contributor to this entry\\"\\"\\"
+  contributorsFromDescription: [String!]!
+
   \\"\\"\\"
   The playing time for this specific part (i.e. the duration of a music track) 
   \\"\\"\\"
@@ -1475,7 +1478,7 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
-  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]!
+  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
   linkCheck: LinkCheckService!
@@ -2006,6 +2009,9 @@ type ManifestationPart {
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
   \\"\\"\\"
   creatorsFromDescription: [String!]!
+
+  \\"\\"\\"Contributors from description - additional contributor to this entry\\"\\"\\"
+  contributorsFromDescription: [String!]!
 
   \\"\\"\\"
   The playing time for this specific part (i.e. the duration of a music track) 

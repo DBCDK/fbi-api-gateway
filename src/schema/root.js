@@ -34,7 +34,7 @@ type Query {
   monitor(name: String!): String!
   user: User
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
-  works(id: [String!], faust: [String!], pid: [String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust"])
+  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
@@ -204,6 +204,10 @@ export const resolvers = {
       } else if (args.pid) {
         return Promise.all(
           args.pid.map((pid) => resolveWork({ pid }, context))
+        );
+      } else if (args.oclc) {
+        return Promise.all(
+          args.oclc.map((oclc) => resolveWork({ oclc }, context))
         );
       }
       return [];
