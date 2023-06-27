@@ -1,0 +1,47 @@
+[
+  {
+    "field": "Work",
+    "value": "5",
+    "multipliers": "..."
+  },
+  {
+    "field": "Work.seriesMembers",
+    "value": "5",
+    "multipliers": "..."
+  },
+  {
+    "field": "SerieWork.work",
+    "value": "5",
+    "multipliers": "..."
+  },
+  {
+    "field": "Works",
+    "value": "5",
+    "multipliers": "id, pid, faust"
+  },
+  {
+    "field": "Manifestaion",
+    "value": "3",
+    "multipliers": "..."
+  },
+  {
+    "field": "Manifestaion.ownerWork",
+    "value": "5",
+    "multipliers": "..."
+  },
+  {
+    "field": "Manifestaions",
+    "value": "3",
+    "multipliers": "pid, faust"
+  },
+  {
+    "field": "Suggest",
+    "value": "3",
+    "multipliers": "limit"
+  },
+  {
+    "field": "Suggest.work",
+    "value": "5",
+    "multipliers": "..."
+  }
+]

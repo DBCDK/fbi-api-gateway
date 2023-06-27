@@ -1,7 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`default schema transform 1`] = `
-"\\"\\"\\"
+"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
+
+\\"\\"\\"
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the \`date-time\` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 \\"\\"\\"
 scalar DateTime
@@ -1635,7 +1638,10 @@ type DidYouMean {
 `;
 
 exports[`limited access to root fields 1`] = `
-"type HelpRow {
+"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
+
+type HelpRow {
   nid: Int!
   group: String!
   orgTitle: String!
@@ -1659,7 +1665,10 @@ type Query {
 `;
 
 exports[`remove all fields by type 1`] = `
-"enum AccessTypeCode {
+"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
+
+enum AccessTypeCode {
   PHYSICAL
   ONLINE
   NOT_SPECIFIED @deprecated

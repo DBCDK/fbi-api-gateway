@@ -8,17 +8,17 @@ import { resolveWork, resolveManifestation } from "../utils/utils";
 export const typeDef = `
   type Category {
     title: String!
-    result(limit: Int): [CategoryResult!]!
+    result(limit: Int): [CategoryResult!]! @complexity(value: 5, multipliers: ["limit"])
   }
 
   type CategoryResult {
-    work: Work!
-    manifestation: Manifestation!
+    work: Work! 
+    manifestation: Manifestation! 
   }
 
   type Categories {
       category: String!
-      subCategories: [Category!]!
+      subCategories: [Category!]! 
   }`;
 
 export const resolvers = {

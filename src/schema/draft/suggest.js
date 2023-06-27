@@ -21,7 +21,7 @@ type Suggestion {
   """
   A work related to the term
   """
-  work: Work
+  work: Work @complexity(value: 5)
 }
 type SuggestResponse {
   result: [Suggestion!]!

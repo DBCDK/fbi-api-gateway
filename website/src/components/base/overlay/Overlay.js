@@ -8,12 +8,13 @@ export default function Overlay({
   show = false,
   container,
   children,
+  placement = "bottom",
 }) {
   return (
     <_Overlay
       show={show}
       target={container?.current}
-      placement="bottom"
+      placement={placement}
       containerPadding={20}
     >
       <_Popover

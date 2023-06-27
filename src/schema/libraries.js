@@ -41,14 +41,14 @@ export const typeDef = `
     postalAddress: String
     postalCode: String
     userParameters: [UserParameter!]!
-    orderPolicy(pid:String!): CheckOrderPolicy
+    orderPolicy(pid:String!): CheckOrderPolicy @complexity(value: 5)
     city: String
     pickupAllowed: Boolean!
     highlights: [Highlight!]!
     infomediaAccess: Boolean!
     digitalCopyAccess: Boolean!
     userStatusUrl: String
-    holdingStatus(pids:[String]): DetailedHoldings
+    holdingStatus(pids:[String]): DetailedHoldings @complexity(value: 5, multipliers: ["pids"])
     branchWebsiteUrl: String
     branchCatalogueUrl: String
     lookupUrl: String
