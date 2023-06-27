@@ -23,7 +23,7 @@ export const typeDef = `
   }
 
  type Inspiration {
-   categories(filter: [CategoryFilter!]): [Categories]! 
+   categories(filter: [CategoryFilter!]): [Categories]!
  }`;
 
 const mapKeys = {

@@ -77,13 +77,18 @@ This visualization live updates as the query changes, giving the developer an id
 >         <Progress.Circle
 >          value={650}
 >          limit={1000}
->          speed={10}
+>          speed={250}
 >          states={{
 >            0: { color: "var(--success-dark)" },
 >            50: { color: "var(--warning-dark)" },
 >            100: { color: "var(--error)" },
 >          }}
 >        />
+
+The complexity value can be reduced by minimizing the amount of data requested. One approach is to set a lower limit, which can be achieved by implementing pagination/offset functionality.
+
+Other complexity reducements can be attained by breaking down requests to the API into parallel requests and merging the responses on the client-side.
+Lazy loading is also an effective method, which defers content loading until necessary, improving performance and reducing initial load times.
 
 ## Deprecation
 

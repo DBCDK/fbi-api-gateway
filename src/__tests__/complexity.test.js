@@ -1,3 +1,8 @@
+/**
+ * @file This file tests the complexity estimator function, which is evaluated in in graphql validator
+ *
+ */
+
 import { parse } from "graphql/language";
 import { validate } from "graphql/validation";
 

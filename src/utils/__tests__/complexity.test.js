@@ -1,3 +1,8 @@
+/**
+ * @file This file tests the complexity estimator function, which returns a complexity value as an integer (real-time)
+ *
+ */
+
 import { getExecutableSchema } from "../../schemaLoader";
 import { getQueryComplexity } from "../complexity";
 

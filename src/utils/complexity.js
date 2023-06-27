@@ -9,7 +9,14 @@ import queryComplexity, {
 
 import config from "../config";
 
-// THIS WILL BE DEPRECATED IN FUTURE
+// START OF BLOCK
+
+/*
+  This block of code can be removed when the new validateQueryComplexity function 
+  is fully integrated in FBI-API. This means that the complexity test period is over 
+  (Where complexity is only logged and all complexity values is adjustet)
+  and FBI-API now has SLA measures. 
+*/
 
 /**
  * A custom field estimator
@@ -53,13 +60,7 @@ const OLD_BUT_STILL_USED_MAX_COMPLEXITY = 100000;
 
 export function validateComplexity({ query, variables }) {
   return queryComplexity({
-    estimators: [
-      // directiveEstimator(),
-      // simpleEstimator({
-      //   defaultComplexity: 1,
-      // }),
-      customFieldEstimator,
-    ],
+    estimators: [customFieldEstimator],
     maximumComplexity: OLD_BUT_STILL_USED_MAX_COMPLEXITY,
     variables,
     onComplete: (complexity) => {
@@ -74,7 +75,7 @@ export function validateComplexity({ query, variables }) {
   });
 }
 
-// THIS WILL BE DEPRECATED IN FUTURE - END
+// END OF BLOCK
 
 /**
  * Function to build the content for the estimator functions
@@ -112,15 +113,6 @@ export function buildQueryComplexity({ schema, query, variables }) {
     },
   };
 }
-
-// function customEstimator({
-//   type,
-//   field,
-//   node,
-//   args,
-//   childComplexity,
-//   context,
-// }) {}
 
 /**
  * Future complexity estimator (returns validation function)
