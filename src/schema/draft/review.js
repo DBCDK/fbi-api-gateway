@@ -156,7 +156,7 @@ extend type Work {
   """
   The new reviews
   """
-  workReviews: [WorkReview!]!
+  workReviews: [WorkReview!]! @deprecated(reason: "Use 'Work.relations.hasReview' instead")
 }
 
 

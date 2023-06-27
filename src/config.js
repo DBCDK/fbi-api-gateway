@@ -102,7 +102,8 @@ export default {
       prefix: process.env.MOREINFO_PREFIX || "moreinfo-2",
     },
     openuserstatus: {
-      url: process.env.OPENUSERSTATUS_URL,
+      url:
+        process.env.OPENUSERSTATUS_URL || "https://openuserstatus.addi.dk/2.0/",
     },
     openorder: {
       url: process.env.OPENORDER_URL,

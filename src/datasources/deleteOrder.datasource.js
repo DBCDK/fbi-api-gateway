@@ -68,6 +68,8 @@ export async function load(
     body: soap,
   });
 
+  console.log("#################################", { res });
+
   return {
     error:
       res.body?.cancelOrderResponse?.cancelOrderStatus?.[0]?.cancelOrderError
