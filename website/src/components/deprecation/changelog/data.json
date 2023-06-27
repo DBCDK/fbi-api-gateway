@@ -20,7 +20,7 @@
   {
     "field": "Work.seriesMembers",
     "reason": "Replaced by Work.series.members",
-    "deprecated": "01/06-2023",
-    "expired": "01/09-2023"
+    "deprecated": "01/07-2023",
+    "expired": "01/10-2023"
   }
 ]

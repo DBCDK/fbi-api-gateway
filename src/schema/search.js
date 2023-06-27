@@ -49,7 +49,6 @@ The supported facet fields
 enum FacetField {
   workTypes
   mainLanguages
-  materialTypes @deprecated(reason: "Use 'FacetField.materialTypesSpecific'")
   materialTypesGeneral
   materialTypesSpecific 
   fictionalCharacters
@@ -73,7 +72,6 @@ input SearchFilters {
   fictionalCharacters: [String!]
   genreAndForm: [String!]
   mainLanguages: [String!]
-  materialTypes: [String!] @deprecated(reason: "Use 'SearchFilters.materialTypesSpecific'")
   materialTypesGeneral: [String!]
   materialTypesSpecific: [String!]
   subjects: [String!]

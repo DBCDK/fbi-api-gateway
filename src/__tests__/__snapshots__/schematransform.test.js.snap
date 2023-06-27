@@ -951,7 +951,6 @@ type Relations {
 type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
-  reviews: [Review!]! @deprecated(reason: \\"Use 'Work.relations.hasReview'\\")
 
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
@@ -980,7 +979,7 @@ type Work {
   series: [Series!]!
 
   \\"\\"\\"Members of a series that this work is part of\\"\\"\\"
-  seriesMembers: [Work!]!
+  seriesMembers: [Work!]! @deprecated(reason: \\"Use 'Work.series.members' instead\\")
 
   \\"\\"\\"
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
@@ -1004,64 +1003,6 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
-}
-
-enum LibrariansReviewSectionCode {
-  ALL
-  ABOUT
-  DESCRIPTION
-  EVALUATION
-  OTHER
-  LIBRARY
-  USE
-  OLDDESCRIPTION
-  COMPARE
-  CONCLUSION
-}
-
-type LibrariansReviewSection {
-  \\"\\"\\"a code indicating the content type of the section\\"\\"\\"
-  code: LibrariansReviewSectionCode!
-
-  \\"\\"\\"The heading of the section\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"A piece of text, maybe mentioning a work at the end.\\"\\"\\"
-  text: String!
-
-  \\"\\"\\"
-  The work the text is refering to. When work is null, the text does not refer to a work.
-  \\"\\"\\"
-  work: Work
-}
-
-interface Review {
-  author: String
-  date: String
-}
-
-type ExternalReview implements Review {
-  author: String
-  date: String
-  rating: String
-  urls: [AccessUrl!]!
-}
-
-type InfomediaReview implements Review {
-  author: String
-  date: String
-  origin: String
-  rating: String
-  id: String!
-}
-
-type LibrariansReview implements Review {
-  author: String
-  date: String
-  sections: [LibrariansReviewSection!]!
-
-  \\"\\"\\" This is a pid \\"\\"\\"
-  id: String!
 }
 
 enum ReviewElementType {
@@ -1538,7 +1479,6 @@ input SearchQuery {
 enum FacetField {
   workTypes
   mainLanguages
-  materialTypes @deprecated(reason: \\"Use 'FacetField.materialTypesSpecific'\\")
   materialTypesGeneral
   materialTypesSpecific
   fictionalCharacters
@@ -2504,7 +2444,6 @@ type Relations {
 type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
-  reviews: [Review!]! @deprecated(reason: \\"Use 'Work.relations.hasReview'\\")
 
   \\"\\"\\"The new reviews\\"\\"\\"
   workReviews: [WorkReview!]!
@@ -2536,7 +2475,7 @@ type Work {
   series: [Series!]!
 
   \\"\\"\\"Members of a series that this work is part of\\"\\"\\"
-  seriesMembers: [Work!]!
+  seriesMembers: [Work!]! @deprecated(reason: \\"Use 'Work.series.members' instead\\")
 
   \\"\\"\\"
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
@@ -2589,35 +2528,6 @@ type LibrariansReviewSection {
   The work the text is refering to. When work is null, the text does not refer to a work.
   \\"\\"\\"
   work: Work
-}
-
-interface Review {
-  author: String
-  date: String
-}
-
-type ExternalReview implements Review {
-  author: String
-  date: String
-  rating: String
-  urls: [AccessUrl!]!
-}
-
-type InfomediaReview implements Review {
-  author: String
-  date: String
-  origin: String
-  rating: String
-  id: String!
-}
-
-type LibrariansReview implements Review {
-  author: String
-  date: String
-  sections: [LibrariansReviewSection!]!
-
-  \\"\\"\\" This is a pid \\"\\"\\"
-  id: String!
 }
 
 type WorkReview {
