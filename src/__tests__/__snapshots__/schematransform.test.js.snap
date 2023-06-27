@@ -2455,7 +2455,7 @@ type Work {
   relations: Relations!
 
   \\"\\"\\"The new reviews\\"\\"\\"
-  workReviews: [WorkReview!]!
+  workReviews: [WorkReview!]! @deprecated(reason: \\"Use 'Work.relations.hasReview' instead\\")
 
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519

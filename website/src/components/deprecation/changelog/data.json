@@ -22,5 +22,11 @@
     "reason": "Replaced by Work.series.members",
     "deprecated": "01/07-2023",
     "expired": "01/10-2023"
+  },
+  {
+    "field": "Work.workReviews",
+    "reason": "Replaced by Work.relations.hasReview",
+    "deprecated": "01/07-2023",
+    "expired": "01/10-2023"
   }
 ]
