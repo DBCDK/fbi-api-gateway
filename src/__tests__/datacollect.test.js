@@ -1,9 +1,5 @@
 import { graphql } from "graphql";
-import { validate } from "graphql/validation";
-import { parse } from "graphql/language";
 import { getExecutableSchema } from "../schemaLoader";
-import validateComplexity from "../utils/complexity";
-import { createMockedDataLoaders } from "../datasourceLoader";
 
 let internalSchema;
 

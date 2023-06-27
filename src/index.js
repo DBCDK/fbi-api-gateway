@@ -19,7 +19,10 @@ import { parse, getOperationAST } from "graphql";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration } from "./utils/monitor";
-import { validateComplexity, getQueryComplexity } from "./utils/complexity";
+import {
+  validateQueryComplexity,
+  getQueryComplexity,
+} from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
 
 import { v4 as uuid } from "uuid";
@@ -225,7 +228,7 @@ promExporterApp.listen(9599, () => {
 
     const handler = createHandler({
       schema,
-      validationRules: [validateComplexity({ query, variables })],
+      validationRules: [validateQueryComplexity({ query, variables })],
       context: req,
     });
 
