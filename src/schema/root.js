@@ -78,7 +78,6 @@ type Query {
   Get recommendations
   """
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
-
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult! @complexity(value: 5, multipliers: ["limit"])
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
@@ -95,6 +94,23 @@ type Query {
 
 type Mutation {
   data_collect(input: DataCollectInput!): String!
+  deleteOrder(
+    """
+    id of the order to be deleted
+    """
+    orderId: String!
+
+    """
+    The agency where the order is placed.
+    """
+    agencyId: String!
+
+    """
+    If this is true, the order is not actually deleted (is useful when generating examples).
+    """
+    dryRun: Boolean
+    ): DeleteOrderResponse
+    
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
@@ -269,13 +285,6 @@ export const resolvers = {
     recommend(parent, args, context, info) {
       return args;
     },
-    async deleteOrder(parent, args, context, info) {
-      return await context.datasources.getLoader("deleteOrder").load({
-        orderId: args.orderId,
-        orderType: args.orderType,
-        accessToken: context.accessToken,
-      });
-    },
     async borchk(parent, args, context, info) {
       return context.datasources.getLoader("borchk").load({
         libraryCode: args.libraryCode,
@@ -325,6 +334,53 @@ export const resolvers = {
       log.info(JSON.stringify(data), { type: "data" });
 
       return "OK";
+    },
+    async deleteOrder(parent, args, context, info) {
+      // NOTE FOR FURTHER DEVELOPMENT
+      //
+      // When an order is placed, the order is not available in the local system
+      // immediately. It has to go through ORS. Therefore, the user is not able to
+      // delete the order before it has reached the local system.
+      //
+      // This is not a great user experience, if the user must wait hours until
+      // the order can be cancelled.
+      //
+      // BUT, hopefully we can use ORS-maintain to cancel the order as soon as
+      // it has been placed.
+      //
+      // It should probably be handled here as the UI should just make a single call,
+      // and not having to deal with the complexity of ORS and openUserStatus.
+
+      const { orderId, agencyId, dryRun } = args;
+
+      // Get user info
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      // Get user attributes for the agency
+      const agencyAttributes = userinfo?.attributes?.agencies?.find(
+        (attributes) => attributes.agencyId === agencyId
+      );
+
+      // We need the userId
+      const userId = agencyAttributes?.userId;
+
+      // If dryRyn is true, we will not actually delete the order
+      if (dryRun) {
+        return { deleted: true };
+      }
+
+      // Delete order in the local library system, via openUserStatus
+      const res = await context.datasources.getLoader("deleteOrder").load({
+        orderId,
+        agencyId,
+        userId,
+        smaug: context.smaug,
+        accessToken: context.accessToken,
+      });
+
+      return { deleted: !res.error, error: res.error };
     },
     async submitPeriodicaArticleOrder(parent, args, context, info) {
       let { userName, userMail } = args.input;
