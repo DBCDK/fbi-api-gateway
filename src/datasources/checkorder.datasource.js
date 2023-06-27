@@ -1,6 +1,6 @@
-const url =
-  "http://copa-rs.iscrum-ors-staging.svc.cloud.dbc.dk/copa-rs/api/v1/checkorderpolicy/";
-const serviceRequester = "190101";
+import config from "../config";
+
+const { serviceRequester, url, ttl, prefix } = config.datasources.openorder;
 
 export async function load({ pid, pickupBranch, accessToken }, context) {
   const post = {
@@ -9,7 +9,7 @@ export async function load({ pid, pickupBranch, accessToken }, context) {
     serviceRequester: serviceRequester,
   };
 
-  const policy = await context.fetch(url, {
+  const policy = await context.fetch(`${url}checkorderpolicy/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

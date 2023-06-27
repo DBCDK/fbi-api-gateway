@@ -5,7 +5,7 @@ type Recommendation {
   """
   The recommended work
   """
-  work: Work!
+  work: Work
 
   """
   The recommended manifestation
@@ -25,6 +25,8 @@ type RecommendationResponse {
 export const resolvers = {
   Recommendation: {
     work(parent, args, context, info) {
+      console.log(args, parent, "ARGS");
+
       return resolveWork({ id: parent.work }, context);
     },
     manifestation(parent, args, context, info) {
@@ -33,6 +35,8 @@ export const resolvers = {
   },
   RecommendationResponse: {
     async result(parent, args, context, info) {
+      console.log(parent, args, "PARENT ARGS");
+
       let pid;
       if (parent.pid) {
         pid = parent.pid;
@@ -55,6 +59,8 @@ export const resolvers = {
           branchId: parent.branchId,
         });
       if (recommendations?.response) {
+        console.log(recommendations.response);
+
         return recommendations.response;
       }
       return [];

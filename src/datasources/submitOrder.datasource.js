@@ -1,94 +1,12 @@
-import { orderBy, get } from "lodash";
-import request from "superagent";
-import { parseString, processors } from "xml2js";
-import { auditTrace, ACTIONS } from "@dbcdk/dbc-audittrail-logger";
 import config from "../config";
 
-const {
-  url,
-  authenticationUser,
-  authenticationGroup,
-  authenticationPassword,
-  serviceRequester,
-} = config.datasources.openorder;
+const { serviceRequester, url, ttl, prefix } = config.datasources.openorder;
 
-// Openorder is very strict when it comes to the order of parameters
-const paramOrder = [
-  "authentication",
-  "articleDirect",
-  "author",
-  "authorOfComponent",
-  "bibliographicCategory",
-  "callNumber",
-  "copy",
-  "edition",
-  "exactEdition",
-  "fullTextLink",
-  "fullTextLinkType",
-  "isbn",
-  "issn",
-  "issue",
-  "itemId",
-  "language",
-  "localHoldingsId",
-  "mediumType",
-  "needBeforeDate",
-  "orderId",
-  "orderSystem",
-  "pagination",
-  "pickUpAgencyId",
-  "pickUpAgencySubdivision",
-  "pid",
-  "placeOfPublication",
-  "publicationDate",
-  "publicationDateOfComponent",
-  "publisher",
-  "requesterId",
-  "requesterNote",
-  "responderId",
-  "seriesTitelNumber",
-  "serviceRequester",
-  "title",
-  "titleOfComponent",
-  "trackingId",
-  "userAddress",
-  "userAgencyId",
-  "userDateOfBirth",
-  "userId",
-  "userIdAuthenticated",
-  "userIdType",
-  "userMail",
-  "userName",
-  "userReferenceSource",
-  "userTelephone",
-  "verificationReferenceSource",
-  "volume",
-  "outputType",
-  "callback",
-].reduce((obj, key, index) => ({ ...obj, [key]: index }), {});
-
-/**
- * Constructs soap request to perform placeOrder request
- * @param {array} parameters
- * @returns {string} soap request string
- */
-function constructSoap(parameters) {
-  let soap = `<SOAP-ENV:Envelope xmlns="http://oss.dbc.dk/ns/openorder" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-     <SOAP-ENV:Body>
-        <placeOrderRequest>
-           <authentication>
-              <groupIdAut>${authenticationGroup}</groupIdAut>
-              <passwordAut>${authenticationPassword}</passwordAut>
-              <userIdAut>${authenticationUser}</userIdAut>
-           </authentication>
-           ${parameters
-             .map(({ key, val }) => `<${key}>${val}</${key}>`)
-             .join("\n           ")}
-         </placeOrderRequest>
-      </SOAP-ENV:Body>
-    </SOAP-ENV:Envelope>`;
-  return soap;
-}
+/*
+const url =
+  "http://copa-rs.iscrum-ors-staging.svc.cloud.dbc.dk/copa-rs/api/v1/checkorderpolicy/";
+const serviceRequester = "190101";
+*/
 
 /**
  * Creates date three months in the future. Used if a date is not provided
@@ -103,26 +21,13 @@ function createNeedBeforeDate() {
   return dateStr;
 }
 
-async function postSoap(soap, context) {
-  const res = await context?.fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/xml",
-    },
-    body: soap,
-  });
-
-  return res.body;
-}
-
 /**
- * Converts input to a valid openorder request
- * Will also
- * @param {object} input
- * @param {func} postSoapFunc
- * @returns
+ *
+ * @param input
+ * @param context
+ * @returns {{[p: number]: [string, unknown], shift(): ([string, unknown] | undefined), pid: *, authorOfComponent: (string|*), serviceRequester: string, slice(start?: number, end?: number): [string, unknown][], find: {<S extends [string, unknown]>(predicate: (this:void, value: [string, unknown], index: number, obj: [string, unknown][]) => value is S, thisArg?: any): (S | undefined), (predicate: (value: [string, unknown], index: number, obj: [string, unknown][]) => unknown, thisArg?: any): ([string, unknown] | undefined)}, join(separator?: string): string, copyWithin(target: number, start: number, end?: number): this, indexOf(searchElement: [string, unknown], fromIndex?: number): number, needBeforeDate: string, reduce: {(callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown]): [string, unknown], (callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown], initialValue: [string, unknown]): [string, unknown], <U>(callbackfn: (previousValue: U, currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => U, initialValue: U): U}, titleOfComponent: (string|*), author: *, concat: {(...items: ConcatArray<[string, unknown]>): [string, unknown][], (...items: ConcatArray<[string, unknown]> | [string, unknown][]): [string, unknown][]}, sort(compareFn?: (a: [string, unknown], b: [string, unknown]) => number): this, fill(value: [string, unknown], start?: number, end?: number): this, push(...items: [string, unknown]): number, [Symbol.unscopables](): {copyWithin: boolean, entries: boolean, fill: boolean, find: boolean, findIndex: boolean, keys: boolean, values: boolean}, volume: (string|number|*), entries(): IterableIterator<[number, [string, unknown]]>, toLocaleString(): string, some(predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => unknown, thisArg?: any): boolean, pagination: (string|*), keys(): IterableIterator<number>, values(): IterableIterator<[string, unknown]>, verificationReferenceSource: string, title, pop(): ([string, unknown] | undefined), copy: boolean, reduceRight: {(callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown]): [string, unknown], (callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown], initialValue: [string, unknown]): [string, unknown], <U>(callbackfn: (previousValue: U, currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => U, initialValue: U): U}, publicationDate, every: {<S extends [string, unknown]>(predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => value is S, thisArg?: any): this is S[], (predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => unknown, thisArg?: any): boolean}, map<U>(callbackfn: (value: [string, unknown], index: number, array: [string, unknown][]) => U, thisArg?: any): U[], splice: {(start: number, deleteCount?: number): [string, unknown][], (start: number, deleteCount: number, ...items: [string, unknown]): [string, unknown][]}, forEach(callbackfn: (value: [string, unknown], index: number, array: [string, unknown][]) => void, thisArg?: any): void, [Symbol.iterator](): IterableIterator<[string, unknown]>, length: number, orderSystem: (string|*), userIdAuthenticated: (*|boolean), reverse(): [string, unknown][], userId: (string|*), publicationDateOfComponent: (string|*), filter: {<S extends [string, unknown]>(predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => value is S, thisArg?: any): S[], (predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => unknown, thisArg?: any): [string, unknown][]}, findIndex(predicate: (value: [string, unknown], index: number, obj: [string, unknown][]) => unknown, thisArg?: any): number, lastIndexOf(searchElement: [string, unknown], fromIndex?: number): number, exactEdition: (boolean|*), toString(): string, unshift(...items: [string, unknown]): number, pickUpAgencyId: ((function(*, *, *, *): Promise<*>)|*|string|string)}}
  */
-export async function processRequest(input, postSoapFunc, context) {
+function setPost(input, context) {
   // If id is found the user is authenticated via some agency
   // otherwise the token is anonymous
   const userIdFromToken = input.smaug.user.id;
@@ -151,80 +56,63 @@ export async function processRequest(input, postSoapFunc, context) {
     ([key]) => !userIdTypes.includes(key)
   );
 
-  let parameters = [
-    ["copy", false],
-    ["exactEdition", input.exactEdition || false],
-    ["needBeforeDate", createNeedBeforeDate()],
-    ["orderSystem", input.smaug.orderSystem],
-    ["pickUpAgencyId", input.pickUpBranch],
-    ["author", input.author],
-    ["authorOfComponent", input.authorOfComponent],
-    ["pagination", input.pagination],
-    ["publicationDate", input.publicationDate],
-    ["publicationDateOfComponent", input.publicationDateOfComponent],
-    ["title", input.title],
-    ["titleOfComponent", input.titleOfComponent],
-    ["volume", input.volume],
-    ...input.pids.map((pid) => ["pid", pid]),
-    ["serviceRequester", serviceRequester],
-    ["userId", userId[1]],
-    ["userIdAuthenticated", userIdAuthenticated],
-    ...userParameters,
-    ["verificationReferenceSource", "dbcdatawell"],
-    ["outputType", "json"],
-  ]
-    .filter(([key, val]) => !!val)
-    .map(([key, val]) => ({ key, val, order: paramOrder[key] }));
+  // defaults
+  const postParameters = {
+    copy: false,
+    exactEdition: input.exactEdition || false,
+    needBeforeDate: createNeedBeforeDate(),
+    orderSystem: input.smaug.orderSystem,
+    pickUpAgencyId: input.pickUpBranch,
+    author: input.author,
+    authorOfComponent: input.authorOfComponent,
+    pagination: input.pagination,
+    publicationDate: input.publicationDate,
+    publicationDateOfComponent: input.publicationDateOfComponent,
+    title: input.title,
+    titleOfComponent: input.titleOfComponent,
+    volume: input.volume,
+    pid: input.pids.map((pid) => pid),
+    serviceRequester: serviceRequester,
+    userId: userId[1],
+    userIdAuthenticated: userIdAuthenticated,
+    ...input.userParameters,
+    verificationReferenceSource: "dbcdatawell",
+  };
 
-  parameters = orderBy(parameters, "order");
-
-  const soap = constructSoap(parameters);
-
-  const text = await postSoapFunc(soap, context);
-
-  let parsed;
-  parseString(
-    text,
-    { trim: true, tagNameProcessors: [processors.stripPrefix] },
-    function (err, result) {
-      parsed = {
-        orderId: get(
-          result,
-          "Envelope.Body[0].placeOrderResponse[0].orderPlaced[0].orderId[0]"
-        ),
-        status:
-          get(
-            result,
-            "Envelope.Body[0].placeOrderResponse[0].orderPlaced[0].orderPlacedMessage[0]"
-          ) ||
-          get(
-            result,
-            "Envelope.Body[0].placeOrderResponse[0].orderNotPlaced[0].placeOrderError[0]"
-          ),
-      };
-    }
+  // @TODO filter out empties
+  Object.keys(postParameters).forEach(
+    (k) => postParameters[k] == null && delete postParameters[k]
   );
 
-  auditTrace(
-    ACTIONS.write,
-    config.app.id,
-    input.smaug.app.ips,
-    {
-      login_token: input.accessToken,
-    },
-    `${userId[1]}/${input.branch.agencyId}`,
-    {
-      place_order: parsed.orderId,
-    }
-  );
-  return parsed;
+  return postParameters;
 }
 
-/**
- * Do the request
- * @param input
- * @return {Promise<*>}
- */
+const checkPost = (post) => {
+  //@TODO - more checks
+  return post != null;
+};
+
 export async function load(input, context) {
-  return await processRequest(input, postSoap, context);
+  console.log(input, "ORIGINAL INPUT");
+  console.log(input.accessToken, "ACCESSTOKEN");
+
+  const post = setPost(input, context);
+
+  if (!checkPost(post)) {
+    return null;
+  }
+
+  console.log(post, "POST");
+  const order = await context.fetch(`${url}placeorder/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${input.accessToken}`,
+    },
+    body: JSON.stringify(post),
+  });
+
+  console.log(order, "ORDER");
+
+  return order.body;
 }
