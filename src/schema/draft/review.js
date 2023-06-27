@@ -153,12 +153,10 @@ type PeriodicaReviewDetails {
 }
 
 extend type Work {
-  reviews: [Review!]! @deprecated(reason: "Use 'Work.relations.hasReview'")
-
   """
   The new reviews
   """
-  workReviews: [WorkReview!]!
+  workReviews: [WorkReview!]! @deprecated(reason: "Use 'Work.relations.hasReview' instead")
 }
 
 
@@ -424,11 +422,6 @@ export const resolvers = {
   Work: {
     workReviews(parent, args, context, info) {
       return resolveReviews(parent, context);
-    },
-    async reviews(parent, args, context, info) {
-      return (await resolveReviews(parent, context))?.filter(
-        (review) => review?.__typename
-      );
     },
   },
   ReviewElement: {

@@ -31,7 +31,7 @@ Object {
           ],
         },
         Object {
-          "name": "materialTypes",
+          "name": "materialTypesSpecific",
           "values": Array [
             Object {
               "score": 1148775,
