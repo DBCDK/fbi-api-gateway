@@ -483,10 +483,11 @@ type Audience {
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
-  all: [Manifestation!]!
-  bestRepresentation: Manifestation!
-  mostRelevant: [Manifestation!]!
+  all: [Manifestation!]! @complexity(value: 50)
+  bestRepresentation: Manifestation! 
+  mostRelevant: [Manifestation!]! @complexity(value: 25)
 }
+
 type Manifestation {
   """
   Unique identification of the manifestation e.g 870970-basis:54029519
@@ -606,7 +607,7 @@ type Manifestation {
   """
   The work that this manifestation is part of
   """
-  ownerWork: Work!
+  ownerWork: Work! @complexity(value: 5)
 
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals

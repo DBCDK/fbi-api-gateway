@@ -1,12 +1,29 @@
+/* custom curl button */
 .graphiql .curl {
   margin-top: var(--pt1);
 }
 
-.graphiql .curl .button p {
+.graphiql .curl .button p,
+.graphiql .complexity .button p {
   color: hsla(var(--color-neutral), var(--alpha-tertiary));
   font-style: italic;
   font-size: 12px;
 }
+
+/* custom complexity button */
+.graphiql .complexity {
+  margin-top: auto;
+}
+
+.graphiql .complexity .button {
+  cursor: default;
+}
+
+.graphiql .complexity .button p {
+  font-style: unset;
+}
+
+/*  */
 
 .graphiql :global(.graphiql-container) {
   height: calc(100vh - 68px);

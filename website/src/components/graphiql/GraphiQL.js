@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { GraphiQLInterface } from "graphiql";
 
+import Progress from "@/components/base/progress";
+
 import {
   GraphiQLProvider,
   useExecutionContext,
@@ -18,9 +20,30 @@ import Overlay from "@/components/base/overlay";
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 
+import useComplexity from "@/hooks/useComplexity";
+
 import Header from "@/components/header";
 
 import styles from "./GraphiQL.module.css";
+
+export function ComplexityButton({ value, limit, className }) {
+  return (
+    <span className={`${styles.complexity} ${className}`}>
+      <ToolbarButton className={styles.button} label="Query complexity">
+        <Progress.Circle
+          value={value}
+          limit={limit}
+          speed={1}
+          states={{
+            0: { color: "var(--success-dark)" },
+            50: { color: "var(--warning-dark)" },
+            100: { color: "var(--error)" },
+          }}
+        />
+      </ToolbarButton>
+    </span>
+  );
+}
 
 function CurlButton({ onClick }) {
   const curlRef = useRef();
@@ -108,6 +131,11 @@ export default function Wrap() {
 
   const parameters = { ...router.query };
 
+  const { complexity, limit } = useComplexity({
+    token: selectedToken?.token,
+    ...parameters,
+  });
+
   const curl = generateCurl({
     ...parameters,
     url,
@@ -178,6 +206,11 @@ export default function Wrap() {
             <CurlButton
               key="copy-curl-btn"
               onClick={() => navigator?.clipboard?.writeText?.(curl)}
+            />,
+            <ComplexityButton
+              value={complexity}
+              limit={limit}
+              key="complexity-btn"
             />,
           ],
         }}

@@ -129,7 +129,7 @@ type FacetResult {
   """
   The values of thie facet result
   """
-  values(limit: Int!): [FacetValue!]!
+  values(limit: Int!): [FacetValue!]! @complexity(value: 2, multipliers: ["limit"])
 }
 
 """
@@ -144,23 +144,23 @@ type SearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int! limit: PaginationLimit!): [Work!]!
+  works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   
   """
   Make sure only to fetch this when needed
   This may take seconds to complete
   """
-  facets(facets: [FacetField!]!): [FacetResult!]!
+  facets(facets: [FacetField!]!): [FacetResult!]! @complexity(value: 5, multipliers: ["facets"])
 
   """
   Will return the facets that best match the input query and filters
   """
-  intelligentFacets(limit: Int): [FacetResult!]!
+  intelligentFacets(limit: Int): [FacetResult!]! @complexity(value: 5, multipliers: ["limit"])
 
   """
   A list of alternative search queries
   """
-  didYouMean(limit: Int ): [DidYouMean!]!
+  didYouMean(limit: Int ): [DidYouMean!]! @complexity(value: 2, multipliers: ["limit"])
 }
 
 type DidYouMean {

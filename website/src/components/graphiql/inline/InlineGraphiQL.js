@@ -14,9 +14,13 @@ import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useIntersection from "@/hooks/useIntersection";
 
+import useComplexity from "@/hooks/useComplexity";
+
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 import Input from "@/components/base/input";
+
+import { ComplexityButton } from "../GraphiQL";
 
 import Overlay from "@/components/base/overlay";
 
@@ -115,6 +119,7 @@ export function InlineGraphiQL({
   variables,
   onEditQuery,
   onEditVariables,
+  toolbar,
 }) {
   const { tabs, activeTabIndex } = useEditorContext({
     nonNull: true,
@@ -196,6 +201,7 @@ export function InlineGraphiQL({
         onEditQuery={onEditQuery}
         onEditVariables={onEditVariables}
         isHeadersEditorEnabled={false}
+        toolbar={toolbar}
       />
 
       <Input
@@ -223,11 +229,17 @@ export default function Wrap(props) {
   const { schema } = useSchema(selectedToken);
   const url = useGraphQLUrl(selectedToken);
 
-  const { query: initialQuery, variables: initialVariabels } = props;
+  const { query: initialQuery, variables: initialVariabels = "" } = props;
 
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState(initialQuery);
   const [variables, setVariables] = useState(initialVariabels);
+
+  const { complexity, limit } = useComplexity({
+    token: selectedToken?.token,
+    variables,
+    query,
+  });
 
   useEffect(() => {
     setShow(false);
@@ -264,6 +276,16 @@ export default function Wrap(props) {
         variables={variables}
         onEditVariables={setVariables}
         onEditQuery={setQuery}
+        toolbar={{
+          additionalContent: [
+            <ComplexityButton
+              className={styles.complexity}
+              value={complexity}
+              limit={limit}
+              key="complexity-btn"
+            />,
+          ],
+        }}
       />
     </GraphiQLProvider>
   );

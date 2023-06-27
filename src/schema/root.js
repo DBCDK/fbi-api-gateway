@@ -17,16 +17,27 @@ import { resolveAccess } from "./draft/draft_utils_manifestations";
  * The root type definitions
  */
 export const typeDef = `
+
+"""
+Complexity directive to evaluate query complexity 
+"""
+directive @complexity(
+  # The complexity value for the field
+  value: Int!
+  # Optional multipliers
+  multipliers: [String!]
+) on FIELD_DEFINITION
+
 type Query {
-  manifestation(pid: String, faust: String): Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
+  manifestation(pid: String, faust: String): Manifestation @complexity(value: 3)
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]! @complexity(value: 3, multipliers: ["pid", "faust"])
   monitor(name: String!): String!
   user: User
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
-  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]!
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
+  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
-  linkCheck: LinkCheckService!
+  linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
 
   localSuggest(
     """
@@ -40,12 +51,12 @@ type Query {
     """
     Number of items to return
     """
-    limit: Int
+    limit: Int 
     """
     Id of branch to filter by
     """
     branchId: String    
-  ): localSuggestResponse!
+  ): localSuggestResponse! @complexity(value: 2, multipliers: ["limit"])
   
   suggest(
     workType: WorkType
@@ -61,23 +72,24 @@ type Query {
     Number of items to return
     """
     limit: Int
-  ): SuggestResponse!
+  ): SuggestResponse! @complexity(value: 3, multipliers: ["limit"])
 
   """
   Get recommendations
   """
-  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult!
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult! @complexity(value: 5, multipliers: ["limit"])
+  deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomedia(id: String!): InfomediaResponse!
   session: Session
   howru:String
-  localizations(pids:[String!]!):Localizations
+  localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
   refWorks(pid:String!):String!
   ris(pid:String!):String!
-  relatedSubjects(q:[String!]!, limit:Int ):[String!]
-  inspiration(language: LanguageCode, limit: Int): Inspiration!
+  relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
+  inspiration(language: LanguageCode, limit: Int): Inspiration! 
 }
 
 type Mutation {
