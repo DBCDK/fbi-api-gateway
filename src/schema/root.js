@@ -358,8 +358,6 @@ export const resolvers = {
         accessToken: context.accessToken,
       });
 
-      console.log("##############", { userinfo });
-
       // Get user attributes for the agency
       const agencyAttributes = userinfo?.attributes?.agencies?.find(
         (attributes) => attributes.agencyId === agencyId
@@ -367,8 +365,6 @@ export const resolvers = {
 
       // We need the userId
       const userId = agencyAttributes?.userId;
-
-      console.log("##############", { userId });
 
       // If dryRyn is true, we will not actually delete the order
       if (dryRun) {
@@ -383,8 +379,6 @@ export const resolvers = {
         smaug: context.smaug,
         accessToken: context.accessToken,
       });
-
-      console.log("############## root", { res });
 
       return { deleted: !res.error, error: res.error };
     },
