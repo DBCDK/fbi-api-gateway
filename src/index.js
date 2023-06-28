@@ -5,6 +5,7 @@
 import { log } from "dbc-node-logger";
 import { getExecutableSchema } from "./schemaLoader";
 import express from "express";
+import request from "superagent";
 
 import createHash from "./utils/hash";
 
@@ -18,8 +19,12 @@ import { parse, getOperationAST } from "graphql";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration } from "./utils/monitor";
-import validateComplexity from "./utils/complexity";
+import {
+  validateQueryComplexity,
+  getQueryComplexity,
+} from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
+
 import { v4 as uuid } from "uuid";
 import isbot from "isbot";
 
@@ -78,6 +83,7 @@ promExporterApp.listen(9599, () => {
               typeof val === "string" ? val : JSON.stringify(val))
         );
       }
+
       const userAgent = req.get("User-Agent");
 
       const accessTokenHash = createHash(req.accessToken);
@@ -91,6 +97,8 @@ promExporterApp.listen(9599, () => {
         datasources: { ...req?.datasources?.trackingObject?.trackObject },
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
+        queryComplexity: req.queryComplexity,
+        isIntrospectionQuery: req.isIntrospectionQuery,
         graphQLErrors: req.graphQLErrors && JSON.stringify(req.graphQLErrors),
         userAgent,
         userAgentIsBot: isbot(userAgent),
@@ -206,7 +214,7 @@ promExporterApp.listen(9599, () => {
     });
   }
 
-  // Setup route handler for GraphQL
+  // Query complexity middleware
   app.post("/:profile/graphql", async (req, res) => {
     const schema = await getExecutableSchema({
       clientPermissions: req?.smaug?.gateway,
@@ -215,9 +223,12 @@ promExporterApp.listen(9599, () => {
 
     const { query, variables } = req.body;
 
+    // Set incomming query complexity
+    req.queryComplexity = getQueryComplexity({ query, variables, schema });
+
     const handler = createHandler({
       schema,
-      validationRules: [validateComplexity({ query, variables })],
+      validationRules: [validateQueryComplexity({ query, variables })],
       context: req,
     });
 
@@ -226,6 +237,50 @@ promExporterApp.listen(9599, () => {
 
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
+
+  /**
+   * Query complexity endpoint
+   * POST request
+   * token set as bearer header (Not required)
+   * query {string} and variables {string} set as body params.
+   */
+  app.post("/complexity", async (req, res) => {
+    // get AccessToken from header
+    const token = req.headers.authorization?.replace(/bearer /i, "");
+
+    // Get body params
+    const { query, variables } = req.body;
+
+    // Get client permissions from smuag
+    let clientPermissions;
+    try {
+      const url = config.datasources.smaug.url;
+      const smaug = (
+        await request.get(`${url}/configuration`).query({
+          token,
+        })
+      ).body;
+
+      // Set token client permissions
+      clientPermissions = smaug?.gateway;
+    } catch (e) {
+      // No valid accessToken - fallbacks to default schema (introspect)
+    }
+
+    const schema = await getExecutableSchema({
+      clientPermissions,
+      hasAccessToken: !!(clientPermissions && token),
+    });
+
+    // // Set incomming query complexity
+    const queryComplexity = getQueryComplexity({
+      query,
+      variables,
+      schema,
+    });
+
+    res.send({ complexity: queryComplexity });
+  });
 
   app.use(proxy);
 

@@ -259,7 +259,7 @@ export async function load() {
       ],
     },
     {
-      name: "materialTypes",
+      name: "materialTypesSpecific",
       values: [
         {
           term: "tidsskriftsartikel",

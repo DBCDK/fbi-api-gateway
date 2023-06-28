@@ -5,12 +5,12 @@ type Recommendation {
   """
   The recommended work
   """
-  work: Work
+  work: Work! @complexity(value: 5)
 
   """
   The recommended manifestation
   """
-  manifestation: Manifestation!
+  manifestation: Manifestation! @complexity(value: 3)
 
   """
   Info on how this recommendation was generated

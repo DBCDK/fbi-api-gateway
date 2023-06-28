@@ -6,7 +6,7 @@ export default {
   query: {
     maxComplexity: process.env.MAX_QUERY_COMPLEXITY
       ? parseInt(process.env.MAX_QUERY_COMPLEXITY, 10)
-      : 100000,
+      : 1000,
   },
   dmzproxy: {
     url: process.env.PROXY_URL || null,
@@ -100,6 +100,10 @@ export default {
       authenticationPassword: process.env.MOREINFO_PASSWORD,
       ttl: process.env.MOREINFO_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.MOREINFO_PREFIX || "moreinfo-2",
+    },
+    openuserstatus: {
+      url:
+        process.env.OPENUSERSTATUS_URL || "https://openuserstatus.addi.dk/2.0/",
     },
     openorder: {
       url: process.env.OPENORDER_URL,

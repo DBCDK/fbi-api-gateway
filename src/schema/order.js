@@ -45,7 +45,21 @@ export const typeDef = `
     title: String
     titleOfComponent: String
     volume: String
-  } `;
+  } 
+  
+  type DeleteOrderResponse {
+
+    """
+    Whether the order was deleted or not
+    """
+    deleted: Boolean!
+
+    """
+    Error message
+    """
+    error: String
+  }
+  `;
 
 /**
  * Resolvers for the Profile type

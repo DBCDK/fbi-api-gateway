@@ -20,22 +20,10 @@ export async function load(
     debug: false,
   };
 
-  // REMOVE WHEN SERVICE SUPPORTS materialTypesSpecific
-  const _filters = { ...filters };
-  if (_filters.materialTypesSpecific) {
-    if (!_filters.materialTypes) {
-      _filters.materialTypes = _filters.materialTypesSpecific;
-    }
-    delete _filters.materialTypesSpecific;
-  }
-  // // // // // // // // // // // // // // // // // //
-
   // merge variables and statics
   const query = {
     q,
-    // CHANGE BACK WHEN SERVICE SUPPORTS materialTypesSpecific
-    filters: _filters,
-    // // // // // // // // // // // // // // // // // //
+    filters,
     start: offset,
     rows: limit,
     ...statics,
@@ -44,7 +32,6 @@ export async function load(
   };
 
   // do the request
-
   const response = (
     await context.fetch(url, { method: "POST", body: JSON.stringify(query) })
   ).body;

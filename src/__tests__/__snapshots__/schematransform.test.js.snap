@@ -1,7 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`default schema transform 1`] = `
-"\\"\\"\\"
+"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
+
+\\"\\"\\"
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the \`date-time\` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 \\"\\"\\"
 scalar DateTime
@@ -951,7 +954,6 @@ type Relations {
 type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
-  reviews: [Review!]! @deprecated(reason: \\"Use 'Work.relations.hasReview'\\")
 
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
@@ -980,7 +982,7 @@ type Work {
   series: [Series!]!
 
   \\"\\"\\"Members of a series that this work is part of\\"\\"\\"
-  seriesMembers: [Work!]!
+  seriesMembers: [Work!]! @deprecated(reason: \\"Use 'Work.series.members' instead\\")
 
   \\"\\"\\"
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
@@ -1004,64 +1006,6 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
-}
-
-enum LibrariansReviewSectionCode {
-  ALL
-  ABOUT
-  DESCRIPTION
-  EVALUATION
-  OTHER
-  LIBRARY
-  USE
-  OLDDESCRIPTION
-  COMPARE
-  CONCLUSION
-}
-
-type LibrariansReviewSection {
-  \\"\\"\\"a code indicating the content type of the section\\"\\"\\"
-  code: LibrariansReviewSectionCode!
-
-  \\"\\"\\"The heading of the section\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"A piece of text, maybe mentioning a work at the end.\\"\\"\\"
-  text: String!
-
-  \\"\\"\\"
-  The work the text is refering to. When work is null, the text does not refer to a work.
-  \\"\\"\\"
-  work: Work
-}
-
-interface Review {
-  author: String
-  date: String
-}
-
-type ExternalReview implements Review {
-  author: String
-  date: String
-  rating: String
-  urls: [AccessUrl!]!
-}
-
-type InfomediaReview implements Review {
-  author: String
-  date: String
-  origin: String
-  rating: String
-  id: String!
-}
-
-type LibrariansReview implements Review {
-  author: String
-  date: String
-  sections: [LibrariansReviewSection!]!
-
-  \\"\\"\\" This is a pid \\"\\"\\"
-  id: String!
 }
 
 enum ReviewElementType {
@@ -1538,7 +1482,6 @@ input SearchQuery {
 enum FacetField {
   workTypes
   mainLanguages
-  materialTypes @deprecated(reason: \\"Use 'FacetField.materialTypesSpecific'\\")
   materialTypesGeneral
   materialTypesSpecific
   fictionalCharacters
@@ -1635,7 +1578,10 @@ type DidYouMean {
 `;
 
 exports[`limited access to root fields 1`] = `
-"type HelpRow {
+"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
+
+type HelpRow {
   nid: Int!
   group: String!
   orgTitle: String!
@@ -1659,7 +1605,10 @@ type Query {
 `;
 
 exports[`remove all fields by type 1`] = `
-"enum AccessTypeCode {
+"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
+
+enum AccessTypeCode {
   PHYSICAL
   ONLINE
   NOT_SPECIFIED @deprecated
@@ -2504,10 +2453,9 @@ type Relations {
 type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
-  reviews: [Review!]! @deprecated(reason: \\"Use 'Work.relations.hasReview'\\")
 
   \\"\\"\\"The new reviews\\"\\"\\"
-  workReviews: [WorkReview!]!
+  workReviews: [WorkReview!]! @deprecated(reason: \\"Use 'Work.relations.hasReview' instead\\")
 
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
@@ -2536,7 +2484,7 @@ type Work {
   series: [Series!]!
 
   \\"\\"\\"Members of a series that this work is part of\\"\\"\\"
-  seriesMembers: [Work!]!
+  seriesMembers: [Work!]! @deprecated(reason: \\"Use 'Work.series.members' instead\\")
 
   \\"\\"\\"
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
@@ -2589,35 +2537,6 @@ type LibrariansReviewSection {
   The work the text is refering to. When work is null, the text does not refer to a work.
   \\"\\"\\"
   work: Work
-}
-
-interface Review {
-  author: String
-  date: String
-}
-
-type ExternalReview implements Review {
-  author: String
-  date: String
-  rating: String
-  urls: [AccessUrl!]!
-}
-
-type InfomediaReview implements Review {
-  author: String
-  date: String
-  origin: String
-  rating: String
-  id: String!
-}
-
-type LibrariansReview implements Review {
-  author: String
-  date: String
-  sections: [LibrariansReviewSection!]!
-
-  \\"\\"\\" This is a pid \\"\\"\\"
-  id: String!
 }
 
 type WorkReview {

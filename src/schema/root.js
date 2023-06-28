@@ -17,16 +17,27 @@ import { resolveAccess } from "./draft/draft_utils_manifestations";
  * The root type definitions
  */
 export const typeDef = `
+
+"""
+Complexity directive to evaluate query complexity 
+"""
+directive @complexity(
+  # The complexity value for the field
+  value: Int!
+  # Optional multipliers
+  multipliers: [String!]
+) on FIELD_DEFINITION
+
 type Query {
-  manifestation(pid: String, faust: String): Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
+  manifestation(pid: String, faust: String): Manifestation @complexity(value: 3)
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]! @complexity(value: 3, multipliers: ["pid", "faust"])
   monitor(name: String!): String!
   user: User
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
-  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]!
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
+  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQuery!, filters: SearchFilters): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
-  linkCheck: LinkCheckService!
+  linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
 
   localSuggest(
     """
@@ -40,12 +51,12 @@ type Query {
     """
     Number of items to return
     """
-    limit: Int
+    limit: Int 
     """
     Id of branch to filter by
     """
     branchId: String    
-  ): localSuggestResponse!
+  ): localSuggestResponse! @complexity(value: 2, multipliers: ["limit"])
   
   suggest(
     workType: WorkType
@@ -61,29 +72,45 @@ type Query {
     Number of items to return
     """
     limit: Int
-  ): SuggestResponse!
+  ): SuggestResponse! @complexity(value: 3, multipliers: ["limit"])
 
   """
   Get recommendations
   """
-  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult!
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult! @complexity(value: 5, multipliers: ["limit"])
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
   infomedia(id: String!): InfomediaResponse!
   session: Session
   howru:String
-  localizations(pids:[String!]!):Localizations
+  localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
   refWorks(pid:String!):String!
   ris(pid:String!):String!
-  relatedSubjects(q:[String!]!, limit:Int ):[String!]
-  inspiration(language: LanguageCode, limit: Int): Inspiration!
+  relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
+  inspiration(language: LanguageCode, limit: Int): Inspiration! 
 }
 
 type Mutation {
   data_collect(input: DataCollectInput!): String!
+  deleteOrder(
+    """
+    id of the order to be deleted
+    """
+    orderId: String!
+
+    """
+    The agency where the order is placed.
+    """
+    agencyId: String!
+
+    """
+    If this is true, the order is not actually deleted (is useful when generating examples).
+    """
+    dryRun: Boolean
+    ): DeleteOrderResponse
+    
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
@@ -258,13 +285,6 @@ export const resolvers = {
     recommend(parent, args, context, info) {
       return args;
     },
-    async deleteOrder(parent, args, context, info) {
-      return await context.datasources.getLoader("deleteOrder").load({
-        orderId: args.orderId,
-        orderType: args.orderType,
-        accessToken: context.accessToken,
-      });
-    },
     async borchk(parent, args, context, info) {
       return context.datasources.getLoader("borchk").load({
         libraryCode: args.libraryCode,
@@ -314,6 +334,53 @@ export const resolvers = {
       log.info(JSON.stringify(data), { type: "data" });
 
       return "OK";
+    },
+    async deleteOrder(parent, args, context, info) {
+      // NOTE FOR FURTHER DEVELOPMENT
+      //
+      // When an order is placed, the order is not available in the local system
+      // immediately. It has to go through ORS. Therefore, the user is not able to
+      // delete the order before it has reached the local system.
+      //
+      // This is not a great user experience, if the user must wait hours until
+      // the order can be cancelled.
+      //
+      // BUT, hopefully we can use ORS-maintain to cancel the order as soon as
+      // it has been placed.
+      //
+      // It should probably be handled here as the UI should just make a single call,
+      // and not having to deal with the complexity of ORS and openUserStatus.
+
+      const { orderId, agencyId, dryRun } = args;
+
+      // Get user info
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      // Get user attributes for the agency
+      const agencyAttributes = userinfo?.attributes?.agencies?.find(
+        (attributes) => attributes.agencyId === agencyId
+      );
+
+      // We need the userId
+      const userId = agencyAttributes?.userId;
+
+      // If dryRyn is true, we will not actually delete the order
+      if (dryRun) {
+        return { deleted: true };
+      }
+
+      // Delete order in the local library system, via openUserStatus
+      const res = await context.datasources.getLoader("deleteOrder").load({
+        orderId,
+        agencyId,
+        userId,
+        smaug: context.smaug,
+        accessToken: context.accessToken,
+      });
+
+      return { deleted: !res.error, error: res.error };
     },
     async submitPeriodicaArticleOrder(parent, args, context, info) {
       let { userName, userMail } = args.input;

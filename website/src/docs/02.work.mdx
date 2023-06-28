@@ -1,5 +1,11 @@
 # Work
 
+<DeprecationBox deprecated="01/07-2023" expires="01/10-2023">
+  Please note that Field `Work.workReviews` is deprecated and will be removed.
+  Use `Work.relations.hasReview` instead. See [reviews](#Reviews) documentation
+  for details.
+</DeprecationBox>
+
 A work is some creation like a book, article, movie etc. It may exist in many different variants -
 in the API we call these manifestations. For instance, a book may be available in multiple physical
 and online variants or manifestations. And a movie could be streamed online or maybe borrowed on DVD
@@ -258,103 +264,6 @@ does not require substitution.
     pid: "870976-anmeld:129103779",
   }}
 />
-
-## <DeprecationTitle>Reviews</DeprecationTitle>
-
-<DeprecationBorder>
-  <DeprecationBox deprecated="01/03-2023" expires="01/06-2023">
-    Please note that Field `Work.reviews` is deprecated and will be removed. Use
-    `Work.relations.hasReview` instead. See [Reviews](#Reviews) documentation
-    for details.
-  </DeprecationBox>
-
-<br />
-
-The reviews field returns a list of reviews. Each review may be one of the following types:
-
-- `InfomediaReview` includes an ID that can be used to look up the actual
-  article. Check out the [Infomedia section](#Infomedia).
-- `ExternalReview` includes a url to an external website where the review is located.
-- `LibrariansReview` is a review made by Danish librarians - in Danish it's known as “lektørudtalelse” or “materialevurdering”.
-  The entire review can be obtained from this object type, without the user being logged
-  in, and consists of a list of content sections. A section may include a reference
-  to another work. If so, the title of this referenced work should be appended to the
-  text (preferably as a link).
-
-The following example shows a librarians review with a reference to an external work
-(in the last section of the response).
-
-<InlineGraphiQL
-  query={`query Example_Deprecated_ReviewsWithReference ($id: String!) {
-  work(id: $id) {
-    workId
-    titles {
-      main
-    }
-    reviews {
-      __typename
-      ... on LibrariansReview {
-        author
-        date
-        sections {
-          code
-          heading
-          text
-          work {
-            workId
-            titles {
-              main
-            }
-            creators {
-              display
-            }
-          }
-        }
-      }
-    }
-  }
-}`}
-  variables={{
-    id: "work-of:870970-basis:51701763",
-  }}
-/>
-
-<br />
-<br />
-In the following example you will find both external and infomedia reviews. Note
-that some but not all of these reviews include a rating.
-
-<InlineGraphiQL
-  query={`query Example_Deprecated_Reviews ($id: String!) {
-  work(id: $id) {
-    workId
-    titles {
-      main
-    }
-    reviews {
-      __typename
-      author
-      date
-      ... on ExternalReview {
-        rating
-        urls {
-          origin
-          url
-        }
-      }
-      ... on InfomediaReview {
-        id
-        rating
-      }
-    }
-  }
-}`}
-  variables={{
-    id: "work-of:870970-basis:53969127",
-  }}
-/>
-
-</DeprecationBorder>
 
 ## Series
 

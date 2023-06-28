@@ -1,50 +1,39 @@
 import { log } from "dbc-node-logger";
-import queryComplexity from "graphql-query-complexity";
+import { parse, GraphQLError } from "graphql";
+
+import queryComplexity, {
+  getComplexity,
+  simpleEstimator,
+  directiveEstimator,
+} from "graphql-query-complexity";
 
 import config from "../config";
 
 /**
- * A custom field estimator
- * https://github.com/slicknode/graphql-query-complexity#creating-custom-estimators
+ * Function to build the content for the estimator functions
  *
- * This function is called per field.
- * If field is an array we multiply with the complexity value
- * of its children. This makes highly nested queries expensive.
- *
- * @param {ComplexityEstimatorArgs} params
- * @param {GraphQLField<any, any>} params.field
- * @param {number} params.childComplexity
+ * @param {*} params.query
+ * @param {*} params.variables
+ * @param {object} params.schema
+ * @returns {object}
  */
-function CustomFieldEstimator({ field, childComplexity }) {
-  const fieldType = field.type.toString();
-  const isExpensiveArray =
-    fieldType.startsWith("[Work!]") ||
-    fieldType.startsWith("[Work]") ||
-    fieldType.startsWith("[Manifestation");
-
-  if (isExpensiveArray) {
-    return 100 * (childComplexity || 1);
-  }
-  return childComplexity;
-}
-/**
- * Statically validates the complexity of a query
- * I.e. it calculates complexity before query execution
- *
- * It should be added as an entry in the validationRules
- *
- * We use the graphql-query-complexity for creating the rule
- * https://github.com/slicknode/graphql-query-complexity
- *
- * @param {object} params
- * @param {string} params.query
- * @param {object} params.variables
- */
-export default function validateComplexity({ query, variables }) {
-  return queryComplexity({
-    estimators: [CustomFieldEstimator],
+export function buildQueryComplexity({ schema = null, query, variables }) {
+  return {
+    estimators: [
+      directiveEstimator(),
+      simpleEstimator({
+        defaultComplexity: 1,
+      }),
+    ],
+    schema,
     maximumComplexity: config.query.maxComplexity,
+    query: parse(query),
     variables,
+    createError: (max, actual) => {
+      return new GraphQLError(
+        `Query is too complex: ${actual}. Maximum allowed complexity: ${max}`
+      );
+    },
     onComplete: (complexity) => {
       if (complexity > config.query.maxComplexity) {
         log.error("Query exceeded complexity limit", {
@@ -54,5 +43,41 @@ export default function validateComplexity({ query, variables }) {
         });
       }
     },
-  });
+  };
+}
+
+/**
+ * Future complexity estimator (returns validation function)
+ *
+ * @param {*} params.query
+ * @param {*} params.variables
+ * @param {object} params.schema
+ * @returns {funciton}
+ */
+
+export function validateQueryComplexity(params) {
+  try {
+    return queryComplexity(buildQueryComplexity(params));
+  } catch (e) {
+    // Log error in case complexity cannot be calculated (invalid query, misconfiguration, etc.)
+    console.error("Could not calculate complexity", e.message);
+  }
+}
+
+/**
+ * Future complexity estimator (returns complexity value)
+ *
+ * @param {*} params.query
+ * @param {*} params.variables
+ * @param {object} params.schema
+ * @returns {int}
+ */
+
+export function getQueryComplexity(params) {
+  try {
+    return getComplexity(buildQueryComplexity(params));
+  } catch (e) {
+    // Log error in case complexity cannot be calculated (invalid query, misconfiguration, etc.)
+    console.error("Could not calculate complexity", e.message);
+  }
 }

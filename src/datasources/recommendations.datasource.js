@@ -13,9 +13,11 @@ export async function load({ pid, limit = 10, profile, branchId }, context) {
     persistent_work: true,
     limit,
   };
+
   if (branchId) {
     body.branchid = branchId;
   }
+
   return (
     await context.fetch(url, { method: "POST", body: JSON.stringify(body) })
   ).body;
