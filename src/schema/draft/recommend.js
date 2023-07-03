@@ -61,49 +61,11 @@ export const resolvers = {
         });
 
       if (recommendations?.response) {
-        // TODO: (1) Den her, Morten? (virker ikke pt)
-        // const manifestations = recommendations?.response?.map(
-        //   (res) =>
-        //     new Promise((resolve) =>
-        //       resolve(
-        //         context.datasources.getLoader("jedRecord").load({
-        //           id: res?.pid, //keys.map((key) => key.id),
-        //           profile: context.profile,
-        //         })
-        //       )
-        //     )
-        // );
-        //
-        // const morten = (await Promise.all(manifestations))
-        //   .map((res) => res.pid)
-        //   .filter((res) => res);
-        // TODO slut
-
-        // TODO: (2) Den her, Morten? (virker ikke pt)
-        // const keys = recommendations?.response
-        //   ?.filter((res) => res.work)
-        //   ?.map((res) => {
-        //     return {
-        //       id: res.pid,
-        //       profile: {
-        //         agency: context?.profile?.agency,
-        //         name: context?.profile?.name,
-        //       },
-        //     };
-        //   });
-        // const morten = await Promise.all([
-        //   new Promise((resolve) => resolve(batchLoader(keys, context))),
-        // ]);
-        // const benson = await recommendations?.response?.filter(
-        //   (res, index) => morten[index] !== null
-        // );
-        // TODO slut
-
         const awaitedPromiseWithResolveWork = await (async function () {
           const asyncFunctions = recommendations?.response?.map(
             (res) =>
               new Promise((resolve) =>
-                resolve(resolveManifestation({ pid: res.pid }, context))
+                resolve(resolveWork({ id: res.work }, context))
               )
           );
           const results = await Promise.all(asyncFunctions);
