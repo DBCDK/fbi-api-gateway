@@ -105,6 +105,8 @@ export default function Header() {
         <Mode className={styles.darkmode} />
       </Container>
 
+      <div className={styles.border} />
+
       <Modal
         show={show}
         onHide={() => setShow(false)}
