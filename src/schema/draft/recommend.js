@@ -75,7 +75,7 @@ export const resolvers = {
 
         awaitedPromiseWithResolveWork.forEach((res, index) => {
           if (res === 0) {
-            log.info(
+            log.warn(
               "Work/manifestation from recommendation object can't be fetched in jedRecord",
               {
                 recommendationWorkId: recommendations?.response?.[index]?.work,
