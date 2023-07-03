@@ -1,4 +1,9 @@
 import { resolveWork, resolveManifestation } from "../../utils/utils";
+import { log } from "dbc-node-logger";
+
+export function tuneLimit(limit) {
+  return Math.floor(limit + Math.max(limit * 0.2, 10));
+}
 
 export const typeDef = `
 type Recommendation {
@@ -50,12 +55,78 @@ export const resolvers = {
         .getLoader("recommendations")
         .load({
           pid,
-          limit: parent.limit || 10,
+          limit: tuneLimit(parent.limit) || 10,
           profile: context.profile,
           branchId: parent.branchId,
         });
+
       if (recommendations?.response) {
-        return recommendations.response;
+        // TODO: (1) Den her, Morten? (virker ikke pt)
+        // const manifestations = recommendations?.response?.map(
+        //   (res) =>
+        //     new Promise((resolve) =>
+        //       resolve(
+        //         context.datasources.getLoader("jedRecord").load({
+        //           id: res?.pid, //keys.map((key) => key.id),
+        //           profile: context.profile,
+        //         })
+        //       )
+        //     )
+        // );
+        //
+        // const morten = (await Promise.all(manifestations))
+        //   .map((res) => res.pid)
+        //   .filter((res) => res);
+        // TODO slut
+
+        // TODO: (2) Den her, Morten? (virker ikke pt)
+        // const keys = recommendations?.response
+        //   ?.filter((res) => res.work)
+        //   ?.map((res) => {
+        //     return {
+        //       id: res.pid,
+        //       profile: {
+        //         agency: context?.profile?.agency,
+        //         name: context?.profile?.name,
+        //       },
+        //     };
+        //   });
+        // const morten = await Promise.all([
+        //   new Promise((resolve) => resolve(batchLoader(keys, context))),
+        // ]);
+        // const benson = await recommendations?.response?.filter(
+        //   (res, index) => morten[index] !== null
+        // );
+        // TODO slut
+
+        const awaitedPromiseWithResolveWork = await (async function () {
+          const asyncFunctions = recommendations?.response?.map(
+            (res) =>
+              new Promise((resolve) =>
+                resolve(resolveManifestation({ pid: res.pid }, context))
+              )
+          );
+          const results = await Promise.all(asyncFunctions);
+
+          return results.map((res, index) => (res ? 1 : 0));
+        })();
+
+        awaitedPromiseWithResolveWork.forEach((res, index) => {
+          if (res === 0) {
+            log.info(
+              "Work/manifestation from recommendation object can't be fetched in jedRecord",
+              {
+                recommendationWorkId: recommendations?.response?.[index]?.work,
+                recommendationPid: recommendations?.response?.[index]?.pid,
+                profile: context?.profile,
+              }
+            );
+          }
+        });
+
+        return recommendations?.response
+          .filter((res, index) => awaitedPromiseWithResolveWork[index] === 1)
+          .slice(0, parent.limit);
       }
       return [];
     },
