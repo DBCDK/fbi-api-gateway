@@ -1,4 +1,9 @@
 import { resolveWork, resolveManifestation } from "../../utils/utils";
+import { log } from "dbc-node-logger";
+
+export function tuneLimit(limit) {
+  return Math.floor(limit + Math.max(limit * 0.2, 10));
+}
 
 export const typeDef = `
 type Recommendation {
@@ -50,12 +55,40 @@ export const resolvers = {
         .getLoader("recommendations")
         .load({
           pid,
-          limit: parent.limit || 10,
+          limit: tuneLimit(parent.limit) || 10,
           profile: context.profile,
           branchId: parent.branchId,
         });
+
       if (recommendations?.response) {
-        return recommendations.response;
+        const awaitedPromiseWithResolveWork = await (async function () {
+          const asyncFunctions = recommendations?.response?.map(
+            (res) =>
+              new Promise((resolve) =>
+                resolve(resolveWork({ id: res.work }, context))
+              )
+          );
+          const results = await Promise.all(asyncFunctions);
+
+          return results.map((res, index) => (res ? 1 : 0));
+        })();
+
+        awaitedPromiseWithResolveWork.forEach((res, index) => {
+          if (res === 0) {
+            log.warn(
+              "Work/manifestation from recommendation object can't be fetched in jedRecord",
+              {
+                recommendationWorkId: recommendations?.response?.[index]?.work,
+                recommendationPid: recommendations?.response?.[index]?.pid,
+                profile: context?.profile,
+              }
+            );
+          }
+        });
+
+        return recommendations?.response
+          .filter((res, index) => awaitedPromiseWithResolveWork[index] === 1)
+          .slice(0, parent.limit);
       }
       return [];
     },

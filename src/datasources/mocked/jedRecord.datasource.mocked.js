@@ -1,6 +1,13 @@
 import * as consts from "../../schema/draft/FAKE";
 
 export function load({ id }) {
+  if (id.startsWith("vroevl")) {
+    return null;
+  }
+  if (id.startsWith("work-of:vroevl")) {
+    return null;
+  }
+
   if (id.startsWith("work-of")) {
     return { ...consts.FAKE_WORK, workId: id };
   } else {
