@@ -17,6 +17,17 @@ const IDENTIFIER_TYPES = new Set([
 ]);
 
 export const typeDef = `
+type CatalogueCodes {
+  """
+  CatalogueCodes from the national registers
+  """
+  nationalBibliography: [String!]!
+  
+  """
+  CatalogueCodes from local bibliographies or catalogues that the manifestation belongs to
+  """
+  otherCatalogues: [String!]!
+}
 type TableOfContent {
   heading: String
   content: String
@@ -520,6 +531,11 @@ type Manifestation {
   audience: Audience
   
   """
+  CatalogueCodes divided in codes from the national bibliography and other codes
+  """
+  catalogueCodes: CatalogueCodes!
+  
+  """
   Classification codes for this manifestation from any classification system
   """
   classifications: [Classification!]!
@@ -749,8 +765,10 @@ export const resolvers = {
   },
   ManifestationParts: {
     parts(parent) {
-      return parent?.parts?.filter((part) => !Object.hasOwn(part.title, "forSearchIndexOnly"))
-    }
+      return parent?.parts?.filter(
+        (part) => !Object.hasOwn(part.title, "forSearchIndexOnly")
+      );
+    },
   },
   ManifestationPart: {
     title(parent) {
@@ -778,6 +796,12 @@ export const resolvers = {
     },
   },
   Manifestation: {
+    catalogueCodes(parent) {
+      return {
+        nationalBibliography: parent.catalogueCodes.nationalBibliography || [],
+        otherCatalogues: parent.catalogueCodes.otherCatalogues || [],
+      };
+    },
     workTypes(parent) {
       return parent?.workTypes || [];
     },

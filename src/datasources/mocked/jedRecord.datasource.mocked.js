@@ -8,6 +8,65 @@ export function load({ id }) {
     return null;
   }
 
+  if (
+    id.startsWith(
+      "test_catalogueCodes_nationalBibliography_and_otherCatalogues"
+    )
+  ) {
+    return {
+      pid: "test_catalogueCodes_nationalBibliography_and_otherCatalogues",
+      catalogueCodes: {
+        nationalBibliography: [
+          "national_bibliography",
+          "more_national_bibliography",
+        ],
+        otherCatalogues: ["other_catalogues", "more_other_catalogues"],
+      },
+    };
+  }
+
+  if (
+    id.startsWith(
+      "test_catalogueCodes_yes_nationalBibliography_no_otherCatalogues"
+    )
+  ) {
+    return {
+      pid: "test_catalogueCodes_yes_nationalBibliography_no_otherCatalogues",
+      catalogueCodes: {
+        nationalBibliography: ["national_bibliography"],
+        otherCatalogues: [],
+      },
+    };
+  }
+
+  if (
+    id.startsWith(
+      "test_catalogueCodes_no_nationalBibliography_yes_otherCatalogues"
+    )
+  ) {
+    return {
+      pid: "test_catalogueCodes_no_nationalBibliography_yes_otherCatalogues",
+      catalogueCodes: {
+        nationalBibliography: [],
+        otherCatalogues: ["other_catalogues"],
+      },
+    };
+  }
+
+  if (
+    id.startsWith(
+      "test_catalogueCodes_no_nationalBibliography_no_otherCatalogues"
+    )
+  ) {
+    return {
+      pid: "test_catalogueCodes_no_nationalBibliography_no_otherCatalogues",
+      catalogueCodes: {
+        nationalBibliography: [],
+        otherCatalogues: [],
+      },
+    };
+  }
+
   if (id.startsWith("work-of")) {
     return { ...consts.FAKE_WORK, workId: id };
   } else {
