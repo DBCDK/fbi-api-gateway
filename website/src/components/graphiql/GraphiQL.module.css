@@ -52,6 +52,13 @@
   flex-direction: column;
 }
 
+/* panel button outline on focus */
+:global(body.graphiql-dark)
+  .graphiql
+  :global(:is(.graphiql-un-styled, button.graphiql-un-styled):focus) {
+  outline: 2px solid var(--text-light);
+}
+
 .graphiql :global(button.graphiql-toolbar-button.error) {
   background-color: var(--error);
 }
