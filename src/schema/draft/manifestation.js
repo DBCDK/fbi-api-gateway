@@ -798,8 +798,8 @@ export const resolvers = {
   Manifestation: {
     catalogueCodes(parent) {
       return {
-        nationalBibliography: parent.catalogueCodes.nationalBibliography || [],
-        otherCatalogues: parent.catalogueCodes.otherCatalogues || [],
+        nationalBibliography: parent.catalogueCodes?.nationalBibliography || [],
+        otherCatalogues: parent.catalogueCodes?.otherCatalogues || [],
       };
     },
     workTypes(parent) {
