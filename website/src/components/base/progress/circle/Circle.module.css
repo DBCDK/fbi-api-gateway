@@ -32,3 +32,8 @@
 .bar.err .value {
   color: unset;
 }
+
+/* dark support */
+:global(body.dark) .bar::before {
+  background-color: var(--dark);
+}
