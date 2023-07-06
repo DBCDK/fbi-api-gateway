@@ -185,17 +185,44 @@ materialtype and title of the manifestation. The source of the cover is given in
 
 <InlineGraphiQL
   query={`query Example_ManifestationCovers ($faust: [String!]!) {
-manifestations(faust: $faust) {    
-titles {
-main
-}
-cover{detail origin}
-}
-}`}
+            manifestations(faust: $faust) {
+              titles {
+                main
+              }
+              cover {
+                detail
+                origin
+              }
+            }
+          }`}
   variables={{
     faust: ["40754563", "61965815"],
   }}
 />
+
+## Catalogue Codes
+
+_CatalogueCodes_ are provided on manifestations. _NationalBibliography_ contains, as the name implies, the catalogue
+codes from the national registers (DBF, DBI, DLF, DMO etc.). _OtherCatalogues_ contains codes for the local
+bibliographies or catalogues that the manifestation belongs to.
+
+<InlineGraphiQL
+  query={`query Example_ManifestationCatalogueCodes ($pid: String!) {
+            manifestation(pid: $pid) {
+              titles {
+                main
+              }
+              catalogueCodes {
+                nationalBibliography
+                otherCatalogues
+              }
+            }
+        }`}
+  variables={{
+    pid: "870970-basis:55139784",
+  }}
+/>
+
 
 ## Shelf information
 

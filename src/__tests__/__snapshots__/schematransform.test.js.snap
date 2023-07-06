@@ -272,6 +272,16 @@ type InfomediaArticle {
   html: String
 }
 
+type CatalogueCodes {
+  \\"\\"\\"CatalogueCodes from the national registers\\"\\"\\"
+  nationalBibliography: [String!]!
+
+  \\"\\"\\"
+  CatalogueCodes from local bibliographies or catalogues that the manifestation belongs to
+  \\"\\"\\"
+  otherCatalogues: [String!]!
+}
+
 type TableOfContent {
   heading: String
   content: String
@@ -676,6 +686,11 @@ type Manifestation {
   Different kinds of definitions of appropriate audience for this manifestation
   \\"\\"\\"
   audience: Audience
+
+  \\"\\"\\"
+  CatalogueCodes divided in codes from the national bibliography and other codes
+  \\"\\"\\"
+  catalogueCodes: CatalogueCodes!
 
   \\"\\"\\"
   Classification codes for this manifestation from any classification system
@@ -1794,6 +1809,16 @@ interface Creator {
   roles: [Role!]!
 }
 
+type CatalogueCodes {
+  \\"\\"\\"CatalogueCodes from the national registers\\"\\"\\"
+  nationalBibliography: [String!]!
+
+  \\"\\"\\"
+  CatalogueCodes from local bibliographies or catalogues that the manifestation belongs to
+  \\"\\"\\"
+  otherCatalogues: [String!]!
+}
+
 type TableOfContent {
   heading: String
   content: String
@@ -2198,6 +2223,11 @@ type Manifestation {
   Different kinds of definitions of appropriate audience for this manifestation
   \\"\\"\\"
   audience: Audience
+
+  \\"\\"\\"
+  CatalogueCodes divided in codes from the national bibliography and other codes
+  \\"\\"\\"
+  catalogueCodes: CatalogueCodes!
 
   \\"\\"\\"
   Classification codes for this manifestation from any classification system
