@@ -17,10 +17,10 @@ const {
  * @param {string} loanId
  * @param {string} agencyId
  * @param {string} userId
- * @param {string} userPincode //needed?
  * @returns {string} soap
  */
 function constructSoap({ loanId, agencyId, userId }) {
+  console.log("SOAP REQUEST", loanId, agencyId, userId);
   return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://oss.dbc.dk/ns/openuserstatus">
    <soapenv:Header/>
    <soapenv:Body>
@@ -70,8 +70,6 @@ export async function load(
   });
 
   return {
-    error:
-      res.body?.cancelOrderResponse?.cancelOrderStatus?.[0]?.cancelOrderError
-        ?.$,
+    error: res.body?.renewLoanResponse?.renewLoanStatus?.[0]?.renewLoanError?.$,
   };
 }

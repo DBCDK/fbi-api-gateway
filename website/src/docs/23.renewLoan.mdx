@@ -7,7 +7,7 @@ It is possible to renew a loan at any agency the user is registered at.
 <InlineGraphiQL
   query={`mutation renewLoan($loanId: String!, $agencyId: String!) {
   renewLoan(loanId: $loanId, agencyId: $agencyId, dryRun: true) {
-    deleted
+    renewed
     error
   }
 }`}

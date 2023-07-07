@@ -2,28 +2,13 @@ export const typeDef = `
   type RenewLoanResponse {
 
     """
-    Whether the order was deleted or not
+    Whether the order was deleted or not.
     """
-    statusCode: number!
+    renewed: Boolean!
 
     """
     Error message
     """
-    errors: string
-
-    """
-    Error description
-    """
-    error_description: string
-
-    """
-    data
-    """
-    data: Data
+    error: String
   }
-
-  type Data {
-    loanId: String
-    returnDate: String
-    }
 `;

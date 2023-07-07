@@ -397,6 +397,43 @@ export const resolvers = {
 
       return { deleted: !res.error, error: res.error };
     },
+    async renewLoan(parent, args, context, info) {
+      // NOTE FOR FURTHER DEVELOPMENT
+      //
+      // status check should be implemented here, to check if the loan can be renewed
+
+      const { loanId, agencyId, dryRun = false } = args;
+
+      // Get user info
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      // Get user attributes for the agency
+      const agencyAttributes = userinfo?.attributes?.agencies?.find(
+        (attributes) => attributes.agencyId === agencyId
+      );
+
+      // We need the userId
+      const userId = agencyAttributes?.userId;
+
+      // If dryRyn is true, we will not actually renew the loan
+      if (dryRun) {
+        return { renewed: true };
+      }
+
+      // Renew loan in the local library system, via openUserStatus
+      const res = await context.datasources.getLoader("renewLoan").load({
+        loanId,
+        agencyId,
+        userId,
+        smaug: context.smaug,
+        accessToken: context.accessToken,
+      });
+
+      return { renewed: !res.error, error: res.error };
+    },
+
     async submitPeriodicaArticleOrder(parent, args, context, info) {
       let { userName, userMail } = args.input;
 
