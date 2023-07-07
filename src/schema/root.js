@@ -399,9 +399,6 @@ export const resolvers = {
     },
     async renewLoan(parent, args, context, info) {
       // NOTE FOR FURTHER DEVELOPMENT
-      //
-      // status check should be implemented here, to check if the loan can be renewed
-
       const { loanId, agencyId, dryRun = false } = args;
 
       // Get user info
