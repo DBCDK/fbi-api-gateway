@@ -1,6 +1,24 @@
 import { createMockedDataLoaders } from "../datasourceLoader";
 import { performTestQuery } from "../utils/utils";
 
+async function catalogueCodesQuery(pid) {
+  return await performTestQuery({
+    query: `query ($pid: String!) {
+        manifestation(pid: $pid) {
+          pid
+          catalogueCodes {
+            nationalBibliography
+            otherCatalogues
+          }
+        }
+      }`,
+    variables: {
+      pid: pid,
+    },
+    context: { datasources: createMockedDataLoaders() },
+  });
+}
+
 describe("Manifestation", () => {
   test("fetch by pid", async () => {
     const result = await performTestQuery({
@@ -49,6 +67,79 @@ describe("Manifestation", () => {
       context: { datasources: createMockedDataLoaders() },
     });
     expect(result).toMatchSnapshot();
+  });
+  test("CatalogueCodes nationalBibliography and otherCatalogues", async () => {
+    const pid = "test_catalogueCodes_nationalBibliography_and_otherCatalogues";
+    const result = await catalogueCodesQuery(pid);
+    const expected = {
+      data: {
+        manifestation: {
+          catalogueCodes: {
+            nationalBibliography: [
+              "national_bibliography",
+              "more_national_bibliography",
+            ],
+            otherCatalogues: ["other_catalogues", "more_other_catalogues"],
+          },
+          pid: pid,
+        },
+      },
+    };
+    expect(result).toEqual(expected);
+  });
+  test("CatalogueCodes, yes nationalBibliography, no otherCatalogues", async () => {
+    const pid =
+      "test_catalogueCodes_yes_nationalBibliography_no_otherCatalogues";
+    const result = await catalogueCodesQuery(pid);
+
+    const expected = {
+      data: {
+        manifestation: {
+          catalogueCodes: {
+            nationalBibliography: ["national_bibliography"],
+            otherCatalogues: [],
+          },
+          pid: pid,
+        },
+      },
+    };
+    expect(result).toEqual(expected);
+  });
+  test("CatalogueCodes, no nationalBibliography, yes otherCatalogues", async () => {
+    const pid =
+      "test_catalogueCodes_no_nationalBibliography_yes_otherCatalogues";
+    const result = await catalogueCodesQuery(pid);
+
+    const expected = {
+      data: {
+        manifestation: {
+          catalogueCodes: {
+            nationalBibliography: [],
+            otherCatalogues: ["other_catalogues"],
+          },
+          pid: pid,
+        },
+      },
+    };
+    expect(result).toEqual(expected);
+  });
+  test("CatalogueCodes no nationalBibliography, no otherCatalogues", async () => {
+    const pid =
+      "test_catalogueCodes_no_nationalBibliography_no_otherCatalogues";
+    const result = await catalogueCodesQuery(pid);
+
+    const expected = {
+      data: {
+        manifestation: {
+          catalogueCodes: {
+            nationalBibliography: [],
+            otherCatalogues: [],
+          },
+          pid: pid,
+        },
+      },
+    };
+    expect(result).toEqual(expected);
   });
   test("Query all fields", async () => {
     const result = await performTestQuery({
@@ -119,6 +210,10 @@ describe("Manifestation", () => {
             primaryTarget
             let
             lix
+          }
+          catalogueCodes {
+            nationalBibliography
+            otherCatalogues
           }
           contributors {
             display

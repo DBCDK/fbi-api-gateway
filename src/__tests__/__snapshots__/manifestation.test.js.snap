@@ -58,6 +58,15 @@ Object {
           },
         ],
       },
+      "catalogueCodes": Object {
+        "nationalBibliography": Array [
+          "national_bibliography",
+        ],
+        "otherCatalogues": Array [
+          "other_catalogueCodes",
+          "even_other_catalogueCodes",
+        ],
+      },
       "classifications": Array [
         Object {
           "code": "Dummy 86-096",

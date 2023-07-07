@@ -160,6 +160,17 @@
   color: var(--dark);
 }
 
+/* panel button outline on focus */
+:global(body.dark)
+  .inlinegraphiql
+  :global(:is(.graphiql-un-styled, button.graphiql-un-styled):focus) {
+  outline: 2px solid var(--text-light);
+}
+
+:global(body.dark) .inlinegraphiql .complexity span {
+  background-color: var(--dark) !important;
+}
+
 /* dummy container */
 :global(body.dark) .inlinegraphiql.dummy .interface,
 :global(body.dark) .inlinegraphiql.dummy .buttons button,
