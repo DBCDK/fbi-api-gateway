@@ -110,7 +110,22 @@ type Mutation {
     """
     dryRun: Boolean
     ): DeleteOrderResponse
-    
+   renewLoan(
+    """
+    id of the loan to be renewed
+    """
+    loanId: String!
+
+    """
+    The agency where the loan is to be renewed.
+    """
+    agencyId: String!
+
+    """
+    If this is true, the loan is not actually renewed (is useful when generating examples).
+    """
+    dryRun: Boolean
+    ): RenewLoanResponse  
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!

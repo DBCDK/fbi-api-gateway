@@ -28,13 +28,19 @@ import createDataLoaders from "./datasourceLoader";
 import { v4 as uuid } from "uuid";
 import isbot from "isbot";
 
+process.stdout.on("error", function (err) {
+  if (err.code == "EPIPE") {
+    process.exit(0);
+  }
+});
+
 const app = express();
 let server;
 
 const proxy = createProxyMiddleware("http://127.0.0.1:3001", {
   changeOrigin: true,
   ws: true,
-  logLevel: "silent",
+  logLevel: "error",
 });
 
 const promExporterApp = express();
