@@ -30,41 +30,34 @@ export const typeDef = `
       userMail: String,
       userTelephone: String
    }
-   input SubmitOrderInput{
-    orderType: OrderType,
-    pids: [String!]!,
-    pickUpBranch: String!,
-    exactEdition: Boolean
-    expires: String
-    userParameters: SubmitOrderUserParameters!
-    author: String
-    authorOfComponent: String
-    pagination: String
-    publicationDate: String
-    publicationDateOfComponent: String
-    title: String
-    titleOfComponent: String
-    volume: String
+    input SubmitOrderInput{
+      orderType: OrderType,
+      pids: [String!]!,
+      pickUpBranch: String!,
+      exactEdition: Boolean
+      expires: String
+      userParameters: SubmitOrderUserParameters!
+      author: String
+      authorOfComponent: String
+      pagination: String
+      publicationDate: String
+      publicationDateOfComponent: String
+      title: String
+      titleOfComponent: String
+      volume: String
   } 
+    type CancelOrderResponse {
 
-  input DeleteOrderInput {
-    orderId: String!,
-    agencyId: String!,
-    dryRun: Boolean
-  }
-  
-  type DeleteOrderResponse {
+      """
+      Whether the order was cancelled or not
+      """
+      cancelled: Boolean!
 
-    """
-    Whether the order was deleted or not
-    """
-    deleted: Boolean!
-
-    """
-    Error message
-    """
-    error: String
-  }
+      """
+      Error message
+      """
+      error: String
+    }
   `;
 
 /**

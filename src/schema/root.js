@@ -94,7 +94,7 @@ type Query {
 
 type Mutation {
   data_collect(input: DataCollectInput!): String!
-  deleteOrder(
+  cancelOrder(    
     """
     id of the order to be deleted
     """
@@ -108,14 +108,14 @@ type Mutation {
     """
     If this is true, the order is not actually deleted (is useful when generating examples).
     """
-    dryRun: Boolean
-    ): DeleteOrderResponse
-    
+    dryRun: Boolean): CancelOrderResponse 
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
 }`;
+
+//TODO: @pjo: is deleteOrder in type query used?
 
 function translateFilters(filters) {
   const res = {};
@@ -335,7 +335,7 @@ export const resolvers = {
 
       return "OK";
     },
-    async deleteOrder(parent, args, context, info) {
+    async cancelOrder(parent, args, context, info) {
       // NOTE FOR FURTHER DEVELOPMENT
       //
       // When an order is placed, the order is not available in the local system
@@ -366,13 +366,13 @@ export const resolvers = {
       // We need the userId
       const userId = agencyAttributes?.userId;
 
-      // If dryRyn is true, we will not actually delete the order
+      // If dryRyn is true, we will not actually cancel the order
       if (dryRun) {
-        return { deleted: true };
+        return { cancelled: true };
       }
 
-      // Delete order in the local library system, via openUserStatus
-      const res = await context.datasources.getLoader("deleteOrder").load({
+      // Cancel order in the local library system, via openUserStatus
+      const res = await context.datasources.getLoader("cancelOrder").load({
         orderId,
         agencyId,
         userId,
@@ -380,7 +380,7 @@ export const resolvers = {
         accessToken: context.accessToken,
       });
 
-      return { deleted: !res.error, error: res.error };
+      return { cancelled: !res.error, error: res.error };
     },
     async submitPeriodicaArticleOrder(parent, args, context, info) {
       let { userName, userMail } = args.input;

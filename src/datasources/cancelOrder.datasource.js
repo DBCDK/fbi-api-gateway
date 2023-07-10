@@ -45,7 +45,6 @@ export async function load(
   { orderId, agencyId, userId, smaug, accessToken },
   context
 ) {
-  console.log("RIGHT");
   auditTrace(
     ACTIONS.write,
     config.app.id,
@@ -55,7 +54,7 @@ export async function load(
     },
     `${userId}/${agencyId}`,
     {
-      delete_order: orderId,
+      cancel_order: orderId,
     }
   );
 
