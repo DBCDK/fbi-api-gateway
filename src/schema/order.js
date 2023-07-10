@@ -46,6 +46,12 @@ export const typeDef = `
     titleOfComponent: String
     volume: String
   } 
+
+  input DeleteOrderInput {
+    orderId: String!,
+    agencyId: String!,
+    dryRun: Boolean
+  }
   
   type DeleteOrderResponse {
 
