@@ -399,6 +399,9 @@ export const resolvers = {
     },
     async renewLoan(parent, args, context, info) {
       // NOTE FOR FURTHER DEVELOPMENT
+      // In the long run, we would like to be able to retrieve the loans status from a. o. cicero to see if the loan can be renewed.
+      // This way, we can check if the loan can be renewed without calling the renewLoan function, which would be a better user experience.
+
       const { loanId, agencyId, dryRun = false } = args;
 
       // Get user info

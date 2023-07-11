@@ -40,7 +40,7 @@ let server;
 const proxy = createProxyMiddleware("http://127.0.0.1:3001", {
   changeOrigin: true,
   ws: true,
-  logLevel: "error",
+  logLevel: "silent",
 });
 
 const promExporterApp = express();

@@ -20,7 +20,6 @@ const {
  * @returns {string} soap
  */
 function constructSoap({ loanId, agencyId, userId }) {
-  console.log("SOAP REQUEST", loanId, agencyId, userId);
   return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://oss.dbc.dk/ns/openuserstatus">
    <soapenv:Header/>
    <soapenv:Body>
