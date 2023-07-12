@@ -2,7 +2,7 @@ export const typeDef = `
   type RenewLoanResponse {
 
     """
-    Whether the order was deleted or not.
+    Whether the loan was renewed or not.
     """
     renewed: Boolean!
 
