@@ -30,8 +30,7 @@ const constructSoap = ({ agencyId, userId }) => {
   return soap;
 };
 
-const reduceBody = (body) => ({
-});
+const reduceBody = (body) => ({});
 
 /**
  * Fetch user info

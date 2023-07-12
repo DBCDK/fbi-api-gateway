@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url: openuserstatusUrl } = config.datasources.openuserstatus;
+const { url } = config.datasources.openuserstatus;
 const {
   authenticationUser,
   authenticationGroup,
@@ -30,42 +30,19 @@ const constructSoap = ({ agencyId, userId }) => {
   return soap;
 };
 
-const reduceBody = (body) => ({
-    loans: body.getUserStatusResponse.userStatus.loanedItems.loan.map(item => ({
-      loanId: item.loanId.$,
-      edition: item.edition.$,
-      dueDate: item.dateDue.$,
-      bibliographicId: item.bibliographicRecordId.$,
-      title: item.title.$,
-      materialType: item.mediumType.$
-    }))
-  });
+const reduceBody = (body) =>
+  body.getUserStatusResponse.userStatus.loanedItems.loan?.map((item) => ({
+    loanId: item.loanId.$,
+    edition: item.edition.$,
+    dueDate: item.dateDue.$,
+    titleId: item.bibliographicRecordId.$,
+    title: item.title.$,
+    materialType: item.mediumType.$,
+  }));
 
-/**
- * Fetch user info
- */
-
-export async function load(bd, context) {
-  const url = config.datasources.openplatform.url + "/user";
-  const { accessToken } = bd;
-
-  // Get user info
-  const userinfo = await context.getLoader("userinfo").load({
-    accessToken: accessToken,
-  });
-
-  // Get user attributes for the agency
-  const agencyAttributes = userinfo?.attributes?.agencies?.find(
-    (attributes) => attributes.agencyId === agencyId
-  );
-
-  // We need the userId
-  const userId = agencyAttributes?.userId;
-
-  console.log("dada", bd, agencyAttributes, userId, userinfo);
-
-  const soap = constructSoap({ agencyId: "726500", userId: "2904951253" });
-  const res = await context?.fetch(openuserstatusUrl, {
+const callService = async ({ agencyId, userId }, context) => {
+  const soap = constructSoap({ agencyId: agencyId, userId: userId });
+  const res = await context?.fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "text/xml",
@@ -73,19 +50,30 @@ export async function load(bd, context) {
     body: soap,
   });
 
-  const loans = reduceBody(res.body);
-  console.log("LOANS", loans);
+  return reduceBody(res.body);
+};
 
-  return (
-    await context.fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        access_token: accessToken,
-        userinfo: ["userLoan"],
-      }),
+export async function load({ accessToken, userAccounts }, context) {
+  const collectedLoans = [];
+
+  await Promise.all(
+    userAccounts.map(async (account) => {
+      const loans = await callService(account, context);
+      if (!loans) {
+        // No loans found, stop here
+        return;
+      }
+      // Add agency used to fetch the loan
+      loans?.map((loan) => ({ ...loan, agencyId: account.agencyId }));
+      // Add to total list
+      collectedLoans.push(loans);
     })
-  ).body?.data;
+  );
+
+  // Flatten the array
+  const result = {
+    loans: collectedLoans.flat(),
+  };
+
+  return result;
 }

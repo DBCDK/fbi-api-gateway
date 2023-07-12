@@ -90,8 +90,27 @@ export const resolvers = {
       return res.debt;
     },
     async loans(parent, args, context, info) {
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      let userAccounts = userinfo?.attributes?.agencies;
+      /**
+       * filter duplicates, since we get different userIdTypes (LOCAL, CPR)
+       *
+       * TODO
+       * - Where to place
+       * - Should we prefer LOCAL or CPR - maybe just use both?
+       */
+      /*   */
+      userAccounts = userAccounts?.filter(
+        (value, index, self) =>
+          index === self.findIndex((e) => e.agencyId === value.agencyId)
+      );
+
       const res = await context.datasources.getLoader("loans").load({
         accessToken: context.accessToken,
+        userAccounts: userAccounts,
       });
 
       return res.loans;

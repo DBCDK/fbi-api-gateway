@@ -31,23 +31,25 @@ const constructSoap = ({ agencyId, userId }) => {
 };
 
 const reduceBody = (body) => ({
-  orders: body.getUserStatusResponse.userStatus.orderedItems.order?.map(item => ({
-    author: item.author?.$,
-    bibliographicId: item.bibliographicRecordId?.$,
-    publisher: item.publisher?.$,
-    materialType: item.mediumType?.$,
-    title: item.title?.$,
-    orderDate: item.orderDate?.$,
-    orderId: item.orderId?.$,
-    pages: item.pagination?.$,
-    language: item.language?.$,
-    edition: item.edition?.$,
-    orderStatus: item.orderStatus?.$,
-    orderType: item.orderType?.$,
-    holdQueuePosition: item.holdQueuePosition?.$,
-    pickUpAgency: item.pickUpAgency?.$,
-    pickUpExpiryDate: item.pickUpExpiryDate?.$
-  }))
+  orders: body.getUserStatusResponse.userStatus.orderedItems.order?.map(
+    (item) => ({
+      author: item.author?.$,
+      bibliographicId: item.bibliographicRecordId?.$,
+      publisher: item.publisher?.$,
+      materialType: item.mediumType?.$,
+      title: item.title?.$,
+      orderDate: item.orderDate?.$,
+      orderId: item.orderId?.$,
+      pages: item.pagination?.$,
+      language: item.language?.$,
+      edition: item.edition?.$,
+      orderStatus: item.orderStatus?.$,
+      orderType: item.orderType?.$,
+      holdQueuePosition: item.holdQueuePosition?.$,
+      pickUpAgency: item.pickUpAgency?.$,
+      pickUpExpiryDate: item.pickUpExpiryDate?.$,
+    })
+  ),
 });
 
 /**
