@@ -1,12 +1,16 @@
 import config from "../config";
 
-const { url: openuserstatusUrl } = config.datasources.openuserstatus;
+const { url } = config.datasources.openuserstatus;
 const {
   authenticationUser,
   authenticationGroup,
   authenticationPassword,
 } = config.datasources.openorder;
 
+/**
+ * SOAP request
+ * Returns either total debt or debts individually.
+ */
 const constructSoap = ({ agencyId, userId }) => {
   let soap = `
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://oss.dbc.dk/ns/openuserstatus">
@@ -31,12 +35,25 @@ const constructSoap = ({ agencyId, userId }) => {
 };
 
 /**
- * Fetch user info
+ * Reduce body data to match data model
  */
-export async function load({ accessToken }, context) {
-  const soap = constructSoap({ agencyId: "790900", userId: "0102033692" });
+const reduceBody = (body, agencyId) =>
+  body?.getUserStatusResponse?.userStatus?.fiscalAccount?.fiscalTransaction?.map(
+    (item) => ({
+      amount: item.fiscalTransactionAmount?.$,
+      currency: item.fiscalTransactionCurrency?.$,
+      title: item.title?.$,
+      date: item.fiscalTransactionDate?.$,
+      agencyId: agencyId, // Add agency used to fetch the debt
+    })
+  );
 
-  const res = await context?.fetch(openuserstatusUrl, {
+/**
+ * Call SOAP service for one user account
+ */
+const callService = async ({ agencyId, userId }, context) => {
+  const soap = constructSoap({ agencyId: agencyId, userId: userId });
+  const res = await context?.fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "text/xml",
@@ -44,20 +61,27 @@ export async function load({ accessToken }, context) {
     body: soap,
   });
 
-  console.log("FISCAL", res.body.userStatus);
+  return reduceBody(res?.body, agencyId);
+};
 
-  const url = config.datasources.openplatform.url + "/user";
+/**
+ * Fetch user debts
+ */
+export async function load({ userAccounts }, context) {
+  const collectedDebts = [];
 
-  return (
-    await context.fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        access_token: accessToken,
-        userinfo: ["userFiscal"],
-      }),
+  await Promise.all(
+    userAccounts.map(async (account) => {
+      const debts = await callService(account, context);
+      if (!debts) {
+        // No loans found, stop here
+        return;
+      }
+      // Add to total list
+      collectedDebts.push(debts);
     })
-  ).body?.data;
+  );
+
+  // Flatten the array
+  return collectedDebts.flat();
 }

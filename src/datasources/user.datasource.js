@@ -46,7 +46,6 @@ export async function load({ accessToken }, context) {
   });
 
   const data = res2.body;
-  console.log("USER", data);
 
   /*  */
   const url = config.datasources.openplatform.url + "/user";

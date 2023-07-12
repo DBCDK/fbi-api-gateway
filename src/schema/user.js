@@ -24,7 +24,13 @@ type User {
 type Loan {
   dueDate:	DateTime!
   loanId:	String!
+  agencyId: String!
+  edition: String
+  pages: String
+  publisher: String
+  language: String
   manifestation: Manifestation
+  materialType: String
 }
 enum OrderStatus {
   ACTIVE
@@ -40,15 +46,21 @@ type Order {
   orderType: String
   status: OrderStatus!
   pickUpBranch: Branch!
+  agencyId: String!
   holdQueuePosition: String
   orderDate: DateTime!
   creator: String
   title: String
   pickUpExpiryDate: DateTime
   manifestation: Manifestation
+  edition: String
+  language: String
+  pages: String
+  materialType: String
 }
 type Debt {
   amount: String!
+  agencyId: String!
   creator: String
   currency: String
   date: DateTime
@@ -84,10 +96,28 @@ export const resolvers = {
       return userinfo?.attributes?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
-      const res = await context.datasources.getLoader("debt").load({
+      const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
-      return res.debt;
+
+      let userAccounts = userinfo?.attributes?.agencies;
+      /**
+       * filter duplicates, since we get different userIdTypes (LOCAL, CPR)
+       *
+       * TODO
+       * - Where to place
+       * - Should we prefer LOCAL or CPR - maybe just use both?
+       */
+      /*   */
+      userAccounts = userAccounts?.filter(
+        (value, index, self) =>
+          index === self.findIndex((e) => e.agencyId === value.agencyId)
+      );
+
+      const res = await context.datasources.getLoader("debt").load({
+        userAccounts: userAccounts,
+      });
+      return res;
     },
     async loans(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
@@ -109,18 +139,35 @@ export const resolvers = {
       );
 
       const res = await context.datasources.getLoader("loans").load({
-        accessToken: context.accessToken,
         userAccounts: userAccounts,
       });
 
-      return res.loans;
+      return res;
     },
     async orders(parent, args, context, info) {
-      const res = await context.datasources.getLoader("orders").load({
+      const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
 
-      return res.orders;
+      let userAccounts = userinfo?.attributes?.agencies;
+      /**
+       * filter duplicates, since we get different userIdTypes (LOCAL, CPR)
+       *
+       * TODO
+       * - Where to place
+       * - Should we prefer LOCAL or CPR - maybe just use both?
+       */
+      /*   */
+      userAccounts = userAccounts?.filter(
+        (value, index, self) =>
+          index === self.findIndex((e) => e.agencyId === value.agencyId)
+      );
+
+      const res = await context.datasources.getLoader("orders").load({
+        userAccounts: userAccounts,
+      });
+
+      return res;
     },
     async postalCode(parent, args, context, info) {
       const res = await context.datasources.getLoader("user").load({

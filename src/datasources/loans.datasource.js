@@ -7,6 +7,10 @@ const {
   authenticationPassword,
 } = config.datasources.openorder;
 
+/**
+ * SOAP request
+ * Returns user loans
+ */
 const constructSoap = ({ agencyId, userId }) => {
   let soap = `
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://oss.dbc.dk/ns/openuserstatus">
@@ -30,16 +34,26 @@ const constructSoap = ({ agencyId, userId }) => {
   return soap;
 };
 
-const reduceBody = (body) =>
-  body.getUserStatusResponse.userStatus.loanedItems.loan?.map((item) => ({
-    loanId: item.loanId.$,
-    edition: item.edition.$,
-    dueDate: item.dateDue.$,
-    titleId: item.bibliographicRecordId.$,
-    title: item.title.$,
-    materialType: item.mediumType.$,
+/**
+ * Reduce body data to match data model
+ */
+const reduceBody = (body, agencyId) =>
+  body?.getUserStatusResponse?.userStatus?.loanedItems?.loan?.map((item) => ({
+    loanId: item.loanId?.$,
+    edition: item.edition?.$,
+    dueDate: item.dateDue?.$,
+    titleId: item.bibliographicRecordId?.$,
+    title: item.title?.$,
+    materialType: item.mediumType?.$,
+    pages: item.pagination?.$,
+    publisher: item.publisher?.$,
+    language: item.language?.$,
+    agencyId: agencyId, // Add agency used to fetch the order
   }));
 
+/**
+ * Call SOAP service for one user account
+ */
 const callService = async ({ agencyId, userId }, context) => {
   const soap = constructSoap({ agencyId: agencyId, userId: userId });
   const res = await context?.fetch(url, {
@@ -50,10 +64,13 @@ const callService = async ({ agencyId, userId }, context) => {
     body: soap,
   });
 
-  return reduceBody(res.body);
+  return reduceBody(res?.body, agencyId);
 };
 
-export async function load({ accessToken, userAccounts }, context) {
+/**
+ * Fetch user loans
+ */
+export async function load({ userAccounts }, context) {
   const collectedLoans = [];
 
   await Promise.all(
@@ -63,17 +80,11 @@ export async function load({ accessToken, userAccounts }, context) {
         // No loans found, stop here
         return;
       }
-      // Add agency used to fetch the loan
-      loans?.map((loan) => ({ ...loan, agencyId: account.agencyId }));
       // Add to total list
       collectedLoans.push(loans);
     })
   );
 
   // Flatten the array
-  const result = {
-    loans: collectedLoans.flat(),
-  };
-
-  return result;
+  return collectedLoans.flat();
 }

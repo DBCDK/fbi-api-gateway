@@ -1,12 +1,16 @@
 import config from "../config";
 
-const { url: openuserstatusUrl } = config.datasources.openuserstatus;
+const { url } = config.datasources.openuserstatus;
 const {
   authenticationUser,
   authenticationGroup,
   authenticationPassword,
 } = config.datasources.openorder;
 
+/**
+ * SOAP request
+ * Returns user orders
+ */
 const constructSoap = ({ agencyId, userId }) => {
   let soap = `
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://oss.dbc.dk/ns/openuserstatus">
@@ -30,35 +34,35 @@ const constructSoap = ({ agencyId, userId }) => {
   return soap;
 };
 
-const reduceBody = (body) => ({
-  orders: body.getUserStatusResponse.userStatus.orderedItems.order?.map(
-    (item) => ({
-      author: item.author?.$,
-      bibliographicId: item.bibliographicRecordId?.$,
-      publisher: item.publisher?.$,
-      materialType: item.mediumType?.$,
-      title: item.title?.$,
-      orderDate: item.orderDate?.$,
-      orderId: item.orderId?.$,
-      pages: item.pagination?.$,
-      language: item.language?.$,
-      edition: item.edition?.$,
-      orderStatus: item.orderStatus?.$,
-      orderType: item.orderType?.$,
-      holdQueuePosition: item.holdQueuePosition?.$,
-      pickUpAgency: item.pickUpAgency?.$,
-      pickUpExpiryDate: item.pickUpExpiryDate?.$,
-    })
-  ),
-});
+/**
+ * Reduce body data to match data model
+ */
+const reduceBody = (body, agencyId) =>
+  body?.getUserStatusResponse?.userStatus?.orderedItems?.order?.map((item) => ({
+    creator: item.author?.$,
+    titleId: item.bibliographicRecordId?.$,
+    publisher: item.publisher?.$,
+    materialType: item.mediumType?.$,
+    title: item.title?.$,
+    orderDate: item.orderDate?.$,
+    orderId: item.orderId?.$,
+    pages: item.pagination?.$,
+    language: item.language?.$,
+    edition: item.edition?.$,
+    orderStatus: item.orderStatus?.$,
+    orderType: item.orderType?.$,
+    holdQueuePosition: item.holdQueuePosition?.$,
+    pickUpAgency: item.pickUpAgency?.$, // Can we get pickupbranch?
+    pickUpExpiryDate: item.pickUpExpiryDate?.$,
+    agencyId: agencyId, // Add agency used to fetch the order
+  }));
 
 /**
- * Fetch user info
+ * Call SOAP service for one user account
  */
-export async function load({ accessToken }, context) {
-  const soap = constructSoap({ agencyId: "726500", userId: "2904951253" });
-
-  const res = await context?.fetch(openuserstatusUrl, {
+const callService = async ({ agencyId, userId }, context) => {
+  const soap = constructSoap({ agencyId: agencyId, userId: userId });
+  const res = await context?.fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "text/xml",
@@ -66,24 +70,29 @@ export async function load({ accessToken }, context) {
     body: soap,
   });
 
-  const orders = reduceBody(res.body);
+  return reduceBody(res?.body, agencyId);
+};
 
-  console.log("ORDERS", orders);
+/**
+ * Fetch user orders
+ */
+export async function load({ userAccounts }, context) {
+  const collectedOrders = [];
 
-  /* OLD */
-
-  const url = config.datasources.openplatform.url + "/user";
-
-  return (
-    await context.fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        access_token: accessToken,
-        userinfo: ["userOrder"],
-      }),
+  await Promise.all(
+    userAccounts.map(async (account) => {
+      const orders = await callService(account, context);
+      if (!orders) {
+        // No loans found, stop here
+        return;
+      }
+      // Add agency used to fetch the loan
+      orders.map((order) => ({ ...order, agencyId: account.agencyId }));
+      // Add to total list
+      collectedOrders.push(orders);
     })
-  ).body?.data;
+  );
+
+  // Flatten the array
+  return collectedOrders.flat();
 }
