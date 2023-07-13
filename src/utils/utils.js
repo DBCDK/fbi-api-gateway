@@ -403,6 +403,7 @@ export async function getAgencyAttributes({ agencyId, context }) {
  */
 export function getUserIdFromAgencyAttributes(agencyAttributes) {
   if (!agencyAttributes || agencyAttributes.length === 0) {
+    log.error("No agencyAttributes found for user.");
     return null;
   }
   //if we have 2, we prefer getting the local id to avoid saving cpr
