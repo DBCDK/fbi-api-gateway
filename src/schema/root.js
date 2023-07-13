@@ -376,15 +376,7 @@ export const resolvers = {
         };
       }
 
-      let userId;
-      try {
-        userId = await getUserId({ agencyId, context });
-      } catch (e) {
-        return {
-          deleted: false,
-          error: "Could not get userId " + e,
-        };
-      }
+      const userId = await getUserId({ agencyId, context });
 
       if (!userId) {
         return {
@@ -423,15 +415,8 @@ export const resolvers = {
         };
       }
 
-      let userId;
-      try {
-        userId = await getUserId({ agencyId, context });
-      } catch (e) {
-        return {
-          renewed: false,
-          error: "Could not get userId " + e,
-        };
-      }
+      const userId = await getUserId({ agencyId, context });
+
       if (!userId) {
         return {
           renewed: false,
