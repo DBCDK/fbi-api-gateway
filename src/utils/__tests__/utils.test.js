@@ -1,4 +1,4 @@
-import { getPageDescription } from "../utils";
+import { getPageDescription, getUserIdFromAgencyAttributes } from "../utils";
 
 describe("Utils", () => {
   test("getPageDescription", () => {
@@ -43,4 +43,27 @@ describe("Utils", () => {
       "Lån en Bogtitel af En Forfatter. Bestil, reserver, lån fra alle danmarks biblioteker. Afhent på dit lokale bibliotek eller find online.";
     expect(actual).toEqual(expected);
   });
+});
+
+test("get local userId from agencyattributes when there are both CPR and LOCAL ID", () => {
+  const twoMatches = [
+    { agencyId: "716100", userId: "2904951253", userIdType: "CPR" },
+    { agencyId: "716100", userId: "C026780038", userIdType: "LOCAL" },
+  ];
+
+  const actual = getUserIdFromAgencyAttributes(twoMatches);
+  expect(actual).toEqual("C026780038");
+});
+
+test("get cpr userId from agencyattributes when there is only one", () => {
+  const oneMatch = [
+    { agencyId: "716100", userId: "2904951253", userIdType: "CPR" },
+  ];
+  const actual = getUserIdFromAgencyAttributes(oneMatch);
+  expect(actual).toEqual("2904951253");
+});
+
+test("return null, when there is neither cpr or local id", () => {
+  const actual = getUserIdFromAgencyAttributes([]);
+  expect(actual).toEqual(null);
 });

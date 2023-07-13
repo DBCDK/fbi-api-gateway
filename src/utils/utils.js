@@ -379,3 +379,39 @@ export function parseJedSubjects({
     })),
   ];
 }
+
+export async function getUserId({ agencyId, context }) {
+  const agencyAttributes = await getAgencyAttributes({ agencyId, context });
+  return getUserIdFromAgencyAttributes(agencyAttributes);
+}
+
+export async function getAgencyAttributes({ agencyId, context }) {
+  const userinfo = await context.datasources.getLoader("userinfo").load({
+    accessToken: context.accessToken,
+  });
+
+  return userinfo?.attributes?.agencies?.filter(
+    (attributes) => attributes.agencyId === agencyId
+  );
+}
+
+/**
+ * Get the userId from agencyAttributes.
+ * If we have two agencyAttributes (local and cpr), we prefer getting the local id to avoid saving cpr
+ * @param {*} agencyAttributes
+ * @returns
+ */
+export function getUserIdFromAgencyAttributes(agencyAttributes) {
+  if (agencyAttributes.length === 0) {
+    return null;
+  }
+  //if we only have one userId, we take what we can get
+  if (agencyAttributes.length === 1) {
+    return agencyAttributes[0].userId;
+  }
+  //if we have 2, we prefer getting the local id to avoid saving cpr
+  if (agencyAttributes.length > 1) {
+    return agencyAttributes?.find((attr) => attr.userIdType === "LOCAL")
+      ?.userId;
+  }
+}

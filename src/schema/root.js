@@ -6,6 +6,7 @@
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import {
+  getUserId,
   resolveBorrowerCheck,
   resolveManifestation,
   resolveWork,
@@ -368,20 +369,16 @@ export const resolvers = {
 
       const { orderId, agencyId, dryRun } = args;
 
-      // Get user info
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
+      const userId = await getUserId({ agencyId, context });
 
-      // Get user attributes for the agency
-      const agencyAttributes = userinfo?.attributes?.agencies?.find(
-        (attributes) => attributes.agencyId === agencyId
-      );
+      if (!userId) {
+        return {
+          deleted: false,
+          error: "User not found",
+        };
+      }
 
-      // We need the userId
-      const userId = agencyAttributes?.userId;
-
-      // If dryRyn is true, we will not actually delete the order
+      //if dry run, we will not actually execute the deleteOrder function
       if (dryRun) {
         return { deleted: true };
       }
@@ -404,20 +401,16 @@ export const resolvers = {
 
       const { loanId, agencyId, dryRun = false } = args;
 
-      // Get user info
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
+      const userId = getUserId({ agencyId, context });
 
-      // Get user attributes for the agency
-      const agencyAttributes = userinfo?.attributes?.agencies?.find(
-        (attributes) => attributes.agencyId === agencyId
-      );
+      if (!userId) {
+        return {
+          renewed: false,
+          error: "User not found",
+        };
+      }
 
-      // We need the userId
-      const userId = agencyAttributes?.userId;
-
-      // If dryRyn is true, we will not actually renew the loan
+      //if dry run, we will not actually execute the renewLoan function
       if (dryRun) {
         return { renewed: true };
       }
