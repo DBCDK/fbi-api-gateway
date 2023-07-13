@@ -402,16 +402,13 @@ export async function getAgencyAttributes({ agencyId, context }) {
  * @returns
  */
 export function getUserIdFromAgencyAttributes(agencyAttributes) {
-  if (agencyAttributes.length === 0) {
+  if (!agencyAttributes || agencyAttributes.length === 0) {
     return null;
   }
-  //if we only have one userId, we take what we can get
-  if (agencyAttributes.length === 1) {
-    return agencyAttributes[0].userId;
-  }
   //if we have 2, we prefer getting the local id to avoid saving cpr
-  if (agencyAttributes.length > 1) {
-    return agencyAttributes?.find((attr) => attr.userIdType === "LOCAL")
-      ?.userId;
-  }
+
+  return (
+    agencyAttributes?.find((attr) => attr.userIdType === "LOCAL")?.userId ||
+    agencyAttributes[0].userId
+  );
 }

@@ -45,7 +45,7 @@ describe("Utils", () => {
   });
 });
 
-test("get local userId from agencyattributes when there are both CPR and LOCAL ID", () => {
+test("Get local userId from agencyattributes when there are both CPR and LOCAL ID", () => {
   const twoMatches = [
     { agencyId: "716100", userId: "2904951253", userIdType: "CPR" },
     { agencyId: "716100", userId: "C026780038", userIdType: "LOCAL" },
@@ -55,7 +55,17 @@ test("get local userId from agencyattributes when there are both CPR and LOCAL I
   expect(actual).toEqual("C026780038");
 });
 
-test("get cpr userId from agencyattributes when there is only one", () => {
+test("If there is no local id, take the first", () => {
+  const twoCPR = [
+    { agencyId: "716100", userId: "2904951253", userIdType: "CPR" },
+    { agencyId: "716100", userId: "123", userIdType: "CPR" },
+  ];
+
+  const actual = getUserIdFromAgencyAttributes(twoCPR);
+  expect(actual).toEqual("2904951253");
+});
+
+test("Get cpr userId from agencyattributes when there is only one", () => {
   const oneMatch = [
     { agencyId: "716100", userId: "2904951253", userIdType: "CPR" },
   ];
@@ -63,7 +73,12 @@ test("get cpr userId from agencyattributes when there is only one", () => {
   expect(actual).toEqual("2904951253");
 });
 
-test("return null, when there is neither cpr or local id", () => {
+test("Return null, when there is neither cpr or local id", () => {
   const actual = getUserIdFromAgencyAttributes([]);
+  expect(actual).toEqual(null);
+});
+
+test("Return null, when there are no agencies", () => {
+  const actual = getUserIdFromAgencyAttributes();
   expect(actual).toEqual(null);
 });
