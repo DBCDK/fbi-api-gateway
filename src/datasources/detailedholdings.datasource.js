@@ -28,7 +28,6 @@ function parseResponse(details, agencyId) {
   }
 
   return {
-    count: responders?.length,
     branchId: agencyId,
     holdingstatus: localholdings,
   };
@@ -65,6 +64,7 @@ export async function load({ localIds, agencyId }, context) {
     });
 
     return parseResponse(response?.body, agencyId);
+    // return { miaw: "vuf" };
   } catch (e) {
     log.error("Request to holdingsservice failed." + " Message: " + e.message);
     // @TODO what to return here
