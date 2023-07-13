@@ -374,7 +374,7 @@ export const resolvers = {
       if (!userId) {
         return {
           deleted: false,
-          error: "User not found",
+          error: "User or agency not found",
         };
       }
 
@@ -406,7 +406,7 @@ export const resolvers = {
       if (!userId) {
         return {
           renewed: false,
-          error: "User not found",
+          error: "User or agency not found",
         };
       }
 
