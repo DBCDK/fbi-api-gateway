@@ -369,7 +369,22 @@ export const resolvers = {
 
       const { orderId, agencyId, dryRun } = args;
 
-      const userId = await getUserId({ agencyId, context });
+      if (!orderId || !agencyId) {
+        return {
+          deleted: false,
+          error: "Please provide orderId and agencyId",
+        };
+      }
+
+      let userId;
+      try {
+        userId = await getUserId({ agencyId, context });
+      } catch (e) {
+        return {
+          deleted: false,
+          error: "Could not get userId " + e,
+        };
+      }
 
       if (!userId) {
         return {
@@ -401,8 +416,22 @@ export const resolvers = {
 
       const { loanId, agencyId, dryRun = false } = args;
 
-      const userId = getUserId({ agencyId, context });
+      if (!loanId || !agencyId) {
+        return {
+          renewed: false,
+          error: "Please provide loanId and agencyId",
+        };
+      }
 
+      let userId;
+      try {
+        userId = await getUserId({ agencyId, context });
+      } catch (e) {
+        return {
+          renewed: false,
+          error: "Could not get userId " + e,
+        };
+      }
       if (!userId) {
         return {
           renewed: false,
@@ -423,7 +452,6 @@ export const resolvers = {
         smaug: context.smaug,
         accessToken: context.accessToken,
       });
-
       return { renewed: !res.error, error: res.error };
     },
 

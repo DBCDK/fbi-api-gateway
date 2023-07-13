@@ -68,7 +68,11 @@ export async function load(
     body: soap,
   });
 
+  const error =
+    res.body?.renewLoanResponse?.renewLoanStatus?.[0]?.renewLoanError?.$ ||
+    res.body?.getUserStatusResponse?.getUserStatusError?.$;
+
   return {
-    error: res.body?.renewLoanResponse?.renewLoanStatus?.[0]?.renewLoanError?.$,
+    error: error,
   };
 }
