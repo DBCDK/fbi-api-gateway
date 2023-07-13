@@ -2,8 +2,8 @@ import { processRequest } from "../submitOrder.datasource";
 
 export async function load(input) {
   const postSoap = () =>
-    ` <?xml version="1.0" encoding="UTF-8"?>
-    <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    `<?xml version="1.0" encoding="UTF-8"?>
+     <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
       <S:Body>
         <ns1:placeOrderResponse xmlns:ns1="http://oss.dbc.dk/ns/openorder">
           <ns1:orderPlaced>
@@ -12,7 +12,7 @@ export async function load(input) {
           </ns1:orderPlaced>
         </ns1:placeOrderResponse>
       </S:Body>
-    </S:Envelope>`;
+     </S:Envelope>`;
 
   return await processRequest(input, postSoap);
 }
