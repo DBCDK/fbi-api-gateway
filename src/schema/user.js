@@ -11,15 +11,17 @@ import { resolveManifestation } from "../utils/utils";
 export const typeDef = `
 type User {
   name: String!
+  agencies: [String]
   address: String
   postalCode: String
   municipalityAgencyId: String
   mail: String
   culrMail: String
+  country: String
   agency(language: LanguageCode): BranchResult!
-  orders: [Order!]!
-  loans: [Loan!]!
-  debt: [Debt!]!
+  orders: [Order!]! @complexity(value: 5)
+  loans: [Loan!]! @complexity(value: 5)
+  debt: [Debt!]! @complexity(value: 3)
 }
 type Loan {
   dueDate:	DateTime!
@@ -73,20 +75,90 @@ function isEmail(email) {
 }
 
 /**
+ * Filter duplicates, since we get different userIdTypes (LOCAL, CPR)
+ * If both LOCAL and CPR exists, prioritize LOCAL to minimize CPR's sent around services
+ * @param userAccounts: [{ agencyId: String, userId: String, userIdType: String }]
+ * @returns [{ agencyId: String, userId: String, userIdType: String }]
+ */
+const filterDuplicateAgencies = (userAccounts) => {
+  const result = [];
+
+  userAccounts.forEach((account) => {
+    const indexOf = result.map((e) => e.agencyId).indexOf(account.agencyId);
+
+    if (indexOf === -1) {
+      // Result doesn't contain agencyId, push this one
+      result.push(account);
+      return;
+    }
+
+    // result already contains agencyId, check if we want to replace it
+    if (
+      result[indexOf].userIdType === "CPR" &&
+      account.userIdType === "LOCAL"
+    ) {
+      result.splice(indexOf, 1);
+      result.push(account);
+    }
+  });
+
+  return result;
+};
+
+/**
+ * getHomeAgencyAccount
+ * Prioritizes LOCAL account
+ * @param userinfo - parse the data directy from userinfo datasource
+ * @returns user account: { agencyId: String, userId: String, userIdType: String }
+ */
+const getHomeAgencyAccount = (userinfo) => {
+  const homeAgency = userinfo?.attributes?.municipalityAgencyId;
+
+  /**
+   * Firstly try getting the local account
+   */
+  const accountLocal = userinfo?.attributes?.agencies.find(
+    (account) =>
+      account.agencyId === homeAgency && account.userIdType === "LOCAL"
+  );
+
+  if (accountLocal) return accountLocal;
+
+  /**
+   * If no local existed, try to find the CPR account
+   */
+  const accountCPR = userinfo?.attributes?.agencies.find((account) => {
+    account.agencyId === homeAgency && account.userIdType === "CPR";
+  });
+
+  return accountCPR;
+};
+
+/**
  * Resolvers for the Profile type
  */
 export const resolvers = {
   User: {
     async name(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
+      const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load({
+        userAccount: homeAccount,
+      });
+
       return res.name;
     },
     async address(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
+      const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load({
+        userAccount: homeAccount,
+      });
+
       return res.address;
     },
     async municipalityAgencyId(parent, args, context, info) {
@@ -99,21 +171,9 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
-
-      let userAccounts = userinfo?.attributes?.agencies;
-      /**
-       * filter duplicates, since we get different userIdTypes (LOCAL, CPR)
-       *
-       * TODO
-       * - Where to place
-       * - Should we prefer LOCAL or CPR - maybe just use both?
-       */
-      /*   */
-      userAccounts = userAccounts?.filter(
-        (value, index, self) =>
-          index === self.findIndex((e) => e.agencyId === value.agencyId)
+      const userAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
       );
-
       const res = await context.datasources.getLoader("debt").load({
         userAccounts: userAccounts,
       });
@@ -123,21 +183,9 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
-
-      let userAccounts = userinfo?.attributes?.agencies;
-      /**
-       * filter duplicates, since we get different userIdTypes (LOCAL, CPR)
-       *
-       * TODO
-       * - Where to place
-       * - Should we prefer LOCAL or CPR - maybe just use both?
-       */
-      /*   */
-      userAccounts = userAccounts?.filter(
-        (value, index, self) =>
-          index === self.findIndex((e) => e.agencyId === value.agencyId)
+      const userAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
       );
-
       const res = await context.datasources.getLoader("loans").load({
         userAccounts: userAccounts,
       });
@@ -148,21 +196,9 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
-
-      let userAccounts = userinfo?.attributes?.agencies;
-      /**
-       * filter duplicates, since we get different userIdTypes (LOCAL, CPR)
-       *
-       * TODO
-       * - Where to place
-       * - Should we prefer LOCAL or CPR - maybe just use both?
-       */
-      /*   */
-      userAccounts = userAccounts?.filter(
-        (value, index, self) =>
-          index === self.findIndex((e) => e.agencyId === value.agencyId)
+      const userAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
       );
-
       const res = await context.datasources.getLoader("orders").load({
         userAccounts: userAccounts,
       });
@@ -170,17 +206,37 @@ export const resolvers = {
       return res;
     },
     async postalCode(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
+      const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
+      });
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load({
+        userAccount: homeAccount,
       });
 
       return res.postalCode;
     },
     async mail(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
+      const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load({
+        userAccount: homeAccount,
+      });
+
       return res.mail;
+    },
+    async country(parent, args, context, info) {
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load({
+        userAccount: homeAccount,
+      });
+
+      return res.country;
     },
     async culrMail(parent, args, context, info) {
       const resUserInfo = await context.datasources.getLoader("userinfo").load({
@@ -207,6 +263,16 @@ export const resolvers = {
         status: args.status || "ALLE",
         bibdkExcludeBranches: args.bibdkExcludeBranches || false,
       });
+    },
+    async agencies(parent, args, context, info) {
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      const agencies = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
+      )?.map((account) => account.agencyId);
+      return agencies;
     },
   },
   Loan: {

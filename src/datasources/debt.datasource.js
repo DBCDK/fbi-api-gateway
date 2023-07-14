@@ -66,6 +66,7 @@ const callService = async ({ agencyId, userId }, context) => {
 
 /**
  * Fetch user debts
+ * @param userAccounts: [{ agencyId: String, userId: String, userIdType: String }]
  */
 export async function load({ userAccounts }, context) {
   const collectedDebts = [];

@@ -75,6 +75,7 @@ const callService = async ({ agencyId, userId }, context) => {
 
 /**
  * Fetch user orders
+ * @param userAccounts: [{ agencyId: String, userId: String, userIdType: String }]
  */
 export async function load({ userAccounts }, context) {
   const collectedOrders = [];
@@ -86,8 +87,6 @@ export async function load({ userAccounts }, context) {
         // No loans found, stop here
         return;
       }
-      // Add agency used to fetch the loan
-      orders.map((order) => ({ ...order, agencyId: account.agencyId }));
       // Add to total list
       collectedOrders.push(orders);
     })

@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url: openuserstatusUrl } = config.datasources.openuserstatus;
+const { url } = config.datasources.openuserstatus;
 const {
   authenticationUser,
   authenticationGroup,
@@ -30,14 +30,24 @@ const constructSoap = ({ agencyId, userId }) => {
   return soap;
 };
 
-const reduceBody = (body) => ({});
+const reduceBody = (body) => ({
+  name: body?.getUserStatusResponse?.userName?.$,
+  mail: body?.getUserStatusResponse?.userMail?.$,
+  address: body?.getUserStatusResponse?.userAddress?.$,
+  postalCode: body?.getUserStatusResponse?.userPostalCode?.$,
+  country: body?.getUserStatusResponse?.userCountry?.$,
+});
 
 /**
  * Fetch user info
+ * @param userAccount: { agencyId: String, userId: String, userIdType: String }
  */
-export async function load({ accessToken }, context) {
-  const soap = constructSoap({ agencyId: "726500", userId: "2904951253" });
-  const res2 = await context?.fetch(openuserstatusUrl, {
+export async function load({ userAccount }, context) {
+  const soap = constructSoap({
+    agencyId: userAccount?.agencyId,
+    userId: userAccount?.userId,
+  });
+  const res = await context?.fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "text/xml",
@@ -45,21 +55,5 @@ export async function load({ accessToken }, context) {
     body: soap,
   });
 
-  const data = res2.body;
-
-  /*  */
-  const url = config.datasources.openplatform.url + "/user";
-
-  const res = await context?.fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      access_token: accessToken,
-      userinfo: ["userData"],
-    }),
-    allowedErrorStatusCodes: [403],
-  });
-  return res?.body?.data;
+  return reduceBody(res?.body);
 }
