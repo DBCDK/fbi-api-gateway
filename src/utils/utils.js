@@ -413,3 +413,77 @@ export function getUserIdFromAgencyAttributes(agencyAttributes) {
     agencyAttributes[0].userId
   );
 }
+
+/**
+ * getHomeAgencyAccount
+ * Prioritizes LOCAL account
+ * @param userinfo - parse the data directy from userinfo datasource
+ * @returns user account: { agencyId: String, userId: String, userIdType: String }
+ */
+export const getHomeAgencyAccount = (userinfo) => {
+  const homeAgency = userinfo?.attributes?.municipalityAgencyId;
+
+  /**
+   * Firstly try getting the local account
+   */
+  const accountLocal = userinfo?.attributes?.agencies.find(
+    (account) =>
+      account.agencyId === homeAgency && account.userIdType === "LOCAL"
+  );
+
+  if (accountLocal) return accountLocal;
+
+  /**
+   * If no local existed, try to find the CPR account
+   */
+  const accountCPR = userinfo?.attributes?.agencies.find((account) => {
+    account.agencyId === homeAgency && account.userIdType === "CPR";
+  });
+
+  /**
+   * Edge case for test users which municipalityAgencyId doesn't match their accounts
+   */
+  if (!accountLocal && !accountCPR) {
+    // Fall back to any local
+    return userinfo?.attributes?.agencies.find(
+      (account) => account.userIdType === "LOCAL"
+    );
+  }
+
+  return accountCPR;
+};
+
+/**
+ * Filter duplicates, since we get different userIdTypes (LOCAL, CPR)
+ * If both LOCAL and CPR exists, prioritize LOCAL to minimize CPR's sent around services
+ * @param userAccounts: [{ agencyId: String, userId: String, userIdType: String }]
+ * @returns [{ agencyId: String, userId: String, userIdType: String }]
+ */
+export const filterDuplicateAgencies = (userAccounts) => {
+  const result = [];
+
+  if (!userAccounts || userAccounts.length === 0) {
+    return result;
+  }
+
+  userAccounts.forEach((account) => {
+    const indexOf = result.map((e) => e.agencyId).indexOf(account.agencyId);
+
+    if (indexOf === -1) {
+      // Result doesn't contain agencyId, push this one
+      result.push(account);
+      return;
+    }
+
+    // result already contains agencyId, check if we want to replace it
+    if (
+      result[indexOf].userIdType === "CPR" &&
+      account.userIdType === "LOCAL"
+    ) {
+      result.splice(indexOf, 1);
+      result.push(account);
+    }
+  });
+
+  return result;
+};

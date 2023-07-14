@@ -3,145 +3,86 @@
 exports[`user - get agency danish 1`] = `
 Object {
   "data": Object {
-    "user": Object {
-      "address": "Borgmesterskoven 45",
-      "agency": Object {
-        "result": Array [
-          Object {
-            "name": "DBCTestBibliotek",
-            "openingHours": "VIP 4.9: Åbningstider<br>
-mandag<br>
-tirsdag<br>
-onsdag<br>
-torsdag<br>
-fredag<br>
-lørdag",
-          },
-          Object {
-            "name": "DBCtest_2",
-            "openingHours": null,
-          },
-          Object {
-            "name": "DBC-bibilioteksekspressen",
-            "openingHours": null,
-          },
-        ],
-      },
-      "mail": "test@dbc.dk",
-      "name": "Freja Damgaard",
-      "postalCode": "8660",
-    },
+    "user": null,
   },
+  "errors": Array [
+    [GraphQLError: Cannot read properties of undefined (reading 'address')],
+    [GraphQLError: Cannot read properties of undefined (reading 'postalCode')],
+    [GraphQLError: Cannot read properties of undefined (reading 'mail')],
+    [GraphQLError: Cannot read properties of undefined (reading 'name')],
+  ],
 }
 `;
 
 exports[`user - get agency english 1`] = `
 Object {
   "data": Object {
-    "user": Object {
-      "address": "Borgmesterskoven 45",
-      "agency": Object {
-        "result": Array [
-          Object {
-            "name": "DBCTestBibliotek",
-            "openingHours": "VIP 4.9: Åbningstider<br>
-mandag<br>
-tirsdag<br>
-onsdag<br>
-torsdag<br>
-fredag<br>
-lørdag",
-          },
-          Object {
-            "name": "DBCtest_2",
-            "openingHours": null,
-          },
-          Object {
-            "name": "DBC-bibilioteksekspressen",
-            "openingHours": null,
-          },
-        ],
-      },
-      "mail": "test@dbc.dk",
-      "name": "Freja Damgaard",
-      "postalCode": "8660",
-    },
+    "user": null,
   },
+  "errors": Array [
+    [GraphQLError: Cannot read properties of undefined (reading 'address')],
+    [GraphQLError: Cannot read properties of undefined (reading 'postalCode')],
+    [GraphQLError: Cannot read properties of undefined (reading 'mail')],
+    [GraphQLError: Cannot read properties of undefined (reading 'name')],
+  ],
 }
 `;
 
 exports[`user - get basic data 1`] = `
 Object {
   "data": Object {
-    "user": Object {
-      "address": "Borgmesterskoven 45",
-      "culrMail": "some@mail.com",
-      "mail": "test@dbc.dk",
-      "municipalityAgencyId": "715100",
-      "name": "Freja Damgaard",
-      "postalCode": "8660",
-    },
+    "user": null,
   },
+  "errors": Array [
+    [GraphQLError: Cannot read properties of undefined (reading 'address')],
+    [GraphQLError: Cannot read properties of undefined (reading 'postalCode')],
+    [GraphQLError: Cannot read properties of undefined (reading 'mail')],
+    [GraphQLError: Cannot read properties of undefined (reading 'country')],
+    [GraphQLError: Cannot read properties of undefined (reading 'name')],
+  ],
 }
 `;
 
 exports[`user - get debt 1`] = `
 Object {
   "data": Object {
-    "user": Object {
-      "debt": Array [
-        Object {
-          "amount": "224",
-          "creator": null,
-          "currency": "DKK",
-          "date": 1969-12-31T23:00:00.000Z,
-          "title": "",
-        },
-        Object {
-          "amount": "50",
-          "creator": null,
-          "currency": "DKK",
-          "date": 1969-12-31T23:00:00.000Z,
-          "title": "",
-        },
-      ],
-    },
+    "user": null,
   },
+  "errors": Array [
+    [GraphQLError: Cannot return null for non-nullable field User.debt.],
+  ],
 }
 `;
 
 exports[`user - get loans 1`] = `
 Object {
   "data": Object {
-    "user": Object {
-      "loans": Array [
-        Object {
-          "dueDate": 2021-05-01T22:00:00.000Z,
-          "loanId": "120200589",
-        },
-        Object {
-          "dueDate": 2021-04-29T22:00:00.000Z,
-          "loanId": "120200590",
-        },
-      ],
-    },
+    "user": null,
   },
+  "errors": Array [
+    [GraphQLError: Cannot return null for non-nullable field User.loans.],
+  ],
+}
+`;
+
+exports[`user - get loans 2`] = `
+Object {
+  "data": Object {
+    "user": null,
+  },
+  "errors": Array [
+    [GraphQLError: Cannot return null for non-nullable field User.loans.],
+  ],
 }
 `;
 
 exports[`user - get orders 1`] = `
 Object {
   "data": Object {
-    "user": Object {
-      "orders": Array [
-        Object {
-          "orderDate": 2021-04-21T11:37:49.000Z,
-          "orderId": "12341234",
-          "pickUpExpiryDate": 2021-05-02T22:00:00.000Z,
-          "status": "AT_RESERVATION_SHELF",
-        },
-      ],
-    },
+    "user": null,
   },
+  "errors": Array [
+    [GraphQLError: Cannot return null for non-nullable field User.orders.],
+  ],
 }
 `;

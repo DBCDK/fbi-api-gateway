@@ -3,7 +3,11 @@
  *
  */
 
-import { resolveManifestation } from "../utils/utils";
+import {
+  filterDuplicateAgencies,
+  getHomeAgencyAccount,
+  resolveManifestation,
+} from "../utils/utils";
 
 /**
  * The Profile type definition
@@ -73,66 +77,6 @@ type Debt {
 function isEmail(email) {
   return /\S+@\S+\.\S+/.test(email);
 }
-
-/**
- * Filter duplicates, since we get different userIdTypes (LOCAL, CPR)
- * If both LOCAL and CPR exists, prioritize LOCAL to minimize CPR's sent around services
- * @param userAccounts: [{ agencyId: String, userId: String, userIdType: String }]
- * @returns [{ agencyId: String, userId: String, userIdType: String }]
- */
-const filterDuplicateAgencies = (userAccounts) => {
-  const result = [];
-
-  userAccounts.forEach((account) => {
-    const indexOf = result.map((e) => e.agencyId).indexOf(account.agencyId);
-
-    if (indexOf === -1) {
-      // Result doesn't contain agencyId, push this one
-      result.push(account);
-      return;
-    }
-
-    // result already contains agencyId, check if we want to replace it
-    if (
-      result[indexOf].userIdType === "CPR" &&
-      account.userIdType === "LOCAL"
-    ) {
-      result.splice(indexOf, 1);
-      result.push(account);
-    }
-  });
-
-  return result;
-};
-
-/**
- * getHomeAgencyAccount
- * Prioritizes LOCAL account
- * @param userinfo - parse the data directy from userinfo datasource
- * @returns user account: { agencyId: String, userId: String, userIdType: String }
- */
-const getHomeAgencyAccount = (userinfo) => {
-  const homeAgency = userinfo?.attributes?.municipalityAgencyId;
-
-  /**
-   * Firstly try getting the local account
-   */
-  const accountLocal = userinfo?.attributes?.agencies.find(
-    (account) =>
-      account.agencyId === homeAgency && account.userIdType === "LOCAL"
-  );
-
-  if (accountLocal) return accountLocal;
-
-  /**
-   * If no local existed, try to find the CPR account
-   */
-  const accountCPR = userinfo?.attributes?.agencies.find((account) => {
-    account.agencyId === homeAgency && account.userIdType === "CPR";
-  });
-
-  return accountCPR;
-};
 
 /**
  * Resolvers for the Profile type
