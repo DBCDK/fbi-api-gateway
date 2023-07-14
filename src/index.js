@@ -28,6 +28,7 @@ import createDataLoaders from "./datasourceLoader";
 import { v4 as uuid } from "uuid";
 import isbot from "isbot";
 
+// this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
   if (err.code == "EPIPE") {
     process.exit(0);

@@ -6,6 +6,7 @@
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import {
+  getUserId,
   resolveBorrowerCheck,
   resolveManifestation,
   resolveWork,
@@ -110,7 +111,22 @@ type Mutation {
     """
     dryRun: Boolean
     ): DeleteOrderResponse
-    
+   renewLoan(
+    """
+    id of the loan to be renewed
+    """
+    loanId: String!
+
+    """
+    The agency where the loan is to be renewed.
+    """
+    agencyId: String!
+
+    """
+    If this is true, the loan is not actually renewed (is useful when generating examples).
+    """
+    dryRun: Boolean
+    ): RenewLoanResponse  
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
@@ -353,20 +369,23 @@ export const resolvers = {
 
       const { orderId, agencyId, dryRun } = args;
 
-      // Get user info
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
+      if (!orderId || !agencyId) {
+        return {
+          deleted: false,
+          error: "Please provide orderId and agencyId",
+        };
+      }
 
-      // Get user attributes for the agency
-      const agencyAttributes = userinfo?.attributes?.agencies?.find(
-        (attributes) => attributes.agencyId === agencyId
-      );
+      const userId = await getUserId({ agencyId, context });
 
-      // We need the userId
-      const userId = agencyAttributes?.userId;
+      if (!userId) {
+        return {
+          deleted: false,
+          error: "User or agency not found",
+        };
+      }
 
-      // If dryRyn is true, we will not actually delete the order
+      //if dry run, we will not actually execute the deleteOrder function
       if (dryRun) {
         return { deleted: true };
       }
@@ -382,6 +401,45 @@ export const resolvers = {
 
       return { deleted: !res.error, error: res.error };
     },
+    async renewLoan(parent, args, context, info) {
+      // NOTE FOR FURTHER DEVELOPMENT
+      // In the long run, we would like to be able to retrieve the loans status from a. o. cicero to see if the loan can be renewed.
+      // This way, we can check if the loan can be renewed without calling the renewLoan function, which would be a better user experience.
+
+      const { loanId, agencyId, dryRun = false } = args;
+
+      if (!loanId || !agencyId) {
+        return {
+          renewed: false,
+          error: "Please provide loanId and agencyId",
+        };
+      }
+
+      const userId = await getUserId({ agencyId, context });
+
+      if (!userId) {
+        return {
+          renewed: false,
+          error: "User or agency not found",
+        };
+      }
+
+      //if dry run, we will not actually execute the renewLoan function
+      if (dryRun) {
+        return { renewed: true };
+      }
+
+      // Renew loan in the local library system, via openUserStatus
+      const res = await context.datasources.getLoader("renewLoan").load({
+        loanId,
+        agencyId,
+        userId,
+        smaug: context.smaug,
+        accessToken: context.accessToken,
+      });
+      return { renewed: !res.error, error: res.error };
+    },
+
     async submitPeriodicaArticleOrder(parent, args, context, info) {
       let { userName, userMail } = args.input;
 
