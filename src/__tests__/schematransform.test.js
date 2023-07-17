@@ -99,6 +99,21 @@ fragment TypeRef on __Type {
 }
 `;
 
+test("complete access to whole schema", async () => {
+  const result = await performTestQuery({
+    query: introspectionQuery,
+    variables: {},
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "DUMMY_TOKEN",
+      // If smaug === null, we get access to the entire schema but without data
+      smaug: null,
+    },
+  });
+
+  expect(printSchema(buildClientSchema(result.data))).toMatchSnapshot();
+});
+
 test("limited access to root fields", async () => {
   const result = await performTestQuery({
     query: introspectionQuery,
