@@ -106,7 +106,7 @@ test("complete access to whole schema", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      // If smaug === null, we get access to the entire schema but without data
+      // If smaug === null, we get access to the entire schema without data
       smaug: null,
     },
   });
