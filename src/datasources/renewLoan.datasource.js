@@ -74,5 +74,6 @@ export async function load(
 
   return {
     error: error,
+    dueDate: res.body?.renewLoanResponse?.renewLoanStatus?.[0]?.dateDue?.$,
   };
 }
