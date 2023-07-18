@@ -1,6 +1,14 @@
 import * as consts from "../../schema/draft/FAKE";
 
 export function load({ id }) {
+  if (id.startsWith("default_forsider_") || id.startsWith("moreinfo_")) {
+    return {
+      pid: id,
+      materialTypes: [{ specific: "bog" }],
+      titles: { main: [`${id}__title`] },
+    };
+  }
+
   if (id.startsWith("vroevl")) {
     return null;
   }
