@@ -807,12 +807,42 @@ export const resolvers = {
     },
     async cover(parent, args, context, info) {
       if (parent?.pid) {
+        function checkCoverImage(coverImageObject) {
+          return (
+            coverImageObject &&
+            typeof coverImageObject === "object" &&
+            Object.keys(coverImageObject).length > 0 &&
+            coverImageObject.hasOwnProperty("detail") &&
+            coverImageObject.hasOwnProperty("thumbnail")
+          );
+        }
+
         const moreinfoCoverImage = await context.datasources
           .getLoader("moreinfoCovers")
           .load(parent.pid);
 
-        if (moreinfoCoverImage && Object.keys(moreinfoCoverImage).length > 0) {
+        if (checkCoverImage(moreinfoCoverImage)) {
           return moreinfoCoverImage;
+        } else if (
+          moreinfoCoverImage &&
+          typeof moreinfoCoverImage === "object" &&
+          Object.keys(moreinfoCoverImage).length > 0
+        ) {
+          log.warn(
+            `Response from moreinfo was a non-empty object, but somehow missing fields 'detail' and/or 'thumbnail'. The actual response was`,
+            {
+              unexpectedResponse: moreinfoCoverImage,
+              unexpectedResponseType: typeof moreinfoCoverImage,
+            }
+          );
+        } else if (typeof moreinfoCoverImage !== "object") {
+          log.warn(
+            `Response from moreinfo was not of type 'object'. The actual type of response was: '${typeof moreinfoCoverImage}'. The actual response was`,
+            {
+              unexpectedResponse: moreinfoCoverImage,
+              unexpectedResponseType: typeof moreinfoCoverImage,
+            }
+          );
         }
 
         // Maybe the smaug client has a custom color palette
@@ -829,13 +859,34 @@ export const resolvers = {
           .load(params);
 
         if (
-          defaultForsiderCoverImage &&
-          Object.keys(defaultForsiderCoverImage).length > 0
+          checkCoverImage(defaultForsiderCoverImage) &&
+          defaultForsiderCoverImage.hasOwnProperty("origin") &&
+          defaultForsiderCoverImage.origin === "default"
         ) {
           return defaultForsiderCoverImage;
+        } else if (
+          moreinfoCoverImage &&
+          typeof moreinfoCoverImage === "object" &&
+          Object.keys(moreinfoCoverImage).length > 0
+        ) {
+          log.warn(
+            "Response from defaultForsider was of type 'object' but missing fields 'origin', 'detail' and/or 'thumbnail'. The actual response was",
+            {
+              unexpectedResponse: defaultForsiderCoverImage,
+              unexpectedResponseType: typeof defaultForsiderCoverImage,
+            }
+          );
+        } else if (typeof moreinfoCoverImage !== "object") {
+          log.warn(
+            `Response from defaultForsider was not of type 'object'. The actual type of response was: ${typeof defaultForsiderCoverImage}. The actual response was`,
+            {
+              unexpectedResponse: defaultForsiderCoverImage,
+              unexpectedResponseType: typeof defaultForsiderCoverImage,
+            }
+          );
         }
       }
-      // no manifestation
+      // no coverImage
       return {};
     },
     creators(parent, args, context, info) {
