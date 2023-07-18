@@ -808,23 +808,9 @@ export const resolvers = {
     async cover(parent, args, context, info) {
       if (parent?.pid) {
         function checkCoverImage(coverImageObject, caller) {
-          if (
-            coverImageObject &&
-            typeof coverImageObject === "object" &&
-            Object.keys(coverImageObject).length > 0 &&
-            coverImageObject.hasOwnProperty("detail") &&
-            coverImageObject.hasOwnProperty("thumbnail")
-          ) {
-            return true;
-          }
-
-          if (
-            coverImageObject &&
-            typeof coverImageObject === "object" &&
-            Object.keys(coverImageObject).length > 0
-          ) {
+          if (!coverImageObject) {
             log.warn(
-              `Response from ${caller} was a non-empty object, but somehow missing fields 'detail' and/or 'thumbnail'. The actual response was`,
+              `Response from ${caller} was a null or undefined. The actual response was`,
               {
                 unexpectedResponse: coverImageObject,
                 unexpectedResponseType: typeof coverImageObject,
@@ -843,6 +829,34 @@ export const resolvers = {
             );
             return false;
           }
+
+          if (!(Object.keys(coverImageObject).length > 1)) {
+            log.warn(
+              `Response from ${caller} was an empty 'object'. The actual response was`,
+              {
+                unexpectedResponse: coverImageObject,
+                unexpectedResponseType: typeof coverImageObject,
+              }
+            );
+          }
+
+          if (
+            !coverImageObject.hasOwnProperty("detail") ||
+            !coverImageObject.hasOwnProperty("thumbnail")
+          ) {
+            // Default: We know it is a non-empty object, but some fields are missing
+            log.warn(
+              `Response from ${caller} was a non-empty object, but somehow missing fields 'detail' and/or 'thumbnail'. The actual response was`,
+              {
+                unexpectedResponse: coverImageObject,
+                unexpectedResponseType: typeof coverImageObject,
+              }
+            );
+            return false;
+          }
+
+          // Response is an object with at least fields 'detail' and 'thumbnail'
+          return true;
         }
 
         const moreinfoCoverImage = await context.datasources
