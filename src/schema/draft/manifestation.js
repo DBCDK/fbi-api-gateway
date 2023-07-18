@@ -807,42 +807,50 @@ export const resolvers = {
     },
     async cover(parent, args, context, info) {
       if (parent?.pid) {
-        function checkCoverImage(coverImageObject) {
-          return (
+        function checkCoverImage(coverImageObject, caller) {
+          if (
             coverImageObject &&
             typeof coverImageObject === "object" &&
             Object.keys(coverImageObject).length > 0 &&
             coverImageObject.hasOwnProperty("detail") &&
             coverImageObject.hasOwnProperty("thumbnail")
-          );
+          ) {
+            return true;
+          }
+
+          if (
+            coverImageObject &&
+            typeof coverImageObject === "object" &&
+            Object.keys(coverImageObject).length > 0
+          ) {
+            log.warn(
+              `Response from ${caller} was a non-empty object, but somehow missing fields 'detail' and/or 'thumbnail'. The actual response was`,
+              {
+                unexpectedResponse: coverImageObject,
+                unexpectedResponseType: typeof coverImageObject,
+              }
+            );
+            return false;
+          }
+
+          if (typeof coverImageObject !== "object") {
+            log.warn(
+              `Response from ${caller} was not of type 'object'. The actual type of response was: '${typeof coverImageObject}'. The actual response was`,
+              {
+                unexpectedResponse: coverImageObject,
+                unexpectedResponseType: typeof coverImageObject,
+              }
+            );
+            return false;
+          }
         }
 
         const moreinfoCoverImage = await context.datasources
           .getLoader("moreinfoCovers")
           .load(parent.pid);
 
-        if (checkCoverImage(moreinfoCoverImage)) {
+        if (checkCoverImage(moreinfoCoverImage, "moreinfo")) {
           return moreinfoCoverImage;
-        } else if (
-          moreinfoCoverImage &&
-          typeof moreinfoCoverImage === "object" &&
-          Object.keys(moreinfoCoverImage).length > 0
-        ) {
-          log.warn(
-            `Response from moreinfo was a non-empty object, but somehow missing fields 'detail' and/or 'thumbnail'. The actual response was`,
-            {
-              unexpectedResponse: moreinfoCoverImage,
-              unexpectedResponseType: typeof moreinfoCoverImage,
-            }
-          );
-        } else if (typeof moreinfoCoverImage !== "object") {
-          log.warn(
-            `Response from moreinfo was not of type 'object'. The actual type of response was: '${typeof moreinfoCoverImage}'. The actual response was`,
-            {
-              unexpectedResponse: moreinfoCoverImage,
-              unexpectedResponseType: typeof moreinfoCoverImage,
-            }
-          );
         }
 
         // Maybe the smaug client has a custom color palette
@@ -858,32 +866,8 @@ export const resolvers = {
           .getLoader("defaultForsider")
           .load(params);
 
-        if (
-          checkCoverImage(defaultForsiderCoverImage) &&
-          defaultForsiderCoverImage.hasOwnProperty("origin") &&
-          defaultForsiderCoverImage.origin === "default"
-        ) {
+        if (checkCoverImage(defaultForsiderCoverImage, "defaultForsider")) {
           return defaultForsiderCoverImage;
-        } else if (
-          moreinfoCoverImage &&
-          typeof moreinfoCoverImage === "object" &&
-          Object.keys(moreinfoCoverImage).length > 0
-        ) {
-          log.warn(
-            "Response from defaultForsider was of type 'object' but missing fields 'origin', 'detail' and/or 'thumbnail'. The actual response was",
-            {
-              unexpectedResponse: defaultForsiderCoverImage,
-              unexpectedResponseType: typeof defaultForsiderCoverImage,
-            }
-          );
-        } else if (typeof moreinfoCoverImage !== "object") {
-          log.warn(
-            `Response from defaultForsider was not of type 'object'. The actual type of response was: ${typeof defaultForsiderCoverImage}. The actual response was`,
-            {
-              unexpectedResponse: defaultForsiderCoverImage,
-              unexpectedResponseType: typeof defaultForsiderCoverImage,
-            }
-          );
         }
       }
       // no coverImage
