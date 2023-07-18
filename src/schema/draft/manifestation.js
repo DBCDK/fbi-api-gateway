@@ -831,13 +831,7 @@ export const resolvers = {
           }
 
           if (Object.keys(coverImageObject)?.length < 1) {
-            log.warn(
-              `Response from ${caller} was an empty 'object'. The actual response was`,
-              {
-                unexpectedResponse: coverImageObject,
-                unexpectedResponseType: typeof coverImageObject,
-              }
-            );
+            // Normal that response is empty, although we'd rather get a usefull response
             return false;
           }
 
@@ -860,18 +854,16 @@ export const resolvers = {
           return true;
         }
 
-        let moreinfoCoverImage = await context.datasources
+        const moreinfoCoverImage = await context.datasources
           .getLoader("moreinfoCovers")
           .load(parent.pid);
-
-        moreinfoCoverImage = {};
 
         if (checkCoverImage(moreinfoCoverImage, "moreinfo")) {
           return moreinfoCoverImage;
         }
 
         // Maybe the smaug client has a custom color palette
-        const colors = context.smaug.defaultForsider?.colors;
+        const colors = context?.smaug?.defaultForsider?.colors;
 
         // no coverimage has been returned - get a default one
         const params = {
