@@ -810,7 +810,7 @@ export const resolvers = {
         function checkCoverImage(coverImageObject, caller) {
           if (!coverImageObject) {
             log.warn(
-              `Response from ${caller} was a null or undefined. The actual response was`,
+              `Response from ${caller} was null or undefined. The actual response was`,
               {
                 unexpectedResponse: coverImageObject,
                 unexpectedResponseType: typeof coverImageObject,
@@ -830,7 +830,7 @@ export const resolvers = {
             return false;
           }
 
-          if (!(Object.keys(coverImageObject).length > 1)) {
+          if (Object.keys(coverImageObject)?.length < 1) {
             log.warn(
               `Response from ${caller} was an empty 'object'. The actual response was`,
               {
@@ -838,11 +838,12 @@ export const resolvers = {
                 unexpectedResponseType: typeof coverImageObject,
               }
             );
+            return false;
           }
 
           if (
-            !coverImageObject.hasOwnProperty("detail") ||
-            !coverImageObject.hasOwnProperty("thumbnail")
+            !coverImageObject?.hasOwnProperty("detail") ||
+            !coverImageObject?.hasOwnProperty("thumbnail")
           ) {
             // Default: We know it is a non-empty object, but some fields are missing
             log.warn(
@@ -859,9 +860,11 @@ export const resolvers = {
           return true;
         }
 
-        const moreinfoCoverImage = await context.datasources
+        let moreinfoCoverImage = await context.datasources
           .getLoader("moreinfoCovers")
           .load(parent.pid);
+
+        moreinfoCoverImage = {};
 
         if (checkCoverImage(moreinfoCoverImage, "moreinfo")) {
           return moreinfoCoverImage;
