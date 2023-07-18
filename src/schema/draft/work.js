@@ -270,7 +270,8 @@ export const resolvers = {
       const all = manifestations?.all || [];
       const bestRepresentation =
         manifestations?.bestRepresentations?.[0] || manifestations?.all?.[0];
-      const mostRelevant = manifestations?.mostRelevant || manifestations?.all;
+      const mostRelevant =
+        manifestations?.mostRelevant || manifestations?.all || [];
 
       return {
         first,
