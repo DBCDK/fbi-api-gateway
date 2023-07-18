@@ -806,13 +806,13 @@ export const resolvers = {
       return parent?.workTypes || [];
     },
     async cover(parent, args, context, info) {
-      let coverImage;
       if (parent?.pid) {
-        coverImage = await context.datasources
+        const moreinfoCoverImage = await context.datasources
           .getLoader("moreinfoCovers")
           .load(parent.pid);
-        if (Object.keys(coverImage).length > 0) {
-          return coverImage;
+
+        if (moreinfoCoverImage && Object.keys(moreinfoCoverImage).length > 0) {
+          return moreinfoCoverImage;
         }
 
         // Maybe the smaug client has a custom color palette
@@ -824,10 +824,16 @@ export const resolvers = {
           materialType: parent?.materialTypes?.[0]?.specific,
           colors,
         };
-        coverImage = await context.datasources
+        const defaultForsiderCoverImage = await context.datasources
           .getLoader("defaultForsider")
           .load(params);
-        return coverImage || {};
+
+        if (
+          defaultForsiderCoverImage &&
+          Object.keys(defaultForsiderCoverImage).length > 0
+        ) {
+          return defaultForsiderCoverImage;
+        }
       }
       // no manifestation
       return {};
