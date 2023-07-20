@@ -66,23 +66,15 @@ const callService = async ({ agencyId, userId }, context) => {
 
 /**
  * Fetch user debts
- * @param userAccounts: [{ agencyId: String, userId: String, userIdType: String }]
+ * @param userInfoAccounts: [{ agencyId: String, userId: String, userIdType: String }]
  */
-export async function load({ userAccounts }, context) {
-  const collectedDebts = [];
-
-  await Promise.all(
-    userAccounts.map(async (account) => {
-      const debts = await callService(account, context);
-      if (!debts) {
-        // No loans found, stop here
-        return;
-      }
-      // Add to total list
-      collectedDebts.push(debts);
+export async function load({ userInfoAccounts }, context) {
+  const collectedDebts = await Promise.all(
+    userInfoAccounts.map(async (account) => {
+      return await callService(account, context);
     })
   );
 
   // Flatten the array
-  return collectedDebts.flat();
+  return collectedDebts.flat().filter((debt) => !!debt);
 }

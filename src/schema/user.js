@@ -92,7 +92,7 @@ export const resolvers = {
         userAccount: homeAccount,
       });
 
-      return res.name;
+      return res?.name;
     },
     async address(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
@@ -103,7 +103,7 @@ export const resolvers = {
         userAccount: homeAccount,
       });
 
-      return res.address;
+      return res?.address;
     },
     async municipalityAgencyId(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
@@ -115,23 +115,24 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
-      const userAccounts = filterDuplicateAgencies(
+      const userInfoAccounts = filterDuplicateAgencies(
         userinfo?.attributes?.agencies
       );
       const res = await context.datasources.getLoader("debt").load({
-        userAccounts: userAccounts,
+        userInfoAccounts: userInfoAccounts,
       });
+
       return res;
     },
     async loans(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
-      const userAccounts = filterDuplicateAgencies(
+      const userInfoAccounts = filterDuplicateAgencies(
         userinfo?.attributes?.agencies
       );
       const res = await context.datasources.getLoader("loans").load({
-        userAccounts: userAccounts,
+        userInfoAccounts: userInfoAccounts,
       });
 
       return res;
@@ -140,11 +141,11 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
-      const userAccounts = filterDuplicateAgencies(
+      const userInfoAccounts = filterDuplicateAgencies(
         userinfo?.attributes?.agencies
       );
       const res = await context.datasources.getLoader("orders").load({
-        userAccounts: userAccounts,
+        userInfoAccounts: userInfoAccounts,
       });
 
       return res;
@@ -158,7 +159,7 @@ export const resolvers = {
         userAccount: homeAccount,
       });
 
-      return res.postalCode;
+      return res?.postalCode;
     },
     async mail(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
@@ -169,7 +170,7 @@ export const resolvers = {
         userAccount: homeAccount,
       });
 
-      return res.mail;
+      return res?.mail;
     },
     async country(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
@@ -180,7 +181,7 @@ export const resolvers = {
         userAccount: homeAccount,
       });
 
-      return res.country;
+      return res?.country;
     },
     async culrMail(parent, args, context, info) {
       const resUserInfo = await context.datasources.getLoader("userinfo").load({

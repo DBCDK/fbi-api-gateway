@@ -456,17 +456,17 @@ export const getHomeAgencyAccount = (userinfo) => {
 /**
  * Filter duplicates, since we get different userIdTypes (LOCAL, CPR)
  * If both LOCAL and CPR exists, prioritize LOCAL to minimize CPR's sent around services
- * @param userAccounts: [{ agencyId: String, userId: String, userIdType: String }]
+ * @param userInfoAccounts: [{ agencyId: String, userId: String, userIdType: String }]
  * @returns [{ agencyId: String, userId: String, userIdType: String }]
  */
-export const filterDuplicateAgencies = (userAccounts) => {
+export const filterDuplicateAgencies = (userInfoAccounts) => {
   const result = [];
 
-  if (!userAccounts || userAccounts.length === 0) {
+  if (!userInfoAccounts || userInfoAccounts.length === 0) {
     return result;
   }
 
-  userAccounts.forEach((account) => {
+  userInfoAccounts.forEach((account) => {
     const indexOf = result.map((e) => e.agencyId).indexOf(account.agencyId);
 
     if (indexOf === -1) {
