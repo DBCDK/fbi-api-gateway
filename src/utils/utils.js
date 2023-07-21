@@ -380,28 +380,28 @@ export function parseJedSubjects({
   ];
 }
 
-export async function getUserId({ agencyId, context }) {
-  const agencyAttributes = await getAgencyAttributes({ agencyId, context });
-  return getUserIdFromAgencyAttributes(agencyAttributes);
+export async function getUserId({ agencyId, userinfo }) {
+  const agencyAttributes = getUserInfoAccountsForAgency({
+    agencyId,
+    userinfo,
+  });
+  return getUserInfoAccountFromAgencyAttributes(agencyAttributes)?.userId;
 }
 
-export async function getAgencyAttributes({ agencyId, context }) {
-  const userinfo = await context.datasources.getLoader("userinfo").load({
-    accessToken: context.accessToken,
-  });
-
+export function getUserInfoAccountsForAgency({ agencyId, userinfo }) {
   return userinfo?.attributes?.agencies?.filter(
     (attributes) => attributes.agencyId === agencyId
   );
 }
 
 /**
- * Get the userId from agencyAttributes.
+ * Get the user info getUserInfoAccountFromAgencyAttributes from agencyAttributes.
  * If we have two agencyAttributes (local and cpr), we prefer getting the local id to avoid saving cpr
+ * Used for already filtered agency attributes. Assumes only
  * @param {*} agencyAttributes
  * @returns
  */
-export function getUserIdFromAgencyAttributes(agencyAttributes) {
+export function getUserInfoAccountFromAgencyAttributes(agencyAttributes) {
   if (!agencyAttributes || agencyAttributes.length === 0) {
     log.error("No agencyAttributes found for user.");
     return null;
@@ -409,8 +409,9 @@ export function getUserIdFromAgencyAttributes(agencyAttributes) {
 
   //if we have several ids, we prefer getting the local id to avoid saving cpr
   return (
-    agencyAttributes?.find((attr) => attr.userIdType === "LOCAL")?.userId ||
-    agencyAttributes[0].userId
+    agencyAttributes?.find((attr) => attr.userIdType === "LOCAL") ||
+    agencyAttributes?.find((attr) => attr.userIdType === "CPR") ||
+    null
   );
 }
 
@@ -426,31 +427,20 @@ export const getHomeAgencyAccount = (userinfo) => {
   /**
    * Firstly try getting the local account
    */
-  const accountLocal = userinfo?.attributes?.agencies.find(
-    (account) =>
-      account.agencyId === homeAgency && account.userIdType === "LOCAL"
-  );
-
+  const agencyAttributes = getUserInfoAccountsForAgency({
+    homeAgency,
+    userinfo,
+  });
+  const accountLocal = getUserInfoAccountFromAgencyAttributes(agencyAttributes);
   if (accountLocal) return accountLocal;
 
   /**
-   * If no local existed, try to find the CPR account
-   */
-  const accountCPR = userinfo?.attributes?.agencies.find((account) => {
-    account.agencyId === homeAgency && account.userIdType === "CPR";
-  });
-
-  /**
    * Edge case for test users which municipalityAgencyId doesn't match their accounts
+   * Return any LOCAL account
    */
-  if (!accountLocal && !accountCPR) {
-    // Fall back to any local
-    return userinfo?.attributes?.agencies.find(
-      (account) => account.userIdType === "LOCAL"
-    );
-  }
-
-  return accountCPR;
+  return userinfo?.attributes?.agencies.find(
+    (account) => account.userIdType === "LOCAL"
+  );
 };
 
 /**
