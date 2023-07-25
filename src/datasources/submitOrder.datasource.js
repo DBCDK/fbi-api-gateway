@@ -21,6 +21,12 @@ function createNeedBeforeDate() {
   return dateStr;
 }
 
+function createTrackingId() {
+  const now = new Date();
+
+  return now.toISOString();
+}
+
 /**
  *
  * @param input
@@ -56,12 +62,13 @@ function setPost(input, context) {
     ([key]) => !userIdTypes.includes(key)
   );
 
+  //  orderSystem: input.smaug.orderSystem,
   // defaults
   const postParameters = {
     copy: false,
     exactEdition: input.exactEdition || false,
     needBeforeDate: createNeedBeforeDate(),
-    orderSystem: input.smaug.orderSystem,
+    orderSystem: "BIBLIOTEKDK",
     pickUpAgencyId: input.pickUpBranch,
     author: input.author,
     authorOfComponent: input.authorOfComponent,
@@ -73,10 +80,11 @@ function setPost(input, context) {
     volume: input.volume,
     pid: input.pids.map((pid) => pid),
     serviceRequester: serviceRequester,
+    trackingId: createTrackingId(),
     userId: userId[1],
     userIdAuthenticated: userIdAuthenticated,
     ...input.userParameters,
-    verificationReferenceSource: "dbcdatawell",
+    verificationReferenceSource: "DBCDATAWELL",
   };
 
   // @TODO filter out empties
@@ -95,6 +103,7 @@ const checkPost = (post) => {
 export async function load(input, context) {
   console.log(input, "ORIGINAL INPUT");
   console.log(input.accessToken, "ACCESSTOKEN");
+  console.log(url, "URL");
 
   const post = setPost(input, context);
 
@@ -103,16 +112,20 @@ export async function load(input, context) {
   }
 
   console.log(post, "POST");
-  const order = await context.fetch(`${url}placeorder/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${input.accessToken}`,
-    },
-    body: JSON.stringify(post),
-  });
-
-  console.log(order, "ORDER");
-
-  return order.body;
+  try {
+    const order = await context.fetch(`${url}placeorder/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${input.accessToken}`,
+      },
+      body: JSON.stringify(post),
+    });
+    console.log(order, "ORDER");
+    return order.body;
+  } catch (e) {
+    console.log("ERROR");
+    console.log(e);
+    return null;
+  }
 }
