@@ -379,3 +379,101 @@ export function parseJedSubjects({
     })),
   ];
 }
+
+export async function getUserId({ agencyId, userinfo }) {
+  const agencyAttributes = getUserInfoAccountsForAgency({
+    agencyId,
+    userinfo,
+  });
+  return getUserInfoAccountFromAgencyAttributes(agencyAttributes)?.userId;
+}
+
+export function getUserInfoAccountsForAgency({ agencyId, userinfo }) {
+  return userinfo?.attributes?.agencies?.filter(
+    (attributes) => attributes.agencyId === agencyId
+  );
+}
+
+/**
+ * Get the user info getUserInfoAccountFromAgencyAttributes from agencyAttributes.
+ * If we have two agencyAttributes (local and cpr), we prefer getting the local id to avoid saving cpr
+ * Used for already filtered agency attributes. Assumes only
+ * @param {*} agencyAttributes
+ * @returns
+ */
+export function getUserInfoAccountFromAgencyAttributes(agencyAttributes) {
+  if (!agencyAttributes || agencyAttributes.length === 0) {
+    log.error("No agencyAttributes found for user.");
+    return null;
+  }
+
+  //if we have several ids, we prefer getting the local id to avoid saving cpr
+  return (
+    agencyAttributes?.find((attr) => attr.userIdType === "LOCAL") ||
+    agencyAttributes?.find((attr) => attr.userIdType === "CPR") ||
+    null
+  );
+}
+
+/**
+ * getHomeAgencyAccount
+ * Prioritizes LOCAL account
+ * @param userinfo - parse the data directy from userinfo datasource
+ * @returns user account: { agencyId: String, userId: String, userIdType: String }
+ */
+export const getHomeAgencyAccount = (userinfo) => {
+  const homeAgency = userinfo?.attributes?.municipalityAgencyId;
+
+  /**
+   * Firstly try getting the local account
+   */
+  const agencyAttributes = getUserInfoAccountsForAgency({
+    homeAgency,
+    userinfo,
+  });
+  const accountLocal = getUserInfoAccountFromAgencyAttributes(agencyAttributes);
+  if (accountLocal) return accountLocal;
+
+  /**
+   * Edge case for test users which municipalityAgencyId doesn't match their accounts
+   * Return any LOCAL account
+   */
+  return userinfo?.attributes?.agencies.find(
+    (account) => account.userIdType === "LOCAL"
+  );
+};
+
+/**
+ * Filter duplicates, since we get different userIdTypes (LOCAL, CPR)
+ * If both LOCAL and CPR exists, prioritize LOCAL to minimize CPR's sent around services
+ * @param userInfoAccounts: [{ agencyId: String, userId: String, userIdType: String }]
+ * @returns [{ agencyId: String, userId: String, userIdType: String }]
+ */
+export const filterDuplicateAgencies = (userInfoAccounts) => {
+  const result = [];
+
+  if (!userInfoAccounts || userInfoAccounts.length === 0) {
+    return result;
+  }
+
+  userInfoAccounts.forEach((account) => {
+    const indexOf = result.map((e) => e.agencyId).indexOf(account.agencyId);
+
+    if (indexOf === -1) {
+      // Result doesn't contain agencyId, push this one
+      result.push(account);
+      return;
+    }
+
+    // result already contains agencyId, check if we want to replace it
+    if (
+      result[indexOf].userIdType === "CPR" &&
+      account.userIdType === "LOCAL"
+    ) {
+      result.splice(indexOf, 1);
+      result.push(account);
+    }
+  });
+
+  return result;
+};

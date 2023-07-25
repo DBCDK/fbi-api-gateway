@@ -28,7 +28,6 @@ function parseResponse(details, agencyId) {
   }
 
   return {
-    count: responders?.length,
     branchId: agencyId,
     holdingstatus: localholdings,
   };

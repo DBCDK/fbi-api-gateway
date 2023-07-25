@@ -1,0 +1,18 @@
+# BIBDK Renew Loan
+
+Renew a loan through openuserstatus service.
+
+It is possible to renew a loan at any agency the user is registered at.
+The example sets dryRun:true, which prevents the renewal query from actually being executed against openuserstatus.
+If omitted, dryRun is sat to false.
+
+<InlineGraphiQL
+  query={`mutation renewLoan($loanId: String!, $agencyId: String!) {
+  renewLoan(loanId: $loanId, agencyId: $agencyId, dryRun: true) {
+    renewed
+    error
+    dueDate
+  }
+}`}
+  variables={{ loanId: "78434523", agencyId: "715100" }}
+/>

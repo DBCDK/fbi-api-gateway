@@ -3,7 +3,11 @@
  *
  */
 
-import { resolveManifestation } from "../utils/utils";
+import {
+  filterDuplicateAgencies,
+  getHomeAgencyAccount,
+  resolveManifestation,
+} from "../utils/utils";
 
 /**
  * The Profile type definition
@@ -11,20 +15,28 @@ import { resolveManifestation } from "../utils/utils";
 export const typeDef = `
 type User {
   name: String!
+  agencies: [String]
   address: String
   postalCode: String
   municipalityAgencyId: String
   mail: String
   culrMail: String
+  country: String
   agency(language: LanguageCode): BranchResult!
-  orders: [Order!]!
-  loans: [Loan!]!
-  debt: [Debt!]!
+  orders: [Order!]! @complexity(value: 5)
+  loans: [Loan!]! @complexity(value: 5)
+  debt: [Debt!]! @complexity(value: 3)
 }
 type Loan {
   dueDate:	DateTime!
   loanId:	String!
+  agencyId: String!
+  edition: String
+  pages: String
+  publisher: String
+  language: String
   manifestation: Manifestation
+  materialType: String
 }
 enum OrderStatus {
   ACTIVE
@@ -40,15 +52,21 @@ type Order {
   orderType: String
   status: OrderStatus!
   pickUpBranch: Branch!
+  agencyId: String!
   holdQueuePosition: String
   orderDate: DateTime!
   creator: String
   title: String
   pickUpExpiryDate: DateTime
   manifestation: Manifestation
+  edition: String
+  language: String
+  pages: String
+  materialType: String
 }
 type Debt {
   amount: String!
+  agencyId: String!
   creator: String
   currency: String
   date: DateTime
@@ -66,16 +84,24 @@ function isEmail(email) {
 export const resolvers = {
   User: {
     async name(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
-        accessToken: context.accessToken,
-      });
-      return res.name;
+      const res = await context.datasources.getLoader("user").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
+
+      return res?.name;
     },
     async address(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
-        accessToken: context.accessToken,
-      });
-      return res.address;
+      const res = await context.datasources.getLoader("user").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
+
+      return res?.address;
     },
     async municipalityAgencyId(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
@@ -84,37 +110,64 @@ export const resolvers = {
       return userinfo?.attributes?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
-      const res = await context.datasources.getLoader("debt").load({
-        accessToken: context.accessToken,
-      });
-      return res.debt;
+      const res = await context.datasources.getLoader("debt").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
+
+      return res;
     },
     async loans(parent, args, context, info) {
-      const res = await context.datasources.getLoader("loans").load({
-        accessToken: context.accessToken,
-      });
+      const res = await context.datasources.getLoader("loans").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
 
-      return res.loans;
+      return res;
     },
     async orders(parent, args, context, info) {
-      const res = await context.datasources.getLoader("orders").load({
-        accessToken: context.accessToken,
-      });
+      const res = await context.datasources.getLoader("orders").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
 
-      return res.orders;
+      return res;
     },
     async postalCode(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
-        accessToken: context.accessToken,
-      });
+      const res = await context.datasources.getLoader("user").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
 
-      return res.postalCode;
+      return res?.postalCode;
     },
     async mail(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
-        accessToken: context.accessToken,
-      });
-      return res.mail;
+      const res = await context.datasources.getLoader("user").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
+
+      return res?.mail;
+    },
+    async country(parent, args, context, info) {
+      const res = await context.datasources.getLoader("user").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
+
+      return res?.country;
     },
     async culrMail(parent, args, context, info) {
       const resUserInfo = await context.datasources.getLoader("userinfo").load({
@@ -130,9 +183,12 @@ export const resolvers = {
       return agencyWithEmail && agencyWithEmail.userId;
     },
     async agency(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
-        accessToken: context.accessToken,
-      });
+      const res = await context.datasources.getLoader("user").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
 
       return await context.datasources.getLoader("library").load({
         agencyid: res.agency,
@@ -141,6 +197,19 @@ export const resolvers = {
         status: args.status || "ALLE",
         bibdkExcludeBranches: args.bibdkExcludeBranches || false,
       });
+    },
+    async agencies(parent, args, context, info) {
+      const userinfo = await context.datasources.getLoader("userinfo").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
+
+      const agencies = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
+      )?.map((account) => account.agencyId);
+      return agencies;
     },
   },
   Loan: {

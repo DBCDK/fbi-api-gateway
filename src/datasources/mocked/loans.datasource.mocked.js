@@ -1,30 +1,62 @@
 const data = {
-  DUMMY_TOKEN: {
-    id: "XgY2QOGYqxGgHHYQu8DJKTKX2bbdMNBF",
-    name: "Freja Damgaard",
-    address: "Borgmesterskoven 45",
-    postalCode: "8660",
-    loans: [
-      {
-        loanId: "120200589",
-        dueDate: "2021-05-02T00:00:00+02:00",
-        title: "Efter uvejret",
-        creator: "Brooke, Lauren",
-        materialId: "9788721016395",
-        titleId: "23424916",
+  DUMMY_TOKEN: [
+    {
+      materialType: "Bog",
+      loanId: "5301555018",
+      dueDate: "2023-07-31T22:00:00.000Z",
+      edition: "2. udgave",
+      pages: "299 sider",
+      publisher: "Voice & Writing 2019",
+      agencyId: "790900",
+      manifestation: {
+        pid: "870970-basis:48623549",
+        titles: {
+          main: ["Digitale nomader"],
+        },
+        ownerWork: {
+          workId: "work-of:870970-basis:48623549",
+        },
+        materialTypes: [
+          {
+            specific: "bog",
+          },
+        ],
+        cover: {
+          thumbnail:
+            "https://moreinfo.addi.dk/2.11/more_info_get.php?lokalid=48623549&attachment_type=forside_lille&bibliotek=870970&source_id=150020&key=081f8c0481e077420cdd",
+        },
+        recordCreationDate: "20200731",
       },
-      {
-        loanId: "120200590",
-        dueDate: "2021-04-30T00:00:00+02:00",
-        title: "Vennebogen & Koglerier: to skuespil",
-        creator: "Hultberg, Peer",
-        materialId: "87-595-1659-3",
-        titleId: "23518260",
+    },
+    {
+      materialType: "Bog",
+      loanId: "5085535759",
+      dueDate: "2023-08-10T22:00:00.000Z",
+      edition: "1. udgave",
+      pages: "159 sider",
+      publisher: "People's Press 2018",
+      agencyId: "790900",
+      manifestation: {
+        pid: "870970-basis:52037794",
+        titles: {
+          main: ["Fermentering"],
+        },
+        ownerWork: {
+          workId: "work-of:870970-basis:52037794",
+        },
+        materialTypes: [
+          {
+            specific: "bog",
+          },
+        ],
+        cover: {
+          thumbnail:
+            "https://moreinfo.addi.dk/2.11/more_info_get.php?lokalid=52037794&attachment_type=forside_lille&bibliotek=870970&source_id=150020&key=2747c6a55d37e7c5131e",
+        },
+        recordCreationDate: "20151102",
       },
-    ],
-    ddbcmsapi: "https://cmscontent.dbc.dk/",
-    agency: "790900",
-  },
+    },
+  ],
 };
 
 export async function load({ accessToken }) {
