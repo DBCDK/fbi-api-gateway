@@ -7,8 +7,13 @@ export const typeDef = `
     renewed: Boolean!
 
     """
-    Error message
+    Returns error message, if the renewal failed.
     """
     error: String
+
+    """
+    Returns due date of the loan, if renewal was successful.
+    """
+    dueDate: String
   }
 `;

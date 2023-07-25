@@ -432,7 +432,7 @@ export const resolvers = {
 
       //if dry run, we will not actually execute the renewLoan function
       if (dryRun) {
-        return { renewed: true };
+        return { renewed: true, dueDate: "2100-08-13T00:00:00+02:00" };
       }
 
       // Renew loan in the local library system, via openUserStatus
@@ -443,7 +443,7 @@ export const resolvers = {
         smaug: context.smaug,
         accessToken: context.accessToken,
       });
-      return { renewed: !res.error, error: res.error };
+      return { renewed: !res.error, error: res.error, dueDate: res.dueDate };
     },
 
     async submitPeriodicaArticleOrder(parent, args, context, info) {
