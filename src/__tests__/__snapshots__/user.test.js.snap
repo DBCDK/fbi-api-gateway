@@ -3,43 +3,86 @@
 exports[`user - get agency danish 1`] = `
 Object {
   "data": Object {
-    "user": null,
+    "user": Object {
+      "address": "Borgmesterskoven 45",
+      "agency": Object {
+        "result": Array [
+          Object {
+            "name": "DBCTestBibliotek",
+            "openingHours": "VIP 4.9: Åbningstider<br>
+mandag<br>
+tirsdag<br>
+onsdag<br>
+torsdag<br>
+fredag<br>
+lørdag",
+          },
+          Object {
+            "name": "DBCtest_2",
+            "openingHours": null,
+          },
+          Object {
+            "name": "DBC-bibilioteksekspressen",
+            "openingHours": null,
+          },
+        ],
+      },
+      "mail": "test@dbc.dk",
+      "name": "Freja Damgaard",
+      "postalCode": "8660",
+    },
   },
-  "errors": Array [
-    [GraphQLError: Cannot read properties of undefined (reading 'address')],
-    [GraphQLError: Cannot read properties of undefined (reading 'postalCode')],
-    [GraphQLError: Cannot read properties of undefined (reading 'mail')],
-    [GraphQLError: Cannot read properties of undefined (reading 'name')],
-  ],
 }
 `;
 
 exports[`user - get agency english 1`] = `
 Object {
   "data": Object {
-    "user": null,
+    "user": Object {
+      "address": "Borgmesterskoven 45",
+      "agency": Object {
+        "result": Array [
+          Object {
+            "name": "DBCTestBibliotek",
+            "openingHours": "VIP 4.9: Åbningstider<br>
+mandag<br>
+tirsdag<br>
+onsdag<br>
+torsdag<br>
+fredag<br>
+lørdag",
+          },
+          Object {
+            "name": "DBCtest_2",
+            "openingHours": null,
+          },
+          Object {
+            "name": "DBC-bibilioteksekspressen",
+            "openingHours": null,
+          },
+        ],
+      },
+      "mail": "test@dbc.dk",
+      "name": "Freja Damgaard",
+      "postalCode": "8660",
+    },
   },
-  "errors": Array [
-    [GraphQLError: Cannot read properties of undefined (reading 'address')],
-    [GraphQLError: Cannot read properties of undefined (reading 'postalCode')],
-    [GraphQLError: Cannot read properties of undefined (reading 'mail')],
-    [GraphQLError: Cannot read properties of undefined (reading 'name')],
-  ],
 }
 `;
 
 exports[`user - get basic data 1`] = `
 Object {
   "data": Object {
-    "user": null,
+    "user": Object {
+      "address": "Borgmesterskoven 45",
+      "country": "DK",
+      "culrMail": "some@mail.com",
+      "mail": "test@dbc.dk",
+      "municipalityAgencyId": "715100",
+      "name": "Freja Damgaard",
+      "postalCode": "8660",
+    },
   },
-  "errors": Array [
-    [GraphQLError: Cannot read properties of undefined (reading 'address')],
-    [GraphQLError: Cannot read properties of undefined (reading 'postalCode')],
-    [GraphQLError: Cannot read properties of undefined (reading 'mail')],
-    [GraphQLError: Cannot read properties of undefined (reading 'country')],
-    [GraphQLError: Cannot read properties of undefined (reading 'name')],
-  ],
 }
 `;
 
@@ -49,7 +92,7 @@ Object {
     "user": null,
   },
   "errors": Array [
-    [GraphQLError: Cannot return null for non-nullable field User.debt.],
+    [GraphQLError: Expected Iterable, but did not find one for field "User.debt".],
   ],
 }
 `;
@@ -60,7 +103,7 @@ Object {
     "user": null,
   },
   "errors": Array [
-    [GraphQLError: Cannot return null for non-nullable field User.loans.],
+    [GraphQLError: Expected Iterable, but did not find one for field "User.loans".],
   ],
 }
 `;
@@ -71,7 +114,7 @@ Object {
     "user": null,
   },
   "errors": Array [
-    [GraphQLError: Cannot return null for non-nullable field User.loans.],
+    [GraphQLError: Expected Iterable, but did not find one for field "User.loans".],
   ],
 }
 `;
@@ -82,7 +125,7 @@ Object {
     "user": null,
   },
   "errors": Array [
-    [GraphQLError: Cannot return null for non-nullable field User.orders.],
+    [GraphQLError: Expected Iterable, but did not find one for field "User.orders".],
   ],
 }
 `;

@@ -1,4 +1,5 @@
 import config from "../config";
+import { getHomeAgencyAccount } from "../utils/utils";
 
 const { url } = config.datasources.openuserstatus;
 const {
@@ -42,10 +43,17 @@ const reduceBody = (body) => ({
  * Fetch user info
  * @param userAccount: { agencyId: String, userId: String, userIdType: String }
  */
-export async function load({ userAccount }, context) {
+export async function load({ accessToken }, context) {
+  const userinfo = await context.getLoader("userinfo").load(
+    {
+      accessToken: accessToken,
+    },
+    context
+  );
+  const homeAccount = getHomeAgencyAccount(userinfo);
   const soap = constructSoap({
-    agencyId: userAccount?.agencyId,
-    userId: userAccount?.userId,
+    agencyId: homeAccount?.agencyId,
+    userId: homeAccount?.userId,
   });
   const res = await context?.fetch(url, {
     method: "POST",

@@ -1,4 +1,5 @@
 import config from "../config";
+import { filterDuplicateAgencies } from "../utils/utils";
 
 const { url } = config.datasources.openuserstatus;
 const {
@@ -68,7 +69,16 @@ const callService = async ({ agencyId, userId }, context) => {
  * Fetch user debts
  * @param userInfoAccounts: [{ agencyId: String, userId: String, userIdType: String }]
  */
-export async function load({ userInfoAccounts }, context) {
+export async function load({ accessToken }, context) {
+  const userinfo = await context.getLoader("userinfo").load(
+    {
+      accessToken: accessToken,
+    },
+    context
+  );
+  const userInfoAccounts = filterDuplicateAgencies(
+    userinfo?.attributes?.agencies
+  );
   const collectedDebts = await Promise.all(
     userInfoAccounts.map(async (account) => {
       return await callService(account, context);

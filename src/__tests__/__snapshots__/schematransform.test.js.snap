@@ -2427,11 +2427,13 @@ type Stats {
 
 type User {
   name: String!
+  agencies: [String]
   address: String
   postalCode: String
   municipalityAgencyId: String
   mail: String
   culrMail: String
+  country: String
   agency(language: LanguageCode): BranchResult!
   orders: [Order!]!
   loans: [Loan!]!
@@ -2441,7 +2443,13 @@ type User {
 type Loan {
   dueDate: DateTime!
   loanId: String!
+  agencyId: String!
+  edition: String
+  pages: String
+  publisher: String
+  language: String
   manifestation: Manifestation
+  materialType: String
 }
 
 enum OrderStatus {
@@ -2459,16 +2467,22 @@ type Order {
   orderType: String
   status: OrderStatus!
   pickUpBranch: Branch!
+  agencyId: String!
   holdQueuePosition: String
   orderDate: DateTime!
   creator: String
   title: String
   pickUpExpiryDate: DateTime
   manifestation: Manifestation
+  edition: String
+  language: String
+  pages: String
+  materialType: String
 }
 
 type Debt {
   amount: String!
+  agencyId: String!
   creator: String
   currency: String
   date: DateTime
