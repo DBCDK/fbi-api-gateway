@@ -806,17 +806,64 @@ export const resolvers = {
       return parent?.workTypes || [];
     },
     async cover(parent, args, context, info) {
-      let coverImage;
       if (parent?.pid) {
-        coverImage = await context.datasources
+        function checkCoverImage(coverImageObject, caller) {
+          if (!coverImageObject) {
+            log.warn(
+              `Response from ${caller} was null or undefined. The actual response was`,
+              {
+                unexpectedResponse: coverImageObject,
+                unexpectedResponseType: typeof coverImageObject,
+              }
+            );
+            return false;
+          }
+
+          if (typeof coverImageObject !== "object") {
+            log.warn(
+              `Response from ${caller} was not of type 'object'. The actual type of response was: '${typeof coverImageObject}'. The actual response was`,
+              {
+                unexpectedResponse: coverImageObject,
+                unexpectedResponseType: typeof coverImageObject,
+              }
+            );
+            return false;
+          }
+
+          if (Object.keys(coverImageObject)?.length < 1) {
+            // Normal that response is empty, although we'd rather get a usefull response
+            return false;
+          }
+
+          if (
+            !coverImageObject?.hasOwnProperty("detail") ||
+            !coverImageObject?.hasOwnProperty("thumbnail")
+          ) {
+            // Default: We know it is a non-empty object, but some fields are missing
+            log.warn(
+              `Response from ${caller} was a non-empty object, but somehow missing fields 'detail' and/or 'thumbnail'. The actual response was`,
+              {
+                unexpectedResponse: coverImageObject,
+                unexpectedResponseType: typeof coverImageObject,
+              }
+            );
+            return false;
+          }
+
+          // Response is an object with at least fields 'detail' and 'thumbnail'
+          return true;
+        }
+
+        const moreinfoCoverImage = await context.datasources
           .getLoader("moreinfoCovers")
           .load(parent.pid);
-        if (Object.keys(coverImage).length > 0) {
-          return coverImage;
+
+        if (checkCoverImage(moreinfoCoverImage, "moreinfo")) {
+          return moreinfoCoverImage;
         }
 
         // Maybe the smaug client has a custom color palette
-        const colors = context.smaug.defaultForsider?.colors;
+        const colors = context?.smaug?.defaultForsider?.colors;
 
         // no coverimage has been returned - get a default one
         const params = {
@@ -824,12 +871,15 @@ export const resolvers = {
           materialType: parent?.materialTypes?.[0]?.specific,
           colors,
         };
-        coverImage = await context.datasources
+        const defaultForsiderCoverImage = await context.datasources
           .getLoader("defaultForsider")
           .load(params);
-        return coverImage || {};
+
+        if (checkCoverImage(defaultForsiderCoverImage, "defaultForsider")) {
+          return defaultForsiderCoverImage;
+        }
       }
-      // no manifestation
+      // no coverImage
       return {};
     },
     creators(parent, args, context, info) {
