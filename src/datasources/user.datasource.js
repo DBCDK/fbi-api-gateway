@@ -41,7 +41,7 @@ const reduceBody = (body) => ({
 
 /**
  * Fetch user info
- * @param userAccount: { agencyId: String, userId: String, userIdType: String }
+ * @param accessToken: String
  */
 export async function load({ accessToken }, context) {
   const userinfo = await context.getLoader("userinfo").load(

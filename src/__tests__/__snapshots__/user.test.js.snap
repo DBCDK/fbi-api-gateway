@@ -89,43 +89,82 @@ Object {
 exports[`user - get debt 1`] = `
 Object {
   "data": Object {
-    "user": null,
+    "user": Object {
+      "debt": Array [
+        Object {
+          "amount": "224",
+          "creator": null,
+          "currency": "DKK",
+          "date": 1969-12-31T23:00:00.000Z,
+          "title": "",
+        },
+        Object {
+          "amount": "50",
+          "creator": null,
+          "currency": "DKK",
+          "date": 1969-12-31T23:00:00.000Z,
+          "title": "",
+        },
+      ],
+    },
   },
-  "errors": Array [
-    [GraphQLError: Expected Iterable, but did not find one for field "User.debt".],
-  ],
 }
 `;
 
 exports[`user - get loans 1`] = `
 Object {
   "data": Object {
-    "user": null,
+    "user": Object {
+      "loans": Array [
+        Object {
+          "agencyId": "790900",
+          "dueDate": 2023-07-31T22:00:00.000Z,
+          "edition": "2. udgave",
+          "loanId": "5301555018",
+          "manifestation": null,
+          "materialType": "Bog",
+          "pages": "299 sider",
+          "publisher": "Voice & Writing 2019",
+        },
+        Object {
+          "agencyId": "790900",
+          "dueDate": 2023-08-10T22:00:00.000Z,
+          "edition": "1. udgave",
+          "loanId": "5085535759",
+          "manifestation": null,
+          "materialType": "Bog",
+          "pages": "159 sider",
+          "publisher": "People's Press 2018",
+        },
+      ],
+    },
   },
-  "errors": Array [
-    [GraphQLError: Expected Iterable, but did not find one for field "User.loans".],
-  ],
-}
-`;
-
-exports[`user - get loans 2`] = `
-Object {
-  "data": Object {
-    "user": null,
-  },
-  "errors": Array [
-    [GraphQLError: Expected Iterable, but did not find one for field "User.loans".],
-  ],
 }
 `;
 
 exports[`user - get orders 1`] = `
 Object {
   "data": Object {
-    "user": null,
+    "user": Object {
+      "orders": Array [
+        Object {
+          "agencyId": "790900",
+          "creator": "Thorborg, Martin",
+          "edition": "1. udgave",
+          "holdQueuePosition": "1",
+          "orderDate": 2023-06-27T13:42:35.000Z,
+          "orderId": "79182543",
+          "orderType": "normal",
+          "pages": "151 sider",
+          "pickUpBranch": Object {
+            "agencyName": "Øen",
+          },
+          "pickUpExpiryDate": null,
+          "status": "UNKNOWN",
+          "title": "Skab din egen succes: leveregler der kan bringe dig langt",
+        },
+      ],
+    },
   },
-  "errors": Array [
-    [GraphQLError: Expected Iterable, but did not find one for field "User.orders".],
-  ],
 }
 `;

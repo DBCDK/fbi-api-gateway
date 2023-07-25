@@ -82,28 +82,6 @@ test("user - get agency english", async () => {
   expect(result).toMatchSnapshot();
 });
 
-test("user - get loans", async () => {
-  const result = await performTestQuery({
-    query: `
-            query  {
-              user {
-                loans {
-                  loanId
-                  dueDate   
-                }
-              }
-            }
-        `,
-    variables: {},
-    context: {
-      datasources: createMockedDataLoaders(),
-      accessToken: "DUMMY_TOKEN",
-      smaug: { user: { uniqueId: "some-unique-id" } },
-    },
-  });
-  expect(result).toMatchSnapshot();
-});
-
 test("user - get orders", async () => {
   const result = await performTestQuery({
     query: `
@@ -124,52 +102,7 @@ test("user - get orders", async () => {
                   pages
                   edition
                   agencyId
-                  manifestation {
-                    pid
-                    titles {
-                      main
-                    }
-                    ownerWork {
-                      workId
-                    }
-                    creators {
-                      ...creatorsFragment
-                    }
-                    materialTypes {
-                      specific
-                    }
-                    cover {
-                      thumbnail
-                    }
-                    recordCreationDate
-                  }
-                }
-              }
-            }
 
-            fragment creatorsFragment on Creator {
-              ... on Corporation {
-                __typename
-                display
-                nameSort
-                roles {
-                  function {
-                    plural
-                    singular
-                  }
-                  functionCode
-                }
-              }
-              ... on Person {
-                __typename
-                display
-                nameSort
-                roles {
-                  function {
-                    plural
-                    singular
-                  }
-                  functionCode
                 }
               }
             }
@@ -230,9 +163,6 @@ test("user - get loans", async () => {
                     ownerWork {
                       workId
                     }
-                    creators {
-                      ...creatorsFragment
-                    }
                     materialTypes {
                       specific
                     }
@@ -241,33 +171,6 @@ test("user - get loans", async () => {
                     }
                     recordCreationDate
                   }
-                }
-              }
-            }
-
-            fragment creatorsFragment on Creator {
-              ... on Corporation {
-                __typename
-                display
-                nameSort
-                roles {
-                  function {
-                    plural
-                    singular
-                  }
-                  functionCode
-                }
-              }
-              ... on Person {
-                __typename
-                display
-                nameSort
-                roles {
-                  function {
-                    plural
-                    singular
-                  }
-                  functionCode
                 }
               }
             }

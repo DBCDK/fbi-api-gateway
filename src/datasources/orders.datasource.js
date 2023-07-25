@@ -76,7 +76,7 @@ const callService = async ({ agencyId, userId }, context) => {
 
 /**
  * Fetch user orders
- * @param userInfoAccounts: [{ agencyId: String, userId: String, userIdType: String }]
+ * @param accessToken: String
  */
 export async function load({ accessToken }, context) {
   const userinfo = await context.getLoader("userinfo").load(

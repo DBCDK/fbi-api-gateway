@@ -1,25 +1,41 @@
 const data = {
-  DUMMY_TOKEN: {
-    id: "XgY2QOGYqxGgHHYQu8DJKTKX2bbdMNBF",
-    name: "Freja Damgaard",
-    address: "Borgmesterskoven 45",
-    postalCode: "8660",
-    orders: [
-      {
-        orderId: "12341234",
-        orderType: "normal",
-        status: "At reservation shelf",
-        pickUpAgency: "DK-715100",
-        creator: "Loe, Erlend",
-        title: "Enden på verden som vi kender den: roman",
-        orderDate: "2021-04-21T13:37:49+02:00",
-        pickUpExpiryDate: "2021-05-03T00:00:00+02:00",
-        titleId: "52186986",
+  DUMMY_TOKEN: [
+    {
+      orderId: "79182543",
+      status: "UNKNOWN",
+      pickUpBranch: {
+        agencyName: "Roskilde Bibliotekerne",
       },
-    ],
-    ddbcmsapi: "https://cmscontent.dbc.dk/",
-    agency: "790900",
-  },
+      pickUpExpiryDate: null,
+      holdQueuePosition: "1",
+      creator: "Thorborg, Martin",
+      orderType: "normal",
+      orderDate: "2023-06-27T13:42:35.000Z",
+      title: "Skab din egen succes: leveregler der kan bringe dig langt",
+      pages: "151 sider",
+      edition: "1. udgave",
+      agencyId: "790900",
+      manifestation: {
+        pid: "870970-basis:135689122",
+        titles: {
+          main: ["Skab din egen succes"],
+        },
+        ownerWork: {
+          workId: "work-of:870970-basis:135689122",
+        },
+        materialTypes: [
+          {
+            specific: "bog",
+          },
+        ],
+        cover: {
+          thumbnail:
+            "https://moreinfo.addi.dk/2.11/more_info_get.php?lokalid=135689122&attachment_type=forside_lille&bibliotek=870970&source_id=150020&key=12d8b127df5a2cdb850d",
+        },
+        recordCreationDate: "20230306",
+      },
+    },
+  ],
 };
 
 export async function load({ accessToken }) {
