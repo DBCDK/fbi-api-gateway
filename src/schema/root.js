@@ -376,7 +376,10 @@ export const resolvers = {
         };
       }
 
-      const userId = await getUserId({ agencyId, context });
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+      const userId = await getUserId({ agencyId, userinfo });
 
       if (!userId) {
         return {
@@ -415,7 +418,10 @@ export const resolvers = {
         };
       }
 
-      const userId = await getUserId({ agencyId, context });
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+      const userId = await getUserId({ agencyId, userinfo });
 
       if (!userId) {
         return {

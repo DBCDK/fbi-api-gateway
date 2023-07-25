@@ -12,6 +12,7 @@ test("user - get basic data", async () => {
                 mail
                 culrMail
                 municipalityAgencyId
+                country
               }
             }
         `,
@@ -81,28 +82,6 @@ test("user - get agency english", async () => {
   expect(result).toMatchSnapshot();
 });
 
-test("user - get loans", async () => {
-  const result = await performTestQuery({
-    query: `
-            query  {
-              user {
-                loans {
-                  loanId
-                  dueDate   
-                }
-              }
-            }
-        `,
-    variables: {},
-    context: {
-      datasources: createMockedDataLoaders(),
-      accessToken: "DUMMY_TOKEN",
-      smaug: { user: { uniqueId: "some-unique-id" } },
-    },
-  });
-  expect(result).toMatchSnapshot();
-});
-
 test("user - get orders", async () => {
   const result = await performTestQuery({
     query: `
@@ -111,8 +90,19 @@ test("user - get orders", async () => {
                 orders {
                   orderId
                   status
+                  pickUpBranch {
+                    agencyName
+                  }
                   pickUpExpiryDate
+                  holdQueuePosition
+                  creator
+                  orderType
                   orderDate
+                  title
+                  pages
+                  edition
+                  agencyId
+
                 }
               }
             }
@@ -138,6 +128,49 @@ test("user - get debt", async () => {
                   currency
                   date
                   title
+                }
+              }
+            }
+        `,
+    variables: {},
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "DUMMY_TOKEN",
+      smaug: { user: { uniqueId: "some-unique-id" } },
+    },
+  });
+  expect(result).toMatchSnapshot();
+});
+
+test("user - get loans", async () => {
+  const result = await performTestQuery({
+    query: `
+            query  {
+              user {
+                loans {
+                  materialType
+                  loanId
+                  dueDate
+                  edition
+                  pages
+                  publisher
+                  agencyId
+                  manifestation {
+                    pid
+                    titles {
+                      main
+                    }
+                    ownerWork {
+                      workId
+                    }
+                    materialTypes {
+                      specific
+                    }
+                    cover {
+                      thumbnail
+                    }
+                    recordCreationDate
+                  }
                 }
               }
             }
