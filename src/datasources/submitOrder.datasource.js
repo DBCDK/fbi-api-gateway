@@ -3,12 +3,6 @@ import { ACTIONS, auditTrace } from "@dbcdk/dbc-audittrail-logger";
 
 const { serviceRequester, url, ttl, prefix } = config.datasources.openorder;
 
-/*
-const url =
-  "http://copa-rs.iscrum-ors-staging.svc.cloud.dbc.dk/copa-rs/api/v1/checkorderpolicy/";
-const serviceRequester = "190101";
-*/
-
 /**
  * Creates date three months in the future. Used if a date is not provided
  */
