@@ -33,7 +33,7 @@ export async function load({ pid, pickupBranch, accessToken }, context) {
 
 export const options = {
   redis: {
-    prefix: "checkorder-1",
-    ttl: 5,
+    prefix: prefix,
+    ttl: ttl,
   },
 };
