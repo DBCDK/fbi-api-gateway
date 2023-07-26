@@ -30,8 +30,6 @@ type RecommendationResponse {
 export const resolvers = {
   Recommendation: {
     work(parent, args, context, info) {
-      console.log(args, parent, "ARGS");
-
       return resolveWork({ id: parent.work }, context);
     },
     manifestation(parent, args, context, info) {
@@ -40,8 +38,6 @@ export const resolvers = {
   },
   RecommendationResponse: {
     async result(parent, args, context, info) {
-      console.log(parent, args, "PARENT ARGS");
-
       let pid;
       if (parent.pid) {
         pid = parent.pid;
