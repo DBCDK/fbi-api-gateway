@@ -1,4 +1,5 @@
 import config from "../config";
+import { ACTIONS, auditTrace } from "@dbcdk/dbc-audittrail-logger";
 
 const { serviceRequester, url, ttl, prefix } = config.datasources.openorder;
 
@@ -33,7 +34,7 @@ function createTrackingId() {
  * @param context
  * @returns {{[p: number]: [string, unknown], shift(): ([string, unknown] | undefined), pid: *, authorOfComponent: (string|*), serviceRequester: string, slice(start?: number, end?: number): [string, unknown][], find: {<S extends [string, unknown]>(predicate: (this:void, value: [string, unknown], index: number, obj: [string, unknown][]) => value is S, thisArg?: any): (S | undefined), (predicate: (value: [string, unknown], index: number, obj: [string, unknown][]) => unknown, thisArg?: any): ([string, unknown] | undefined)}, join(separator?: string): string, copyWithin(target: number, start: number, end?: number): this, indexOf(searchElement: [string, unknown], fromIndex?: number): number, needBeforeDate: string, reduce: {(callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown]): [string, unknown], (callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown], initialValue: [string, unknown]): [string, unknown], <U>(callbackfn: (previousValue: U, currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => U, initialValue: U): U}, titleOfComponent: (string|*), author: *, concat: {(...items: ConcatArray<[string, unknown]>): [string, unknown][], (...items: ConcatArray<[string, unknown]> | [string, unknown][]): [string, unknown][]}, sort(compareFn?: (a: [string, unknown], b: [string, unknown]) => number): this, fill(value: [string, unknown], start?: number, end?: number): this, push(...items: [string, unknown]): number, [Symbol.unscopables](): {copyWithin: boolean, entries: boolean, fill: boolean, find: boolean, findIndex: boolean, keys: boolean, values: boolean}, volume: (string|number|*), entries(): IterableIterator<[number, [string, unknown]]>, toLocaleString(): string, some(predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => unknown, thisArg?: any): boolean, pagination: (string|*), keys(): IterableIterator<number>, values(): IterableIterator<[string, unknown]>, verificationReferenceSource: string, title, pop(): ([string, unknown] | undefined), copy: boolean, reduceRight: {(callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown]): [string, unknown], (callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown], initialValue: [string, unknown]): [string, unknown], <U>(callbackfn: (previousValue: U, currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => U, initialValue: U): U}, publicationDate, every: {<S extends [string, unknown]>(predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => value is S, thisArg?: any): this is S[], (predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => unknown, thisArg?: any): boolean}, map<U>(callbackfn: (value: [string, unknown], index: number, array: [string, unknown][]) => U, thisArg?: any): U[], splice: {(start: number, deleteCount?: number): [string, unknown][], (start: number, deleteCount: number, ...items: [string, unknown]): [string, unknown][]}, forEach(callbackfn: (value: [string, unknown], index: number, array: [string, unknown][]) => void, thisArg?: any): void, [Symbol.iterator](): IterableIterator<[string, unknown]>, length: number, orderSystem: (string|*), userIdAuthenticated: (*|boolean), reverse(): [string, unknown][], userId: (string|*), publicationDateOfComponent: (string|*), filter: {<S extends [string, unknown]>(predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => value is S, thisArg?: any): S[], (predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => unknown, thisArg?: any): [string, unknown][]}, findIndex(predicate: (value: [string, unknown], index: number, obj: [string, unknown][]) => unknown, thisArg?: any): number, lastIndexOf(searchElement: [string, unknown], fromIndex?: number): number, exactEdition: (boolean|*), toString(): string, unshift(...items: [string, unknown]): number, pickUpAgencyId: ((function(*, *, *, *): Promise<*>)|*|string|string)}}
  */
-function setPost(input, context) {
+export async function processRequest(input, postSoap, context) {
   // If id is found the user is authenticated via some agency
   // otherwise the token is anonymous
   const userIdFromToken = input.smaug.user.id;
@@ -58,11 +59,11 @@ function setPost(input, context) {
     );
   }
 
+  // filter out userid from user parameters - it is found above
   let userParameters = Object.entries(input.userParameters).filter(
     ([key]) => !userIdTypes.includes(key)
   );
 
-  //  orderSystem: input.smaug.orderSystem,
   // defaults
   const postParameters = {
     copy: false,
@@ -92,7 +93,26 @@ function setPost(input, context) {
     (k) => postParameters[k] == null && delete postParameters[k]
   );
 
-  return postParameters;
+  if (!checkPost(postParameters)) {
+    return null;
+  }
+
+  const res = await postSoap(postParameters, input, context);
+
+  auditTrace(
+    ACTIONS.write,
+    config.app.id,
+    input.smaug.app.ips,
+    {
+      login_token: input.accessToken,
+    },
+    `${userId[1]}/${input.branch.agencyId}`,
+    {
+      place_order: res?.body?.orderPlaced?.orderId,
+    }
+  );
+
+  return res;
 }
 
 const checkPost = (post) => {
@@ -100,18 +120,7 @@ const checkPost = (post) => {
   return post != null;
 };
 
-export async function load(input, context) {
-  console.log(input, "ORIGINAL INPUT");
-  console.log(input.accessToken, "ACCESSTOKEN");
-  console.log(url, "URL");
-
-  const post = setPost(input, context);
-
-  if (!checkPost(post)) {
-    return null;
-  }
-
-  console.log(post, "POST");
+async function postSoap(post, input, context) {
   try {
     const order = await context.fetch(`${url}placeorder/`, {
       method: "POST",
@@ -121,11 +130,13 @@ export async function load(input, context) {
       },
       body: JSON.stringify(post),
     });
-    console.log(order, "ORDER");
-    return order.body;
+    return order;
   } catch (e) {
-    console.log("ERROR");
-    console.log(e);
+    // @TODO log
     return null;
   }
+}
+
+export async function load(input, context) {
+  return processRequest(input, postSoap, context);
 }
