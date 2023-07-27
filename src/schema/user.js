@@ -16,13 +16,13 @@ export const typeDef = `
 type User {
   name: String!
   agencies: [String]
+  agency(language: LanguageCode): BranchResult!
   address: String
   postalCode: String
   municipalityAgencyId: String
   mail: String
   culrMail: String
   country: String
-  agency(language: LanguageCode): BranchResult!
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
@@ -183,15 +183,16 @@ export const resolvers = {
       return agencyWithEmail && agencyWithEmail.userId;
     },
     async agency(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
         },
         context
       );
+      const homeAgency = getHomeAgencyAccount(userinfo);
 
       return await context.datasources.getLoader("library").load({
-        agencyid: res.agency,
+        agencyid: homeAgency.agencyId,
         language: parent.language,
         limit: 100,
         status: args.status || "ALLE",
