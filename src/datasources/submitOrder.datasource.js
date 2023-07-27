@@ -1,5 +1,6 @@
 import config from "../config";
 import { ACTIONS, auditTrace } from "@dbcdk/dbc-audittrail-logger";
+import { log } from "dbc-node-logger";
 
 const { serviceRequester, url, ttl, prefix } = config.datasources.openorder;
 
@@ -23,10 +24,14 @@ function createTrackingId() {
 }
 
 /**
+ * Handle the request. Merge given input and fixed parameters for a post request.
  *
  * @param input
+ *  input from query
+ * @param postSoap
+ *  the function to fetch data
  * @param context
- * @returns {{[p: number]: [string, unknown], shift(): ([string, unknown] | undefined), pid: *, authorOfComponent: (string|*), serviceRequester: string, slice(start?: number, end?: number): [string, unknown][], find: {<S extends [string, unknown]>(predicate: (this:void, value: [string, unknown], index: number, obj: [string, unknown][]) => value is S, thisArg?: any): (S | undefined), (predicate: (value: [string, unknown], index: number, obj: [string, unknown][]) => unknown, thisArg?: any): ([string, unknown] | undefined)}, join(separator?: string): string, copyWithin(target: number, start: number, end?: number): this, indexOf(searchElement: [string, unknown], fromIndex?: number): number, needBeforeDate: string, reduce: {(callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown]): [string, unknown], (callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown], initialValue: [string, unknown]): [string, unknown], <U>(callbackfn: (previousValue: U, currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => U, initialValue: U): U}, titleOfComponent: (string|*), author: *, concat: {(...items: ConcatArray<[string, unknown]>): [string, unknown][], (...items: ConcatArray<[string, unknown]> | [string, unknown][]): [string, unknown][]}, sort(compareFn?: (a: [string, unknown], b: [string, unknown]) => number): this, fill(value: [string, unknown], start?: number, end?: number): this, push(...items: [string, unknown]): number, [Symbol.unscopables](): {copyWithin: boolean, entries: boolean, fill: boolean, find: boolean, findIndex: boolean, keys: boolean, values: boolean}, volume: (string|number|*), entries(): IterableIterator<[number, [string, unknown]]>, toLocaleString(): string, some(predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => unknown, thisArg?: any): boolean, pagination: (string|*), keys(): IterableIterator<number>, values(): IterableIterator<[string, unknown]>, verificationReferenceSource: string, title, pop(): ([string, unknown] | undefined), copy: boolean, reduceRight: {(callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown]): [string, unknown], (callbackfn: (previousValue: [string, unknown], currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => [string, unknown], initialValue: [string, unknown]): [string, unknown], <U>(callbackfn: (previousValue: U, currentValue: [string, unknown], currentIndex: number, array: [string, unknown][]) => U, initialValue: U): U}, publicationDate, every: {<S extends [string, unknown]>(predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => value is S, thisArg?: any): this is S[], (predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => unknown, thisArg?: any): boolean}, map<U>(callbackfn: (value: [string, unknown], index: number, array: [string, unknown][]) => U, thisArg?: any): U[], splice: {(start: number, deleteCount?: number): [string, unknown][], (start: number, deleteCount: number, ...items: [string, unknown]): [string, unknown][]}, forEach(callbackfn: (value: [string, unknown], index: number, array: [string, unknown][]) => void, thisArg?: any): void, [Symbol.iterator](): IterableIterator<[string, unknown]>, length: number, orderSystem: (string|*), userIdAuthenticated: (*|boolean), reverse(): [string, unknown][], userId: (string|*), publicationDateOfComponent: (string|*), filter: {<S extends [string, unknown]>(predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => value is S, thisArg?: any): S[], (predicate: (value: [string, unknown], index: number, array: [string, unknown][]) => unknown, thisArg?: any): [string, unknown][]}, findIndex(predicate: (value: [string, unknown], index: number, obj: [string, unknown][]) => unknown, thisArg?: any): number, lastIndexOf(searchElement: [string, unknown], fromIndex?: number): number, exactEdition: (boolean|*), toString(): string, unshift(...items: [string, unknown]): number, pickUpAgencyId: ((function(*, *, *, *): Promise<*>)|*|string|string)}}
+ * @returns {Promise<*|null>}
  */
 export async function processRequest(input, postSoap, context) {
   // If id is found the user is authenticated via some agency
@@ -82,7 +87,7 @@ export async function processRequest(input, postSoap, context) {
     verificationReferenceSource: "DBCDATAWELL",
   };
 
-  // @TODO filter out empties
+  // delete empties
   Object.keys(postParameters).forEach(
     (k) => postParameters[k] == null && delete postParameters[k]
   );
@@ -93,6 +98,7 @@ export async function processRequest(input, postSoap, context) {
 
   const res = await postSoap(postParameters, input, context);
 
+  // some logging
   auditTrace(
     ACTIONS.write,
     config.app.id,
@@ -126,6 +132,7 @@ async function postSoap(post, input, context) {
     });
     return order;
   } catch (e) {
+    log.error("SUBMIT ORDER: Error placing order", { post: post });
     // @TODO log
     return null;
   }

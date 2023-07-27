@@ -82,7 +82,6 @@ export const resolvers = {
   },
   SubmitOrder: {
     status(parent, args, context, info) {
-      //console.log(parent, "PARENT");
       return parent?.body?.orderPlaced?.orderPlacedMessage || null;
     },
     orderId(parent, args, context, info) {
