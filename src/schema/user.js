@@ -183,6 +183,11 @@ export const resolvers = {
       return agencyWithEmail && agencyWithEmail.userId;
     },
     async agency(parent, args, context, info) {
+      /**
+       * @TODO
+       * Align agency and agencies properly
+       * Discuss the intended usage of these fields
+       */
       const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
@@ -200,6 +205,11 @@ export const resolvers = {
       });
     },
     async agencies(parent, args, context, info) {
+      /**
+       * @TODO
+       * Align agency and agencies properly
+       * Discuss the intended usage of these fields
+       */
       const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
