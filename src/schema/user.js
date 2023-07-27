@@ -15,7 +15,7 @@ import {
 export const typeDef = `
 type User {
   name: String!
-  agencies: [String]
+  agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
   address: String
   postalCode: String
@@ -210,7 +210,21 @@ export const resolvers = {
       const agencies = filterDuplicateAgencies(
         userinfo?.attributes?.agencies
       )?.map((account) => account.agencyId);
-      return agencies;
+
+      const agencyInfos = await Promise.all(
+        agencies.map(
+          async (agency) =>
+            await context.datasources.getLoader("library").load({
+              agencyid: agency,
+              language: parent.language,
+              limit: 20,
+              status: args.status || "ALLE",
+              bibdkExcludeBranches: args.bibdkExcludeBranches || false,
+            })
+        )
+      );
+
+      return agencyInfos;
     },
   },
   Loan: {
