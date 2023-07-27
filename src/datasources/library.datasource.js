@@ -19,6 +19,7 @@ const fields = [
   "name",
   "agencyName",
   "agencyId",
+  "branchName",
   "branchId",
   "city",
   "postalCode",
