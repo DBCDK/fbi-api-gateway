@@ -11,6 +11,8 @@ import { resolveManifestation } from "../utils/utils";
 export const typeDef = `
 type User {
   name: String!
+  favoritePickUpBranch: String
+  savedOrders: [SavedOrders]
   address: String
   postalCode: String
   municipalityAgencyId: String
@@ -20,6 +22,13 @@ type User {
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
+}
+type SavedOrders {
+  id: Int!
+  createdAt: String!
+  updatedAt: String!
+  orderId: String!
+  userId: String!
 }
 type Loan {
   dueDate:	DateTime!
@@ -54,12 +63,33 @@ type Debt {
   date: DateTime
   title: String
 }
+type Mutation {
+  """
+  Unique user id from SMAUG. Prefarbly use general user id GUID
+  """
+addUserToUserData(smaugUserId: String!): Boolean
+"""
+Add an orderId to a user. Will create user in database if they dont exist
+"""
+addOrder(orderId: String!):Boolean
+
+setFavoritePickUpBranch(favoritePickUpBranch: String!):Boolean
+}
 `;
 
 function isEmail(email) {
   return /\S+@\S+\.\S+/.test(email);
 }
+/**
+ * returns true if input has CPR-number format(10 digits)
+ * @param {String} uniqueId
+ * @returns {Boolean}
+ */
+function isCPRNumber(uniqueId) {
+  return /^\d{10}$/.test(uniqueId);
+}
 
+function getUserId() {}
 /**
  * Resolvers for the Profile type
  */
@@ -71,6 +101,42 @@ export const resolvers = {
       });
       return res.name;
     },
+
+    async favoritePickUpBranch(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        console.log("\n\nparent", parent);
+        console.log("is cpr right: ", isCPRNumber("1402952489"));
+        console.log("is wrong right:smaugUserId ", isCPRNumber(smaugUserId));
+        console.log(
+          "setFavoritePickUpBranch.context?.smaug?.user?.uniqueId",
+          context?.smaug?.user?.uniqueId
+        );
+        if (!smaugUserId || isCPRNumber(smaugUserId)) {
+          return null;
+        }
+        const res = await context.datasources
+          .getLoader("userDataGetUser")
+          .load({
+            smaugUserId: smaugUserId,
+          });
+        return res.favoritePickUpBranch;
+      } catch (error) {
+        console.log("\n\n\nerror: ", error);
+        return null;
+      }
+    },
+
+    async savedOrders(parent, args, context, info) {
+      const smaugUserId = context?.smaug?.user?.uniqueId;
+      const res = await context.datasources.getLoader("userDataGetUser").load({
+        smaugUserId: smaugUserId,
+      });
+      if (!smaugUserId || isCPRNumber(smaugUserId)) {
+        return null;
+      }
+      return res.orders;
+    },
     async address(parent, args, context, info) {
       const res = await context.datasources.getLoader("user").load({
         accessToken: context.accessToken,
@@ -81,6 +147,7 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
+      console.log("\n\n\nuserinfo", userinfo);
       return userinfo?.attributes?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
@@ -172,6 +239,80 @@ export const resolvers = {
           "At reservation shelf": "AT_RESERVATION_SHELF",
         }[parent.status] || "UNKNOWN"
       );
+    },
+  },
+  Mutation: {
+    async addUserToUserData(parent, args, context, info) {
+      try {
+        const { smaugUserId } = args;
+        console.log("smaugUserId", smaugUserId);
+        // Get user info
+        const userinfo = await context.datasources
+          .getLoader("userDataCreateUser")
+          .load({
+            smaugUserId: smaugUserId,
+          });
+        return true;
+      } catch (error) {
+        console.log("errir", error);
+        return false;
+      }
+    },
+
+    async setFavoritePickUpBranch(parent, args, context, info) {
+      try {
+        const { favoritePickUpBranch } = args;
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        console.log("\n\nparent", parent);
+
+        if (!smaugUserId || isCPRNumber(smaugUserId)) {
+          return null;
+        }
+
+        console.log("setFavoritePickUpBranch.smaugUserId", smaugUserId);
+
+        // Get user info
+        const userinfo = await context.datasources
+          .getLoader("userDataFavoritePickupBranch")
+          .load({
+            smaugUserId: smaugUserId,
+            favoritePickUpBranch: favoritePickUpBranch,
+          });
+        return true;
+      } catch (error) {
+        console.log("errir", error);
+        return false;
+      }
+    },
+
+    async addOrder(parent, args, context, info) {
+      try {
+        const { orderId } = args;
+
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        console.log("addOrder.smaugUserId", smaugUserId);
+        console.log("\n\nparent", parent);
+        console.log("is cpr right: ", isCPRNumber("1402952489"));
+        console.log("is wrong right:smaugUserId ", isCPRNumber(smaugUserId));
+        console.log(
+          "setFavoritePickUpBranch.context?.smaug?.user?.uniqueId",
+          context?.smaug?.user?.uniqueId
+        );
+        if (!smaugUserId || isCPRNumber(smaugUserId)) {
+          return null;
+        }
+        // Get user info
+        const userinfo = await context.datasources
+          .getLoader("userDataAddOrder")
+          .load({
+            smaugUserId: smaugUserId,
+            orderId: orderId,
+          });
+        return true;
+      } catch (error) {
+        console.log("error: ", error);
+        return false;
+      }
     },
   },
 };

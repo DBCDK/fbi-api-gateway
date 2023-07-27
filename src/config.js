@@ -223,5 +223,9 @@ export default {
       prefix: process.env.LINKCHECK_PREFIX || "linkcheck-1",
       ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
     },
+    userdata: {
+      url: process.env.USERDATA_URL || "http://localhost:3002/",
+      ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
+    },
   },
 };
