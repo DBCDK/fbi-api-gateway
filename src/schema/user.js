@@ -106,6 +106,11 @@ type Mutation {
   addOrder(orderId: String!): UserDataResponse
   
   """
+  Remove order from userData service
+  """
+  removeOrder(orderId: String!): UserDataResponse
+  
+  """
   Set a favorite pickup branch. Will create user in userdata service if they dont exist
   """
   setFavoritePickUpBranch(favoritePickUpBranch: String!): UserDataResponse
@@ -427,5 +432,29 @@ export const resolvers = {
         return { success: false };
       }
     },
+
+
+    async removeOrder(parent, args, context, info) {
+      try {
+        const { orderId } = args;
+
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        await context.datasources.getLoader("userDataRemoveOrder").load({
+          smaugUserId: smaugUserId,
+          orderId: orderId,
+        });
+        return { success: true };
+      } catch (error) {
+        return { success: false };
+      }
+    },
+
+    
   },
 };
