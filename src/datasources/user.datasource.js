@@ -17,6 +17,5 @@ export async function load({ accessToken }, context) {
     }),
     allowedErrorStatusCodes: [403],
   });
-  console.log("\n\nUSER: res?.body?.data;", res?.body?.data);
   return res?.body?.data;
 }

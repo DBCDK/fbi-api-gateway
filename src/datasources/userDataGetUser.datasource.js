@@ -2,19 +2,15 @@ import config from "../config";
 import request from "superagent";
 
 /**
- * Fetch user info
+ * Fetch user data form userdata service
  */
 export async function load({ smaugUserId }, context) {
   const { url } = config.datasources.userdata;
-  console.log("\nurl: ", url);
-  const GUID = smaugUserId || "hejhejhej";
   const addUserEndpoint = url + "user/get";
-  console.log("getuser", addUserEndpoint);
-
-  const user = await request.post(addUserEndpoint).send({ smaugUserId: GUID });
-  console.log("user", user.body);
-
-  return user.body; //"messi"
+  const user = await request
+    .post(addUserEndpoint)
+    .send({ smaugUserId: smaugUserId });
+  return user.body;
 }
 
 export const options = {

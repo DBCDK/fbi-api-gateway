@@ -12,7 +12,7 @@ export const typeDef = `
 type User {
   name: String!
   favoritePickUpBranch: String
-  savedOrders: [SavedOrders]
+  bibliotekDkOrders: [BibliotekDkOrders]
   address: String
   postalCode: String
   municipalityAgencyId: String
@@ -23,12 +23,12 @@ type User {
   loans: [Loan!]!
   debt: [Debt!]!
 }
-type SavedOrders {
-  id: Int!
-  createdAt: String!
-  updatedAt: String!
-  orderId: String!
-  userId: String!
+"""
+Orders made through bibliotek.dk
+"""
+type BibliotekDkOrders {
+  createdAt: String
+  orderId: String
 }
 type Loan {
   dueDate:	DateTime!
@@ -63,18 +63,44 @@ type Debt {
   date: DateTime
   title: String
 }
+
+type UserDataResponse {
+
+  """
+  Whether the opreation was sucess or not
+  """
+  success: Boolean!
+
+}
+
 type Mutation {
   """
-  Unique user id from SMAUG. Prefarbly use general user id GUID
+  Add user to userdata service
   """
-addUserToUserData(smaugUserId: String!): Boolean
-"""
-Add an orderId to a user. Will create user in database if they dont exist
-"""
-addOrder(orderId: String!):Boolean
+  addUserToUserDataService:UserDataResponse
 
-setFavoritePickUpBranch(favoritePickUpBranch: String!):Boolean
+
+"""
+Delete user from userdata service
+"""
+deleteUserFromUserDataService:UserDataResponse
+
+"""
+Add an orderId to a user. Will create user in userdata service if they dont exist
+"""
+addOrder(orderId: String!):UserDataResponse
+"""
+Set a favorite pickup branch. Will create user in userdata service if they dont exist
+"""
+setFavoritePickUpBranch(favoritePickUpBranch: String!):UserDataResponse
+
+"""
+Sets favoritePickUpBranch to null
+"""
+clearFavoritePickUpBranch:UserDataResponse
+
 }
+
 `;
 
 function isEmail(email) {
@@ -105,13 +131,6 @@ export const resolvers = {
     async favoritePickUpBranch(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        console.log("\n\nparent", parent);
-        console.log("is cpr right: ", isCPRNumber("1402952489"));
-        console.log("is wrong right:smaugUserId ", isCPRNumber(smaugUserId));
-        console.log(
-          "setFavoritePickUpBranch.context?.smaug?.user?.uniqueId",
-          context?.smaug?.user?.uniqueId
-        );
         if (!smaugUserId || isCPRNumber(smaugUserId)) {
           return null;
         }
@@ -122,12 +141,11 @@ export const resolvers = {
           });
         return res.favoritePickUpBranch;
       } catch (error) {
-        console.log("\n\n\nerror: ", error);
         return null;
       }
     },
 
-    async savedOrders(parent, args, context, info) {
+    async bibliotekDkOrders(parent, args, context, info) {
       const smaugUserId = context?.smaug?.user?.uniqueId;
       const res = await context.datasources.getLoader("userDataGetUser").load({
         smaugUserId: smaugUserId,
@@ -147,7 +165,6 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
-      console.log("\n\n\nuserinfo", userinfo);
       return userinfo?.attributes?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
@@ -242,20 +259,33 @@ export const resolvers = {
     },
   },
   Mutation: {
-    async addUserToUserData(parent, args, context, info) {
+    async addUserToUserDataService(parent, args, context, info) {
       try {
-        const { smaugUserId } = args;
-        console.log("smaugUserId", smaugUserId);
-        // Get user info
-        const userinfo = await context.datasources
-          .getLoader("userDataCreateUser")
-          .load({
-            smaugUserId: smaugUserId,
-          });
-        return true;
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        await context.datasources.getLoader("userDataCreateUser").load({
+          smaugUserId: smaugUserId,
+        });
+        return { success: true };
       } catch (error) {
-        console.log("errir", error);
-        return false;
+        return { success: false };
+      }
+    },
+    async deleteUserFromUserDataService(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+
+        await context.datasources.getLoader("userDataDeleteUser").load({
+          smaugUserId: smaugUserId,
+        });
+        return { success: true };
+      } catch (error) {
+        return { success: false };
       }
     },
 
@@ -263,44 +293,57 @@ export const resolvers = {
       try {
         const { favoritePickUpBranch } = args;
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        console.log("\n\nparent", parent);
-
-        if (!smaugUserId || isCPRNumber(smaugUserId)) {
-          return null;
+        if (!smaugUserId) {
+          throw "Not authorized";
         }
-
-        console.log("setFavoritePickUpBranch.smaugUserId", smaugUserId);
-
-        // Get user info
-        const userinfo = await context.datasources
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        await context.datasources
           .getLoader("userDataFavoritePickupBranch")
           .load({
             smaugUserId: smaugUserId,
             favoritePickUpBranch: favoritePickUpBranch,
           });
-        return true;
+        return { success: true };
       } catch (error) {
-        console.log("errir", error);
-        return false;
+        return { success: false };
+      }
+    },
+    async clearFavoritePickUpBranch(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        await context.datasources
+          .getLoader("userDataFavoritePickupBranch")
+          .load({
+            smaugUserId: smaugUserId,
+            favoritePickUpBranch: null,
+          });
+        return { success: true };
+      } catch (error) {
+        return { success: false };
       }
     },
 
+  
     async addOrder(parent, args, context, info) {
       try {
         const { orderId } = args;
 
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        console.log("addOrder.smaugUserId", smaugUserId);
-        console.log("\n\nparent", parent);
-        console.log("is cpr right: ", isCPRNumber("1402952489"));
-        console.log("is wrong right:smaugUserId ", isCPRNumber(smaugUserId));
-        console.log(
-          "setFavoritePickUpBranch.context?.smaug?.user?.uniqueId",
-          context?.smaug?.user?.uniqueId
-        );
-        if (!smaugUserId || isCPRNumber(smaugUserId)) {
-          return null;
+        if (!smaugUserId) {
+          throw "Not authorized";
         }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+
         // Get user info
         const userinfo = await context.datasources
           .getLoader("userDataAddOrder")
@@ -308,10 +351,9 @@ export const resolvers = {
             smaugUserId: smaugUserId,
             orderId: orderId,
           });
-        return true;
+        return { success: true };
       } catch (error) {
-        console.log("error: ", error);
-        return false;
+        return { success: false };
       }
     },
   },
