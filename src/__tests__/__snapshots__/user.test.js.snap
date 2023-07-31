@@ -8,22 +8,41 @@ Object {
       "agency": Object {
         "result": Array [
           Object {
-            "name": "DBCTestBibliotek",
-            "openingHours": "VIP 4.9: Åbningstider<br>
-mandag<br>
-tirsdag<br>
-onsdag<br>
-torsdag<br>
-fredag<br>
-lørdag",
+            "name": "Ballerup Bibliotek",
+            "openingHours": "Mandag - torsdag: 07 - 22
+Fredag - lørdag - søndag: 07 - 17
+
+
+Betjening:
+Mandag-torsdag: 10 - 19
+Fredag: 10 - 17
+Lørdag: 10 - 14",
           },
           Object {
-            "name": "DBCtest_2",
-            "openingHours": null,
+            "name": "Skovlunde Kulturhus",
+            "openingHours": "Mandag-torsdag: 07 - 22
+Fredag-lørdag-søndag: 07 - 17
+
+
+Betjening:
+Mandag: 13 - 17
+Tirsdag: 13 - 17
+Onsdag: 10 - 17
+Torsdag: 13 - 17
+Fredag: 10 - 17
+Lørdag: 10 - 14",
           },
           Object {
-            "name": "DBC-bibilioteksekspressen",
-            "openingHours": null,
+            "name": "Kulturhus Måløv",
+            "openingHours": "Alle dage: 07-22
+
+Betjening:
+Mandag: 14-18
+Tirsdag: 14-18
+Onsdag: 10-18
+Torsdag: 14-18
+Fredag: 13-17
+Lørdag: 10-14",
           },
         ],
       },
@@ -43,22 +62,41 @@ Object {
       "agency": Object {
         "result": Array [
           Object {
-            "name": "DBCTestBibliotek",
-            "openingHours": "VIP 4.9: Åbningstider<br>
-mandag<br>
-tirsdag<br>
-onsdag<br>
-torsdag<br>
-fredag<br>
-lørdag",
+            "name": "Ballerup Bibliotek",
+            "openingHours": "Mandag - torsdag: 07 - 22
+Fredag - lørdag - søndag: 07 - 17
+
+
+Betjening:
+Mandag-torsdag: 10 - 19
+Fredag: 10 - 17
+Lørdag: 10 - 14",
           },
           Object {
-            "name": "DBCtest_2",
-            "openingHours": null,
+            "name": "Skovlunde Kulturhus",
+            "openingHours": "Mandag-torsdag: 07 - 22
+Fredag-lørdag-søndag: 07 - 17
+
+
+Betjening:
+Mandag: 13 - 17
+Tirsdag: 13 - 17
+Onsdag: 10 - 17
+Torsdag: 13 - 17
+Fredag: 10 - 17
+Lørdag: 10 - 14",
           },
           Object {
-            "name": "DBC-bibilioteksekspressen",
-            "openingHours": null,
+            "name": "Kulturhus Måløv",
+            "openingHours": "Alle dage: 07-22
+
+Betjening:
+Mandag: 14-18
+Tirsdag: 14-18
+Onsdag: 10-18
+Torsdag: 14-18
+Fredag: 13-17
+Lørdag: 10-14",
           },
         ],
       },
