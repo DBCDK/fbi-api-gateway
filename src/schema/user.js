@@ -84,7 +84,7 @@ type Debt {
 
 type UserDataResponse {
   """
-  Whether the opreation was sucess or not
+  Whether the operation was sucess or not
   """
   success: Boolean!
 }
@@ -93,27 +93,27 @@ type Mutation {
   """
   Add user to userdata service
   """
-  addUserToUserDataService:UserDataResponse
+  addUserToUserDataService: UserDataResponse
 
   """
   Delete user from userdata service
   """
-  deleteUserFromUserDataService:UserDataResponse
+  deleteUserFromUserDataService: UserDataResponse
 
   """
   Add an orderId to a user. Will create user in userdata service if they dont exist
   """
-  addOrder(orderId: String!):UserDataResponse
+  addOrder(orderId: String!): UserDataResponse
   
   """
   Set a favorite pickup branch. Will create user in userdata service if they dont exist
   """
-  setFavoritePickUpBranch(favoritePickUpBranch: String!):UserDataResponse
+  setFavoritePickUpBranch(favoritePickUpBranch: String!): UserDataResponse
 
   """
   Sets favoritePickUpBranch to null
   """
-  clearFavoritePickUpBranch:UserDataResponse
+  clearFavoritePickUpBranch: UserDataResponse
 
   }
 
@@ -148,6 +148,9 @@ export const resolvers = {
 
     async favoritePickUpBranch(parent, args, context, info) {
       try {
+        console.log('process.env.USERDATA_URL',process.env.USERDATA_URL)
+        console.log('process.env',process.env)
+
         const smaugUserId = context?.smaug?.user?.uniqueId;
         if (!smaugUserId) {
           throw "Not authorized";
@@ -162,6 +165,7 @@ export const resolvers = {
           });
         return res.favoritePickUpBranch;
       } catch (error) {
+        console.log('error',error)
         return null;
       }
     },

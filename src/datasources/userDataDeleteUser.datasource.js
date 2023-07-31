@@ -12,7 +12,6 @@ export async function load({ smaugUserId }, context) {
 
 export const options = {
   redis: {
-    prefix: "userinfo",
-    ttl: 60 * 5,
-  },
+    prefix: "userinfo"
+},
 };

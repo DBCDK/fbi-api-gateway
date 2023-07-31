@@ -7,6 +7,7 @@ import request from "superagent";
 export async function load({ smaugUserId }, context) {
   const { url } = config.datasources.userdata;
   const addUserEndpoint = url + "user/get";
+  console.log('addUserEndpoint',addUserEndpoint)
   const user = await request
     .post(addUserEndpoint)
     .send({ smaugUserId: smaugUserId });
