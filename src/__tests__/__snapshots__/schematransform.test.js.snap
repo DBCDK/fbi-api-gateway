@@ -2427,14 +2427,14 @@ type Stats {
 
 type User {
   name: String!
-  agencies: [String]
+  agencies(language: LanguageCode): [BranchResult!]!
+  agency(language: LanguageCode): BranchResult!
   address: String
   postalCode: String
   municipalityAgencyId: String
   mail: String
   culrMail: String
   country: String
-  agency(language: LanguageCode): BranchResult!
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
