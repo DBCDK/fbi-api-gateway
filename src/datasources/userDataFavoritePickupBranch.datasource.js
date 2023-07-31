@@ -8,7 +8,7 @@ export async function load({ smaugUserId, favoritePickUpBranch }) {
   const { url } = config.datasources.userdata;
   const addUserEndpoint = url + "user/favoritePickupBranch";
 
-  console.log('\n\nin fav pickupbranch',favoritePickUpBranch)
+  console.log("\n\nin fav pickupbranch", favoritePickUpBranch);
 
   await request.post(addUserEndpoint).send({
     smaugUserId: smaugUserId,

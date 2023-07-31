@@ -25,9 +25,9 @@ type User {
   mail: String
   culrMail: String
   country: String
-  orders: [Order!]!
-  loans: [Loan!]!
-  debt: [Debt!]!
+  orders: [Order!]! @complexity(value: 5)
+  loans: [Loan!]! @complexity(value: 5)
+  debt: [Debt!]! @complexity(value: 3)
 }
 """
 Orders made through bibliotek.dk
@@ -122,15 +122,14 @@ type Mutation {
 function isEmail(email) {
   return /\S+@\S+\.\S+/.test(email);
 }
+
 /**
  * returns true if input has CPR-number format (10 digits)
  * @param {String} uniqueId
- * @returns {Boolean}
  */
 function isCPRNumber(uniqueId) {
   return /^\d{10}$/.test(uniqueId);
 }
-
 
 /**
  * Resolvers for the Profile type
@@ -138,17 +137,23 @@ function isCPRNumber(uniqueId) {
 export const resolvers = {
   User: {
     async name(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load({
-        accessToken: context.accessToken,
-      });
+      const res = await context.datasources.getLoader("user").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
       return res.name;
     },
 
     async favoritePickUpBranch(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId || isCPRNumber(smaugUserId)) {
-          return null;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
         }
         const res = await context.datasources
           .getLoader("userDataGetUser")
@@ -166,8 +171,11 @@ export const resolvers = {
       const res = await context.datasources.getLoader("userDataGetUser").load({
         smaugUserId: smaugUserId,
       });
-      if (!smaugUserId || isCPRNumber(smaugUserId)) {
-        return null;
+      if (!smaugUserId) {
+        throw "Not authorized";
+      }
+      if (isCPRNumber(smaugUserId)) {
+        throw "User not found in CULR";
       }
       return res.orders;
     },
@@ -395,7 +403,6 @@ export const resolvers = {
       }
     },
 
-  
     async addOrder(parent, args, context, info) {
       try {
         const { orderId } = args;
@@ -407,12 +414,10 @@ export const resolvers = {
         if (isCPRNumber(smaugUserId)) {
           throw "User not found in CULR";
         }
-          await context.datasources
-          .getLoader("userDataAddOrder")
-          .load({
-            smaugUserId: smaugUserId,
-            orderId: orderId,
-          });
+        await context.datasources.getLoader("userDataAddOrder").load({
+          smaugUserId: smaugUserId,
+          orderId: orderId,
+        });
         return { success: true };
       } catch (error) {
         return { success: false };
