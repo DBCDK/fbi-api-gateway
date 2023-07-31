@@ -148,8 +148,6 @@ export const resolvers = {
 
     async favoritePickUpBranch(parent, args, context, info) {
       try {
-        console.log('process.env.USERDATA_URL',process.env.USERDATA_URL)
-        console.log('process.env',process.env)
 
         const smaugUserId = context?.smaug?.user?.uniqueId;
         if (!smaugUserId) {
@@ -165,7 +163,6 @@ export const resolvers = {
           });
         return res.favoritePickUpBranch;
       } catch (error) {
-        console.log('error',error)
         return null;
       }
     },
@@ -377,10 +374,13 @@ export const resolvers = {
         }
         await context.datasources
           .getLoader("userDataFavoritePickupBranch")
-          .load({
-            smaugUserId: smaugUserId,
-            favoritePickUpBranch: favoritePickUpBranch,
-          });
+          .load(
+            {
+              smaugUserId: smaugUserId,
+              favoritePickUpBranch: favoritePickUpBranch,
+            },
+            context
+          );
         return { success: true };
       } catch (error) {
         return { success: false };

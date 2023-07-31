@@ -1,5 +1,4 @@
 import config from "../config";
-import request from "superagent";
 
 /**
  * Create new user in userdata service
@@ -7,12 +6,18 @@ import request from "superagent";
 export async function load({ smaugUserId }, context) {
   const { url } = config.datasources.userdata;
   const addUserEndpoint = url + "user/add";
-  await request.post(addUserEndpoint).send({ smaugUserId: smaugUserId });
+
+  await context.fetch(addUserEndpoint, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({ smaugUserId: smaugUserId }),
+  });
 }
 
 export const options = {
   redis: {
     prefix: "userinfo",
-    ttl: 60 * 5,
   },
 };

@@ -1,16 +1,20 @@
 import config from "../config";
-import request from "superagent";
 
 /**
  * Fetch user data form userdata service
  */
 export async function load({ smaugUserId }, context) {
   const { url } = config.datasources.userdata;
-  const addUserEndpoint = url + "user/get";
-  console.log('addUserEndpoint',addUserEndpoint)
-  const user = await request
-    .post(addUserEndpoint)
-    .send({ smaugUserId: smaugUserId });
+  const endpoint = url + "user/get";
+
+  const user = await context.fetch(endpoint, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({ smaugUserId: smaugUserId }),
+  });
+
   return user.body;
 }
 
