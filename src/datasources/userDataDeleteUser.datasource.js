@@ -1,10 +1,10 @@
 import config from "../config";
+const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
  * Delete user from userdata service
  */
 export async function load({ smaugUserId }, context) {
-  const { url } = config.datasources.userdata;
   const endpoint = url + "user";
   await context.fetch(endpoint, {
     headers: {
@@ -17,6 +17,7 @@ export async function load({ smaugUserId }, context) {
 
 export const options = {
   redis: {
-    prefix: "userinfo",
+    ttl,
+    prefix,
   },
 };

@@ -1,10 +1,10 @@
 import config from "../config";
+const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
  * set favorite pickup branch in userdata service
  */
 export async function load({ smaugUserId, favoritePickUpBranch }, context) {
-  const { url } = config.datasources.userdata;
   const endpoint = url + "user/favoritePickupBranch";
   await context?.fetch(endpoint, {
     headers: {
@@ -20,6 +20,7 @@ export async function load({ smaugUserId, favoritePickUpBranch }, context) {
 
 export const options = {
   redis: {
-    prefix: "userinfo",
+    ttl,
+    prefix,
   },
 };

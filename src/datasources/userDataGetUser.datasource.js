@@ -1,10 +1,10 @@
 import config from "../config";
+const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
  * Fetch user data form userdata service
  */
 export async function load({ smaugUserId }, context) {
-  const { url } = config.datasources.userdata;
   const endpoint = url + "user/get";
 
   const user = await context.fetch(endpoint, {
@@ -20,7 +20,7 @@ export async function load({ smaugUserId }, context) {
 
 export const options = {
   redis: {
-    prefix: "userinfo",
-    ttl: 60 * 5,
+    ttl,
+    prefix,
   },
 };

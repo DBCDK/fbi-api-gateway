@@ -1,10 +1,10 @@
 import config from "../config";
+const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
  * Add order in userdata service
  */
 export async function load({ smaugUserId, orderId }, context) {
-  const { url } = config.datasources.userdata;
   const endpoint = url + "user/order";
   await context.fetch(endpoint, {
     headers: {
@@ -17,6 +17,7 @@ export async function load({ smaugUserId, orderId }, context) {
 
 export const options = {
   redis: {
-    prefix: "userinfo",
+    ttl,
+    prefix,
   },
 };

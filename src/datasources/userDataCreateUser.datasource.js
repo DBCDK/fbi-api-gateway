@@ -1,12 +1,11 @@
 import config from "../config";
+const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
  * Create new user in userdata service
  */
 export async function load({ smaugUserId }, context) {
-  const { url } = config.datasources.userdata;
   const addUserEndpoint = url + "user/add";
-
   await context.fetch(addUserEndpoint, {
     headers: {
       "Content-Type": "application/json",
@@ -18,6 +17,7 @@ export async function load({ smaugUserId }, context) {
 
 export const options = {
   redis: {
-    prefix: "userinfo",
+    ttl,
+    prefix,
   },
 };

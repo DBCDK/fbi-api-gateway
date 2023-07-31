@@ -153,7 +153,6 @@ export const resolvers = {
 
     async favoritePickUpBranch(parent, args, context, info) {
       try {
-
         const smaugUserId = context?.smaug?.user?.uniqueId;
         if (!smaugUserId) {
           throw "Not authorized";
@@ -433,7 +432,6 @@ export const resolvers = {
       }
     },
 
-
     async removeOrder(parent, args, context, info) {
       try {
         const { orderId } = args;
@@ -454,7 +452,5 @@ export const resolvers = {
         return { success: false };
       }
     },
-
-    
   },
 };
