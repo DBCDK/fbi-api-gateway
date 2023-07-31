@@ -241,7 +241,7 @@ export async function search(props, getFunc) {
   return {
     hitcount: merged.length,
     result: merged
-      .slice(offset, limit)
+      .slice(offset, limit + offset)
       .map((branch) => ({ ...branch, language })),
   };
 }
