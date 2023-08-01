@@ -1275,6 +1275,28 @@ type Mutation {
   submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
+
+  \\"\\"\\"Add user to userdata service\\"\\"\\"
+  addUserToUserDataService: UserDataResponse
+
+  \\"\\"\\"Delete user from userdata service\\"\\"\\"
+  deleteUserFromUserDataService: UserDataResponse
+
+  \\"\\"\\"
+  Add an orderId to a user. Will create user in userdata service if they dont exist
+  \\"\\"\\"
+  addOrder(orderId: String!): UserDataResponse
+
+  \\"\\"\\"Remove order from userData service\\"\\"\\"
+  removeOrder(orderId: String!): UserDataResponse
+
+  \\"\\"\\"
+  Set a favorite pickup branch. Will create user in userdata service if they dont exist
+  \\"\\"\\"
+  setFavoritePickUpBranch(favoritePickUpBranch: String!): UserDataResponse
+
+  \\"\\"\\"Sets favoritePickUpBranch to null\\"\\"\\"
+  clearFavoritePickUpBranch: UserDataResponse
 }
 
 type Recommendation {
@@ -2427,6 +2449,8 @@ type Stats {
 
 type User {
   name: String!
+  favoritePickUpBranch: String
+  bibliotekDkOrders: [BibliotekDkOrders]
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
   address: String
@@ -2438,6 +2462,12 @@ type User {
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
+}
+
+\\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
+type BibliotekDkOrders {
+  createdAt: String
+  orderId: String
 }
 
 type Loan {
@@ -2487,6 +2517,11 @@ type Debt {
   currency: String
   date: DateTime
   title: String
+}
+
+type UserDataResponse {
+  \\"\\"\\"Whether the operation was sucess or not\\"\\"\\"
+  success: Boolean!
 }
 "
 `;
