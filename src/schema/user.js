@@ -16,7 +16,7 @@ export const typeDef = `
 type User {
   name: String!
   favoritePickUpBranch: String
-  bibliotekDkOrders: [BibliotekDkOrders]
+  bibliotekDkOrders: [BibliotekDkOrders!]!
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
   address: String
@@ -33,8 +33,8 @@ type User {
 Orders made through bibliotek.dk
 """
 type BibliotekDkOrders {
-  createdAt: String
-  orderId: String
+  createdAt: String!
+  orderId: String!
 }
 type Loan {
   dueDate:	DateTime!
@@ -182,7 +182,7 @@ export const resolvers = {
       if (isCPRNumber(smaugUserId)) {
         throw "User not found in CULR";
       }
-      return res.orders;
+      return res.orders || [];
     },
     async address(parent, args, context, info) {
       const res = await context.datasources.getLoader("user").load(
