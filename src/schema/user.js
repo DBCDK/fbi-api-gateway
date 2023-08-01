@@ -16,7 +16,7 @@ export const typeDef = `
 type User {
   name: String!
   favoritePickUpBranch: String
-  bibliotekDkOrders: [BibliotekDkOrders]!
+  bibliotekDkOrders: [BibliotekDkOrders!]!
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
   address: String
