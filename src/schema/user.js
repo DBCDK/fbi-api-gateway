@@ -15,6 +15,8 @@ import {
 export const typeDef = `
 type User {
   name: String!
+  favoritePickUpBranch: String
+  bibliotekDkOrders: [BibliotekDkOrders]
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
   address: String
@@ -26,6 +28,13 @@ type User {
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
+}
+"""
+Orders made through bibliotek.dk
+"""
+type BibliotekDkOrders {
+  createdAt: String
+  orderId: String
 }
 type Loan {
   dueDate:	DateTime!
@@ -72,10 +81,59 @@ type Debt {
   date: DateTime
   title: String
 }
+
+type UserDataResponse {
+  """
+  Whether the operation was sucess or not
+  """
+  success: Boolean!
+}
+
+type Mutation {
+  """
+  Add user to userdata service
+  """
+  addUserToUserDataService: UserDataResponse
+
+  """
+  Delete user from userdata service
+  """
+  deleteUserFromUserDataService: UserDataResponse
+
+  """
+  Add an orderId to a user. Will create user in userdata service if they dont exist
+  """
+  addOrder(orderId: String!): UserDataResponse
+  
+  """
+  Remove order from userData service
+  """
+  removeOrder(orderId: String!): UserDataResponse
+  
+  """
+  Set a favorite pickup branch. Will create user in userdata service if they dont exist
+  """
+  setFavoritePickUpBranch(favoritePickUpBranch: String!): UserDataResponse
+
+  """
+  Sets favoritePickUpBranch to null
+  """
+  clearFavoritePickUpBranch: UserDataResponse
+
+  }
+
 `;
 
 function isEmail(email) {
   return /\S+@\S+\.\S+/.test(email);
+}
+
+/**
+ * returns true if input has CPR-number format (10 digits)
+ * @param {String} uniqueId
+ */
+function isCPRNumber(uniqueId) {
+  return /^\d{10}$/.test(uniqueId);
 }
 
 /**
@@ -90,8 +148,41 @@ export const resolvers = {
         },
         context
       );
+      return res.name;
+    },
 
-      return res?.name;
+    async favoritePickUpBranch(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        const res = await context.datasources
+          .getLoader("userDataGetUser")
+          .load({
+            smaugUserId: smaugUserId,
+          });
+        return res.favoritePickUpBranch;
+      } catch (error) {
+        return null;
+      }
+    },
+
+    async bibliotekDkOrders(parent, args, context, info) {
+      const smaugUserId = context?.smaug?.user?.uniqueId;
+      const res = await context.datasources.getLoader("userDataGetUser").load({
+        smaugUserId: smaugUserId,
+      });
+      if (!smaugUserId) {
+        throw "Not authorized";
+      }
+      if (isCPRNumber(smaugUserId)) {
+        throw "User not found in CULR";
+      }
+      return res.orders;
     },
     async address(parent, args, context, info) {
       const res = await context.datasources.getLoader("user").load(
@@ -266,6 +357,124 @@ export const resolvers = {
           "At reservation shelf": "AT_RESERVATION_SHELF",
         }[parent.status] || "UNKNOWN"
       );
+    },
+  },
+  Mutation: {
+    async addUserToUserDataService(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        await context.datasources.getLoader("userDataCreateUser").load({
+          smaugUserId: smaugUserId,
+        });
+        return { success: true };
+      } catch (error) {
+        return { success: false };
+      }
+    },
+    async deleteUserFromUserDataService(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+
+        await context.datasources.getLoader("userDataDeleteUser").load({
+          smaugUserId: smaugUserId,
+        });
+        return { success: true };
+      } catch (error) {
+        return { success: false };
+      }
+    },
+
+    async setFavoritePickUpBranch(parent, args, context, info) {
+      try {
+        const { favoritePickUpBranch } = args;
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        await context.datasources
+          .getLoader("userDataFavoritePickupBranch")
+          .load(
+            {
+              smaugUserId: smaugUserId,
+              favoritePickUpBranch: favoritePickUpBranch,
+            },
+            context
+          );
+        return { success: true };
+      } catch (error) {
+        return { success: false };
+      }
+    },
+    async clearFavoritePickUpBranch(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        await context.datasources
+          .getLoader("userDataFavoritePickupBranch")
+          .load({
+            smaugUserId: smaugUserId,
+            favoritePickUpBranch: null,
+          });
+        return { success: true };
+      } catch (error) {
+        return { success: false };
+      }
+    },
+
+    async addOrder(parent, args, context, info) {
+      try {
+        const { orderId } = args;
+
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        await context.datasources.getLoader("userDataAddOrder").load({
+          smaugUserId: smaugUserId,
+          orderId: orderId,
+        });
+        return { success: true };
+      } catch (error) {
+        return { success: false };
+      }
+    },
+
+    async removeOrder(parent, args, context, info) {
+      try {
+        const { orderId } = args;
+
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        await context.datasources.getLoader("userDataRemoveOrder").load({
+          smaugUserId: smaugUserId,
+          orderId: orderId,
+        });
+        return { success: true };
+      } catch (error) {
+        return { success: false };
+      }
     },
   },
 };
