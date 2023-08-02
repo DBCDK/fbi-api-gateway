@@ -182,7 +182,7 @@ export const resolvers = {
       if (isCPRNumber(smaugUserId)) {
         throw "User not found in CULR";
       }
-      return res.orders || [];
+      return res?.orders || [];
     },
     async address(parent, args, context, info) {
       const res = await context.datasources.getLoader("user").load(
