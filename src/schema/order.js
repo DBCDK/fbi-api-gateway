@@ -80,4 +80,12 @@ export const resolvers = {
       );
     },
   },
+  SubmitOrder: {
+    status(parent, args, context, info) {
+      return parent?.body?.orderPlaced?.orderPlacedMessage || null;
+    },
+    orderId(parent, args, context, info) {
+      return parent?.body?.orderPlaced?.orderId || null;
+    },
+  },
 };

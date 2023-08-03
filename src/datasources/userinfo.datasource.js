@@ -1,10 +1,10 @@
-import request from "superagent";
+import config from "../config";
 
+const { url, ttl, prefix } = config.datasources.userInfo;
 /**
  * Fetch user info
  */
 export async function load({ accessToken }, context) {
-  const url = "https://login.bib.dk/userinfo";
   const res = await context?.fetch(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
     allowedErrorStatusCodes: [401],
@@ -15,7 +15,7 @@ export async function load({ accessToken }, context) {
 
 export const options = {
   redis: {
-    prefix: "userinfo",
-    ttl: 60 * 5,
+    prefix: prefix,
+    ttl: ttl,
   },
 };
