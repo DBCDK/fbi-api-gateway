@@ -142,13 +142,19 @@ function isCPRNumber(uniqueId) {
 export const resolvers = {
   User: {
     async name(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
       );
-      return res.name;
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
+      );
+      return res?.name;
     },
 
     async favoritePickUpBranch(parent, args, context, info) {
@@ -185,11 +191,17 @@ export const resolvers = {
       return res?.orders || [];
     },
     async address(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
+      );
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
       );
 
       return res?.address;
@@ -201,61 +213,97 @@ export const resolvers = {
       return userinfo?.attributes?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
-      const res = await context.datasources.getLoader("debt").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
       );
-
-      return res;
+      const userInfoAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
+      );
+      return await context.datasources.getLoader("debt").load(
+        {
+          userInfoAccounts: userInfoAccounts,
+          accessToken: context.accessToken, // Required for testing
+        }
+      );
     },
     async loans(parent, args, context, info) {
-      const res = await context.datasources.getLoader("loans").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
       );
-
-      return res;
+      const userInfoAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
+      );
+      return await context.datasources.getLoader("loans").load(
+        {
+          userInfoAccounts: userInfoAccounts,
+          accessToken: context.accessToken, // Required for testing
+        }
+      );
     },
     async orders(parent, args, context, info) {
-      const res = await context.datasources.getLoader("orders").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
         },
-        context
       );
-
-      return res;
+      const userInfoAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
+      );
+      return await context.datasources.getLoader("orders").load(
+        {
+          userInfoAccounts: userInfoAccounts,
+          accessToken: context.accessToken, // Required for testing
+        }
+      );
     },
     async postalCode(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
+      );
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
       );
 
       return res?.postalCode;
     },
     async mail(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
+      );
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
       );
 
       return res?.mail;
     },
     async country(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
+      );
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
       );
 
       return res?.country;
