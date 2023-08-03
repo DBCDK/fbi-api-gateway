@@ -90,7 +90,7 @@ type UserDataResponse {
   success: Boolean!
   
   """
-  errorMessage in case request has failed
+  Error message if request fails
   """
   errorMessage: String  
 }
