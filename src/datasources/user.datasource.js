@@ -40,7 +40,7 @@ const reduceBody = (body) => ({
 
 /**
  * Fetch user info
- * @param homeAccount: {}
+ * @param homeAccount: {agencyId: String, userId: String, userIdType: String}
  */
 export async function load({ homeAccount }, context) {
   const soap = constructSoap({

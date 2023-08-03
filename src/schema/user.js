@@ -213,31 +213,52 @@ export const resolvers = {
       return userinfo?.attributes?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
-      const res = await context.datasources.getLoader("debt").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
         }
       );
-
-      return res;
+      const userInfoAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
+      );
+      return await context.datasources.getLoader("debt").load(
+        {
+          userInfoAccounts: userInfoAccounts,
+          accessToken: context.accessToken, // Required for testing
+        }
+      );
     },
     async loans(parent, args, context, info) {
-      const res = await context.datasources.getLoader("loans").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
         }
       );
-
-      return res;
+      const userInfoAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
+      );
+      return await context.datasources.getLoader("loans").load(
+        {
+          userInfoAccounts: userInfoAccounts,
+          accessToken: context.accessToken, // Required for testing
+        }
+      );
     },
     async orders(parent, args, context, info) {
-      const res = await context.datasources.getLoader("orders").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
+        },
+      );
+      const userInfoAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
+      );
+      return await context.datasources.getLoader("orders").load(
+        {
+          userInfoAccounts: userInfoAccounts,
+          accessToken: context.accessToken, // Required for testing
         }
       );
-
-      return res;
     },
     async postalCode(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load(

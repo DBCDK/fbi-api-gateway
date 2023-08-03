@@ -70,18 +70,9 @@ const callService = async ({ agencyId, userId }, context) => {
 
 /**
  * Fetch user loans
- * @param accessToken: String
+ * @param userInfoAccounts: [{agencyId: String, userId: String, userIdType: String}]
  */
-export async function load({ accessToken }, context) {
-  const userinfo = await context.getLoader("userinfo").load(
-    {
-      accessToken: accessToken,
-    },
-    context
-  );
-  const userInfoAccounts = filterDuplicateAgencies(
-    userinfo?.attributes?.agencies
-  );
+export async function load({ userInfoAccounts }, context) {
   const collectedLoans = await Promise.all(
     userInfoAccounts.map(async (account) => {
       return await callService(account, context);
