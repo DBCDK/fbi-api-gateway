@@ -229,7 +229,7 @@ export default {
       ttl: 60 * 5,
     },
     userdata: {
-      url: process.env.USERDATA_URL,
+      url: process.env.USERDATA_URL || "http://localhost:3002/",
       ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 5,
       prefix: "userinfo",
     },

@@ -6,7 +6,7 @@ const { url, ttl, prefix } = config.datasources.userdata;
  */
 export async function load({ smaugUserId, favoritePickUpBranch }, context) {
   const endpoint = url + "user/favoritePickupBranch";
-  await context?.fetch(endpoint, {
+  const res = await context?.fetch(endpoint, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -16,6 +16,10 @@ export async function load({ smaugUserId, favoritePickUpBranch }, context) {
       favoritePickUpBranch: favoritePickUpBranch,
     }),
   });
+
+  if (res?.status !== 200) {
+    throw new Error(res?.body?.error || "Something went wrong");
+  }
 }
 
 export const options = {

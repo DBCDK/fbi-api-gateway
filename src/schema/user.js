@@ -6,6 +6,7 @@
 import {
   filterDuplicateAgencies,
   getHomeAgencyAccount,
+  getUserAgencyIds,
   resolveManifestation,
 } from "../utils/utils";
 
@@ -87,6 +88,11 @@ type UserDataResponse {
   Whether the operation was sucess or not
   """
   success: Boolean!
+  
+  """
+  errorMessage in case request has failed
+  """
+  errorMessage: String  
 }
 
 type Mutation {
@@ -103,12 +109,12 @@ type Mutation {
   """
   Add an orderId to a user. Will create user in userdata service if they dont exist
   """
-  addOrder(orderId: String!): UserDataResponse
+  addOrderToUserData(orderId: String!): UserDataResponse
   
   """
   Remove order from userData service
   """
-  removeOrder(orderId: String!): UserDataResponse
+  deleteOrderFromUserData(orderId: String!): UserDataResponse
   
   """
   Set a favorite pickup branch. Will create user in userdata service if they dont exist
@@ -142,18 +148,14 @@ function isCPRNumber(uniqueId) {
 export const resolvers = {
   User: {
     async name(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        }
-      );
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
       const homeAccount = getHomeAgencyAccount(userinfo);
-      const res = await context.datasources.getLoader("user").load(
-        {
-          homeAccount: homeAccount,
-          accessToken: context.accessToken // Required for testing
-        }
-      );
+      const res = await context.datasources.getLoader("user").load({
+        homeAccount: homeAccount,
+        accessToken: context.accessToken, // Required for testing
+      });
       return res?.name;
     },
 
@@ -171,7 +173,7 @@ export const resolvers = {
           .load({
             smaugUserId: smaugUserId,
           });
-        return res.favoritePickUpBranch;
+        return res?.favoritePickUpBranch || null;
       } catch (error) {
         return null;
       }
@@ -191,18 +193,14 @@ export const resolvers = {
       return res?.orders || [];
     },
     async address(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        }
-      );
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
       const homeAccount = getHomeAgencyAccount(userinfo);
-      const res = await context.datasources.getLoader("user").load(
-        {
-          homeAccount: homeAccount,
-          accessToken: context.accessToken // Required for testing
-        }
-      );
+      const res = await context.datasources.getLoader("user").load({
+        homeAccount: homeAccount,
+        accessToken: context.accessToken, // Required for testing
+      });
 
       return res?.address;
     },
@@ -213,98 +211,74 @@ export const resolvers = {
       return userinfo?.attributes?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        }
-      );
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
       const userInfoAccounts = filterDuplicateAgencies(
         userinfo?.attributes?.agencies
       );
-      return await context.datasources.getLoader("debt").load(
-        {
-          userInfoAccounts: userInfoAccounts,
-          accessToken: context.accessToken, // Required for testing
-        }
-      );
+      return await context.datasources.getLoader("debt").load({
+        userInfoAccounts: userInfoAccounts,
+        accessToken: context.accessToken, // Required for testing
+      });
     },
     async loans(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        }
-      );
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
       const userInfoAccounts = filterDuplicateAgencies(
         userinfo?.attributes?.agencies
       );
-      return await context.datasources.getLoader("loans").load(
-        {
-          userInfoAccounts: userInfoAccounts,
-          accessToken: context.accessToken, // Required for testing
-        }
-      );
+      return await context.datasources.getLoader("loans").load({
+        userInfoAccounts: userInfoAccounts,
+        accessToken: context.accessToken, // Required for testing
+      });
     },
     async orders(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        },
-      );
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
       const userInfoAccounts = filterDuplicateAgencies(
         userinfo?.attributes?.agencies
       );
-      return await context.datasources.getLoader("orders").load(
-        {
-          userInfoAccounts: userInfoAccounts,
-          accessToken: context.accessToken, // Required for testing
-        }
-      );
+      return await context.datasources.getLoader("orders").load({
+        userInfoAccounts: userInfoAccounts,
+        accessToken: context.accessToken, // Required for testing
+      });
     },
     async postalCode(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        }
-      );
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
       const homeAccount = getHomeAgencyAccount(userinfo);
-      const res = await context.datasources.getLoader("user").load(
-        {
-          homeAccount: homeAccount,
-          accessToken: context.accessToken // Required for testing
-        }
-      );
+      const res = await context.datasources.getLoader("user").load({
+        homeAccount: homeAccount,
+        accessToken: context.accessToken, // Required for testing
+      });
 
       return res?.postalCode;
     },
     async mail(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        }
-      );
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
       const homeAccount = getHomeAgencyAccount(userinfo);
-      const res = await context.datasources.getLoader("user").load(
-        {
-          homeAccount: homeAccount,
-          accessToken: context.accessToken // Required for testing
-        }
-      );
+      const res = await context.datasources.getLoader("user").load({
+        homeAccount: homeAccount,
+        accessToken: context.accessToken, // Required for testing
+      });
 
       return res?.mail;
     },
     async country(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        }
-      );
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
       const homeAccount = getHomeAgencyAccount(userinfo);
-      const res = await context.datasources.getLoader("user").load(
-        {
-          homeAccount: homeAccount,
-          accessToken: context.accessToken // Required for testing
-        }
-      );
+      const res = await context.datasources.getLoader("user").load({
+        homeAccount: homeAccount,
+        accessToken: context.accessToken, // Required for testing
+      });
 
       return res?.country;
     },
@@ -434,7 +408,7 @@ export const resolvers = {
         });
         return { success: true };
       } catch (error) {
-        return { success: false };
+        return { success: false, errorMessage: error?.message };
       }
     },
 
@@ -442,11 +416,18 @@ export const resolvers = {
       try {
         const { favoritePickUpBranch } = args;
         const smaugUserId = context?.smaug?.user?.uniqueId;
+
         if (!smaugUserId) {
           throw "Not authorized";
         }
         if (isCPRNumber(smaugUserId)) {
           throw "User not found in CULR";
+        }
+
+        //validate that favoritePickUpBranch is a valid user branch id
+        const userAgencyIds = await getUserAgencyIds(context);
+        if (!userAgencyIds?.includes(favoritePickUpBranch)) {
+          throw new Error("Invalid branch value");
         }
         await context.datasources
           .getLoader("userDataFavoritePickupBranch")
@@ -459,7 +440,7 @@ export const resolvers = {
           );
         return { success: true };
       } catch (error) {
-        return { success: false };
+        return { success: false, errorMessage: error?.message };
       }
     },
     async clearFavoritePickUpBranch(parent, args, context, info) {
@@ -483,7 +464,7 @@ export const resolvers = {
       }
     },
 
-    async addOrder(parent, args, context, info) {
+    async addOrderToUserData(parent, args, context, info) {
       try {
         const { orderId } = args;
 
@@ -500,11 +481,11 @@ export const resolvers = {
         });
         return { success: true };
       } catch (error) {
-        return { success: false };
+        return { success: false, errorMessage: error?.message };
       }
     },
 
-    async removeOrder(parent, args, context, info) {
+    async deleteOrderFromUserData(parent, args, context, info) {
       try {
         const { orderId } = args;
 
@@ -515,11 +496,14 @@ export const resolvers = {
         if (isCPRNumber(smaugUserId)) {
           throw "User not found in CULR";
         }
-        await context.datasources.getLoader("userDataRemoveOrder").load({
-          smaugUserId: smaugUserId,
-          orderId: orderId,
-        });
-        return { success: true };
+        const res = await context.datasources
+          .getLoader("userDataRemoveOrder")
+          .load({
+            smaugUserId: smaugUserId,
+            orderId: orderId,
+          });
+
+        return { success: !res?.error, errorMessage: res?.error };
       } catch (error) {
         return { success: false };
       }
