@@ -1285,10 +1285,10 @@ type Mutation {
   \\"\\"\\"
   Add an orderId to a user. Will create user in userdata service if they dont exist
   \\"\\"\\"
-  addOrder(orderId: String!): UserDataResponse
+  addOrderToUserData(orderId: String!): UserDataResponse
 
   \\"\\"\\"Remove order from userData service\\"\\"\\"
-  removeOrder(orderId: String!): UserDataResponse
+  deleteOrderFromUserData(orderId: String!): UserDataResponse
 
   \\"\\"\\"
   Set a favorite pickup branch. Will create user in userdata service if they dont exist
@@ -2522,6 +2522,9 @@ type Debt {
 type UserDataResponse {
   \\"\\"\\"Whether the operation was sucess or not\\"\\"\\"
   success: Boolean!
+
+  \\"\\"\\"Error message if request fails\\"\\"\\"
+  errorMessage: String
 }
 "
 `;
