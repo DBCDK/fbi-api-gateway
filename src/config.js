@@ -223,8 +223,13 @@ export default {
       prefix: process.env.LINKCHECK_PREFIX || "linkcheck-1",
       ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
     },
+    userInfo: {
+      url: process.env.USER_INFO_URL || "https://stg.login.bib.dk/userinfo",
+      prefix: "userinfo",
+      ttl: 60 * 5,
+    },
     userdata: {
-      url:  process.env.USERDATA_URL,
+      url: process.env.USERDATA_URL,
       ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 5,
       prefix: "userinfo",
     },
