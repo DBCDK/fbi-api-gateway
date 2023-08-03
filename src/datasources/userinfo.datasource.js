@@ -5,7 +5,6 @@ const { url, ttl, prefix } = config.datasources.userInfo;
  * Fetch user info
  */
 export async function load({ accessToken }, context) {
-  const url = "https://stg.login.bib.dk/userinfo";
   const res = await context?.fetch(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
     allowedErrorStatusCodes: [401],
