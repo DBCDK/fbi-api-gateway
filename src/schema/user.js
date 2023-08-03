@@ -142,13 +142,19 @@ function isCPRNumber(uniqueId) {
 export const resolvers = {
   User: {
     async name(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
       );
-      return res.name;
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
+      );
+      return res?.name;
     },
 
     async favoritePickUpBranch(parent, args, context, info) {
@@ -185,11 +191,17 @@ export const resolvers = {
       return res?.orders || [];
     },
     async address(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
+      );
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
       );
 
       return res?.address;
@@ -204,8 +216,7 @@ export const resolvers = {
       const res = await context.datasources.getLoader("debt").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
       );
 
       return res;
@@ -214,8 +225,7 @@ export const resolvers = {
       const res = await context.datasources.getLoader("loans").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
       );
 
       return res;
@@ -224,38 +234,55 @@ export const resolvers = {
       const res = await context.datasources.getLoader("orders").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
       );
 
       return res;
     },
     async postalCode(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
+      );
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
       );
 
       return res?.postalCode;
     },
     async mail(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
+      );
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
       );
 
       return res?.mail;
     },
     async country(parent, args, context, info) {
-      const res = await context.datasources.getLoader("user").load(
+      const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
-        },
-        context
+        }
+      );
+      const homeAccount = getHomeAgencyAccount(userinfo);
+      const res = await context.datasources.getLoader("user").load(
+        {
+          homeAccount: homeAccount,
+          accessToken: context.accessToken // Required for testing
+        }
       );
 
       return res?.country;

@@ -180,6 +180,7 @@ test("user - get loans", async () => {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: { user: { uniqueId: "some-unique-id" } },
+      homeAccount: {agencyId: '715100', userId: 'some@mail.com', userIdType: 'LOCAL'}
     },
   });
   expect(result).toMatchSnapshot();
