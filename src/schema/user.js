@@ -334,8 +334,6 @@ export const resolvers = {
         userinfo?.attributes?.agencies
       )?.map((account) => account.agencyId);
 
-      console.log("agencies", agencies);
-
       const agencyInfos = await Promise.all(
         agencies.map(
           async (agency) =>
@@ -348,7 +346,7 @@ export const resolvers = {
             })
         )
       );
-      console.log("\n\n\nagencyInfos", agencyInfos);
+
       return agencyInfos;
     },
   },
