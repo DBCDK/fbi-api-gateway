@@ -9,6 +9,7 @@ import {
   getUserBranchIds,
   resolveManifestation,
 } from "../utils/utils";
+import { log } from "dbc-node-logger";
 
 /**
  * The Profile type definition
@@ -393,7 +394,11 @@ export const resolvers = {
         });
         return { success: true };
       } catch (error) {
-        return { success: false };
+        log.error(
+          `Failed to add user to userData service. Message: ${e.message}`
+        );
+
+        return { success: false, errorMessage: error?.message };
       }
     },
     async deleteUserFromUserDataService(parent, args, context, info) {
