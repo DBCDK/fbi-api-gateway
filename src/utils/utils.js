@@ -295,6 +295,9 @@ export async function getDigitalArticleAccessStatus(context) {
 export async function resolveWork(args, context) {
   let id;
   if (args.id) {
+    if (!validateWorkId(args.id)) {
+      return null;
+    }
     id = args.id;
   } else if (args.faust) {
     id = await context.datasources
@@ -324,6 +327,15 @@ export async function resolveWork(args, context) {
   });
 
   return w;
+}
+
+/**
+ * simple validator for workId
+ * @param id
+ * @returns {*}
+ */
+function validateWorkId(id) {
+  return id.startsWith("work-of");
 }
 
 export async function resolveManifestation(args, context) {
