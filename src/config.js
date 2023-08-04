@@ -230,7 +230,7 @@ export default {
     },
     userdata: {
       url: process.env.USERDATA_URL,
-      ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 5,
+      ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 1,
       prefix: "userinfo",
     },
   },

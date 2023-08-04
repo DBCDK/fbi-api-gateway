@@ -393,7 +393,7 @@ export const resolvers = {
         });
         return { success: true };
       } catch (error) {
-        return { success: false };
+        return { success: false, errorMessage: error?.message };
       }
     },
     async deleteUserFromUserDataService(parent, args, context, info) {
