@@ -6,13 +6,17 @@ const { url, ttl, prefix } = config.datasources.userdata;
  */
 export async function load({ smaugUserId }, context) {
   const endpoint = url + "user";
-  await context.fetch(endpoint, {
+  const res = await context.fetch(endpoint, {
     headers: {
       "Content-Type": "application/json",
     },
     method: "DELETE",
     body: JSON.stringify({ smaugUserId: smaugUserId }),
   });
+
+  if (res?.status !== 200) {
+    throw new Error(res?.body?.error || "Something went wrong");
+  }
 }
 
 export const options = {
