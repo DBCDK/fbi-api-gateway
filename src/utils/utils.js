@@ -487,5 +487,33 @@ export const getUserBranchIds = async (context) => {
   const userinfo = await context.datasources.getLoader("userinfo").load({
     accessToken: context.accessToken,
   });
-  return userinfo?.attributes?.agencies?.map((agency) => agency?.agencyId);
+
+  //list of agency ids
+  const agencies = filterDuplicateAgencies(userinfo?.attributes?.agencies)?.map(
+    (account) => account.agencyId
+  );
+  console.log(" \n\n\nuserinfo?.attributes", userinfo?.attributes);
+  console.log(" \n\ngetUserBranchIds?.agencies", agencies);
+
+  const agencyInfos = await Promise.all(
+    agencies.map(
+      async (agency) =>
+        await context.datasources.getLoader("library").load({
+          agencyid: agency,
+          limit: 20,
+          status: "ALLE",
+        })
+    )
+  );
+
+  let branchIdsArray = [];
+
+  agencyInfos.map((agency) => {
+    agency.result.map((branch) => branchIdsArray.push(branch.branchId));
+  }, []);
+
+  console.log(" \n\ngetUserBranchIds?.branchids", branchIdsArray);
+
+  return branchIdsArray;
+  //return userinfo?.attributes?.agencies?.map((agency) => agency?.agencyId);
 };
