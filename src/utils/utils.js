@@ -493,11 +493,30 @@ export const filterDuplicateAgencies = (userInfoAccounts) => {
 /**
  *
  * @param {*} context context
- * @returns an array of users agency ids
+ * @returns an array of users branch ids
  */
 export const getUserBranchIds = async (context) => {
+  //get users agencies
   const userinfo = await context.datasources.getLoader("userinfo").load({
     accessToken: context.accessToken,
   });
-  return userinfo?.attributes?.agencies?.map((agency) => agency?.agencyId);
+  const agencies = filterDuplicateAgencies(userinfo?.attributes?.agencies)?.map(
+    (account) => account.agencyId
+  );
+  //fetch branches for each agency
+  const agencyInfos = await Promise.all(
+    agencies.map(
+      async (agency) =>
+        await context.datasources.getLoader("library").load({
+          agencyid: agency,
+          limit: 20,
+          status: "ALLE",
+        })
+    )
+  );
+
+  //merge all branchIds into one array
+  return agencyInfos
+    .map((agency) => agency.result.map((res) => res.branchId))
+    .flat();
 };
