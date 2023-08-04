@@ -14,7 +14,7 @@ export async function load({ smaugUserId }, context) {
     body: JSON.stringify({ smaugUserId: smaugUserId }),
   });
   if (res?.status !== 200) {
-    throw new Error(res?.body?.error || "Something went wrong");
+    throw new Error(res?.body?.error || "Failed to create user");
   }
 }
 
