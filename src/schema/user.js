@@ -395,7 +395,7 @@ export const resolvers = {
         return { success: true };
       } catch (error) {
         log.error(
-          `Failed to add user to userData service. Message: ${error.message}`
+          `Failed to add user to userData service. Message: ${error?.message}`
         );
 
         return { success: false, errorMessage: error?.message };
