@@ -483,12 +483,9 @@ export const filterDuplicateAgencies = (userInfoAccounts) => {
  * @param {*} context context
  * @returns an array of users agency ids
  */
-export const getUserAgencyIds = async (context) => {
-  const userinfo = await context.datasources.getLoader("userinfo").load(
-    {
-      accessToken: context.accessToken,
-    },
-    context
-  );
+export const getUserBranchIds = async (context) => {
+  const userinfo = await context.datasources.getLoader("userinfo").load({
+    accessToken: context.accessToken,
+  });
   return userinfo?.attributes?.agencies?.map((agency) => agency?.agencyId);
 };

@@ -6,7 +6,7 @@
 import {
   filterDuplicateAgencies,
   getHomeAgencyAccount,
-  getUserAgencyIds,
+  getUserBranchIds,
   resolveManifestation,
 } from "../utils/utils";
 
@@ -425,9 +425,9 @@ export const resolvers = {
         }
 
         //validate that favoritePickUpBranch is a valid user branch id
-        const userAgencyIds = await getUserAgencyIds(context);
-        if (!userAgencyIds?.includes(favoritePickUpBranch)) {
-          throw new Error("Invalid branch value");
+        const userBranchIds = await getUserBranchIds(context);
+        if (!userBranchIds?.includes(favoritePickUpBranch)) {
+          throw new Error("Invalid branch id.");
         }
         await context.datasources
           .getLoader("userDataFavoritePickupBranch")
