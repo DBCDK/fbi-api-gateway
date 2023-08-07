@@ -7,7 +7,7 @@ import config from "../config";
 const { url, prefix, ttl, token } = config.datasources.simplesearch;
 
 export async function load(
-  { q, filters = {}, limit = 10, offset = 0, profile },
+  { q, filters = {}, limit = 10, offset = 0, profile, search_exact = false },
   context
 ) {
   const { agency, name } = profile;
@@ -18,8 +18,8 @@ export async function load(
     "access-token": token,
     options: { "include-phonetic-creator": false },
     debug: false,
+    search_exact: search_exact,
   };
-
   // merge variables and statics
   const query = {
     q,
@@ -29,6 +29,7 @@ export async function load(
     ...statics,
     agency,
     profile: name,
+    search_exact,
   };
 
   // do the request

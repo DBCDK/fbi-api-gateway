@@ -15,6 +15,7 @@ export async function load(
     suggestType = "all",
     unique_works = true,
     limit,
+    profile,
   },
   context
 ) {
@@ -25,8 +26,10 @@ export async function load(
       unique_works,
       type: suggestType.toLowerCase(),
       limit: limit || 10,
+      profile: profile.name,
     })}`
   );
+
   const body = res.body;
 
   if (Array.isArray(body)) {
