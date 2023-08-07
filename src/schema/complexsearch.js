@@ -81,13 +81,21 @@ type ComplexSearchResponse {
 }
 `;
 
-function setPost(parent, context) {
+/**
+ * Make an object for a POST request
+ * @param parent
+ * @param context
+ * @param args
+ * @returns {{offset: (*|number), profile, limit: (*|number), filters: ([{category: string, subCategories: string[]},{category: string, subCategories: string[]}]|[{category: string, subCategories: string[]}]|[{category: string, subCategories: [string]}]|[{category: string, subCategories: []}]|[{category: string}]|[]|*), cql}}
+ */
+function setPost(parent, context, args) {
   return {
-    offset: 0,
-    limit: 10,
+    offset: args?.offset || 0,
+    limit: args?.limit || 10,
     cql: parent.cql,
     profile: context.profile,
     filters: parent.filters,
+    ...(args && args),
   };
 }
 
@@ -108,14 +116,14 @@ export const resolvers = {
     async solrFilter(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context));
+        .load(setPost(parent, context, args));
 
       return res?.solrFilter;
     },
     async solrQuery(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context));
+        .load(setPost(parent, context, args));
 
       return res?.solrQuery;
     },
@@ -123,7 +131,7 @@ export const resolvers = {
     async solrExecutionDurationInMs(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context));
+        .load(setPost(parent, context, args));
 
       return res?.solrExecutionDurationInMs;
     },
@@ -131,7 +139,7 @@ export const resolvers = {
     async tokenizerDurationInMs(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context));
+        .load(setPost(parent, context, args));
 
       return res?.tokenizerDurationInMs;
     },
@@ -139,7 +147,7 @@ export const resolvers = {
     async works(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context));
+        .load(setPost(parent, context, args));
       const expanded = await Promise.all(
         res?.works?.map(async (id) => resolveWork({ id }, context))
       );
