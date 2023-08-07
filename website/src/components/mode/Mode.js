@@ -10,6 +10,7 @@ const modes = [
   { label: "light", icon: "🌞" },
   { label: "dark", icon: "🌛" },
   { label: "system", icon: "🤖" },
+  { label: "theme", icon: "🎨" },
 ];
 
 export function Mode({ mode, onClick, className = "" }) {
@@ -26,7 +27,7 @@ export function Mode({ mode, onClick, className = "" }) {
         placement="left"
         overlay={
           <Tooltip className={styles.tooltip} id={`tooltip-mode`}>
-            {"Theme"}
+            {"Mode"}
           </Tooltip>
         }
       >

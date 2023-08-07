@@ -1,41 +1,20 @@
 .wrap {
-  width: calc(50px + var(--pt2) + var(--pt2));
+  width: calc(250px + var(--pt2) + var(--pt2));
   height: 100%;
   position: absolute;
-  z-index: 1;
+  z-index: 2;
+
+  right: 15vw;
+  top: 0;
 }
 
 .wrap:hover .spider {
-  top: -100%;
+  top: -135%;
 }
 
-.wrap_0 {
-  left: 5%;
-  height: 65%;
-}
-
-.wrap_1 {
-  left: 20%;
-  height: 85%;
-}
-
-.wrap_2 {
-  left: 35%;
-}
-
-.wrap_3 {
-  right: 30%;
-  height: 65%;
-}
-
-.wrap_4 {
-  right: 20%;
-  height: 75%;
-}
-
-.wrap_5 {
-  right: 5%;
-  height: 70%;
+.wrap > div {
+  height: 100%;
+  position: relative;
 }
 
 .spider {
@@ -45,8 +24,13 @@
   border-radius: 50%;
   margin: 40px 0 0 var(--pt2);
   background: #110d04;
-  transition: top 0.8s;
+  transition: top 1s;
   top: 0;
+  left: 100px;
+
+  animation: spider-move 5s infinite;
+
+  transform: scale(3);
 }
 
 .spider *,
@@ -100,7 +84,7 @@
   border-bottom: 1px solid transparent;
 }
 .spider .leg.left {
-  left: -8px;
+  left: -6px;
   transform-origin: top right;
   transform: rotate(36deg) skewX(-20deg);
   border-left: 2px solid #110d04;
@@ -108,7 +92,7 @@
   animation: legs-wriggle-left 1s 0s infinite;
 }
 .spider .leg.right {
-  right: -8px;
+  right: -6px;
   transform-origin: top left;
   transform: rotate(-36deg) skewX(20deg);
   border-right: 2px solid #110d04;
@@ -127,7 +111,7 @@
 }
 .spider .leg:nth-of-type(4) {
   top: 31px;
-  left: -10px;
+  left: -8px;
   animation: legs-wriggle-left 1s 0.4s infinite;
 }
 .spider .leg:nth-of-type(6) {
@@ -142,35 +126,8 @@
 }
 .spider .leg:nth-of-type(8) {
   top: 31px;
-  right: -10px;
+  right: -8px;
   animation: legs-wriggle-right 1s 0.3s infinite;
-}
-
-.wrap_0 .spider {
-  animation: spider-move-0 5s infinite;
-}
-
-.wrap_1 .spider {
-  animation: spider-move-1 5s infinite;
-}
-
-.wrap_2 .spider {
-  animation: spider-move-2 5s infinite;
-}
-
-.wrap_3 .spider {
-  margin-top: 160px;
-  animation: spider-move-3 5s infinite;
-}
-
-.wrap_4 .spider {
-  margin-top: 50px;
-  animation: spider-move-4 5s infinite;
-}
-
-.wrap_5 .spider {
-  margin-top: 210px;
-  animation: spider-move-5 5s infinite;
 }
 
 @keyframes legs-wriggle-left {
@@ -201,62 +158,12 @@
   }
 }
 
-@keyframes spider-move-0 {
+@keyframes spider-move {
   0%,
   100% {
-    margin-top: 133px;
+    margin-top: 150%;
   }
   56% {
-    margin-top: calc(133px + 46px);
-  }
-}
-
-@keyframes spider-move-1 {
-  0%,
-  100% {
-    margin-top: 210px;
-  }
-  47% {
-    margin-top: calc(210px + 39px);
-  }
-}
-
-@keyframes spider-move-2 {
-  0%,
-  100% {
-    margin-top: 189px;
-  }
-  52% {
-    margin-top: calc(189px + 118px);
-  }
-}
-
-@keyframes spider-move-3 {
-  0%,
-  100% {
-    margin-top: 141px;
-  }
-  56% {
-    margin-top: calc(141px + 52px);
-  }
-}
-
-@keyframes spider-move-4 {
-  0%,
-  100% {
-    margin-top: 121px;
-  }
-  60% {
-    margin-top: calc(121px + 100px);
-  }
-}
-
-@keyframes spider-move-5 {
-  0%,
-  100% {
-    margin-top: 114px;
-  }
-  49% {
-    margin-top: calc(114px + 85px);
+    margin-top: 100%;
   }
 }

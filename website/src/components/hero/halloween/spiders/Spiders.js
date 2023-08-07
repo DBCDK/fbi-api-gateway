@@ -1,8 +1,6 @@
 import styles from "./Spiders.module.css";
 
 function Spider({ className = "" }) {
-  console.log({ className });
-
   return (
     <div className={`${styles.wrap} ${className}`}>
       <div className={styles.spider}>

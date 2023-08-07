@@ -66,10 +66,10 @@ body.christmas {
   --hero-gradient-secondary: #f07470;
 }
 body.halloween {
-  --primary: #ff8a65;
-  --primary-dark: #ff7043;
+  --primary: #ffcc80;
+  --primary-dark: #ffb74d;
 
-  --secondary: #ffb74d;
+  --secondary: #ff7043;
 
   --hero-gradient-primary: #ff5722;
   --hero-gradient-secondary: #ff8a65;
@@ -130,9 +130,9 @@ body.dark.christmas {
   --secondary-light: #ffffff;
 }
 body.dark.halloween {
-  --primary: #ff7043;
-  --primary-dark: #ff5722;
+  --primary: #ffcc80;
+  --primary-dark: #ffb74d;
 
-  --secondary: #ffb74d;
-  --secondary-light: #ffcc80;
+  --secondary: #ff5722;
+  --secondary-light: #ff7043;
 }

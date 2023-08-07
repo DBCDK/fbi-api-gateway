@@ -1,0 +1,40 @@
+.wrap {
+  background-color: #000;
+  overflow: hidden;
+}
+.container {
+  width: 100vw;
+  position: relative;
+  cursor: none;
+}
+
+svg {
+  width: 100vw;
+  position: relative;
+  top: 50vh;
+  transform: translateY(-50%);
+}
+
+.dark-layer {
+  background: rgba(0, 0, 0, 0.95);
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+#owl {
+  transform-origin: 64% 68%;
+  transition: transform 0.75s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+#owl:hover {
+  transform: scale(1.2);
+}
+/* #house #window-group-1 path{
+    transition: fill 1s ease;
+  }
+  #house:hover #window-group-1 path {
+    fill: #0d1221;
+  } */

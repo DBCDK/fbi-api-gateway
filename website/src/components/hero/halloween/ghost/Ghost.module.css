@@ -5,15 +5,12 @@
   border-radius: 100px 100px 0 0;
   background-color: white;
   border: 1px solid var(--divider);
+  z-index: 2;
 
   /* position */
   position: absolute;
   right: 10%;
   top: 75%;
-}
-
-:global(body.dark) .ghost {
-  background-color: var(--divider-dark);
 }
 
 @media screen and (min-width: 576px) {

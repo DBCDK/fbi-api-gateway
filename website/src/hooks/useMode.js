@@ -7,6 +7,7 @@ const ENUM_VALUES = {
   dark: "dark",
   light: "light",
   system: "system",
+  theme: "theme",
 };
 
 /**
@@ -72,12 +73,14 @@ export default function useMode() {
       document.body.classList?.remove("dark", "graphiql-dark");
       document.body.classList?.add("light", "graphiql-light");
     }
+    if (value === "theme") {
+      syncMode("dark");
+    }
   }
 
   return {
     mode,
     setMode,
-    syncMode,
     isLoading: typeof mode === "undefined" && !error,
   };
 }
