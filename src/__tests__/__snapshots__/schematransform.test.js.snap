@@ -326,11 +326,32 @@ type CheckOrderPolicy {
 
 \\"\\"\\"Search Filters\\"\\"\\"
 input ComplexSearchFilters {
+  \\"\\"\\"BranchId. \\"\\"\\"
   branchId: [String!]
+
+  \\"\\"\\"Overall location in library (eg. Voksne).\\"\\"\\"
   department: [String!]
+
+  \\"\\"\\"Where is the book physically located  (eg. skønlitteratur).\\"\\"\\"
   location: [String!]
+
+  \\"\\"\\"More specific location (eg. Fantasy).\\"\\"\\"
   sublocation: [String!]
+
+  \\"\\"\\"Onloan or OnShelf.\\"\\"\\"
   status: [HoldingsStatus!]
+
+  \\"\\"\\"Id of agency.\\"\\"\\"
+  agencyId: [String!]
+
+  \\"\\"\\"Name of the branch.\\"\\"\\"
+  branch: [String!]
+
+  \\"\\"\\"Local id of the item.\\"\\"\\"
+  itemId: [String!]
+
+  \\"\\"\\"Id of publishing issue.\\"\\"\\"
+  issueId: [String!]
 }
 
 \\"\\"\\"The search response\\"\\"\\"
@@ -2540,11 +2561,32 @@ scalar DateTime
 
 \\"\\"\\"Search Filters\\"\\"\\"
 input ComplexSearchFilters {
+  \\"\\"\\"BranchId. \\"\\"\\"
   branchId: [String!]
+
+  \\"\\"\\"Overall location in library (eg. Voksne).\\"\\"\\"
   department: [String!]
+
+  \\"\\"\\"Where is the book physically located  (eg. skønlitteratur).\\"\\"\\"
   location: [String!]
+
+  \\"\\"\\"More specific location (eg. Fantasy).\\"\\"\\"
   sublocation: [String!]
+
+  \\"\\"\\"Onloan or OnShelf.\\"\\"\\"
   status: [HoldingsStatus!]
+
+  \\"\\"\\"Id of agency.\\"\\"\\"
+  agencyId: [String!]
+
+  \\"\\"\\"Name of the branch.\\"\\"\\"
+  branch: [String!]
+
+  \\"\\"\\"Local id of the item.\\"\\"\\"
+  itemId: [String!]
+
+  \\"\\"\\"Id of publishing issue.\\"\\"\\"
+  issueId: [String!]
 }
 
 \\"\\"\\"The search response\\"\\"\\"
