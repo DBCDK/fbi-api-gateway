@@ -15,8 +15,8 @@ exports[`submitorder succedes when user is authenticated, and no userId provided
 Object {
   "data": Object {
     "submitOrder": Object {
-      "orderId": "1041254137",
-      "status": "not_owned_ILL_loc",
+      "orderId": "1046910462",
+      "status": "NOT_OWNED_ILL_LOC",
     },
   },
 }
@@ -26,8 +26,8 @@ exports[`submitorder succedes when user is not authenticated, but userId provide
 Object {
   "data": Object {
     "submitOrder": Object {
-      "orderId": "1041254137",
-      "status": "not_owned_ILL_loc",
+      "orderId": "1046910462",
+      "status": "NOT_OWNED_ILL_LOC",
     },
   },
 }

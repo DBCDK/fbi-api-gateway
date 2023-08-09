@@ -3,6 +3,8 @@
 Delete an order which has been placed with the submitOrder mutation.
 
 It is possible to delete an order at any agency the user is registered.
+The example sets dryRun:true, which prevents the deletetion query from actually being executed against openuserstatus.
+If omitted, dryRun is sat to false.
 
 <InlineGraphiQL
   query={`mutation cancelOrder($orderId: String!, $agencyId: String!) {

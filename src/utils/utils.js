@@ -295,6 +295,9 @@ export async function getDigitalArticleAccessStatus(context) {
 export async function resolveWork(args, context) {
   let id;
   if (args.id) {
+    if (!validateWorkId(args.id)) {
+      return null;
+    }
     id = args.id;
   } else if (args.faust) {
     id = await context.datasources
@@ -324,6 +327,15 @@ export async function resolveWork(args, context) {
   });
 
   return w;
+}
+
+/**
+ * simple validator for workId
+ * @param id
+ * @returns {*}
+ */
+function validateWorkId(id) {
+  return id.startsWith("work-of");
 }
 
 export async function resolveManifestation(args, context) {
@@ -379,3 +391,132 @@ export function parseJedSubjects({
     })),
   ];
 }
+
+export async function getUserId({ agencyId, userinfo }) {
+  const agencyAttributes = getUserInfoAccountsForAgency({
+    agencyId,
+    userinfo,
+  });
+  return getUserInfoAccountFromAgencyAttributes(agencyAttributes)?.userId;
+}
+
+export function getUserInfoAccountsForAgency({ agencyId, userinfo }) {
+  return userinfo?.attributes?.agencies?.filter(
+    (attributes) => attributes.agencyId === agencyId
+  );
+}
+
+/**
+ * Get the user info getUserInfoAccountFromAgencyAttributes from agencyAttributes.
+ * If we have two agencyAttributes (local and cpr), we prefer getting the local id to avoid saving cpr
+ * Used for already filtered agency attributes. Assumes only
+ * @param {*} agencyAttributes
+ * @returns
+ */
+export function getUserInfoAccountFromAgencyAttributes(agencyAttributes) {
+  if (!agencyAttributes || agencyAttributes.length === 0) {
+    log.error("No agencyAttributes found for user.");
+    return null;
+  }
+
+  //if we have several ids, we prefer getting the local id to avoid saving cpr
+  return (
+    agencyAttributes?.find((attr) => attr.userIdType === "LOCAL") ||
+    agencyAttributes?.find((attr) => attr.userIdType === "CPR") ||
+    null
+  );
+}
+
+/**
+ * getHomeAgencyAccount
+ * Prioritizes LOCAL account
+ * @param userinfo - parse the data directy from userinfo datasource
+ * @returns user account: { agencyId: String, userId: String, userIdType: String }
+ */
+export const getHomeAgencyAccount = (userinfo) => {
+  const homeAgency = userinfo?.attributes?.municipalityAgencyId;
+
+  /**
+   * Firstly try getting the local account
+   */
+  const agencyAttributes = getUserInfoAccountsForAgency({
+    homeAgency,
+    userinfo,
+  });
+  const accountLocal = getUserInfoAccountFromAgencyAttributes(agencyAttributes);
+  if (accountLocal) return accountLocal;
+
+  /**
+   * Edge case for test users which municipalityAgencyId doesn't match their accounts
+   * Return any LOCAL account
+   */
+  return userinfo?.attributes?.agencies.find(
+    (account) => account.userIdType === "LOCAL"
+  );
+};
+
+/**
+ * Filter duplicates, since we get different userIdTypes (LOCAL, CPR)
+ * If both LOCAL and CPR exists, prioritize LOCAL to minimize CPR's sent around services
+ * @param userInfoAccounts: [{ agencyId: String, userId: String, userIdType: String }]
+ * @returns [{ agencyId: String, userId: String, userIdType: String }]
+ */
+export const filterDuplicateAgencies = (userInfoAccounts) => {
+  const result = [];
+
+  if (!userInfoAccounts || userInfoAccounts.length === 0) {
+    return result;
+  }
+
+  userInfoAccounts.forEach((account) => {
+    const indexOf = result.map((e) => e.agencyId).indexOf(account.agencyId);
+
+    if (indexOf === -1) {
+      // Result doesn't contain agencyId, push this one
+      result.push(account);
+      return;
+    }
+
+    // result already contains agencyId, check if we want to replace it
+    if (
+      result[indexOf].userIdType === "CPR" &&
+      account.userIdType === "LOCAL"
+    ) {
+      result.splice(indexOf, 1);
+      result.push(account);
+    }
+  });
+
+  return result;
+};
+
+/**
+ *
+ * @param {*} context context
+ * @returns an array of users branch ids
+ */
+export const getUserBranchIds = async (context) => {
+  //get users agencies
+  const userinfo = await context.datasources.getLoader("userinfo").load({
+    accessToken: context.accessToken,
+  });
+  const agencies = filterDuplicateAgencies(userinfo?.attributes?.agencies)?.map(
+    (account) => account.agencyId
+  );
+  //fetch branches for each agency
+  const agencyInfos = await Promise.all(
+    agencies.map(
+      async (agency) =>
+        await context.datasources.getLoader("library").load({
+          agencyid: agency,
+          limit: 20,
+          status: "ALLE",
+        })
+    )
+  );
+
+  //merge all branchIds into one array
+  return agencyInfos
+    .map((agency) => agency.result.map((res) => res.branchId))
+    .flat();
+};

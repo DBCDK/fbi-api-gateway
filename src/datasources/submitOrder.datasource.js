@@ -1,94 +1,8 @@
-import { orderBy, get } from "lodash";
-import request from "superagent";
-import { parseString, processors } from "xml2js";
-import { auditTrace, ACTIONS } from "@dbcdk/dbc-audittrail-logger";
 import config from "../config";
+import { ACTIONS, auditTrace } from "@dbcdk/dbc-audittrail-logger";
+import { log } from "dbc-node-logger";
 
-const {
-  url,
-  authenticationUser,
-  authenticationGroup,
-  authenticationPassword,
-  serviceRequester,
-} = config.datasources.openorder;
-
-// Openorder is very strict when it comes to the order of parameters
-const paramOrder = [
-  "authentication",
-  "articleDirect",
-  "author",
-  "authorOfComponent",
-  "bibliographicCategory",
-  "callNumber",
-  "copy",
-  "edition",
-  "exactEdition",
-  "fullTextLink",
-  "fullTextLinkType",
-  "isbn",
-  "issn",
-  "issue",
-  "itemId",
-  "language",
-  "localHoldingsId",
-  "mediumType",
-  "needBeforeDate",
-  "orderId",
-  "orderSystem",
-  "pagination",
-  "pickUpAgencyId",
-  "pickUpAgencySubdivision",
-  "pid",
-  "placeOfPublication",
-  "publicationDate",
-  "publicationDateOfComponent",
-  "publisher",
-  "requesterId",
-  "requesterNote",
-  "responderId",
-  "seriesTitelNumber",
-  "serviceRequester",
-  "title",
-  "titleOfComponent",
-  "trackingId",
-  "userAddress",
-  "userAgencyId",
-  "userDateOfBirth",
-  "userId",
-  "userIdAuthenticated",
-  "userIdType",
-  "userMail",
-  "userName",
-  "userReferenceSource",
-  "userTelephone",
-  "verificationReferenceSource",
-  "volume",
-  "outputType",
-  "callback",
-].reduce((obj, key, index) => ({ ...obj, [key]: index }), {});
-
-/**
- * Constructs soap request to perform placeOrder request
- * @param {array} parameters
- * @returns {string} soap request string
- */
-function constructSoap(parameters) {
-  let soap = `<SOAP-ENV:Envelope xmlns="http://oss.dbc.dk/ns/openorder" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-     <SOAP-ENV:Body>
-        <placeOrderRequest>
-           <authentication>
-              <groupIdAut>${authenticationGroup}</groupIdAut>
-              <passwordAut>${authenticationPassword}</passwordAut>
-              <userIdAut>${authenticationUser}</userIdAut>
-           </authentication>
-           ${parameters
-             .map(({ key, val }) => `<${key}>${val}</${key}>`)
-             .join("\n           ")}
-         </placeOrderRequest>
-      </SOAP-ENV:Body>
-    </SOAP-ENV:Envelope>`;
-  return soap;
-}
+const { serviceRequester, url, ttl, prefix } = config.datasources.openorder;
 
 /**
  * Creates date three months in the future. Used if a date is not provided
@@ -103,26 +17,23 @@ function createNeedBeforeDate() {
   return dateStr;
 }
 
-async function postSoap(soap, context) {
-  const res = await context?.fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/xml",
-    },
-    body: soap,
-  });
+function createTrackingId() {
+  const now = new Date();
 
-  return res.body;
+  return now.toISOString();
 }
 
 /**
- * Converts input to a valid openorder request
- * Will also
- * @param {object} input
- * @param {func} postSoapFunc
- * @returns
+ * Handle the request. Merge given input and fixed parameters for a post request.
+ *
+ * @param input
+ *  input from query
+ * @param postSoap
+ *  the function to fetch data
+ * @param context
+ * @returns {Promise<*|null>}
  */
-export async function processRequest(input, postSoapFunc, context) {
+export async function processRequest(input, postSoap, context) {
   // If id is found the user is authenticated via some agency
   // otherwise the token is anonymous
   const userIdFromToken = input.smaug.user.id;
@@ -147,64 +58,47 @@ export async function processRequest(input, postSoapFunc, context) {
     );
   }
 
+  // filter out userid from user parameters - it is found above
   let userParameters = Object.entries(input.userParameters).filter(
     ([key]) => !userIdTypes.includes(key)
   );
 
-  let parameters = [
-    ["copy", false],
-    ["exactEdition", input.exactEdition || false],
-    ["needBeforeDate", createNeedBeforeDate()],
-    ["orderSystem", input.smaug.orderSystem],
-    ["pickUpAgencyId", input.pickUpBranch],
-    ["author", input.author],
-    ["authorOfComponent", input.authorOfComponent],
-    ["pagination", input.pagination],
-    ["publicationDate", input.publicationDate],
-    ["publicationDateOfComponent", input.publicationDateOfComponent],
-    ["title", input.title],
-    ["titleOfComponent", input.titleOfComponent],
-    ["volume", input.volume],
-    ...input.pids.map((pid) => ["pid", pid]),
-    ["serviceRequester", serviceRequester],
-    ["userId", userId[1]],
-    ["userIdAuthenticated", userIdAuthenticated],
-    ...userParameters,
-    ["verificationReferenceSource", "dbcdatawell"],
-    ["outputType", "json"],
-  ]
-    .filter(([key, val]) => !!val)
-    .map(([key, val]) => ({ key, val, order: paramOrder[key] }));
+  // defaults
+  const postParameters = {
+    copy: false,
+    exactEdition: input.exactEdition || false,
+    needBeforeDate: createNeedBeforeDate(),
+    orderSystem: "BIBLIOTEKDK",
+    pickUpAgencyId: input.pickUpBranch,
+    author: input.author,
+    authorOfComponent: input.authorOfComponent,
+    pagination: input.pagination,
+    publicationDate: input.publicationDate,
+    publicationDateOfComponent: input.publicationDateOfComponent,
+    title: input.title,
+    titleOfComponent: input.titleOfComponent,
+    volume: input.volume,
+    pid: input.pids.map((pid) => pid),
+    serviceRequester: serviceRequester,
+    trackingId: createTrackingId(),
+    userId: userId[1],
+    userIdAuthenticated: userIdAuthenticated,
+    ...input.userParameters,
+    verificationReferenceSource: "DBCDATAWELL",
+  };
 
-  parameters = orderBy(parameters, "order");
-
-  const soap = constructSoap(parameters);
-
-  const text = await postSoapFunc(soap, context);
-
-  let parsed;
-  parseString(
-    text,
-    { trim: true, tagNameProcessors: [processors.stripPrefix] },
-    function (err, result) {
-      parsed = {
-        orderId: get(
-          result,
-          "Envelope.Body[0].placeOrderResponse[0].orderPlaced[0].orderId[0]"
-        ),
-        status:
-          get(
-            result,
-            "Envelope.Body[0].placeOrderResponse[0].orderPlaced[0].orderPlacedMessage[0]"
-          ) ||
-          get(
-            result,
-            "Envelope.Body[0].placeOrderResponse[0].orderNotPlaced[0].placeOrderError[0]"
-          ),
-      };
-    }
+  // delete empties
+  Object.keys(postParameters).forEach(
+    (k) => postParameters[k] == null && delete postParameters[k]
   );
 
+  if (!checkPost(postParameters)) {
+    return null;
+  }
+
+  const res = await postSoap(postParameters, input, context);
+
+  // some logging
   auditTrace(
     ACTIONS.write,
     config.app.id,
@@ -214,17 +108,36 @@ export async function processRequest(input, postSoapFunc, context) {
     },
     `${userId[1]}/${input.branch.agencyId}`,
     {
-      place_order: parsed.orderId,
+      place_order: res?.body?.orderPlaced?.orderId,
     }
   );
-  return parsed;
+
+  return res;
 }
 
-/**
- * Do the request
- * @param input
- * @return {Promise<*>}
- */
+const checkPost = (post) => {
+  //@TODO - more checks
+  return post != null;
+};
+
+async function postSoap(post, input, context) {
+  try {
+    const order = await context.fetch(`${url}placeorder/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${input.accessToken}`,
+      },
+      body: JSON.stringify(post),
+    });
+    return order;
+  } catch (e) {
+    log.error("SUBMIT ORDER: Error placing order", { post: post });
+    // @TODO log
+    return null;
+  }
+}
+
 export async function load(input, context) {
-  return await processRequest(input, postSoap, context);
+  return processRequest(input, postSoap, context);
 }

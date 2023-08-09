@@ -106,7 +106,9 @@ export default {
         process.env.OPENUSERSTATUS_URL || "https://openuserstatus.addi.dk/2.0/",
     },
     openorder: {
-      url: process.env.OPENORDER_URL,
+      url:
+        process.env.OPENORDER_URL ||
+        "http://copa-rs.iscrum-ors-staging.svc.cloud.dbc.dk/copa-rs/api/v1/",
       authenticationUser: process.env.OPENORDER_USER,
       authenticationGroup: process.env.OPENORDER_GROUP,
       authenticationPassword: process.env.OPENORDER_PASSWORD,
@@ -222,6 +224,16 @@ export default {
         "http://link-check-service.de-prod.svc.cloud.dbc.dk/api/v1",
       prefix: process.env.LINKCHECK_PREFIX || "linkcheck-1",
       ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
+    },
+    userInfo: {
+      url: process.env.USER_INFO_URL || "https://stg.login.bib.dk/userinfo",
+      prefix: "userinfo",
+      ttl: 60 * 5,
+    },
+    userdata: {
+      url: process.env.USERDATA_URL,
+      ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 1,
+      prefix: "userinfo",
     },
   },
 };

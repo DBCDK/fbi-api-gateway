@@ -1,11 +1,12 @@
 const DEFAULT = {
-  id: "XgY2QOGYqxGgHHYQu8DJKTKX2bbdMNBF",
+  id: "x",
   name: "Freja Damgaard",
   address: "Borgmesterskoven 45",
   postalCode: "8660",
   ddbcmsapi: "https://cmscontent.dbc.dk/",
   agency: "790900",
   mail: "test@dbc.dk",
+  country: "DK",
 };
 
 const data = {

@@ -69,8 +69,6 @@ export async function load({ pids }, context) {
       }),
     });
 
-    console.log(JSON.stringify(response, null, 4));
-
     return parseResponse(response?.body?.localizations);
   } catch (e) {
     log.error("Request to holdingsservice failed." + " Message: " + e.message);

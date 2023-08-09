@@ -8,22 +8,41 @@ Object {
       "agency": Object {
         "result": Array [
           Object {
-            "name": "DBCTestBibliotek",
-            "openingHours": "VIP 4.9: Åbningstider<br>
-mandag<br>
-tirsdag<br>
-onsdag<br>
-torsdag<br>
-fredag<br>
-lørdag",
+            "name": "Ballerup Bibliotek",
+            "openingHours": "Mandag - torsdag: 07 - 22
+Fredag - lørdag - søndag: 07 - 17
+
+
+Betjening:
+Mandag-torsdag: 10 - 19
+Fredag: 10 - 17
+Lørdag: 10 - 14",
           },
           Object {
-            "name": "DBCtest_2",
-            "openingHours": null,
+            "name": "Skovlunde Kulturhus",
+            "openingHours": "Mandag-torsdag: 07 - 22
+Fredag-lørdag-søndag: 07 - 17
+
+
+Betjening:
+Mandag: 13 - 17
+Tirsdag: 13 - 17
+Onsdag: 10 - 17
+Torsdag: 13 - 17
+Fredag: 10 - 17
+Lørdag: 10 - 14",
           },
           Object {
-            "name": "DBC-bibilioteksekspressen",
-            "openingHours": null,
+            "name": "Kulturhus Måløv",
+            "openingHours": "Alle dage: 07-22
+
+Betjening:
+Mandag: 14-18
+Tirsdag: 14-18
+Onsdag: 10-18
+Torsdag: 14-18
+Fredag: 13-17
+Lørdag: 10-14",
           },
         ],
       },
@@ -43,22 +62,41 @@ Object {
       "agency": Object {
         "result": Array [
           Object {
-            "name": "DBCTestBibliotek",
-            "openingHours": "VIP 4.9: Åbningstider<br>
-mandag<br>
-tirsdag<br>
-onsdag<br>
-torsdag<br>
-fredag<br>
-lørdag",
+            "name": "Ballerup Bibliotek",
+            "openingHours": "Mandag - torsdag: 07 - 22
+Fredag - lørdag - søndag: 07 - 17
+
+
+Betjening:
+Mandag-torsdag: 10 - 19
+Fredag: 10 - 17
+Lørdag: 10 - 14",
           },
           Object {
-            "name": "DBCtest_2",
-            "openingHours": null,
+            "name": "Skovlunde Kulturhus",
+            "openingHours": "Mandag-torsdag: 07 - 22
+Fredag-lørdag-søndag: 07 - 17
+
+
+Betjening:
+Mandag: 13 - 17
+Tirsdag: 13 - 17
+Onsdag: 10 - 17
+Torsdag: 13 - 17
+Fredag: 10 - 17
+Lørdag: 10 - 14",
           },
           Object {
-            "name": "DBC-bibilioteksekspressen",
-            "openingHours": null,
+            "name": "Kulturhus Måløv",
+            "openingHours": "Alle dage: 07-22
+
+Betjening:
+Mandag: 14-18
+Tirsdag: 14-18
+Onsdag: 10-18
+Torsdag: 14-18
+Fredag: 13-17
+Lørdag: 10-14",
           },
         ],
       },
@@ -75,6 +113,7 @@ Object {
   "data": Object {
     "user": Object {
       "address": "Borgmesterskoven 45",
+      "country": "DK",
       "culrMail": "some@mail.com",
       "mail": "test@dbc.dk",
       "municipalityAgencyId": "715100",
@@ -116,12 +155,24 @@ Object {
     "user": Object {
       "loans": Array [
         Object {
-          "dueDate": 2021-05-01T22:00:00.000Z,
-          "loanId": "120200589",
+          "agencyId": "790900",
+          "dueDate": 2023-07-31T22:00:00.000Z,
+          "edition": "2. udgave",
+          "loanId": "5301555018",
+          "manifestation": null,
+          "materialType": "Bog",
+          "pages": "299 sider",
+          "publisher": "Voice & Writing 2019",
         },
         Object {
-          "dueDate": 2021-04-29T22:00:00.000Z,
-          "loanId": "120200590",
+          "agencyId": "790900",
+          "dueDate": 2023-08-10T22:00:00.000Z,
+          "edition": "1. udgave",
+          "loanId": "5085535759",
+          "manifestation": null,
+          "materialType": "Bog",
+          "pages": "159 sider",
+          "publisher": "People's Press 2018",
         },
       ],
     },
@@ -135,10 +186,20 @@ Object {
     "user": Object {
       "orders": Array [
         Object {
-          "orderDate": 2021-04-21T11:37:49.000Z,
-          "orderId": "12341234",
-          "pickUpExpiryDate": 2021-05-02T22:00:00.000Z,
-          "status": "AT_RESERVATION_SHELF",
+          "agencyId": "790900",
+          "creator": "Thorborg, Martin",
+          "edition": "1. udgave",
+          "holdQueuePosition": "1",
+          "orderDate": 2023-06-27T13:42:35.000Z,
+          "orderId": "79182543",
+          "orderType": "normal",
+          "pages": "151 sider",
+          "pickUpBranch": Object {
+            "agencyName": "Øen",
+          },
+          "pickUpExpiryDate": null,
+          "status": "UNKNOWN",
+          "title": "Skab din egen succes: leveregler der kan bringe dig langt",
         },
       ],
     },

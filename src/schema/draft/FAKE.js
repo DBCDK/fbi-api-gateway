@@ -273,7 +273,8 @@ export const FAKE_MANIFESTATION_PARTS = {
         {
           system: "DK5",
           code: "Dummy 88.424",
-          display: "Dummy Trommer og slaginstrumenter. Bongo og slaginstrumenter",
+          display:
+            "Dummy Trommer og slaginstrumenter. Bongo og slaginstrumenter",
         },
       ],
       playingTime: "Dummy wasteful playing time",
@@ -343,6 +344,11 @@ export const FAKE_MANIFESTATION_1 = {
   ],
   access: FAKE_ACCESS,
   audience: FAKE_AUDIENCE,
+  catalogueCodes: {
+    nationalBibliography: ["national_bibliography"],
+    // otherCatalogues: ["other_catalogueCodes", "even_other_catalogueCodes"],
+    otherCatalogues: ["other_catalogueCodes", "even_other_catalogueCodes"],
+  },
   contributors: [
     {
       ...FAKE_PERSON,

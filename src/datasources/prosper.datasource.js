@@ -30,6 +30,7 @@ export async function load(
       rows: limit || 10,
       type: types,
       ...(branchId && { branchid: branchId }),
+      profile: profile.name,
     }),
   });
 
