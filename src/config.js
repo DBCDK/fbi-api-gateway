@@ -106,7 +106,9 @@ export default {
         process.env.OPENUSERSTATUS_URL || "https://openuserstatus.addi.dk/2.0/",
     },
     openorder: {
-      url: process.env.OPENORDER_URL,
+      url:
+        process.env.OPENORDER_URL ||
+        "http://copa-rs.iscrum-ors-staging.svc.cloud.dbc.dk/copa-rs/api/v1/",
       authenticationUser: process.env.OPENORDER_USER,
       authenticationGroup: process.env.OPENORDER_GROUP,
       authenticationPassword: process.env.OPENORDER_PASSWORD,
