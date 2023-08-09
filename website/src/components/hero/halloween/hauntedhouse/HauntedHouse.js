@@ -7,7 +7,7 @@ export default function Rain() {
   useEffect(() => flashlight(), []);
   return (
     <div className={styles.wrap}>
-      <div class="container">
+      <div className="container">
         <svg viewBox="0 0 753.6 500.2">
           <g>
             <radialGradient
@@ -1326,7 +1326,7 @@ export default function Rain() {
             />
           </g>
         </svg>
-        <div class="dark-layer" id="flashlight"></div>
+        <div className="dark-layer" id="flashlight"></div>
       </div>
     </div>
   );

@@ -7,11 +7,17 @@ export default function Spider() {
         <div className={styles.spider}>
           <div className={`${styles.eye} ${styles.left}`} />
           <div className={`${styles.eye} ${styles.right}`} />
-          {[...Array(4)].map((k) => (
-            <span className={`${styles.leg} ${styles.left}`} />
+          {[...Array(4)].map((k, idx) => (
+            <span
+              key={`leg-left-${idx}`}
+              className={`${styles.leg} ${styles.left}`}
+            />
           ))}
-          {[...Array(4)].map((k) => (
-            <span className={`${styles.leg} ${styles.right}`} />
+          {[...Array(4)].map((k, idx) => (
+            <span
+              key={`leg-right-${idx}`}
+              className={`${styles.leg} ${styles.right}`}
+            />
           ))}
         </div>
       </div>
