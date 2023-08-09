@@ -28,7 +28,7 @@ export const typeDef = `
 export const resolvers = {
   CheckOrderPolicy: {
     lookUpUrl(parent, args, context, info) {
-      return parent.lookUpUrl?.[0] || null;
+      return parent.lookUpUrl?.[0]?.value || null;
     },
     orderPossible(parent, args, context, info) {
       return parent.orderPossible;
