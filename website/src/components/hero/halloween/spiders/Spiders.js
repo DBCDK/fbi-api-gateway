@@ -27,7 +27,7 @@ export default function Spiders() {
   return (
     <div className={styles.spiders}>
       {[...Array(6)].map((k, i) => (
-        <Spider idx={idx} className={styles[`wrap_${i}`]} />
+        <Spider key={`spider-${i}`} idx={i} className={styles[`wrap_${i}`]} />
       ))}
     </div>
   );
