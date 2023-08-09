@@ -2,19 +2,20 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
-import useTheme from "@/hooks/useTheme";
+import useMode from "@/hooks/useMode";
 
-import styles from "./Theme.module.css";
+import styles from "./Mode.module.css";
 
-const themes = [
+const modes = [
   { label: "light", icon: "🌞" },
   { label: "dark", icon: "🌛" },
   { label: "system", icon: "🤖" },
+  // { label: "theme", icon: "🎨" },
 ];
 
-export function Theme({ theme, onClick, className = "" }) {
+export function Mode({ mode, onClick, className = "" }) {
   const isSelected =
-    themes.find((t) => t.label === theme) || themes[themes.length - 1];
+    modes.find((t) => t.label === mode) || modes[modes.length - 1];
 
   return (
     <Dropdown
@@ -25,18 +26,18 @@ export function Theme({ theme, onClick, className = "" }) {
       <OverlayTrigger
         placement="left"
         overlay={
-          <Tooltip className={styles.tooltip} id={`tooltip-theme`}>
-            {"Theme"}
+          <Tooltip className={styles.tooltip} id={`tooltip-mode`}>
+            {"Mode"}
           </Tooltip>
         }
       >
-        <Dropdown.Toggle className={styles.toggle} id="dropdown-theme-select">
+        <Dropdown.Toggle className={styles.toggle} id="dropdown-mode-select">
           {isSelected?.icon}
         </Dropdown.Toggle>
       </OverlayTrigger>
 
       <Dropdown.Menu className={styles.menu}>
-        {themes.map(({ label, icon }) => (
+        {modes.map(({ label, icon }) => (
           <OverlayTrigger
             key={label}
             placement="left"
@@ -60,12 +61,8 @@ export function Theme({ theme, onClick, className = "" }) {
 }
 
 export default function Wrap(props) {
-  const { theme, setTheme } = useTheme();
+  const { mode, setMode } = useMode();
   return (
-    <Theme
-      theme={theme}
-      onClick={(newTheme) => setTheme(newTheme)}
-      {...props}
-    />
+    <Mode mode={mode} onClick={(newMode) => setMode(newMode)} {...props} />
   );
 }

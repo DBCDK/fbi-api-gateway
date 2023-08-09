@@ -1,0 +1,44 @@
+.pride {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+}
+
+.wrap {
+  height: 100%;
+  position: relative;
+}
+
+.dimmer {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.rainbow {
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    #fe0000 16.66%,
+    #fd8c00 16.66%,
+    33.32%,
+    #ffe500 33.32%,
+    49.98%,
+    #119f0b 49.98%,
+    66.64%,
+    #0644b3 66.64%,
+    83.3%,
+    #c22edc 83.3%
+  );
+}
+
+/* darkmode */
+
+:global(body.dark) .dimmer {
+  background: rgba(0, 0, 0, 0.5);
+}

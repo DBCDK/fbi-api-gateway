@@ -44,7 +44,7 @@
 }
 
 /* 
-* Dark theme
+* Dark mode
 */
 :global(body.dark) .border {
   border-left: var(--pt05) solid #ffa000;

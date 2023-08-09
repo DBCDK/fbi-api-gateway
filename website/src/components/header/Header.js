@@ -1,12 +1,12 @@
 import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import getConfig from "next/config";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
+import useTheme from "@/hooks/useTheme";
 
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
@@ -14,25 +14,11 @@ import Link from "@/components/base/link";
 import History from "@/components/history";
 import Token from "@/components/token";
 import Profile from "@/components/profile";
-import Darkmode from "@/components/darkmode";
-import Theme from "@/components/theme";
+import Mode from "@/components/mode";
 
 import Modal, { Pages } from "@/components/modal";
 
 import styles from "./Header.module.css";
-
-const theme = getConfig()?.publicRuntimeConfig?.theme;
-
-let logo = "🥳";
-if (theme === "christmas") {
-  logo = "🎅";
-}
-if (theme === "easter") {
-  logo = "🐤";
-}
-if (theme === "halloween") {
-  logo = "🎃";
-}
 
 export default function Header() {
   const router = useRouter();
@@ -53,6 +39,7 @@ export default function Header() {
 
   const { selectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
+  const { icon } = useTheme();
 
   const isValidToken =
     selectedToken &&
@@ -80,7 +67,7 @@ export default function Header() {
           <Col className={styles.left}>
             <Title className={styles.logo}>
               <span>
-                <Link href="/">FBI API</Link> {logo}
+                <Link href="/">FBI API</Link> {icon}
               </span>
             </Title>
           </Col>
@@ -115,9 +102,10 @@ export default function Header() {
             <History className={styles.history} />
           </Col>
         </Row>
-        {/* <Darkmode className={styles.darkmode} /> */}
-        <Theme className={styles.darkmode} />
+        <Mode className={styles.darkmode} />
       </Container>
+
+      <div className={styles.border} />
 
       <Modal
         show={show}

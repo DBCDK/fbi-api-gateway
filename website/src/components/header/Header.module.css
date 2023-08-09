@@ -2,6 +2,8 @@
   /* observer hack */
   top: -1px;
 
+  position: relative;
+
   z-index: 99;
   padding: var(--pt1) 0;
   background-color: var(--white);
@@ -180,7 +182,7 @@
 }
 
 /* 
-* Dark theme
+* Dark mode
 */
 
 :global(body.dark) .top {
@@ -199,4 +201,28 @@
 }
 :global(body.dark) .token > div:first-child {
   background-color: var(--text-light) !important;
+}
+
+/* pride border theme*/
+:global(body.pride) .top:not(.index) .border {
+  content: "";
+  background: linear-gradient(
+    90deg,
+    #fe0000 16.66%,
+    #fd8c00 16.66%,
+    33.32%,
+    #ffe500 33.32%,
+    49.98%,
+    #119f0b 49.98%,
+    66.64%,
+    #0644b3 66.64%,
+    83.3%,
+    #c22edc 83.3%
+  );
+  display: block;
+  height: 4px;
+  width: 100%;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
 }
