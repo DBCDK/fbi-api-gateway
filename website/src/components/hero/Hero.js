@@ -1,9 +1,9 @@
 import { Container, Row, Col } from "react-bootstrap";
-import getConfig from "next/config";
 import { useRouter } from "next/router";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
+import useTheme from "@/hooks/useTheme";
 
 import Title from "@/components/base/title";
 import Token from "@/components/token";
@@ -11,12 +11,10 @@ import Button from "@/components/base/button";
 import Label from "@/components/base/label";
 import History from "@/components/history";
 
-const theme = getConfig()?.publicRuntimeConfig?.theme;
-const isChristmas = theme === "christmas";
-const isEaster = theme === "easter";
-
 import Snow from "./snow";
 import Chicken from "./chicken";
+import Pride from "./pride";
+import Halloween from "./halloween";
 
 import styles from "./Hero.module.css";
 
@@ -25,6 +23,12 @@ export default function Hero({ className = "" }) {
 
   const { selectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
+  const { theme } = useTheme();
+
+  const isChristmas = theme === "christmas";
+  const isEaster = theme === "easter";
+  const isPride = theme === "pride";
+  const isHalloween = theme === "halloween";
 
   const inputIsValid =
     selectedToken && configuration && Object?.keys(configuration).length;
@@ -35,6 +39,8 @@ export default function Hero({ className = "" }) {
       <div className={styles.silhouette} />
       {isChristmas && <Snow />}
       {isEaster && <Chicken />}
+      {isPride && <Pride />}
+      {isHalloween && <Halloween />}
       <Container>
         <Row className={styles.row}>
           <Col>
