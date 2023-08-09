@@ -7,7 +7,7 @@ const ENUM_VALUES = {
   dark: "dark",
   light: "light",
   system: "system",
-  theme: "theme",
+  // theme: "theme",
 };
 
 /**

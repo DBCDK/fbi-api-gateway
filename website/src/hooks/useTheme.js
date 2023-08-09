@@ -15,13 +15,13 @@ const icons = {
  * @param {*} value
  */
 export default function useTheme() {
-  const { mode, setMode } = useMode();
+  // const { mode, setMode } = useMode();
   const theme = getConfig()?.publicRuntimeConfig?.theme || "default";
   const icon = icons[theme];
 
-  if (theme === "halloween" && mode === "theme") {
-    setMode("theme");
-  }
+  // if (theme === "halloween" && mode === "theme") {
+  //   setMode("theme");
+  // }
 
   useEffect(() => {
     document.body.classList?.add(theme);

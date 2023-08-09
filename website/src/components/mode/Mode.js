@@ -10,7 +10,7 @@ const modes = [
   { label: "light", icon: "🌞" },
   { label: "dark", icon: "🌛" },
   { label: "system", icon: "🤖" },
-  { label: "theme", icon: "🎨" },
+  // { label: "theme", icon: "🎨" },
 ];
 
 export function Mode({ mode, onClick, className = "" }) {
