@@ -562,12 +562,13 @@ export const resolvers = {
         ).result[0],
       };
 
-      const res = await context.datasources
+      const submitOrderRes = await context.datasources
         .getLoader("submitOrder")
         .load(input);
-      //If the request is coming from beta.bibliotek.dk, add the order id to userData service.s
+
+      //if the request is coming from beta.bibliotek.dk, add the order id to userData service
       if ((context.profile.agency = 190101)) {
-        const orderId = res?.body?.orderPlaced?.orderId;
+        const orderId = submitOrderRes?.body?.orderPlaced?.orderId;
         const smaugUserId = context?.smaug?.user?.uniqueId;
 
         try {
@@ -583,14 +584,14 @@ export const resolvers = {
           });
         } catch (error) {
           log.error(
-            `Failed to add orde to userData service. Message: ${
+            `Failed to add order to userData service. Message: ${
               error.message || JSON.stringify(error)
             }`
           );
         }
       }
 
-      return res;
+      return submitOrderRes;
     },
     async submitSession(parent, args, context, info) {
       await context.datasources.getLoader("submitSession").load({
