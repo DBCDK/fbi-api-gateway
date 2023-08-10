@@ -91,6 +91,7 @@ type Query {
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
   inspiration(language: LanguageCode, limit: Int): Inspiration! 
+  orderStatus(orderId: String!): OrderStatusResponse
 }
 
 type Mutation {
@@ -165,6 +166,24 @@ function translateFilters(filters) {
  */
 export const resolvers = {
   Query: {
+    async orderStatus(parent, args, context, info) {
+      const { orderId } = args;
+      const order = await context.datasources.getLoader("orderStatus").load({
+        orderId: orderId,
+      });
+
+      return {
+        orderId: order?.orderId,
+        closed: order?.orderJSON?.closed,
+        autoForwardResult: order?.orderJSON?.autoForwardResult,
+        placeOnHold: order?.orderJSON?.placeOnHold,
+        pickupAgencyId: order.pickupAgencyId,
+        pid: order.orderJSON.pid,
+        author: order?.orderJSON?.author,
+        title: order?.orderJSON?.title,
+        creationDate: order?.orderJSON?.creationDate,
+      };
+    },
     async inspiration(parent, args, context, info) {
       return {};
     },
