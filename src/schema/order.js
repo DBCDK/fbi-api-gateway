@@ -103,7 +103,7 @@ export const typeDef = `
     """
     Date and time when the order was created
     """
-    creationDate: String
+    creationDate: String!
    }
 
   `;
