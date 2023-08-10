@@ -562,7 +562,35 @@ export const resolvers = {
         ).result[0],
       };
 
-      return await context.datasources.getLoader("submitOrder").load(input);
+      const res = await context.datasources
+        .getLoader("submitOrder")
+        .load(input);
+      //If the request is coming from beta.bibliotek.dk, add the order id to userData service.s
+      if ((context.profile.agency = 190101)) {
+        const orderId = res?.body?.orderPlaced?.orderId;
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+
+        try {
+          if (!smaugUserId) {
+            throw new Error("Not authorized");
+          }
+          if (!orderId) {
+            throw new Error("Undefined orderId");
+          }
+          await context.datasources.getLoader("userDataAddOrder").load({
+            smaugUserId: smaugUserId,
+            orderId: orderId,
+          });
+        } catch (error) {
+          log.error(
+            `Failed to add orde to userData service. Message: ${
+              error.message || JSON.stringify(error)
+            }`
+          );
+        }
+      }
+
+      return res;
     },
     async submitSession(parent, args, context, info) {
       await context.datasources.getLoader("submitSession").load({
