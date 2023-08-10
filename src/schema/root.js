@@ -567,7 +567,7 @@ export const resolvers = {
         .load(input);
 
       //if the request is coming from beta.bibliotek.dk, add the order id to userData service
-      if ((context.profile.agency = 190101)) {
+      if (context.profile.agency == 190101) {
         const orderId = submitOrderRes?.body?.orderPlaced?.orderId;
         const smaugUserId = context?.smaug?.user?.uniqueId;
 
