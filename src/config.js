@@ -233,7 +233,14 @@ export default {
     userdata: {
       url: process.env.USERDATA_URL,
       ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 1,
-      prefix: "userinfo",
+      prefix: "userdata",
+    },
+    orderStatus: {
+      url:
+        process.env.ORDERSTATUS_URL ||
+        "http://ors-maintenance.iscrum-ors-prod.svc.cloud.dbc.dk:8080/",
+      ttl: process.env.ORDERSTATUS_TIME_TO_LIVE_SECONDS || 60 * 5,
+      prefix: "orderstatus",
     },
   },
 };
