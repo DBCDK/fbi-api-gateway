@@ -128,7 +128,7 @@ type Mutation {
     dryRun: Boolean
     ): RenewLoanResponse  
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
-  submitOrder(input: SubmitOrderInput!, orderSystem: OrderSystem!): SubmitOrder
+  submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
 }`;
@@ -532,11 +532,13 @@ export const resolvers = {
       return res;
     },
     async submitOrder(parent, args, context, info) {
+      if (!context?.smaug?.orderSystem) {
+        throw "invalid smaug configuration [orderSystem]";
+      }
       const input = {
         ...args.input,
         accessToken: context.accessToken,
         smaug: context.smaug,
-        orderSystem: args.orderSystem,
         branch: (
           await context.datasources.getLoader("library").load({
             branchId: args.input.pickUpBranch,

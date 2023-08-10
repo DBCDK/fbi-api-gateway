@@ -18,10 +18,6 @@ export const typeDef = `
       NORMAL,
       STACK_RETRIEVAL
    }
-   enum OrderSystem {
-      BIBLIOTEKDK,
-      DDBCMS
-   }
    input SubmitOrderUserParameters {
       cpr: String,
       userId: String,

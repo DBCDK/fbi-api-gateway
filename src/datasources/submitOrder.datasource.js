@@ -67,7 +67,7 @@ export async function processRequest(input, postSoap, context) {
     copy: false,
     exactEdition: input.exactEdition || false,
     needBeforeDate: createNeedBeforeDate(),
-    orderSystem: input.orderSystem,
+    orderSystem: input.smaug.orderSystem.toUpperCase(),
     pickUpAgencyId: input.pickUpBranch,
     author: input.author,
     authorOfComponent: input.authorOfComponent,
