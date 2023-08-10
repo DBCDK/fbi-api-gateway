@@ -1,0 +1,20 @@
+# Order status
+
+Orderstatus fetches the status and details of an order based on a provided order ID.
+
+<InlineGraphiQL
+  query={`query getOrderStatus ($orderId: String!) {
+    
+  orderStatus(orderId: $orderId ){
+    autoForwardResult
+    placeOnHold
+    orderId
+    pickupAgencyId
+    pid
+    closed
+    creationDate
+    author
+    title
+  }  }`}
+  variables={{ orderId: "1046602794" }}
+/>
