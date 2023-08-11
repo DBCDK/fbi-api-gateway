@@ -1293,7 +1293,7 @@ type Mutation {
     dryRun: Boolean
   ): RenewLoanResponse
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
-  submitOrder(input: SubmitOrderInput!): SubmitOrder
+  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
 
