@@ -34,6 +34,10 @@ function createTrackingId() {
  * @returns {Promise<*|null>}
  */
 export async function processRequest(input, postSoap, context) {
+  if (input.dryRun) {
+    log.info("submitOrder dryRun", { dryRunMessage: input?.orderSystem });
+    return { status: "OK - dryRun", orderId: "1234" };
+  }
   // If id is found the user is authenticated via some agency
   // otherwise the token is anonymous
   const userIdFromToken = input.smaug.user.id;
@@ -111,13 +115,20 @@ export async function processRequest(input, postSoap, context) {
     }
   );
 
-  return res;
+  return parseOrder(res);
 }
 
 const checkPost = (post) => {
   //@TODO - more checks
   return post != null;
 };
+
+function parseOrder(orderFromService) {
+  return {
+    status: orderFromService?.body?.orderPlaced?.orderPlacedMessage || null,
+    orderId: orderFromService?.body?.orderPlaced?.orderId || null,
+  };
+}
 
 async function postSoap(post, input, context) {
   try {

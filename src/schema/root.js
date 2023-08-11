@@ -129,7 +129,7 @@ type Mutation {
     dryRun: Boolean
     ): RenewLoanResponse  
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
-  submitOrder(input: SubmitOrderInput!): SubmitOrder
+  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
 }`;
@@ -559,6 +559,7 @@ export const resolvers = {
         ...args.input,
         accessToken: context.accessToken,
         smaug: context.smaug,
+        dryRun: args.dryRun,
         branch: (
           await context.datasources.getLoader("library").load({
             branchId: args.input.pickUpBranch,
