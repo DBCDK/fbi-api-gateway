@@ -63,12 +63,11 @@ export async function processRequest(input, postSoap, context) {
     ([key]) => !userIdTypes.includes(key)
   );
 
-  // defaults
   const postParameters = {
     copy: false,
     exactEdition: input.exactEdition || false,
     needBeforeDate: createNeedBeforeDate(),
-    orderSystem: "BIBLIOTEKDK",
+    orderSystem: input.smaug.orderSystem.toUpperCase(),
     pickUpAgencyId: input.pickUpBranch,
     author: input.author,
     authorOfComponent: input.authorOfComponent,

@@ -19,7 +19,7 @@ test("submitorder fails when user is not authenticated, and no userId provided",
                   userName: "Test Testesen",
                   userMail: "test@test.dk"
                 }
-              }) {
+              }, orderSystem:BIBLIOTEKDK) {
               status
               orsId
             }
@@ -47,7 +47,7 @@ test("submitorder succedes when user is authenticated, and no userId provided", 
                   userName: "Test Testesen",
                   userMail: "test@test.dk"
                 }
-              }) {
+              }, orderSystem:BIBLIOTEKDK) {
               status
               orderId
             }
@@ -79,7 +79,7 @@ test("submitorder succedes when user is not authenticated, but userId provided",
                   userName: "Test Testesen",
                   userMail: "test@test.dk"
                 }
-              }) {
+              }, orderSystem:BIBLIOTEKDK) {
               status
               orderId
             }
