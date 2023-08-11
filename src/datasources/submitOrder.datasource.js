@@ -119,7 +119,19 @@ const checkPost = (post) => {
   return post != null;
 };
 
+function parseOrder(orderFromService) {
+  return {
+    status: orderFromService?.body?.orderPlaced?.orderPlacedMessage || null,
+    orderId: orderFromService?.body?.orderPlaced?.orderId || null,
+  };
+}
+
 async function postSoap(post, input, context) {
+  if (input.dryRun) {
+    log.info("submitOrder dryRun", { dryRunMessage: input?.orderSystem });
+    return { status: "OK - dryRun", orderId: "1234" };
+  }
+
   try {
     const order = await context.fetch(`${url}placeorder/`, {
       method: "POST",
@@ -129,7 +141,7 @@ async function postSoap(post, input, context) {
       },
       body: JSON.stringify(post),
     });
-    return order;
+    return parseOrder(order);
   } catch (e) {
     log.error("SUBMIT ORDER: Error placing order", { post: post });
     // @TODO log
