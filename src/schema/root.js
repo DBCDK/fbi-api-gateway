@@ -554,6 +554,7 @@ export const resolvers = {
       if (!context?.smaug?.orderSystem) {
         throw "invalid smaug configuration [orderSystem]";
       }
+
       const input = {
         ...args.input,
         accessToken: context.accessToken,

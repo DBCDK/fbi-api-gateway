@@ -1293,7 +1293,7 @@ type Mutation {
     dryRun: Boolean
   ): RenewLoanResponse
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
-  submitOrder(input: SubmitOrderInput!, orderSystem: OrderSystem!): SubmitOrder
+  submitOrder(input: SubmitOrderInput!): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
 
@@ -2166,11 +2166,6 @@ enum OrderType {
   NON_RETURNABLE_COPY
   NORMAL
   STACK_RETRIEVAL
-}
-
-enum OrderSystem {
-  BIBLIOTEKDK
-  DDBCMS
 }
 
 input SubmitOrderUserParameters {
