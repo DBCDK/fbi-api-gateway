@@ -189,6 +189,13 @@ export default {
     smaug: {
       url: process.env.SMAUG_URL || "https://auth-config.dbc.dk",
     },
+    culr: {
+      url:
+        process.env.CULR_URL || "https://culr.addi.dk/1.6/CulrWebService?wsdl",
+      authenticationUser: process.env.CULR_USER,
+      authenticationGroup: process.env.CULR_GROUP,
+      authenticationPassword: process.env.CULR_PASSWORD,
+    },
     statsbiblioteket: {
       url:
         process.env.STATSBIBLIOTEKET_URL ||
