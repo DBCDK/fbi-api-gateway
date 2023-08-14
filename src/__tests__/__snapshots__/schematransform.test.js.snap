@@ -2311,7 +2311,7 @@ type Query {
   ris(pid: String!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
   inspiration(language: LanguageCode, limit: Int): Inspiration!
-  orderStatus(orderId: String!): OrderStatusResponse!
+  orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
 }
 
