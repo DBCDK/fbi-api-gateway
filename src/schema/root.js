@@ -91,7 +91,7 @@ type Query {
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
   inspiration(language: LanguageCode, limit: Int): Inspiration! 
-  orderStatus(orderIds: [String]!): [OrderStatusResponse]!
+  orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
 }
 
 type Mutation {

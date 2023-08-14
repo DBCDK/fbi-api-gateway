@@ -15,7 +15,7 @@ Returns: A list of objects each containing the following fields:
 - _**pickupAgencyId**_ - The branch where the user should collect the material
 
 <InlineGraphiQL
-  query={`query getOrderStatus($orderIds: [String]!) {
+  query={`query getOrderStatus($orderIds: [String!]!) {
   orderStatus(orderIds: $orderIds) {
     autoForwardResult
     placeOnHold
