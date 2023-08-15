@@ -167,7 +167,7 @@ function translateFilters(filters) {
 export const resolvers = {
   Query: {
     async orderStatus(parent, args, context, info) {
-      const { orderIds } = args; 
+      const { orderIds } = args;
       if (!orderIds || orderIds.length === 0) {
         throw new Error("No order IDs provided.");
       }
@@ -182,7 +182,7 @@ export const resolvers = {
             log.error(
               `Failed to fetch orderStatus. Order with order id ${orderId} not found.`
             );
-            return null; 
+            return null;
           }
 
           return {
@@ -199,7 +199,7 @@ export const resolvers = {
         })
       );
 
-      return orders.filter(order => order !== null);
+      return orders.filter((order) => order !== null);
     },
     async inspiration(parent, args, context, info) {
       return {};
@@ -590,9 +590,8 @@ export const resolvers = {
 
       //if the request is coming from beta.bibliotek.dk, add the order id to userData service
       if (context?.profile?.agency == 190101) {
-        const orderId = submitOrderRes?.body?.orderPlaced?.orderId;
+        const orderId = submitOrderRes?.orderId;
         const smaugUserId = context?.smaug?.user?.uniqueId;
-
         try {
           if (!smaugUserId) {
             throw new Error("Not authorized");
