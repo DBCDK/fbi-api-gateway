@@ -1,19 +1,50 @@
+/**
+ * Cases:
+ *
+ * Der logges altid ind via borchk
+ * Alle oprettes i CULR
+ *
+ * 1. Eksistere ikke i CULR
+ *    - Validere med mitId - oprettes i CULR med CPR - tilknyttes FFU
+ * 2. Eksistere i CULR men er logget ind med localID - tilnyttes FFU
+ *    -
+ */
+
 import { isValidCpr } from "../utils/cpr";
 import { isFFUAgency } from "../utils/agency";
 
 export const typeDef = `
 
-enum SubscribeAgencyStatus {
+enum CulrStatus {
     OK
+    ERROR
     ERROR_INVALID_CPR
     ERROR_INVALID_AGENCY
     ERROR_UNAUTHENTICATED_TOKEN
+    ERROR_USER_ALREADY_CREATED
+    ERROR_LOCALID_NOT_UNIQUE
+    ERROR_ACCOUNT_DOES_NOT_EXIST
+    ERROR_AGENCYID_NOT_PERMITTED
+}
 
-    ERROR_UNAUTHENTICATED_USER
-    ERROR_USER_ALREADY_SUBSCRIBED
-  }
- 
-input SubscribeAgencyInput {
+type CulrResponse {
+    status: CulrStatus!
+}
+
+type CulrAccount {
+  agencyId: String!
+  userIdType: String!
+  userIdValue: String!
+}
+
+type CulrAccountResponse {
+  accounts: [CulrAccount!]!
+  municipalityNo: String
+  guid: String
+}
+
+input DeleteAccountInput {
+
     """
     The agencyId
     """
@@ -23,29 +54,66 @@ input SubscribeAgencyInput {
     The subscribing users local ID
     """
     localId: String!
+}
+
+input CreateAccountInput {
 
     """
-    The subscribing users CPR 
+    The agencyId
+    """
+    agencyId: String!
+
+    """
+    The users local ID
+    """
+    localId: String!
+
+    """
+    The users CPR 
     """
     cpr: String!
 }
 
-type SubscribeAgencyResponse {
-    status: SubscribeAgencyStatus!,
+input GetAccountsByLocalIdInput {
+    """
+    The agencyId
+    """
+    agencyId: String!
+
+    """
+    The users local ID
+    """
+    localId: String!
 }
 
 type CulrService {
 
     """
-    Subscribe an agency to a CPR validated user
+    Add an agency to a CPR validated user
     """
-    subscribeAgency(input: SubscribeAgencyInput!, 
+    createAccount(input: CreateAccountInput!, 
 
     """
     If dryRun is set to true, the actual service is never called
     Used for testing
     """
-    dryRun: Boolean): SubscribeAgencyResponse!
+    dryRun: Boolean): CulrResponse!
+
+    """
+    Remove an agency from a user
+    """
+    deleteAccount(input: DeleteAccountInput!, 
+
+    """
+    If dryRun is set to true, the actual service is never called
+    Used for testing
+    """
+    dryRun: Boolean): CulrResponse!
+
+    """
+    Get alluser accounts within the given agency
+    """
+    getAccountsByLocalId(input: GetAccountsByLocalIdInput!): CulrAccountResponse!
 }
 
 extend type Mutation {
@@ -61,25 +129,13 @@ export const resolvers = {
   },
 
   CulrService: {
-    async subscribeAgency(parent, args, context, info) {
-      // tjek om token er authenticated
-      // tjek om CPR er valid
-      // tjek om agency er FFU
-      // tjek om bruger allerede er subscribed - egentlig ikke nødvendigt - håndteres også i culr
+    async createAccount(parent, args, context, info) {
+      const { agencyId, cpr, localId } = args.input;
 
-      /**
-       * Cases:
-       *
-       * Der logges altid ind via borchk
-       * Alle oprettes i CULR
-       *
-       * 1. Eksistere ikke i CULR
-       *    - Validere med mitId - oprettes i CULR med CPR - tilknyttes FFU
-       * 2. Eksistere i CULR men er logget ind med localID - tilnyttes FFU
-       *    -
-       */
-
-      // console.log("context.smaug.......", context.smaug);
+      // settings
+      const ENABLE_CPR_CHECK = false;
+      const ENABLE_FFU_CHECK = false;
+      const ENABLE_CREATED_CHECK = true;
 
       // token is not authenticated - anonymous token used
       // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
@@ -90,51 +146,168 @@ export const resolvers = {
       }
 
       // validate cpr input
-      if (!isValidCpr(args.input.cpr)) {
+      if (ENABLE_CPR_CHECK && !isValidCpr(cpr)) {
         return {
           status: "ERROR_INVALID_CPR",
         };
       }
 
       // validate Agency
-      // if (!isFFUAgency(args.input.agencyId)) {
-      //   return {
-      //     status: "ERROR_INVALID_AGENCY",
-      //   };
-      // }
-
-      // Check if user is already subscribed to agency
-      const subscribtions = await context.datasources
-        .getLoader("culrGetSubscribtionsById")
-        .load({
-          userId: args.input.cpr,
-          agencyId: args.input.agencyId,
-        });
-
-      const accounts = subscribtions?.accounts;
-      if (accounts?.find((acc) => acc.agencyId === args.input.agencyId)) {
+      if (ENABLE_FFU_CHECK && !isFFUAgency(agencyId)) {
         return {
-          status: "ERROR_USER_ALREADY_SUBSCRIBED",
+          status: "ERROR_INVALID_AGENCY",
         };
       }
 
-      return { status: "OK" };
+      // Retrieve user culr account
+      const account = await context.datasources
+        .getLoader("culrGetAccountsByLocalId")
+        .load({
+          userId: localId,
+          agencyId,
+        });
+
+      console.log("account", account);
 
       // Check if user is already subscribed to agency
-      // const isSubscribed = userinfo?.attributes?.agencies?.find(
-      //   (agency) => agency.agencyId === input.agencyId
-      // );
+      if (ENABLE_CREATED_CHECK && account.code === "OK200") {
+        if (account.accounts.find((acc) => acc.userIdValue === localId))
+          return {
+            status: "ERROR_USER_ALREADY_CREATED",
+          };
+      }
+
+      // Create user account for agency
+      if (account.code === "ACCOUNT_DOES_NOT_EXIST") {
+        // Check for dryRun
+        if (args.dryRun) {
+          return {
+            status: "OK",
+          };
+        }
+
+        // Get agencies informations from login.bib.dk /userinfo endpoint
+        const response = await context.datasources
+          .getLoader("culrCreateAccount")
+          .load({ agencyId, cpr, localId });
+
+        // Response errors - localid is already in use
+        if (response.code === "TRANSACTION_ERROR") {
+          return {
+            status: "ERROR_LOCALID_NOT_UNIQUE",
+          };
+        }
+
+        // AgencyID
+        if (response.code === "ILLEGAL_ARGUMENT") {
+          return {
+            status: "ERROR_AGENCYID_NOT_PERMITTED",
+          };
+        }
+
+        if (response.code === "OK200") {
+          return {
+            status: "OK",
+          };
+        }
+      }
+
+      return { status: "ERROR" };
+    },
+
+    async deleteAccount(parent, args, context, info) {
+      const { agencyId, localId } = args.input;
+
+      // settings
+      const ENABLE_FFU_CHECK = false;
+
+      // token is not authenticated - anonymous token used
+      // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
+      if (!context?.smaug?.user?.id) {
+        return {
+          status: "ERROR_UNAUTHENTICATED_TOKEN",
+        };
+      }
+
+      // validate Agency
+      if (ENABLE_FFU_CHECK && !isFFUAgency(agencyId)) {
+        return {
+          status: "ERROR_INVALID_AGENCY",
+        };
+      }
+
+      // Check for dryRun
+      if (args.dryRun) {
+        return {
+          status: "OK",
+        };
+      }
 
       // Get agencies informations from login.bib.dk /userinfo endpoint
       const response = await context.datasources
-        .getLoader("culrCreateSubscribtion")
+        .getLoader("culrDeleteAccount")
+        .load({ agencyId, localId });
+
+      // Response errors - account does not exist
+      if (response.code === "ACCOUNT_DOES_NOT_EXIST") {
+        return {
+          status: "ERROR_ACCOUNT_DOES_NOT_EXIST",
+        };
+      }
+
+      if (response.code === "OK200") {
+        return {
+          status: "OK",
+        };
+      }
+
+      return { status: "ERROR" };
+    },
+
+    async getAccountsByLocalId(parent, args, context, info) {
+      const { agencyId, localId } = args.input;
+
+      // settings
+      const ENABLE_FFU_CHECK = false;
+
+      // token is not authenticated - anonymous token used
+      // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
+      if (!context?.smaug?.user?.id) {
+        return {
+          status: "ERROR_UNAUTHENTICATED_TOKEN",
+        };
+      }
+
+      // validate Agency
+      if (ENABLE_FFU_CHECK && !isFFUAgency(agencyId)) {
+        return {
+          status: "ERROR_INVALID_AGENCY",
+        };
+      }
+
+      // Retrieve user culr account
+      const response = await context.datasources
+        .getLoader("culrGetAccountsByLocalId")
         .load({
-          accessToken: context.accessToken,
+          userId: localId,
+          agencyId,
         });
 
-      console.log("########", { userinfo });
+      console.log("response", response);
 
-      // return await context.datasources.getLoader("submitOrder").load(input);
+      if (response.code === "OK200") {
+        return response;
+      }
+
+      return { status: "ERROR" };
+    },
+  },
+
+  CulrAccountResponse: {
+    accounts(parent, args, context, info) {
+      console.log("fffffffffff", parent);
+
+      return parent.accounts;
     },
   },
 };

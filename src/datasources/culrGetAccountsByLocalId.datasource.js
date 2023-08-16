@@ -3,7 +3,7 @@
  */
 
 import { parseString } from "xml2js";
-import find from "lodash/find";
+import { log } from "dbc-node-logger";
 
 import config from "../config";
 
@@ -39,22 +39,31 @@ function constructSoap({ agencyId, userId }) {
 
 function parseResponse(xml) {
   try {
-    const body = xml["S:Envelope"]["S:Body"];
-    const result = body[0]["tns:createAccountResponse"][0].result[0];
+    const body = xml?.["S:Envelope"]?.["S:Body"];
+    const result =
+      body?.[0]?.["ns2:getAccountsByLocalIdResponse"]?.[0]?.result?.[0];
+
+    const responseStatus = result?.responseStatus?.[0];
+
+    const code = responseStatus?.responseCode?.[0];
+    const message = responseStatus?.responseMessage?.[0];
+
+    const municipalityNo = result?.MunicipalityNo?.[0];
+    const guid = result?.Guid?.[0];
 
     const accounts = result?.Account?.map((account) => ({
-      agencyId: account.provider[0],
-      userIdType: account.userIdType[0],
-      userIdValue: account.userIdValue[0],
+      agencyId: account?.provider?.[0],
+      userIdType: account?.userIdType?.[0],
+      userIdValue: account?.userIdValue?.[0],
     }));
 
-    const municipalityNo = result.MunicipalityNo[0];
-
-    const guid = result.Guid[0];
-
-    const status = result.responseStatus[0].responseCode[0];
-
-    return { accounts, municipalityNo, guid, status };
+    return {
+      code,
+      message,
+      accounts,
+      municipalityNo,
+      guid,
+    };
   } catch (e) {
     log.error("Failed to parse culr response", {
       error: e.message,
@@ -76,6 +85,8 @@ export async function load({ agencyId, userId }, context) {
     },
     body: soap,
   });
+
+  console.log("CULR => getAccounts", { soap, res });
 
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
