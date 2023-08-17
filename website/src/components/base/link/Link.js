@@ -59,7 +59,7 @@ export default function Link({
 
   // Return the component
   return (
-    <NextLink href={href} shallow={true} scroll={scroll}>
+    <NextLink href={href} shallow={true} scroll={scroll} legacyBehavior>
       {children}
     </NextLink>
   );

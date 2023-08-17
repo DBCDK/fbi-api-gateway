@@ -35,13 +35,14 @@ export default function useSchema(token) {
     const json = await response.json();
     const schema = buildClientSchema(json.data);
     const schemaStr = printSchema(schema);
-    return { schema, schemaStr };
+    return { schema, schemaStr, json };
   };
 
   const { data } = useSWR(token?.token && [url, token?.token], fetcher);
   return {
     schema: data?.schema,
     schemaStr: data?.schemaStr,
+    json: data?.json,
     isLoading: !data,
   };
 }
