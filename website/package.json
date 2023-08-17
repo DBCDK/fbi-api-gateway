@@ -17,7 +17,7 @@
     "lodash": "^4.17.21",
     "next": "^13.4.16",
     "next-mdx-remote": "^4.4.1",
-    "node-sass": "^7.0.1",
+    "node-sass": "^9.0.0",
     "nookies": "^2.5.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
