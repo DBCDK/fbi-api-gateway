@@ -1,5 +1,5 @@
 /**
- * @file This datasource is used to subscribe a NEW user to an agency in CULR (OBS: User does not exist in CULR)
+ * @file This datasource is used to link a user to an agency in CULR
  */
 
 import { parseString } from "xml2js";

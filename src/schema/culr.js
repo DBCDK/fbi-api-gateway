@@ -21,6 +21,7 @@ enum CulrStatus {
     ERROR_INVALID_CPR
     ERROR_INVALID_AGENCY
     ERROR_UNAUTHENTICATED_TOKEN
+    ERROR_NO_AUTHORISATION
     ERROR_USER_ALREADY_CREATED
     ERROR_LOCALID_NOT_UNIQUE
     ERROR_ACCOUNT_DOES_NOT_EXIST
@@ -113,7 +114,7 @@ type CulrService {
     """
     Get alluser accounts within the given agency
     """
-    getAccountsByLocalId(input: GetAccountsByLocalIdInput!): CulrAccountResponse!
+    getAccountsByLocalId(input: GetAccountsByLocalIdInput!): CulrAccountResponse
 }
 
 extend type Mutation {
@@ -166,6 +167,13 @@ export const resolvers = {
           userId: localId,
           agencyId,
         });
+
+      // User credentials (netpunkt-triple) could not be authorized
+      if (account.code === "NO_AUTHORISATION") {
+        return {
+          status: "ERROR_NO_AUTHORISATION",
+        };
+      }
 
       console.log("account", account);
 
@@ -255,6 +263,13 @@ export const resolvers = {
         };
       }
 
+      // AgencyID
+      if (response.code === "ILLEGAL_ARGUMENT") {
+        return {
+          status: "ERROR_AGENCYID_NOT_PERMITTED",
+        };
+      }
+
       if (response.code === "OK200") {
         return {
           status: "OK",
@@ -267,24 +282,6 @@ export const resolvers = {
     async getAccountsByLocalId(parent, args, context, info) {
       const { agencyId, localId } = args.input;
 
-      // settings
-      const ENABLE_FFU_CHECK = false;
-
-      // token is not authenticated - anonymous token used
-      // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
-      if (!context?.smaug?.user?.id) {
-        return {
-          status: "ERROR_UNAUTHENTICATED_TOKEN",
-        };
-      }
-
-      // validate Agency
-      if (ENABLE_FFU_CHECK && !isFFUAgency(agencyId)) {
-        return {
-          status: "ERROR_INVALID_AGENCY",
-        };
-      }
-
       // Retrieve user culr account
       const response = await context.datasources
         .getLoader("culrGetAccountsByLocalId")
@@ -293,21 +290,17 @@ export const resolvers = {
           agencyId,
         });
 
-      console.log("response", response);
-
-      if (response.code === "OK200") {
-        return response;
+      if (!response.guid) {
+        return null;
       }
 
-      return { status: "ERROR" };
+      return response;
     },
   },
 
-  CulrAccountResponse: {
-    accounts(parent, args, context, info) {
-      console.log("fffffffffff", parent);
-
-      return parent.accounts;
-    },
-  },
+  // CulrAccountResponse: {
+  //   accounts(parent, args, context, info) {
+  //     return parent.accounts || [];
+  //   },
+  // },
 };

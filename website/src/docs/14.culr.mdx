@@ -1,0 +1,103 @@
+# Culr
+
+CULR (_Core User Library Registry_) receives local user identifiers from affiliated
+data providers (eg. libraries) and assigns a global user id (_GUID_) for each unique user.
+
+## CreateAccount
+
+Creates an account in culr based on a CPR validated user. Only FFU libraries which supports **Borchk** can be created using this mutation field.
+
+The returned _status_ can be one of the following:
+
+- _**OK**_ - Account was successfully created
+- _**ERROR**_ - Account was not created - Some unknown error occured
+- _**ERROR_INVALID_CPR**_ - CPR input was not recognized as a CPR
+- _**ERROR_INVALID_AGENCY**_ - AgencyId input was not recognized as a valid FFU Agency
+- _**ERROR_UNAUTHENTICATED_TOKEN**_ - An unauthenticated token was used
+- _**ERROR_USER_ALREADY_CREATED**_ - Account already exist
+- _**ERROR_LOCALID_NOT_UNIQUE**_ - LocalId is already in use
+- _**ERROR_AGENCYID_NOT_PERMITTED**_ - AgencyId input is out of permission scope
+- _**ERROR_NO_AUTHORISATION**_ - Credentials could not be authorized
+
+<InlineGraphiQL
+  query={`
+    mutation Example_CreateAccount($input: CreateAccountInput!) {
+        culr {
+            createAccount(input: $input, dryRun: true) {
+                status
+            }
+        }
+    }
+`}
+  variables={{
+    input: {
+      agencyId: "800010",
+      localId: "C012345678",
+      cpr: "0123456789",
+    },
+  }}
+/>
+
+## DeleteAccount
+
+Delete an account in culr based on a localId. Only FFU libraries which supports Borchk can be deleted using this mutation field.
+
+The returned _status_ can be one of the following:
+
+- _**OK**_ - Account was successfully deleted
+- _**ERROR**_ - Account was not deleted - Some unknown error occured
+- _**ERROR_INVALID_AGENCY**_ - AgencyId input was not recognized as a valid FFU Agency
+- _**ERROR_UNAUTHENTICATED_TOKEN**_ - An unauthenticated token was used
+- _**ERROR_ACCOUNT_DOES_NOT_EXIST**_ - The account which was requested for deleting does not exist
+- _**ERROR_AGENCYID_NOT_PERMITTED**_ - AgencyId input is out of permission scope
+- _**ERROR_NO_AUTHORISATION**_ - Credentials could not be authorized
+
+<InlineGraphiQL
+  query={`
+    mutation Example_DeleteAccount($input: DeleteAccountInput!) {
+        culr {
+            deleteAccount(input: $input, dryRun: true) {
+                status
+            }
+        }
+    }
+`}
+  variables={{
+    input: {
+      agencyId: "800010",
+      localId: "C012345678",
+    },
+  }}
+/>
+
+## GetAccountsByLocalId
+
+Get all culr accounts by a users localId. All Agencies linked to the user is returned.
+
+If no account (_GUID_) was found, `getAccountsByLocalId` will return _null_
+
+All libraries are supported.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_GetAccountsByLocalId($input: GetAccountsByLocalIdInput!) {
+        culr {
+            getAccountsByLocalId(input: $input) {
+                municipalityNo
+                guid
+                accounts {
+                    agencyId
+                    userIdType
+                    userIdValue
+                }
+            }
+        }
+    }
+`}
+  variables={{
+    input: {
+      agencyId: "800010",
+      localId: "C012345678",
+    },
+  }}
+/>
