@@ -134,8 +134,8 @@ export const resolvers = {
       const { agencyId, cpr, localId } = args.input;
 
       // settings
-      const ENABLE_CPR_CHECK = false;
-      const ENABLE_FFU_CHECK = false;
+      const ENABLE_CPR_CHECK = true;
+      const ENABLE_FFU_CHECK = true;
       const ENABLE_CREATED_CHECK = true;
 
       // token is not authenticated - anonymous token used
@@ -227,7 +227,7 @@ export const resolvers = {
       const { agencyId, localId } = args.input;
 
       // settings
-      const ENABLE_FFU_CHECK = false;
+      const ENABLE_FFU_CHECK = true;
 
       // token is not authenticated - anonymous token used
       // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr

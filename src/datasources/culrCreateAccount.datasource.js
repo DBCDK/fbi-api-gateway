@@ -58,7 +58,7 @@ function constructSoap({ agencyId, cpr, localId }) {
  * @returns
  */
 
-function parseResponse(xml) {
+export function parseResponse(xml) {
   try {
     const body = xml?.["S:Envelope"]?.["S:Body"];
     const result = body?.[0]?.["ns2:createAccountResponse"]?.[0]?.return?.[0];
