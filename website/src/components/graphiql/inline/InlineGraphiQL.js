@@ -158,9 +158,13 @@ export function InlineGraphiQL({
   const tab = tabs[activeTabIndex];
   useEffect(() => {
     if (isReady) {
-      if (!tab.response && tab.query && !isFetching) {
+      if (tab.query) {
         try {
           prettifyEditors();
+        } catch (err) {}
+      }
+      if (!tab.response && tab.query && !isFetching) {
+        try {
           run();
         } catch (err) {}
       }
