@@ -160,6 +160,8 @@ export const resolvers = {
         };
       }
 
+      console.error("!!!!!!!!!!!!!!!!!!!!!!1");
+
       // Retrieve user culr account
       const account = await context.datasources
         .getLoader("culrGetAccountsByLocalId")
@@ -168,14 +170,14 @@ export const resolvers = {
           agencyId,
         });
 
+      console.error("vvvv", account);
+
       // User credentials (netpunkt-triple) could not be authorized
       if (account.code === "NO_AUTHORISATION") {
         return {
           status: "ERROR_NO_AUTHORISATION",
         };
       }
-
-      console.log("account", account);
 
       // Check if user is already subscribed to agency
       if (ENABLE_CREATED_CHECK && account.code === "OK200") {

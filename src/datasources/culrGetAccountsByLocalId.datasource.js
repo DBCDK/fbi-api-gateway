@@ -37,7 +37,9 @@ function constructSoap({ agencyId, userId }) {
 `;
 }
 
-function parseResponse(xml) {
+export function parseResponse(xml) {
+  console.error("xmlxmlxmlxml", xml);
+
   try {
     const body = xml?.["S:Envelope"]?.["S:Body"];
     const result =
