@@ -390,6 +390,159 @@ type Cover {
   origin: String
 }
 
+enum CulrStatus {
+  OK
+  ERROR
+  ERROR_INVALID_CPR
+  ERROR_INVALID_AGENCY
+  ERROR_UNAUTHENTICATED_TOKEN
+  ERROR_NO_AUTHORISATION
+  ERROR_USER_ALREADY_CREATED
+  ERROR_LOCALID_NOT_UNIQUE
+  ERROR_ACCOUNT_DOES_NOT_EXIST
+  ERROR_AGENCYID_NOT_PERMITTED
+}
+
+type CulrResponse {
+  status: CulrStatus!
+}
+
+type CulrAccount {
+  agencyId: String!
+  userIdType: String!
+  userIdValue: String!
+}
+
+type CulrAccountResponse {
+  accounts: [CulrAccount!]!
+  municipalityNo: String
+  guid: String
+}
+
+input DeleteAccountInput {
+  \\"\\"\\"The agencyId\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The subscribing users local ID\\"\\"\\"
+  localId: String!
+}
+
+input CreateAccountInput {
+  \\"\\"\\"The agencyId\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The users local ID\\"\\"\\"
+  localId: String!
+
+  \\"\\"\\"The users CPR \\"\\"\\"
+  cpr: String!
+}
+
+input GetAccountsByLocalIdInput {
+  \\"\\"\\"The agencyId\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The users local ID\\"\\"\\"
+  localId: String!
+}
+
+type CulrService {
+  \\"\\"\\"Add an agency to a CPR validated user\\"\\"\\"
+  createAccount(
+    input: CreateAccountInput!
+
+    \\"\\"\\"
+    If dryRun is set to true, the actual service is never called
+    Used for testing
+    \\"\\"\\"
+    dryRun: Boolean
+  ): CulrResponse!
+
+  \\"\\"\\"Remove an agency from a user\\"\\"\\"
+  deleteAccount(
+    input: DeleteAccountInput!
+
+    \\"\\"\\"
+    If dryRun is set to true, the actual service is never called
+    Used for testing
+    \\"\\"\\"
+    dryRun: Boolean
+  ): CulrResponse!
+
+  \\"\\"\\"Get alluser accounts within the given agency\\"\\"\\"
+  getAccountsByLocalId(input: GetAccountsByLocalIdInput!): CulrAccountResponse
+}
+
+type Mutation {
+  culr: CulrService!
+
+  \\"\\"\\"
+  Order digital article through Digital Article Service
+  Link to article is sent via email
+  \\"\\"\\"
+  digitalArticleService(
+    \\"\\"\\"The pid of an article or periodica\\"\\"\\"
+    pid: String!
+    publicationDateOfComponent: String
+    volume: String
+    authorOfComponent: String
+    titleOfComponent: String
+    pagination: String
+  ): DigitalArticleServiceResponse!
+  elba: ElbaServices!
+  data_collect(input: DataCollectInput!): String!
+  deleteOrder(
+    \\"\\"\\"id of the order to be deleted\\"\\"\\"
+    orderId: String!
+
+    \\"\\"\\"The agency where the order is placed.\\"\\"\\"
+    agencyId: String!
+
+    \\"\\"\\"
+    If this is true, the order is not actually deleted (is useful when generating examples).
+    \\"\\"\\"
+    dryRun: Boolean
+  ): DeleteOrderResponse
+  renewLoan(
+    \\"\\"\\"id of the loan to be renewed\\"\\"\\"
+    loanId: String!
+
+    \\"\\"\\"The agency where the loan is to be renewed.\\"\\"\\"
+    agencyId: String!
+
+    \\"\\"\\"
+    If this is true, the loan is not actually renewed (is useful when generating examples).
+    \\"\\"\\"
+    dryRun: Boolean
+  ): RenewLoanResponse
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
+  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+  submitSession(input: SessionInput!): String!
+  deleteSession: String!
+
+  \\"\\"\\"Add user to userdata service\\"\\"\\"
+  addUserToUserDataService: UserDataResponse
+
+  \\"\\"\\"Delete user from userdata service\\"\\"\\"
+  deleteUserFromUserDataService: UserDataResponse
+
+  \\"\\"\\"
+  Add an orderId to a user. Will create user in userdata service if they dont exist
+  \\"\\"\\"
+  addOrderToUserData(orderId: String!): UserDataResponse
+
+  \\"\\"\\"Remove order from userData service\\"\\"\\"
+  deleteOrderFromUserData(orderId: String!): UserDataResponse
+
+  \\"\\"\\"
+  Set a favorite pickup branch. Will create user in userdata service if they dont exist
+  \\"\\"\\"
+  setFavoritePickUpBranch(favoritePickUpBranch: String!): UserDataResponse
+
+  \\"\\"\\"Sets favoritePickUpBranch to null\\"\\"\\"
+  clearFavoritePickUpBranch: UserDataResponse
+}
+
 type Lamp {
   color: String
   message: String
@@ -1250,74 +1403,6 @@ type ManifestationTitles {
 
 type DigitalArticleServiceResponse {
   msg: String!
-}
-
-type Mutation {
-  \\"\\"\\"
-  Order digital article through Digital Article Service
-  Link to article is sent via email
-  \\"\\"\\"
-  digitalArticleService(
-    \\"\\"\\"The pid of an article or periodica\\"\\"\\"
-    pid: String!
-    publicationDateOfComponent: String
-    volume: String
-    authorOfComponent: String
-    titleOfComponent: String
-    pagination: String
-  ): DigitalArticleServiceResponse!
-  elba: ElbaServices!
-  data_collect(input: DataCollectInput!): String!
-  deleteOrder(
-    \\"\\"\\"id of the order to be deleted\\"\\"\\"
-    orderId: String!
-
-    \\"\\"\\"The agency where the order is placed.\\"\\"\\"
-    agencyId: String!
-
-    \\"\\"\\"
-    If this is true, the order is not actually deleted (is useful when generating examples).
-    \\"\\"\\"
-    dryRun: Boolean
-  ): DeleteOrderResponse
-  renewLoan(
-    \\"\\"\\"id of the loan to be renewed\\"\\"\\"
-    loanId: String!
-
-    \\"\\"\\"The agency where the loan is to be renewed.\\"\\"\\"
-    agencyId: String!
-
-    \\"\\"\\"
-    If this is true, the loan is not actually renewed (is useful when generating examples).
-    \\"\\"\\"
-    dryRun: Boolean
-  ): RenewLoanResponse
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
-  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
-  submitSession(input: SessionInput!): String!
-  deleteSession: String!
-
-  \\"\\"\\"Add user to userdata service\\"\\"\\"
-  addUserToUserDataService: UserDataResponse
-
-  \\"\\"\\"Delete user from userdata service\\"\\"\\"
-  deleteUserFromUserDataService: UserDataResponse
-
-  \\"\\"\\"
-  Add an orderId to a user. Will create user in userdata service if they dont exist
-  \\"\\"\\"
-  addOrderToUserData(orderId: String!): UserDataResponse
-
-  \\"\\"\\"Remove order from userData service\\"\\"\\"
-  deleteOrderFromUserData(orderId: String!): UserDataResponse
-
-  \\"\\"\\"
-  Set a favorite pickup branch. Will create user in userdata service if they dont exist
-  \\"\\"\\"
-  setFavoritePickUpBranch(favoritePickUpBranch: String!): UserDataResponse
-
-  \\"\\"\\"Sets favoritePickUpBranch to null\\"\\"\\"
-  clearFavoritePickUpBranch: UserDataResponse
 }
 
 type Recommendation {
@@ -2657,6 +2742,11 @@ type Cover {
   origin: String
 }
 
+type Mutation {
+  elba: ElbaServices!
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
+}
+
 enum AccessTypeCode {
   PHYSICAL
   ONLINE
@@ -3464,11 +3554,6 @@ type ManifestationTitles {
 
   \\"\\"\\"detailed title for tv series \\"\\"\\"
   tvSeries: TvSeries
-}
-
-type Mutation {
-  elba: ElbaServices!
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
 }
 
 type Recommendation {

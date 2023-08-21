@@ -16,13 +16,10 @@
 }
 
 /* selected dark theme */
-:global(body.graphiql-dark) .body {
-  color: var(--dark);
+:global(body.dark) .body {
+  color: var(--text-light);
 }
 
-/* system dark theme */
-@media (prefers-color-scheme: dark) {
-  :global(body:not(.graphiql-light)) .body {
-    color: var(--dark);
-  }
+:global(body.dark) .container {
+  background-color: var(--dark);
 }

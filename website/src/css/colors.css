@@ -74,6 +74,16 @@ body.halloween {
   --hero-gradient-primary: #ff5722;
   --hero-gradient-secondary: #ff8a65;
 }
+body.pride {
+  --primary: #ce93d8;
+  --primary-dark: #ba68c8;
+
+  --secondary: #4dd0e1;
+  --secondary-light: #80deea;
+
+  --hero-gradient-primary: #ce93d8;
+  --hero-gradient-secondary: #4dd0e1;
+}
 
 /* 
 * Dark mode
@@ -135,4 +145,11 @@ body.dark.halloween {
 
   --secondary: #ff5722;
   --secondary-light: #ff7043;
+}
+body.dark.pride {
+  --primary: #ce93d8;
+  --primary-dark: #ba68c8;
+
+  --secondary: #4dd0e1;
+  --secondary-light: #80deea;
 }

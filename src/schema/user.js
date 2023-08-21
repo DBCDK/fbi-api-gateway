@@ -152,6 +152,7 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
+
       const homeAccount = getHomeAgencyAccount(userinfo);
       const res = await context.datasources.getLoader("user").load({
         homeAccount: homeAccount,
