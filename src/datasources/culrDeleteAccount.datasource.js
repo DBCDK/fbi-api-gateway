@@ -1,5 +1,5 @@
 /**
- * @file This datasource is used to removes an agency from a user in CULR
+ * @file This datasource is used to removes an account from a user in CULR
  */
 
 import { parseString } from "xml2js";
@@ -42,11 +42,11 @@ function constructSoap({ agencyId, localId }) {
 }
 
 /**
+ * Parse xml-json-string (badgerfish) to json
  *
- * @param {*} fisk
- * @returns
+ * @param {string} badgerfish xml
+ * @returns {object}
  */
-
 export function parseResponse(xml) {
   try {
     const body = xml?.["S:Envelope"]?.["S:Body"];

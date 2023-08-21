@@ -46,11 +46,11 @@ function constructSoap({ agencyId, cpr, localId }) {
 }
 
 /**
+ * Parse xml-json-string (badgerfish) to json
  *
- * @param {*} fisk
- * @returns
+ * @param {string} badgerfish xml
+ * @returns {object}
  */
-
 export function parseResponse(xml) {
   try {
     const body = xml?.["S:Envelope"]?.["S:Body"];
