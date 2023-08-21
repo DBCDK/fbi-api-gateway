@@ -1,5 +1,5 @@
 /**
- * @file This datasource is used to link a user to an agency in CULR
+ * @file This datasource is used to create a new account for a CPR validated user
  */
 
 import { parseString } from "xml2js";
@@ -13,13 +13,6 @@ const {
   authenticationGroup,
   authenticationPassword,
 } = config.datasources.culr;
-
-{
-  /* <userCredentials>
-            <userIdType>CPR</userIdType>
-            <userIdValue>${cpr}</userIdValue>
-</userCredentials> */
-}
 
 /**
  * Constructs soap request to perform request
@@ -59,8 +52,6 @@ function constructSoap({ agencyId, cpr, localId }) {
  */
 
 export function parseResponse(xml) {
-  console.error("xmlxmlxmlxml", xml);
-
   try {
     const body = xml?.["S:Envelope"]?.["S:Body"];
     const result = body?.[0]?.["ns2:createAccountResponse"]?.[0]?.return?.[0];
@@ -96,8 +87,6 @@ export async function load({ agencyId, cpr, localId }, context) {
     },
     body: soap,
   });
-
-  console.log("CULR => addAccount", soap, res);
 
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))

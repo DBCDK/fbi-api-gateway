@@ -1,5 +1,5 @@
 /**
- * @file This datasource is used to retrieve a users agency subscribtions from CULR
+ * @file This datasource is used to retrieve a users agency accounts from CULR
  */
 
 import { parseString } from "xml2js";
@@ -38,8 +38,6 @@ function constructSoap({ agencyId, userId }) {
 }
 
 export function parseResponse(xml) {
-  console.error("xmlxmlxmlxml", xml);
-
   try {
     const body = xml?.["S:Envelope"]?.["S:Body"];
     const result =
@@ -87,8 +85,6 @@ export async function load({ agencyId, userId }, context) {
     },
     body: soap,
   });
-
-  console.log("CULR => getAccounts", { soap, res });
 
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))

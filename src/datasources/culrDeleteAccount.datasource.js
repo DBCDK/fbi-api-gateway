@@ -1,5 +1,5 @@
 /**
- * @file This datasource is used to remove an agency from a user in CULR (OBS: User does not exist in CULR)
+ * @file This datasource is used to removes an agency from a user in CULR
  */
 
 import { parseString } from "xml2js";
@@ -47,7 +47,7 @@ function constructSoap({ agencyId, localId }) {
  * @returns
  */
 
-function parseResponse(xml) {
+export function parseResponse(xml) {
   try {
     const body = xml?.["S:Envelope"]?.["S:Body"];
     const result = body?.[0]?.["ns2:deleteAccountResponse"]?.[0]?.return?.[0];
@@ -83,8 +83,6 @@ export async function load({ agencyId, localId }, context) {
     },
     body: soap,
   });
-
-  console.log("CULR => deleteAccount", soap, res);
 
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))

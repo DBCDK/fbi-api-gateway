@@ -1,13 +1,6 @@
 /**
- * Cases:
+ * @file This file handles CULR interactions e.g. get, create, delete
  *
- * Der logges altid ind via borchk
- * Alle oprettes i CULR
- *
- * 1. Eksistere ikke i CULR
- *    - Validere med mitId - oprettes i CULR med CPR - tilknyttes FFU
- * 2. Eksistere i CULR men er logget ind med localID - tilnyttes FFU
- *    -
  */
 
 import { isValidCpr } from "../utils/cpr";
@@ -160,8 +153,6 @@ export const resolvers = {
         };
       }
 
-      console.error("!!!!!!!!!!!!!!!!!!!!!!1");
-
       // Retrieve user culr account
       const account = await context.datasources
         .getLoader("culrGetAccountsByLocalId")
@@ -169,8 +160,6 @@ export const resolvers = {
           userId: localId,
           agencyId,
         });
-
-      console.error("vvvv", account);
 
       // User credentials (netpunkt-triple) could not be authorized
       if (account.code === "NO_AUTHORISATION") {
@@ -181,13 +170,17 @@ export const resolvers = {
 
       // Check if user is already subscribed to agency
       if (ENABLE_CREATED_CHECK && account.code === "OK200") {
-        if (account.accounts.find((acc) => acc.userIdValue === localId))
+        if (
+          account.accounts.find(
+            (a) => a.userIdValue === localId && a.agencyId === agencyId
+          )
+        )
           return {
             status: "ERROR_USER_ALREADY_CREATED",
           };
       }
 
-      // Create user account for agency
+      // If not already exist - Create user account for agency
       if (account.code === "ACCOUNT_DOES_NOT_EXIST") {
         // Check for dryRun
         if (args.dryRun) {
@@ -196,12 +189,12 @@ export const resolvers = {
           };
         }
 
-        // Get agencies informations from login.bib.dk /userinfo endpoint
+        // Create the account
         const response = await context.datasources
           .getLoader("culrCreateAccount")
           .load({ agencyId, cpr, localId });
 
-        // Response errors - localid is already in use
+        // Response errors - localid is already in use for this user
         if (response.code === "TRANSACTION_ERROR") {
           return {
             status: "ERROR_LOCALID_NOT_UNIQUE",
@@ -299,10 +292,4 @@ export const resolvers = {
       return response;
     },
   },
-
-  // CulrAccountResponse: {
-  //   accounts(parent, args, context, info) {
-  //     return parent.accounts || [];
-  //   },
-  // },
 };
