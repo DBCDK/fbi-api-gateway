@@ -91,6 +91,7 @@ type Query {
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
   inspiration(language: LanguageCode, limit: Int): Inspiration! 
+  orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
 }
 
 type Mutation {
@@ -128,7 +129,7 @@ type Mutation {
     dryRun: Boolean
     ): RenewLoanResponse  
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
-  submitOrder(input: SubmitOrderInput!): SubmitOrder
+  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
 }`;
@@ -165,6 +166,41 @@ function translateFilters(filters) {
  */
 export const resolvers = {
   Query: {
+    async orderStatus(parent, args, context, info) {
+      const { orderIds } = args;
+      if (!orderIds || orderIds.length === 0) {
+        throw new Error("No order IDs provided.");
+      }
+      //fetch order data for each orderID provided in the orderIds List
+      const orders = await Promise.all(
+        orderIds.map(async (orderId) => {
+          const order = await context.datasources
+            .getLoader("orderStatus")
+            .load({ orderId });
+
+          if (!order) {
+            log.error(
+              `Failed to fetch orderStatus. Order with order id ${orderId} not found.`
+            );
+            return null;
+          }
+
+          return {
+            orderId: order?.orderId,
+            closed: order?.orderJSON?.closed,
+            autoForwardResult: order?.orderJSON?.autoForwardResult,
+            placeOnHold: order?.orderJSON?.placeOnHold,
+            pickupAgencyId: order?.pickupAgencyId,
+            pid: order?.orderJSON?.pid,
+            author: order?.orderJSON?.author,
+            title: order?.orderJSON?.title,
+            creationDate: order?.orderJSON?.creationDate,
+          };
+        })
+      );
+
+      return orders.filter((order) => order !== null);
+    },
     async inspiration(parent, args, context, info) {
       return {};
     },
@@ -532,10 +568,15 @@ export const resolvers = {
       return res;
     },
     async submitOrder(parent, args, context, info) {
+      if (!context?.smaug?.orderSystem) {
+        throw "invalid smaug configuration [orderSystem]";
+      }
+
       const input = {
         ...args.input,
         accessToken: context.accessToken,
         smaug: context.smaug,
+        dryRun: args.dryRun,
         branch: (
           await context.datasources.getLoader("library").load({
             branchId: args.input.pickUpBranch,
@@ -543,7 +584,35 @@ export const resolvers = {
         ).result[0],
       };
 
-      return await context.datasources.getLoader("submitOrder").load(input);
+      const submitOrderRes = await context.datasources
+        .getLoader("submitOrder")
+        .load(input);
+
+      //if the request is coming from beta.bibliotek.dk, add the order id to userData service
+      if (context?.profile?.agency == 190101) {
+        const orderId = submitOrderRes?.orderId;
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        try {
+          if (!smaugUserId) {
+            throw new Error("Not authorized");
+          }
+          if (!orderId) {
+            throw new Error("Undefined orderId");
+          }
+          await context.datasources.getLoader("userDataAddOrder").load({
+            smaugUserId: smaugUserId,
+            orderId: orderId,
+          });
+        } catch (error) {
+          log.error(
+            `Failed to add order to userData service. Message: ${
+              error.message || JSON.stringify(error)
+            }`
+          );
+        }
+      }
+
+      return submitOrderRes;
     },
     async submitSession(parent, args, context, info) {
       await context.datasources.getLoader("submitSession").load({

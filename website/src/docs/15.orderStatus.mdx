@@ -1,0 +1,34 @@
+# Order status
+
+Orderstatus fetches the status and details of an order based on a provided order ID. OrderStatus receives a list of orderIds and returns a list with the fetched data for each orderId.
+
+Returns: A list of objects each containing the following fields:
+
+- _**orderId**_ - Unique id for the order
+- _**closed**_ - Whether the order is open or closed
+- _**creationDate**_ - Date and time when the order was created
+- _**pid**_ - pid associated with the order
+- _**title**_ - Title of the material
+- _**author**_ - Author of the material
+- _**autoForwardResult**_ - Indicates if the order has been automated
+- _**placeOnHold**_ - Confirms a reservation has been made
+- _**pickupAgencyId**_ - The branch where the user should collect the material
+
+<InlineGraphiQL
+  query={`query getOrderStatus($orderIds: [String!]!) {
+  orderStatus(orderIds: $orderIds) {
+    autoForwardResult
+    placeOnHold
+    orderId
+    pickupAgencyId
+    pid
+    closed
+    creationDate
+    author
+    title
+  }
+}`}
+  variables={{
+    orderIds: ["1047049153", "1047049154"],
+  }}
+/>

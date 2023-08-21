@@ -13,6 +13,7 @@ export async function load({ agencyId, userId }, context) {
     ok: true,
   };
 
+  // Success - 1 account
   if (agencyId === "812345" && userId === "C000000001") {
     response = {
       status: 200,
@@ -21,6 +22,7 @@ export async function load({ agencyId, userId }, context) {
     };
   }
 
+  // Success - 2 accounts
   if (agencyId === "800001" && userId === "C000000003") {
     response = {
       status: 200,

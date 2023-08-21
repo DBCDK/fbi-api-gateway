@@ -59,6 +59,53 @@ export const typeDef = `
     """
     error: String
   }
+  type OrderStatusResponse {
+    """
+    Unique id for the order
+    """
+    orderId: String!
+
+    """
+    Whether the order is open or closed
+    """
+    closed: Boolean!
+
+    """
+    Indicates if the order has been automated
+    """
+    autoForwardResult: String
+    
+    """
+    Confirms a reservation has been made 
+    """
+    placeOnHold: String
+        
+    """
+    The branch where the user should collect the material
+    """
+    pickupAgencyId: String
+    
+    """
+    pid associated with the order
+    """
+    pid: String
+    
+    """
+    Author of the material
+    """
+    author: String
+    
+    """
+    Title of the material
+    """
+    title: String
+    
+    """
+    Date and time when the order was created
+    """
+    creationDate: String!
+   }
+
   `;
 
 /**
@@ -78,14 +125,6 @@ export const resolvers = {
           "Stack Retrieval": "STACK_RETRIEVAL",
         }[parent.orderType] || "UNKNOWN"
       );
-    },
-  },
-  SubmitOrder: {
-    status(parent, args, context, info) {
-      return parent?.body?.orderPlaced?.orderPlacedMessage || null;
-    },
-    orderId(parent, args, context, info) {
-      return parent?.body?.orderPlaced?.orderId || null;
     },
   },
 };

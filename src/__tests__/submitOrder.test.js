@@ -28,7 +28,11 @@ test("submitorder fails when user is not authenticated, and no userId provided",
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "some-access-token",
-      smaug: { user: {}, app: { id: "app-name", ips: ["1.1.1.1"] } },
+      smaug: {
+        user: {},
+        app: { id: "app-name", ips: ["1.1.1.1"] },
+        orderSystem: "bibliotekdk_21",
+      },
     },
   });
   expect(result).toMatchSnapshot();
@@ -59,6 +63,7 @@ test("submitorder succedes when user is authenticated, and no userId provided", 
       smaug: {
         user: { id: "123", agency: "715100" },
         app: { id: "app-name", ips: ["1.1.1.1"] },
+        orderSystem: "bibliotekdk_21",
       },
     },
   });
@@ -88,7 +93,11 @@ test("submitorder succedes when user is not authenticated, but userId provided",
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "some-access-token",
-      smaug: { user: {}, app: { id: "app-name", ips: ["1.1.1.1"] } },
+      smaug: {
+        user: {},
+        app: { id: "app-name", ips: ["1.1.1.1"] },
+        orderSystem: "bibliotekdk_21",
+      },
     },
   });
   expect(result).toMatchSnapshot();
