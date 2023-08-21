@@ -7,7 +7,7 @@ const {
   authenticationPassword,
 } = config.datasources.openorder;
 
-const constructSoap = ({ agencyId, userId }) => {
+export const constructSoap = ({ agencyId, userId }) => {
   let soap = `
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://oss.dbc.dk/ns/openuserstatus">
   <soapenv:Header/>
@@ -30,7 +30,7 @@ const constructSoap = ({ agencyId, userId }) => {
   return soap;
 };
 
-const reduceBody = (body) => ({
+export const reduceBody = (body) => ({
   name: body?.getUserStatusResponse?.userName?.$,
   mail: body?.getUserStatusResponse?.userMail?.$,
   address: body?.getUserStatusResponse?.userAddress?.$,

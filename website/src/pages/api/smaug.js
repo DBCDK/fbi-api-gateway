@@ -1,5 +1,10 @@
 import fetch from "isomorphic-unfetch";
 import _permissions from "../../../../src/permissions.json";
+import config from "../../../../src/config.js";
+import {
+  reduceBody,
+  constructSoap,
+} from "../../../../src/datasources/user.datasource";
 
 /**
  * Extract specific data
@@ -26,15 +31,43 @@ const selectUserdata = (data) => {
 /**
  * remote userstatus api call
  */
-async function getUserdata(token) {
-  const url = process.env.OPENPLATFORM_URL || "https://openplatform.dbc.dk/v3";
-  return await fetch(`${url}/user?access_token=${token}`);
+// async function getUserdata(token) {
+//   const url = config.datasources.smaug.url;
+//   return await fetch(`${url}/configuration?token=${token}`);
+// }
+
+async function getUserData() {
+  const { municipalityAgencyId, agencies } = userinfo;
+
+  let userId = agencies?.find(
+    (a) => a.agencyId === municipalityAgencyId && a.userIdType === "LOCAL"
+  );
+  if (!userId) {
+    userId = agencies?.find(
+      (a) => a.agencyId === municipalityAgencyId && a.userIdType === "CPR"
+    );
+  }
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/xml",
+    },
+    body: constructSoap({
+      agencyId: municipalityAgencyId,
+      userId,
+    }),
+  });
+
+  return reduceBody(res?.body);
 }
 
 /**
  * Extract specific data from whitelist
  */
 const selectUserinfo = (data) => {
+  console.log("selectUserInfo data", data);
+
   return {
     blocked: data.attributes.blocked,
     agencies: data.attributes.agencies,
@@ -46,7 +79,7 @@ const selectUserinfo = (data) => {
  * remote smaug api call
  */
 async function getUserinfo(token) {
-  const url = process.env.USERINFO_URL || "https://login.bib.dk/userinfo";
+  const url = config.datasources.userInfo.url;
   return await fetch(`${url}/`, {
     method: "GET",
     headers: { authorization: `Bearer ${token}` },
@@ -140,7 +173,7 @@ export default async function handler(req, res) {
       }
 
       if (configuration.uniqueId) {
-        // Get Search Profiles from vipcore
+        // Get userinfo from login.bib.dk/userinfo
         const userinfo_response = await getUserinfo(token);
 
         switch (userinfo_response.status) {
@@ -150,23 +183,22 @@ export default async function handler(req, res) {
 
             // add to result
             result = { ...result, user: userinfo };
-        }
-      }
 
-      if (configuration.uniqueId) {
-        // Get Search Profiles from vipcore
-        const userdata_response = await getUserdata(token);
-        switch (userdata_response.status) {
-          case 200:
-            const user_data = await userdata_response.json();
-            const userdata = selectUserdata(user_data.data);
+            const userdata_response = getUserData(userinfo);
 
-            // add to result
-            result.user = { ...result.user, ...userdata };
+            switch (userdata_response.status) {
+              case 200:
+                const user_data = await userdata_response.json();
+                const userdata = selectUserdata(user_data.data);
+
+                // add to result
+                result.user = { ...result.user, ...userdata };
+            }
         }
       }
 
       return res.status(200).send(result);
+
     default:
       return res.status(400).send({});
   }
