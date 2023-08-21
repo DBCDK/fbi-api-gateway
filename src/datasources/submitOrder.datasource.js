@@ -125,6 +125,7 @@ const checkPost = (post) => {
 
 function parseOrder(orderFromService) {
   return {
+    ok: orderFromService?.ok || false,
     status: orderFromService?.body?.orderPlaced?.orderPlacedMessage || null,
     orderId: orderFromService?.body?.orderPlaced?.orderId || null,
   };

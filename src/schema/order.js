@@ -5,6 +5,10 @@
 
 export const typeDef = `
    type SubmitOrder {
+    """
+    if order was submitted successfully
+    """
+    ok: Boolean,
     status: String,
     orderId: String,
     deleted: Boolean,
