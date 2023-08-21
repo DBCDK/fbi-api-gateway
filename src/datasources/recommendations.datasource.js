@@ -11,6 +11,7 @@ export async function load({ pid, limit = 10, profile, branchId }, context) {
     like: [pid],
     agencies: [profile.agency],
     persistent_work: true,
+    profile: profile.name,
     limit,
   };
 
