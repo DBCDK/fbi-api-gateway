@@ -78,8 +78,8 @@ function parseAgencies(agencies) {
   return agencies?.map((a) => ({
     ...a,
     agencyId: a?.result?.[0]?.agencyId,
-    agencyName: a?.result?.[0].agencyName,
-    isBlocked: a?.result?.[0].userIsBlocked,
+    agencyName: a?.result?.[0]?.agencyName,
+    isBlocked: a?.result?.[0]?.userIsBlocked,
   }));
 }
 
@@ -267,6 +267,7 @@ function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
                         <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
                           {`Blocked: ${a.isBlocked.toString()}`}
                         </Text>
+                        {/* removed for now until design is ready */}
                         {false && (
                           <div className={styles.branches}>
                             {a?.result?.map((r, i) => (

@@ -296,8 +296,6 @@ export const resolvers = {
           agencyId: parent.agencyId,
         });
 
-      console.log(".......... detailedHoldings", detailedHoldings);
-
       /** START HOLDING ITEMS **/
       let holdingsitems;
       try {
@@ -312,8 +310,6 @@ export const resolvers = {
       } catch (e) {
         holdingsitems = null;
       }
-
-      console.log("....... holdingsitems", holdingsitems);
 
       const mergedholdings = [];
       holdingsitems?.completeItems &&
