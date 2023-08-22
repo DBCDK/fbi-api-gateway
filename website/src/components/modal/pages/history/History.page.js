@@ -4,6 +4,7 @@ import uniqBy from "lodash/uniqBy";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
+import useUser from "@/hooks/useUser";
 
 import { dateConverter, timeConverter, daysBetween } from "@/components/utils";
 import Text from "@/components/base/text";
@@ -73,6 +74,15 @@ function ExpandButton({ onClick, open }) {
   );
 }
 
+function parseAgencies(agencies) {
+  return agencies?.map((a) => ({
+    ...a,
+    agencyId: a?.result?.[0]?.agencyId,
+    agencyName: a?.result?.[0].agencyName,
+    isBlocked: a?.result?.[0].userIsBlocked,
+  }));
+}
+
 /**
  * The Component function
  *
@@ -84,6 +94,7 @@ function ExpandButton({ onClick, open }) {
 
 function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
   const { setSelectedToken, removeHistoryItem } = useStorage();
+  const { user } = useUser({ token, profile });
 
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
@@ -105,9 +116,7 @@ function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
   const modal = document.getElementById("modal");
   const containerScrollY = modal?.scrollTop;
 
-  const user = configuration.user;
-
-  const agencies = uniqBy(user?.agencies, "agencyId");
+  const agencies = parseAgencies(user?.agencies);
 
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = isExpired ? styles.expired : "";
@@ -245,12 +254,36 @@ function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
               )}
               {agencies?.length > 0 && (
                 <div className={styles.agencies}>
-                  <Text type="text4">User agencies</Text>
-                  {agencies?.map((a, i) => (
-                    <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
-                      {a.agencyId + " "}
-                    </Text>
-                  ))}
+                  <Text type="text4">Token user agencies</Text>
+                  {agencies?.map((a, i) => {
+                    return (
+                      <div className={styles.list}>
+                        <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
+                          {a.agencyName}
+                        </Text>
+                        <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
+                          {a.agencyId}
+                        </Text>
+                        <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
+                          {`Blocked: ${a.isBlocked.toString()}`}
+                        </Text>
+                        {false && (
+                          <div className={styles.branches}>
+                            {a?.result?.map((r, i) => (
+                              <Text
+                                as="span"
+                                key={`${r.branchId}-${i}`}
+                                type="text1"
+                                title={r.name}
+                              >
+                                {r.branchId + " "}
+                              </Text>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

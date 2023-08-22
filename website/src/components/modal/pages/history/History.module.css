@@ -305,6 +305,39 @@
   display: none;
 }
 
+.item .agencies p {
+  font-size: 12px;
+  font-family: var(--font-mono-regular);
+  margin: var(--pt2) 0 var(--pt1) 0;
+}
+
+.item .agencies .list {
+  margin-bottom: var(--pt2);
+}
+
+.item .agencies .list > span {
+  display: block;
+}
+
+.item .agencies .list > span:first-child {
+  font-family: var(--font-mono-semibold);
+}
+
+.item .agencies .list .branches {
+  display: flex;
+  overflow-x: scroll;
+}
+
+.item .agencies .list .branches > span {
+  margin-right: var(--pt05);
+  cursor: pointer;
+}
+
+.item .agencies .list .branches > span:is(:hover) {
+  font-family: var(--font-mono-semibold);
+  cursor: pointer;
+}
+
 /* loading */
 
 .item.isLoading {
@@ -344,6 +377,42 @@
   100% {
     transform: translateX(100%);
   }
+}
+
+/* 
+* scrollbar
+*/
+
+/* width */
+.item .agencies .list .branches::-webkit-scrollbar {
+  display: none;
+}
+
+/* width */
+.item .agencies .list .branches::-webkit-scrollbar,
+.item .agencies .list .branches::-webkit-scrollbar {
+  display: block;
+  width: var(--pt1);
+  height: var(--pt1);
+}
+
+/* Track */
+.item .agencies .list .branches::-webkit-scrollbar-track,
+.CodeMirror-vscrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+.item .agencies .list .branches::-webkit-scrollbar-thumb,
+.item .agencies .list .branches::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--pt05);
+}
+
+/* Handle on hover */
+.item .agencies .list .branches::-webkit-scrollbar-thumb:hover,
+.item .agencies .list .branches::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
 }
 
 /* 

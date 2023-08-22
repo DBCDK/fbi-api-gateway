@@ -242,7 +242,7 @@ export const resolvers = {
      * localisationRequest (openHoldingStatus - see localizations.datasource.js) : to get localizations (agencies where material is located)
      * detailedHoldingsRequest (openHoldingStatus - see detailedholdings.datasource.js): to get detail for a localization (can the material
      *  be borrowed? - is the material home ? when is the expected delivery date ?)
-     * holdingitems (openplatform - see holdingsitems.datasource.js): to get additional information (which branch is the material located at? shelf? etc.)
+     * holdingitems (see holdingsitems.datasource.js): to get additional information (which branch is the material located at? shelf? etc.)
      *
      * It returns a merge af the information gathered (schema/detailedholdings.js)
      *
@@ -296,6 +296,8 @@ export const resolvers = {
           agencyId: parent.agencyId,
         });
 
+      console.log(".......... detailedHoldings", detailedHoldings);
+
       /** START HOLDING ITEMS **/
       let holdingsitems;
       try {
@@ -310,6 +312,8 @@ export const resolvers = {
       } catch (e) {
         holdingsitems = null;
       }
+
+      console.log("....... holdingsitems", holdingsitems);
 
       const mergedholdings = [];
       holdingsitems?.completeItems &&
