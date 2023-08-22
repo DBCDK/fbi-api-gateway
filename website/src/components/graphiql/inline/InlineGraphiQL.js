@@ -121,7 +121,7 @@ export function InlineGraphiQL({
   onEditVariables,
   toolbar,
 }) {
-  const { tabs, activeTabIndex } = useEditorContext({
+  const { tabs, activeTabIndex, initialQuery } = useEditorContext({
     nonNull: true,
   });
 
@@ -158,18 +158,20 @@ export function InlineGraphiQL({
   const tab = tabs[activeTabIndex];
   useEffect(() => {
     if (isReady) {
-      if (tab.query) {
+      // Auto prettify when graphiql is first loaded
+      if (initialQuery === tab.query) {
         try {
           prettifyEditors();
         } catch (err) {}
       }
+
       if (!tab.response && tab.query && !isFetching) {
         try {
           run();
         } catch (err) {}
       }
     }
-  }, [tab, isReady]);
+  }, [initialQuery, tab, isReady]);
 
   return (
     <div className={`${styles.inlinegraphiql} inlinegraphiql`}>
