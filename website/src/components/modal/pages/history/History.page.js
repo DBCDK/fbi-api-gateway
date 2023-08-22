@@ -265,7 +265,7 @@ function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
                           {a.agencyId}
                         </Text>
                         <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
-                          {`Blocked: ${a.isBlocked.toString()}`}
+                          {`Blocked: ${a.isBlocked?.toString()}`}
                         </Text>
                         {/* removed for now until design is ready */}
                         {false && (
