@@ -92,9 +92,16 @@ function parseAgencies(agencies) {
  * @returns {component}
  */
 
-function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
+function Item({
+  token,
+  profile,
+  timestamp,
+  inUse,
+  configuration,
+  user,
+  isExpired,
+}) {
   const { setSelectedToken, removeHistoryItem } = useStorage();
-  const { user } = useUser({ token, profile });
 
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
@@ -257,14 +264,14 @@ function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
                   <Text type="text4">Token user agencies</Text>
                   {agencies?.map((a, i) => {
                     return (
-                      <div className={styles.list}>
-                        <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
+                      <div key={`${a.agencyId}-${i}`} className={styles.list}>
+                        <Text as="span" type="text1">
                           {a.agencyName}
                         </Text>
-                        <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
+                        <Text as="span" type="text1">
                           {a.agencyId}
                         </Text>
-                        <Text as="span" key={`${a.agencyId}-${i}`} type="text1">
+                        <Text as="span" type="text1">
                           {`Blocked: ${a.isBlocked?.toString()}`}
                         </Text>
                         {/* removed for now until design is ready */}
@@ -332,6 +339,7 @@ function Item({ token, profile, timestamp, inUse, configuration, isExpired }) {
 
 function Wrap(props) {
   const { configuration, isLoading } = useConfiguration(props);
+  const { user } = useUser(props);
 
   if (isLoading) {
     return <ItemIsLoading />;
@@ -340,7 +348,12 @@ function Wrap(props) {
   const isExpired = !Object.keys(configuration || {}).length;
 
   return (
-    <Item {...props} configuration={configuration} isExpired={isExpired} />
+    <Item
+      {...props}
+      user={user}
+      configuration={configuration}
+      isExpired={isExpired}
+    />
   );
 }
 

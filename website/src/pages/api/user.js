@@ -27,11 +27,7 @@ async function graphQL({ token, profile }) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ query, variables: {} }),
-  }).then(async (r) => ({
-    status: r.status,
-    message: r.message,
-    body: await r.json(),
-  }));
+  });
 }
 
 /**
@@ -46,6 +42,12 @@ export default async function handler(req, res) {
   }
 
   const response = await graphQL({ token, profile });
+  const parsed = await response.json();
 
-  return res.status(response.status).send(response);
+  if (parsed.errors?.length > 0) {
+    // Errors found -> throw bad request
+    return res.status(400).send(parsed);
+  }
+
+  return res.status(response.status).send(parsed);
 }

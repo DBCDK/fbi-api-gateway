@@ -16,7 +16,7 @@ async function getProfiles(agency) {
   const url = config.datasources.vipcore.url;
   const version = process.env.VIPCORE_VERSION || "3";
 
-  return await fetch(`${url}/api/opensearchprofile/${agency}/${version}`, {
+  return await fetch(`${url}/opensearchprofile/${agency}/${version}`, {
     method: "GET",
   });
 }

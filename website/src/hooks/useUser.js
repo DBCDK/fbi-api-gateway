@@ -14,7 +14,7 @@ const fetcher = async (url) => {
 
   const res = await response.json();
 
-  return res.body.data.user;
+  return res.data?.user;
 };
 
 export default function useUser({ token, profile }) {
