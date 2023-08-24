@@ -185,11 +185,7 @@ export const resolvers = {
     async bibliotekDkOrders(parent, args, context, info) {
       const smaugUserId = context?.smaug?.user?.uniqueId;
       const { limit, offset } = args;
-      console.log(
-        "\n\n\n\nbibliotekDkOrders IN bibliotekDkOrdersbibliotekDkOrderslimit, offset",
-        limit,
-        offset
-      );
+
       if (!smaugUserId) {
         throw "Not authorized";
       }
@@ -216,7 +212,6 @@ export const resolvers = {
         homeAccount: homeAccount,
         accessToken: context.accessToken, // Required for testing
       });
-      console.log("\nargsargsargs", args);
 
       return res?.address;
     },
