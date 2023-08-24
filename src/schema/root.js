@@ -6,6 +6,7 @@
 import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import {
+  fetchOrderStatus,
   getUserId,
   resolveBorrowerCheck,
   resolveManifestation,
@@ -167,39 +168,7 @@ function translateFilters(filters) {
 export const resolvers = {
   Query: {
     async orderStatus(parent, args, context, info) {
-      const { orderIds } = args;
-      if (!orderIds || orderIds.length === 0) {
-        throw new Error("No order IDs provided.");
-      }
-      //fetch order data for each orderID provided in the orderIds List
-      const orders = await Promise.all(
-        orderIds.map(async (orderId) => {
-          const order = await context.datasources
-            .getLoader("orderStatus")
-            .load({ orderId });
-
-          if (!order) {
-            log.error(
-              `Failed to fetch orderStatus. Order with order id ${orderId} not found.`
-            );
-            return null;
-          }
-
-          return {
-            orderId: order?.orderId,
-            closed: order?.orderJSON?.closed,
-            autoForwardResult: order?.orderJSON?.autoForwardResult,
-            placeOnHold: order?.orderJSON?.placeOnHold,
-            pickupAgencyId: order?.pickupAgencyId,
-            pid: order?.orderJSON?.pid,
-            author: order?.orderJSON?.author,
-            title: order?.orderJSON?.title,
-            creationDate: order?.orderJSON?.creationDate,
-          };
-        })
-      );
-
-      return orders.filter((order) => order !== null);
+      return fetchOrderStatus(args, context);
     },
     async inspiration(parent, args, context, info) {
       return {};
