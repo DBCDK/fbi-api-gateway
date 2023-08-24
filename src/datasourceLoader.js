@@ -16,14 +16,14 @@ import { escapeRegExp } from "lodash";
           ------------------
                                       Request C
                                       -----------
-  Total A-B
+  Total AB
   --------------------------
   
   The totaltime for the requests should NOT be:
   Request A + Request B + Request C
   
   But instead:
-  Total A-B + Request C
+  Total AB + Request C
 */
 
 export const trackMe = () => {
