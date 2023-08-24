@@ -101,7 +101,7 @@ promExporterApp.listen(9599, () => {
         uuid: req?.datasources?.trackingObject.uuid,
         parsedQuery: req.parsedQuery,
         queryVariables,
-        datasources: { ...req?.datasources?.trackingObject?.trackObject },
+        datasources: { ...req?.datasources?.trackingObject?.getMetrics() },
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
         queryComplexity: req.queryComplexity,

@@ -5,6 +5,26 @@ import { withRedis } from "./datasources/redis.datasource";
 import { createFetchWithConcurrencyLimit } from "./utils/fetchWithLimit";
 import { getFilesRecursive } from "./utils/utils";
 import config from "./config";
+import { escapeRegExp } from "lodash";
+
+/*
+  This is how we time parallel requests to a single datasource.
+  
+  Request A
+  ------------
+          Request B
+          ------------------
+                                      Request C
+                                      -----------
+  Total A-B
+  --------------------------
+  
+  The totaltime for the requests should NOT be:
+  Request A + Request B + Request C
+  
+  But instead:
+  Total A-B + Request C
+*/
 
 export const trackMe = () => {
   return {
@@ -12,23 +32,67 @@ export const trackMe = () => {
       this.uuid = uuid;
       return this;
     },
-    track: function (name, time, count) {
+    createTracker: function (name) {
+      // If this datasource has not been tracked yet, initialize its tracking object.
       if (!this.trackObject[name]) {
-        this.trackObject[name] = {};
+        this.trackObject[name] = {
+          overlappingRequestCount: 0, // Number of ongoing requests for this datasource.
+          count: 0, // Total number of elements retrieved from datasource
+          started: 0, // Timestamp when the first concurrent request starts.
+          time: 0, // Total time taken for all requests so far.
+        };
       }
-      this.trackObject[name].count =
-        (this.trackObject[name].count || 0) + count;
-      this.trackObject[name].time = (this.trackObject[name].time || 0) + time;
+    },
+
+    // Function to indicate the beginning of a datasource call.
+    begin: function (name, count) {
+      this.createTracker(name);
+
+      // If no other requests are ongoing for this datasource, set the starting time.
+      //
+      if (this.trackObject[name].overlappingRequestCount === 0) {
+        this.trackObject[name].started = performance.now();
+      }
+
+      // Increment the count of ongoing requests.
+      this.trackObject[name].overlappingRequestCount++;
+
+      this.trackObject[name].count += count;
+    },
+
+    // Function to indicate the end of an datasource call.
+    end: function (name) {
+      // Decrement the count of ongoing requests.
+      this.trackObject[name].overlappingRequestCount--;
+
+      // If all ongoing requests are complete, calculate the time taken.
+      if (this.trackObject[name].overlappingRequestCount === 0) {
+        this.trackObject[name].time += Math.round(
+          performance.now() - this.trackObject[name].started
+        );
+      }
     },
     cacheMiss: function (name, count) {
-      if (!this.trackObject[name]) {
-        this.trackObject[name] = {};
-      }
+      this.createTracker(name);
+
       this.trackObject[name].cacheMiss =
         (this.trackObject[name].cacheMiss || 0) + count;
     },
     uuid: null,
     trackObject: {},
+    getMetrics: function () {
+      const res = {};
+
+      Object.entries(this.trackObject).forEach(([key, val]) => {
+        res[key] = {
+          count: val.count,
+          time: val.time,
+          cacheMiss: val.cacheMiss,
+        };
+      });
+
+      return res;
+    },
   };
 };
 
@@ -88,7 +152,8 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
   }
 
   async function batchLoaderWithTiming(keys) {
-    const start = new Date().getTime();
+    context?.track?.begin?.(name, keys.length);
+
     try {
       return await batchLoaderWithContext(keys);
     } catch (err) {
@@ -104,9 +169,7 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
       }
       throw err;
     } finally {
-      const count = keys.length;
-      const end = new Date().getTime();
-      context.track.track(name, end - start, count);
+      context.track.end(name);
     }
   }
 
