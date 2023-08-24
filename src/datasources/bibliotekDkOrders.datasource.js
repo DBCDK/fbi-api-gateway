@@ -2,7 +2,7 @@ import config from "../config";
 const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
- * Fetch users order form userdata service
+ * Fetch orders for a user from userdata service
  */
 export async function load({ smaugUserId, limit, offset }, context) {
   const endpoint = url + "order/get";

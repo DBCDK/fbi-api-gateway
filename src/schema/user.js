@@ -195,13 +195,13 @@ export const resolvers = {
       const res = await context.datasources
         .getLoader("bibliotekDkOrders")
         .load({
-          smaugUserId: smaugUserId,
+          smaugUserId,
           limit,
           offset,
         });
       const orderIds = res.result.map((order) => order.orderId);
       const result = await fetchOrderStatus({ orderIds: orderIds }, context);
-      return { result: result, hitcount: res.hitcount } || {};
+      return { result, hitcount: res.hitcount } || {};
     },
     async address(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({

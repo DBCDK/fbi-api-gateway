@@ -114,7 +114,7 @@ export const typeDef = `
     """
     creationDate: String
     """
-    errorMessage
+    Error message if ors-maintenance request fails
     """
     errorMessage: String
    }
