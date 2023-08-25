@@ -547,16 +547,16 @@ export const fetchOrderStatus = async (args, context) => {
       }
 
       return {
-        orderId: order?.orderId,
-        closed: order?.orderJSON?.closed,
-        autoForwardResult: order?.orderJSON?.autoForwardResult,
-        placeOnHold: order?.orderJSON?.placeOnHold,
-        pickupAgencyId: order?.pickupAgencyId,
-        pid: order?.orderJSON?.pid,
-        pidOfPrimaryObject: order?.orderJSON?.pidOfPrimaryObject,
-        author: order?.orderJSON?.author,
-        title: order?.orderJSON?.title,
-        creationDate: order?.orderJSON?.creationDate,
+        orderId: order.orderId,
+        closed: order.orderJSON?.closed,
+        autoForwardResult: order.orderJSON?.autoForwardResult,
+        placeOnHold: order.orderJSON?.placeOnHold,
+        pickupAgencyId: order.pickupAgencyId,
+        pid: order.orderJSON?.pid,
+        pidOfPrimaryObject: order.orderJSON?.pidOfPrimaryObject,
+        author: order.orderJSON?.author,
+        title: order.orderJSON?.title,
+        creationDate: order.orderJSON?.creationDate,
       };
     })
   );
