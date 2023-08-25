@@ -39,6 +39,8 @@ export const trackMe = () => {
           count: 0, // Total number of elements retrieved from datasource
           started: 0, // Timestamp when the first concurrent request starts.
           time: 0, // Total time taken for all requests so far.
+          sequentialTime: 0, // If requests were to be run sequentially, this is the total time
+          batches: 0, // Dataloader batches multiple requests, into a single request when possible
         };
       }
     },
@@ -47,30 +49,33 @@ export const trackMe = () => {
     begin: function (name, count) {
       this.createTracker(name);
 
-      // If no other requests are ongoing for this datasource, set the starting time.
-      //
-      if (this.trackObject[name].overlappingRequestCount === 0) {
-        this.trackObject[name].started = performance.now();
-      }
+      const beginTime = performance.now();
+
+      const trackObject = this.trackObject[name];
 
       // Increment the count of ongoing requests.
-      this.trackObject[name].overlappingRequestCount++;
+      trackObject.overlappingRequestCount++;
 
-      this.trackObject[name].count += count;
+      // Increment total number of elements retrieved from datasource
+      trackObject.count += count;
+      trackObject.batches++;
+
+      // Function to indicate the end of an datasource call.
+      return function end() {
+        const endTime = performance.now();
+        const duration = Math.round(endTime - beginTime);
+        // Decrement the count of ongoing requests.
+        trackObject.overlappingRequestCount--;
+
+        // If all ongoing requests are complete, calculate the time taken.
+        if (trackObject.overlappingRequestCount === 0) {
+          trackObject.time += duration;
+        }
+
+        trackObject.sequentialTime += duration;
+      };
     },
 
-    // Function to indicate the end of an datasource call.
-    end: function (name) {
-      // Decrement the count of ongoing requests.
-      this.trackObject[name].overlappingRequestCount--;
-
-      // If all ongoing requests are complete, calculate the time taken.
-      if (this.trackObject[name].overlappingRequestCount === 0) {
-        this.trackObject[name].time += Math.round(
-          performance.now() - this.trackObject[name].started
-        );
-      }
-    },
     cacheMiss: function (name, count) {
       this.createTracker(name);
 
@@ -88,6 +93,22 @@ export const trackMe = () => {
           time: val.time,
           cacheMiss: val.cacheMiss,
         };
+      });
+
+      return res;
+    },
+    getMetricsArr: function () {
+      const res = [];
+
+      Object.entries(this.trackObject).forEach(([key, val]) => {
+        res.push({
+          name: key,
+          count: val.count,
+          total_ms: val.time,
+          avg_ms: Math.round(val.sequentialTime / val.count),
+          cache_miss: val.cacheMiss,
+          num_batches: val.batches,
+        });
       });
 
       return res;
@@ -151,7 +172,7 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
   }
 
   async function batchLoaderWithTiming(keys) {
-    context?.track?.begin?.(name, keys.length);
+    const end = context?.track?.begin?.(name, keys.length);
 
     try {
       return await batchLoaderWithContext(keys);
@@ -168,7 +189,7 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
       }
       throw err;
     } finally {
-      context.track.end(name);
+      end?.();
     }
   }
 

@@ -207,12 +207,11 @@ export function withRedis(
 
     // Get values of all prefixed keys from Redis
     let cachedValues;
+    const end = track?.begin("redis", keys.length);
     try {
-      track?.begin("redis", keys.length);
-
       cachedValues = await mgetFunc(prefixedKeys, inMemory);
     } finally {
-      track?.end("redis", keys.length);
+      end?.();
     }
 
     // If some values were not found in Redis,

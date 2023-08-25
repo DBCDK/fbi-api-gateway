@@ -101,7 +101,10 @@ promExporterApp.listen(9599, () => {
         uuid: req?.datasources?.trackingObject.uuid,
         parsedQuery: req.parsedQuery,
         queryVariables,
+        // old format, when kibana visualizations are updated, we can remove this
         datasources: { ...req?.datasources?.trackingObject?.getMetrics() },
+        // This is the new format
+        ds: req?.datasources?.trackingObject?.getMetricsArr(),
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
         queryComplexity: req.queryComplexity,
