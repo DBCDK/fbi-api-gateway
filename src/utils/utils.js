@@ -520,7 +520,10 @@ export const getUserBranchIds = async (context) => {
     .map((agency) => agency.result.map((res) => res.branchId))
     .flat();
 };
-
+/**
+ * Receives a list of orderids. Fetches data for each orderid from ors-maintenance. Returns a list of populated data.
+ *
+ */
 export const fetchOrderStatus = async (args, context) => {
   const { orderIds } = args;
 

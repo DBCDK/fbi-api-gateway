@@ -199,9 +199,9 @@ export const resolvers = {
           limit,
           offset,
         });
-      const orderIds = res.result.map((order) => order.orderId);
+      const orderIds = res?.result?.map((order) => order.orderId);
       const result = await fetchOrderStatus({ orderIds: orderIds }, context);
-      return { result, hitcount: res.hitcount } || {};
+      return { result, hitcount: res?.hitcount || 0 } || {};
     },
     async address(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
