@@ -434,13 +434,13 @@ export function getUserInfoAccountFromAgencyAttributes(agencyAttributes) {
  * @returns user account: { agencyId: String, userId: String, userIdType: String }
  */
 export const getHomeAgencyAccount = (userinfo) => {
-  const homeAgency = userinfo?.attributes?.municipalityAgencyId;
+  const municipalityAgencyId = userinfo?.attributes?.municipalityAgencyId;
 
   /**
    * Firstly try getting the local account
    */
   const agencyAttributes = getUserInfoAccountsForAgency({
-    homeAgency,
+    agencyId: municipalityAgencyId,
     userinfo,
   });
   const accountLocal = getUserInfoAccountFromAgencyAttributes(agencyAttributes);
