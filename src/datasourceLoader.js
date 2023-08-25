@@ -5,7 +5,6 @@ import { withRedis } from "./datasources/redis.datasource";
 import { createFetchWithConcurrencyLimit } from "./utils/fetchWithLimit";
 import { getFilesRecursive } from "./utils/utils";
 import config from "./config";
-import { escapeRegExp } from "lodash";
 
 /*
   This is how we time parallel requests to a single datasource.
