@@ -164,11 +164,6 @@ export default {
       disableFuzzySearch:
         process.env.FACETS_DISABLE_FUZZY_SEARCH === "false" ? false : true,
     },
-    openplatform: {
-      url: process.env.OPENPLATFORM_URL || "https://openplatform.dbc.dk/v3",
-      prefix: process.env.OPENPLATFORM_PREFIX || "openplatform-1",
-      ttl: process.env.OPENFORMAT_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
-    },
     vipcore: {
       excludeBranches:
         process.env.VIP_EXCLUDE_BRANCHES === "true" ||
