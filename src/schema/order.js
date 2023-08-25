@@ -72,7 +72,7 @@ export const typeDef = `
     """
     Whether the order is open or closed
     """
-    closed: Boolean!
+    closed: Boolean
 
     """
     Indicates if the order has been automated
@@ -95,6 +95,11 @@ export const typeDef = `
     pid: String
     
     """
+    Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
+    """
+    pidOfPrimaryObject: String
+
+    """
     Author of the material
     """
     author: String
@@ -107,7 +112,11 @@ export const typeDef = `
     """
     Date and time when the order was created
     """
-    creationDate: String!
+    creationDate: String
+    """
+    Error message if ors-maintenance request fails
+    """
+    errorMessage: String
    }
 
   `;

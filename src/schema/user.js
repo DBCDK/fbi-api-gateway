@@ -4,6 +4,7 @@
  */
 
 import {
+  fetchOrderStatus,
   filterDuplicateAgencies,
   getHomeAgencyAccount,
   getUserBranchIds,
@@ -18,7 +19,7 @@ export const typeDef = `
 type User {
   name: String!
   favoritePickUpBranch: String
-  bibliotekDkOrders: [BibliotekDkOrders!]!
+  bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
   address: String
@@ -35,8 +36,8 @@ type User {
 Orders made through bibliotek.dk
 """
 type BibliotekDkOrders {
-  createdAt: String!
-  orderId: String!
+result: [OrderStatusResponse!]
+hitcount: Int!
 }
 type Loan {
   dueDate:	DateTime!
@@ -183,16 +184,24 @@ export const resolvers = {
 
     async bibliotekDkOrders(parent, args, context, info) {
       const smaugUserId = context?.smaug?.user?.uniqueId;
-      const res = await context.datasources.getLoader("userDataGetUser").load({
-        smaugUserId: smaugUserId,
-      });
+      const { limit, offset } = args;
+
       if (!smaugUserId) {
         throw "Not authorized";
       }
       if (isCPRNumber(smaugUserId)) {
         throw "User not found in CULR";
       }
-      return res?.orders || [];
+      const res = await context.datasources
+        .getLoader("bibliotekDkOrders")
+        .load({
+          smaugUserId,
+          limit,
+          offset,
+        });
+      const orderIds = res?.result?.map((order) => order.orderId);
+      const result = await fetchOrderStatus({ orderIds: orderIds }, context);
+      return { result, hitcount: res?.hitcount || 0 };
     },
     async address(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({

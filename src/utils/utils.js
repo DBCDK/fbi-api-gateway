@@ -520,3 +520,45 @@ export const getUserBranchIds = async (context) => {
     .map((agency) => agency.result.map((res) => res.branchId))
     .flat();
 };
+/**
+ * Receives a list of orderids. Fetches data for each orderid from ors-maintenance. Returns a list of populated data.
+ *
+ */
+export const fetchOrderStatus = async (args, context) => {
+  const { orderIds } = args;
+
+  if (!orderIds || orderIds.length === 0) {
+    throw new Error("No order IDs provided.");
+  }
+  //fetch order data for each orderID provided in the orderIds List
+  const orders = await Promise.all(
+    orderIds.map(async (orderId) => {
+      const order = await context.datasources
+        .getLoader("orderStatus")
+        .load({ orderId });
+      if (!order) {
+        log.error(
+          `Failed to fetch orderStatus. Order with order id ${orderId} not found.`
+        );
+        return {
+          orderId,
+          errorMessage: "Could not fetch order info from ors-maintenance.",
+        };
+      }
+
+      return {
+        orderId: order.orderId,
+        closed: order.orderJSON?.closed,
+        autoForwardResult: order.orderJSON?.autoForwardResult,
+        placeOnHold: order.orderJSON?.placeOnHold,
+        pickupAgencyId: order.pickupAgencyId,
+        pid: order.orderJSON?.pid,
+        pidOfPrimaryObject: order.orderJSON?.pidOfPrimaryObject,
+        author: order.orderJSON?.author,
+        title: order.orderJSON?.title,
+        creationDate: order.orderJSON?.creationDate,
+      };
+    })
+  );
+  return orders;
+};

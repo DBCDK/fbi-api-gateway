@@ -2298,7 +2298,7 @@ type OrderStatusResponse {
   orderId: String!
 
   \\"\\"\\"Whether the order is open or closed\\"\\"\\"
-  closed: Boolean!
+  closed: Boolean
 
   \\"\\"\\"Indicates if the order has been automated\\"\\"\\"
   autoForwardResult: String
@@ -2312,6 +2312,11 @@ type OrderStatusResponse {
   \\"\\"\\"pid associated with the order\\"\\"\\"
   pid: String
 
+  \\"\\"\\"
+  Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
+  \\"\\"\\"
+  pidOfPrimaryObject: String
+
   \\"\\"\\"Author of the material\\"\\"\\"
   author: String
 
@@ -2319,7 +2324,10 @@ type OrderStatusResponse {
   title: String
 
   \\"\\"\\"Date and time when the order was created\\"\\"\\"
-  creationDate: String!
+  creationDate: String
+
+  \\"\\"\\"Error message if ors-maintenance request fails\\"\\"\\"
+  errorMessage: String
 }
 
 input PeriodicaArticleOrder {
@@ -2588,7 +2596,7 @@ type Stats {
 type User {
   name: String!
   favoritePickUpBranch: String
-  bibliotekDkOrders: [BibliotekDkOrders!]!
+  bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
   address: String
@@ -2604,8 +2612,8 @@ type User {
 
 \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
 type BibliotekDkOrders {
-  createdAt: String!
-  orderId: String!
+  result: [OrderStatusResponse!]
+  hitcount: Int!
 }
 
 type Loan {
