@@ -19,7 +19,7 @@ export const typeDef = `
 type User {
   name: String!
   favoritePickUpBranch: String
-  bibliotekDkOrders(offset: Int limit: Int): BibliotekDkOrders!
+  bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
   address: String
@@ -201,7 +201,7 @@ export const resolvers = {
         });
       const orderIds = res?.result?.map((order) => order.orderId);
       const result = await fetchOrderStatus({ orderIds: orderIds }, context);
-      return { result, hitcount: res?.hitcount || 0 } || {};
+      return { result, hitcount: res?.hitcount || 0 };
     },
     async address(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({

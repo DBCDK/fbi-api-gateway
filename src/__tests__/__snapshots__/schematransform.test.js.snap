@@ -2596,7 +2596,7 @@ type Stats {
 type User {
   name: String!
   favoritePickUpBranch: String
-  bibliotekDkOrders(offset: Int, limit: Int): BibliotekDkOrders!
+  bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
   address: String

@@ -560,5 +560,5 @@ export const fetchOrderStatus = async (args, context) => {
       };
     })
   );
-  return orders.filter((order) => order !== null);
+  return orders;
 };
