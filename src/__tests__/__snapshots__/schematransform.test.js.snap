@@ -275,22 +275,27 @@ type AdminData {
   requestButton: Boolean
 }
 
-enum BorchkRequestStatus {
-  ok
-  service_not_licensed
-  service_unavailable
-  library_not_found
-  borrowercheck_not_allowed
-  borrower_not_found
-  borrower_not_in_municipality
-  municipality_check_not_supported_by_library
-  no_user_in_request
-  error_in_request
-  internal_error
+enum BorchkResponseStatus {
+  OK
+  SERVICE_NOT_LICENSED
+  SERVICE_UNAVAILABLE
+  LIBRARY_NOT_FOUND
+  BORROWERCHECK_NOT_ALLOWED
+  BORROWER_NOT_FOUND
+  BORROWER_NOT_IN_MUNICIPALITY
+  MUNICIPALITY_CHECK_NOT_SUPPORTED_BY_LIBRARY
+  NO_USER_IN_REQUEST
+  ERROR_IN_REQUEST
 }
 
-type Borchk {
-  RequestStatus: BorchkRequestStatus
+input BorchkInput {
+  libraryCode: String!
+  userId: String!
+  userPincode: String!
+}
+
+type BorchkResponse {
+  status: BorchkResponseStatus!
 }
 
 type Category {
@@ -2397,7 +2402,7 @@ type Query {
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches: Boolean): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
-  borchk(libraryCode: String!, userId: String!, userPincode: String!): BorchkRequestStatus!
+  borchk(input: BorchkInput!): BorchkResponse!
   infomedia(id: String!): InfomediaResponse!
   session: Session
   howru: String
