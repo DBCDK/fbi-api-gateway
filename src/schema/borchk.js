@@ -24,11 +24,29 @@ enum BorchkResponseStatus {
 input BorchkInput {
   libraryCode: String!
   userId: String! 
-  userPincode: String!
+  userPincode: String
 }
 
 type BorchkResponse {
-   status: BorchkResponseStatus!
+  """
+  UserId of the requesting user (always the same as requested)
+  """
+  userId: String! 
+
+  """
+  The status of the requesting user
+  """
+  status: BorchkResponseStatus! 
+
+  """
+  MunicipalityNumber of the requesting user
+  """
+  municipalityNumber: String
+
+  """
+  Returns if the requesting user is blocked or not
+  """
+  blocked: Boolean
 }`;
 
 /**
@@ -38,8 +56,17 @@ type BorchkResponse {
  */
 export const resolvers = {
   BorchkResponse: {
+    userId(parent, args) {
+      return parent.userId;
+    },
     status(parent, args) {
-      return parent.responseStatus?.toUpperCase();
+      return parent.requestStatus?.toUpperCase();
+    },
+    municipalityNumber(parent, args) {
+      return parent.municipalityNumber;
+    },
+    blocked(parent, args) {
+      return parent.blocked;
     },
   },
 };

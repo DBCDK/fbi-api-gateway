@@ -5,18 +5,23 @@
 import { parseString } from "xml2js";
 import { parseResponse } from "../borchk.datasource";
 
-function constructResponse({ userId }, status = "ok") {
+function constructResponse(
+  { userId, municipalityNumber = "400", blocked = "false" },
+  status = "ok"
+) {
   let response = {
     status: 200,
     body: `<?xml version='1.0' encoding='UTF-8'?>
             <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
               <S:Body>
-              <borrowerCheckResponse xmlns="http://oss.dbc.dk/ns/borchk">
-                <userId>${userId}</userId>
-                <requestStatus>${status}</requestStatus>
-              </borrowerCheckResponse>
-            </S:Body>
-          </S:Envelope>`,
+                <borrowerCheckComplexResponse xmlns="http://oss.dbc.dk/ns/borchk">
+                  <userId>${userId}</userId>
+                  <requestStatus>${status}</requestStatus>
+                  <municipalityNumber>${municipalityNumber}</municipalityNumber>
+                  <blocked>${blocked}</blocked>
+                </borrowerCheckComplexResponse>
+              </S:Body>
+            </S:Envelope>`,
     ok: true,
   };
 

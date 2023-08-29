@@ -77,7 +77,7 @@ export default {
       prefix: process.env.BACKEND_PREFIX || "backend-1",
     },
     borchk: {
-      url: process.env.BORCHK_URL || "https://borchk.addi.dk/3.0/",
+      url: process.env.BORCHK_URL || "https://borchk.addi.dk/3.1/",
     },
     holdingsservice: {
       url:
