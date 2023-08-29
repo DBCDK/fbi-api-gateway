@@ -1,51 +1,89 @@
 import { log } from "dbc-node-logger";
-import request from "superagent";
 import config from "../config";
 
-const { url } = config.datasources.borchk;
+import { parseString } from "xml2js";
 
-function createRequest(libraryCode, userId, userPincode) {
+const { url, ttl, prefix } = config.datasources.borchk;
+
+/**
+ * Construct BorrowerCheckComplex SOAP request (Complex)
+ * @param libraryCode
+ * @param userId
+ * @param userPincode (optional)
+ * @return {String}
+ */
+function constructSoap({ libraryCode, userId, userPincode = null }) {
   return `<?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/namespace/borchk">
-<SOAP-ENV:Body>
-  <ns1:borrowerCheckRequest>
-    <ns1:serviceRequester>bibliotek.dk</ns1:serviceRequester>
-    <ns1:libraryCode>DK-${libraryCode}</ns1:libraryCode>
-    <ns1:userId>${userId}</ns1:userId>
-    <ns1:userPincode>${userPincode}</ns1:userPincode>
-    <ns1:outputType>json</ns1:outputType>
-  </ns1:borrowerCheckRequest>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>`;
+  <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bor="http://oss.dbc.dk/ns/borchk">
+    <soapenv:Header/>
+    <soapenv:Body>
+      <bor:borrowerCheckComplexRequest>
+        <bor:serviceRequester>bibliotek.dk</bor:serviceRequester>
+        <bor:libraryCode>DK-${libraryCode}</bor:libraryCode>
+        <bor:userId>${userId}</bor:userId>
+        ${userPincode && `<bor:userPincode>${userPincode}</bor:userPincode>`}
+      </bor:borrowerCheckComplexRequest>
+    </soapenv:Body>
+  </soapenv:Envelope>`;
 }
 
 /**
- * Do a borchk - return request status
- * @param libraryCode
- * @param userId
- * @param userPincode
- * @return {Promise<string|*>}
+ * Parse xml-json-string (badgerfish) to json
+ *
+ * @param {string} badgerfish xml
+ * @returns {object}
  */
-export async function load({ libraryCode, userId, userPincode }) {
+export function parseResponse(xml) {
   try {
-    return (
-      await request
-        .post(url)
-        .field("xml", createRequest(libraryCode, userId, userPincode))
-    ).body.borrowerCheckResponse.requestStatus.$;
+    const body = xml?.["S:Envelope"]?.["S:Body"];
+    const result = body?.[0]?.borrowerCheckComplexResponse?.[0];
+
+    const userId = result?.userId?.[0];
+    const requestStatus = result?.requestStatus?.[0];
+    const municipalityNumber = result?.municipalityNumber?.[0];
+    const blocked = !result?.blocked?.[0] === "false";
+
+    return {
+      userId,
+      requestStatus,
+      municipalityNumber,
+      blocked,
+    };
   } catch (e) {
-    log.error("Request to borchk failed: " + url + " message: " + e.message);
-    throw e;
-    // @TODO what to return here - i made this one up
-    // return "internal_error";
+    log.error("Failed to parse culr response", {
+      error: e.message,
+      stack: e.stack,
+    });
+    return {};
   }
 }
 
 /**
- * The status function
- *
- * @throws Will throw error if service is down
+ * Borchk - return request status
+ * @param libraryCode
+ * @param userId
+ * @param userPincode (optional)
+ * @return {Promise<string|*>}
  */
-/*export async function status(loadFunc) {
-  await loadFunc("870970-basis:51877330");
-}*/
+export async function load({ libraryCode, userId, userPincode }, context) {
+  const soap = constructSoap({ libraryCode, userId, userPincode });
+
+  const res = await context?.fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/xml",
+    },
+    body: soap,
+  });
+
+  return new Promise((resolve) =>
+    parseString(res.body, (err, result) => resolve(parseResponse(result)))
+  );
+}
+
+export const options = {
+  redis: {
+    prefix: prefix,
+    ttl: ttl,
+  },
+};

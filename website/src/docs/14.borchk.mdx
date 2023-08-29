@@ -1,0 +1,39 @@
+# Borchk
+
+Borrower check. Used to verify if a user is enrolled in a specific library and if the library is in the users municipality of residence.
+
+The _userPincode_ in BorchkInput is optional.
+
+The responding _userId_ will always be the same as the requesting _userId_.
+
+The returned _status_ can be one of the following:
+
+- _**OK**_
+- _**SERVICE_NOT_LICENSED**_ - Invalid borchk request. Service not licensed
+- _**SERVICE_UNAVAILABLE**_ - Borchk service is unavailable
+- _**LIBRARY_NOT_FOUND**_ - The requested library was not found
+- _**BORROWERCHECK_NOT_ALLOWED**_ - Borrowercheck is not allowed
+- _**BORROWER_NOT_FOUND**_ - The requesting borrower was not found
+- _**BORROWER_NOT_IN_MUNICIPALITY**_ - The requesting borrower not in municipality
+- _**MUNICIPALITY_CHECK_NOT_SUPPORTED_BY_LIBRARY**_ - Municipality check not supported by library
+- _**NO_USER_IN_REQUEST**_ - Invalid borchk request. Missing user
+- _**ERROR_IN_REQUEST**_ - Invalid borchk request
+
+<InlineGraphiQL
+  query={`
+    query Example_borchk($input: BorchkInput!) {
+        borchk(input: $input) {
+            userId
+            status
+            municipalityNumber
+            blocked
+        }
+    }
+`}
+  variables={{
+    input: {
+      libraryCode: "790900",
+      userId: "0102033690",
+    },
+  }}
+/>
