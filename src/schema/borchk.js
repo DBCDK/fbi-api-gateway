@@ -56,17 +56,8 @@ type BorchkResponse {
  */
 export const resolvers = {
   BorchkResponse: {
-    userId(parent, args) {
-      return parent.userId;
-    },
     status(parent, args) {
       return parent.requestStatus?.toUpperCase();
-    },
-    municipalityNumber(parent, args) {
-      return parent.municipalityNumber;
-    },
-    blocked(parent, args) {
-      return parent.blocked;
     },
   },
 };

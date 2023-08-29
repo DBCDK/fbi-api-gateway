@@ -78,6 +78,8 @@ export default {
     },
     borchk: {
       url: process.env.BORCHK_URL || "https://borchk.addi.dk/3.1/",
+      prefix: process.env.BORCHK_PREFIX || "borchk-1",
+      ttl: process.env.BORCHK_TIME_TO_LIVE_SECONDS || 60 * 5,
     },
     holdingsservice: {
       url:

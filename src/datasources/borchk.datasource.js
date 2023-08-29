@@ -3,24 +3,16 @@ import config from "../config";
 
 import { parseString } from "xml2js";
 
-const { url } = config.datasources.borchk;
+const { url, ttl, prefix } = config.datasources.borchk;
 
-// function constructSoap({ libraryCode, userId, userPincode }) {
-//   return `<?xml version="1.0" encoding="UTF-8"?>
-//   <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bor="http://oss.dbc.dk/ns/borchk">
-//     <soapenv:Header/>
-//     <soapenv:Body>
-//       <bor:borrowerCheckRequest>
-//         <bor:serviceRequester>bibliotek.dk</bor:serviceRequester>
-//         <bor:libraryCode>DK-${libraryCode}</bor:libraryCode>
-//         <bor:userId>${userId}</bor:userId>
-//         ${userPincode && `<bor:userPincode>${userPincode}</bor:userPincode>`}
-//       </bor:borrowerCheckRequest>
-//     </soapenv:Body>
-//   </soapenv:Envelope>`;
-// }
-
-function constructSoap({ libraryCode, userId, userPincode }) {
+/**
+ * Construct BorrowerCheckComplex SOAP request (Complex)
+ * @param libraryCode
+ * @param userId
+ * @param userPincode (optional)
+ * @return {String}
+ */
+function constructSoap({ libraryCode, userId, userPincode = null }) {
   return `<?xml version="1.0" encoding="UTF-8"?>
   <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bor="http://oss.dbc.dk/ns/borchk">
     <soapenv:Header/>
@@ -70,7 +62,7 @@ export function parseResponse(xml) {
  * Borchk - return request status
  * @param libraryCode
  * @param userId
- * @param userPincode
+ * @param userPincode (optional)
  * @return {Promise<string|*>}
  */
 export async function load({ libraryCode, userId, userPincode }, context) {
@@ -84,9 +76,14 @@ export async function load({ libraryCode, userId, userPincode }, context) {
     body: soap,
   });
 
-  console.log("............res", res);
-
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
   );
 }
+
+export const options = {
+  redis: {
+    prefix: prefix,
+    ttl: ttl,
+  },
+};
