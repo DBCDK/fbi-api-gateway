@@ -19,6 +19,7 @@ export const typeDef = `
 type User {
   name: String!
   favoritePickUpBranch: String
+  persistUserData: Boolean
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
@@ -127,7 +128,10 @@ type Mutation {
   Sets favoritePickUpBranch to null
   """
   clearFavoritePickUpBranch: UserDataResponse
-
+  """
+  Change users consent for storing orderhistory for more than 30 days. If false, orde rhistory will be deleted after 30 days.
+  """
+  setPersistUserDataValue(persistUserData: Boolean!):UserDataResponse
   }
 
 `;
@@ -182,6 +186,29 @@ export const resolvers = {
       }
     },
 
+
+    async persistUserData(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        const res = await context.datasources
+          .getLoader("userDataGetUser")
+          .load({
+            smaugUserId: smaugUserId,
+          });
+        return res?.persistUserData;
+      } catch (error) {
+        return null;
+      }
+    },
+
+
+    
     async bibliotekDkOrders(parent, args, context, info) {
       const smaugUserId = context?.smaug?.user?.uniqueId;
       const { limit, offset } = args;
@@ -523,5 +550,30 @@ export const resolvers = {
         return { success: false };
       }
     },
+    async setPersistUserDataValue (parent, args, context, info) {
+      try {
+        const { persistUserData } = args;
+
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw new Error( "Not authorized");
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw new Error("User not found in CULR");
+        }
+
+        const res = await context.datasources
+          .getLoader("userDataDataConsent")
+          .load({
+            smaugUserId: smaugUserId,
+            persistUserData: persistUserData,
+          });
+
+        return { success: !res?.error, errorMessage: res?.error };
+      } catch (error) {
+        return { success: false };
+      }
+    },
+    
   },
 };
