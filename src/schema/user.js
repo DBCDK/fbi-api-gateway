@@ -19,7 +19,13 @@ export const typeDef = `
 type User {
   name: String!
   favoritePickUpBranch: String
-  persistUserData: Boolean
+  """
+  We can store userdata for more than 30 days if set to true.
+  """
+  persistUserData: Boolean!
+  """
+  Orders made through bibliotek.dk
+  """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
   agency(language: LanguageCode): BranchResult!
@@ -186,7 +192,6 @@ export const resolvers = {
       }
     },
 
-
     async persistUserData(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
@@ -207,8 +212,6 @@ export const resolvers = {
       }
     },
 
-
-    
     async bibliotekDkOrders(parent, args, context, info) {
       const smaugUserId = context?.smaug?.user?.uniqueId;
       const { limit, offset } = args;
@@ -227,8 +230,11 @@ export const resolvers = {
           offset,
         });
       const orderIds = res?.result?.map((order) => order.orderId);
-      const result = await fetchOrderStatus({ orderIds: orderIds }, context);
-      return { result, hitcount: res?.hitcount || 0 };
+      if (orderIds.length > 0) {
+        const result = await fetchOrderStatus({ orderIds: orderIds }, context);
+        return { result, hitcount: res?.hitcount || 0 };
+      }
+      return { result: [], hitcount: 0 };
     },
     async address(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
@@ -550,13 +556,13 @@ export const resolvers = {
         return { success: false };
       }
     },
-    async setPersistUserDataValue (parent, args, context, info) {
+    async setPersistUserDataValue(parent, args, context, info) {
       try {
         const { persistUserData } = args;
 
         const smaugUserId = context?.smaug?.user?.uniqueId;
         if (!smaugUserId) {
-          throw new Error( "Not authorized");
+          throw new Error("Not authorized");
         }
         if (isCPRNumber(smaugUserId)) {
           throw new Error("User not found in CULR");
@@ -571,9 +577,8 @@ export const resolvers = {
 
         return { success: !res?.error, errorMessage: res?.error };
       } catch (error) {
-        return { success: false };
+        return { success: false, errorMessage: error?.message };
       }
     },
-    
   },
 };

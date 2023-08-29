@@ -11,9 +11,8 @@ export async function load({ smaugUserId, persistUserData }, context) {
       "Content-Type": "application/json",
     },
     method: "PUT",
-    body: JSON.stringify({ smaugUserId: smaugUserId,persistUserData }),
+    body: JSON.stringify({ smaugUserId: smaugUserId, persistUserData }),
   });
-console.log('\n\n\nres',res)
   if (res?.status !== 200) {
     throw new Error(res?.body?.error || "Something went wrong");
   }
