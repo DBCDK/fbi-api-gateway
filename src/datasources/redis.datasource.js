@@ -206,8 +206,13 @@ export function withRedis(
     const prefixedKeys = keys.map((key) => createPrefixedKey(prefix, key));
 
     // Get values of all prefixed keys from Redis
-    const cachedValues = await mgetFunc(prefixedKeys, inMemory);
-    track?.track("redis", Date.now() - now, keys.length);
+    let cachedValues;
+    const end = track?.begin("redis", keys.length);
+    try {
+      cachedValues = await mgetFunc(prefixedKeys, inMemory);
+    } finally {
+      end?.();
+    }
 
     // If some values were not found in Redis,
     // they are added to missing keys array
