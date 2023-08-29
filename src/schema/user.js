@@ -135,7 +135,7 @@ type Mutation {
   """
   clearFavoritePickUpBranch: UserDataResponse
   """
-  Change users consent for storing orderhistory for more than 30 days. If false, orde rhistory will be deleted after 30 days.
+  Change users consent for storing order history for more than 30 days. If false, order history will be deleted after 30 days.
   """
   setPersistUserDataValue(persistUserData: Boolean!):UserDataResponse
   }
