@@ -3,6 +3,10 @@
  *
  */
 
+import { log } from "dbc-node-logger";
+
+import { getUserOrderAllowedStatus } from "../utils/utils";
+
 export const typeDef = `
    type SubmitOrder {
     """
@@ -14,6 +18,7 @@ export const typeDef = `
     deleted: Boolean,
     orsId: String
    }
+
    enum OrderType {
       ESTIMATE,
       HOLD,
@@ -22,6 +27,7 @@ export const typeDef = `
       NORMAL,
       STACK_RETRIEVAL
    }
+
    input SubmitOrderUserParameters {
       cpr: String,
       userId: String,
@@ -34,6 +40,7 @@ export const typeDef = `
       userMail: String,
       userTelephone: String
    }
+
    input SubmitOrderInput{
     orderType: OrderType,
     pids: [String!]!,
@@ -119,12 +126,88 @@ export const typeDef = `
     errorMessage: String
    }
 
+   extend type Mutation {
+    submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+  }
+
   `;
 
 /**
  * Resolvers for the Profile type
  */
 export const resolvers = {
+  Mutation: {
+    async submitOrder(parent, args, context, info) {
+      if (!context?.smaug?.orderSystem) {
+        throw "invalid smaug configuration [orderSystem]";
+      }
+
+      const branch = (
+        await context.datasources.getLoader("library").load({
+          branchId: args.input.pickUpBranch,
+        })
+      ).result[0];
+
+      if (!branch) {
+        return {
+          status: "ERROR_INVALID_PICKUP_BRANCH",
+        };
+      }
+
+      const agencyId = branch.agencyId;
+
+      const userId =
+        context?.smaug?.user?.id || args.input?.userParameters?.userId;
+
+      const { ok, status } = await getUserOrderAllowedStatus(
+        { agencyId, userId },
+        context
+      );
+
+      if (!ok) {
+        return { ok, status };
+      }
+
+      const input = {
+        ...args.input,
+        accessToken: context.accessToken,
+        smaug: context.smaug,
+        dryRun: args.dryRun,
+        branch,
+      };
+
+      const submitOrderRes = await context.datasources
+        .getLoader("submitOrder")
+        .load(input);
+
+      //if the request is coming from beta.bibliotek.dk, add the order id to userData service
+      if (context?.profile?.agency == 190101) {
+        const orderId = submitOrderRes?.orderId;
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        try {
+          if (!smaugUserId) {
+            throw new Error("Not authorized");
+          }
+          if (!orderId) {
+            throw new Error("Undefined orderId");
+          }
+          await context.datasources.getLoader("userDataAddOrder").load({
+            smaugUserId: smaugUserId,
+            orderId: orderId,
+          });
+        } catch (error) {
+          log.error(
+            `Failed to add order to userData service. Message: ${
+              error.message || JSON.stringify(error)
+            }`
+          );
+        }
+      }
+
+      return submitOrderRes;
+    },
+  },
+
   SubmitOrderInput: {
     // map ordertype to enum
     async orderType(parent, args, context, info) {

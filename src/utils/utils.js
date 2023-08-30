@@ -562,3 +562,103 @@ export const fetchOrderStatus = async (args, context) => {
   );
   return orders;
 };
+
+/**
+ * Verify if user account is still active (Mostly for FFU users)
+ *
+ * Why this check?
+ * FFU libraries will not sync automatically with the CULR service,
+ * unlike the public libraries. This will result in old user accounts
+ * not being automatically removed from CULR.
+
+ * Verify that user account is NOT blocked
+ *
+ * Why this check?
+ * Now, a 'pickupbranch' is not associated with the agency where the
+ * logged-in user is currently signed in. Therefore, it's necessary
+ * to verify whether the user is blocked before placing an order.
+ * 
+ * @param {string} props.userId context
+ * @param {string} props.context context
+ * @param {obj} context context
+ * @returns {obj} containing status and statusCode
+ *  
+ */
+export async function getUserOrderAllowedStatus(
+  { agencyId, userId: _userId },
+  context
+) {
+  // agency must be provided
+  if (!agencyId) {
+    return { ok: false, status: "AGENCYID_NOT_FOUND" };
+  }
+
+  // If none provided Fallback to userId froms smaug (The id from where the user originally logged in at)
+  const userId = _userId || context?.smaug?.user?.id;
+
+  // an userId must exist
+  if (!userId) {
+    return { ok: false, status: "USERID_NOT_FOUND" };
+  }
+
+  // Verify that the agencyId has borrowerCheck
+  const hasBorrowerCheck = await resolveBorrowerCheck(agencyId, context);
+
+  if (hasBorrowerCheck) {
+    // Fetch specific account between the loggedIn users accounts
+    // const branches = await getUserBranchIds(context);
+    //get users agencies
+    const userinfo = await context.datasources.getLoader("userinfo").load({
+      accessToken: context.accessToken,
+    });
+
+    // user accounts liste
+    const accounts = userinfo.attributes.agencies;
+
+    // fetch account from list
+
+    const { status, blocked } = await context.datasources
+      .getLoader("borchk")
+      .load({ userId, libraryCode: branch.agencyId });
+
+    if (blocked) {
+      // User is blocked on the provided pickupAgency
+      log.error(
+        `User is not allowed to place an order. Borchk: ${JSON.stringify({
+          ok: false,
+          agencyId,
+          blocked,
+          status,
+        })}`
+      );
+
+      return {
+        ok: false,
+        status: "USER_BLOCKED_BY_AGENCY",
+      };
+    }
+
+    if (status !== "OK") {
+      // User does not exist on the provided pickupBranch
+      log.error(
+        `User is not allowed to place an order. Borchk: ${JSON.stringify({
+          ok: false,
+          agencyId,
+          blocked,
+          status,
+        })}`
+      );
+
+      return {
+        ok: false,
+        status: "BORCHK_USER_NOT_FOUND_ON_AGENCY",
+      };
+    }
+
+    // Return status ok
+    return { ok: true, status: "OK" };
+  }
+
+  // Agency does not support borrowercheck - return status ok
+  return { ok: true, status: "OK" };
+}

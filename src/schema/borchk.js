@@ -50,14 +50,8 @@ type BorchkResponse {
 }`;
 
 /**
- * Resolvers for the Cover type
+ * Custom resolvers
  * Note that for fields not represented in resolvers, GraphQL
  * uses its default resolver (it looks in parent obj for the field).
  */
-export const resolvers = {
-  BorchkResponse: {
-    status(parent, args) {
-      return parent.requestStatus?.toUpperCase();
-    },
-  },
-};
+export const resolvers = {};

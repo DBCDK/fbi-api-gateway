@@ -5,25 +5,23 @@ The example sets dryRun:true, which prevents the query from actually being execu
 If omitted, dryRun is sat to false and order is executed.
 
 <InlineGraphiQL
-  query={`mutation example_submitorder($input: SubmitOrderInput!, $dryRun: Boolean) {
-            submitOrder(input: $input, dryRun: $dryRun) {
+  query={`mutation example_submitorder($input: SubmitOrderInput!) {
+            submitOrder(input: $input, dryRun: true) {
               status
               orderId
             }
           }`}
   variables={{
-               "input": {
-                 "pids": [
-                   "870970-basis:25574486"
-                 ],
-                 "pickUpBranch": "765700",
-                 "userParameters": {
-                   "userId": "6571799497",
-                   "userAddress": "test",
-                   "userName": "Flemming test",
-                   "userMail": "flemminghoimark@gmail.com"
-                 }
-               },
-               "dryRun": true
-             }}
+    input: {
+      pids: ["870970-basis:25574486"],
+      pickUpBranch: "765700",
+      userParameters: {
+        userId: "6571799497",
+        userAddress: "test",
+        userName: "Flemming test",
+        userMail: "flemminghoimark@gmail.com",
+      },
+    },
+    dryRun: true,
+  }}
 />

@@ -129,8 +129,7 @@ type Mutation {
     """
     dryRun: Boolean
     ): RenewLoanResponse  
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
-  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+  
   submitSession(input: SessionInput!): String!
   deleteSession: String!
 }`;
@@ -447,138 +446,6 @@ export const resolvers = {
       return { renewed: !res.error, error: res.error, dueDate: res.dueDate };
     },
 
-    async submitPeriodicaArticleOrder(parent, args, context, info) {
-      let { userName, userMail } = args.input;
-
-      const branch = (
-        await context.datasources.getLoader("library").load({
-          branchId: args.input.pickUpBranch,
-        })
-      ).result[0];
-
-      if (!branch) {
-        return {
-          status: "ERROR_INVALID_PICKUP_BRANCH",
-        };
-      }
-
-      const hasBorrowerCheck = await resolveBorrowerCheck(
-        branch.agencyId,
-        context
-      );
-
-      // If branch has borrowerCheck, we require the user to be authenticated via that agency
-      if (hasBorrowerCheck) {
-        if (!context.smaug || !context.smaug.user || !context.smaug.user.id) {
-          return {
-            status: "ERROR_UNAUTHORIZED_USER",
-          };
-        }
-        const agencyId = context.smaug.user.agency;
-        if (branch.agencyId !== agencyId) {
-          return {
-            status: "ERROR_INVALID_PICKUP_BRANCH",
-          };
-        }
-
-        // We need users name and email
-        const user = await context.datasources.getLoader("user").load({
-          accessToken: context.accessToken,
-        });
-        userName = user.name ? user.name : userMail;
-        userMail = user.mail ? user.mail : userMail;
-      }
-
-      if (!userName || !userMail) {
-        return {
-          status: "ERROR_NO_NAME_OR_EMAIL",
-        };
-      }
-
-      // Agency must be subscribed
-      const subscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-      if (!subscriptions[branch.agencyId]) {
-        return {
-          status: "ERROR_AGENCY_NOT_SUBSCRIBED",
-        };
-      }
-
-      // Pid must be a manifestation with a valid issn (valid journal)
-      let issn;
-      try {
-        const onlineAccess = await resolveAccess(args.input.pid, context);
-        issn = onlineAccess.find((entry) => entry.issn);
-      } catch (e) {
-        return {
-          status: "ERROR_PID_NOT_RESERVABLE",
-        };
-      }
-      if (!issn) {
-        return {
-          status: "ERROR_PID_NOT_RESERVABLE",
-        };
-      }
-
-      // Then send order
-      const res = await context.datasources
-        .getLoader("statsbiblioteketSubmitArticleOrder")
-        .load({
-          ...args.input,
-          agencyId: branch.agencyId,
-          dryRun: args.dryRun,
-        });
-
-      return res;
-    },
-    async submitOrder(parent, args, context, info) {
-      if (!context?.smaug?.orderSystem) {
-        throw "invalid smaug configuration [orderSystem]";
-      }
-
-      const input = {
-        ...args.input,
-        accessToken: context.accessToken,
-        smaug: context.smaug,
-        dryRun: args.dryRun,
-        branch: (
-          await context.datasources.getLoader("library").load({
-            branchId: args.input.pickUpBranch,
-          })
-        ).result[0],
-      };
-
-      const submitOrderRes = await context.datasources
-        .getLoader("submitOrder")
-        .load(input);
-
-      //if the request is coming from beta.bibliotek.dk, add the order id to userData service
-      if (context?.profile?.agency == 190101) {
-        const orderId = submitOrderRes?.orderId;
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        try {
-          if (!smaugUserId) {
-            throw new Error("Not authorized");
-          }
-          if (!orderId) {
-            throw new Error("Undefined orderId");
-          }
-          await context.datasources.getLoader("userDataAddOrder").load({
-            smaugUserId: smaugUserId,
-            orderId: orderId,
-          });
-        } catch (error) {
-          log.error(
-            `Failed to add order to userData service. Message: ${
-              error.message || JSON.stringify(error)
-            }`
-          );
-        }
-      }
-
-      return submitOrderRes;
-    },
     async submitSession(parent, args, context, info) {
       await context.datasources.getLoader("submitSession").load({
         accessToken: context.accessToken,
