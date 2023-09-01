@@ -582,23 +582,18 @@ export const fetchOrderStatus = async (args, context) => {
  * @param {string} props.context context
  * @param {obj} context context
  * @returns {obj} containing status and statusCode
+ * 
+ * statusCodes:
+ * 
+ * OK
+ * BORCHK_USER_BLOCKED_BY_AGENCY
+ * BORCHK_USER_NOT_FOUND_ON_AGENCY
  *  
  */
-export async function getUserOrderAllowedStatus(
-  { agencyId, userId: _userId },
-  context
-) {
+export async function getUserOrderAllowedStatus({ agencyId }, context) {
   // agency must be provided
   if (!agencyId) {
-    return { ok: false, status: "AGENCYID_NOT_FOUND" };
-  }
-
-  // If none provided Fallback to userId froms smaug (The id from where the user originally logged in at)
-  const userId = _userId || context?.smaug?.user?.id;
-
-  // an userId must exist
-  if (!userId) {
-    return { ok: false, status: "USERID_NOT_FOUND" };
+    return { ok: false, status: "UNKNOWN_PICKUPAGENCY" };
   }
 
   // Verify that the agencyId has borrowerCheck
@@ -615,11 +610,36 @@ export async function getUserOrderAllowedStatus(
     // user accounts liste
     const accounts = userinfo.attributes.agencies;
 
-    // fetch account from list
+    // fetch requested account from list
+    // Local (type) account is used because it always exist
+    const account = accounts.find(
+      (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
+    );
+
+    if (!account) {
+      // No account was found
+      log.error(
+        `No account was found for user within the provided agencyId: ${JSON.stringify(
+          {
+            ok: false,
+            agencyId,
+            status: "UNKNOWN_USER",
+          }
+        )}`
+      );
+
+      return {
+        ok: false,
+        status: "UNKNOWN_USER",
+      };
+    }
 
     const { status, blocked } = await context.datasources
       .getLoader("borchk")
-      .load({ userId, libraryCode: branch.agencyId });
+      .load({
+        userId: account.userId,
+        libraryCode: account.agencyId,
+      });
 
     if (blocked) {
       // User is blocked on the provided pickupAgency
@@ -628,13 +648,14 @@ export async function getUserOrderAllowedStatus(
           ok: false,
           agencyId,
           blocked,
-          status,
+          borchkStatus: status,
+          status: "BORCHK_USER_BLOCKED_BY_AGENCY",
         })}`
       );
 
       return {
         ok: false,
-        status: "USER_BLOCKED_BY_AGENCY",
+        status: "BORCHK_USER_BLOCKED_BY_AGENCY",
       };
     }
 
@@ -645,7 +666,8 @@ export async function getUserOrderAllowedStatus(
           ok: false,
           agencyId,
           blocked,
-          status,
+          borchkStatus: status,
+          status: "BORCHK_USER_NOT_FOUND_ON_AGENCY",
         })}`
       );
 
@@ -658,6 +680,12 @@ export async function getUserOrderAllowedStatus(
     // Return status ok
     return { ok: true, status: "OK" };
   }
+
+  log.warn(
+    `Borchk not permitted by agencyId ${JSON.stringify({
+      agencyId,
+    })}`
+  );
 
   // Agency does not support borrowercheck - return status ok
   return { ok: true, status: "OK" };

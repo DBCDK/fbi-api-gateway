@@ -7,13 +7,127 @@ import { log } from "dbc-node-logger";
 
 import { getUserOrderAllowedStatus } from "../utils/utils";
 
+const orderStatusmessageMap = {
+  OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",
+  NOT_OWNED_ILL_LOC:
+    "Item not available at pickupAgency, item localised for ILL",
+  OWNED_WRONG_MEDIUMTYPE:
+    "Item available at pickupAgency, order of mediumType not accepted",
+  NOT_OWNED_WRONG_ILL_MEDIUMTYPE:
+    "Item not available at pickupAgency, ILL of mediumType not accepted",
+  NOT_OWNED_NO_ILL_LOC:
+    "Item not available at pickupAgency, item not localised for ILL",
+  OWNED_OWN_CATALOGUE:
+    "Item available at pickupAgency, item may be ordered through the library's catalogue",
+  SERVICE_UNAVAILABLE: "Service unavailable",
+  UNKNOWN_PICKUPAGENCY: "PickupAgency not found",
+  UNKNOWN_USER: "User not found",
+  INVALID_ORDER: "Order does not validate",
+  ORS_ERROR: "Error sending order to ORS",
+  NO_SERVICEREQUESTER: "ServiceRequester is obligatory",
+  AUTHENTICATION_ERROR: "Authentication error",
+};
+
+/**
+ * First block contains user validation status' from util function
+ *
+ * Last block includes status' from openorder (ORS)
+ */
+
 export const typeDef = `
+  enum OrderStatus {
+    """
+    Borchk: User is blocked by agency
+    """
+    BORCHK_USER_BLOCKED_BY_AGENCY
+
+    """
+    Borchk: User is no longer loaner at the provided pickupbranch
+    """
+    BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY 
+
+
+
+
+
+    """
+    Item available at pickupAgency, order accepted
+    """
+    OWNED_ACCEPTED
+
+    """
+    Item not available at pickupAgency, item localised for ILL
+    """
+    NOT_OWNED_ILL_LOC
+
+    """
+    Item available at pickupAgency, order of mediumType not accepted
+    """
+    OWNED_WRONG_MEDIUMTYPE
+    
+    """
+    Item not available at pickupAgency, ILL of mediumType not accepted
+    """
+    NOT_OWNED_WRONG_ILL_MEDIUMTYPE
+
+    """
+    Item not available at pickupAgency, item not localised for ILL
+    """
+    NOT_OWNED_NO_ILL_LOC
+
+    """
+    Item available at pickupAgency, item may be ordered through the library's catalogue
+    """
+    OWNED_OWN_CATALOGUE
+    
+    """ 
+    Service unavailable
+    """
+    SERVICE_UNAVAILABLE
+
+    """
+    PickupAgency not found
+    """
+    UNKNOWN_PICKUPAGENCY
+
+    """
+    User not found
+    """
+    UNKNOWN_USER
+
+    """
+    Order does not validate
+    """
+    INVALID_ORDER
+
+    """
+    Error sending order to ORS
+    """
+    ORS_ERROR
+
+    """
+    ServiceRequester is obligatory
+    """
+    NO_SERVICEREQUESTER
+
+    """
+    Authentication error
+    """
+    AUTHENTICATION_ERROR
+
+    """
+    Unknown error occured, status is unknown
+    """
+    UNKNOWN_STATUS
+  }
+
    type SubmitOrder {
     """
     if order was submitted successfully
     """
     ok: Boolean,
-    status: String,
+    status: OrderStatus!,
+    message: String,
     orderId: String,
     deleted: Boolean,
     orsId: String
@@ -134,6 +248,15 @@ export const typeDef = `
 
 /**
  * Resolvers for the Profile type
+ *
+ *
+ *
+ * AGENCYID_NOT_FOUND
+ * NO_ACCOUNT_WAS_FOUND
+ * USER_BLOCKED_BY_AGENCY
+ * BORCHK_USER_NOT_FOUND_ON_AGENCY
+ * OK
+ *
  */
 export const resolvers = {
   Mutation: {
@@ -156,8 +279,7 @@ export const resolvers = {
 
       const agencyId = branch.agencyId;
 
-      const userId =
-        context?.smaug?.user?.id || args.input?.userParameters?.userId;
+      const userId = args.input?.userParameters?.userId;
 
       const { ok, status } = await getUserOrderAllowedStatus(
         { agencyId, userId },
@@ -205,6 +327,16 @@ export const resolvers = {
       }
 
       return submitOrderRes;
+    },
+  },
+
+  SubmitOrder: {
+    status(parent, args, context, info) {
+      return parent.status?.toUpperCase();
+    },
+
+    message(parent, args, context, info) {
+      return orderStatusmessageMap[parent.status];
     },
   },
 
