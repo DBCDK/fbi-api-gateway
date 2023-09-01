@@ -562,3 +562,18 @@ export const fetchOrderStatus = async (args, context) => {
   );
   return orders;
 };
+
+/**
+ * Get the first match of a series of conditions
+ * @template T
+ * @template V
+ * @param {T} matcherValue
+ * @param {V} defaultReturn
+ * @param {[T, V][]} matcherArray
+ * @returns {V}
+ */
+export function getFirstMatch(matcherValue, defaultReturn, matcherArray) {
+  return (
+    matcherArray?.find((el) => el[0] === matcherValue)?.[1] || defaultReturn
+  );
+}
