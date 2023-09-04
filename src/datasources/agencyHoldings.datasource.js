@@ -1,6 +1,5 @@
 import config from "../config";
 import isEmpty from "lodash/isEmpty";
-import uniqBy from "lodash/uniqBy";
 import { getFirstMatch } from "../utils/utils";
 
 const {
@@ -21,92 +20,24 @@ export const AgencyHoldingsFilterEnum = Object.freeze({
   ERRORS: "ERRORS",
 });
 
-function compareDate(a, b) {
-  return getFirstMatch(true, 0, [
-    [!a && !b, 0],
-    [a && !b, -1],
-    [b && !a, 1],
-    [a > b, 1],
-    [a <= b, -1],
+function checkSingleAvailability(expectedDelivery) {
+  return getFirstMatch(true, AgencyHoldingsFilterEnum.AVAILABLE_UNKNOWN, [
+    [
+      new Date(expectedDelivery).toDateString() === new Date().toDateString(),
+      AgencyHoldingsFilterEnum.AVAILABLE_NOW,
+    ],
+    [
+      expectedDelivery &&
+        !isEmpty(expectedDelivery) &&
+        new Date(expectedDelivery).toDateString() !== new Date().toDateString(),
+      AgencyHoldingsFilterEnum.AVAILABLE_LATER,
+    ],
   ]);
-}
-
-function responseBuilderFactory(filter) {
-  const agencyHoldingsTypes = Object.keys(AgencyHoldingsFilterEnum).reduce(
-    (accumulator, currentValue) => {
-      accumulator[currentValue] = [];
-      return accumulator;
-    },
-    {}
-  );
-
-  return {
-    ...agencyHoldingsTypes,
-    agencyIds: new Set(),
-    getAgencyIdsAsArray() {
-      return Array.from(this.agencyIds);
-    },
-    addResponse(holdings, singleFilter) {
-      if (
-        filter.includes(singleFilter) &&
-        singleFilter !== AgencyHoldingsFilterEnum.ERRORS
-      ) {
-        this[filter].push(
-          ...holdings.filter((holding) => {
-            return (
-              !this.agencyIds.has(holding.agencyId) &&
-              holding.availability === singleFilter
-            );
-          })
-        );
-        holdings.map(
-          (holding) =>
-            holding.availability === singleFilter &&
-            this.agencyIds.add(holding.agencyId)
-        );
-      }
-    },
-    addErrors(errors) {
-      filter.includes(AgencyHoldingsFilterEnum.ERRORS) &&
-        this[AgencyHoldingsFilterEnum.ERRORS].push(...errors);
-    },
-    getFilteredResponses() {
-      return Object.keys(agencyHoldingsTypes).flatMap(
-        (singleType) => this[singleType]
-      );
-    },
-    getCount() {
-      return this.getFilteredResponses().length;
-    },
-    getCountOfUniqueAgencyIds() {
-      return uniqBy(this.getFilteredResponses(), "agencyId").length;
-    },
-  };
-}
-
-function checkSingleAvailability(item) {
-  if (
-    new Date(item.expectedDelivery).toDateString() === new Date().toDateString()
-  ) {
-    return AgencyHoldingsFilterEnum.AVAILABLE_NOW;
-  }
-
-  if (
-    item.expectedDelivery &&
-    !isEmpty(item.expectedDelivery) &&
-    new Date(item.expectedDelivery).toDateString() !== new Date().toDateString()
-  ) {
-    return AgencyHoldingsFilterEnum.AVAILABLE_LATER;
-  }
-
-  if (!item.expectedDelivery || isEmpty(item.expectedDelivery)) {
-    return AgencyHoldingsFilterEnum.AVAILABLE_UNKNOWN;
-  }
 }
 
 function checkAvailability(singleRes) {
   return singleRes.holdingsItem
-    .map((item) => checkSingleAvailability(item))
+    .map((item) => checkSingleAvailability(item.expectedDelivery))
     ?.sort((a, b) => {
       function getMatcherArray(matcherValue) {
         return [
@@ -130,58 +61,13 @@ function checkAvailability(singleRes) {
     })?.[0];
 }
 
-function parseDetailedHoldingsResponse(responseBody) {
-  const results = responseBody?.responderDetailed?.map((res) => {
+function parseDetailedHoldingsResponse(responderDetailed) {
+  return responderDetailed?.map((res) => {
     return {
-      ...res,
       agencyId: res.responderId,
-      expectedDelivery: res.holdingsItem
-        ?.map((e) => e.expectedDelivery)
-        ?.sort(compareDate)?.[0],
       availability: checkAvailability(res),
-      holdingsItem: res.holdingsItem.map((singleHoldingsItem) => {
-        return {
-          ...singleHoldingsItem,
-          pid: res.pid,
-          availability: checkSingleAvailability(singleHoldingsItem),
-        };
-      }),
-      errorMessage: null,
     };
   });
-
-  const errors = responseBody?.error?.map((singleError) => {
-    return {
-      ...singleError,
-      agencyId: singleError.responderId,
-      availability: AgencyHoldingsFilterEnum.ERRORS,
-      holdingsItem: [],
-    };
-  });
-
-  return {
-    results: results,
-    errors: errors,
-  };
-}
-
-function queryForDetailedHoldings(agencyIds, pids) {
-  if (!agencyIds || isEmpty(agencyIds) || !pids || isEmpty(pids)) {
-    return [];
-  } else {
-    return pids.reduce(
-      (accumulator, pid) => [
-        ...accumulator,
-        ...agencyIds.map((agencyId) => {
-          return {
-            pid: pid,
-            responderId: agencyId,
-          };
-        }),
-      ],
-      []
-    );
-  }
 }
 
 async function fetchDetailedHoldings(context, lookupRecord) {
@@ -211,41 +97,49 @@ async function progressiveLoad({
   lookupRecord: lookupRecordBeforeSetup,
   filter,
 }) {
-  const responseBuilder = responseBuilderFactory(filter);
+  const lookupRecordBeforeSetupLength = lookupRecordBeforeSetup.length;
+  const agencyIdsWithFilteredHoldings = new Set();
 
+  // PERFORMANCE - We need to adjust these during running for performance reasons, therefore `let` and not `const`
   let currentOffset = 0;
   let numberOfCallsToService = 0;
-
-  // We need to adjust these during running for performance reasons
   let lookupRecord = lookupRecordBeforeSetup;
   let stepSize = stepSizeBeforeSetup;
+  // ---
 
   do {
-    // PERFORMANCE - `lookupRecord` is adjusted by removing records wuth agencyIds found in `responseBuilder.agencyIds` and `responseBuilder.results`
-    lookupRecord = lookupRecord.filter((singleLookupRecord) => {
-      return !responseBuilder.agencyIds.has(singleLookupRecord.responderId);
-    });
+    // PERFORMANCE - `lookupRecord` is adjusted by removing records with agencyIds
+    //  found in `responseBuilder.agencyIds` and `responseBuilder.results`
+    lookupRecord = lookupRecord.filter(
+      (singleLookupRecord) =>
+        !agencyIdsWithFilteredHoldings.has(singleLookupRecord.responderId)
+    );
 
     const currentLookupRecord = lookupRecord.slice(0, stepSize);
     lookupRecord = lookupRecord.slice(stepSize, lookupRecord.length);
-    //
+    // ---
 
     const tempRes = await fetchDetailedHoldings(context, currentLookupRecord);
 
-    const {
-      results: holdings,
-      errors: errorsFromResponse,
-    } = parseDetailedHoldingsResponse(tempRes.body);
+    const holdings = parseDetailedHoldingsResponse(
+      tempRes.body.responderDetailed
+    );
 
     [
       AgencyHoldingsFilterEnum.AVAILABLE_NOW,
       AgencyHoldingsFilterEnum.AVAILABLE_LATER,
       AgencyHoldingsFilterEnum.AVAILABLE_UNKNOWN,
-    ].map((singleFilter) =>
-      responseBuilder.addResponse(holdings, singleFilter)
-    );
-
-    responseBuilder.addErrors(errorsFromResponse);
+    ].map((singleFilter) => {
+      holdings.map((holding) => {
+        if (
+          filter.includes(singleFilter) &&
+          singleFilter !== AgencyHoldingsFilterEnum.ERRORS &&
+          holding.availability === singleFilter
+        ) {
+          agencyIdsWithFilteredHoldings.add(holding.agencyId);
+        }
+      });
+    });
 
     currentOffset += stepSize;
     numberOfCallsToService += 1;
@@ -254,25 +148,50 @@ async function progressiveLoad({
     stepSize = Math.ceil(
       Math.max(
         10,
-        Math.min(stepSize, (resultCount - responseBuilder.agencyIds.size) * 10)
+        Math.min(
+          stepSize,
+          (resultCount - agencyIdsWithFilteredHoldings.size) * 10
+        )
       )
     );
-    //
+    // ---
   } while (
     !(
-      numberOfCallsToService > lookupRecord.length ||
-      responseBuilder.getCountOfUniqueAgencyIds() >= resultCount ||
-      currentOffset >= lookupRecordBeforeSetup.length
+      agencyIdsWithFilteredHoldings.size >= resultCount ||
+      currentOffset >= lookupRecordBeforeSetupLength
     )
   );
 
+  const agencyIdsAsArray = Array.from(agencyIdsWithFilteredHoldings);
+
   return {
-    responses: responseBuilder.getFilteredResponses(),
-    countUniqueAgencies: responseBuilder.getCountOfUniqueAgencyIds(),
-    countUniqueResponses: responseBuilder.getCount(),
-    agencyIdsWithResults: responseBuilder.getAgencyIdsAsArray(),
+    countUniqueAgencies: agencyIdsAsArray.length,
+    agencyIdsWithResults: agencyIdsAsArray,
     numberOfCallsToService: numberOfCallsToService,
   };
+}
+
+function queryForDetailedHoldings(agencyIds, pids) {
+  // PERFORMANCE - We create lookupRecord such that we look at 1 pid for every agencyId first (because most popular pids,
+  //  are first in the list of pids. We do this rather than looking at every pid for 1 agencyId,
+  //  because this means worst case more often
+  if (!agencyIds || isEmpty(agencyIds) || !pids || isEmpty(pids)) {
+    return [];
+  } else {
+    // Fast version: pid > agencyId
+    return pids.reduce(
+      (accumulator, pid) => [
+        ...accumulator,
+        ...agencyIds.map((agencyId) => {
+          return {
+            pid: pid,
+            responderId: agencyId,
+          };
+        }),
+      ],
+      []
+    );
+  }
 }
 
 /**
@@ -302,10 +221,9 @@ export async function load(
 
   const lookupRecord = queryForDetailedHoldings(agencyIds, pids);
 
+  // PERFORMANCE - We do a progressive load to reduce pressure on server and decrease call time
   const {
-    responses,
     agencyIdsWithResults,
-    countUniqueResponses,
     countUniqueAgencies,
     numberOfCallsToService,
   } = await progressiveLoad({
@@ -314,12 +232,11 @@ export async function load(
     resultCount: resultCount,
     filter: filter,
   });
+  // ---
 
   return {
-    countUniqueResponses: countUniqueResponses,
     countUniqueAgencies: countUniqueAgencies,
     agencyIds: agencyIdsWithResults,
-    agencyHoldings: responses,
     numberOfCallsToService: numberOfCallsToService,
   };
 }

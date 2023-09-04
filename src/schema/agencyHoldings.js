@@ -16,12 +16,7 @@ enum AgencyHoldingsFilter {
   ${AgencyHoldingsFilterEnum.ERRORS},
 }
 
-type AgencyHoldingsResponse {
-  """
-  Count of respondes
-  """
-  countUniqueResponses: Int!
-  
+type AgencyHoldingsResponse {  
   """
   Count of unique agencies
   """
@@ -33,72 +28,7 @@ type AgencyHoldingsResponse {
   agencyIds: [String!]!
   
   """
-  The detailed holdings of materials returned by the responders
-  """
-  agencyHoldings: [DetailedAgencyHoldings!]!
-  
-  """
   Number of calls to service (Here HoldingsService)
   """
   numberOfCallsToService: Int!
-}
-
-type DetailedAgencyHoldings {
-  """
-  Pid
-  """
-  pid: String!
-
-  """
-  AgencyId
-  """
-  agencyId: String!
-  
-  """
-  ExpectedDelivery
-  """
-  expectedDelivery: String!
-  
-  """
-  holdingsItem
-  """
-  holdingsItem: [HoldingsServiceItem!]!
-  
-  """
-  Availability
-  """
-  availability: AgencyHoldingsFilter!
-  
-  """
-  errorMessage
-  """
-  errorMessage: String
-}
-
-type HoldingsServiceItem {
-  """
-  localItemId
-  """
-  localItemId: String!
-  
-  """
-  Pid
-  """
-  pid: String!
-  
-  """
-  Availability
-  """
-  availability: AgencyHoldingsFilter!
-  
-  """
-  policy
-  """
-  policy: Int!
-  
-  """
-  expectedDelivery
-  """
-  expectedDelivery: String
-}
-`;
+}`;
