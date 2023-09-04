@@ -88,6 +88,10 @@ type Query {
   session: Session
   howru:String
   localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
+  """
+  fisklocalizations parses ALL localizations and ALL detailedholdings - timings are ok - max 4-5 secs
+  """
+   fisklocalizations(pids:[String!]!): [DetailedHoldings] 
   refWorks(pid:String!):String!
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
@@ -191,6 +195,53 @@ export const resolvers = {
         .load(args.pid);
       return ref;
     },
+
+    async fisklocalizations(parent, args, context, info) {
+      // .. hmm is this openformat ??
+      const allmanifestations = await Promise.all(
+        args.pids.map((pid) => {
+          return context.datasources.getLoader("openformat").load(pid);
+        })
+      );
+
+      const pids = allmanifestations.map(
+        (manifestation) =>
+          manifestation?.details?.hostPublicationPid?.$ ||
+          manifestation.admindata.pid.$
+      );
+
+      // get localizations from openholdingstatus
+      const localizations = await context.datasources
+        .getLoader("localizations")
+        .load({
+          pids: pids,
+        });
+
+      //console.log(JSON.stringify(localizations, null, 4), "LOCALIZATIONS");
+
+      const hest = await Promise.all(
+        localizations.agencies.map((agency) => {
+          const localids = agency.holdingItems.map((item) => ({
+            localIdentifier: item.localIdentifier,
+            localisationPid: item.localizationPid,
+            agency: item.agencyId,
+          }));
+
+          let detailedHoldings = context.datasources
+            .getLoader("detailedholdings")
+            .load({
+              localIds: localids,
+              agencyId: agency.agencyId,
+            });
+          return detailedHoldings;
+        })
+      );
+
+      //console.log(JSON.stringify(hest, null, 4), "HEST");
+
+      return hest;
+    },
+
     async localizations(parent, args, context, info) {
       const allmanifestations = await Promise.all(
         args.pids.map((pid) => {
