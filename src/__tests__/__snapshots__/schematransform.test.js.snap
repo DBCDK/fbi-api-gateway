@@ -2260,15 +2260,7 @@ type holdingsItem {
   localIdentifier: String
 }
 
-enum OrderStatus {
-  ACTIVE
-  IN_PROCESS
-  AVAILABLE_FOR_PICKUP
-  EXPIRED
-  REQUESTED_VIA_ILL
-  AT_RESERVATION_SHELF
-  UNKNOWN
-
+enum SubmitOrderStatus {
   \\"\\"\\"Borchk: User is blocked by agency\\"\\"\\"
   BORCHK_USER_BLOCKED_BY_AGENCY
 
@@ -2323,7 +2315,7 @@ enum OrderStatus {
 type SubmitOrder {
   \\"\\"\\"if order was submitted successfully\\"\\"\\"
   ok: Boolean
-  status: OrderStatus!
+  status: SubmitOrderStatus!
   message: String
   orderId: String
   deleted: Boolean
@@ -2715,6 +2707,16 @@ type Loan {
   language: String
   manifestation: Manifestation
   materialType: String
+}
+
+enum OrderStatus {
+  ACTIVE
+  IN_PROCESS
+  AVAILABLE_FOR_PICKUP
+  EXPIRED
+  REQUESTED_VIA_ILL
+  AT_RESERVATION_SHELF
+  UNKNOWN
 }
 
 type Order {

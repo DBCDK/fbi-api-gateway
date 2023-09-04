@@ -4,6 +4,23 @@ It is possible to submit an order at any agency the user is registered.
 The example sets dryRun:true, which prevents the query from actually being executed.
 If omitted, dryRun is sat to false and order is executed.
 
+The returned status can be one of following:
+
+- _**OWNED_ACCEPTED**_ - Item available at pickupAgency, order accepted
+- _**NOT_OWNED_ILL_LOC**_ - Item not available at pickupAgency, item localised for ILL
+- _**OWNED_WRONG_MEDIUMTYPE**_ - Item available at pickupAgency, order of mediumType not accepted
+- _**NOT_OWNED_WRONG_ILL_MEDIUMTYPE**_ - Item not available at pickupAgency, ILL of mediumType not accepted
+- _**NOT_OWNED_NO_ILL_LOC**_ - Item not available at pickupAgency, item not localised for ILL
+- _**OWNED_OWN_CATALOGUE**_ - Item available at pickupAgency, item may be ordered through the library's catalogue
+- _**SERVICE_UNAVAILABLE**_ - Service unavailable
+- _**UNKNOWN_PICKUPAGENCY**_ - PickupAgency not found
+- _**UNKNOWN_USER**_ - User not found
+- _**INVALID_ORDER**_ - Order does not validate
+- _**ORS_ERROR**_ - Error sending order to ORS
+- _**NO_SERVICEREQUESTER**_ - ServiceRequester is obligatory
+- _**AUTHENTICATION_ERROR**_ - Authentication error
+- _**UNKNOWN_STATUS**_ - Some unknown error occured
+
 ⚠️ For this example to return _**OK**_, the provided input must match the token user details.
 
 <InlineGraphiQL

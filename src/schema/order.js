@@ -26,6 +26,7 @@ const orderStatusmessageMap = {
   ORS_ERROR: "Error sending order to ORS",
   NO_SERVICEREQUESTER: "ServiceRequester is obligatory",
   AUTHENTICATION_ERROR: "Authentication error",
+  UNKNOWN_STATUS: "Some unknown error occured",
 };
 
 /**
@@ -35,7 +36,7 @@ const orderStatusmessageMap = {
  */
 
 export const typeDef = `
-  enum OrderStatus {
+  enum SubmitOrderStatus {
     """
     Borchk: User is blocked by agency
     """
@@ -45,8 +46,6 @@ export const typeDef = `
     Borchk: User is no longer loaner at the provided pickupbranch
     """
     BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY 
-
-
 
 
 
@@ -126,7 +125,7 @@ export const typeDef = `
     if order was submitted successfully
     """
     ok: Boolean,
-    status: OrderStatus!,
+    status: SubmitOrderStatus!,
     message: String,
     orderId: String,
     deleted: Boolean,
