@@ -14,6 +14,7 @@ import {
 } from "../utils/utils";
 import translations from "../utils/translations.json";
 import { resolveAccess } from "./draft/draft_utils_manifestations";
+import { AgencyHoldingsFilterEnum } from "../datasources/agencyHoldings.datasource";
 
 /**
  * The root type definitions
@@ -88,6 +89,21 @@ type Query {
   session: Session
   howru:String
   localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
+  agencyHoldings(
+    agencyIds: [String!]!, 
+    pids: [String!]!,
+    """
+    Total number of unique agencies expected (including errors if requested)
+    Requests are pooled, so resultCount is an estimate. If available, the number of unique agencies is at least the given resultCount
+    But sometimes the number of results are less that given resultCount, and then number of results is 
+    """ 
+    resultCount: Int,
+    """
+    Filter of requested responses.
+    Default filter is ${AgencyHoldingsFilterEnum.AVAILABLE_NOW}
+    """
+    filter: [AgencyHoldingsFilter!]
+  ): AgencyHoldingsResponse
   refWorks(pid:String!):String!
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
@@ -212,6 +228,14 @@ export const resolvers = {
         });
 
       return localizations;
+    },
+    async agencyHoldings(parent, args, context, info) {
+      return await context.datasources.getLoader("agencyHoldings").load({
+        agencyIds: args.agencyIds,
+        pids: args.pids,
+        resultCount: args.resultCount || 10,
+        filter: args.filter,
+      });
     },
     howru(parent, args, context, info) {
       return "gr8";
