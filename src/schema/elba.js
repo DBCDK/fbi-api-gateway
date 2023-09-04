@@ -10,6 +10,9 @@ export const typeDef = `
    ERROR_INVALID_PICKUP_BRANCH
    ERROR_PID_NOT_RESERVABLE
    ERROR_MISSING_CLIENT_CONFIGURATION
+
+   BORCHK_USER_BLOCKED_BY_AGENCY
+   BORCHK_USER_NOT_FOUND_ON_AGENCY
  }
 
  type CopyRequestResponse {
@@ -147,8 +150,18 @@ export const resolvers = {
         };
       }
 
-      // Then send order
+      // Verify that the user is allowed to place an order
+      // checking the municipality exist is redundant - but we still want the blocked check.
+      const { status, statusCode } = await getUserOrderAllowedStatus(
+        { agencyId: user.municipalityAgencyId },
+        context
+      );
 
+      if (!status) {
+        return { ok: status, status: statusCode };
+      }
+
+      // Then send order
       return await context.datasources
         .getLoader("statsbiblioteketSubmitArticleOrder")
         .load({

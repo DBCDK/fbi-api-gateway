@@ -581,7 +581,7 @@ export const fetchOrderStatus = async (args, context) => {
  * @param {string} props.userId context
  * @param {string} props.context context
  * @param {obj} context context
- * @returns {obj} containing status and statusCode
+ * @returns {obj} containing status, verified and statusCode
  * 
  * statusCodes:
  * 
@@ -593,16 +593,14 @@ export const fetchOrderStatus = async (args, context) => {
 export async function getUserOrderAllowedStatus({ agencyId }, context) {
   // agency must be provided
   if (!agencyId) {
-    return { ok: false, status: "UNKNOWN_PICKUPAGENCY" };
+    return { status: false, statusCode: "UNKNOWN_PICKUPAGENCY" };
   }
 
   // Verify that the agencyId has borrowerCheck
   const hasBorrowerCheck = await resolveBorrowerCheck(agencyId, context);
 
   if (hasBorrowerCheck) {
-    // Fetch specific account between the loggedIn users accounts
-    // const branches = await getUserBranchIds(context);
-    //get users agencies
+    // Fetch specific account between the loggedIn user accounts
     const userinfo = await context.datasources.getLoader("userinfo").load({
       accessToken: context.accessToken,
     });
@@ -611,26 +609,26 @@ export async function getUserOrderAllowedStatus({ agencyId }, context) {
     const accounts = userinfo.attributes.agencies;
 
     // fetch requested account from list
-    // Local (type) account is used because it always exist
+    // Local (type) account is preferred, because it will always exist
     const account = accounts.find(
       (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
     );
 
     if (!account) {
-      // No account was found
-      log.error(
+      // No user account was found - user is not a loaner at the provided pickupbranch
+      log.warn(
         `No account was found for user within the provided agencyId: ${JSON.stringify(
           {
-            ok: false,
+            status: false,
             agencyId,
-            status: "UNKNOWN_USER",
+            statusCode: "UNKNOWN_USER",
           }
         )}`
       );
 
       return {
-        ok: false,
-        status: "UNKNOWN_USER",
+        status: false,
+        statusCode: "UNKNOWN_USER",
       };
     }
 
@@ -643,42 +641,42 @@ export async function getUserOrderAllowedStatus({ agencyId }, context) {
 
     if (blocked) {
       // User is blocked on the provided pickupAgency
-      log.error(
+      log.warn(
         `User is not allowed to place an order. Borchk: ${JSON.stringify({
-          ok: false,
+          status: false,
           agencyId,
           blocked,
           borchkStatus: status,
-          status: "BORCHK_USER_BLOCKED_BY_AGENCY",
+          statusCode: "BORCHK_USER_BLOCKED_BY_AGENCY",
         })}`
       );
 
       return {
-        ok: false,
-        status: "BORCHK_USER_BLOCKED_BY_AGENCY",
+        status: false,
+        statusCode: "BORCHK_USER_BLOCKED_BY_AGENCY",
       };
     }
 
     if (status !== "OK") {
       // User does not exist on the provided pickupBranch
-      log.error(
+      log.warn(
         `User is not allowed to place an order. Borchk: ${JSON.stringify({
-          ok: false,
+          status: false,
           agencyId,
           blocked,
           borchkStatus: status,
-          status: "BORCHK_USER_NOT_FOUND_ON_AGENCY",
+          statusCode: "BORCHK_USER_NOT_FOUND_ON_AGENCY",
         })}`
       );
 
       return {
-        ok: false,
-        status: "BORCHK_USER_NOT_FOUND_ON_AGENCY",
+        status: false,
+        statusCode: "BORCHK_USER_NOT_FOUND_ON_AGENCY",
       };
     }
 
-    // Return status ok
-    return { ok: true, status: "OK" };
+    // Return status ok - verified
+    return { status: true, verified: true, statusCode: "OK" };
   }
 
   log.warn(
@@ -687,6 +685,6 @@ export async function getUserOrderAllowedStatus({ agencyId }, context) {
     })}`
   );
 
-  // Agency does not support borrowercheck - return status ok
-  return { ok: true, status: "OK" };
+  // Agency does not support borrowercheck - return status ok - no verification
+  return { status: true, statusCode: "OK", verified: false };
 }

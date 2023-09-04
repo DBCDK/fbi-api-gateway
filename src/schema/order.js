@@ -246,18 +246,6 @@ export const typeDef = `
 
   `;
 
-/**
- * Resolvers for the Profile type
- *
- *
- *
- * AGENCYID_NOT_FOUND
- * NO_ACCOUNT_WAS_FOUND
- * USER_BLOCKED_BY_AGENCY
- * BORCHK_USER_NOT_FOUND_ON_AGENCY
- * OK
- *
- */
 export const resolvers = {
   Mutation: {
     async submitOrder(parent, args, context, info) {
@@ -273,7 +261,7 @@ export const resolvers = {
 
       if (!branch) {
         return {
-          status: "ERROR_INVALID_PICKUP_BRANCH",
+          status: "UNKNOWN_PICKUPAGENCY",
         };
       }
 
@@ -281,13 +269,14 @@ export const resolvers = {
 
       const userId = args.input?.userParameters?.userId;
 
-      const { ok, status } = await getUserOrderAllowedStatus(
-        { agencyId, userId },
+      // Verify that the user is allowed to place an order
+      const { status, statusCode } = await getUserOrderAllowedStatus(
+        { agencyId },
         context
       );
 
-      if (!ok) {
-        return { ok, status };
+      if (!status) {
+        return { ok: status, status: statusCode };
       }
 
       const input = {
@@ -331,10 +320,12 @@ export const resolvers = {
   },
 
   SubmitOrder: {
+    ok(parent, args, context, info) {
+      return parent.ok || false;
+    },
     status(parent, args, context, info) {
       return parent.status?.toUpperCase();
     },
-
     message(parent, args, context, info) {
       return orderStatusmessageMap[parent.status];
     },
