@@ -104,7 +104,17 @@ type UserDataResponse {
   errorMessage: String  
 }
 
-type Mutation {
+type BookMarkId {
+  bookMarkId: Int!
+}
+
+input BookMarkInput {
+  materialType: String!
+  materialId: String!
+}
+
+
+type UserMutations {
   """
   Add user to userdata service
   """
@@ -138,7 +148,18 @@ type Mutation {
   Change users consent for storing order history for more than 30 days. If false, order history will be deleted after 30 days.
   """
   setPersistUserDataValue(persistUserData: Boolean!):UserDataResponse
+  
+  """
+  Add a bookmark
+  """
+  addBookmark(bookmark: BookMarkInput!): BookMarkId!
   }
+  
+  
+  
+extend type Mutation{
+  users:UserMutations!
+}
 
 `;
 
@@ -426,6 +447,11 @@ export const resolvers = {
     },
   },
   Mutation: {
+    async users(parent, args, context, info) {
+      return {};
+    },
+  },
+  UserMutations: {
     async addUserToUserDataService(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
@@ -459,7 +485,6 @@ export const resolvers = {
         return { success: false, errorMessage: error?.message };
       }
     },
-
     async setFavoritePickUpBranch(parent, args, context, info) {
       try {
         const { favoritePickUpBranch } = args;
@@ -511,7 +536,6 @@ export const resolvers = {
         return { success: false };
       }
     },
-
     async addOrderToUserData(parent, args, context, info) {
       try {
         const { orderId } = args;
@@ -532,7 +556,6 @@ export const resolvers = {
         return { success: false, errorMessage: error?.message };
       }
     },
-
     async deleteOrderFromUserData(parent, args, context, info) {
       try {
         const { orderId } = args;
@@ -574,6 +597,39 @@ export const resolvers = {
             smaugUserId: smaugUserId,
             persistUserData: persistUserData,
           });
+
+        return { success: !res?.error, errorMessage: res?.error };
+      } catch (error) {
+        return { success: false, errorMessage: error?.message };
+      }
+    },
+    async addBookmark(parent, args, context, info) {
+      console.log("ADDBOOKMARK");
+
+      return 200;
+
+      try {
+        const { persistUserData } = args;
+
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw new Error("Not authorized");
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw new Error("User not found in CULR");
+        }
+
+        // @TODO check bookmark
+
+        const res = await context.datasources
+          .getLoader("userDataAddBookmark")
+          .load({
+            smaugUserId: smaugUserId,
+            materialType: args.materialType,
+            materialId: args.materialId,
+          });
+
+        console.log(res, "RES");
 
         return { success: !res?.error, errorMessage: res?.error };
       } catch (error) {

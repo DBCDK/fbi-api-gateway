@@ -1,22 +1,23 @@
-import config from "../config";
+import config from "../../config";
 const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
- * Add order in userdata service
+ * remove order in userdata service
  */
 export async function load({ smaugUserId, orderId }, context) {
-  const endpoint = url + "order/add";
+  const endpoint = url + "order";
   const res = await context.fetch(endpoint, {
     headers: {
       "Content-Type": "application/json",
     },
-    method: "POST",
+    method: "DELETE",
     body: JSON.stringify({ smaugUserId: smaugUserId, orderId: orderId }),
   });
 
   if (res?.status !== 200) {
-    throw new Error(res?.body?.error || "Something went wrong.");
+    return { error: res?.body?.error };
   }
+  return { status: res.status };
 }
 
 export const options = {

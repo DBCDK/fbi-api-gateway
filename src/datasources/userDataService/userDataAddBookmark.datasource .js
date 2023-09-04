@@ -1,20 +1,23 @@
-import config from "../config";
+import config from "../../config";
 const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
  * Fetch user data form userdata service
  */
-export async function load({ smaugUserId }, context) {
-  const endpoint = url + "user/get";
+export async function load({ smaugUserId, materialType, materialId }, context) {
+  const endpoint = url + "bookmark/add";
+
+  console.log("FISKEHEST");
 
   const user = await context.fetch(endpoint, {
     headers: {
       "Content-Type": "application/json",
     },
     method: "POST",
-    body: JSON.stringify({ smaugUserId: smaugUserId }),
+    body: JSON.stringify({ smaugUserId, materialType, materialId }),
   });
 
+  console.log(user.body);
   return user.body;
 }
 
