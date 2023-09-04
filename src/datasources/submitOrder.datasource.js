@@ -36,7 +36,7 @@ function createTrackingId() {
 export async function processRequest(input, postSoap, context) {
   if (input.dryRun) {
     log.info("submitOrder dryRun", { dryRunMessage: input?.orderSystem });
-    return { status: "OK - dryRun", orderId: "1234" };
+    return { status: "OWNED_ACCEPTED", orderId: "1234" };
   }
   // If id is found the user is authenticated via some agency
   // otherwise the token is anonymous

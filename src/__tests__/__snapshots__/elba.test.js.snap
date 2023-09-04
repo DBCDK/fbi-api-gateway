@@ -96,6 +96,18 @@ Object {
 }
 `;
 
+exports[`PeriodicaArticleOrder, user blocked by municipality - should give error 1`] = `
+Object {
+  "data": Object {
+    "elba": Object {
+      "placeCopyRequest": Object {
+        "status": "BORCHK_USER_BLOCKED_BY_AGENCY",
+      },
+    },
+  },
+}
+`;
+
 exports[`PeriodicaArticleOrder, userName and userMail set in input, order success 1`] = `
 Object {
   "data": Object {

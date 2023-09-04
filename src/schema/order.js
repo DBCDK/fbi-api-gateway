@@ -243,7 +243,6 @@ export const typeDef = `
    extend type Mutation {
     submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   }
-
   `;
 
 export const resolvers = {
@@ -266,8 +265,6 @@ export const resolvers = {
       }
 
       const agencyId = branch.agencyId;
-
-      const userId = args.input?.userParameters?.userId;
 
       // Verify that the user is allowed to place an order
       const { status, statusCode } = await getUserOrderAllowedStatus(

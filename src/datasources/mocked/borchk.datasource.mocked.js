@@ -30,8 +30,11 @@ function constructResponse(
   );
 }
 
-export async function load({ libraryCode, userId, userPincode }, context) {
-  const props = { libraryCode, userId, userPincode };
+export async function load(
+  { libraryCode, userId, userPincode = null },
+  context
+) {
+  const props = { libraryCode, userId };
 
   // library not found status
   if (libraryCode === "000000") {
@@ -53,4 +56,14 @@ export async function load({ libraryCode, userId, userPincode }, context) {
   ) {
     return constructResponse(props, "ok");
   }
+
+  if (userId === "some@mail.com" && libraryCode === "715100") {
+    return constructResponse(props, "ok");
+  }
+
+  if (userId === "0123456799" && libraryCode === "715100") {
+    return constructResponse({ ...props, blocked: true }, "ok");
+  }
+
+  return constructResponse(props, "borrower_not_found");
 }

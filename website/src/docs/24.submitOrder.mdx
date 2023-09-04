@@ -4,24 +4,26 @@ It is possible to submit an order at any agency the user is registered.
 The example sets dryRun:true, which prevents the query from actually being executed.
 If omitted, dryRun is sat to false and order is executed.
 
+⚠️ For this example to return _**OK**_, the provided input must match the token user details.
+
 <InlineGraphiQL
   query={`mutation example_submitorder($input: SubmitOrderInput!) {
             submitOrder(input: $input, dryRun: true) {
               status
+              message
               orderId
             }
           }`}
   variables={{
     input: {
       pids: ["870970-basis:25574486"],
-      pickUpBranch: "765700",
+      pickUpBranch: "790900",
       userParameters: {
-        userId: "6571799497",
+        userId: "0102033690",
         userAddress: "test",
         userName: "Flemming test",
         userMail: "flemminghoimark@gmail.com",
       },
     },
-    dryRun: true,
   }}
 />

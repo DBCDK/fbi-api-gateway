@@ -1,5 +1,8 @@
 import { resolveAccess } from "./draft/draft_utils_manifestations";
-import { getHomeAgencyAccount } from "../utils/utils";
+import {
+  getHomeAgencyAccount,
+  getUserOrderAllowedStatus,
+} from "../utils/utils";
 
 export const typeDef = `
 
@@ -10,6 +13,7 @@ export const typeDef = `
    ERROR_INVALID_PICKUP_BRANCH
    ERROR_PID_NOT_RESERVABLE
    ERROR_MISSING_CLIENT_CONFIGURATION
+   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
 
    BORCHK_USER_BLOCKED_BY_AGENCY
    BORCHK_USER_NOT_FOUND_ON_AGENCY
@@ -120,7 +124,7 @@ export const resolvers = {
       // Ensure user has municipalityAgencyId
       if (!user.municipalityAgencyId) {
         return {
-          status: "ERROR_UNAUTHENTICATED_USER",
+          status: "ERROR_MISSING_MUNICIPALITYAGENCYID",
         };
       }
 

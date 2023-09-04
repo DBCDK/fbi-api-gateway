@@ -579,6 +579,7 @@ export const fetchOrderStatus = async (args, context) => {
  * to verify whether the user is blocked before placing an order.
  * 
  * @param {string} props.userId context
+ * @param {string} props.agencyId context
  * @param {string} props.context context
  * @param {obj} context context
  * @returns {obj} containing status, verified and statusCode
@@ -590,7 +591,7 @@ export const fetchOrderStatus = async (args, context) => {
  * BORCHK_USER_NOT_FOUND_ON_AGENCY
  *  
  */
-export async function getUserOrderAllowedStatus({ agencyId }, context) {
+export async function getUserOrderAllowedStatus({ agencyId, userId }, context) {
   // agency must be provided
   if (!agencyId) {
     return { status: false, statusCode: "UNKNOWN_PICKUPAGENCY" };
@@ -605,6 +606,8 @@ export async function getUserOrderAllowedStatus({ agencyId }, context) {
       accessToken: context.accessToken,
     });
 
+    console.error("...........", userinfo);
+
     // user accounts liste
     const accounts = userinfo.attributes.agencies;
 
@@ -613,6 +616,8 @@ export async function getUserOrderAllowedStatus({ agencyId }, context) {
     const account = accounts.find(
       (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
     );
+
+    console.log("account", account, JSON.stringify(accounts, null, 2));
 
     if (!account) {
       // No user account was found - user is not a loaner at the provided pickupbranch
@@ -638,6 +643,8 @@ export async function getUserOrderAllowedStatus({ agencyId }, context) {
         userId: account.userId,
         libraryCode: account.agencyId,
       });
+
+    console.error("borchk....", { status, blocked });
 
     if (blocked) {
       // User is blocked on the provided pickupAgency
