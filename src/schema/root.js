@@ -89,7 +89,7 @@ type Query {
   howru:String
   localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
   """
-  fisklocalizations(pids:[String!]!): [DetailedHoldings] @complexity(value: 35, multipliers: ["pids"])
+  fisklocalizations parses ALL localizations and ALL detailedholdings - timings are ok - max 4-5 secs
   """
    fisklocalizations(pids:[String!]!): [DetailedHoldings] 
   refWorks(pid:String!):String!
