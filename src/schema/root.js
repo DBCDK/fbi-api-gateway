@@ -88,6 +88,10 @@ type Query {
   session: Session
   howru:String
   localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
+  """
+  fisklocalizations(pids:[String!]!): [DetailedHoldings] @complexity(value: 35, multipliers: ["pids"])
+  """
+   fisklocalizations(pids:[String!]!): [String] 
   refWorks(pid:String!):String!
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
@@ -190,6 +194,101 @@ export const resolvers = {
         .getLoader("refworks")
         .load(args.pid);
       return ref;
+    },
+    async fisklocalizations(parent, args, context, info) {
+      // .. hmm is this openformat ??
+      const allmanifestations = await Promise.all(
+        args.pids.map((pid) => {
+          return context.datasources.getLoader("openformat").load(pid);
+        })
+      );
+
+      const pids = allmanifestations.map(
+        (manifestation) =>
+          manifestation?.details?.hostPublicationPid?.$ ||
+          manifestation.admindata.pid.$
+      );
+
+      // get localizations from openholdingstatus
+      const localizations = await context.datasources
+        .getLoader("localizations")
+        .load({
+          pids: pids,
+        });
+
+      console.log(JSON.stringify(localizations, null, 4), "LOCALIZATIONS");
+      //return ["fISK"];
+
+      const res = [];
+
+      const hest = await Promise.all(
+        localizations.agencies.map((agency) => {
+          const localids = agency.holdingItems.map((item) => ({
+            localIdentifier: item.localIdentifier,
+            localisationPid: item.localizationPid,
+            agency: item.agencyId,
+          }));
+          console.log(localids, "LOCALIDS");
+          console.log(agency, "AGENCY");
+
+          let detailedHoldings = context.datasources
+            .getLoader("detailedholdings")
+            .load({
+              localIds: localids,
+              agencyId: agency.agencyId,
+            });
+          return detailedHoldings;
+        })
+      );
+
+      console.log(JSON.stringify(hest, null, 4), "HEST");
+
+      /*const hest = Promise.all(localizations.agencies.map((agency) => {
+        const localids = agency.holdingItems.map((item) => ({
+          localIdentifier: item.localIdentifier,
+          localisationPid: item.localizationPid,
+          agency: item.agencyId,
+        }));
+        console.log(localids, "LOCALIDS");
+        console.log(agency, "AGENCY");
+
+
+
+        // let detailedHoldings =  context.datasources
+        //     .getLoader("detailedholdings")
+        //     .load({
+        //       localIds: localids,
+        //       agencyId: agency.agencyId,
+        //     });
+        // return detailedHoldings;
+      });*/
+
+      // localizations.agencies.forEach((agency) => {
+      //   const localids = agency.holdingItems.map((item) => ({
+      //     localIdentifier: item.localIdentifier,
+      //     localisationPid: item.localizationPid,
+      //     agency: item.agencyId,
+      //   }));
+      //   console.log(localids, "LOCALIDS");
+      //   console.log(agency, "AGENCY");
+      //
+      //
+      //
+      //   let detailedHoldings = await context.datasources
+      //     .getLoader("detailedholdings")
+      //     .load({
+      //       localIds: localids,
+      //       agencyId: agency.agencyId,
+      //     });
+      //
+      //   console.log(detailedHoldings, "DETAILED");
+      //   res.push(detailedHoldings);
+      // });
+      //
+      // console.log(JSON.stringify(res, null, 4), "RES");
+      return ["fisk"];
+
+      return localizations;
     },
     async localizations(parent, args, context, info) {
       const allmanifestations = await Promise.all(
