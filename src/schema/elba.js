@@ -1,5 +1,5 @@
-import { log } from "dbc-node-logger";
 import { resolveAccess } from "./draft/draft_utils_manifestations";
+import { getHomeAgencyAccount } from "../utils/utils";
 
 export const typeDef = `
 
@@ -82,10 +82,10 @@ export const resolvers = {
         };
       }
 
-      // Basic user information (e.g. name, email)
-      let userData;
+      // Detailed user informations (e.g. municipalityAgencyId)
+      let userInfo;
       try {
-        userData = await context.datasources.getLoader("user").load({
+        userInfo = await context.datasources.getLoader("userinfo").load({
           accessToken: context.accessToken,
         });
       } catch (e) {
@@ -94,11 +94,13 @@ export const resolvers = {
         };
       }
 
-      // Detailed user informations (e.g. municipalityAgencyId)
-      let userInfo;
+      // Basic user information (e.g. name, email)
+      let userData;
       try {
-        userInfo = await context.datasources.getLoader("userinfo").load({
-          accessToken: context.accessToken,
+        const homeAccount = getHomeAgencyAccount(userInfo);
+        userData = await context.datasources.getLoader("user").load({
+          homeAccount: homeAccount,
+          accessToken: context.accessToken, // Required for testing
         });
       } catch (e) {
         return {

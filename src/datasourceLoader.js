@@ -92,23 +92,8 @@ export const trackMe = () => {
           count: val.count,
           time: val.time,
           cacheMiss: val.cacheMiss,
-        };
-      });
-
-      return res;
-    },
-    getMetricsArr: function () {
-      const res = [];
-
-      Object.entries(this.trackObject).forEach(([key, val]) => {
-        res.push({
-          name: key,
-          count: val.count,
-          total_ms: val.time,
           avg_ms: Math.round(val.sequentialTime / val.count),
-          cache_miss: val.cacheMiss,
-          num_batches: val.batches,
-        });
+        };
       });
 
       return res;
