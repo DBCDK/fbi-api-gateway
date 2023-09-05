@@ -577,3 +577,67 @@ export function getFirstMatch(matcherValue, defaultReturn, matcherArray) {
     matcherArray?.find((el) => el[0] === matcherValue)?.[1] || defaultReturn
   );
 }
+
+export async function resolveLocalizations(args, context) {
+  // Remove openformat when the time is right
+  const allmanifestations = await Promise.all(
+    args.pids.map((pid) => {
+      return context.datasources.getLoader("openformat").load(pid);
+    })
+  );
+
+  const pids = allmanifestations.map(
+    (manifestation) =>
+      manifestation?.details?.hostPublicationPid?.$ ||
+      manifestation.admindata.pid.$
+  );
+
+  // get localizations from openholdingstatus
+  return await context.datasources.getLoader("localizations").load({
+    pids: pids,
+  });
+}
+
+export async function resolveLocalizationsWithHoldings(
+  args,
+  context,
+  offset,
+  limit
+) {
+  const localizations = await resolveLocalizations(args, context);
+
+  const detailedHoldings = await Promise.all(
+    localizations.agencies.map((agency) => {
+      const localids = agency.holdingItems.map((item) => ({
+        localIdentifier: item.localIdentifier,
+        localisationPid: item.localizationPid,
+        agency: item.agencyId,
+      }));
+
+      return context.datasources.getLoader("detailedholdings").load({
+        localIds: localids,
+        agencyId: agency.agencyId,
+      });
+    })
+  );
+
+  const agencyIds = new Set(
+    detailedHoldings
+      .filter((singleDetailedHolding) => {
+        return (
+          new Date(singleDetailedHolding.expectedDelivery).toDateString() ===
+          new Date().toDateString()
+        );
+      })
+      .map((singleDetailedHolding) => singleDetailedHolding.branchId)
+  );
+
+  const localizationsWithHoldings = localizations.agencies
+    .filter((agency) => agencyIds.has(agency.agencyId))
+    .slice(offset, offset + limit);
+
+  return {
+    count: localizationsWithHoldings.length,
+    agencies: localizationsWithHoldings,
+  };
+}

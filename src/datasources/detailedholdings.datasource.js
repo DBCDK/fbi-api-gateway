@@ -30,6 +30,9 @@ function parseResponse(details, agencyId) {
   return {
     branchId: agencyId,
     holdingstatus: localholdings,
+    expectedDelivery: [...localholdings]
+      .map((item) => item?.expectedDelivery)
+      .sort((a, b) => (a > b ? 1 : -1))?.[0],
   };
 }
 

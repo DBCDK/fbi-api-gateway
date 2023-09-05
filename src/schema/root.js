@@ -9,12 +9,14 @@ import {
   fetchOrderStatus,
   getUserId,
   resolveBorrowerCheck,
+  resolveLocalizations,
+  resolveLocalizationsWithHoldings,
   resolveManifestation,
   resolveWork,
 } from "../utils/utils";
 import translations from "../utils/translations.json";
 import { resolveAccess } from "./draft/draft_utils_manifestations";
-import { AgencyHoldingsFilterEnum } from "../datasources/agencyHoldings.datasource";
+import isEmpty from "lodash/isEmpty";
 
 /**
  * The root type definitions
@@ -89,21 +91,10 @@ type Query {
   session: Session
   howru:String
   localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
-  agencyHoldings(
-    agencyIds: [String!]!, 
-    pids: [String!]!,
-    """
-    Total number of unique agencies expected (including errors if requested)
-    Requests are pooled, so resultCount is an estimate. If available, the number of unique agencies is at least the given resultCount
-    But sometimes the number of results are less that given resultCount, and then number of results is 
-    """ 
-    resultCount: Int,
-    """
-    Filter of requested responses.
-    Default filter is ${AgencyHoldingsFilterEnum.AVAILABLE_NOW}
-    """
-    filter: [AgencyHoldingsFilter!]
-  ): AgencyHoldingsResponse
+  """
+  localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
+  """
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int): Localizations 
   refWorks(pid:String!):String!
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
@@ -208,34 +199,22 @@ export const resolvers = {
       return ref;
     },
     async localizations(parent, args, context, info) {
-      const allmanifestations = await Promise.all(
-        args.pids.map((pid) => {
-          return context.datasources.getLoader("openformat").load(pid);
-        })
-      );
-
-      const pids = allmanifestations.map(
-        (manifestation) =>
-          manifestation?.details?.hostPublicationPid?.$ ||
-          manifestation.admindata.pid.$
-      );
-
-      // get localizations from openholdingstatus
-      const localizations = await context.datasources
-        .getLoader("localizations")
-        .load({
-          pids: pids,
-        });
-
-      return localizations;
+      return await resolveLocalizations(args, context);
     },
-    async agencyHoldings(parent, args, context, info) {
-      return await context.datasources.getLoader("agencyHoldings").load({
-        agencyIds: args.agencyIds,
-        pids: args.pids,
-        resultCount: args.resultCount || 10,
-        filter: args.filter,
-      });
+    async localizationsWithHoldings(parent, args, context, info) {
+      if (!args.pids || isEmpty(args.pids)) {
+        return { count: 0, agencies: [] };
+      }
+
+      const offset = args.offset ?? 0;
+      const limit = args.limit ?? 10;
+
+      return await resolveLocalizationsWithHoldings(
+        args,
+        context,
+        offset,
+        limit
+      );
     },
     howru(parent, args, context, info) {
       return "gr8";
