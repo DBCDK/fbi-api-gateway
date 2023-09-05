@@ -5,7 +5,7 @@
 
 import { log } from "dbc-node-logger";
 
-import { getUserOrderAllowedStatus } from "../utils/utils";
+import getUserOrderAllowedStatus from "../utils/userOrderAllowedStatus";
 
 const orderStatusmessageMap = {
   OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",
@@ -46,6 +46,11 @@ export const typeDef = `
     Borchk: User is no longer loaner at the provided pickupbranch
     """
     BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY 
+
+    """
+    Borchk: User could not be verified
+    """
+    BORCHK_USER_NOT_VERIFIED
 
 
 
@@ -113,6 +118,8 @@ export const typeDef = `
     Authentication error
     """
     AUTHENTICATION_ERROR
+
+
 
     """
     Unknown error occured, status is unknown
@@ -320,7 +327,7 @@ export const resolvers = {
       return parent.ok || false;
     },
     status(parent, args, context, info) {
-      return parent.status?.toUpperCase();
+      return parent.status?.toUpperCase() || "UNKNOWN_STATUS";
     },
     message(parent, args, context, info) {
       return orderStatusmessageMap[parent.status];

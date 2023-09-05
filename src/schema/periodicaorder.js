@@ -3,10 +3,7 @@
  *
  */
 
-import {
-  getUserOrderAllowedStatus,
-  resolveBorrowerCheck,
-} from "../utils/utils";
+import { resolveBorrowerCheck } from "../utils/utils";
 
 export const typeDef = `
  input PeriodicaArticleOrder {

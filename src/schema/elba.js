@@ -1,8 +1,6 @@
 import { resolveAccess } from "./draft/draft_utils_manifestations";
-import {
-  getHomeAgencyAccount,
-  getUserOrderAllowedStatus,
-} from "../utils/utils";
+import { getHomeAgencyAccount } from "../utils/utils";
+import getUserOrderAllowedStatus from "../utils/userOrderAllowedStatus";
 
 export const typeDef = `
 
@@ -15,8 +13,10 @@ export const typeDef = `
    ERROR_MISSING_CLIENT_CONFIGURATION
    ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
 
+   UNKNOWN_USER
    BORCHK_USER_BLOCKED_BY_AGENCY
-   BORCHK_USER_NOT_FOUND_ON_AGENCY
+   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
+   BORCHK_USER_NOT_VERIFIED
  }
 
  type CopyRequestResponse {
