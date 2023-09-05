@@ -606,8 +606,6 @@ export async function getUserOrderAllowedStatus({ agencyId, userId }, context) {
       accessToken: context.accessToken,
     });
 
-    console.error("...........", userinfo);
-
     // user accounts liste
     const accounts = userinfo.attributes.agencies;
 
@@ -616,8 +614,6 @@ export async function getUserOrderAllowedStatus({ agencyId, userId }, context) {
     const account = accounts.find(
       (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
     );
-
-    console.log("account", account, JSON.stringify(accounts, null, 2));
 
     if (!account) {
       // No user account was found - user is not a loaner at the provided pickupbranch
@@ -643,8 +639,6 @@ export async function getUserOrderAllowedStatus({ agencyId, userId }, context) {
         userId: account.userId,
         libraryCode: account.agencyId,
       });
-
-    console.error("borchk....", { status, blocked });
 
     if (blocked) {
       // User is blocked on the provided pickupAgency
