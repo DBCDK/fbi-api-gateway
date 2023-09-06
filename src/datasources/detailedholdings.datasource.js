@@ -32,7 +32,7 @@ function parseResponse(details, agencyId) {
     holdingstatus: localholdings,
     expectedDelivery: [...localholdings]
       .map((item) => item?.expectedDelivery)
-      .sort((a, b) => (a > b ? 1 : -1))?.[0],
+      .sort((a, b) => new Date(a) - new Date(b))?.[0],
   };
 }
 
