@@ -108,6 +108,7 @@ type BookMarkId {
   bookMarkId: Int!
 }
 
+
 input BookMarkInput {
   materialType: String!
   materialId: String!
@@ -155,11 +156,10 @@ type UserMutations {
   addBookmark(bookmark: BookMarkInput!): BookMarkId!
   }
   
-  
-  
-extend type Mutation{
+extend type Mutation {
   users:UserMutations!
 }
+
 
 `;
 
@@ -451,6 +451,27 @@ export const resolvers = {
       return {};
     },
   },
+  /*Query: {
+    async getBookMarks(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        const bookmarks = await context.datasources
+          .getLoader("userDataGetBookMarks")
+          .load({
+            smaugUserId: smaugUserId,
+          });
+        return bookmarks;
+      } catch (error) {
+        log.error(
+          `Failed to add user to userData service. Message: ${error.message}`
+        );
+        return [];
+      }
+    },
+  },*/
   UserMutations: {
     async addUserToUserDataService(parent, args, context, info) {
       try {
@@ -604,13 +625,7 @@ export const resolvers = {
       }
     },
     async addBookmark(parent, args, context, info) {
-      console.log("ADDBOOKMARK");
-
-      return 200;
-
       try {
-        const { persistUserData } = args;
-
         const smaugUserId = context?.smaug?.user?.uniqueId;
         if (!smaugUserId) {
           throw new Error("Not authorized");
@@ -619,21 +634,18 @@ export const resolvers = {
           throw new Error("User not found in CULR");
         }
 
-        // @TODO check bookmark
-
         const res = await context.datasources
           .getLoader("userDataAddBookmark")
           .load({
             smaugUserId: smaugUserId,
-            materialType: args.materialType,
-            materialId: args.materialId,
+            materialType: args.bookmark.materialType,
+            materialId: args.bookmark.materialId,
           });
 
-        console.log(res, "RES");
-
-        return { success: !res?.error, errorMessage: res?.error };
+        return res;
       } catch (error) {
-        return { success: false, errorMessage: error?.message };
+        // @TODO log
+        return { bookMarkId: 0 };
       }
     },
   },
