@@ -262,7 +262,7 @@ export const resolvers = {
         await context.datasources.getLoader("library").load({
           branchId: args.input.pickUpBranch,
         })
-      ).result[0];
+      ).result?.[0];
 
       if (!branch) {
         return {
