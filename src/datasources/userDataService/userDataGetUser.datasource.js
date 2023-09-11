@@ -2,7 +2,7 @@ import config from "../../config";
 const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
- * add a bookmark. Bookmark is a materialType + materialId
+ * Get a user
  */
 export async function load({ smaugUserId }, context) {
   const endpoint = url + "user/get";

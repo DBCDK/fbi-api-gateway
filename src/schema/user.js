@@ -480,7 +480,7 @@ export const resolvers = {
         return bookmarks;
       } catch (error) {
         log.error(
-          `Failed to add user to userData service. Message: ${error.message}`
+          `Failed to get bookmarks from userData service. Message: ${error.message}`
         );
         return [];
       }
@@ -659,6 +659,9 @@ export const resolvers = {
         return res;
       } catch (error) {
         // @TODO log
+        log.error(
+          `Failed to add bookmark to userData service. Message: ${error.message}`
+        );
         return { bookMarkId: 0 };
       }
     },
@@ -682,7 +685,9 @@ export const resolvers = {
 
         return res;
       } catch (error) {
-        // @TODO log
+        log.error(
+          `Failed to delete bookmark in userData service. Message: ${error.message}`
+        );
         return 0;
       }
     },
