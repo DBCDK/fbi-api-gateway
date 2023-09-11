@@ -108,6 +108,12 @@ type BookMarkId {
   bookMarkId: Int!
 }
 
+type BookMark{
+  bookmarkId: Int!
+  materialType: String!
+  materialId: String!
+}
+
 
 input BookMarkInput {
   materialType: String!
@@ -153,11 +159,19 @@ type UserMutations {
   """
   Add a bookmark
   """
-  addBookmark(bookmark: BookMarkInput!): BookMarkId!
+  addBookmark(bookmark: BookMarkInput!): BookMark!
+  """
+  Delete a bookmark
+  """
+  deleteBookmark(bookmarkId: Int!): Int!
   }
   
 extend type Mutation {
   users:UserMutations!
+}
+
+extend type Query{
+  getBookMarks: [BookMark!]!
 }
 
 
@@ -451,7 +465,11 @@ export const resolvers = {
       return {};
     },
   },
-  /*Query: {
+  Query: {
+    /*getBookMarks(parent, args, context, info) {
+      return [{ bookMarkId: 4, materialType: "Bog", materialId: "12345" }];
+    },
+  },*/
     async getBookMarks(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
@@ -471,7 +489,7 @@ export const resolvers = {
         return [];
       }
     },
-  },*/
+  },
   UserMutations: {
     async addUserToUserDataService(parent, args, context, info) {
       try {
@@ -646,6 +664,30 @@ export const resolvers = {
       } catch (error) {
         // @TODO log
         return { bookMarkId: 0 };
+      }
+    },
+    async deleteBookmark(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+
+        if (!smaugUserId) {
+          throw new Error("Not authorized");
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw new Error("User not found in CULR");
+        }
+
+        const res = await context.datasources
+          .getLoader("userDataDeleteBookmark")
+          .load({
+            smaugUserId: smaugUserId,
+            bookmarkId: args.bookmarkId,
+          });
+
+        return res;
+      } catch (error) {
+        // @TODO log
+        return 0;
       }
     },
   },

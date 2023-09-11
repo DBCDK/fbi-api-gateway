@@ -19,20 +19,15 @@ export async function load({ pid, limit = 10, profile, branchId }, context) {
     body.branchid = branchId;
   }
 
-  console.log(body, "BODY");
-
-  const fisk = await context.fetch(url, {
+  return await context.fetch(url, {
     method: "POST",
     body: JSON.stringify(body),
-  });
-  console.log(url, "URL");
-  console.log(fisk, "FIS");
-  return fisk.body;
+  }).body;
 }
 
-/*export const options = {
+export const options = {
   redis: {
     prefix,
     ttl,
   },
-};*/
+};
