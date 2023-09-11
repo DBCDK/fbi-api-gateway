@@ -235,7 +235,7 @@ export default {
       ttl: 60 * 5,
     },
     userdata: {
-      url: process.env.USERDATA_URL || "http://localhost:4567/",
+      url: process.env.USERDATA_URL,
       ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 1,
       prefix: "userdata",
     },
