@@ -5,18 +5,31 @@
   top: 0;
   left: 0;
   overflow: hidden;
+
+  cursor: none;
+
+  z-index: 2;
 }
 
 .hill {
-  position: relative;
   border-radius: 50%;
+  background-color: #023020;
+  opacity: 0.3;
+
+  position: absolute;
+}
+
+.hill > div {
+  position: relative;
+  height: 100%;
+}
+
+.hill.large {
   width: 800px;
   height: 600px;
-  margin-top: 10%;
-  background-color: #023020;
-  opacity: 0.25;
 
-  z-index: 3;
+  bottom: -400px;
+  left: 0;
 }
 
 .tomb {
@@ -29,4 +42,9 @@
   position: absolute;
   left: 300px;
   top: -75px;
+}
+
+.tomb p {
+  margin-top: 50%;
+  font-size: 12px;
 }

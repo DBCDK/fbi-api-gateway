@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import useMode from "@/hooks/useMode";
 import getConfig from "next/config";
+import useLocalStorage from "./useLocalStorage";
 
 const icons = {
   default: "🥳",
@@ -15,13 +16,15 @@ const icons = {
  * @param {*} value
  */
 export default function useTheme() {
-  // const { mode, setMode } = useMode();
+  const { mode, setMode, hasEnforcedMode } = useMode();
   const theme = getConfig()?.publicRuntimeConfig?.theme || "default";
   const icon = icons[theme];
 
-  // if (theme === "halloween" && mode === "theme") {
-  //   setMode("theme");
-  // }
+  useEffect(() => {
+    if (theme === "halloween" && mode === "theme") {
+      setMode("theme");
+    }
+  }, []);
 
   useEffect(() => {
     document.body.classList?.add(theme);

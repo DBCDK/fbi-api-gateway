@@ -7,7 +7,7 @@ const ENUM_VALUES = {
   dark: "dark",
   light: "light",
   system: "system",
-  // theme: "theme",
+  theme: "theme",
 };
 
 /**
@@ -61,6 +61,28 @@ export default function useMode() {
     }
   }
 
+  function enforceMode(key, ttl = 60 * 60 * 24) {
+    if (key) {
+      const expire = new Date().getTime() / 1000 + ttl;
+      const obj = { value: true, expire };
+      localStorage.setItem(key, JSON.stringify(obj));
+    }
+  }
+
+  function hasEnforcedMode(key) {
+    if (key) {
+      const now = new Date().getTime() / 1000;
+      const item = JSON.parse(localStorage.getItem(key));
+      if (item?.expire <= now) {
+        return !!item?.value;
+      }
+    }
+  }
+
+  function removeEnforceMode(key) {
+    localStorage.removeItem(key);
+  }
+
   /**
    * sync mode to body as class
    */
@@ -81,6 +103,9 @@ export default function useMode() {
   return {
     mode,
     setMode,
+    enforceMode,
+    hasEnforcedMode,
+    removeEnforceMode,
     isLoading: typeof mode === "undefined" && !error,
   };
 }
