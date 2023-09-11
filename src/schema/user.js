@@ -466,10 +466,6 @@ export const resolvers = {
     },
   },
   Query: {
-    /*getBookMarks(parent, args, context, info) {
-      return [{ bookMarkId: 4, materialType: "Bog", materialId: "12345" }];
-    },
-  },*/
     async getBookMarks(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
