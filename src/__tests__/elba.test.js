@@ -219,3 +219,26 @@ test("PeriodicaArticleOrder, originRequester missing from smaug configuration", 
 
   expect(result).toMatchSnapshot();
 });
+
+test("PeriodicaArticleOrder, user blocked by municipality - should give error", async () => {
+  const result = await performTestQuery({
+    query,
+    variables: {
+      input: {
+        pid: "870971-avis:34591016",
+      },
+    },
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "DUMMY_TOKEN_USER_BLOCKED",
+      smaug: {
+        user: {
+          uniqueId: "1234561234",
+        },
+        digitalArticleService: { originRequester: "bibdk" },
+      },
+    },
+  });
+
+  expect(result).toMatchSnapshot();
+});

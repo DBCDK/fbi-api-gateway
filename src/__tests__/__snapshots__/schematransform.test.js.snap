@@ -505,6 +505,8 @@ type Mutation {
     pagination: String
   ): DigitalArticleServiceResponse!
   elba: ElbaServices!
+  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
   data_collect(input: DataCollectInput!): String!
   deleteOrder(
     \\"\\"\\"id of the order to be deleted\\"\\"\\"
@@ -530,8 +532,6 @@ type Mutation {
     \\"\\"\\"
     dryRun: Boolean
   ): RenewLoanResponse
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
-  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   submitSession(input: SessionInput!): String!
   deleteSession: String!
 
@@ -2008,6 +2008,11 @@ enum CopyRequestStatus {
   ERROR_INVALID_PICKUP_BRANCH
   ERROR_PID_NOT_RESERVABLE
   ERROR_MISSING_CLIENT_CONFIGURATION
+  ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  UNKNOWN_USER
+  BORCHK_USER_BLOCKED_BY_AGENCY
+  BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
+  BORCHK_USER_NOT_VERIFIED
 }
 
 type CopyRequestResponse {
@@ -2257,10 +2262,66 @@ type holdingsItem {
   localIdentifier: String
 }
 
+enum SubmitOrderStatus {
+  \\"\\"\\"Borchk: User is blocked by agency\\"\\"\\"
+  BORCHK_USER_BLOCKED_BY_AGENCY
+
+  \\"\\"\\"Borchk: User is no longer loaner at the provided pickupbranch\\"\\"\\"
+  BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
+
+  \\"\\"\\"Borchk: User could not be verified\\"\\"\\"
+  BORCHK_USER_NOT_VERIFIED
+
+  \\"\\"\\"Item available at pickupAgency, order accepted\\"\\"\\"
+  OWNED_ACCEPTED
+
+  \\"\\"\\"Item not available at pickupAgency, item localised for ILL\\"\\"\\"
+  NOT_OWNED_ILL_LOC
+
+  \\"\\"\\"Item available at pickupAgency, order of mediumType not accepted\\"\\"\\"
+  OWNED_WRONG_MEDIUMTYPE
+
+  \\"\\"\\"Item not available at pickupAgency, ILL of mediumType not accepted\\"\\"\\"
+  NOT_OWNED_WRONG_ILL_MEDIUMTYPE
+
+  \\"\\"\\"Item not available at pickupAgency, item not localised for ILL\\"\\"\\"
+  NOT_OWNED_NO_ILL_LOC
+
+  \\"\\"\\"
+  Item available at pickupAgency, item may be ordered through the library's catalogue
+  \\"\\"\\"
+  OWNED_OWN_CATALOGUE
+
+  \\"\\"\\"Service unavailable\\"\\"\\"
+  SERVICE_UNAVAILABLE
+
+  \\"\\"\\"PickupAgency not found\\"\\"\\"
+  UNKNOWN_PICKUPAGENCY
+
+  \\"\\"\\"User not found\\"\\"\\"
+  UNKNOWN_USER
+
+  \\"\\"\\"Order does not validate\\"\\"\\"
+  INVALID_ORDER
+
+  \\"\\"\\"Error sending order to ORS\\"\\"\\"
+  ORS_ERROR
+
+  \\"\\"\\"ServiceRequester is obligatory\\"\\"\\"
+  NO_SERVICEREQUESTER
+
+  \\"\\"\\"Authentication error\\"\\"\\"
+  AUTHENTICATION_ERROR
+
+  \\"\\"\\"Unknown error occured, status is unknown\\"\\"\\"
+  UNKNOWN_STATUS
+}
+
 type SubmitOrder {
   \\"\\"\\"if order was submitted successfully\\"\\"\\"
   ok: Boolean
-  status: String
+  status: SubmitOrderStatus!
+  message: String
   orderId: String
   deleted: Boolean
   orsId: String
@@ -2782,7 +2843,7 @@ type Cover {
 
 type Mutation {
   elba: ElbaServices!
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse!
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
 }
 
 enum AccessTypeCode {
@@ -4071,6 +4132,11 @@ enum CopyRequestStatus {
   ERROR_INVALID_PICKUP_BRANCH
   ERROR_PID_NOT_RESERVABLE
   ERROR_MISSING_CLIENT_CONFIGURATION
+  ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  UNKNOWN_USER
+  BORCHK_USER_BLOCKED_BY_AGENCY
+  BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
+  BORCHK_USER_NOT_VERIFIED
 }
 
 type CopyRequestResponse {

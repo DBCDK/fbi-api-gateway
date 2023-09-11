@@ -1,5 +1,6 @@
 import { resolveAccess } from "./draft/draft_utils_manifestations";
 import { getHomeAgencyAccount } from "../utils/utils";
+import getUserOrderAllowedStatus from "../utils/userOrderAllowedStatus";
 
 export const typeDef = `
 
@@ -10,6 +11,12 @@ export const typeDef = `
    ERROR_INVALID_PICKUP_BRANCH
    ERROR_PID_NOT_RESERVABLE
    ERROR_MISSING_CLIENT_CONFIGURATION
+   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+
+   UNKNOWN_USER
+   BORCHK_USER_BLOCKED_BY_AGENCY
+   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
+   BORCHK_USER_NOT_VERIFIED
  }
 
  type CopyRequestResponse {
@@ -117,7 +124,7 @@ export const resolvers = {
       // Ensure user has municipalityAgencyId
       if (!user.municipalityAgencyId) {
         return {
-          status: "ERROR_UNAUTHENTICATED_USER",
+          status: "ERROR_MISSING_MUNICIPALITYAGENCYID",
         };
       }
 
@@ -149,8 +156,18 @@ export const resolvers = {
         };
       }
 
-      // Then send order
+      // Verify that the user is allowed to place an order
+      // checking the municipality exist is redundant - but we still want the blocked check.
+      const { status, statusCode } = await getUserOrderAllowedStatus(
+        { agencyId: user.municipalityAgencyId },
+        context
+      );
 
+      if (!status) {
+        return { ok: status, status: statusCode };
+      }
+
+      // Then send order
       return await context.datasources
         .getLoader("statsbiblioteketSubmitArticleOrder")
         .load({

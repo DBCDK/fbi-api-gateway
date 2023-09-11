@@ -24,7 +24,7 @@ exports[`PeriodicaArticleOrder, order success 1`] = `
 Object {
   "data": Object {
     "submitPeriodicaArticleOrder": Object {
-      "status": "OK",
+      "status": "ERROR_PID_NOT_RESERVABLE",
     },
   },
 }
@@ -34,7 +34,7 @@ exports[`PeriodicaArticleOrder, order when agency has no borrowerCheck 1`] = `
 Object {
   "data": Object {
     "submitPeriodicaArticleOrder": Object {
-      "status": "OK",
+      "status": "ERROR_PID_NOT_RESERVABLE",
     },
   },
 }

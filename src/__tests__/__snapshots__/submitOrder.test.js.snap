@@ -1,5 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`submitorder failed when user is blocked by pickupBranch (Agency) 1`] = `
+Object {
+  "data": Object {
+    "submitOrder": Object {
+      "orderId": null,
+      "status": "BORCHK_USER_BLOCKED_BY_AGENCY",
+    },
+  },
+}
+`;
+
+exports[`submitorder failed when user is not found on pickupbranch (borchk) 1`] = `
+Object {
+  "data": Object {
+    "submitOrder": Object {
+      "orderId": null,
+      "status": "UNKNOWN_USER",
+    },
+  },
+}
+`;
+
 exports[`submitorder fails when user is not authenticated, and no userId provided 1`] = `
 Object {
   "data": Object {

@@ -2,6 +2,8 @@
 
 Borrower check. Used to verify if a user is enrolled in a specific library and if the library is in the users municipality of residence.
 
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK".
+
 The _userPincode_ in BorchkInput is optional.
 
 The responding _userId_ will always be the same as the requesting _userId_.
