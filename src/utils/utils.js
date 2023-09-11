@@ -583,28 +583,100 @@ export async function resolveLocalizations(args, context) {
   });
 }
 
-export async function resolveLocalizationsWithHoldings(
+const kglBibBranchIdSet = new Set([
+  "800010",
+  "800015",
+  "800021",
+  "800022",
+  "800023",
+  "800024",
+  "800025",
+  "800026",
+  "800027",
+  "800028",
+  "800029",
+  "800031",
+  "800032",
+  "800033",
+  "800035",
+  "800036",
+  "800037",
+  "800038",
+  "800039",
+  "800041",
+  "800042",
+  "800043",
+  "800044",
+  "800045",
+  "800046",
+  "800047",
+  "800048",
+  "800049",
+  "809010",
+  "809015",
+]);
+
+function handleLocalizationsWithKglBibliotek(
+  localizationsWithHoldings,
+  lookupSpecificAgencyIds,
+  kglBibBranchIds = kglBibBranchIdSet
+) {
+  const lookupSpecificAgencyIdSet = new Set(lookupSpecificAgencyIds);
+
+  const localizationsWithHoldingsNotKglBibliotek = localizationsWithHoldings.filter(
+    (agency) => !kglBibBranchIds.has(agency.agencyId)
+  );
+
+  const localizationsWithHoldingsIsKglBibliotek = localizationsWithHoldings.filter(
+    (agency) => kglBibBranchIds.has(agency.agencyId)
+  );
+
+  const aggregateKglBibliotek =
+    localizationsWithHoldingsIsKglBibliotek.length > 0
+      ? [
+          {
+            agencyId: "800010",
+            holdingItems: uniq(
+              localizationsWithHoldingsIsKglBibliotek.flatMap(
+                (localization) => localization.holdingItems
+              )
+            ),
+          },
+        ]
+      : [];
+
+  return [
+    ...localizationsWithHoldingsNotKglBibliotek,
+    ...aggregateKglBibliotek,
+  ].filter((localization) =>
+    lookupSpecificAgencyIdSet.has(localization.agencyId)
+  );
+}
+
+export async function resolveLocalizationsWithHoldings({
   args,
   context,
+  lookupSpecificAgencyIds,
+  shuffleLocalizations,
   offset,
-  limit
-) {
+  limit,
+}) {
   const localizations = await resolveLocalizations(args, context);
 
-  const detailedHoldings = await Promise.all(
-    localizations.agencies.map((agency) => {
-      const localids = agency.holdingItems.map((item) => ({
-        localIdentifier: item.localIdentifier,
-        localisationPid: item.localizationPid,
-        agency: item.agencyId,
-      }));
+  const detailedHoldingsCalls = localizations.agencies.map(async (agency) => {
+    const localids = agency.holdingItems.map((item) => ({
+      localIdentifier: item.localIdentifier,
+      localisationPid: item.localizationPid,
+      agency: item.agencyId,
+    }));
 
-      return context.datasources.getLoader("detailedholdings").load({
-        localIds: localids,
-        agencyId: agency.agencyId,
-      });
-    })
-  );
+    return await context.datasources.getLoader("detailedholdings").load({
+      localIds: localids,
+      agencyId: agency.agencyId,
+    });
+  });
+
+  const detailedHoldings = await Promise.all(detailedHoldingsCalls);
 
   const agencyIds = new Set(
     detailedHoldings
@@ -617,12 +689,24 @@ export async function resolveLocalizationsWithHoldings(
       .map((singleDetailedHolding) => singleDetailedHolding.branchId)
   );
 
-  const localizationsWithHoldings = localizations.agencies
-    .filter((agency) => agencyIds.has(agency.agencyId))
-    .slice(offset, offset + limit);
+  const localizationsWithHoldings = localizations.agencies.filter((agency) =>
+    agencyIds.has(agency.agencyId)
+  );
+
+  const localizationsWithHoldingsAndHandledKglBibliotek = handleLocalizationsWithKglBibliotek(
+    localizationsWithHoldings,
+    lookupSpecificAgencyIds
+  );
+
+  const shuffledLocalizationsWithHoldings = shuffleLocalizations
+    ? localizationsWithHoldingsAndHandledKglBibliotek
+        .map((value) => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value)
+    : localizationsWithHoldingsAndHandledKglBibliotek;
 
   return {
-    count: localizationsWithHoldings.length,
-    agencies: localizationsWithHoldings,
+    count: shuffledLocalizationsWithHoldings.length,
+    agencies: shuffledLocalizationsWithHoldings.slice(offset, offset + limit),
   };
 }

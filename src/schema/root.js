@@ -94,7 +94,7 @@ type Query {
   """
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   """
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int): Localizations 
+  localizationsWithHoldings(pids: [String!]!, lookupSpecificAgencyIds: [String!], shuffleLocalizations: Boolean limit: Int, offset: Int): Localizations 
   refWorks(pid:String!):String!
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
@@ -205,15 +205,21 @@ export const resolvers = {
         return { count: 0, agencies: [] };
       }
 
+      const lookupSpecificAgencyIds = isEmpty(args.lookupSpecificAgencyIds)
+        ? null
+        : args.lookupSpecificAgencyIds;
+      const shuffleLocalizations = args.shuffleLocalizations ?? true;
       const offset = args.offset ?? 0;
       const limit = args.limit ?? 10;
 
-      return await resolveLocalizationsWithHoldings(
-        args,
-        context,
-        offset,
-        limit
-      );
+      return await resolveLocalizationsWithHoldings({
+        args: args,
+        context: context,
+        lookupSpecificAgencyIds: lookupSpecificAgencyIds,
+        shuffleLocalizations: shuffleLocalizations,
+        offset: offset,
+        limit: limit,
+      });
     },
     howru(parent, args, context, info) {
       return "gr8";
