@@ -44,12 +44,6 @@ export const resolvers = {
     count(parent, args, context, info) {
       return parent?.holdingstatus?.length || 0;
     },
-    expectedDelivery(parent, args, context, info) {
-      // return newest delivery date
-      return [...parent?.holdingstatus]
-        .map((item) => item?.expectedDelivery)
-        .sort((a, b) => (a > b ? 1 : -1))?.[0];
-    },
     lamp(parent, args, context, info) {
       let statusobject = { message: "no_loc_no_holding", color: "none" };
       //check if there are any localizations at all

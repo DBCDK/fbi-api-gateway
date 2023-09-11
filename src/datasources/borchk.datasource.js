@@ -41,7 +41,6 @@ export function parseResponse(xml) {
     const userId = result?.userId?.[0];
     const requestStatus = result?.requestStatus?.[0]?.toUpperCase();
     const municipalityNumber = result?.municipalityNumber?.[0];
-
     const blocked = !!(result?.blocked?.[0] === "true");
 
     return {

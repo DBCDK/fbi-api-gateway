@@ -2483,6 +2483,11 @@ type Query {
   session: Session
   howru: String
   localizations(pids: [String!]!): Localizations
+
+  \\"\\"\\"
+  localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
+  \\"\\"\\"
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int): Localizations
   refWorks(pid: String!): String!
   ris(pid: String!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]

@@ -391,7 +391,13 @@ export const resolvers = {
         )
       );
 
-      return agencyInfos;
+      // Remove agencyes which doesnt exist in VIP
+      // Example "190976" and "191977" (no VIP info) on testuser Michelle Hoffmann will return empty results
+      const filteredAgencyInfoes = agencyInfos.filter(
+        (agency) => agency?.result.length > 0
+      );
+
+      return filteredAgencyInfoes;
     },
   },
   Loan: {

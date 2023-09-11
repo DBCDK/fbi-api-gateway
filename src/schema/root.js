@@ -9,11 +9,14 @@ import {
   fetchOrderStatus,
   getUserId,
   resolveBorrowerCheck,
+  resolveLocalizations,
+  resolveLocalizationsWithHoldings,
   resolveManifestation,
   resolveWork,
 } from "../utils/utils";
 import translations from "../utils/translations.json";
 import { resolveAccess } from "./draft/draft_utils_manifestations";
+import isEmpty from "lodash/isEmpty";
 
 /**
  * The root type definitions
@@ -88,6 +91,10 @@ type Query {
   session: Session
   howru:String
   localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
+  """
+  localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
+  """
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int): Localizations 
   refWorks(pid:String!):String!
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
@@ -191,26 +198,22 @@ export const resolvers = {
       return ref;
     },
     async localizations(parent, args, context, info) {
-      const allmanifestations = await Promise.all(
-        args.pids.map((pid) => {
-          return context.datasources.getLoader("openformat").load(pid);
-        })
+      return await resolveLocalizations(args, context);
+    },
+    async localizationsWithHoldings(parent, args, context, info) {
+      if (!args.pids || isEmpty(args.pids)) {
+        return { count: 0, agencies: [] };
+      }
+
+      const offset = args.offset ?? 0;
+      const limit = args.limit ?? 10;
+
+      return await resolveLocalizationsWithHoldings(
+        args,
+        context,
+        offset,
+        limit
       );
-
-      const pids = allmanifestations.map(
-        (manifestation) =>
-          manifestation?.details?.hostPublicationPid?.$ ||
-          manifestation.admindata.pid.$
-      );
-
-      // get localizations from openholdingstatus
-      const localizations = await context.datasources
-        .getLoader("localizations")
-        .load({
-          pids: pids,
-        });
-
-      return localizations;
     },
     howru(parent, args, context, info) {
       return "gr8";
