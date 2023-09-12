@@ -104,7 +104,24 @@ type UserDataResponse {
   errorMessage: String  
 }
 
-type Mutation {
+type BookMarkId {
+  bookMarkId: Int!
+}
+
+type BookMark{
+  bookmarkId: Int!
+  materialType: String!
+  materialId: String!
+}
+
+
+input BookMarkInput {
+  materialType: String!
+  materialId: String!
+}
+
+
+type UserMutations {
   """
   Add user to userdata service
   """
@@ -138,7 +155,25 @@ type Mutation {
   Change users consent for storing order history for more than 30 days. If false, order history will be deleted after 30 days.
   """
   setPersistUserDataValue(persistUserData: Boolean!):UserDataResponse
+  
+  """
+  Add a bookmark
+  """
+  addBookmark(bookmark: BookMarkInput!): BookMark!
+  """
+  Delete a bookmark
+  """
+  deleteBookmark(bookmarkId: Int!): Int!
   }
+  
+extend type Mutation {
+  users:UserMutations!
+}
+
+extend type Query{
+  getBookMarks: [BookMark!]!
+}
+
 
 `;
 
@@ -432,6 +467,32 @@ export const resolvers = {
     },
   },
   Mutation: {
+    async users(parent, args, context, info) {
+      return {};
+    },
+  },
+  Query: {
+    async getBookMarks(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        const bookmarks = await context.datasources
+          .getLoader("userDataGetBookMarks")
+          .load({
+            smaugUserId: smaugUserId,
+          });
+        return bookmarks;
+      } catch (error) {
+        log.error(
+          `Failed to get bookmarks from userData service. Message: ${error.message}`
+        );
+        return [];
+      }
+    },
+  },
+  UserMutations: {
     async addUserToUserDataService(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
@@ -465,7 +526,6 @@ export const resolvers = {
         return { success: false, errorMessage: error?.message };
       }
     },
-
     async setFavoritePickUpBranch(parent, args, context, info) {
       try {
         const { favoritePickUpBranch } = args;
@@ -517,7 +577,6 @@ export const resolvers = {
         return { success: false };
       }
     },
-
     async addOrderToUserData(parent, args, context, info) {
       try {
         const { orderId } = args;
@@ -538,7 +597,6 @@ export const resolvers = {
         return { success: false, errorMessage: error?.message };
       }
     },
-
     async deleteOrderFromUserData(parent, args, context, info) {
       try {
         const { orderId } = args;
@@ -584,6 +642,59 @@ export const resolvers = {
         return { success: !res?.error, errorMessage: res?.error };
       } catch (error) {
         return { success: false, errorMessage: error?.message };
+      }
+    },
+    async addBookmark(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw new Error("Not authorized");
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw new Error("User not found in CULR");
+        }
+
+        const res = await context.datasources
+          .getLoader("userDataAddBookmark")
+          .load({
+            smaugUserId: smaugUserId,
+            materialType: args.bookmark.materialType,
+            materialId: args.bookmark.materialId,
+          });
+
+        return res;
+      } catch (error) {
+        // @TODO log
+        log.error(
+          `Failed to add bookmark to userData service. Message: ${error.message}`
+        );
+        return { bookMarkId: 0 };
+      }
+    },
+    async deleteBookmark(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+
+        if (!smaugUserId) {
+          throw new Error("Not authorized");
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw new Error("User not found in CULR");
+        }
+
+        const res = await context.datasources
+          .getLoader("userDataDeleteBookmark")
+          .load({
+            smaugUserId: smaugUserId,
+            bookmarkId: args.bookmarkId,
+          });
+
+        return res;
+      } catch (error) {
+        log.error(
+          `Failed to delete bookmark in userData service. Message: ${error.message}`
+        );
+        return 0;
       }
     },
   },

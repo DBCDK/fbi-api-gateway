@@ -1,4 +1,4 @@
-import config from "../config";
+import config from "../../config";
 const { url, ttl, prefix } = config.datasources.userdata;
 
 /**
