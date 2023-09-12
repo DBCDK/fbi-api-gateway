@@ -1,11 +1,12 @@
 import config from "../config";
+import isArray from "lodash/isArray";
 
 const { serviceRequester, url, ttl, prefix } = config.datasources.openorder;
 
 export async function load({ pid, pickupBranch, accessToken }, context) {
   const post = {
     pickUpAgencyId: pickupBranch,
-    pid: [pid],
+    pid: isArray(pid) ? pid : [pid],
     serviceRequester: serviceRequester,
   };
 
