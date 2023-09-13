@@ -618,11 +618,8 @@ const kglBibBranchIdSet = new Set([
 
 function handleLocalizationsWithKglBibliotek(
   localizationsWithHoldings,
-  lookupSpecificAgencyIds,
   kglBibBranchIds = kglBibBranchIdSet
 ) {
-  const lookupSpecificAgencyIdSet = new Set(lookupSpecificAgencyIds);
-
   const localizationsWithHoldingsNotKglBibliotek = localizationsWithHoldings.filter(
     (agency) => !kglBibBranchIds.has(agency.agencyId)
   );
@@ -648,15 +645,12 @@ function handleLocalizationsWithKglBibliotek(
   return [
     ...localizationsWithHoldingsNotKglBibliotek,
     ...aggregateKglBibliotek,
-  ].filter((localization) =>
-    lookupSpecificAgencyIdSet.has(localization.agencyId)
-  );
+  ];
 }
 
 export async function resolveLocalizationsWithHoldings({
   args,
   context,
-  lookupSpecificAgencyIds,
   shuffleLocalizations,
   offset,
   limit,
@@ -694,8 +688,7 @@ export async function resolveLocalizationsWithHoldings({
   );
 
   const localizationsWithHoldingsAndHandledKglBibliotek = handleLocalizationsWithKglBibliotek(
-    localizationsWithHoldings,
-    lookupSpecificAgencyIds
+    localizationsWithHoldings
   );
 
   const shuffledLocalizationsWithHoldings = shuffleLocalizations
