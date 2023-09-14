@@ -27,10 +27,10 @@ export async function load() {
   }
 }
 
-export const options = {
+/*export const options = {
   redis: {
     prefix,
     ttl,
     inMemory: true,
   },
-};
+};*/
