@@ -651,7 +651,6 @@ function handleLocalizationsWithKglBibliotek(
 export async function resolveLocalizationsWithHoldings({
   args,
   context,
-  shuffleLocalizations,
   offset,
   limit,
 }) {
@@ -691,12 +690,10 @@ export async function resolveLocalizationsWithHoldings({
     localizationsWithHoldings
   );
 
-  const shuffledLocalizationsWithHoldings = shuffleLocalizations
-    ? localizationsWithHoldingsAndHandledKglBibliotek
-        .map((value) => ({ value, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort)
-        .map(({ value }) => value)
-    : localizationsWithHoldingsAndHandledKglBibliotek;
+  const shuffledLocalizationsWithHoldings = localizationsWithHoldingsAndHandledKglBibliotek
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
 
   return {
     count: shuffledLocalizationsWithHoldings.length,
