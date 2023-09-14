@@ -65,5 +65,9 @@ export async function load(
     return constructResponse({ ...props, blocked: true }, "ok");
   }
 
+  if (userId === "123" && libraryCode === "715100") {
+    return constructResponse(props, "ok");
+  }
+
   return constructResponse(props, "borrower_not_found");
 }

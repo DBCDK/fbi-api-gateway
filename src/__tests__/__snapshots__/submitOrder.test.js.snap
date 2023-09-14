@@ -25,11 +25,11 @@ Object {
 exports[`submitorder fails when user is not authenticated, and no userId provided 1`] = `
 Object {
   "data": Object {
-    "submitOrder": null,
+    "submitOrder": Object {
+      "orsId": null,
+      "status": "UNKNOWN_USER",
+    },
   },
-  "errors": Array [
-    [GraphQLError: User must be authenticated via the pickUpBranch, or provide userId manually],
-  ],
 }
 `;
 

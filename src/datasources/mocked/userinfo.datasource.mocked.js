@@ -11,6 +11,7 @@ const DEFAULT = {
 };
 
 const data = {
+  ANONYMOUS_TOKEN: {},
   DUMMY_TOKEN: {
     attributes: {
       ...DEFAULT,
@@ -39,7 +40,7 @@ const data = {
       agencies: [
         {
           agencyId: "710100",
-          userId: "0123456798",
+          userId: "321",
           userIdType: "LOCAL",
         },
       ],

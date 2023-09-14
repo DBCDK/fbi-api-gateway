@@ -29,7 +29,8 @@ import { log } from "dbc-node-logger";
  * @param {string} props.agencyId context
  * @param {string} props.context context
  * @param {obj} context context
- * @returns {obj} containing status, verified and statusCode
+ * 
+ * @returns {obj} containing status, userId and statusCode
  * 
  * statusCodes:
  * 
@@ -64,18 +65,18 @@ export default async function getUserOrderAllowedStatus(
     });
 
     // user accounts liste
-    const accounts = userinfo.attributes.agencies;
+    const accounts = userinfo.attributes?.agencies;
 
     // fetch requested account from list
     // Local (type) account is preferred, because it will always exist
-    const account = accounts.find(
+    const account = accounts?.find(
       (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
     );
 
     // Update internal userId
     // If an userinfo account was found, we use the userId credential from the matching local account
     // If NOT we use the provided userId (used for sessional orders) - fallbacks to login.bib.dk id if none provided
-    _userId = account ? account.userId : userId || context.smaug.user.id;
+    _userId = account ? account?.userId : userId || context.smaug.user.id;
 
     const { status, blocked } = await context.datasources
       .getLoader("borchk")
@@ -97,6 +98,8 @@ export default async function getUserOrderAllowedStatus(
       );
 
       return {
+        userId: _userId,
+        isVerified: hasBorrowerCheck,
         status: false,
         statusCode: "BORCHK_USER_BLOCKED_BY_AGENCY",
       };
@@ -120,6 +123,8 @@ export default async function getUserOrderAllowedStatus(
       );
 
       return {
+        userId: _userId,
+        isVerified: hasBorrowerCheck,
         status: false,
         statusCode,
       };
@@ -138,13 +143,20 @@ export default async function getUserOrderAllowedStatus(
       );
 
       return {
+        userId: _userId,
+        isVerified: hasBorrowerCheck,
         status: false,
         statusCode: "BORCHK_USER_NOT_VERIFIED",
       };
     }
 
-    // Return status ok - verified
-    return { status: true, verified: true, statusCode: "OK" };
+    // Return status ok
+    return {
+      userId: _userId,
+      isVerified: hasBorrowerCheck,
+      status: true,
+      statusCode: "OK",
+    };
   }
 
   log.warn(
@@ -153,6 +165,11 @@ export default async function getUserOrderAllowedStatus(
     })}`
   );
 
-  // Agency does not support borrowercheck - return status ok - no verification
-  return { status: true, statusCode: "OK", verified: false };
+  // Agency does not support borrowercheck - return status ok
+  return {
+    userId,
+    isVerified: hasBorrowerCheck,
+    status: true,
+    statusCode: "OK",
+  };
 }

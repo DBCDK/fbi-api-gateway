@@ -273,8 +273,8 @@ export const resolvers = {
       const agencyId = branch.agencyId;
 
       // Verify that the user is allowed to place an order
-      const { status, statusCode } = await getUserOrderAllowedStatus(
-        { agencyId },
+      const { status, statusCode, userId } = await getUserOrderAllowedStatus(
+        { agencyId, userId: args?.input?.userParameters?.userId },
         context
       );
 
@@ -282,17 +282,34 @@ export const resolvers = {
         return { ok: status, status: statusCode };
       }
 
-      const input = {
-        ...args.input,
-        accessToken: context.accessToken,
-        smaug: context.smaug,
-        dryRun: args.dryRun,
-        branch,
-      };
+      // Check if the user is authenticated on the given pickUpBranch (check assumption)
+      const verifiedOnPickUpBranch = !!(
+        context.smaug.user.id && context.smaug.user.agency === branch.agencyId
+      );
+
+      // Find userId for the given pickUpBranch
+      // default we assume the users pickUpBranch is in the same origin of the loggedInAgency.
+      let _userId = verifiedOnPickUpBranch ? context.smaug.user.id : userId;
+
+      // order is not possible if no userId could be found or was provided for the user
+      if (!_userId) {
+        return { ok: false, status: "UNKNOWN_USER" };
+      }
+
+      // return if dryrun
+      if (args.dryRun) {
+        return { status: "OWNED_ACCEPTED", orderId: "1234" };
+      }
 
       const submitOrderRes = await context.datasources
         .getLoader("submitOrder")
-        .load(input);
+        .load({
+          userId: _userId,
+          branch,
+          input: args.input,
+          accessToken: context.accessToken,
+          smaug: context.smaug,
+        });
 
       //if the request is coming from beta.bibliotek.dk, add the order id to userData service
       if (context?.profile?.agency == 190101) {
