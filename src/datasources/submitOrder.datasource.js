@@ -19,7 +19,6 @@ function createNeedBeforeDate() {
 
 function createTrackingId() {
   const now = new Date();
-
   return now.toISOString();
 }
 
@@ -91,8 +90,7 @@ export async function load(
   { userId, input, branch, accessToken, smaug },
   context
 ) {
-  const orderSystem = smaug.orderSystem;
-
+  const orderSystem = smaug?.orderSystem;
   // build parameters for service request
   const parameters = buildParameters({ userId, input, orderSystem });
 
@@ -130,7 +128,6 @@ export async function load(
     return parseOrder(order);
   } catch (e) {
     log.error("SUBMIT ORDER: Error placing order", { parameters });
-    // @TODO log
     return null;
   }
 }

@@ -270,7 +270,7 @@ export const resolvers = {
         };
       }
 
-      const agencyId = branch.agencyId;
+      const agencyId = branch?.agencyId;
 
       // Verify that the user is allowed to place an order
       const { status, statusCode, userId } = await getUserOrderAllowedStatus(
@@ -284,12 +284,13 @@ export const resolvers = {
 
       // Check if the user is authenticated on the given pickUpBranch (check assumption)
       const verifiedOnPickUpBranch = !!(
-        context.smaug.user.id && context.smaug.user.agency === branch.agencyId
+        context.smaug?.user?.id &&
+        context.smaug?.user?.agency === branch?.agencyId
       );
 
       // Find userId for the given pickUpBranch
       // default we assume the users pickUpBranch is in the same origin of the loggedInAgency.
-      let _userId = verifiedOnPickUpBranch ? context.smaug.user.id : userId;
+      let _userId = verifiedOnPickUpBranch ? context.smaug?.user?.id : userId;
 
       // order is not possible if no userId could be found or was provided for the user
       if (!_userId) {
