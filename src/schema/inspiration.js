@@ -53,9 +53,9 @@ export const resolvers = {
         if (subCategories?.length) {
           return {
             category,
-            subCategories: subCategories.map((sub) =>
-              data.find(({ title }) => title === sub)
-            ),
+            subCategories: subCategories
+              .map((sub) => data.find(({ title }) => title === sub))
+              .filter((element) => element !== undefined),
           };
         }
 
