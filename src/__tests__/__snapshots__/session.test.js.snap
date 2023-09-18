@@ -13,6 +13,7 @@ Object {
   "data": Object {
     "session": Object {
       "pickupBranch": "790900",
+      "storeSession": true,
       "userParameters": Object {
         "barcode": "some-barcode",
         "cardno": "some-cardno",
