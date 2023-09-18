@@ -27,10 +27,12 @@ input SessionUserParametersInput {
 }
 type Session {
   userParameters: SessionUserParameters
+  storeSession: Boolean
   pickupBranch: String
 }
 input SessionInput {
   userParameters: SessionUserParametersInput
+  storeSession: Boolean
   pickupBranch: String
 }`;
 
