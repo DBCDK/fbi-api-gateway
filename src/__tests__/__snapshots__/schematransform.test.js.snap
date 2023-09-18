@@ -2468,7 +2468,6 @@ type Query {
   inspiration(language: LanguageCode, limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
-  getBookMarks: [BookMark!]!
 }
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
@@ -2674,6 +2673,7 @@ type User {
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
+  bookmarks: [BookMark!]!
 }
 
 \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"

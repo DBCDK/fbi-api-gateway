@@ -38,6 +38,7 @@ type User {
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
+  bookmarks: [BookMark!]!
 }
 """
 Orders made through bibliotek.dk
@@ -169,11 +170,6 @@ type UserMutations {
 extend type Mutation {
   users:UserMutations!
 }
-
-extend type Query{
-  getBookMarks: [BookMark!]!
-}
-
 
 `;
 
@@ -434,6 +430,26 @@ export const resolvers = {
 
       return filteredAgencyInfoes;
     },
+    async bookmarks(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        const bookmarks = await context.datasources
+          .getLoader("userDataGetBookMarks")
+          .load({
+            smaugUserId: smaugUserId,
+          });
+
+        return bookmarks;
+      } catch (error) {
+        log.error(
+          `Failed to get bookmarks from userData service. Message: ${error.message}`
+        );
+        return [];
+      }
+    },
   },
   Loan: {
     manifestation(parent, args, context, info) {
@@ -469,27 +485,6 @@ export const resolvers = {
   Mutation: {
     async users(parent, args, context, info) {
       return {};
-    },
-  },
-  Query: {
-    async getBookMarks(parent, args, context, info) {
-      try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        const bookmarks = await context.datasources
-          .getLoader("userDataGetBookMarks")
-          .load({
-            smaugUserId: smaugUserId,
-          });
-        return bookmarks;
-      } catch (error) {
-        log.error(
-          `Failed to get bookmarks from userData service. Message: ${error.message}`
-        );
-        return [];
-      }
     },
   },
   UserMutations: {
