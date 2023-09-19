@@ -112,6 +112,7 @@ promExporterApp.listen(9599, () => {
         ip: req?.smaug?.app?.ips?.[0],
         isAuthenticatedToken: !!req.smaug?.user?.uniqueId,
         accessTokenHash,
+        isTestToken: req.isTestToken,
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
@@ -134,9 +135,12 @@ promExporterApp.listen(9599, () => {
    */
   app.post("/:profile/graphql", async (req, res, next) => {
     // Get bearer token from authorization header
-    req.accessToken =
-      req.headers.authorization &&
-      req.headers.authorization.replace(/bearer /i, "");
+    req.rawAccessToken = req.headers.authorization?.replace(/bearer /i, "");
+    req.accessToken = req.rawAccessToken?.replace("test:", "");
+
+    // Using a test token will automatically mock certain datasources
+    // making it possible to have test users
+    req.isTestToken = req.rawAccessToken !== req.accessToken;
 
     // Get graphQL params
     try {
