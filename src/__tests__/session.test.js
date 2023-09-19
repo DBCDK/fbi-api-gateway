@@ -10,7 +10,7 @@ describe("Session", () => {
               userParameters {
                 userTelephone
               }
-              storeSession
+              allowSessionStorage
               pickupBranch
             }
           }
@@ -40,7 +40,7 @@ describe("Session", () => {
                 userMail
                 userTelephone
               }
-              storeSession
+              allowSessionStorage
               pickupBranch
             }
           }
@@ -74,7 +74,7 @@ describe("Session", () => {
             userMail: "some@mail.dk",
             userTelephone: "123123123",
           },
-          storeSession: true,
+          allowSessionStorage: true,
           pickupBranch: "790900",
         },
       },

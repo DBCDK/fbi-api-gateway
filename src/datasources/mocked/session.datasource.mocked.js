@@ -13,7 +13,7 @@ export async function load({ accessToken }) {
         userMail: "some@mail.dk",
         userTelephone: "123123123",
       },
-      storeSession: true,
+      allowSessionStorage: true,
       pickupBranch: "790900",
     },
   };
