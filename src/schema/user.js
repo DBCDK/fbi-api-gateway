@@ -640,8 +640,19 @@ export const resolvers = {
       }
     },
     async addBookmark(parent, args, context, info) {
+      /**
+       * Handles single or multiple additions to bookmarks.
+       *
+       * For multiple, {smaugUserId: string, bookmarks: [{materialType, string, materialId: string}]}
+       * For single, {smaugUserId: string, materialType, string, materialId: string}
+       * 
+       * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
+       * while we espect single additions to throw an error if this bookmark already exists
+       */
+
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
+
         if (!smaugUserId) {
           throw new Error("Not authorized");
         }
@@ -649,15 +660,35 @@ export const resolvers = {
           throw new Error("User not found in CULR");
         }
 
-        const res = await context.datasources
-          .getLoader("userDataAddBookmark")
-          .load({
-            smaugUserId: smaugUserId,
-            materialType: args.bookmark.materialType,
-            materialId: args.bookmark.materialId,
-          });
+        if (args.bookmarks && args.bookmarks.length > 0) {
+          /**
+           * Add array of bookmarks
+           */
 
-        return res;
+          const res = await context.datasources
+            .getLoader("userDataAddMultipleBookmarks")
+            .load({
+              smaugUserId: smaugUserId,
+              bookmarks: args.bookmarks.map((bookmark) => ({
+                materialType: bookmark.materialType,
+                materialId: bookmark.materialId,
+              })),
+            });
+          return res;
+        } else {
+          /**
+           * Add single bookmark
+           */
+
+          const res = await context.datasources
+            .getLoader("userDataAddBookmark")
+            .load({
+              smaugUserId: smaugUserId,
+              materialType: args.bookmark.materialType,
+              materialId: args.bookmark.materialId,
+            });
+          return res;
+        }
       } catch (error) {
         // @TODO log
         log.error(
