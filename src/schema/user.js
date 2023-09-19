@@ -645,6 +645,9 @@ export const resolvers = {
        *
        * For multiple, {smaugUserId: string, bookmarks: [{materialType, string, materialId: string}]}
        * For single, {smaugUserId: string, materialType, string, materialId: string}
+       * 
+       * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
+       * while we espect single additions to throw an error if this bookmark already exists
        */
 
       try {
