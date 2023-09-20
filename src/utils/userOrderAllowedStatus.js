@@ -249,6 +249,10 @@ export default async function getUserOrderAllowedStatus(
   };
 }
 
+/**
+ *
+ * Function to perform the actual borchk status check
+ */
 async function checkUserOrderAllowedStatus(
   { agencyId, userId = null, isAccount = false },
   context
