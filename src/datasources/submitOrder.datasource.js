@@ -19,7 +19,6 @@ function createNeedBeforeDate() {
 
 function createTrackingId() {
   const now = new Date();
-
   return now.toISOString();
 }
 
@@ -33,45 +32,13 @@ function createTrackingId() {
  * @param context
  * @returns {Promise<*|null>}
  */
-export async function processRequest(input, postSoap, context) {
-  if (input.dryRun) {
-    log.info("submitOrder dryRun", { dryRunMessage: input?.orderSystem });
-    return { status: "OWNED_ACCEPTED", orderId: "1234" };
-  }
-  // If id is found the user is authenticated via some agency
-  // otherwise the token is anonymous
-  const userIdFromToken = input.smaug.user.id;
-
-  // Check if the user is authenticated on the given pickUpBranch
-  const userIdAuthenticated =
-    (userIdFromToken && input.branch.agencyId === input.smaug.user.agency) ||
-    false;
-
-  const userIdTypes = ["cpr", "userId", "barcode", "cardno", "customId"];
-  // Use the userId from token, if user is authenticated,
-  // otherwise the userId must be provided via args
-  const userId = userIdAuthenticated
-    ? ["userId", userIdFromToken]
-    : Object.entries(input.userParameters).find(([key]) =>
-        userIdTypes.includes(key)
-      );
-
-  if (!userId) {
-    throw new Error(
-      "User must be authenticated via the pickUpBranch, or provide userId manually"
-    );
-  }
-
-  // filter out userid from user parameters - it is found above
-  let userParameters = Object.entries(input.userParameters).filter(
-    ([key]) => !userIdTypes.includes(key)
-  );
-
-  const postParameters = {
+export function buildParameters({ userId, input, orderSystem }) {
+  // Set order parameters
+  const params = {
     copy: false,
     exactEdition: input.exactEdition || false,
     needBeforeDate: createNeedBeforeDate(),
-    orderSystem: input.smaug.orderSystem.toUpperCase(),
+    orderSystem: orderSystem?.toUpperCase(),
     pickUpAgencyId: input.pickUpBranch,
     author: input.author,
     authorOfComponent: input.authorOfComponent,
@@ -84,38 +51,15 @@ export async function processRequest(input, postSoap, context) {
     pid: input.pids.map((pid) => pid),
     serviceRequester: serviceRequester,
     trackingId: createTrackingId(),
-    userId: userId[1],
-    userIdAuthenticated: userIdAuthenticated,
     ...input.userParameters,
+    userId: userId || input.userParameters.userId,
     verificationReferenceSource: "DBCDATAWELL",
   };
 
-  // delete empties
-  Object.keys(postParameters).forEach(
-    (k) => postParameters[k] == null && delete postParameters[k]
-  );
+  // delete empty params
+  Object.keys(params).forEach((k) => params[k] == null && delete params[k]);
 
-  if (!checkPost(postParameters)) {
-    return null;
-  }
-
-  const res = await postSoap(postParameters, input, context);
-
-  // some logging
-  auditTrace(
-    ACTIONS.write,
-    config.app.id,
-    input.smaug.app.ips,
-    {
-      login_token: input.accessToken,
-    },
-    `${userId[1]}/${input.branch.agencyId}`,
-    {
-      place_order: res?.body?.orderPlaced?.orderId,
-    }
-  );
-
-  return parseOrder(res);
+  return params;
 }
 
 const checkPost = (post) => {
@@ -123,32 +67,67 @@ const checkPost = (post) => {
   return post != null;
 };
 
-function parseOrder(orderFromService) {
-  return {
-    ok: orderFromService?.ok || false,
-    status: orderFromService?.body?.orderPlaced?.orderPlacedMessage || null,
-    orderId: orderFromService?.body?.orderPlaced?.orderId || null,
-  };
+export function parseOrder(orderFromService) {
+  try {
+    return {
+      ok: orderFromService?.ok || false,
+      status: orderFromService?.body?.orderPlaced?.orderPlacedMessage || null,
+      orderId: orderFromService?.body?.orderPlaced?.orderId || null,
+    };
+  } catch {}
 }
 
-async function postSoap(post, input, context) {
+/**
+ * @param props
+ * @param props.input {obj}
+ * @param props.accessToken {string}
+ * @param props.smaug {obj}
+ * @param props.branch {obj}
+ * @param context
+ */
+
+export async function load(
+  { userId, input, branch, accessToken, smaug },
+  context
+) {
+  const orderSystem = smaug?.orderSystem;
+  // build parameters for service request
+  const parameters = buildParameters({ userId, input, orderSystem });
+
   try {
     const order = await context.fetch(`${url}placeorder/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${input.accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(post),
+      body: JSON.stringify(parameters),
     });
-    return order;
+
+    if (!checkPost(parameters)) {
+      return null;
+    }
+
+    // userID for log trace
+    const _userId = smaug.user.id || userId;
+
+    // some logging
+    auditTrace(
+      ACTIONS.write,
+      config.app.id,
+      smaug.app.ips,
+      {
+        login_token: accessToken,
+      },
+      `${_userId}/${branch.agencyId}`,
+      {
+        place_order: order?.body?.orderPlaced?.orderId,
+      }
+    );
+
+    return parseOrder(order);
   } catch (e) {
-    log.error("SUBMIT ORDER: Error placing order", { post: post });
-    // @TODO log
+    log.error("SUBMIT ORDER: Error placing order", { parameters });
     return null;
   }
-}
-
-export async function load(input, context) {
-  return processRequest(input, postSoap, context);
 }

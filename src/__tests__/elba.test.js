@@ -23,9 +23,7 @@ test("PeriodicaArticleOrder, unauthenticated token, should give error", async ()
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: {
-          uniqueId: null,
-        },
+        user: { id: null, agency: null, uniqueId: null },
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -46,9 +44,7 @@ test("PeriodicaArticleOrder, municiapalityAgencyId not subscribed, should give e
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_UNSUBSCRIPED_MUNICIPALITY",
       smaug: {
-        user: {
-          uniqueId: "1234561234",
-        },
+        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -69,9 +65,7 @@ test("PeriodicaArticleOrder, no municiapalityAgencyId, should give error", async
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MUNICIPALITY",
       smaug: {
-        user: {
-          uniqueId: "1234561234",
-        },
+        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -92,9 +86,7 @@ test("PeriodicaArticleOrder, manifestation not part of statsbibliotek journal sh
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: {
-          uniqueId: "1234561234",
-        },
+        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -115,9 +107,7 @@ test("PeriodicaArticleOrder, missing mail on user and input, should give error",
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MAIL",
       smaug: {
-        user: {
-          uniqueId: "1234561234",
-        },
+        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -139,9 +129,7 @@ test("PeriodicaArticleOrder, missing mail in user, but given in input, order suc
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MAIL",
       smaug: {
-        user: {
-          uniqueId: "1234561234",
-        },
+        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -164,9 +152,7 @@ test("PeriodicaArticleOrder, userName and userMail set in input, order success",
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: {
-          uniqueId: "1234561234",
-        },
+        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -187,9 +173,7 @@ test("PeriodicaArticleOrder, order success", async () => {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: {
-          uniqueId: "1234561234",
-        },
+        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -210,9 +194,7 @@ test("PeriodicaArticleOrder, originRequester missing from smaug configuration", 
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: {
-          uniqueId: "1234561234",
-        },
+        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
       },
     },
   });
@@ -230,11 +212,9 @@ test("PeriodicaArticleOrder, user blocked by municipality - should give error", 
     },
     context: {
       datasources: createMockedDataLoaders(),
-      accessToken: "DUMMY_TOKEN_USER_BLOCKED",
+      accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: {
-          uniqueId: "1234561234",
-        },
+        user: { id: "0123456799", agency: "715100", uniqueId: "1234561234" },
         digitalArticleService: { originRequester: "bibdk" },
       },
     },

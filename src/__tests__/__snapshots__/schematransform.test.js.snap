@@ -2468,6 +2468,7 @@ type Query {
   inspiration(language: LanguageCode, limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
+  getBookMarks: [BookMark!]!
 }
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"

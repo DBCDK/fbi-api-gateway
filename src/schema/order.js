@@ -3,9 +3,12 @@
  *
  */
 
+import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
-import getUserOrderAllowedStatus from "../utils/userOrderAllowedStatus";
+import getUserOrderAllowedStatus, {
+  getUserIds,
+} from "../utils/userOrderAllowedStatus";
 
 const orderStatusmessageMap = {
   OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",
@@ -270,11 +273,15 @@ export const resolvers = {
         };
       }
 
-      const agencyId = branch.agencyId;
+      // PickUpBranch agencyId
+      const agencyId = branch?.agencyId;
+
+      // userIds from userParameters
+      const userIds = getUserIds(args?.input?.userParameters);
 
       // Verify that the user is allowed to place an order
-      const { status, statusCode } = await getUserOrderAllowedStatus(
-        { agencyId },
+      const { status, statusCode, userId } = await getUserOrderAllowedStatus(
+        { agencyId, userIds },
         context
       );
 
@@ -282,17 +289,34 @@ export const resolvers = {
         return { ok: status, status: statusCode };
       }
 
-      const input = {
-        ...args.input,
-        accessToken: context.accessToken,
-        smaug: context.smaug,
-        dryRun: args.dryRun,
-        branch,
-      };
+      // We assume we will get the verified userId from the 'getUserOrderAllowedStatus' check.
+      // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
+      if (!userId && !context?.smaug?.user?.id && isEmpty(userIds)) {
+        // Order is not possible if no userId could be found or was provided for the user
+        return { ok: false, status: "UNKNOWN_USER" };
+      }
 
+      // return if dryrun
+      if (args.dryRun) {
+        return {
+          ok: true,
+          status: "OWNED_ACCEPTED",
+          orderId: "1234",
+          orsId: "4321",
+          deleted: false,
+        };
+      }
+
+      // Place order
       const submitOrderRes = await context.datasources
         .getLoader("submitOrder")
-        .load(input);
+        .load({
+          userId: userId || context?.smaug?.user?.id || userIds.userId,
+          branch,
+          input: args.input,
+          accessToken: context.accessToken,
+          smaug: context.smaug,
+        });
 
       //if the request is coming from beta.bibliotek.dk, add the order id to userData service
       if (context?.profile?.agency == 190101) {
