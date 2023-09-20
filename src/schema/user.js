@@ -39,7 +39,16 @@ type User {
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
   bookmarks: [BookMark!]!
+  rights: [SubscriptionServices!]!
 }
+
+enum SubscriptionServices {
+  INFOMEDIA
+  DIGITAL_ARTICLE_SERVICE
+  DEMAND_DRIVEN_ACQUISITION
+}
+
+
 """
 Orders made through bibliotek.dk
 """
@@ -190,6 +199,44 @@ function isCPRNumber(uniqueId) {
  */
 export const resolvers = {
   User: {
+    async rights(parent, args, context, info) {
+      const innerrights = [];
+
+      const userAgencies = await this.agencies(parent, args, context, info);
+
+      // get rights from idp
+      const idpRights = await context.datasources.getLoader("idp").load("");
+      // check for infomedia access - if either of users agencies subscribes
+      for (const agency of userAgencies) {
+        if (idpRights[agency.agencyId]) {
+          innerrights.push("INFOMEDIA");
+          break;
+        }
+      }
+      // check for digital article service
+      const digitalAccessSubscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+
+      // get municipality agency
+      const municipalityAgencyId = await this.municipalityAgencyId(
+        parent,
+        args,
+        context,
+        info
+      );
+      // check with municipality agency
+      if (digitalAccessSubscriptions[municipalityAgencyId]) {
+        innerrights.push("DIGITAL_ARTICLE_SERVICE");
+      }
+
+      // and now for DDA .. the only check we can do is if agency starts with '7' (public library)
+      if (municipalityAgencyId.startsWith("7")) {
+        innerrights.push("DEMAND_DRIVEN_ACQUISITION");
+      }
+
+      return innerrights;
+    },
     async name(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
