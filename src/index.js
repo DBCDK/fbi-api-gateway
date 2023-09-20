@@ -33,6 +33,9 @@ process.stdout.on("error", function (err) {
   if (err.code == "EPIPE") {
     process.exit(0);
   }
+  if (err.code == "ECONNRESET") {
+    process.exit(0);
+  }
 });
 
 const app = express();

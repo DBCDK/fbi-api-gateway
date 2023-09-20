@@ -175,7 +175,7 @@ export const resolvers = {
           userName: userName || user.name,
           userMail: userMail || user.mail,
           agencyId: user.municipalityAgencyId,
-          pickUpBranch: user.agency,
+          pickUpBranch: userData.homeAccount,
           dryRun: args.dryRun,
           originRequester,
         });

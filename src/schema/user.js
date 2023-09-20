@@ -28,10 +28,10 @@ type User {
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
-  agency(language: LanguageCode): BranchResult!
+  loginBranchId: String
+  municipalityAgencyId: String
   address: String
   postalCode: String
-  municipalityAgencyId: String
   mail: String
   culrMail: String
   country: String
@@ -370,27 +370,8 @@ export const resolvers = {
 
       return agencyWithEmail && agencyWithEmail.userId;
     },
-    async agency(parent, args, context, info) {
-      /**
-       * @TODO
-       * Align agency and agencies properly
-       * Discuss the intended usage of these fields
-       */
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        },
-        context
-      );
-      const homeAgency = getHomeAgencyAccount(userinfo);
-
-      return await context.datasources.getLoader("library").load({
-        agencyid: homeAgency.agencyId,
-        language: parent.language,
-        limit: 100,
-        status: args.status || "ALLE",
-        bibdkExcludeBranches: args.bibdkExcludeBranches || false,
-      });
+    async loginBranchId(parent, args, context, info) {
+      return context.smaug.user.agency;
     },
     async agencies(parent, args, context, info) {
       /**
@@ -413,6 +394,7 @@ export const resolvers = {
         agencies.map(
           async (agency) =>
             await context.datasources.getLoader("library").load({
+              q: undefined,
               agencyid: agency,
               language: parent.language,
               limit: 20,
@@ -422,13 +404,36 @@ export const resolvers = {
         )
       );
 
-      // Remove agencyes which doesnt exist in VIP
+      // Remove agencies that dont exist in VIP
       // Example "190976" and "191977" (no VIP info) on testuser Michelle Hoffmann will return empty results
       const filteredAgencyInfoes = agencyInfos.filter(
         (agency) => agency?.result.length > 0
       );
 
-      return filteredAgencyInfoes;
+      const sortedAgencies = filteredAgencyInfoes.sort((a, b) =>
+        a.result[0].agencyName.localeCompare(b.result[0].agencyName)
+      );
+
+      const loginAgencyIdx = sortedAgencies.findIndex((agency) => {
+        const matchingBranch =
+          agency.result.findIndex(
+            (library) => library.branchId === context.smaug.user.agency
+          ) > -1;
+        //problem I: i get loginbibliotek instead of loginagency
+        //problem II: we dont return all bibs for an agency, but only first 20 or so --> can be that loginbib is not included
+        return (
+          agency.result[0].agencyId === context.smaug.user.agency ||
+          matchingBranch
+        );
+      });
+
+      //put element at loginAgencyIdx at the beginning of the array
+      if (loginAgencyIdx > 0) {
+        const loginAgency = sortedAgencies.splice(loginAgencyIdx, 1)[0];
+        filteredAgencyInfoes.unshift(loginAgency);
+      }
+
+      return sortedAgencies;
     },
     async bookmarks(parent, args, context, info) {
       try {
@@ -645,7 +650,7 @@ export const resolvers = {
        *
        * For multiple, {smaugUserId: string, bookmarks: [{materialType, string, materialId: string}]}
        * For single, {smaugUserId: string, materialType, string, materialId: string}
-       * 
+       *
        * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
        * while we espect single additions to throw an error if this bookmark already exists
        */

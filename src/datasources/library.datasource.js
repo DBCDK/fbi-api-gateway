@@ -232,11 +232,13 @@ export async function search(props, getFunc) {
   if (branchId) {
     merged = merged.filter((branch) => branch.branchId === branchId);
   }
-  merged = orderBy(merged, ["score", "branchId"], ["desc", "asc"]);
   merged = [
     ...merged.filter((branch) => branch.pickupAllowed),
     ...merged.filter((branch) => !branch.pickupAllowed),
   ];
+
+  const orderFields = q ? ["score", "branchId"] : "name";
+  merged = orderBy(merged, orderFields, "asc");
 
   return {
     hitcount: merged.length,
