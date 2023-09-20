@@ -293,7 +293,7 @@ export const resolvers = {
       // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
       if (!userId && !context?.smaug?.user?.id && isEmpty(userIds)) {
         // Order is not possible if no userId could be found or was provided for the user
-        return { ok: false, orderId: "fisk", status: "UNKNOWN_USER" };
+        return { ok: false, status: "UNKNOWN_USER" };
       }
 
       // return if dryrun
