@@ -17,18 +17,6 @@ const data = {
       ...DEFAULT,
     },
   },
-  DUMMY_TOKEN_USER_BLOCKED: {
-    attributes: {
-      ...DEFAULT,
-      agencies: [
-        {
-          agencyId: "715100",
-          userId: "0123456799",
-          userIdType: "LOCAL",
-        },
-      ],
-    },
-  },
   DUMMY_TOKEN_NO_MAIL: {
     attributes: {
       ...DEFAULT,

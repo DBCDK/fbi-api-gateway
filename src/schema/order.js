@@ -3,9 +3,12 @@
  *
  */
 
+import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
-import getUserOrderAllowedStatus from "../utils/userOrderAllowedStatus";
+import getUserOrderAllowedStatus, {
+  getUserIds,
+} from "../utils/userOrderAllowedStatus";
 
 const orderStatusmessageMap = {
   OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",
@@ -270,11 +273,15 @@ export const resolvers = {
         };
       }
 
+      // PickUpBranch agencyId
       const agencyId = branch?.agencyId;
+
+      // userIds from userParameters
+      const userIds = getUserIds(args?.input?.userParameters);
 
       // Verify that the user is allowed to place an order
       const { status, statusCode, userId } = await getUserOrderAllowedStatus(
-        { agencyId, userId: args?.input?.userParameters?.userId },
+        { agencyId, userIds },
         context
       );
 
@@ -282,30 +289,29 @@ export const resolvers = {
         return { ok: status, status: statusCode };
       }
 
-      // Check if the user is authenticated on the given pickUpBranch (check assumption)
-      const verifiedOnPickUpBranch = !!(
-        context.smaug?.user?.id &&
-        context.smaug?.user?.agency === branch?.agencyId
-      );
-
-      // Find userId for the given pickUpBranch
-      // default we assume the users pickUpBranch is in the same origin of the loggedInAgency.
-      let _userId = verifiedOnPickUpBranch ? context.smaug?.user?.id : userId;
-
-      // order is not possible if no userId could be found or was provided for the user
-      if (!_userId) {
-        return { ok: false, status: "UNKNOWN_USER" };
+      // We assume we will get the verified userId from the 'getUserOrderAllowedStatus' check.
+      // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
+      if (!userId && !context?.smaug?.user?.id && isEmpty(userIds)) {
+        // Order is not possible if no userId could be found or was provided for the user
+        return { ok: false, orderId: "fisk", status: "UNKNOWN_USER" };
       }
 
       // return if dryrun
       if (args.dryRun) {
-        return { status: "OWNED_ACCEPTED", orderId: "1234" };
+        return {
+          ok: true,
+          status: "OWNED_ACCEPTED",
+          orderId: "1234",
+          orsId: "4321",
+          deleted: false,
+        };
       }
 
+      // Place order
       const submitOrderRes = await context.datasources
         .getLoader("submitOrder")
         .load({
-          userId: _userId,
+          userId: userId || context?.smaug?.user?.id || userIds.userId,
           branch,
           input: args.input,
           accessToken: context.accessToken,
