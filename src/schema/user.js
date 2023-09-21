@@ -27,7 +27,6 @@ type User {
   Orders made through bibliotek.dk
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
-  agency(language: LanguageCode): BranchResult! @deprecated (reason: "Use 'User.agencies' instead.")
   agencies(language: LanguageCode): [BranchResult!]!
   loginBranchId: String
   municipalityAgencyId: String
