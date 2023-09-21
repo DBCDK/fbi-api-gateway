@@ -110,17 +110,21 @@ type BookMarkId {
 }
 
 type BookMark{
-  bookmarkId: Int!
   materialType: String!
   materialId: String!
+  bookmarkId: Int
+  createdAt: DateTime
 }
 
+type BookmarkResponse {
+  bookmarksAdded: [BookMark]
+  bookmarksAlreadyExists: [BookMark]
+}
 
 input BookMarkInput {
   materialType: String!
   materialId: String!
 }
-
 
 type UserMutations {
   """
@@ -160,7 +164,7 @@ type UserMutations {
   """
   Add a bookmark
   """
-  addBookmark(bookmark: BookMarkInput!): BookMark!
+  addBookmarks(bookmarks: [BookMarkInput!]!): BookmarkResponse
   """
   Delete a bookmark
   """
@@ -639,13 +643,13 @@ export const resolvers = {
         return { success: false, errorMessage: error?.message };
       }
     },
-    async addBookmark(parent, args, context, info) {
+    async addBookmarks(parent, args, context, info) {
       /**
        * Handles single or multiple additions to bookmarks.
        *
        * For multiple, {smaugUserId: string, bookmarks: [{materialType, string, materialId: string}]}
        * For single, {smaugUserId: string, materialType, string, materialId: string}
-       * 
+       *
        * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
        * while we espect single additions to throw an error if this bookmark already exists
        */
@@ -660,35 +664,21 @@ export const resolvers = {
           throw new Error("User not found in CULR");
         }
 
-        if (args.bookmarks && args.bookmarks.length > 0) {
-          /**
-           * Add array of bookmarks
-           */
-
-          const res = await context.datasources
-            .getLoader("userDataAddMultipleBookmarks")
-            .load({
-              smaugUserId: smaugUserId,
-              bookmarks: args.bookmarks.map((bookmark) => ({
-                materialType: bookmark.materialType,
-                materialId: bookmark.materialId,
-              })),
-            });
-          return res;
-        } else {
-          /**
-           * Add single bookmark
-           */
-
-          const res = await context.datasources
-            .getLoader("userDataAddBookmark")
-            .load({
-              smaugUserId: smaugUserId,
-              materialType: args.bookmark.materialType,
-              materialId: args.bookmark.materialId,
-            });
-          return res;
+        if (!args.bookmarks || args.bookmarks.length === 0) {
+          throw new Error("Bookmarks not set");
         }
+
+        const res = await context.datasources
+          .getLoader("userDataAddBookmarks")
+          .load({
+            smaugUserId: smaugUserId,
+            bookmarks: args.bookmarks.map((bookmark) => ({
+              materialType: bookmark.materialType,
+              materialId: bookmark.materialId,
+            })),
+          });
+
+        return res;
       } catch (error) {
         // @TODO log
         log.error(
