@@ -27,6 +27,7 @@ type User {
   Orders made through bibliotek.dk
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
+  agency(language: LanguageCode): BranchResult! @deprecated (reason: "Use 'User.agencies' instead.")
   agencies(language: LanguageCode): [BranchResult!]!
   loginBranchId: String
   municipalityAgencyId: String
@@ -373,6 +374,28 @@ export const resolvers = {
     async loginBranchId(parent, args, context, info) {
       return context.smaug.user.agency;
     },
+    async agency(parent, args, context, info) {
+      /**
+       * @TODO
+       * Align agency and agencies properly
+       * Discuss the intended usage of these fields
+       */
+      const userinfo = await context.datasources.getLoader("userinfo").load(
+        {
+          accessToken: context.accessToken,
+        },
+        context
+      );
+      const homeAgency = getHomeAgencyAccount(userinfo);
+
+      return await context.datasources.getLoader("library").load({
+        agencyid: homeAgency.agencyId,
+        language: parent.language,
+        limit: 100,
+        status: args.status || "ALLE",
+        bibdkExcludeBranches: args.bibdkExcludeBranches || false,
+      });
+    },
     async agencies(parent, args, context, info) {
       /**
        * @TODO
@@ -394,7 +417,6 @@ export const resolvers = {
         agencies.map(
           async (agency) =>
             await context.datasources.getLoader("library").load({
-              q: undefined,
               agencyid: agency,
               language: parent.language,
               limit: 30,
@@ -419,8 +441,6 @@ export const resolvers = {
           agency.result.findIndex(
             (library) => library.branchId === context.smaug.user.agency
           ) > -1;
-        //problem I: i get loginbibliotek instead of loginagency
-        //problem II: we dont return all bibs for an agency, but only first 20 or so --> can be that loginbib is not included
         return (
           agency.result[0].agencyId === context.smaug.user.agency ||
           matchingBranch

@@ -2665,7 +2665,7 @@ type User {
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
-  agency(language: LanguageCode): BranchResult!
+  agency(language: LanguageCode): BranchResult! @deprecated(reason: \\"Use 'User.agencies' instead\\")
   address: String
   postalCode: String
   municipalityAgencyId: String
