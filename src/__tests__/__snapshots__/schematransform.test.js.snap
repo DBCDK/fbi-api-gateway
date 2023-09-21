@@ -2656,7 +2656,7 @@ type Stats {
 }
 
 type User {
-  name: String!
+  name: String
   favoritePickUpBranch: String
 
   \\"\\"\\"We can store userdata for more than 30 days if set to true.\\"\\"\\"
@@ -2753,9 +2753,15 @@ type BookMarkId {
 }
 
 type BookMark {
-  bookmarkId: Int!
   materialType: String!
   materialId: String!
+  bookmarkId: Int
+  createdAt: DateTime
+}
+
+type BookmarkResponse {
+  bookmarksAdded: [BookMark]
+  bookmarksAlreadyExists: [BookMark]
 }
 
 input BookMarkInput {
@@ -2792,7 +2798,7 @@ type UserMutations {
   setPersistUserDataValue(persistUserData: Boolean!): UserDataResponse
 
   \\"\\"\\"Add a bookmark\\"\\"\\"
-  addBookmark(bookmark: BookMarkInput!): BookMark!
+  addBookmarks(bookmarks: [BookMarkInput!]!): BookmarkResponse
 
   \\"\\"\\"Delete a bookmark\\"\\"\\"
   deleteBookmark(bookmarkId: Int!): Int!
