@@ -17,7 +17,7 @@ import { log } from "dbc-node-logger";
  */
 export const typeDef = `
 type User {
-  name: String!
+  name: String
   favoritePickUpBranch: String
   """
   We can store userdata for more than 30 days if set to true.
@@ -206,22 +206,6 @@ export const resolvers = {
         demandDrivenAcquisition: false,
       };
 
-      const userAgencies = await this.agencies(parent, args, context, info);
-
-      // get rights from idp
-      const idpRights = await context.datasources.getLoader("idp").load("");
-      // check for infomedia access - if either of users agencies subscribes
-      for (const agency of userAgencies) {
-        if (idpRights[agency.agencyId]) {
-          subscriptions.infomedia = true;
-          break;
-        }
-      }
-      // check for digital article service
-      const digitalAccessSubscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-
       // get municipality agency
       const municipalityAgencyId = await this.municipalityAgencyId(
         parent,
@@ -229,13 +213,31 @@ export const resolvers = {
         context,
         info
       );
+
+      //const userAgencies = await this.agencies(parent, args, context, info);
+      // get rights from idp
+      const idpRights = await context.datasources.getLoader("idp").load("");
+
+      // check for infomedia access - if either of users agencies subscribes
+      /** NOTE  we leave this (outcommented) for loop for now @TODO is it correct  ?? **/
+      //for (const agency of userAgencies?.[0]?.result) {
+      if (municipalityAgencyId && idpRights[municipalityAgencyId]) {
+        subscriptions.infomedia = true;
+        //   break;
+      }
+      //}
+      // check for digital article service
+      const digitalAccessSubscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+
       // check with municipality agency
       if (digitalAccessSubscriptions[municipalityAgencyId]) {
         subscriptions.digitalArticleService = true;
       }
 
-      // and now for DDA .. the only check we can do is if agency starts with '7' (public library)
-      if (municipalityAgencyId.startsWith("7")) {
+      // and now for DDA .. the only check we can do is if agency (municipality) starts with '7' (public library)
+      if (municipalityAgencyId && municipalityAgencyId?.startsWith("7")) {
         subscriptions.demandDrivenAcquisition = true;
       }
 
@@ -696,7 +698,7 @@ export const resolvers = {
        *
        * For multiple, {smaugUserId: string, bookmarks: [{materialType, string, materialId: string}]}
        * For single, {smaugUserId: string, materialType, string, materialId: string}
-       * 
+       *
        * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
        * while we espect single additions to throw an error if this bookmark already exists
        */
