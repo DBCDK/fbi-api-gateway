@@ -7,40 +7,17 @@ Object {
       "hitcount": 1280,
       "result": Array [
         Object {
-          "agencyId": "000200",
-          "agencyName": "Øen",
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
           "borrowerCheck": true,
-          "branchId": "000201",
-          "city": "Fladøen S",
+          "branchId": "800044",
+          "city": "Aarhus C",
           "digitalCopyAccess": false,
-          "name": "Øknasten",
-          "openingHours": "Åbningstider",
-          "pickupAllowed": true,
-          "postalAddress": "Fladøens Filialvej 17",
-          "postalCode": "0112",
-          "userParameters": Array [
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": false,
-              "userParameterType": "userMail",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "100200",
-          "agencyName": "",
-          "borrowerCheck": true,
-          "branchId": "100200",
-          "city": null,
-          "digitalCopyAccess": false,
-          "name": "integrArtesis",
+          "name": "AU Bartholins Allé, Aarhus",
           "openingHours": null,
           "pickupAllowed": true,
-          "postalAddress": null,
-          "postalCode": null,
+          "postalAddress": "Bartholins Allé 11",
+          "postalCode": "8000",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
@@ -53,17 +30,17 @@ Object {
           ],
         },
         Object {
-          "agencyId": "100400",
-          "agencyName": "Dummy Bestilmodtager",
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
           "borrowerCheck": true,
-          "branchId": "100400",
-          "city": "Ballerup",
+          "branchId": "800041",
+          "city": "Herning",
           "digitalCopyAccess": false,
-          "name": "Dummy Bestilmodtager",
+          "name": "AU Birk Centerpark, Herning",
           "openingHours": null,
           "pickupAllowed": true,
-          "postalAddress": "Tempovej 7-11",
-          "postalCode": "2750",
+          "postalAddress": "Birk Centerpark 15",
+          "postalCode": "7400",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
@@ -76,164 +53,180 @@ Object {
           ],
         },
         Object {
-          "agencyId": "100450",
-          "agencyName": "DBC bibliotek",
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
           "borrowerCheck": true,
-          "branchId": "100450",
-          "city": "Q2zx",
+          "branchId": "800039",
+          "city": "København NV",
           "digitalCopyAccess": false,
-          "name": "DBC bibliotek",
-          "openingHours": "mandag - onsdag kl. 10-16
-torsdag 12-18
-fredag 10-16
-Den 26 oktober er alle afdelinger lukket p.g.a. Internt kursus",
-          "pickupAllowed": true,
-          "postalAddress": "DBC vej 22",
-          "postalCode": "0117",
-          "userParameters": Array [
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": false,
-              "userParameterType": "userMail",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "100451",
-          "agencyName": "Q2fjern-Væsen",
-          "borrowerCheck": true,
-          "branchId": "100451",
-          "city": "Q2zx",
-          "digitalCopyAccess": false,
-          "name": "Q2fjern",
-          "openingHours": "mandag-lørdag 10-19
-søndag lukket",
-          "pickupAllowed": true,
-          "postalAddress": "Qfjernvej 2",
-          "postalCode": "0116",
-          "userParameters": Array [
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": false,
-              "userParameterType": "userMail",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "700400",
-          "agencyName": "Dansk Centralbibliotek for Sydslesvig e.V.",
-          "borrowerCheck": true,
-          "branchId": "700400",
-          "city": "Flensburg",
-          "digitalCopyAccess": false,
-          "name": "Flensborg Bibliotek",
-          "openingHours": "Hverdage 9-19. 
-Lørdage 9-14.",
-          "pickupAllowed": true,
-          "postalAddress": "Norderstrasse 59",
-          "postalCode": "D-24939",
-          "userParameters": Array [
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": false,
-              "userParameterType": "userMail",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "700400",
-          "agencyName": "Dansk Centralbibliotek for Sydslesvig e.V.",
-          "borrowerCheck": true,
-          "branchId": "700401",
-          "city": "Husum",
-          "digitalCopyAccess": false,
-          "name": "Husum Bibliotek",
-          "openingHours": "mandag: 12.00 - 18.00.
-onsdag og torsdag: 10.00 - 16.00 
-1/9 - 31/3: også lørdag: 10.00 - 13.00",
-          "pickupAllowed": true,
-          "postalAddress": "Neustadt 81",
-          "postalCode": "D-25813",
-          "userParameters": Array [
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": false,
-              "userParameterType": "userMail",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "700400",
-          "agencyName": "Dansk Centralbibliotek for Sydslesvig e.V.",
-          "borrowerCheck": true,
-          "branchId": "700402",
-          "city": "Schleswig",
-          "digitalCopyAccess": false,
-          "name": "Slesvig Bibliotek",
-          "openingHours": "mandag og torsdag: 11.00 - 18.00
-tirsdag og onsdag: 10.00 - 16.00
-1/9 - 31/3: også lørdag: 10.00 - 13.00",
-          "pickupAllowed": true,
-          "postalAddress": "Bismarckstraße 18A",
-          "postalCode": "D-24837",
-          "userParameters": Array [
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": false,
-              "userParameterType": "userMail",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "700400",
-          "agencyName": "Dansk Centralbibliotek for Sydslesvig e.V.",
-          "borrowerCheck": true,
-          "branchId": "700404",
-          "city": "Eckernförde",
-          "digitalCopyAccess": false,
-          "name": "Fællesbiblioteket Egernførde",
-          "openingHours": "mandag og onsdag: 13.00 - 17.00",
-          "pickupAllowed": true,
-          "postalAddress": "Hans-Chr-Andersen Weg 2",
-          "postalCode": "D-24340",
-          "userParameters": Array [
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": false,
-              "userParameterType": "userMail",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "700400",
-          "agencyName": "Dansk Centralbibliotek for Sydslesvig e.V.",
-          "borrowerCheck": true,
-          "branchId": "700405",
-          "city": "Flensburg",
-          "digitalCopyAccess": false,
-          "name": "Bogbusserne",
+          "name": "AU Emdrup, København",
           "openingHours": null,
           "pickupAllowed": true,
-          "postalAddress": "Norderstr. 59",
-          "postalCode": "D-24939",
+          "postalAddress": "Tuborgvvej 164",
+          "postalCode": "2400",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
+          "borrowerCheck": true,
+          "branchId": "800038",
+          "city": "Aarhus V",
+          "digitalCopyAccess": false,
+          "name": "AU Fuglesangs Allé, Aarhus",
+          "openingHours": null,
+          "pickupAllowed": true,
+          "postalAddress": "Fuglesangs Alle 4",
+          "postalCode": "8210",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
+          "borrowerCheck": true,
+          "branchId": "800037",
+          "city": "Aarhus C",
+          "digitalCopyAccess": false,
+          "name": "AU Kasernen, Aarhus",
+          "openingHours": null,
+          "pickupAllowed": true,
+          "postalAddress": "Langelandsgade 151",
+          "postalCode": "8000",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
+          "borrowerCheck": true,
+          "branchId": "800042",
+          "city": "Aarhus N",
+          "digitalCopyAccess": false,
+          "name": "AU Katrinebjerg, Aarhus",
+          "openingHours": null,
+          "pickupAllowed": true,
+          "postalAddress": "Finlandsgade 21, 1. sal",
+          "postalCode": "8200",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
+          "borrowerCheck": true,
+          "branchId": "800043",
+          "city": "Højbjerg",
+          "digitalCopyAccess": false,
+          "name": "AU Moesgård, Højbjerg",
+          "openingHours": null,
+          "pickupAllowed": true,
+          "postalAddress": "Moesgård Allé 20",
+          "postalCode": "8270",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
+          "borrowerCheck": true,
+          "branchId": "800045",
+          "city": "Aarhus C",
+          "digitalCopyAccess": false,
+          "name": "AU Nobelparken, Aarhus",
+          "openingHours": null,
+          "pickupAllowed": true,
+          "postalAddress": "Jens Chr. Skous Vej 5
+Bygning 1461-1463, 1. etage",
+          "postalCode": "8000",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
+          "borrowerCheck": true,
+          "branchId": "800046",
+          "city": "Aarhus C",
+          "digitalCopyAccess": false,
+          "name": "AU Ny Munkegade, Aarhus",
+          "openingHours": null,
+          "pickupAllowed": true,
+          "postalAddress": "Ny Munkegade 118",
+          "postalCode": "8000",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "800010",
+          "agencyName": "Det Kgl. Bibliotek",
+          "borrowerCheck": true,
+          "branchId": "800047",
+          "city": "Aarhus C",
+          "digitalCopyAccess": false,
+          "name": "AU Sundhedsvidenskab, Aarhus",
+          "openingHours": null,
+          "pickupAllowed": true,
+          "postalAddress": "Victor Albeck Bygningen
+Vennelyst Boulevard 4",
+          "postalCode": "8000",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
@@ -260,16 +253,40 @@ Object {
         Object {
           "agencyId": "710100",
           "borrowerCheck": true,
-          "branchId": "710100",
-          "city": "København K",
+          "branchId": "710110",
+          "city": "København NV",
           "digitalCopyAccess": false,
-          "name": "Hovedbiblioteket, Krystalgade",
+          "name": "Biblioteket Rentemestervej",
           "openingHours": "Åbningstider
 Se åbningstider på:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+bibliotek.kk.dk/biblioteker/",
           "pickupAllowed": true,
-          "postalAddress": "Krystalgade 15",
-          "postalCode": "1172",
+          "postalAddress": "Rentemestervej 76",
+          "postalCode": "2400",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "710100",
+          "borrowerCheck": true,
+          "branchId": "710114",
+          "city": "København S",
+          "digitalCopyAccess": false,
+          "name": "Bibliotekshuset",
+          "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
+          "pickupAllowed": true,
+          "postalAddress": "Rodosvej 4",
+          "postalCode": "2300",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
@@ -357,6 +374,30 @@ bibliotek.kk.dk/biblioteker/",
         Object {
           "agencyId": "710100",
           "borrowerCheck": true,
+          "branchId": "710100",
+          "city": "København K",
+          "digitalCopyAccess": false,
+          "name": "Hovedbiblioteket, Krystalgade",
+          "openingHours": "Åbningstider
+Se åbningstider på:
+<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+          "pickupAllowed": true,
+          "postalAddress": "Krystalgade 15",
+          "postalCode": "1172",
+          "userParameters": Array [
+            Object {
+              "parameterRequired": true,
+              "userParameterType": "userId",
+            },
+            Object {
+              "parameterRequired": false,
+              "userParameterType": "userMail",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "710100",
+          "borrowerCheck": true,
           "branchId": "710107",
           "city": "Brønshøj",
           "digitalCopyAccess": false,
@@ -405,16 +446,16 @@ bibliotek.kk.dk/biblioteker/",
         Object {
           "agencyId": "710100",
           "borrowerCheck": true,
-          "branchId": "710109",
-          "city": "København Ø",
+          "branchId": "710118",
+          "city": "Vanløse",
           "digitalCopyAccess": false,
-          "name": "Øbro Jagtvej Bibliotek",
+          "name": "Kulturstationen Vanløse. Biblioteket",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
           "pickupAllowed": true,
-          "postalAddress": "Jagtvej 227",
-          "postalCode": "2100",
+          "postalAddress": "Jernbane Alle 38",
+          "postalCode": "2720",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
@@ -429,65 +470,14 @@ bibliotek.kk.dk/biblioteker/",
         Object {
           "agencyId": "710100",
           "borrowerCheck": true,
-          "branchId": "710110",
-          "city": "København NV",
+          "branchId": "710123",
+          "city": "Albertslund",
           "digitalCopyAccess": false,
-          "name": "Biblioteket Rentemestervej",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
+          "name": "Københavns Bibliotekers centrale sortering",
+          "openingHours": "ma-fre: 9-16",
           "pickupAllowed": true,
-          "postalAddress": "Rentemestervej 76",
-          "postalCode": "2400",
-          "userParameters": Array [
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": false,
-              "userParameterType": "userMail",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "710100",
-          "borrowerCheck": true,
-          "branchId": "710111",
-          "city": "København N",
-          "digitalCopyAccess": false,
-          "name": "Nørrebro Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-          "pickupAllowed": true,
-          "postalAddress": "Nørrebrohallen
-Nørrebrogade 208",
-          "postalCode": "2200",
-          "userParameters": Array [
-            Object {
-              "parameterRequired": true,
-              "userParameterType": "userId",
-            },
-            Object {
-              "parameterRequired": false,
-              "userParameterType": "userMail",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "710100",
-          "borrowerCheck": true,
-          "branchId": "710112",
-          "city": "København S",
-          "digitalCopyAccess": false,
-          "name": "Solvang Bibliotek",
-          "openingHours": "Åbningstider
-Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
-          "pickupAllowed": true,
-          "postalAddress": "Remisevej 14",
-          "postalCode": "2300",
+          "postalAddress": "Djursvang 7C",
+          "postalCode": "2620",
           "userParameters": Array [
             Object {
               "parameterRequired": true,

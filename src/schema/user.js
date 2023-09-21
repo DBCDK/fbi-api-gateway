@@ -430,28 +430,6 @@ export const resolvers = {
     async loggedInBranchId(parent, args, context, info) {
       return context.smaug.user.agency;
     },
-    async agency(parent, args, context, info) {
-      /**
-       * @TODO
-       * Align agency and agencies properly
-       * Discuss the intended usage of these fields
-       */
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        },
-        context
-      );
-      const homeAgency = getHomeAgencyAccount(userinfo);
-
-      return await context.datasources.getLoader("library").load({
-        agencyid: homeAgency.agencyId,
-        language: parent.language,
-        limit: 100,
-        status: args.status || "ALLE",
-        bibdkExcludeBranches: args.bibdkExcludeBranches || false,
-      });
-    },
     async agencies(parent, args, context, info) {
       /**
        * @TODO

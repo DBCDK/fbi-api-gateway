@@ -5,11 +5,12 @@ Object {
   "data": Object {
     "user": Object {
       "address": "Borgmesterskoven 45",
-      "agency": Object {
-        "result": Array [
-          Object {
-            "name": "Ballerup Bibliotek",
-            "openingHours": "Mandag - torsdag: 07 - 22
+      "agencies": Array [
+        Object {
+          "result": Array [
+            Object {
+              "name": "Ballerup Bibliotek",
+              "openingHours": "Mandag - torsdag: 07 - 22
 Fredag - lørdag - søndag: 07 - 17
 
 
@@ -17,10 +18,22 @@ Betjening:
 Mandag-torsdag: 10 - 19
 Fredag: 10 - 17
 Lørdag: 10 - 14",
-          },
-          Object {
-            "name": "Skovlunde Kulturhus",
-            "openingHours": "Mandag-torsdag: 07 - 22
+            },
+            Object {
+              "name": "Kulturhus Måløv",
+              "openingHours": "Alle dage: 07-22
+
+Betjening:
+Mandag: 14-18
+Tirsdag: 14-18
+Onsdag: 10-18
+Torsdag: 14-18
+Fredag: 13-17
+Lørdag: 10-14",
+            },
+            Object {
+              "name": "Skovlunde Kulturhus",
+              "openingHours": "Mandag-torsdag: 07 - 22
 Fredag-lørdag-søndag: 07 - 17
 
 
@@ -31,21 +44,10 @@ Onsdag: 10 - 17
 Torsdag: 13 - 17
 Fredag: 10 - 17
 Lørdag: 10 - 14",
-          },
-          Object {
-            "name": "Kulturhus Måløv",
-            "openingHours": "Alle dage: 07-22
-
-Betjening:
-Mandag: 14-18
-Tirsdag: 14-18
-Onsdag: 10-18
-Torsdag: 14-18
-Fredag: 13-17
-Lørdag: 10-14",
-          },
-        ],
-      },
+            },
+          ],
+        },
+      ],
       "mail": "test@dbc.dk",
       "name": "Freja Damgaard",
       "postalCode": "8660",
@@ -59,11 +61,12 @@ Object {
   "data": Object {
     "user": Object {
       "address": "Borgmesterskoven 45",
-      "agency": Object {
-        "result": Array [
-          Object {
-            "name": "Ballerup Bibliotek",
-            "openingHours": "Mandag - torsdag: 07 - 22
+      "agencies": Array [
+        Object {
+          "result": Array [
+            Object {
+              "name": "Ballerup Bibliotek",
+              "openingHours": "Mandag - torsdag: 07 - 22
 Fredag - lørdag - søndag: 07 - 17
 
 
@@ -71,10 +74,22 @@ Betjening:
 Mandag-torsdag: 10 - 19
 Fredag: 10 - 17
 Lørdag: 10 - 14",
-          },
-          Object {
-            "name": "Skovlunde Kulturhus",
-            "openingHours": "Mandag-torsdag: 07 - 22
+            },
+            Object {
+              "name": "Kulturhus Måløv",
+              "openingHours": "Alle dage: 07-22
+
+Betjening:
+Mandag: 14-18
+Tirsdag: 14-18
+Onsdag: 10-18
+Torsdag: 14-18
+Fredag: 13-17
+Lørdag: 10-14",
+            },
+            Object {
+              "name": "Skovlunde Kulturhus",
+              "openingHours": "Mandag-torsdag: 07 - 22
 Fredag-lørdag-søndag: 07 - 17
 
 
@@ -85,21 +100,10 @@ Onsdag: 10 - 17
 Torsdag: 13 - 17
 Fredag: 10 - 17
 Lørdag: 10 - 14",
-          },
-          Object {
-            "name": "Kulturhus Måløv",
-            "openingHours": "Alle dage: 07-22
-
-Betjening:
-Mandag: 14-18
-Tirsdag: 14-18
-Onsdag: 10-18
-Torsdag: 14-18
-Fredag: 13-17
-Lørdag: 10-14",
-          },
-        ],
-      },
+            },
+          ],
+        },
+      ],
       "mail": "test@dbc.dk",
       "name": "Freja Damgaard",
       "postalCode": "8660",
@@ -195,7 +199,7 @@ Object {
           "orderType": "normal",
           "pages": "151 sider",
           "pickUpBranch": Object {
-            "agencyName": "Øen",
+            "agencyName": "Det Kgl. Bibliotek",
           },
           "pickUpExpiryDate": null,
           "status": "UNKNOWN",

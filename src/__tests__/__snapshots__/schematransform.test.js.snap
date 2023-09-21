@@ -2665,9 +2665,10 @@ type User {
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
+  loggedInBranchId: String
+  municipalityAgencyId: String
   address: String
   postalCode: String
-  municipalityAgencyId: String
   mail: String
   culrMail: String
   country: String
