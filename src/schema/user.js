@@ -28,7 +28,7 @@ type User {
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
-  loginBranchId: String
+  loggedInBranchId: String
   municipalityAgencyId: String
   address: String
   postalCode: String
@@ -370,7 +370,7 @@ export const resolvers = {
 
       return agencyWithEmail && agencyWithEmail.userId;
     },
-    async loginBranchId(parent, args, context, info) {
+    async loggedInBranchId(parent, args, context, info) {
       return context.smaug.user.agency;
     },
     async agency(parent, args, context, info) {
