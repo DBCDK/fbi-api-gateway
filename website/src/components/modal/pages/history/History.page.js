@@ -172,12 +172,12 @@ function Item({
                 <Text type="text4">This token was removed 🗑️</Text>
               ) : (
                 (isInvalid && (
-                  <Text type="text4">This token is invalid 😔</Text>
+                  <Text type="text4">This token is invalid 🧐</Text>
                 )) ||
                 (isExpired && (
                   <Text type="text4">This token is expired 😔</Text>
                 )) || (
-                  <Text type="text4">This token could not be verified 😔</Text>
+                  <Text type="text4">This token could not be verified 🤔</Text>
                 )
               )}
               <Text type="text1">{token}</Text>

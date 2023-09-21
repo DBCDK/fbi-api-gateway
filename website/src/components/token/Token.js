@@ -61,6 +61,9 @@ export default function Token({
 
   const hasStatusError = isExpired || isInvalid || isNotVerified || isError;
 
+  const hasMissingConfigError =
+    !selectedToken?.profile || !configuration.agency;
+
   const hasValidationError =
     selectedToken?.token && !isLoading && hasStatusError;
 
@@ -69,7 +72,7 @@ export default function Token({
 
   const _errorMissingConfig =
     !hasValidationError &&
-    !configuration?.agency &&
+    hasMissingConfigError &&
     "😵‍💫 Missing client configuration!";
 
   const _errorExpired =
