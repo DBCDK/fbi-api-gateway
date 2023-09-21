@@ -30,7 +30,7 @@ export default function useConfiguration(token) {
   const isValid = isToken(token?.token);
 
   const { data, error } = useSWR(isValid && url, fetcher, {
-    fallback: { config: {}, status: null },
+    fallback: { config: {}, status: null, statusCode: null },
   });
 
   return (
