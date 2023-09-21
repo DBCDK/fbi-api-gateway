@@ -62,7 +62,7 @@ export default function Token({
   const hasStatusError = isExpired || isInvalid || isNotVerified || isError;
 
   const hasMissingConfigError =
-    !selectedToken?.profile || !configuration.agency;
+    !selectedToken?.profile || !configuration?.agency;
 
   const hasValidationError =
     selectedToken?.token && !isLoading && hasStatusError;

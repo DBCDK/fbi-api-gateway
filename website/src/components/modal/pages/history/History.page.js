@@ -109,7 +109,7 @@ function Item({
   const displayName = configuration?.displayName;
   const clientId = configuration?.clientId;
   const authenticated = !!configuration?.uniqueId;
-  const missingConfiguration = !profile || !configuration.agency;
+  const missingConfiguration = !profile || !configuration?.agency;
   const submitted = {
     date: dateConverter(timestamp),
     time: timeConverter(timestamp),
