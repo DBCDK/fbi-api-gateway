@@ -51,21 +51,11 @@ export default function Token({
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 
-  const hasEmptyConfig = !Object.keys(configuration || {}).length;
-
-  // Validation status class'
-  const isExpired = hasEmptyConfig && status === 404;
-  const isInvalid = hasEmptyConfig && status === 401;
-  const isNotVerified = hasEmptyConfig && status === 500;
-  const isError = hasEmptyConfig && status !== 200;
-
-  const hasStatusError = isExpired || isInvalid || isNotVerified || isError;
-
   const hasMissingConfigError =
     !selectedToken?.profile || !configuration?.agency;
 
   const hasValidationError =
-    selectedToken?.token && !isLoading && hasStatusError;
+    selectedToken?.token && !isLoading && status !== "OK";
 
   // Error messages
   const _errorToken = !selectedToken?.token && "🧐 This token is invalid!";
@@ -77,15 +67,13 @@ export default function Token({
     "😵‍💫 Missing client configuration!";
 
   const _errorExpired =
-    hasValidationError && isExpired && "😔 This token is expired!";
+    hasValidationError && status === "EXPIRED" && "😔 This token is expired!";
 
   const _errorInvalid =
-    hasValidationError && isInvalid && "🧐 This token is invalid!";
+    hasValidationError && status === "INVALID" && "🧐 This token is invalid!";
 
   const _errorIsNotVerified =
-    hasValidationError &&
-    (isNotVerified || isError) &&
-    "🤔 Error validating token!";
+    hasValidationError && status === "ERROR" && "🤔 Error validating token!";
 
   const hasError = _errorToken || _errorMissingConfig || hasValidationError;
 

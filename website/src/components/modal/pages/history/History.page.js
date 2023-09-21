@@ -120,15 +120,7 @@ function Item({
     time: timeConverter(configuration?.expires),
   };
 
-  const hasEmptyConfig = !Object.keys(configuration || {}).length;
-
-  // Validation status class'
-  const isExpired = hasEmptyConfig && configurationStatus === 404;
-  const isInvalid = hasEmptyConfig && configurationStatus === 401;
-  const isNotVerified = hasEmptyConfig && configurationStatus === 500;
-  const isError = hasEmptyConfig && configurationStatus !== 200;
-
-  const hasValidationError = isExpired || isInvalid || isNotVerified || isError;
+  const hasValidationError = configurationStatus !== "OK";
 
   const modal = document.getElementById("modal");
   const containerScrollY = modal?.scrollTop;
@@ -136,8 +128,7 @@ function Item({
   const agencies = parseAgencies(user?.agencies);
 
   const inUseClass = inUse ? styles.inUse : "";
-  const expiredClass =
-    isExpired || isInvalid || isNotVerified ? styles.expired : "";
+  const expiredClass = hasValidationError ? styles.expired : "";
   const missingConfigClass = missingConfiguration ? styles.missingConfig : "";
   const exapandedClass = open ? styles.expanded : "";
   const exapandedClassGlobal = open ? "expanded" : "";
@@ -171,14 +162,12 @@ function Item({
               {removed ? (
                 <Text type="text4">This token was removed 🗑️</Text>
               ) : (
-                (isInvalid && (
+                (configurationStatus === "INVALID" && (
                   <Text type="text4">This token is invalid 🧐</Text>
                 )) ||
-                (isExpired && (
+                (configurationStatus === "EXPIRED" && (
                   <Text type="text4">This token is expired 😔</Text>
-                )) || (
-                  <Text type="text4">This token could not be verified 🤔</Text>
-                )
+                )) || <Text type="text4">Error validating token 🤔</Text>
               )}
               <Text type="text1">{token}</Text>
             </div>
