@@ -397,7 +397,7 @@ export const resolvers = {
               q: undefined,
               agencyid: agency,
               language: parent.language,
-              limit: 20,
+              limit: 30,
               status: args.status || "ALLE",
               bibdkExcludeBranches: args.bibdkExcludeBranches || false,
             })
