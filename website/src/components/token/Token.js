@@ -71,6 +71,7 @@ export default function Token({
   const _errorToken = !selectedToken?.token && "🧐 This token is invalid!";
 
   const _errorMissingConfig =
+    !isLoading &&
     !hasValidationError &&
     hasMissingConfigError &&
     "😵‍💫 Missing client configuration!";
