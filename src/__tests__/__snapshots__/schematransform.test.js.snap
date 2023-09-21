@@ -2288,7 +2288,7 @@ enum SubmitOrderStatus {
   AUTHENTICATION_ERROR
 
   \\"\\"\\"Unknown error occured, status is unknown\\"\\"\\"
-  UNKNOWN_STATUS
+  UNKNOWN_ERROR
 }
 
 type SubmitOrder {

@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Row } from "react-bootstrap";
-import uniqBy from "lodash/uniqBy";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
@@ -99,7 +98,7 @@ function Item({
   inUse,
   configuration,
   user,
-  isExpired,
+  configurationStatus,
 }) {
   const { setSelectedToken, removeHistoryItem } = useStorage();
 
@@ -110,15 +109,18 @@ function Item({
   const displayName = configuration?.displayName;
   const clientId = configuration?.clientId;
   const authenticated = !!configuration?.uniqueId;
-  const missingConfiguration = !profile || !configuration.agency;
+  const missingConfiguration = !profile || !configuration?.agency;
   const submitted = {
     date: dateConverter(timestamp),
     time: timeConverter(timestamp),
   };
+
   const expires = {
     date: dateConverter(configuration?.expires),
     time: timeConverter(configuration?.expires),
   };
+
+  const hasValidationError = configurationStatus !== "OK";
 
   const modal = document.getElementById("modal");
   const containerScrollY = modal?.scrollTop;
@@ -126,7 +128,7 @@ function Item({
   const agencies = parseAgencies(user?.agencies);
 
   const inUseClass = inUse ? styles.inUse : "";
-  const expiredClass = isExpired ? styles.expired : "";
+  const expiredClass = hasValidationError ? styles.expired : "";
   const missingConfigClass = missingConfiguration ? styles.missingConfig : "";
   const exapandedClass = open ? styles.expanded : "";
   const exapandedClassGlobal = open ? "expanded" : "";
@@ -155,12 +157,17 @@ function Item({
         }}
       >
         <div className={styles.display}>
-          {removed || isExpired ? (
+          {removed || hasValidationError ? (
             <div>
               {removed ? (
                 <Text type="text4">This token was removed 🗑️</Text>
               ) : (
-                <Text type="text4">This token is expired 😔</Text>
+                (configurationStatus === "INVALID" && (
+                  <Text type="text4">This token is invalid 🧐</Text>
+                )) ||
+                (configurationStatus === "EXPIRED" && (
+                  <Text type="text4">This token is expired 😔</Text>
+                )) || <Text type="text4">Error validating token 🤔</Text>
               )}
               <Text type="text1">{token}</Text>
             </div>
@@ -315,7 +322,7 @@ function Item({
             </Button>
             <Button
               className={styles.use}
-              disabled={isExpired}
+              disabled={hasValidationError}
               size="small"
               onClick={() => setSelectedToken(token, profile)}
               primary
@@ -338,21 +345,19 @@ function Item({
  */
 
 function Wrap(props) {
-  const { configuration, isLoading } = useConfiguration(props);
+  const { configuration, status, isLoading } = useConfiguration(props);
   const { user } = useUser(props);
 
   if (isLoading) {
     return <ItemIsLoading />;
   }
 
-  const isExpired = !Object.keys(configuration || {}).length;
-
   return (
     <Item
       {...props}
       user={user}
       configuration={configuration}
-      isExpired={isExpired}
+      configurationStatus={status}
     />
   );
 }

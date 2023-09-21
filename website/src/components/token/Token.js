@@ -20,7 +20,7 @@ export default function Token({
 }) {
   // useToken custom hook
   const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
-  const { configuration, isLoading } = useConfiguration(selectedToken);
+  const { configuration, status, isLoading } = useConfiguration(selectedToken);
   // internal state
   const [state, setState] = useState({
     value: "",
@@ -51,24 +51,31 @@ export default function Token({
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 
-  const emptyConfiguration = Object.keys(configuration || {}).length === 0;
+  const hasMissingConfigError =
+    !selectedToken?.profile || !configuration?.agency;
 
-  const _errorToken = !selectedToken?.token && "😬 This is not a valid token!";
+  const hasValidationError =
+    selectedToken?.token && !isLoading && status !== "OK";
+
+  // Error messages
+  const _errorToken = !selectedToken?.token && "🧐 This token is invalid!";
 
   const _errorMissingConfig =
-    selectedToken?.token &&
     !isLoading &&
-    !emptyConfiguration &&
-    !configuration?.agency &&
-    "😬 Missing client configuration!";
+    !hasValidationError &&
+    hasMissingConfigError &&
+    "😵‍💫 Missing client configuration!";
 
   const _errorExpired =
-    selectedToken?.token &&
-    !isLoading &&
-    emptyConfiguration &&
-    "😬 Invalid or expired token!";
+    hasValidationError && status === "EXPIRED" && "😔 This token is expired!";
 
-  const hasError = _errorToken || _errorMissingConfig || _errorExpired;
+  const _errorInvalid =
+    hasValidationError && status === "INVALID" && "🧐 This token is invalid!";
+
+  const _errorIsNotVerified =
+    hasValidationError && status === "ERROR" && "🤔 Error validating token!";
+
+  const hasError = _errorToken || _errorMissingConfig || hasValidationError;
 
   // custom class'
   const compactSize = compact ? styles.compact : "";
@@ -155,7 +162,11 @@ export default function Token({
         container={containerRef}
       >
         <Text type="text2">
-          {_errorToken || _errorExpired || _errorMissingConfig}
+          {_errorToken ||
+            _errorExpired ||
+            _errorMissingConfig ||
+            _errorInvalid ||
+            _errorIsNotVerified}
         </Text>
       </Overlay>
     </form>
