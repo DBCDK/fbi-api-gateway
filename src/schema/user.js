@@ -28,10 +28,10 @@ type User {
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
-  agency(language: LanguageCode): BranchResult!
+  loggedInBranchId: String
+  municipalityAgencyId: String
   address: String
   postalCode: String
-  municipalityAgencyId: String
   mail: String
   culrMail: String
   country: String
@@ -427,6 +427,9 @@ export const resolvers = {
 
       return agencyWithEmail && agencyWithEmail.userId;
     },
+    async loggedInBranchId(parent, args, context, info) {
+      return context.smaug.user.agency;
+    },
     async agency(parent, args, context, info) {
       /**
        * @TODO
@@ -472,20 +475,41 @@ export const resolvers = {
             await context.datasources.getLoader("library").load({
               agencyid: agency,
               language: parent.language,
-              limit: 20,
+              limit: 30,
               status: args.status || "ALLE",
               bibdkExcludeBranches: args.bibdkExcludeBranches || false,
             })
         )
       );
 
-      // Remove agencyes which doesnt exist in VIP
+      // Remove agencies that dont exist in VIP
       // Example "190976" and "191977" (no VIP info) on testuser Michelle Hoffmann will return empty results
       const filteredAgencyInfoes = agencyInfos.filter(
         (agency) => agency?.result.length > 0
       );
 
-      return filteredAgencyInfoes;
+      const sortedAgencies = filteredAgencyInfoes.sort((a, b) =>
+        a.result[0].agencyName.localeCompare(b.result[0].agencyName)
+      );
+
+      const loginAgencyIdx = sortedAgencies.findIndex((agency) => {
+        const matchingBranch =
+          agency.result.findIndex(
+            (library) => library.branchId === context.smaug.user.agency
+          ) > -1;
+        return (
+          agency.result[0].agencyId === context.smaug.user.agency ||
+          matchingBranch
+        );
+      });
+
+      //put element at loginAgencyIdx at the beginning of the array
+      if (loginAgencyIdx > 0) {
+        const loginAgency = sortedAgencies.splice(loginAgencyIdx, 1)[0];
+        filteredAgencyInfoes.unshift(loginAgency);
+      }
+
+      return sortedAgencies;
     },
     async bookmarks(parent, args, context, info) {
       try {
