@@ -20,7 +20,7 @@ export default function Token({
 }) {
   // useToken custom hook
   const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
-  const { configuration, isLoading } = useConfiguration(selectedToken);
+  const { configuration, status, isLoading } = useConfiguration(selectedToken);
   // internal state
   const [state, setState] = useState({
     value: "",
@@ -51,24 +51,39 @@ export default function Token({
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 
-  const emptyConfiguration = Object.keys(configuration || {}).length === 0;
+  const hasEmptyConfig = !Object.keys(configuration || {}).length;
 
-  const _errorToken = !selectedToken?.token && "😬 This is not a valid token!";
+  // Validation status class'
+  const isExpired = hasEmptyConfig && status === 404;
+  const isInvalid = hasEmptyConfig && status === 401;
+  const isNotVerified = hasEmptyConfig && status === 500;
+  const isError = hasEmptyConfig && status !== 200;
+
+  const hasStatusError = isExpired || isInvalid || isNotVerified || isError;
+
+  const hasValidationError =
+    selectedToken?.token && !isLoading && hasStatusError;
+
+  // Error messages
+  const _errorToken = !selectedToken?.token && "🧐 This token is invalid!";
 
   const _errorMissingConfig =
-    selectedToken?.token &&
-    !isLoading &&
-    !emptyConfiguration &&
+    !hasValidationError &&
     !configuration?.agency &&
-    "😬 Missing client configuration!";
+    "😵‍💫 Missing client configuration!";
 
   const _errorExpired =
-    selectedToken?.token &&
-    !isLoading &&
-    emptyConfiguration &&
-    "😬 Invalid or expired token!";
+    hasValidationError && isExpired && "😔 This token is expired!";
 
-  const hasError = _errorToken || _errorMissingConfig || _errorExpired;
+  const _errorInvalid =
+    hasValidationError && isInvalid && "🧐 This token is invalid!";
+
+  const _errorIsNotVerified =
+    hasValidationError &&
+    (isNotVerified || isError) &&
+    "🤔 Error validating token!";
+
+  const hasError = _errorToken || _errorMissingConfig || hasValidationError;
 
   // custom class'
   const compactSize = compact ? styles.compact : "";
@@ -155,7 +170,11 @@ export default function Token({
         container={containerRef}
       >
         <Text type="text2">
-          {_errorToken || _errorExpired || _errorMissingConfig}
+          {_errorToken ||
+            _errorExpired ||
+            _errorMissingConfig ||
+            _errorInvalid ||
+            _errorIsNotVerified}
         </Text>
       </Overlay>
     </form>

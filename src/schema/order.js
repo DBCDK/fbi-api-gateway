@@ -29,7 +29,7 @@ const orderStatusmessageMap = {
   ORS_ERROR: "Error sending order to ORS",
   NO_SERVICEREQUESTER: "ServiceRequester is obligatory",
   AUTHENTICATION_ERROR: "Authentication error",
-  UNKNOWN_STATUS: "Some unknown error occured",
+  UNKNOWN_ERROR: "Some unknown error occured",
 };
 
 /**
@@ -127,7 +127,7 @@ export const typeDef = `
     """
     Unknown error occured, status is unknown
     """
-    UNKNOWN_STATUS
+    UNKNOWN_ERROR
   }
 
    type SubmitOrder {
@@ -351,7 +351,7 @@ export const resolvers = {
       return parent.ok || false;
     },
     status(parent, args, context, info) {
-      return parent.status?.toUpperCase() || "UNKNOWN_STATUS";
+      return parent.status?.toUpperCase() || "UNKNOWN_ERROR";
     },
     message(parent, args, context, info) {
       return orderStatusmessageMap[parent.status];

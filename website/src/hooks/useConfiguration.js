@@ -8,11 +8,15 @@ const fetcher = async (url) => {
     method: "GET",
   });
 
+  const status = response.status;
+
   if (response.status !== 200) {
-    return {};
+    return { config: {}, status };
   }
 
-  return await response.json();
+  const config = await response.json();
+
+  return { config, status };
 };
 
 export default function useConfiguration(token) {
@@ -20,8 +24,14 @@ export default function useConfiguration(token) {
   const isValid = isToken(token?.token);
 
   const { data, error } = useSWR(isValid && url, fetcher, {
-    fallback: {},
+    fallback: { config: {}, status: null },
   });
 
-  return { configuration: data, isLoading: !data && !error && isValid } || {};
+  return (
+    {
+      configuration: data?.config,
+      status: data?.status,
+      isLoading: !data && !error && isValid,
+    } || {}
+  );
 }
