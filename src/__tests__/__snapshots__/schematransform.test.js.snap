@@ -2675,7 +2675,7 @@ type User {
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
-  bookmarks: [BookMark!]!
+  bookmarks(offset: Int, limit: PaginationLimit): BookMarkResponse!
   rights: UserSubscriptions!
 }
 
@@ -2683,6 +2683,12 @@ type UserSubscriptions {
   infomedia: Boolean!
   digitalArticleService: Boolean!
   demandDrivenAcquisition: Boolean!
+}
+
+\\"\\"\\"Response object for bookmark request\\"\\"\\"
+type BookMarkResponse {
+  result: [BookMark!]!
+  hitcount: Int!
 }
 
 \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"

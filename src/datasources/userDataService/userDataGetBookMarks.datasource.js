@@ -7,9 +7,6 @@ const { url } = config.datasources.userdata;
 export async function load({ smaugUserId, limit, offset }, context) {
   const endpoint = url + "bookmark/get";
   try {
-    console.log("endpoint", endpoint);
-    console.log("\nsmaugUserId", smaugUserId);
-
     const bookmarks = await context.fetch(endpoint, {
       headers: {
         "Content-Type": "application/json",
@@ -17,7 +14,7 @@ export async function load({ smaugUserId, limit, offset }, context) {
       method: "POST",
       body: JSON.stringify({ smaugUserId: smaugUserId, limit, offset }),
     });
-    console.log("bookmarks.body", bookmarks.body);
+
     return bookmarks.body;
   } catch (e) {
     // @TODO log

@@ -38,7 +38,7 @@ type User {
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
-  bookmarks(offset: Int limit: PaginationLimit): BookMarkResponse!
+  bookmarks(offset: Int, limit: PaginationLimit): BookMarkResponse!
   rights: UserSubscriptions!
 }
 
@@ -48,7 +48,7 @@ type UserSubscriptions {
   demandDrivenAcquisition: Boolean!
 }
 """
-Orders made through bibliotek.dk
+Response object for bookmark request
 """
 type BookMarkResponse {
 result: [BookMark!]!
