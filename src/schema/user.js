@@ -38,7 +38,7 @@ type User {
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
-  bookmarks(offset: Int, limit: PaginationLimit): BookMarkResponse!
+  bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
 }
 
@@ -123,7 +123,10 @@ type UserDataResponse {
 type BookMarkId {
   bookMarkId: Int!
 }
-
+enum BookMarkOrderBy{
+  createdAt
+  title
+}
 type BookMark{
   materialType: String!
   materialId: String!
@@ -139,6 +142,7 @@ type BookmarkResponse {
 input BookMarkInput {
   materialType: String!
   materialId: String!
+  title: String!
 }
 
 type UserMutations {
@@ -501,7 +505,7 @@ export const resolvers = {
         if (!smaugUserId) {
           throw "Not authorized";
         }
-        const { limit, offset } = args;
+        const { limit, offset,orderBy } = args;
 
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
@@ -509,6 +513,7 @@ export const resolvers = {
             smaugUserId: smaugUserId,
             limit,
             offset,
+            orderBy
           });
 
         return { result: res.result, hitcount: res?.hitcount || 0 };
@@ -737,10 +742,13 @@ export const resolvers = {
           .getLoader("userDataAddBookmarks")
           .load({
             smaugUserId: smaugUserId,
-            bookmarks: args.bookmarks.map((bookmark) => ({
+            bookmarks: args.bookmarks.map((bookmark) => {
+              console.log('bookmark to add: ',bookmark)
+              return ({
               materialType: bookmark.materialType,
               materialId: bookmark.materialId,
-            })),
+              title: bookmark.title
+            })}),
           });
 
         return res;
