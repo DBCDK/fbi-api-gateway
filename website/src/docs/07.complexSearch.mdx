@@ -1,16 +1,8 @@
 # Complex Search
+Version 1 of complex search.
 
-Complex search has support for CQL queries.
-
-Try for instance
-
-`title=harry* AND creator=a*`
-
-This is work in progress:
-
-- offset/limit is not working
-- profile is not working
-- holdings filtering is not working
+Complex search is a searchengine which supports bibliographic queries via CQL
+Currently supports the following indexes in the CQL query: [Full list of indexes](https://fbi-api.dbc.dk/indexmapper/)
 
 <InlineGraphiQL
   query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!) {
