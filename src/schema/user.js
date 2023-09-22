@@ -505,7 +505,7 @@ export const resolvers = {
         if (!smaugUserId) {
           throw "Not authorized";
         }
-        const { limit, offset,orderBy } = args;
+        const { limit, offset, orderBy } = args;
 
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
@@ -513,7 +513,7 @@ export const resolvers = {
             smaugUserId: smaugUserId,
             limit,
             offset,
-            orderBy
+            orderBy,
           });
 
         return { result: res.result, hitcount: res?.hitcount || 0 };
@@ -743,12 +743,12 @@ export const resolvers = {
           .load({
             smaugUserId: smaugUserId,
             bookmarks: args.bookmarks.map((bookmark) => {
-              console.log('bookmark to add: ',bookmark)
-              return ({
-              materialType: bookmark.materialType,
-              materialId: bookmark.materialId,
-              title: bookmark.title
-            })}),
+              return {
+                materialType: bookmark.materialType,
+                materialId: bookmark.materialId,
+                title: bookmark.title,
+              };
+            }),
           });
 
         return res;
