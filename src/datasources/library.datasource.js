@@ -233,8 +233,9 @@ export async function search(props, getFunc) {
     merged = merged.filter((branch) => branch.branchId === branchId);
   }
 
-  const orderFields = q ? ["score", "branchId"] : "name";
-  merged = orderBy(merged, orderFields, "asc");
+  merged = q
+    ? orderBy(merged, ["score", "branchId"], ["desc", "asc"])
+    : orderBy(merged, ["name"], ["asc"]);
 
   // sort by pickupAllowed AFTER sorting by score/branchId or name
   merged = [
