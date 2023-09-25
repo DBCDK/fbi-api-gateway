@@ -5,7 +5,6 @@
 
 import { orderBy } from "lodash";
 import { resolveBorrowerCheck } from "../utils/utils";
-
 export const typeDef = `
   enum LibraryStatus {
     SLETTET
@@ -121,7 +120,7 @@ export const resolvers = {
       }
       return (
         parent.openingHours[parent.language === "da" ? 0 : 1] ||
-        parent.openingHours[0]
+        parent.openingHours
       );
     },
     userStatusUrl(parent, args, context, info) {
