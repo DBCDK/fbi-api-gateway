@@ -83,7 +83,7 @@ export default async function getUserOrderAllowedStatus(
 
   // AgencyId has Borrowercheck, continue the order verification
 
-  // userId may changes (let)
+  // userId may change (let)
   let _userId;
 
   // UserId fetched from other account than loggedIn account
@@ -98,7 +98,7 @@ export default async function getUserOrderAllowedStatus(
       _isAccount
     );
   } else {
-    return await checkUnauthenticatedUser(context, agencyId, summary);
+    return await checkUnauthenticatedUser(context, agencyId, userIds, summary);
   }
 }
 
@@ -162,9 +162,8 @@ async function checkUserOrderAllowedStatus(
   return summary;
 }
 
-// function to fetch possible userIds from userParameters
 /**
- *
+ * function to fetch possible userIds from userParameters
  * @param {*} userParams
  * @returns
  */
@@ -179,6 +178,15 @@ export function getUserIds(userParams) {
   return res;
 }
 
+/**
+ * Check if authenticated user is allowed to place an order
+ * @param {Object} context
+ * @param {string} agencyId
+ * @param {Object} summary
+ * @param {*} _userId
+ * @param {Boolean} _isAccount
+ * @returns
+ */
 async function checkAuthenticatedUser(
   context,
   agencyId,
@@ -190,6 +198,12 @@ async function checkAuthenticatedUser(
   const verifiedOnPickUpBranch = !!(
     context.smaug?.user?.id && context.smaug?.user?.agency === agencyId
   );
+
+  console.log("agencyId", typeof agencyId);
+  console.log("summary", typeof summary);
+
+  console.log("_userId", typeof _userId);
+  console.log("_isAccount", typeof _isAccount);
 
   // add to summary log
   summary.verifiedOnPickUpBranch = verifiedOnPickUpBranch;
@@ -268,10 +282,13 @@ async function checkAuthenticatedUser(
 /**
  * If user is NOT Authenticated! We check the provided userIds
  * This happens if a library has borrowercheck, but is not part of adgangsplatformen.
- * @param {*} context
+ * @param {Object} context
+ * @param {Object} userIds
+ * @param {string} agencyId
+ * @param {Object} summary
  * @returns {Object}
  */
-async function checkUnauthenticatedUser(context, agencyId, summary) {
+async function checkUnauthenticatedUser(context, agencyId, userIds, summary) {
   // if no userIds was provided, no check can be performed
   if (!userIds) {
     return {
@@ -288,9 +305,7 @@ async function checkUnauthenticatedUser(context, agencyId, summary) {
     }))
   );
 
-  // Evaluate status'
-
-  // Ensure no checks returned blocked
+  // Evaluate status from all userIds --> Ensure no status returned "blocked"
   const hasBlocked = statusMap.find((obj) => obj.borchk?.blocked);
 
   // user is blocked by agency
