@@ -135,6 +135,10 @@ input BookMarkInput {
   materialId: String!
 }
 
+type BookMarkDeleteResponse {
+  IdsDeletedCount: Int!
+}
+
 type UserMutations {
   """
   Add user to userdata service
@@ -177,7 +181,7 @@ type UserMutations {
   """
   Delete a bookmark
   """
-  deleteBookmark(bookmarkId: Int!): Int!
+  deleteBookmarks(bookmarkIds: [Int!]!): BookMarkDeleteResponse
   }
   
 extend type Mutation {
@@ -740,7 +744,7 @@ export const resolvers = {
         return { bookMarkId: 0 };
       }
     },
-    async deleteBookmark(parent, args, context, info) {
+    async deleteBookmarks(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
 
@@ -755,7 +759,7 @@ export const resolvers = {
           .getLoader("userDataDeleteBookmark")
           .load({
             smaugUserId: smaugUserId,
-            bookmarkId: args.bookmarkId,
+            bookmarkIds: args.bookmarkIds,
           });
 
         return res;
