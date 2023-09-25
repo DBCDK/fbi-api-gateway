@@ -8,7 +8,7 @@ import { log } from "dbc-node-logger";
 
 import getUserCanBorrowStatus, {
   getUserIds,
-} from "../utils/userCanBorrowStatus";
+} from "../utils/getUserCanBorrowStatus";
 
 const orderStatusmessageMap = {
   OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",
