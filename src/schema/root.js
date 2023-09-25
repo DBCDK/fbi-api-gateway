@@ -8,14 +8,14 @@ import { createHistogram } from "../utils/monitor";
 import {
   fetchOrderStatus,
   getUserId,
-  resolveBorrowerCheck,
   resolveLocalizations,
   resolveLocalizationsWithHoldings,
   resolveManifestation,
   resolveWork,
 } from "../utils/utils";
+import getUserCanBorrowStatus from "../utils/getUserCanBorrowStatus";
+
 import translations from "../utils/translations.json";
-import { resolveAccess } from "./draft/draft_utils_manifestations";
 import isEmpty from "lodash/isEmpty";
 
 /**
@@ -288,7 +288,7 @@ export const resolvers = {
       return args;
     },
     async branches(parent, args, context, info) {
-      return await context.datasources.getLoader("library").load({
+      const libraries = await context.datasources.getLoader("library").load({
         q: args.q,
         limit: args.limit,
         offset: args.offset,
@@ -298,6 +298,19 @@ export const resolvers = {
         status: args.status || "ALLE",
         bibdkExcludeBranches: args.bibdkExcludeBranches || false,
       });
+      const agency = libraries.result[0];
+      //check blocking status for each agency & if user exists on agency (FFU)
+      const { status, statusCode } = await getUserCanBorrowStatus(
+        { agencyId: agency.agencyId },
+        context
+      );
+      return {
+        ...libraries,
+        canBorrow: {
+          canBorrow: status,
+          statusCode: statusCode,
+        },
+      };
     },
     async suggest(parent, args, context, info) {
       return args;
