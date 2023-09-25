@@ -87,7 +87,7 @@ async function doRequest() {
 
   return libraries.map((branch) => ({
     ...branch,
-    agencyName: branch.agencyNames?.join(" :: "),
+    agencyName: branch.agencyNames?.join(" "),
     branchName: branch.name && branch.name,
     illOrderReceiptText:
       branch.illOrderReceiptText &&
