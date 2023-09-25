@@ -106,7 +106,7 @@ export default async function getUserOrderAllowedStatus(
  *
  * Function to perform the actual borchk status check
  */
-async function checkUserOrderAllowedStatus(
+async function checkUsersBorrowerStatus(
   { agencyId, userId = null, isAccount = false },
   context
 ) {
@@ -199,12 +199,6 @@ async function checkAuthenticatedUser(
     context.smaug?.user?.id && context.smaug?.user?.agency === agencyId
   );
 
-  console.log("agencyId", typeof agencyId);
-  console.log("summary", typeof summary);
-
-  console.log("_userId", typeof _userId);
-  console.log("_isAccount", typeof _isAccount);
-
   // add to summary log
   summary.verifiedOnPickUpBranch = verifiedOnPickUpBranch;
 
@@ -242,7 +236,7 @@ async function checkAuthenticatedUser(
   }
 
   // Check authenticated user
-  const result = await checkUserOrderAllowedStatus(
+  const result = await checkUsersBorrowerStatus(
     { agencyId, userId: _userId, isAccount: _isAccount },
     context
   );
@@ -300,7 +294,7 @@ async function checkUnauthenticatedUser(context, agencyId, userIds, summary) {
   // Check all the provided userIds
   const statusMap = await Promise.all(
     Object.entries(userIds).map(async ([k, v]) => ({
-      ...(await checkUserOrderAllowedStatus({ agencyId, userId: v }, context)),
+      ...(await checkUsersBorrowerStatus({ agencyId, userId: v }, context)),
       type: k,
     }))
   );
