@@ -351,6 +351,7 @@ export const resolvers = {
       return parent.ok || false;
     },
     status(parent, args, context, info) {
+      console.log("HERE", parent?.status?.toUpperCase() || "UNKNOWN_ERROR");
       return parent.status?.toUpperCase() || "UNKNOWN_ERROR";
     },
     message(parent, args, context, info) {

@@ -2176,8 +2176,18 @@ type Branch {
 
 type BranchResult {
   hitcount: Int!
+  canBorrow: CanBorrow
   result: [Branch!]!
   agencyUrl: String
+}
+
+"""
+Indicates if user is blocked for a given agency or 
+if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
+"""
+type CanBorrow {
+  canBorrow: Boolean!
+  statusCode: String!
 }
 
 type Highlight {
