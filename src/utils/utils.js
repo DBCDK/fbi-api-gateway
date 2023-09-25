@@ -213,7 +213,8 @@ export async function resolveBorrowerCheck(agencyId, context) {
   const res = await context.datasources
     .getLoader("vipcore_UserOrderParameters")
     .load(agencyId);
-  if (res.agencyParameters && res.agencyParameters.borrowerCheckParameters) {
+
+  if (res?.agencyParameters?.borrowerCheckParameters) {
     return !!res.agencyParameters.borrowerCheckParameters.find(
       ({ borrowerCheckSystem, borrowerCheck }) =>
         borrowerCheckSystem === "login.bib.dk" && borrowerCheck

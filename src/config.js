@@ -184,7 +184,7 @@ export default {
       url:
         process.env.LIBRARY_SEARCH_URL ||
         "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk:8080/1.0/api/alllibraries",
-      prefix: process.env.LIBRARY_SEARCH_PREFIX || "vipcore-1",
+      prefix: process.env.LIBRARY_SEARCH_PREFIX || "librarysearch-1",
       ttl: process.env.LIBRARY_SEARCH_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
     },
     idp: {
