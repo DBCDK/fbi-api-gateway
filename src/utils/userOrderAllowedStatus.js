@@ -90,163 +90,16 @@ export default async function getUserOrderAllowedStatus(
   let _isAccount;
 
   if (isAuthenticated) {
-    // Check if the user is authenticated on the given pickUpBranch
-    const verifiedOnPickUpBranch = !!(
-      context.smaug?.user?.id && context.smaug?.user?.agency === agencyId
+    return await checkAuthenticatedUser(
+      context,
+      agencyId,
+      summary,
+      _userId,
+      _isAccount
     );
-
-    // add to summary log
-    summary.verifiedOnPickUpBranch = verifiedOnPickUpBranch;
-
-    // If so, we check if the user is allowed to place an order here.
-    if (verifiedOnPickUpBranch) {
-      _userId = context.smaug?.user?.id;
-    }
-    // If NOT, we fetch the authenticated users other accounts
-    // User may have placed an order to a different account/agency, than they orignally signed-in at.
-    else {
-      // Fetch specific account between the loggedIn user accounts
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
-      // user account list
-      const accounts = userinfo.attributes?.agencies;
-
-      // fetch requested account from list
-      // Local (type) account is preferred, because it will always exist
-      const account = accounts?.find(
-        (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
-      );
-
-      // Update internal userId
-      // If an userinfo account was found, we use the userId credential from the matching local account
-      // If NOT we use the provided userId (used for sessional orders) - fallbacks to login.bib.dk id if none provided
-      if (account) {
-        _userId = account?.userId;
-        _isAccount = true;
-
-        // add to summary log
-        summary.fromOtherUserAccount = true;
-      }
-    }
-
-    // Check authenticated user
-    const result = await checkUserOrderAllowedStatus(
-      { agencyId, userId: _userId, isAccount: _isAccount },
-      context
-    );
-
-    // Return if status blocked - No further checks needed
-    if (result.borchk?.blocked) {
-      log.warn(
-        `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
-          { ...result, ...summary }
-        )}`
-      );
-
-      return {
-        status: result.status,
-        statusCode: result.statusCode,
-        userId: result.userId,
-      };
-    }
-
-    // Return if status true - No further checks needed
-    if (result.status) {
-      log.info(
-        `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
-          { ...result, ...summary }
-        )}`
-      );
-
-      // enrich response with the hasBorrowerCheck param
-      return {
-        status: result.status,
-        statusCode: result.statusCode,
-        userId: result.userId,
-      };
-    }
+  } else {
+    return await checkUnauthenticatedUser(context, agencyId, summary);
   }
-
-  // If user is NOT Authenticated! We check the provided userIds
-
-  // if no userIds was provided, no check can be performed
-  if (!userIds) {
-    return {
-      status: false,
-      statusCode: "UNKNOWN_USER",
-    };
-  }
-
-  // Check all the provided userIds
-  const statusMap = await Promise.all(
-    Object.entries(userIds).map(async ([k, v]) => ({
-      ...(await checkUserOrderAllowedStatus({ agencyId, userId: v }, context)),
-      type: k,
-    }))
-  );
-
-  // Evaluate status'
-
-  // Ensure no checks returned blocked
-  const hasBlocked = statusMap.find((obj) => obj.borchk?.blocked);
-
-  // user is blocked by agency
-  if (hasBlocked) {
-    log.warn(
-      `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
-        { ...hasBlocked, ...summary }
-      )}`
-    );
-
-    return {
-      status: hasBlocked.status,
-      statusCode: hasBlocked.statusCode,
-      userId: hasBlocked.userId,
-    };
-  }
-
-  // Find match (with status 'true') according to prioritized Type array
-  let match;
-  USER_ID_TYPES.forEach((type) => {
-    const res = statusMap.find((s) => s.type === type && s.status);
-    if (res && !match) {
-      match = res;
-    }
-  });
-
-  // Return match
-  if (match) {
-    log.info(
-      `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
-        { ...match, ...summary }
-      )}`
-    );
-
-    return {
-      status: match.status,
-      statusCode: match.statusCode,
-      userId: match.userId,
-    };
-  }
-
-  // User is not allowed to place an order - no account found for provided credentials
-  log.warn(
-    `getUserOrderAllowedStatus: User is NOT allowed to placed an order. ${JSON.stringify(
-      {
-        status: false,
-        statusCode: "UNKNOWN_USER",
-        statusMap,
-        ...summary,
-      }
-    )}`
-  );
-
-  return {
-    status: false,
-    statusCode: "UNKNOWN_USER",
-  };
 }
 
 /**
@@ -324,4 +177,175 @@ export function getUserIds(userParams) {
     }
   });
   return res;
+}
+
+async function checkAuthenticatedUser(
+  context,
+  agencyId,
+  summary,
+  _userId,
+  _isAccount
+) {
+  // Check if the user is authenticated on the given pickUpBranch
+  const verifiedOnPickUpBranch = !!(
+    context.smaug?.user?.id && context.smaug?.user?.agency === agencyId
+  );
+
+  // add to summary log
+  summary.verifiedOnPickUpBranch = verifiedOnPickUpBranch;
+
+  // If so, we check if the user is allowed to place an order here.
+  if (verifiedOnPickUpBranch) {
+    _userId = context.smaug?.user?.id;
+  }
+  // If NOT, we fetch the authenticated users other accounts
+  // User may have placed an order to a different account/agency, than they orignally signed-in at.
+  else {
+    // Fetch specific account between the loggedIn user accounts
+    const userinfo = await context.datasources.getLoader("userinfo").load({
+      accessToken: context.accessToken,
+    });
+
+    // user account list
+    const accounts = userinfo.attributes?.agencies;
+
+    // fetch requested account from list
+    // Local (type) account is preferred, because it will always exist
+    const account = accounts?.find(
+      (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
+    );
+
+    // Update internal userId
+    // If an userinfo account was found, we use the userId credential from the matching local account
+    // If NOT we use the provided userId (used for sessional orders) - fallbacks to login.bib.dk id if none provided
+    if (account) {
+      _userId = account?.userId;
+      _isAccount = true;
+
+      // add to summary log
+      summary.fromOtherUserAccount = true;
+    }
+  }
+
+  // Check authenticated user
+  const result = await checkUserOrderAllowedStatus(
+    { agencyId, userId: _userId, isAccount: _isAccount },
+    context
+  );
+
+  // Return if status blocked - No further checks needed
+  if (result.borchk?.blocked) {
+    log.warn(
+      `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
+        { ...result, ...summary }
+      )}`
+    );
+
+    return {
+      status: result.status,
+      statusCode: result.statusCode,
+      userId: result.userId,
+    };
+  }
+
+  // Return if status true - No further checks needed
+  if (result.status) {
+    log.info(
+      `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
+        { ...result, ...summary }
+      )}`
+    );
+
+    // enrich response with the hasBorrowerCheck param
+    return {
+      status: result.status,
+      statusCode: result.statusCode,
+      userId: result.userId,
+    };
+  }
+}
+
+/**
+ * If user is NOT Authenticated! We check the provided userIds
+ * This happens if a library has borrowercheck, but is not part of adgangsplatformen.
+ * @param {*} context
+ * @returns {Object}
+ */
+async function checkUnauthenticatedUser(context, agencyId, summary) {
+  // if no userIds was provided, no check can be performed
+  if (!userIds) {
+    return {
+      status: false,
+      statusCode: "UNKNOWN_USER",
+    };
+  }
+
+  // Check all the provided userIds
+  const statusMap = await Promise.all(
+    Object.entries(userIds).map(async ([k, v]) => ({
+      ...(await checkUserOrderAllowedStatus({ agencyId, userId: v }, context)),
+      type: k,
+    }))
+  );
+
+  // Evaluate status'
+
+  // Ensure no checks returned blocked
+  const hasBlocked = statusMap.find((obj) => obj.borchk?.blocked);
+
+  // user is blocked by agency
+  if (hasBlocked) {
+    log.warn(
+      `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
+        { ...hasBlocked, ...summary }
+      )}`
+    );
+
+    return {
+      status: hasBlocked.status,
+      statusCode: hasBlocked.statusCode,
+      userId: hasBlocked.userId,
+    };
+  }
+
+  // Find match (with status 'true') according to prioritized Type array
+  let match;
+  USER_ID_TYPES.forEach((type) => {
+    const res = statusMap.find((s) => s.type === type && s.status);
+    if (res && !match) {
+      match = res;
+    }
+  });
+
+  // Return match
+  if (match) {
+    log.info(
+      `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
+        { ...match, ...summary }
+      )}`
+    );
+
+    return {
+      status: match.status,
+      statusCode: match.statusCode,
+      userId: match.userId,
+    };
+  }
+
+  // User is not allowed to place an order - no account found for provided credentials
+  log.warn(
+    `getUserOrderAllowedStatus: User is NOT allowed to placed an order. ${JSON.stringify(
+      {
+        status: false,
+        statusCode: "UNKNOWN_USER",
+        statusMap,
+        ...summary,
+      }
+    )}`
+  );
+
+  return {
+    status: false,
+    statusCode: "UNKNOWN_USER",
+  };
 }

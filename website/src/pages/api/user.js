@@ -8,10 +8,13 @@ query User_Details {
     municipalityAgencyId
     agencies {
       hitcount
+      orderAllowed{
+        orderAllowed
+        statusCode
+      }
       result {
         name
         branchId
-        userIsBlocked
         agencyId
         agencyName
       }

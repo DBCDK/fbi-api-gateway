@@ -11,6 +11,7 @@ import {
   resolveManifestation,
 } from "../utils/utils";
 import { log } from "dbc-node-logger";
+import getUserOrderAllowedStatus from "../utils/userOrderAllowedStatus";
 
 /**
  * The Profile type definition
@@ -437,11 +438,6 @@ export const resolvers = {
       return context.smaug.user.agency;
     },
     async agencies(parent, args, context, info) {
-      /**
-       * @TODO
-       * Align agency and agencies properly
-       * Discuss the intended usage of these fields
-       */
       const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
@@ -493,7 +489,22 @@ export const resolvers = {
         filteredAgencyInfoes.unshift(loginAgency);
       }
 
-      return sortedAgencies;
+      //check blocking status for each agency & if user exists on agency (FFU)
+      const checkedAgency = sortedAgencies.map(async (agency) => {
+        const { status, statusCode } = await getUserOrderAllowedStatus(
+          { agencyId: agency.result[0].agencyId },
+          context
+        );
+        return {
+          ...agency,
+          orderAllowed: {
+            orderAllowed: status,
+            statusCode,
+          },
+        };
+      });
+
+      return checkedAgency;
     },
     async bookmarks(parent, args, context, info) {
       try {

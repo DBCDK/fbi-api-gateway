@@ -52,18 +52,22 @@ export const typeDef = `
     branchWebsiteUrl: String
     branchCatalogueUrl: String
     lookupUrl: String
-
-    """
-    When user is not logged in, this is null
-    Otherwise true or false
-    """
-    userIsBlocked: Boolean
   }
   
   type BranchResult{
     hitcount: Int!
+    orderAllowed: OrderAllowed
     result: [Branch!]!
     agencyUrl: String
+  }
+
+  """
+    Indicates if user is blocked for a given agency or 
+    if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
+    """
+  type OrderAllowed{
+    orderAllowed: Boolean!
+    statusCode: String!
   }
 
   type Highlight{
@@ -75,12 +79,6 @@ export const typeDef = `
 export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
-    async userIsBlocked(parent, args, context, info) {
-      const userInfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      return userInfo?.attributes?.blocked;
-    },
     async borrowerCheck(parent, args, context, info) {
       return await resolveBorrowerCheck(parent.agencyId, context);
     },

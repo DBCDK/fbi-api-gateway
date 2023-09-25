@@ -2172,12 +2172,6 @@ type Branch {
   branchWebsiteUrl: String
   branchCatalogueUrl: String
   lookupUrl: String
-
-  \\"\\"\\"
-  When user is not logged in, this is null
-  Otherwise true or false
-  \\"\\"\\"
-  userIsBlocked: Boolean
 }
 
 type BranchResult {
