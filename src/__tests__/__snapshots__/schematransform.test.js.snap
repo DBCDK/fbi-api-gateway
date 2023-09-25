@@ -2675,7 +2675,7 @@ type User {
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
-  bookmarks(offset: Int, limit: PaginationLimit): BookMarkResponse!
+  bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
 }
 
@@ -2758,6 +2758,11 @@ type BookMarkId {
   bookMarkId: Int!
 }
 
+enum BookMarkOrderBy {
+  createdAt
+  title
+}
+
 type BookMark {
   materialType: String!
   materialId: String!
@@ -2773,6 +2778,7 @@ type BookmarkResponse {
 input BookMarkInput {
   materialType: String!
   materialId: String!
+  title: String!
 }
 
 type UserMutations {
