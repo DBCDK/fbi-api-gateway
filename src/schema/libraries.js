@@ -56,7 +56,7 @@ export const typeDef = `
   
   type BranchResult{
     hitcount: Int!
-    orderAllowed: OrderAllowed
+    canBorrow: CanBorrow
     result: [Branch!]!
     agencyUrl: String
   }
@@ -65,8 +65,8 @@ export const typeDef = `
     Indicates if user is blocked for a given agency or 
     if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
     """
-  type OrderAllowed{
-    orderAllowed: Boolean!
+  type CanBorrow{
+    canBorrow: Boolean!
     statusCode: String!
   }
 

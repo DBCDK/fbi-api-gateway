@@ -9,7 +9,7 @@
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
-import { resolveBorrowerCheck } from "../utils/utils";
+import { resolveBorrowerCheck } from "./utils";
 
 // all possible id field types
 const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
@@ -45,7 +45,7 @@ const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
  * BORCHK_USER_NOT_VERIFIED
  *  
  */
-export default async function getUserOrderAllowedStatus(
+export default async function getUserCanBorrowStatus(
   { agencyId, userIds = null },
   context
 ) {
@@ -244,7 +244,7 @@ async function checkAuthenticatedUser(
   // Return if status blocked - No further checks needed
   if (result.borchk?.blocked) {
     log.warn(
-      `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
+      `getUserCanBorrowStatus: User is NOT allowed to place an order. ${JSON.stringify(
         { ...result, ...summary }
       )}`
     );
@@ -259,7 +259,7 @@ async function checkAuthenticatedUser(
   // Return if status true - No further checks needed
   if (result.status) {
     log.info(
-      `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
+      `getUserCanBorrowStatus: User allowed to placed an order. ${JSON.stringify(
         { ...result, ...summary }
       )}`
     );
@@ -305,7 +305,7 @@ async function checkUnauthenticatedUser(context, agencyId, userIds, summary) {
   // user is blocked by agency
   if (hasBlocked) {
     log.warn(
-      `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
+      `checkUsersBorrowerStatus: User is NOT allowed to place an order. ${JSON.stringify(
         { ...hasBlocked, ...summary }
       )}`
     );
@@ -329,7 +329,7 @@ async function checkUnauthenticatedUser(context, agencyId, userIds, summary) {
   // Return match
   if (match) {
     log.info(
-      `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
+      `checkUsersBorrowerStatus: User allowed to placed an order. ${JSON.stringify(
         { ...match, ...summary }
       )}`
     );
@@ -343,7 +343,7 @@ async function checkUnauthenticatedUser(context, agencyId, userIds, summary) {
 
   // User is not allowed to place an order - no account found for provided credentials
   log.warn(
-    `getUserOrderAllowedStatus: User is NOT allowed to placed an order. ${JSON.stringify(
+    `checkUsersBorrowerStatus: User is NOT allowed to placed an order. ${JSON.stringify(
       {
         status: false,
         statusCode: "UNKNOWN_USER",

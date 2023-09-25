@@ -8,8 +8,8 @@ query User_Details {
     municipalityAgencyId
     agencies {
       hitcount
-      orderAllowed{
-        orderAllowed
+      canBorrow{
+        canBorrow
         statusCode
       }
       result {

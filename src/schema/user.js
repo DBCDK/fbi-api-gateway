@@ -11,7 +11,7 @@ import {
   resolveManifestation,
 } from "../utils/utils";
 import { log } from "dbc-node-logger";
-import getUserOrderAllowedStatus from "../utils/userOrderAllowedStatus";
+import getUserCanBorrowStatus from "../utils/getUserCanBorrowStatus";
 
 /**
  * The Profile type definition
@@ -491,14 +491,14 @@ export const resolvers = {
 
       //check blocking status for each agency & if user exists on agency (FFU)
       const checkedAgency = sortedAgencies.map(async (agency) => {
-        const { status, statusCode } = await getUserOrderAllowedStatus(
+        const { status, statusCode } = await getUserCanBorrowStatus(
           { agencyId: agency.result[0].agencyId },
           context
         );
         return {
           ...agency,
-          orderAllowed: {
-            orderAllowed: status,
+          canBorrow: {
+            canBorrow: status,
             statusCode,
           },
         };

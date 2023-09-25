@@ -6,9 +6,9 @@
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
-import getUserOrderAllowedStatus, {
+import getUserCanBorrowStatus, {
   getUserIds,
-} from "../utils/userOrderAllowedStatus";
+} from "../utils/userCanBorrowStatus";
 
 const orderStatusmessageMap = {
   OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",
@@ -280,7 +280,7 @@ export const resolvers = {
       const userIds = getUserIds(args?.input?.userParameters);
 
       // Verify that the user is allowed to place an order
-      const { status, statusCode, userId } = await getUserOrderAllowedStatus(
+      const { status, statusCode, userId } = await getUserCanBorrowStatus(
         { agencyId, userIds },
         context
       );
@@ -289,7 +289,7 @@ export const resolvers = {
         return { ok: status, status: statusCode };
       }
 
-      // We assume we will get the verified userId from the 'getUserOrderAllowedStatus' check.
+      // We assume we will get the verified userId from the 'getUserCanBorrowStatus' check.
       // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
       if (!userId && !context?.smaug?.user?.id && isEmpty(userIds)) {
         // Order is not possible if no userId could be found or was provided for the user
