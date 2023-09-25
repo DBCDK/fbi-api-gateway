@@ -49,7 +49,7 @@ const searchOptions = {
 
 // exclude branches - set this to false if you do NOT want to filter
 // out branches
-const excludeBranches = config.datasources.vipcore.excludeBranches;
+const excludeBranches = config.datasources.libarysearch.excludeBranches;
 
 // We cache the docs for 30 minutes
 let branches;
@@ -64,7 +64,7 @@ const timeToLiveMS = 1000 * 60 * 30;
  * @returns {Promise<*>}
  */
 async function get() {
-  const url = config.datasources.vipcore.url;
+  const url = config.datasources.libarysearch.url;
   return (await request.get(url)).body.allLibraries;
 }
 
