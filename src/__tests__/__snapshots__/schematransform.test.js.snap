@@ -2781,6 +2781,10 @@ input BookMarkInput {
   title: String!
 }
 
+type BookMarkDeleteResponse {
+  IdsDeletedCount: Int!
+}
+
 type UserMutations {
   \\"\\"\\"Add user to userdata service\\"\\"\\"
   addUserToUserDataService: UserDataResponse
@@ -2813,7 +2817,7 @@ type UserMutations {
   addBookmarks(bookmarks: [BookMarkInput!]!): BookmarkResponse
 
   \\"\\"\\"Delete a bookmark\\"\\"\\"
-  deleteBookmark(bookmarkId: Int!): Int!
+  deleteBookmarks(bookmarkIds: [Int!]!): BookMarkDeleteResponse
 }
 "
 `;
