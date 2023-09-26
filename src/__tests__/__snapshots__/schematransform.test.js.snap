@@ -326,14 +326,15 @@ type Categories {
 enum OrderPossibleReason {
   OWNED_ACCEPTED
   NOT_OWNED_ILL_LOC
-  OWNED_WRONG_MEDIUMTYPE
-  NOT_OWNED_WRONG_ILL_MEDIUMTYPE
+  OWNED_WRONG_MEDIUM_TYPE
+  NOT_OWNED_WRONG_ILL_MEDIUM_TYPE
   NOT_OWNED_NO_ILL_LOC
   OWNED_OWN_CATALOGUE
   NOT_OWNED_ACCEPTED_BY_CONSORTIA
 }
 
 type CheckOrderPolicy {
+  lookUpUrls: [String!]!
   lookUpUrl: String
   orderPossible: Boolean
   orderPossibleReason: OrderPossibleReason
@@ -2161,7 +2162,7 @@ type Branch {
   postalAddress: String
   postalCode: String
   userParameters: [UserParameter!]!
-  orderPolicy(pid: String!): CheckOrderPolicy
+  orderPolicy(pid: String!, pids: [String!]): CheckOrderPolicy
   city: String
   pickupAllowed: Boolean!
   highlights: [Highlight!]!
