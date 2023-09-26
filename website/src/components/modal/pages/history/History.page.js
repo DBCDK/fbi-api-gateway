@@ -1,3 +1,7 @@
+/**
+ * @file Shows a history of the used tokens
+ */
+
 import { useState, useEffect, useRef } from "react";
 import { Row } from "react-bootstrap";
 
@@ -78,7 +82,7 @@ function parseAgencies(agencies) {
     ...a,
     agencyId: a?.result?.[0]?.agencyId,
     agencyName: a?.result?.[0]?.agencyName,
-    isBlocked: a?.result?.[0]?.userIsBlocked, //TODO when we remove userIsBlocked, can this be a problem?
+    isBlocked: !a?.canBorrow?.canBorrow,
   }));
 }
 
