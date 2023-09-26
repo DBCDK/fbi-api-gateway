@@ -10,6 +10,7 @@ import {
   getUserBranchIds,
   resolveManifestation,
 } from "../utils/utils";
+import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
 /**
@@ -40,6 +41,7 @@ type User {
   debt: [Debt!]! @complexity(value: 3)
   bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
+  isCPRValidated: Boolean!
 }
 
 type UserSubscriptions {
@@ -217,6 +219,18 @@ function isCPRNumber(uniqueId) {
  */
 export const resolvers = {
   User: {
+    async isCPRValidated(parent, args, context, info) {
+      // fetch culr accounts from userinfo
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      // Check if user has a CPR validated account
+      const accounts = userinfo.attributes?.agencies;
+      const account = accounts?.find((a) => a.userIdType === "CPR");
+
+      return !isEmpty(account);
+    },
     async rights(parent, args, context, info) {
       let subscriptions = {
         infomedia: false,
