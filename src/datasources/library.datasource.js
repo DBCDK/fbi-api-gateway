@@ -11,20 +11,17 @@ import request from "superagent";
 import config from "../config";
 import { createIndexer } from "../utils/searcher";
 
-// this endpoint is not in use right now. wait for fbiscrum to
-// fix vip-core.
-const endpoint = "/findlibrary/all?trackingId=betabib";
-
 const fields = [
   "name",
   "agencyName",
+  "agencyNames",
   "agencyId",
   "branchId",
   "city",
   "postalCode",
 ];
 
-const storeFields = [...fields, "libraryStatus", "pickupAllowed"];
+const storeFields = [...fields, "libraryStatus", "pickupAllowed", "status"];
 
 // Indexer options
 const options = {
@@ -87,7 +84,8 @@ async function doRequest() {
 
   return libraries.map((branch) => ({
     ...branch,
-    agencyName: branch.agencyNames?.join(" "),
+    agencyName: branch.agencyName,
+    agencyNames: branch.agencyNames,
     branchName: branch.name && branch.name,
     illOrderReceiptText:
       branch.illOrderReceiptText &&
