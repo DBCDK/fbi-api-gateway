@@ -104,25 +104,7 @@ export const resolvers = {
         }))
         .filter((highlight) => highlight.value.includes("<mark>"));
     },
-    name(parent, args, context, info) {
-      // first item is danish
-      // second item is english
-      return (
-        parent.branchName[parent.language === "da" ? 0 : 1] ||
-        parent.branchName[0]
-      );
-    },
-    openingHours(parent, args, context, info) {
-      // first item is danish
-      // second item is english
-      if (!parent.openingHours) {
-        return null;
-      }
-      return (
-        parent.openingHours[parent.language === "da" ? 0 : 1] ||
-        parent.openingHours
-      );
-    },
+
     userStatusUrl(parent, args, context, info) {
       return parent.userStatusUrl || parent.branchWebsiteUrl || "";
     },
