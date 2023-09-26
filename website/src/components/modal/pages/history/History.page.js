@@ -78,6 +78,7 @@ function parseAgencies(agencies) {
     ...a,
     agencyId: a?.result?.[0]?.agencyId,
     agencyName: a?.result?.[0]?.agencyName,
+    isBlocked: a?.result?.[0]?.userIsBlocked, //TODO when we remove userIsBlocked, can this be a problem?
   }));
 }
 

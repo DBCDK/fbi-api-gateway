@@ -52,6 +52,12 @@ export const typeDef = `
     branchWebsiteUrl: String
     branchCatalogueUrl: String
     lookupUrl: String
+
+     """
+    When user is not logged in, this is null
+    Otherwise true or false
+    """
+    userIsBlocked: Boolean @deprecated(reason: "Use 'BranchResult.CanBorrow' instead")
   }
   
   type BranchResult{
@@ -79,6 +85,12 @@ export const typeDef = `
 export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
+    async userIsBlocked(parent, args, context, info) {
+      const userInfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+      return userInfo?.attributes?.blocked;
+    },
     async borrowerCheck(parent, args, context, info) {
       return await resolveBorrowerCheck(parent.agencyId, context);
     },

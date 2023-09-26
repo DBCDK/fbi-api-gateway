@@ -15,6 +15,7 @@ query User_Details {
       result {
         name
         branchId
+        userIsBlocked
         agencyId
         agencyName
       }
