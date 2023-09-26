@@ -10,6 +10,9 @@ import {
   getUserBranchIds,
   resolveManifestation,
 } from "../utils/utils";
+
+import { isValidCpr } from "../utils/cpr";
+
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
@@ -227,7 +230,9 @@ export const resolvers = {
 
       // Check if user has a CPR validated account
       const accounts = userinfo.attributes?.agencies;
-      const account = accounts?.find((a) => a.userIdType === "CPR");
+      const account = accounts?.find(
+        (a) => a.userIdType === "CPR" && isValidCpr(a.userId)
+      );
 
       return !isEmpty(account);
     },
