@@ -42,7 +42,7 @@ export const typeDef = `
     postalAddress: String
     postalCode: String
     userParameters: [UserParameter!]!
-    orderPolicy(pid:String!, pids: [String!]!): CheckOrderPolicy @complexity(value: 5, multipliers: ["pids"])
+    orderPolicy(pid:String!, pids: [String!]): CheckOrderPolicy @complexity(value: 5, multipliers: ["pids"])
     city: String
     pickupAllowed: Boolean!
     highlights: [Highlight!]!
