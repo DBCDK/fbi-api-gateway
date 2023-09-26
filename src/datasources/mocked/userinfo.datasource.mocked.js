@@ -11,21 +11,10 @@ const DEFAULT = {
 };
 
 const data = {
+  ANONYMOUS_TOKEN: {},
   DUMMY_TOKEN: {
     attributes: {
       ...DEFAULT,
-    },
-  },
-  DUMMY_TOKEN_USER_BLOCKED: {
-    attributes: {
-      ...DEFAULT,
-      agencies: [
-        {
-          agencyId: "715100",
-          userId: "0123456799",
-          userIdType: "LOCAL",
-        },
-      ],
     },
   },
   DUMMY_TOKEN_NO_MAIL: {
@@ -39,7 +28,7 @@ const data = {
       agencies: [
         {
           agencyId: "710100",
-          userId: "0123456798",
+          userId: "321",
           userIdType: "LOCAL",
         },
       ],

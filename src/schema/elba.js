@@ -174,8 +174,8 @@ export const resolvers = {
           ...args.input,
           userName: userName || user.name,
           userMail: userMail || user.mail,
-          agencyId: user.municipalityAgencyId,
-          pickUpBranch: user.agency,
+          agencyId: user.municipalityAgencyId, //TODO - which agency should pay? BIBDK2021-1824
+          pickUpBranch: user.agency, //TODO shouldnt we get pickup branch from UI? BIBDK2021-1824
           dryRun: args.dryRun,
           originRequester,
         });

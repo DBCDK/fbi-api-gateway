@@ -208,12 +208,12 @@ export const resolvers = {
       const offset = args.offset ?? 0;
       const limit = args.limit ?? 10;
 
-      return await resolveLocalizationsWithHoldings(
-        args,
-        context,
-        offset,
-        limit
-      );
+      return await resolveLocalizationsWithHoldings({
+        args: args,
+        context: context,
+        offset: offset,
+        limit: limit,
+      });
     },
     howru(parent, args, context, info) {
       return "gr8";

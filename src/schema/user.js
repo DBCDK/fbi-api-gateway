@@ -17,7 +17,7 @@ import { log } from "dbc-node-logger";
  */
 export const typeDef = `
 type User {
-  name: String!
+  name: String
   favoritePickUpBranch: String
   """
   We can store userdata for more than 30 days if set to true.
@@ -28,17 +28,33 @@ type User {
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
-  agency(language: LanguageCode): BranchResult!
+  loggedInBranchId: String
+  municipalityAgencyId: String
   address: String
   postalCode: String
-  municipalityAgencyId: String
   mail: String
   culrMail: String
   country: String
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
+  bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
+  rights: UserSubscriptions!
 }
+
+type UserSubscriptions {
+  infomedia: Boolean!,
+  digitalArticleService: Boolean!,
+  demandDrivenAcquisition: Boolean!
+}
+"""
+Response object for bookmark request
+"""
+type BookMarkResponse {
+result: [BookMark!]!
+hitcount: Int!
+}
+
 """
 Orders made through bibliotek.dk
 """
@@ -107,19 +123,31 @@ type UserDataResponse {
 type BookMarkId {
   bookMarkId: Int!
 }
-
+enum BookMarkOrderBy{
+  createdAt
+  title
+}
 type BookMark{
-  bookmarkId: Int!
   materialType: String!
   materialId: String!
+  bookmarkId: Int
+  createdAt: DateTime
 }
 
+type BookmarkResponse {
+  bookmarksAdded: [BookMark]
+  bookmarksAlreadyExists: [BookMark]
+}
 
 input BookMarkInput {
   materialType: String!
   materialId: String!
+  title: String!
 }
 
+type BookMarkDeleteResponse {
+  IdsDeletedCount: Int!
+}
 
 type UserMutations {
   """
@@ -159,21 +187,16 @@ type UserMutations {
   """
   Add a bookmark
   """
-  addBookmark(bookmark: BookMarkInput!): BookMark!
+  addBookmarks(bookmarks: [BookMarkInput!]!): BookmarkResponse
   """
   Delete a bookmark
   """
-  deleteBookmark(bookmarkId: Int!): Int!
+  deleteBookmarks(bookmarkIds: [Int!]!): BookMarkDeleteResponse
   }
   
 extend type Mutation {
   users:UserMutations!
 }
-
-extend type Query{
-  getBookMarks: [BookMark!]!
-}
-
 
 `;
 
@@ -194,6 +217,50 @@ function isCPRNumber(uniqueId) {
  */
 export const resolvers = {
   User: {
+    async rights(parent, args, context, info) {
+      let subscriptions = {
+        infomedia: false,
+        digitalArticleService: false,
+        demandDrivenAcquisition: false,
+      };
+
+      // get municipality agency
+      const municipalityAgencyId = await this.municipalityAgencyId(
+        parent,
+        args,
+        context,
+        info
+      );
+
+      //const userAgencies = await this.agencies(parent, args, context, info);
+      // get rights from idp
+      const idpRights = await context.datasources.getLoader("idp").load("");
+
+      // check for infomedia access - if either of users agencies subscribes
+      /** NOTE  we leave this (outcommented) for loop for now @TODO is it correct  ?? **/
+      //for (const agency of userAgencies?.[0]?.result) {
+      if (municipalityAgencyId && idpRights[municipalityAgencyId]) {
+        subscriptions.infomedia = true;
+        //   break;
+      }
+      //}
+      // check for digital article service
+      const digitalAccessSubscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+
+      // check with municipality agency
+      if (digitalAccessSubscriptions[municipalityAgencyId]) {
+        subscriptions.digitalArticleService = true;
+      }
+
+      // and now for DDA .. the only check we can do is if agency (municipality) starts with '7' (public library)
+      if (municipalityAgencyId && municipalityAgencyId?.startsWith("7")) {
+        subscriptions.demandDrivenAcquisition = true;
+      }
+
+      return subscriptions;
+    },
     async name(parent, args, context, info) {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
@@ -374,27 +441,8 @@ export const resolvers = {
 
       return agencyWithEmail && agencyWithEmail.userId;
     },
-    async agency(parent, args, context, info) {
-      /**
-       * @TODO
-       * Align agency and agencies properly
-       * Discuss the intended usage of these fields
-       */
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        },
-        context
-      );
-      const homeAgency = getHomeAgencyAccount(userinfo);
-
-      return await context.datasources.getLoader("library").load({
-        agencyid: homeAgency.agencyId,
-        language: parent.language,
-        limit: 100,
-        status: args.status || "ALLE",
-        bibdkExcludeBranches: args.bibdkExcludeBranches || false,
-      });
+    async loggedInBranchId(parent, args, context, info) {
+      return context.smaug.user.agency;
     },
     async agencies(parent, args, context, info) {
       /**
@@ -419,20 +467,66 @@ export const resolvers = {
             await context.datasources.getLoader("library").load({
               agencyid: agency,
               language: parent.language,
-              limit: 20,
+              limit: 30,
               status: args.status || "ALLE",
               bibdkExcludeBranches: args.bibdkExcludeBranches || false,
             })
         )
       );
 
-      // Remove agencyes which doesnt exist in VIP
+      // Remove agencies that dont exist in VIP
       // Example "190976" and "191977" (no VIP info) on testuser Michelle Hoffmann will return empty results
       const filteredAgencyInfoes = agencyInfos.filter(
         (agency) => agency?.result.length > 0
       );
 
-      return filteredAgencyInfoes;
+      const sortedAgencies = filteredAgencyInfoes.sort((a, b) =>
+        a.result[0].agencyName.localeCompare(b.result[0].agencyName)
+      );
+
+      const loginAgencyIdx = sortedAgencies.findIndex((agency) => {
+        const matchingBranch =
+          agency.result.findIndex(
+            (library) => library.branchId === context.smaug.user.agency
+          ) > -1;
+        return (
+          agency.result[0].agencyId === context.smaug.user.agency ||
+          matchingBranch
+        );
+      });
+
+      //put element at loginAgencyIdx at the beginning of the array
+      if (loginAgencyIdx > 0) {
+        const loginAgency = sortedAgencies.splice(loginAgencyIdx, 1)[0];
+        filteredAgencyInfoes.unshift(loginAgency);
+      }
+
+      return sortedAgencies;
+    },
+    async bookmarks(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        const { limit, offset, orderBy } = args;
+
+        const res = await context.datasources
+          .getLoader("userDataGetBookMarks")
+          .load({
+            smaugUserId: smaugUserId,
+            limit,
+            offset,
+            orderBy,
+          });
+
+        return { result: res.result, hitcount: res?.hitcount || 0 };
+      } catch (error) {
+        log.error(
+          `Failed to get bookmarks from userData service. Message: ${error.message}`
+        );
+        return [];
+      }
     },
   },
   Loan: {
@@ -469,27 +563,6 @@ export const resolvers = {
   Mutation: {
     async users(parent, args, context, info) {
       return {};
-    },
-  },
-  Query: {
-    async getBookMarks(parent, args, context, info) {
-      try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        const bookmarks = await context.datasources
-          .getLoader("userDataGetBookMarks")
-          .load({
-            smaugUserId: smaugUserId,
-          });
-        return bookmarks;
-      } catch (error) {
-        log.error(
-          `Failed to get bookmarks from userData service. Message: ${error.message}`
-        );
-        return [];
-      }
     },
   },
   UserMutations: {
@@ -644,9 +717,20 @@ export const resolvers = {
         return { success: false, errorMessage: error?.message };
       }
     },
-    async addBookmark(parent, args, context, info) {
+    async addBookmarks(parent, args, context, info) {
+      /**
+       * Handles single or multiple additions to bookmarks.
+       *
+       * For multiple, {smaugUserId: string, bookmarks: [{materialType, string, materialId: string}]}
+       * For single, {smaugUserId: string, materialType, string, materialId: string}
+       *
+       * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
+       * while we espect single additions to throw an error if this bookmark already exists
+       */
+
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
+
         if (!smaugUserId) {
           throw new Error("Not authorized");
         }
@@ -654,12 +738,21 @@ export const resolvers = {
           throw new Error("User not found in CULR");
         }
 
+        if (!args.bookmarks || args.bookmarks.length === 0) {
+          throw new Error("Bookmarks not set");
+        }
+
         const res = await context.datasources
-          .getLoader("userDataAddBookmark")
+          .getLoader("userDataAddBookmarks")
           .load({
             smaugUserId: smaugUserId,
-            materialType: args.bookmark.materialType,
-            materialId: args.bookmark.materialId,
+            bookmarks: args.bookmarks.map((bookmark) => {
+              return {
+                materialType: bookmark.materialType,
+                materialId: bookmark.materialId,
+                title: bookmark.title,
+              };
+            }),
           });
 
         return res;
@@ -671,7 +764,7 @@ export const resolvers = {
         return { bookMarkId: 0 };
       }
     },
-    async deleteBookmark(parent, args, context, info) {
+    async deleteBookmarks(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
 
@@ -686,7 +779,7 @@ export const resolvers = {
           .getLoader("userDataDeleteBookmark")
           .load({
             smaugUserId: smaugUserId,
-            bookmarkId: args.bookmarkId,
+            bookmarkIds: args.bookmarkIds,
           });
 
         return res;

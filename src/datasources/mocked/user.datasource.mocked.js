@@ -13,9 +13,6 @@ const data = {
   DUMMY_TOKEN: {
     ...DEFAULT,
   },
-  DUMMY_TOKEN_USER_BLOCKED: {
-    ...DEFAULT,
-  },
   DUMMY_TOKEN_UNSUBSCRIPED_MUNICIPALITY: {
     ...DEFAULT,
   },

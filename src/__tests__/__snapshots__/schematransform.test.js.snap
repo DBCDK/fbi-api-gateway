@@ -534,33 +534,7 @@ type Mutation {
   ): RenewLoanResponse
   submitSession(input: SessionInput!): String!
   deleteSession: String!
-
-  \\"\\"\\"Add user to userdata service\\"\\"\\"
-  addUserToUserDataService: UserDataResponse
-
-  \\"\\"\\"Delete user from userdata service\\"\\"\\"
-  deleteUserFromUserDataService: UserDataResponse
-
-  \\"\\"\\"
-  Add an orderId to a user. Will create user in userdata service if they dont exist
-  \\"\\"\\"
-  addOrderToUserData(orderId: String!): UserDataResponse
-
-  \\"\\"\\"Remove order from userData service\\"\\"\\"
-  deleteOrderFromUserData(orderId: String!): UserDataResponse
-
-  \\"\\"\\"
-  Set a favorite pickup branch. Will create user in userdata service if they dont exist
-  \\"\\"\\"
-  setFavoritePickUpBranch(favoritePickUpBranch: String!): UserDataResponse
-
-  \\"\\"\\"Sets favoritePickUpBranch to null\\"\\"\\"
-  clearFavoritePickUpBranch: UserDataResponse
-
-  \\"\\"\\"
-  Change users consent for storing order history for more than 30 days. If false, order history will be deleted after 30 days.
-  \\"\\"\\"
-  setPersistUserDataValue(persistUserData: Boolean!): UserDataResponse
+  users: UserMutations!
 }
 
 type Lamp {
@@ -2314,7 +2288,7 @@ enum SubmitOrderStatus {
   AUTHENTICATION_ERROR
 
   \\"\\"\\"Unknown error occured, status is unknown\\"\\"\\"
-  UNKNOWN_STATUS
+  UNKNOWN_ERROR
 }
 
 type SubmitOrder {
@@ -2652,11 +2626,13 @@ input SessionUserParametersInput {
 
 type Session {
   userParameters: SessionUserParameters
+  allowSessionStorage: Boolean
   pickupBranch: String
 }
 
 input SessionInput {
   userParameters: SessionUserParametersInput
+  allowSessionStorage: Boolean
   pickupBranch: String
 }
 
@@ -2680,7 +2656,7 @@ type Stats {
 }
 
 type User {
-  name: String!
+  name: String
   favoritePickUpBranch: String
 
   \\"\\"\\"We can store userdata for more than 30 days if set to true.\\"\\"\\"
@@ -2689,16 +2665,30 @@ type User {
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
-  agency(language: LanguageCode): BranchResult!
+  loggedInBranchId: String
+  municipalityAgencyId: String
   address: String
   postalCode: String
-  municipalityAgencyId: String
   mail: String
   culrMail: String
   country: String
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
+  bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
+  rights: UserSubscriptions!
+}
+
+type UserSubscriptions {
+  infomedia: Boolean!
+  digitalArticleService: Boolean!
+  demandDrivenAcquisition: Boolean!
+}
+
+\\"\\"\\"Response object for bookmark request\\"\\"\\"
+type BookMarkResponse {
+  result: [BookMark!]!
+  hitcount: Int!
 }
 
 \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
@@ -2762,6 +2752,72 @@ type UserDataResponse {
 
   \\"\\"\\"Error message if request fails\\"\\"\\"
   errorMessage: String
+}
+
+type BookMarkId {
+  bookMarkId: Int!
+}
+
+enum BookMarkOrderBy {
+  createdAt
+  title
+}
+
+type BookMark {
+  materialType: String!
+  materialId: String!
+  bookmarkId: Int
+  createdAt: DateTime
+}
+
+type BookmarkResponse {
+  bookmarksAdded: [BookMark]
+  bookmarksAlreadyExists: [BookMark]
+}
+
+input BookMarkInput {
+  materialType: String!
+  materialId: String!
+  title: String!
+}
+
+type BookMarkDeleteResponse {
+  IdsDeletedCount: Int!
+}
+
+type UserMutations {
+  \\"\\"\\"Add user to userdata service\\"\\"\\"
+  addUserToUserDataService: UserDataResponse
+
+  \\"\\"\\"Delete user from userdata service\\"\\"\\"
+  deleteUserFromUserDataService: UserDataResponse
+
+  \\"\\"\\"
+  Add an orderId to a user. Will create user in userdata service if they dont exist
+  \\"\\"\\"
+  addOrderToUserData(orderId: String!): UserDataResponse
+
+  \\"\\"\\"Remove order from userData service\\"\\"\\"
+  deleteOrderFromUserData(orderId: String!): UserDataResponse
+
+  \\"\\"\\"
+  Set a favorite pickup branch. Will create user in userdata service if they dont exist
+  \\"\\"\\"
+  setFavoritePickUpBranch(favoritePickUpBranch: String!): UserDataResponse
+
+  \\"\\"\\"Sets favoritePickUpBranch to null\\"\\"\\"
+  clearFavoritePickUpBranch: UserDataResponse
+
+  \\"\\"\\"
+  Change users consent for storing order history for more than 30 days. If false, order history will be deleted after 30 days.
+  \\"\\"\\"
+  setPersistUserDataValue(persistUserData: Boolean!): UserDataResponse
+
+  \\"\\"\\"Add a bookmark\\"\\"\\"
+  addBookmarks(bookmarks: [BookMarkInput!]!): BookmarkResponse
+
+  \\"\\"\\"Delete a bookmark\\"\\"\\"
+  deleteBookmarks(bookmarkIds: [Int!]!): BookMarkDeleteResponse
 }
 "
 `;

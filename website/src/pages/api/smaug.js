@@ -3,6 +3,17 @@ import _permissions from "../../../../src/permissions.json";
 import config from "../../../../src/config.js";
 
 /**
+ * remote smaug api call
+ */
+async function getUserinfo(token) {
+  const url = config.datasources.userInfo.url;
+
+  return await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+/**
  * Extract specific data from whitelist
  */
 const selectProfiles = (data) => {
@@ -31,6 +42,7 @@ const selectConfigurations = (data) => {
     displayName: data.displayName,
     logoColor: data.logoColor,
     clientId: data.app?.clientId,
+    userId: data.user?.id,
     uniqueId: data.user?.uniqueId,
     permissions: data.agencyId && permissions,
     agency: data.agencyId,
@@ -71,6 +83,15 @@ export default async function handler(req, res) {
       // add to result
       result = { ...configuration };
 
+      if (configuration.userId) {
+        // If token is authenticated, ensure userinfo returns 200
+        // if NOT, token is from a different environment stg/prod
+        const userinfo_response = await getUserinfo(token);
+        if (userinfo_response.status !== 200) {
+          res.status(401).send({});
+        }
+      }
+
       if (configuration.agency) {
         // Get Search Profiles from vipcore
         const vipcore_response = await getProfiles(configuration.agency);
@@ -87,6 +108,6 @@ export default async function handler(req, res) {
 
       return res.status(200).send(result);
     default:
-      return res.status(400).send({});
+      return res.status(smaug_response.status).send({});
   }
 }

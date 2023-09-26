@@ -231,7 +231,6 @@ export const resolvers = {
     },
     async infomediaAccess(parent, args, context, info) {
       const response = await context.datasources.getLoader("idp").load("");
-
       return !!response[parent.agencyId];
     },
     async digitalCopyAccess(parent, args, context, info) {

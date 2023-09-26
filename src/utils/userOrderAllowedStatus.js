@@ -6,9 +6,13 @@
  *
  */
 
+import isEmpty from "lodash/isEmpty";
+import { log } from "dbc-node-logger";
+
 import { resolveBorrowerCheck } from "../utils/utils";
 
-import { log } from "dbc-node-logger";
+// all possible id field types
+const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
 
 /**
  * Verify if user is allowed to place an digital or physical order
@@ -29,7 +33,8 @@ import { log } from "dbc-node-logger";
  * @param {string} props.agencyId context
  * @param {string} props.context context
  * @param {obj} context context
- * @returns {obj} containing status, verified and statusCode
+ * 
+ * @returns {obj} containing status, userId and statusCode
  * 
  * statusCodes:
  * 
@@ -40,119 +45,283 @@ import { log } from "dbc-node-logger";
  * BORCHK_USER_NOT_VERIFIED
  *  
  */
-
 export default async function getUserOrderAllowedStatus(
-  { agencyId, userId = null },
+  { agencyId, userIds = null },
   context
 ) {
-  // agency must be provided
+  // Summary log
+  const summary = { agencyId, userIds };
+
+  // An agencyId must be provided
   if (!agencyId) {
     return { status: false, statusCode: "UNKNOWN_PICKUPAGENCY" };
   }
 
+  // Authenticated or anonymous order
+  const isAuthenticated = !!context.smaug?.user?.id;
+
+  // add to summary log
+  summary.isAuthenticated = isAuthenticated;
+
   // Verify that the agencyId has borrowerCheck
+  // If NOT, No checks can be performed. We let the user place the order.
   const hasBorrowerCheck = await resolveBorrowerCheck(agencyId, context);
 
-  if (hasBorrowerCheck) {
-    // siturational userId credential for internal use
-    let _userId;
+  // add to summary log
+  summary.hasBorrowerCheck = hasBorrowerCheck;
 
-    // Fetch specific account between the loggedIn user accounts
-    // User may have placed an order to a different account/agency, than they orignally signed-in at.
-    const userinfo = await context.datasources.getLoader("userinfo").load({
-      accessToken: context.accessToken,
-    });
+  if (!hasBorrowerCheck) {
+    // Verification possible in openorder
+    const status = !!(isAuthenticated || !isEmpty(userIds));
 
-    // user accounts liste
-    const accounts = userinfo.attributes.agencies;
+    // Agency does not support borrowercheck - return status ok
+    return {
+      status,
+      statusCode: status ? "OK" : "UNKNOWN_USER",
+    };
+  }
 
-    // fetch requested account from list
-    // Local (type) account is preferred, because it will always exist
-    const account = accounts.find(
-      (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
+  // AgencyId has Borrowercheck, continue the order verification
+
+  // userId may changes (let)
+  let _userId;
+
+  // UserId fetched from other account than loggedIn account
+  let _isAccount;
+
+  if (isAuthenticated) {
+    // Check if the user is authenticated on the given pickUpBranch
+    const verifiedOnPickUpBranch = !!(
+      context.smaug?.user?.id && context.smaug?.user?.agency === agencyId
     );
 
-    // Update internal userId
-    // If an userinfo account was found, we use the userId credential from the matching local account
-    // If NOT we use the provided userId (used for sessional orders) - fallbacks to login.bib.dk id if none provided
-    _userId = account ? account.userId : userId || context.smaug.user.id;
+    // add to summary log
+    summary.verifiedOnPickUpBranch = verifiedOnPickUpBranch;
 
-    const { status, blocked } = await context.datasources
-      .getLoader("borchk")
-      .load({
-        userId: _userId,
-        libraryCode: agencyId,
+    // If so, we check if the user is allowed to place an order here.
+    if (verifiedOnPickUpBranch) {
+      _userId = context.smaug?.user?.id;
+    }
+    // If NOT, we fetch the authenticated users other accounts
+    // User may have placed an order to a different account/agency, than they orignally signed-in at.
+    else {
+      // Fetch specific account between the loggedIn user accounts
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
       });
 
-    if (blocked) {
-      // User is blocked on the provided pickupAgency
+      // user account list
+      const accounts = userinfo.attributes?.agencies;
+
+      // fetch requested account from list
+      // Local (type) account is preferred, because it will always exist
+      const account = accounts?.find(
+        (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
+      );
+
+      // Update internal userId
+      // If an userinfo account was found, we use the userId credential from the matching local account
+      // If NOT we use the provided userId (used for sessional orders) - fallbacks to login.bib.dk id if none provided
+      if (account) {
+        _userId = account?.userId;
+        _isAccount = true;
+
+        // add to summary log
+        summary.fromOtherUserAccount = true;
+      }
+    }
+
+    // Check authenticated user
+    const result = await checkUserOrderAllowedStatus(
+      { agencyId, userId: _userId, isAccount: _isAccount },
+      context
+    );
+
+    // Return if status blocked - No further checks needed
+    if (result.borchk?.blocked) {
       log.warn(
-        `User is not allowed to place an order. Borchk: ${JSON.stringify({
-          status: false,
-          agencyId,
-          blocked,
-          borchkStatus: status,
-          statusCode: "BORCHK_USER_BLOCKED_BY_AGENCY",
-        })}`
+        `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
+          { ...result, ...summary }
+        )}`
       );
 
       return {
-        status: false,
-        statusCode: "BORCHK_USER_BLOCKED_BY_AGENCY",
+        status: result.status,
+        statusCode: result.statusCode,
+        userId: result.userId,
       };
     }
 
-    if (status === "BORROWER_NOT_FOUND") {
+    // Return if status true - No further checks needed
+    if (result.status) {
+      log.info(
+        `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
+          { ...result, ...summary }
+        )}`
+      );
+
+      // enrich response with the hasBorrowerCheck param
+      return {
+        status: result.status,
+        statusCode: result.statusCode,
+        userId: result.userId,
+      };
+    }
+  }
+
+  // If user is NOT Authenticated! We check the provided userIds
+
+  // if no userIds was provided, no check can be performed
+  if (!userIds) {
+    return {
+      status: false,
+      statusCode: "UNKNOWN_USER",
+    };
+  }
+
+  // Check all the provided userIds
+  const statusMap = await Promise.all(
+    Object.entries(userIds).map(async ([k, v]) => ({
+      ...(await checkUserOrderAllowedStatus({ agencyId, userId: v }, context)),
+      type: k,
+    }))
+  );
+
+  // Evaluate status'
+
+  // Ensure no checks returned blocked
+  const hasBlocked = statusMap.find((obj) => obj.borchk?.blocked);
+
+  // user is blocked by agency
+  if (hasBlocked) {
+    log.warn(
+      `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
+        { ...hasBlocked, ...summary }
+      )}`
+    );
+
+    return {
+      status: hasBlocked.status,
+      statusCode: hasBlocked.statusCode,
+      userId: hasBlocked.userId,
+    };
+  }
+
+  // Find match (with status 'true') according to prioritized Type array
+  let match;
+  USER_ID_TYPES.forEach((type) => {
+    const res = statusMap.find((s) => s.type === type && s.status);
+    if (res && !match) {
+      match = res;
+    }
+  });
+
+  // Return match
+  if (match) {
+    log.info(
+      `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
+        { ...match, ...summary }
+      )}`
+    );
+
+    return {
+      status: match.status,
+      statusCode: match.statusCode,
+      userId: match.userId,
+    };
+  }
+
+  // User is not allowed to place an order - no account found for provided credentials
+  log.warn(
+    `getUserOrderAllowedStatus: User is NOT allowed to placed an order. ${JSON.stringify(
+      {
+        status: false,
+        statusCode: "UNKNOWN_USER",
+        statusMap,
+        ...summary,
+      }
+    )}`
+  );
+
+  return {
+    status: false,
+    statusCode: "UNKNOWN_USER",
+  };
+}
+
+/**
+ *
+ * Function to perform the actual borchk status check
+ */
+async function checkUserOrderAllowedStatus(
+  { agencyId, userId = null, isAccount = false },
+  context
+) {
+  // status summary
+  const summary = { status: true };
+
+  // Get Borchk status
+  const { status, blocked } = await context.datasources
+    .getLoader("borchk")
+    .load({
+      userId: userId,
+      libraryCode: agencyId,
+    });
+
+  // add to summary
+  summary.borchk = { status, blocked };
+
+  if (blocked) {
+    // add to summary
+    summary.statusCode = "BORCHK_USER_BLOCKED_BY_AGENCY";
+    summary.status = false;
+  }
+
+  // No account found for the provided credentials
+  if (status === "BORROWER_NOT_FOUND") {
+    // continue check if status still true
+    if (summary.status) {
       // If account exist in culr but borchk cant find user, the account must have been deleted behind culr.
-      const statusCode = !!account
+      const statusCode = isAccount
         ? "BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY"
         : "UNKNOWN_USER";
 
-      // User does not (longer) exist on the provided pickupBranch
-      log.warn(
-        `User is not allowed to place an order. Borchk: ${JSON.stringify({
-          status: false,
-          agencyId,
-          blocked,
-          borchkStatus: status,
-          statusCode,
-        })}`
-      );
-
-      return {
-        status: false,
-        statusCode,
-      };
+      // add to summary
+      summary.statusCode = statusCode;
+      summary.status = false;
     }
-
-    if (status !== "OK") {
-      // User does not exist on the provided pickupBranch
-      log.warn(
-        `User is not allowed to place an order. Borchk: ${JSON.stringify({
-          status: false,
-          agencyId,
-          blocked,
-          borchkStatus: status,
-          statusCode: "BORCHK_USER_NOT_VERIFIED",
-        })}`
-      );
-
-      return {
-        status: false,
-        statusCode: "BORCHK_USER_NOT_VERIFIED",
-      };
-    }
-
-    // Return status ok - verified
-    return { status: true, verified: true, statusCode: "OK" };
   }
 
-  log.warn(
-    `Borchk not permitted by agencyId ${JSON.stringify({
-      agencyId,
-    })}`
-  );
+  // Users affiliation could not be verified
+  if (status !== "OK") {
+    // continue check if status still true
+    if (summary.status) {
+      // add to summary
+      summary.statusCode = "BORCHK_USER_NOT_VERIFIED";
+      summary.status = false;
+    }
+  }
 
-  // Agency does not support borrowercheck - return status ok - no verification
-  return { status: true, statusCode: "OK", verified: false };
+  if (summary.status) {
+    summary.statusCode = "OK";
+  }
+
+  return summary;
+}
+
+// function to fetch possible userIds from userParameters
+/**
+ *
+ * @param {*} userParams
+ * @returns
+ */
+export function getUserIds(userParams) {
+  // Select and return id fields with values
+  const res = {};
+  Object.entries(userParams).forEach(([k, v]) => {
+    if (USER_ID_TYPES.includes(k)) {
+      res[k] = v;
+    }
+  });
+  return res;
 }
