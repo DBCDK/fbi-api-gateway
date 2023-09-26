@@ -172,7 +172,7 @@ export default {
         process.env.VIP_EXCLUDE_BRANCHES == "1",
       url:
         process.env.VIP_CORE_URL ||
-        "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk:8080/1.0/api/alllibraries",
+        "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api",
       prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
     },
