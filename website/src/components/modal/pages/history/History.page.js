@@ -82,7 +82,7 @@ function parseAgencies(agencies) {
     ...a,
     agencyId: a?.result?.[0]?.agencyId,
     agencyName: a?.result?.[0]?.agencyName,
-    isBlocked: !a?.canBorrow?.canBorrow,
+    isBlocked: !a?.borrowerStatus?.allowed,
   }));
 }
 

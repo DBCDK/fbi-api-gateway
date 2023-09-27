@@ -11,7 +11,6 @@ import {
   resolveManifestation,
 } from "../utils/utils";
 import { log } from "dbc-node-logger";
-import getUserCanBorrowStatus from "../utils/getUserCanBorrowStatus";
 
 /**
  * The Profile type definition
@@ -489,22 +488,8 @@ export const resolvers = {
         filteredAgencyInfoes.unshift(loginAgency);
       }
 
-      //check blocking status for each agency & if user exists on agency (FFU)
-      const checkedAgency = sortedAgencies.map(async (agency) => {
-        const { status, statusCode } = await getUserCanBorrowStatus(
-          { agencyId: agency.result[0].agencyId },
-          context
-        );
-        return {
-          ...agency,
-          canBorrow: {
-            canBorrow: status,
-            statusCode,
-          },
-        };
-      });
-
-      return checkedAgency;
+      console.log("_________sortedAgencies", Object.keys(sortedAgencies[0]));
+      return sortedAgencies;
     },
     async bookmarks(parent, args, context, info) {
       try {

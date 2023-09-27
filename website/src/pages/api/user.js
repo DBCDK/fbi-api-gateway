@@ -8,8 +8,8 @@ query User_Details {
     municipalityAgencyId
     agencies {
       hitcount
-      canBorrow{
-        canBorrow
+      borrowerStatus{
+        allowed
         statusCode
       }
       result {

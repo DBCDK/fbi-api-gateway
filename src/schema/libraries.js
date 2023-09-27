@@ -5,6 +5,7 @@
 
 import { orderBy } from "lodash";
 import { resolveBorrowerCheck } from "../utils/utils";
+import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 
 export const typeDef = `
   enum LibraryStatus {
@@ -57,12 +58,12 @@ export const typeDef = `
     When user is not logged in, this is null
     Otherwise true or false
     """
-    userIsBlocked: Boolean @deprecated(reason: "Use 'BranchResult.CanBorrow' instead")
+    userIsBlocked: Boolean @deprecated(reason: "Use 'BranchResult.borrowerStatus' instead")
   }
   
   type BranchResult{
     hitcount: Int!
-    canBorrow: CanBorrow
+    borrowerStatus: BorrowerStatus
     result: [Branch!]!
     agencyUrl: String
   }
@@ -71,8 +72,8 @@ export const typeDef = `
     Indicates if user is blocked for a given agency or 
     if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
     """
-  type CanBorrow{
-    canBorrow: Boolean!
+  type BorrowerStatus{
+    allowed: Boolean!
     statusCode: String!
   }
 
@@ -360,6 +361,16 @@ export const resolvers = {
     },
     result(parent, args, context, info) {
       return parent.result;
+    },
+    async borrowerStatus(parent, args, context, info) {
+      const { status, statusCode } = await getUserBorrowerStatus(
+        { agencyId: parent.result[0].agencyId },
+        context
+      );
+      return {
+        allowed: status,
+        statusCode,
+      };
     },
     agencyUrl(parent, args, context, info) {
       return (

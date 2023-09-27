@@ -9,7 +9,7 @@
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
-import { resolveBorrowerCheck } from "../utils/utils";
+import { resolveBorrowerCheck } from "./utils";
 
 // all possible id field types
 const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
@@ -45,7 +45,7 @@ const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
  * BORCHK_USER_NOT_VERIFIED
  *  
  */
-export default async function getUserCanBorrowStatus(
+export default async function getUserBorrowerStatus(
   { agencyId, userIds = null },
   context
 ) {
