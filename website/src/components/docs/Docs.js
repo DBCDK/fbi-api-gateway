@@ -8,6 +8,7 @@ import useDocuments from "@/hooks/useDocuments";
 import useStorage from "@/hooks/useStorage";
 
 import { InlineGraphiQL } from "@/components/graphiql";
+import { DescribeEnum } from "@/components/schema/describe";
 import {
   DeprecationBox,
   DeprecationBorder,
@@ -17,7 +18,6 @@ import {
 
 import Progress from "@/components/base/progress";
 import { ComplexityTable } from "@/components/complexity";
-
 import Header from "@/components/header";
 import Menu from "@/components/menu";
 
@@ -31,6 +31,7 @@ const customComponents = {
   Changelog,
   Progress,
   ComplexityTable,
+  DescribeEnum,
 };
 
 export default function Docs() {

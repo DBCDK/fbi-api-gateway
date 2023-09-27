@@ -2678,6 +2678,7 @@ type User {
   debt: [Debt!]!
   bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
+  isCPRValidated: Boolean!
 }
 
 type UserSubscriptions {
