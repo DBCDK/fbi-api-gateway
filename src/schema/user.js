@@ -510,8 +510,6 @@ export const resolvers = {
         const loginAgency = sortedAgencies.splice(loginAgencyIdx, 1)[0];
         filteredAgencyInfoes.unshift(loginAgency);
       }
-
-      console.log("_________sortedAgencies", Object.keys(sortedAgencies[0]));
       return sortedAgencies;
     },
     async bookmarks(parent, args, context, info) {
