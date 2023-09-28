@@ -8,7 +8,6 @@ const { url } = config.datasources.userdata;
  */
 export async function load({ smaugUserId, bookmarks }, context) {
   const endpoint = url + "bookmark/add";
-
   try {
     const res = await context.fetch(endpoint, {
       headers: {

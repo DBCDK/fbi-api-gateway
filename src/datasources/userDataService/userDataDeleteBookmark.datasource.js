@@ -4,7 +4,7 @@ const { url, ttl, prefix } = config.datasources.userdata;
 /**
  * delete a bookmark for logged in user
  */
-export async function load({ smaugUserId, bookmarkId }, context) {
+export async function load({ smaugUserId, bookmarkIds }, context) {
   const endpoint = url + "bookmark/delete";
   try {
     const deleteresult = await context.fetch(endpoint, {
@@ -12,10 +12,9 @@ export async function load({ smaugUserId, bookmarkId }, context) {
         "Content-Type": "application/json",
       },
       method: "DELETE",
-      body: JSON.stringify({ smaugUserId, bookmarkId }),
+      body: JSON.stringify({ smaugUserId, bookmarkIds }),
     });
-
-    return deleteresult.body.bookmarkId;
+    return { IdsDeletedCount: deleteresult.body.IdsDeleted };
   } catch (e) {
     // @TODO log
     return [];

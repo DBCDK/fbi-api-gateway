@@ -10,6 +10,8 @@ import {
   getUserBranchIds,
   resolveManifestation,
 } from "../utils/utils";
+
+import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
 
 /**
@@ -38,8 +40,9 @@ type User {
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
-  bookmarks(offset: Int, limit: PaginationLimit): BookMarkResponse!
+  bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
+  isCPRValidated: Boolean!
 }
 
 type UserSubscriptions {
@@ -123,7 +126,10 @@ type UserDataResponse {
 type BookMarkId {
   bookMarkId: Int!
 }
-
+enum BookMarkOrderBy{
+  createdAt
+  title
+}
 type BookMark{
   materialType: String!
   materialId: String!
@@ -139,6 +145,11 @@ type BookmarkResponse {
 input BookMarkInput {
   materialType: String!
   materialId: String!
+  title: String!
+}
+
+type BookMarkDeleteResponse {
+  IdsDeletedCount: Int!
 }
 
 type UserMutations {
@@ -183,7 +194,7 @@ type UserMutations {
   """
   Delete a bookmark
   """
-  deleteBookmark(bookmarkId: Int!): Int!
+  deleteBookmarks(bookmarkIds: [Int!]!): BookMarkDeleteResponse
   }
   
 extend type Mutation {
@@ -209,6 +220,18 @@ function isCPRNumber(uniqueId) {
  */
 export const resolvers = {
   User: {
+    async isCPRValidated(parent, args, context, info) {
+      // fetch culr accounts from userinfo
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      // Check if user has a CPR validated account
+      const accounts = userinfo.attributes?.agencies;
+      return !!accounts?.find(
+        (a) => a.userIdType === "CPR" && isValidCpr(a.userId)
+      );
+    },
     async rights(parent, args, context, info) {
       let subscriptions = {
         infomedia: false,
@@ -497,7 +520,7 @@ export const resolvers = {
         if (!smaugUserId) {
           throw "Not authorized";
         }
-        const { limit, offset } = args;
+        const { limit, offset, orderBy } = args;
 
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
@@ -505,6 +528,7 @@ export const resolvers = {
             smaugUserId: smaugUserId,
             limit,
             offset,
+            orderBy,
           });
 
         return { result: res.result, hitcount: res?.hitcount || 0 };
@@ -733,10 +757,13 @@ export const resolvers = {
           .getLoader("userDataAddBookmarks")
           .load({
             smaugUserId: smaugUserId,
-            bookmarks: args.bookmarks.map((bookmark) => ({
-              materialType: bookmark.materialType,
-              materialId: bookmark.materialId,
-            })),
+            bookmarks: args.bookmarks.map((bookmark) => {
+              return {
+                materialType: bookmark.materialType,
+                materialId: bookmark.materialId,
+                title: bookmark.title,
+              };
+            }),
           });
 
         return res;
@@ -748,7 +775,7 @@ export const resolvers = {
         return { bookMarkId: 0 };
       }
     },
-    async deleteBookmark(parent, args, context, info) {
+    async deleteBookmarks(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
 
@@ -763,7 +790,7 @@ export const resolvers = {
           .getLoader("userDataDeleteBookmark")
           .load({
             smaugUserId: smaugUserId,
-            bookmarkId: args.bookmarkId,
+            bookmarkIds: args.bookmarkIds,
           });
 
         return res;

@@ -6,6 +6,7 @@
 import { orderBy } from "lodash";
 import { resolveBorrowerCheck } from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
+import isEmpty from "lodash/isEmpty";
 
 export const typeDef = `
   enum LibraryStatus {
@@ -42,7 +43,7 @@ export const typeDef = `
     postalAddress: String
     postalCode: String
     userParameters: [UserParameter!]!
-    orderPolicy(pid:String!): CheckOrderPolicy @complexity(value: 5)
+    orderPolicy(pid:String!, pids: [String!]): CheckOrderPolicy @complexity(value: 5, multipliers: ["pids"])
     city: String
     pickupAllowed: Boolean!
     highlights: [Highlight!]!
@@ -229,9 +230,11 @@ export const resolvers = {
       return orderBy(result, "order");
     },
     async orderPolicy(parent, args, context, info) {
+      const { pid, pids } = args;
+
       return await context.datasources.getLoader("checkorder").load({
         pickupBranch: parent.branchId,
-        pid: args.pid,
+        pids: !isEmpty(pids) ? pids : [pid],
       });
     },
     pickupAllowed(parent, args, context, info) {
