@@ -460,11 +460,6 @@ export const resolvers = {
       return context.smaug.user.agency;
     },
     async agencies(parent, args, context, info) {
-      /**
-       * @TODO
-       * Align agency and agencies properly
-       * Discuss the intended usage of these fields
-       */
       const userinfo = await context.datasources.getLoader("userinfo").load(
         {
           accessToken: context.accessToken,
@@ -515,7 +510,6 @@ export const resolvers = {
         const loginAgency = sortedAgencies.splice(loginAgencyIdx, 1)[0];
         filteredAgencyInfoes.unshift(loginAgency);
       }
-
       return sortedAgencies;
     },
     async bookmarks(parent, args, context, info) {
