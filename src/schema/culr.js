@@ -80,6 +80,14 @@ input GetAccountsByLocalIdInput {
     localId: String!
 }
 
+input GetAccountsByGlobalIdInput {
+
+  """
+  Authenticated accessToken containing globalId, If none provided auth token is used
+  """
+  accessToken: String!
+}
+
 type CulrService {
 
     """
@@ -105,9 +113,14 @@ type CulrService {
     dryRun: Boolean): CulrResponse!
 
     """
-    Get alluser accounts within the given agency
+    Get all user accounts within the given agency by a localId
     """
     getAccountsByLocalId(input: GetAccountsByLocalIdInput!): CulrAccountResponse
+
+    """
+    Get all user accounts within the given agency by a global id
+    """
+    getAccountsByGlobalId(input: GetAccountsByGlobalIdInput): CulrAccountResponse
 }
 
 extend type Mutation {
@@ -283,6 +296,37 @@ export const resolvers = {
         .load({
           userId: localId,
           agencyId,
+        });
+
+      if (!response.guid) {
+        return null;
+      }
+
+      return response;
+    },
+
+    async getAccountsByGlobalId(parent, args, context, info) {
+      const { accessToken } = args.input;
+
+      let user = context.user;
+
+      if (accessToken) {
+        const config = await context.datasources.getLoader("smaug").load({
+          accessToken,
+        });
+
+        user = config.user;
+      }
+
+      console.log("....... config", config, config.user);
+
+      const userId = userInfo?.attributes?.id;
+
+      // Retrieve user culr account
+      const response = await context.datasources
+        .getLoader("culrGetAccountsByGlobalId")
+        .load({
+          userId: localId,
         });
 
       if (!response.guid) {
