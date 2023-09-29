@@ -19,6 +19,7 @@ enum CulrStatus {
     ERROR_LOCALID_NOT_UNIQUE
     ERROR_ACCOUNT_DOES_NOT_EXIST
     ERROR_AGENCYID_NOT_PERMITTED
+    ERROR_INVALID_PROVIDED_TOKEN
 }
 
 type CulrResponse {
@@ -43,50 +44,24 @@ input DeleteAccountInput {
     The agencyId
     """
     agencyId: String!
-
-    """
-    The subscribing users local ID
-    """
-    localId: String!
 }
 
 input CreateAccountInput {
 
-    """
-    The agencyId
-    """
-    agencyId: String!
-
-    """
-    The users local ID
-    """
-    localId: String!
-
-    """
-    The users CPR 
-    """
-    cpr: String!
+  """
+  Authenticated accessToken containing credentials for the new created account in culr
+  """
+  accessToken: String!
 }
 
-input GetAccountsByLocalIdInput {
-    """
-    The agencyId
-    """
-    agencyId: String!
-
-    """
-    The users local ID
-    """
-    localId: String!
-}
-
-input GetAccountsByGlobalIdInput {
+input GetAccountsInput {
 
   """
   Authenticated accessToken containing globalId, If none provided auth token is used
   """
   accessToken: String!
 }
+
 
 type CulrService {
 
@@ -115,12 +90,17 @@ type CulrService {
     """
     Get all user accounts within the given agency by a localId
     """
-    getAccountsByLocalId(input: GetAccountsByLocalIdInput!): CulrAccountResponse
+    getAccountsByLocalId(input: GetAccountsInput): CulrAccountResponse
 
     """
     Get all user accounts within the given agency by a global id
     """
-    getAccountsByGlobalId(input: GetAccountsByGlobalIdInput): CulrAccountResponse
+    getAccountsByGlobalId(input: GetAccountsInput): CulrAccountResponse
+
+    """
+    Get all user accounts within the given agency by a global id
+    """
+    getAccounts(input: GetAccountsInput): CulrAccountResponse
 }
 
 extend type Mutation {
@@ -137,7 +117,7 @@ export const resolvers = {
 
   CulrService: {
     async createAccount(parent, args, context, info) {
-      const { agencyId, cpr, localId } = args.input;
+      const accessToken = args.input?.accessToken;
 
       // settings
       const ENABLE_CPR_CHECK = true;
@@ -152,6 +132,28 @@ export const resolvers = {
         };
       }
 
+      // Fetch user from provided accessToken
+      let user = context.smaug?.user;
+      if (accessToken) {
+        user = (
+          await context.datasources.getLoader("smaug").load({
+            accessToken,
+          })
+        ).user;
+      }
+
+      if (!user) {
+        return {
+          status: "ERROR_INVALID_PROVIDED_TOKEN",
+        };
+      }
+
+      // Credentials from Bearer token
+      const cpr = context?.smaug?.user?.id;
+
+      // Credentials from provided token
+      const { agency, id } = user;
+
       // validate cpr input
       if (ENABLE_CPR_CHECK && !isValidCpr(cpr)) {
         return {
@@ -160,7 +162,7 @@ export const resolvers = {
       }
 
       // validate Agency
-      if (ENABLE_FFU_CHECK && !isFFUAgency(agencyId)) {
+      if (ENABLE_FFU_CHECK && !isFFUAgency(agency)) {
         return {
           status: "ERROR_INVALID_AGENCY",
         };
@@ -168,10 +170,9 @@ export const resolvers = {
 
       // Retrieve user culr account
       const account = await context.datasources
-        .getLoader("culrGetAccountsByLocalId")
+        .getLoader("culrGetAccountsByGlobalId")
         .load({
-          userId: localId,
-          agencyId,
+          userId: cpr,
         });
 
       // User credentials (netpunkt-triple) could not be authorized
@@ -185,7 +186,7 @@ export const resolvers = {
       if (ENABLE_CREATED_CHECK && account.code === "OK200") {
         if (
           account.accounts.find(
-            (a) => a.userIdValue === localId && a.agencyId === agencyId
+            (a) => a.userIdValue === id && a.agencyId === agency
           )
         )
           return {
@@ -205,7 +206,7 @@ export const resolvers = {
         // Create the account
         const response = await context.datasources
           .getLoader("culrCreateAccount")
-          .load({ agencyId, cpr, localId });
+          .load({ agencyId: agency, cpr, localId: id });
 
         // Response errors - localid is already in use for this user
         if (response.code === "TRANSACTION_ERROR") {
@@ -288,14 +289,27 @@ export const resolvers = {
     },
 
     async getAccountsByLocalId(parent, args, context, info) {
-      const { agencyId, localId } = args.input;
+      const accessToken = args.input?.accessToken;
+
+      let user = context.smaug?.user;
+      if (accessToken) {
+        user = (
+          await context.datasources.getLoader("smaug").load({
+            accessToken,
+          })
+        ).user;
+      }
+
+      if (!user) {
+        return null;
+      }
 
       // Retrieve user culr account
       const response = await context.datasources
         .getLoader("culrGetAccountsByLocalId")
         .load({
-          userId: localId,
-          agencyId,
+          userId: user.id,
+          agencyId: user.agency,
         });
 
       if (!response.guid) {
@@ -306,28 +320,61 @@ export const resolvers = {
     },
 
     async getAccountsByGlobalId(parent, args, context, info) {
-      const { accessToken } = args.input;
+      const accessToken = args.input?.accessToken;
 
-      let user = context.user;
-
+      let user = context.smaug?.user;
       if (accessToken) {
-        const config = await context.datasources.getLoader("smaug").load({
-          accessToken,
-        });
-
-        user = config.user;
+        user = (
+          await context.datasources.getLoader("smaug").load({
+            accessToken,
+          })
+        ).user;
       }
 
-      console.log("....... config", config, config.user);
-
-      const userId = userInfo?.attributes?.id;
+      if (!user) {
+        return null;
+      }
 
       // Retrieve user culr account
       const response = await context.datasources
         .getLoader("culrGetAccountsByGlobalId")
         .load({
-          userId: localId,
+          userId: user.id,
         });
+
+      if (!response.guid) {
+        return null;
+      }
+
+      return response;
+    },
+
+    async getAccounts(parent, args, context, info) {
+      const accessToken = args.input?.accessToken;
+
+      let user = context.smaug?.user;
+      if (accessToken) {
+        user = (
+          await context.datasources.getLoader("smaug").load({
+            accessToken,
+          })
+        ).user;
+      }
+
+      if (!user) {
+        return null;
+      }
+
+      // select dataloader
+      const dataloader = isValidCpr(user.id)
+        ? "culrGetAccountsByGlobalId"
+        : "culrGetAccountsByLocalId";
+
+      // Retrieve user culr account
+      const response = await context.datasources.getLoader(dataloader).load({
+        userId: user.id,
+        agencyId: user.agency,
+      });
 
       if (!response.guid) {
         return null;

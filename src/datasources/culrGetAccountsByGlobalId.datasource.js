@@ -23,8 +23,8 @@ function constructSoap({ userId }) {
   <soapenv:Body>
      <ws:getAccountsByGlobalId>
         <userCredentials>
-           <userIdType>CPR</userIdType>
-           <userIdValue>${userId}</userIdValue>
+          <uidType>CPR</uidType>
+          <uidValue>${userId}</uidValue>
         </userCredentials>
         <authCredentials>
           <userIdAut>${authenticationUser}</userIdAut>
@@ -33,7 +33,8 @@ function constructSoap({ userId }) {
         </authCredentials>
      </ws:getAccountsByGlobalId>
   </soapenv:Body>
-</soapenv:Envelope>`;
+</soapenv:Envelope>
+`;
 }
 
 /**
