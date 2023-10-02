@@ -2162,7 +2162,7 @@ type Branch {
   postalAddress: String
   postalCode: String
   userParameters: [UserParameter!]!
-  orderPolicy(pid: String!, pids: [String!]): CheckOrderPolicy
+  orderPolicy(pid: String, pids: [String!]!): CheckOrderPolicy
   city: String
   pickupAllowed: Boolean!
   highlights: [Highlight!]!
