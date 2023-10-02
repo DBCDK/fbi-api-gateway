@@ -43,7 +43,7 @@ export const typeDef = `
     postalAddress: String
     postalCode: String
     userParameters: [UserParameter!]!
-    orderPolicy(pid:String!, pids: [String!]): CheckOrderPolicy @complexity(value: 5, multipliers: ["pids"])
+    orderPolicy(pid:String, pids: [String!]!): CheckOrderPolicy @complexity(value: 5, multipliers: ["pids"])
     city: String
     pickupAllowed: Boolean!
     highlights: [Highlight!]!
@@ -230,11 +230,11 @@ export const resolvers = {
       return orderBy(result, "order");
     },
     async orderPolicy(parent, args, context, info) {
-      const { pid, pids } = args;
+      const { pids } = args;
 
       return await context.datasources.getLoader("checkorder").load({
         pickupBranch: parent.branchId,
-        pids: !isEmpty(pids) ? pids : [pid],
+        pids: !isEmpty(pids) ? pids : [],
       });
     },
     pickupAllowed(parent, args, context, info) {
