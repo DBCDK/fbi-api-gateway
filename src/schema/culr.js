@@ -8,18 +8,24 @@ import { isFFUAgency } from "../utils/agency";
 
 export const typeDef = `
 
+enum GetAccountsType {
+  LOCAL
+  GLOBAL
+}
+
 enum CulrStatus {
     OK
     ERROR
     ERROR_INVALID_CPR
+    ERROR_CPR_MISMATCH
     ERROR_INVALID_AGENCY
+    ERROR_INVALID_PROVIDED_TOKEN
     ERROR_UNAUTHENTICATED_TOKEN
     ERROR_NO_AUTHORISATION
     ERROR_USER_ALREADY_CREATED
     ERROR_LOCALID_NOT_UNIQUE
     ERROR_ACCOUNT_DOES_NOT_EXIST
     ERROR_AGENCYID_NOT_PERMITTED
-    ERROR_INVALID_PROVIDED_TOKEN
 }
 
 type CulrResponse {
@@ -46,12 +52,17 @@ input DeleteAccountInput {
     agencyId: String!
 }
 
-input CreateAccountInput {
+input CreateAccountTokens {
 
   """
-  Authenticated accessToken containing credentials for the new created account in culr
+  FFU accessToken containing credentials for the account which the user will be associated with 
   """
-  accessToken: String!
+  ffu: String!
+
+  """
+  Authenticated accessToken containing CPR credentials for the users main account. Only needed for Auth Bearer header CPR match.
+  """
+  folk: String
 }
 
 input GetAccountsInput {
@@ -68,7 +79,7 @@ type CulrService {
     """
     Add an agency to a CPR validated user
     """
-    createAccount(input: CreateAccountInput!, 
+    createAccount(tokens: CreateAccountTokens!, 
 
     """
     If dryRun is set to true, the actual service is never called
@@ -100,13 +111,45 @@ type CulrService {
     """
     Get all user accounts within the given agency by a global id
     """
-    getAccounts(input: GetAccountsInput): CulrAccountResponse
+    getAccounts(input: GetAccountsInput, 
+      
+      """
+      Force a specific dataloader
+      """
+      type: GetAccountsType): CulrAccountResponse
 }
 
 extend type Mutation {
     culr: CulrService!
 }
  `;
+
+async function getAccounts(accessToken, context, props) {
+  const userinfo = await context.datasources.getLoader("userinfo").load({
+    accessToken,
+  });
+
+  // user account list
+  let accounts = userinfo?.attributes?.agencies || [];
+
+  // find requested account
+  if (props.agency) {
+    accounts = accounts?.filter(({ agencyId }) => agencyId === props.agency);
+  }
+  if (props.id) {
+    accounts = accounts?.filter(({ userId }) => userId === props.id);
+  }
+  if (props.type) {
+    accounts = accounts?.filter(({ userIdType }) => userIdType === props.type);
+  }
+
+  return accounts;
+}
+
+async function getAccount(accessToken, context, props) {
+  const accounts = await getAccounts(accessToken, context, props);
+  return accounts[0] || null;
+}
 
 export const resolvers = {
   Mutation: {
@@ -117,10 +160,13 @@ export const resolvers = {
 
   CulrService: {
     async createAccount(parent, args, context, info) {
-      const accessToken = args.input?.accessToken;
+      const accessToken = context.accessToken;
+      const ffuToken = args.tokens?.ffu;
+      const folkToken = args.tokens?.folk;
 
       // settings
       const ENABLE_CPR_CHECK = true;
+      const ENABLE_CPR_MATCH_CHECK = true;
       const ENABLE_FFU_CHECK = true;
       const ENABLE_CREATED_CHECK = true;
 
@@ -132,101 +178,130 @@ export const resolvers = {
         };
       }
 
-      // Fetch user from provided accessToken
-      let user = context.smaug?.user;
-      if (accessToken) {
-        user = (
-          await context.datasources.getLoader("smaug").load({
-            accessToken,
-          })
-        ).user;
-      }
+      const user = {};
 
-      if (!user) {
+      // Get user from provided ffuToken (only smaug config contains the loggedInAgencyId)
+      user.ffu = (
+        await context.datasources.getLoader("smaug").load({
+          accessToken: ffuToken,
+        })
+      ).user;
+
+      console.log("###############", { ffuUser: user.ffu });
+
+      if (!user.ffu) {
         return {
           status: "ERROR_INVALID_PROVIDED_TOKEN",
         };
       }
 
-      // Credentials from Bearer token
-      const cpr = context?.smaug?.user?.id;
-
-      // Credentials from provided token
-      const { agency, id } = user;
-
-      // validate cpr input
-      if (ENABLE_CPR_CHECK && !isValidCpr(cpr)) {
-        return {
-          status: "ERROR_INVALID_CPR",
-        };
-      }
-
-      // validate Agency
-      if (ENABLE_FFU_CHECK && !isFFUAgency(agency)) {
+      // Validate FFU Agency from FFU user credentials
+      if (ENABLE_FFU_CHECK && !isFFUAgency(user.ffu?.agency)) {
         return {
           status: "ERROR_INVALID_AGENCY",
         };
       }
 
-      // Retrieve user culr account
-      const account = await context.datasources
-        .getLoader("culrGetAccountsByGlobalId")
-        .load({
-          userId: cpr,
-        });
+      // Get account from bearer token / autorization header
+      user.bearer = await getAccount(accessToken, context, {
+        type: "CPR",
+      });
 
-      // User credentials (netpunkt-triple) could not be authorized
-      if (account.code === "NO_AUTHORISATION") {
+      console.log("###############", { bearerUser: user.bearer });
+
+      // Ensure that userId from the fetched account is a valid CPR
+      if (ENABLE_CPR_CHECK && !isValidCpr(user.bearer?.userId)) {
         return {
-          status: "ERROR_NO_AUTHORISATION",
+          status: "ERROR_INVALID_CPR",
         };
       }
 
-      // Check if user is already subscribed to agency
-      if (ENABLE_CREATED_CHECK && account.code === "OK200") {
-        if (
-          account.accounts.find(
-            (a) => a.userIdValue === id && a.agencyId === agency
-          )
-        )
+      // If CPR match is enabled and the optional folkToken is provided
+      if (folkToken && ENABLE_CPR_MATCH_CHECK) {
+        // Get account from provided folkToken
+        user.folk = await getAccount(folkToken, context, {
+          type: "CPR",
+        });
+
+        console.log("###############", { folkUser: user.folk });
+
+        // Ensure that userId from the fetched account is a valid CPR
+        if (ENABLE_CPR_CHECK && !isValidCpr(user.folk?.userId)) {
           return {
-            status: "ERROR_USER_ALREADY_CREATED",
+            status: "ERROR_INVALID_CPR",
           };
+        }
+
+        if (user.folk?.userId !== user.bearer?.userId) {
+          return {
+            status: "ERROR_CPR_MISMATCH",
+          };
+        }
       }
 
+      console.log("###############", { user });
+
+      // CPR from Bearer token selected account
+      const cpr = user.bearer?.userId;
+
+      // FFU credentials
+      const id = user.ffu?.id;
+      const agency = user.ffu?.agency;
+
+      console.log("############", { cpr, agency, id });
+
+      // Ensure account is not already attached to user
+      const accounts = await getAccounts(accessToken, context, {
+        id,
+        agency,
+      });
+
+      console.log("############", { accounts });
+
+      // Check if user is already subscribed to agency
+      if (ENABLE_CREATED_CHECK && accounts.length > 0) {
+        return {
+          status: "ERROR_USER_ALREADY_CREATED",
+        };
+      }
+
+      ////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////
+
       // If not already exist - Create user account for agency
-      if (account.code === "ACCOUNT_DOES_NOT_EXIST") {
-        // Check for dryRun
-        if (args.dryRun) {
-          return {
-            status: "OK",
-          };
-        }
 
-        // Create the account
-        const response = await context.datasources
-          .getLoader("culrCreateAccount")
-          .load({ agencyId: agency, cpr, localId: id });
+      // Check for dryRun
+      if (args.dryRun) {
+        return {
+          status: "OK",
+        };
+      }
 
-        // Response errors - localid is already in use for this user
-        if (response.code === "TRANSACTION_ERROR") {
-          return {
-            status: "ERROR_LOCALID_NOT_UNIQUE",
-          };
-        }
+      // Create the account
+      const response = await context.datasources
+        .getLoader("culrCreateAccount")
+        .load({ agencyId: agency, cpr, localId: id });
 
-        // AgencyID
-        if (response.code === "ILLEGAL_ARGUMENT") {
-          return {
-            status: "ERROR_AGENCYID_NOT_PERMITTED",
-          };
-        }
+      // Response errors - localid is already in use for this user
+      if (response.code === "TRANSACTION_ERROR") {
+        return {
+          status: "ERROR_LOCALID_NOT_UNIQUE",
+        };
+      }
 
-        if (response.code === "OK200") {
-          return {
-            status: "OK",
-          };
-        }
+      // AgencyID
+      if (response.code === "ILLEGAL_ARGUMENT") {
+        return {
+          status: "ERROR_AGENCYID_NOT_PERMITTED",
+        };
+      }
+
+      if (response.code === "OK200") {
+        return {
+          status: "OK",
+        };
       }
 
       return { status: "ERROR" };
@@ -260,7 +335,6 @@ export const resolvers = {
         };
       }
 
-      // Get agencies informations from login.bib.dk /userinfo endpoint
       const response = await context.datasources
         .getLoader("culrDeleteAccount")
         .load({ agencyId, localId });
@@ -351,6 +425,11 @@ export const resolvers = {
 
     async getAccounts(parent, args, context, info) {
       const accessToken = args.input?.accessToken;
+      const type = args.type;
+
+      // Specific dataloader type
+      const isLocal = type === "LOCAL";
+      const isGlobal = type === "GLOBAL";
 
       let user = context.smaug?.user;
       if (accessToken) {
@@ -366,9 +445,18 @@ export const resolvers = {
       }
 
       // select dataloader
-      const dataloader = isValidCpr(user.id)
+      let dataloader = isValidCpr(user.id)
         ? "culrGetAccountsByGlobalId"
         : "culrGetAccountsByLocalId";
+
+      // force specific dataloader if type is set
+      if (isLocal) {
+        dataloader = "culrGetAccountsByLocalId";
+      }
+
+      if (isGlobal) {
+        dataloader = "culrGetAccountsByGlobalId";
+      }
 
       // Retrieve user culr account
       const response = await context.datasources.getLoader(dataloader).load({
