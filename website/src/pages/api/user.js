@@ -8,6 +8,10 @@ query User_Details {
     municipalityAgencyId
     agencies {
       hitcount
+      borrowerStatus{
+        allowed
+        statusCode
+      }
       result {
         name
         branchId

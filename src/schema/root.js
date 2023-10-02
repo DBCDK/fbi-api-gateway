@@ -8,14 +8,13 @@ import { createHistogram } from "../utils/monitor";
 import {
   fetchOrderStatus,
   getUserId,
-  resolveBorrowerCheck,
   resolveLocalizations,
   resolveLocalizationsWithHoldings,
   resolveManifestation,
   resolveWork,
 } from "../utils/utils";
+
 import translations from "../utils/translations.json";
-import { resolveAccess } from "./draft/draft_utils_manifestations";
 import isEmpty from "lodash/isEmpty";
 
 /**
