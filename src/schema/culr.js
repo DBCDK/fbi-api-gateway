@@ -5,6 +5,7 @@
 
 import { isValidCpr } from "../utils/cpr";
 import { isFFUAgency } from "../utils/agency";
+import { getAccount, getAccounts } from "../utils/culr";
 
 export const typeDef = `
 
@@ -60,9 +61,17 @@ input CreateAccountTokens {
   ffu: String!
 
   """
-  Authenticated accessToken containing CPR credentials for the users main account. Only needed for Auth Bearer header CPR match.
+  Authenticated accessToken containing CPR credentials for the users main/public account. Only needed for Auth Bearer header CPR match.
   """
   folk: String
+}
+
+input CreateAccountInput {
+
+  """
+  Tokens containing the credentials to create/associate a new user account
+  """
+  tokens: CreateAccountTokens!
 }
 
 input GetAccountsInput {
@@ -79,7 +88,7 @@ type CulrService {
     """
     Add an agency to a CPR validated user
     """
-    createAccount(tokens: CreateAccountTokens!, 
+    createAccount(input: CreateAccountInput!, 
 
     """
     If dryRun is set to true, the actual service is never called
@@ -124,33 +133,6 @@ extend type Mutation {
 }
  `;
 
-async function getAccounts(accessToken, context, props) {
-  const userinfo = await context.datasources.getLoader("userinfo").load({
-    accessToken,
-  });
-
-  // user account list
-  let accounts = userinfo?.attributes?.agencies || [];
-
-  // find requested account
-  if (props.agency) {
-    accounts = accounts?.filter(({ agencyId }) => agencyId === props.agency);
-  }
-  if (props.id) {
-    accounts = accounts?.filter(({ userId }) => userId === props.id);
-  }
-  if (props.type) {
-    accounts = accounts?.filter(({ userIdType }) => userIdType === props.type);
-  }
-
-  return accounts;
-}
-
-async function getAccount(accessToken, context, props) {
-  const accounts = await getAccounts(accessToken, context, props);
-  return accounts[0] || null;
-}
-
 export const resolvers = {
   Mutation: {
     async culr(parent, args, context, info) {
@@ -161,8 +143,8 @@ export const resolvers = {
   CulrService: {
     async createAccount(parent, args, context, info) {
       const accessToken = context.accessToken;
-      const ffuToken = args.tokens?.ffu;
-      const folkToken = args.tokens?.folk;
+      const ffuToken = args.input?.tokens?.ffu;
+      const folkToken = args.input?.tokens?.folk;
 
       // settings
       const ENABLE_CPR_CHECK = true;
@@ -187,8 +169,6 @@ export const resolvers = {
         })
       ).user;
 
-      console.log("###############", { ffuUser: user.ffu });
-
       if (!user.ffu) {
         return {
           status: "ERROR_INVALID_PROVIDED_TOKEN",
@@ -207,10 +187,8 @@ export const resolvers = {
         type: "CPR",
       });
 
-      console.log("###############", { bearerUser: user.bearer });
-
       // Ensure that userId from the fetched account is a valid CPR
-      if (ENABLE_CPR_CHECK && !isValidCpr(user.bearer?.userId)) {
+      if (ENABLE_CPR_CHECK && !isValidCpr(user.bearer?.userIdValue)) {
         return {
           status: "ERROR_INVALID_CPR",
         };
@@ -223,40 +201,32 @@ export const resolvers = {
           type: "CPR",
         });
 
-        console.log("###############", { folkUser: user.folk });
-
         // Ensure that userId from the fetched account is a valid CPR
-        if (ENABLE_CPR_CHECK && !isValidCpr(user.folk?.userId)) {
+        if (ENABLE_CPR_CHECK && !isValidCpr(user.folk?.userIdValue)) {
           return {
             status: "ERROR_INVALID_CPR",
           };
         }
 
-        if (user.folk?.userId !== user.bearer?.userId) {
+        if (user.folk?.userIdValue !== user.bearer?.userIdValue) {
           return {
             status: "ERROR_CPR_MISMATCH",
           };
         }
       }
 
-      console.log("###############", { user });
-
       // CPR from Bearer token selected account
-      const cpr = user.bearer?.userId;
+      const cpr = user.bearer?.userIdValue;
 
       // FFU credentials
-      const id = user.ffu?.id;
-      const agency = user.ffu?.agency;
-
-      console.log("############", { cpr, agency, id });
+      const localId = user.ffu?.id;
+      const agencyId = user.ffu?.agency;
 
       // Ensure account is not already attached to user
       const accounts = await getAccounts(accessToken, context, {
-        id,
-        agency,
+        id: localId,
+        agency: agencyId,
       });
-
-      console.log("############", { accounts });
 
       // Check if user is already subscribed to agency
       if (ENABLE_CREATED_CHECK && accounts.length > 0) {
@@ -265,12 +235,7 @@ export const resolvers = {
         };
       }
 
-      ////////////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////////////
-
-      // If not already exist - Create user account for agency
+      // If account not already exist - Create user account for agency
 
       // Check for dryRun
       if (args.dryRun) {
@@ -282,7 +247,7 @@ export const resolvers = {
       // Create the account
       const response = await context.datasources
         .getLoader("culrCreateAccount")
-        .load({ agencyId: agency, cpr, localId: id });
+        .load({ agencyId, cpr, localId });
 
       // Response errors - localid is already in use for this user
       if (response.code === "TRANSACTION_ERROR") {
@@ -308,7 +273,7 @@ export const resolvers = {
     },
 
     async deleteAccount(parent, args, context, info) {
-      const { agencyId, localId } = args.input;
+      const agencyId = args.input?.agencyId;
 
       // settings
       const ENABLE_FFU_CHECK = true;
@@ -328,6 +293,18 @@ export const resolvers = {
         };
       }
 
+      // Get token user accounts
+      const account = await getAccount(context.accessToken, context, {
+        agency: agencyId,
+        type: "LOCAL",
+      });
+
+      if (!account) {
+        return {
+          status: "ERROR_ACCOUNT_DOES_NOT_EXIST",
+        };
+      }
+
       // Check for dryRun
       if (args.dryRun) {
         return {
@@ -337,7 +314,7 @@ export const resolvers = {
 
       const response = await context.datasources
         .getLoader("culrDeleteAccount")
-        .load({ agencyId, localId });
+        .load({ agencyId, localId: account.userIdValue });
 
       // Response errors - account does not exist
       if (response.code === "ACCOUNT_DOES_NOT_EXIST") {
