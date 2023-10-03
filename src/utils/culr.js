@@ -38,6 +38,10 @@ export async function getAccounts(accessToken, context, props) {
     })
   ).user;
 
+  if (!user?.id) {
+    return [];
+  }
+
   // select dataloader
   let dataloader = isValidCpr(user.id)
     ? "culrGetAccountsByGlobalId"
@@ -46,7 +50,7 @@ export async function getAccounts(accessToken, context, props) {
   // Retrieve user culr account
   const response = await context.datasources.getLoader(dataloader).load({
     userId: user.id,
-    agencyId: "874480" || user.agency,
+    agencyId: user.agency,
   });
 
   return filterAccountsByProps(response.accounts, props);

@@ -406,11 +406,18 @@ type Cover {
   origin: String
 }
 
+enum GetAccountsType {
+  LOCAL
+  GLOBAL
+}
+
 enum CulrStatus {
   OK
   ERROR
   ERROR_INVALID_CPR
+  ERROR_CPR_MISMATCH
   ERROR_INVALID_AGENCY
+  ERROR_INVALID_PROVIDED_TOKEN
   ERROR_UNAUTHENTICATED_TOKEN
   ERROR_NO_AUTHORISATION
   ERROR_USER_ALREADY_CREATED
@@ -438,28 +445,32 @@ type CulrAccountResponse {
 input DeleteAccountInput {
   \\"\\"\\"The agencyId\\"\\"\\"
   agencyId: String!
+}
 
-  \\"\\"\\"The subscribing users local ID\\"\\"\\"
-  localId: String!
+input CreateAccountTokens {
+  \\"\\"\\"
+  FFU accessToken containing credentials for the account which the user will be associated with 
+  \\"\\"\\"
+  ffu: String!
+
+  \\"\\"\\"
+  Authenticated accessToken containing CPR credentials for the users main/public account. Only needed for Auth Bearer header CPR match.
+  \\"\\"\\"
+  folk: String
 }
 
 input CreateAccountInput {
-  \\"\\"\\"The agencyId\\"\\"\\"
-  agencyId: String!
-
-  \\"\\"\\"The users local ID\\"\\"\\"
-  localId: String!
-
-  \\"\\"\\"The users CPR \\"\\"\\"
-  cpr: String!
+  \\"\\"\\"
+  Tokens containing the credentials to create/associate a new user account
+  \\"\\"\\"
+  tokens: CreateAccountTokens!
 }
 
-input GetAccountsByLocalIdInput {
-  \\"\\"\\"The agencyId\\"\\"\\"
-  agencyId: String!
-
-  \\"\\"\\"The users local ID\\"\\"\\"
-  localId: String!
+input GetAccountsInput {
+  \\"\\"\\"
+  Authenticated accessToken containing globalId, If none provided auth token is used
+  \\"\\"\\"
+  accessToken: String!
 }
 
 type CulrService {
@@ -485,8 +496,19 @@ type CulrService {
     dryRun: Boolean
   ): CulrResponse!
 
-  \\"\\"\\"Get alluser accounts within the given agency\\"\\"\\"
-  getAccountsByLocalId(input: GetAccountsByLocalIdInput!): CulrAccountResponse
+  \\"\\"\\"Get all user accounts within the given agency by a localId\\"\\"\\"
+  getAccountsByLocalId(input: GetAccountsInput): CulrAccountResponse
+
+  \\"\\"\\"Get all user accounts within the given agency by a global id\\"\\"\\"
+  getAccountsByGlobalId(input: GetAccountsInput): CulrAccountResponse
+
+  \\"\\"\\"Get all user accounts within the given agency by a global id\\"\\"\\"
+  getAccounts(
+    input: GetAccountsInput
+
+    \\"\\"\\"Force a specific dataloader\\"\\"\\"
+    type: GetAccountsType
+  ): CulrAccountResponse
 }
 
 type Mutation {

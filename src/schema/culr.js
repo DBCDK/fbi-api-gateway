@@ -187,6 +187,8 @@ export const resolvers = {
         type: "CPR",
       });
 
+      console.error("########", user);
+
       // Ensure that userId from the fetched account is a valid CPR
       if (ENABLE_CPR_CHECK && !isValidCpr(user.bearer?.userIdValue)) {
         return {
@@ -351,7 +353,7 @@ export const resolvers = {
         ).user;
       }
 
-      if (!user) {
+      if (!user?.id) {
         return null;
       }
 
@@ -382,7 +384,7 @@ export const resolvers = {
         ).user;
       }
 
-      if (!user) {
+      if (!user?.id) {
         return null;
       }
 
@@ -417,7 +419,7 @@ export const resolvers = {
         ).user;
       }
 
-      if (!user) {
+      if (!user?.id) {
         return null;
       }
 
