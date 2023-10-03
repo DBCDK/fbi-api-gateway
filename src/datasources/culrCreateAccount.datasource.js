@@ -6,6 +6,7 @@ import { parseString } from "xml2js";
 import { log } from "dbc-node-logger";
 
 import config from "../config";
+import { createAccount } from "../utils/redisTestCulr";
 
 const {
   url,
@@ -91,4 +92,9 @@ export async function load({ agencyId, cpr, localId }, context) {
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
   );
+}
+
+export async function testLoad({ agencyId, cpr, localId }, context) {
+  const res = await createAccount({ agencyId, cpr, localId }, context);
+  return res;
 }

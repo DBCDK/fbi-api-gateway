@@ -3,6 +3,7 @@
  *
  */
 import { orderBy } from "lodash";
+import getUserOrderAllowedStatus from "../utils/userOrderAllowedStatus";
 import { resolveBorrowerCheck } from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
@@ -94,10 +95,14 @@ export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
     async userIsBlocked(parent, args, context, info) {
-      const userInfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      return userInfo?.attributes?.blocked;
+      const { status } = await getUserOrderAllowedStatus(
+        {
+          agencyId: parent.agencyId,
+        },
+        context
+      );
+
+      return status === false;
     },
     async borrowerCheck(parent, args, context, info) {
       return await resolveBorrowerCheck(parent.agencyId, context);

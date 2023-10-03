@@ -19,7 +19,7 @@ export default function useStorage() {
   }
 
   const isToken = (token) => {
-    const strippedToken = token?.replace("test:", "");
+    const strippedToken = token?.replace(/test.*:/, "");
     return !!(strippedToken.length === 40);
   };
 

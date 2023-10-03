@@ -6,6 +6,7 @@ import { parseString } from "xml2js";
 import { log } from "dbc-node-logger";
 
 import config from "../config";
+import { deleteAccount } from "../utils/redisTestCulr";
 
 const {
   url,
@@ -87,4 +88,9 @@ export async function load({ agencyId, localId }, context) {
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
   );
+}
+
+export async function testLoad({ agencyId, localId }, context) {
+  const res = await deleteAccount({ agencyId, localId }, context);
+  return res;
 }

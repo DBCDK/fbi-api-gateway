@@ -127,10 +127,34 @@ promExporterApp.listen(9599, () => {
   });
 
   /**
+   * Middleware for parsing access token
+   */
+  app.post("/:profile/graphql", async (req, res, next) => {
+    // Get bearer token from authorization header
+    req.rawAccessToken = req.headers.authorization?.replace(/bearer /i, "");
+    req.isTestToken = req.rawAccessToken?.startsWith("test");
+    if (req.isTestToken) {
+      // Using a test token will automatically mock certain datasources
+      // making it possible to have test users
+      const [testTokenType, accessToken] = req.rawAccessToken.split(":");
+      const [_test, loginAgency, key] = testTokenType.split("_");
+      req.testUser = {
+        loginAgency,
+        key,
+      };
+      req.accessToken = accessToken;
+    } else {
+      req.accessToken = req.rawAccessToken;
+    }
+
+    next();
+  });
+
+  /**
    * Middleware for initializing dataloaders
    */
   app.post("/:profile/graphql", async (req, res, next) => {
-    req.datasources = createDataLoaders(uuid());
+    req.datasources = createDataLoaders(uuid(), req.testUser, req.accessToken);
     next();
   });
 
@@ -138,14 +162,6 @@ promExporterApp.listen(9599, () => {
    * Middleware for validating access token, and fetching smaug configuration
    */
   app.post("/:profile/graphql", async (req, res, next) => {
-    // Get bearer token from authorization header
-    req.rawAccessToken = req.headers.authorization?.replace(/bearer /i, "");
-    req.accessToken = req.rawAccessToken?.replace("test:", "");
-
-    // Using a test token will automatically mock certain datasources
-    // making it possible to have test users
-    req.isTestToken = req.rawAccessToken !== req.accessToken;
-
     // Get graphQL params
     try {
       const graphQLParams = req.body;

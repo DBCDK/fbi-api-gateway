@@ -103,6 +103,17 @@ export async function load({ libraryCode, userId, userPincode }, context) {
   );
 }
 
+/*
+ * Simulate that user is blocked on agency 715100, but not others
+ */
+export async function testLoad({ libraryCode, userId, userPincode }, context) {
+  const BLOCKED_LIBRARY = "715100";
+  return {
+    blocked: libraryCode === BLOCKED_LIBRARY ? true : false,
+    status: libraryCode === BLOCKED_LIBRARY ? "NOT_OK" : "OK",
+  };
+}
+
 export const options = {
   redis: {
     prefix: prefix,

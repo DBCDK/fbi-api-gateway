@@ -6,6 +6,7 @@ import { parseString } from "xml2js";
 import { log } from "dbc-node-logger";
 
 import config from "../config";
+import { getAccountsByLocalId } from "../utils/redisTestCulr";
 
 const {
   url,
@@ -95,4 +96,15 @@ export async function load({ agencyId, userId }, context) {
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
   );
+}
+
+/**
+ * Gets the CULR account information
+ */
+export async function testLoad({ agencyId, userId }, context) {
+  const res = await getAccountsByLocalId(
+    { agencyId, localId: userId },
+    context
+  );
+  return res;
 }
