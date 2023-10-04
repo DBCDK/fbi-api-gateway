@@ -10,27 +10,123 @@ import { getAccount, getAccounts } from "../utils/culr";
 export const typeDef = `
 
 enum GetAccountsType {
+  
+  """
+  Forces a getAccountsByLocalId request, a localId and agencyId is used as credentials
+  """
   LOCAL
+
+  """
+  Forces a getAccountsByGlobalId request, a cpr number is used as credentials
+  """
   GLOBAL
 }
 
-enum CulrStatus {
-    OK
-    ERROR
-    ERROR_INVALID_CPR
-    ERROR_CPR_MISMATCH
-    ERROR_INVALID_AGENCY
-    ERROR_INVALID_PROVIDED_TOKEN
-    ERROR_UNAUTHENTICATED_TOKEN
-    ERROR_NO_AUTHORISATION
-    ERROR_USER_ALREADY_CREATED
-    ERROR_LOCALID_NOT_UNIQUE
-    ERROR_ACCOUNT_DOES_NOT_EXIST
-    ERROR_AGENCYID_NOT_PERMITTED
+enum CreateAccountStatus {
+  """
+  Account was successfully created
+  """
+  OK
+
+  """
+  Account was not created - Some unknown error occured
+  """
+  ERROR
+
+  """
+  A provided token does not have a valid CPR
+  """
+  ERROR_INVALID_CPR
+
+  """
+  Agency for provided token is not an FFU library
+  """
+  ERROR_INVALID_AGENCY
+
+  """
+  Token is not authenticated
+  """
+  ERROR_UNAUTHENTICATED_TOKEN
+
+  """
+  Credentials for the underlying service could not be authorized
+  """
+  ERROR_NO_AUTHORISATION
+
+  """
+  AgencyId input is out of permission scope
+  """
+  ERROR_AGENCYID_NOT_PERMITTED
+
+  """
+  Account already exist
+  """
+  ERROR_USER_ALREADY_CREATED
+
+  """
+  LocalId is already in use
+  """
+  ERROR_LOCALID_NOT_UNIQUE
+
+  """
+  There is a mismatch between the provided tokens CPR credentials
+  """
+  ERROR_CPR_MISMATCH
+
+  """
+  Some provided token has missing credentials
+  """
+  ERROR_INVALID_PROVIDED_TOKEN
 }
 
-type CulrResponse {
-    status: CulrStatus!
+enum DeleteAccountStatus {
+  """
+  Account was successfully created
+  """
+  OK
+
+  """
+  Account was not created - Some unknown error occured
+  """
+  ERROR
+
+  """
+  A provided token does not have a valid CPR
+  """
+  ERROR_INVALID_CPR
+
+  """
+  Agency for provided token is not an FFU library
+  """
+  ERROR_INVALID_AGENCY
+
+  """
+  Token is not authenticated
+  """
+  ERROR_UNAUTHENTICATED_TOKEN
+
+  """
+  Credentials for the underlying service could not be authorized
+  """
+  ERROR_NO_AUTHORISATION
+
+  """
+  AgencyId input is out of permission scope
+  """
+  ERROR_AGENCYID_NOT_PERMITTED
+
+  """
+  The account which was requested for deleting does not exist
+  """  
+  ERROR_ACCOUNT_DOES_NOT_EXIST
+}
+
+type CreateAccountResponse {
+    status: CreateAccountStatus!
+}
+
+type DeleteAccountResponse {
+  status: DeleteAccountStatus!
 }
 
 type CulrAccount {
@@ -94,7 +190,7 @@ type CulrService {
     If dryRun is set to true, the actual service is never called
     Used for testing
     """
-    dryRun: Boolean): CulrResponse!
+    dryRun: Boolean): CreateAccountResponse!
 
     """
     Remove an agency from a user
@@ -105,7 +201,7 @@ type CulrService {
     If dryRun is set to true, the actual service is never called
     Used for testing
     """
-    dryRun: Boolean): CulrResponse!
+    dryRun: Boolean): DeleteAccountResponse!
 
     """
     Get all user accounts within the given agency by a localId

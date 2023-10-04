@@ -7,35 +7,32 @@ data providers (eg. libraries) and assigns a global user id (_GUID_) for each un
 
 Creates an account in culr based on a CPR validated user. Only FFU libraries which supports **Borchk** can be created using this mutation field.
 
+The optional _folk_ token is used to only allow creation for a specific CPR number (Same as the CPR attached to the folk token)
+
 ⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK".
+
+⚠️ For this example to work, you need to provide real tokens in the variables.
 
 The returned _status_ can be one of the following:
 
-- _**OK**_ - Account was successfully created
-- _**ERROR**_ - Account was not created - Some unknown error occured
-- _**ERROR_INVALID_CPR**_ - CPR input was not recognized as a CPR
-- _**ERROR_INVALID_AGENCY**_ - AgencyId input was not recognized as a valid FFU Agency
-- _**ERROR_UNAUTHENTICATED_TOKEN**_ - An unauthenticated token was used
-- _**ERROR_USER_ALREADY_CREATED**_ - Account already exist
-- _**ERROR_LOCALID_NOT_UNIQUE**_ - LocalId is already in use
-- _**ERROR_AGENCYID_NOT_PERMITTED**_ - AgencyId input is out of permission scope
-- _**ERROR_NO_AUTHORISATION**_ - Credentials could not be authorized
+<DescribeEnum name="CreateAccountStatus" />
 
 <InlineGraphiQL
   query={`
     mutation Example_CreateAccount($input: CreateAccountInput!) {
-        culr {
-            createAccount(input: $input, dryRun: true) {
-                status
-            }
+      culr {
+        createAccount(input: $input, dryRun: true) {
+            status
         }
+      }
     }
 `}
   variables={{
     input: {
-      agencyId: "800010",
-      localId: "C012345678",
-      cpr: "0123456789",
+      tokens: {
+        ffu: "some-ffu-token",
+        folk: "some-optional-folk-token",
+      },
     },
   }}
 />
@@ -44,17 +41,13 @@ The returned _status_ can be one of the following:
 
 Delete an account in culr based on a localId. Only FFU libraries which supports Borchk can be deleted using this mutation field.
 
+Only accounts attached to the header bearer token can be deleted.
+
 ⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK".
 
 The returned _status_ can be one of the following:
 
-- _**OK**_ - Account was successfully deleted
-- _**ERROR**_ - Account was not deleted - Some unknown error occured
-- _**ERROR_INVALID_AGENCY**_ - AgencyId input was not recognized as a valid FFU Agency
-- _**ERROR_UNAUTHENTICATED_TOKEN**_ - An unauthenticated token was used
-- _**ERROR_ACCOUNT_DOES_NOT_EXIST**_ - The account which was requested for deleting does not exist
-- _**ERROR_AGENCYID_NOT_PERMITTED**_ - AgencyId input is out of permission scope
-- _**ERROR_NO_AUTHORISATION**_ - Credentials could not be authorized
+<DescribeEnum name="DeleteAccountStatus" />
 
 <InlineGraphiQL
   query={`
@@ -69,24 +62,54 @@ The returned _status_ can be one of the following:
   variables={{
     input: {
       agencyId: "800010",
-      localId: "C012345678",
     },
   }}
 />
 
-## GetAccountsByLocalId
+## GetAccounts
 
-Get all culr accounts by a users localId. All Agencies linked to the user is returned.
+Get all culr accounts by a users globalId or localId. All Agencies linked to the user is returned.
 
-If no account (_GUID_) was found, `getAccountsByLocalId` will return _null_
+If no account (_GUID_) was found, `getAccounts` will return _null_
+
+Credentials are retrieved from the provided token in the variables. If none provided, header bearer token will be used instead.
+
+The type of the underlying _GetAccounts_ call is made from the provided token id. If id is of type CPR, a _getAccountsByGlobalId_ is made.
 
 All libraries are supported.
 
 <InlineGraphiQL
   query={`
-    mutation Example_GetAccountsByLocalId($input: GetAccountsByLocalIdInput!) {
+    mutation Example_GetAccounts {
+      culr {
+        getAccounts {
+          municipalityNo
+          guid
+          accounts {
+            agencyId
+            userIdType
+            userIdValue
+          }
+        }
+      }
+    }
+`}
+  variables={{}}
+/>
+
+A `type` argument can be added, to force a selection between _getAccountsByLocalId_ and _getAccountsByGlobalId_
+
+⚠️ For this example to work, you need to provide a real token.
+
+The provided _type_ can be one of the following:
+
+<DescribeEnum name="GetAccountsType" />
+
+<InlineGraphiQL
+  query={`
+    mutation Example_GetAccounts($input: GetAccountsInput) {
         culr {
-            getAccountsByLocalId(input: $input) {
+            getAccounts(input: $input, type: GLOBAL) {
                 municipalityNo
                 guid
                 accounts {
@@ -100,8 +123,7 @@ All libraries are supported.
 `}
   variables={{
     input: {
-      agencyId: "800010",
-      localId: "C012345678",
+      accessToken: "some-token",
     },
   }}
 />
