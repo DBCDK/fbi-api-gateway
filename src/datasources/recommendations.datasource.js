@@ -19,10 +19,12 @@ export async function load({ pid, limit = 10, profile, branchId }, context) {
     body.branchid = branchId;
   }
 
-  return await context.fetch(url, {
+  const response = await context.fetch(url, {
     method: "POST",
     body: JSON.stringify(body),
-  }).body;
+  });
+
+  return response?.body;
 }
 
 export const options = {
