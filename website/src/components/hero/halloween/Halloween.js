@@ -11,7 +11,7 @@ export default function Halloween() {
   return (
     <div className={styles.halloween}>
       {/* <div className={styles.dimmer} /> */}
-      {/* <Rain /> */}
+      <Rain />
       {/* <Graveyard /> */}
       {/* <Spider /> */}
       {/* <Spiders /> */}

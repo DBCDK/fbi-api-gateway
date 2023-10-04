@@ -115,14 +115,14 @@ describe("Culr", () => {
         input: {
           tokens: {
             ffu: "FFU_AUTHENTICATED_TOKEN",
-            folk: "FOLK_MISMATCH_CPR_TOKEN",
+            folk: "AUTHENTICATED_TOKEN_USER1",
           },
         },
       },
       context: {
         smaug: { user: { id: "0102033692" } },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "AUTHENTICATED_TOKEN_USER2",
       },
     });
 
@@ -143,7 +143,7 @@ describe("Culr", () => {
       variables: {
         input: {
           tokens: {
-            ffu: "FOLK_AUTHENTICATED_TOKEN",
+            ffu: "AUTHENTICATED_TOKEN_USER2",
           },
         },
       },
@@ -172,14 +172,14 @@ describe("Culr", () => {
         input: {
           tokens: {
             ffu: "FFU_AUTHENTICATED_TOKEN",
-            folk: "FOLK_AUTHENTICATED_TOKEN",
+            folk: "AUTHENTICATED_TOKEN_USER2",
           },
         },
       },
       context: {
         smaug: { user: { id: "0102033692" } },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "AUTHENTICATED_TOKEN_USER2",
       },
     });
 
@@ -201,14 +201,14 @@ describe("Culr", () => {
         input: {
           tokens: {
             ffu: "FFU_AUTHENTICATED_TOKEN",
-            folk: "FOLK_AUTHENTICATED_TOKEN_SUCCES",
+            folk: "AUTHENTICATED_TOKEN_USER1",
           },
         },
       },
       context: {
         smaug: { user: { id: "0102033690" } },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN_SUCCES",
+        accessToken: "AUTHENTICATED_TOKEN_USER1",
       },
     });
 
@@ -246,118 +246,4 @@ describe("Culr", () => {
       },
     });
   });
-
-  it.only("GetAccounts | Should give status ERROR_ACCOUNT_DOES_NOT_EXIST on bearer token", async () => {
-    const result = await performTestQuery({
-      query: getAccounts,
-      variables: {},
-      context: {
-        smaug: { user: { id: "0102033691" } },
-        datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN_NO_ACCOUNTS",
-      },
-    });
-
-    expect(result).toEqual({
-      data: {
-        culr: {
-          getAccounts: null,
-        },
-      },
-    });
-  });
-
-  // it("GetAccountsByLocalId | Should Retrieve accounts", async () => {
-  //   const result = await performTestQuery({
-  //     query: getAccountsByLocalId,
-  //     variables: {
-  //       input: {
-  //         agencyId: "800001",
-  //         localId: "C000000003",
-  //       },
-  //     },
-  //     context: {
-  //       smaug: { user: { id: "0102033690" } },
-  //       datasources: createMockedDataLoaders(),
-  //       accessToken: "AUTHENTICATED_TOKEN",
-  //     },
-  //   });
-
-  //   expect(result).toEqual({
-  //     data: {
-  //       culr: {
-  //         getAccountsByLocalId: {
-  //           municipalityNo: null,
-  //           guid: "4e6b3143-1df7-4db1-b8b4-f19d413437cb",
-  //           accounts: [
-  //             {
-  //               agencyId: "800001",
-  //               userIdType: "LOCAL",
-  //               userIdValue: "C000000003",
-  //             },
-  //             {
-  //               agencyId: "800002",
-  //               userIdType: "LOCAL",
-  //               userIdValue: "C000000004",
-  //             },
-  //           ],
-  //         },
-  //       },
-  //     },
-  //   });
-  // });
-
-  // it("DeleteAccount | Should give status ERROR_ACCOUNT_DOES_NOT_EXIST", async () => {
-  //   const result = await performTestQuery({
-  //     query: deleteAccount,
-  //     variables: {
-  //       input: {
-  //         agencyId: "800001",
-  //         localId: "C000000001",
-  //       },
-  //     },
-  //     context: {
-  //       smaug: { user: { id: "0102033690" } },
-  //       datasources: createMockedDataLoaders(),
-  //       accessToken: "AUTHENTICATED_TOKEN",
-  //     },
-  //   });
-
-  //   expect(result).toEqual({
-  //     data: {
-  //       culr: {
-  //         deleteAccount: {
-  //           status: "ERROR_ACCOUNT_DOES_NOT_EXIST",
-  //         },
-  //       },
-  //     },
-  //   });
-  // });
-
-  // it("DeleteAccount | Should give status OK", async () => {
-  //   const result = await performTestQuery({
-  //     query: deleteAccount,
-  //     variables: {
-  //       input: {
-  //         agencyId: "800001",
-  //         localId: "C000000002",
-  //       },
-  //     },
-  //     context: {
-  //       smaug: { user: { id: "0102033690" } },
-  //       datasources: createMockedDataLoaders(),
-  //       accessToken: "AUTHENTICATED_TOKEN",
-  //     },
-  //   });
-
-  //   expect(result).toEqual({
-  //     data: {
-  //       culr: {
-  //         deleteAccount: {
-  //           status: "OK",
-  //         },
-  //       },
-  //     },
-  //   });
-  // });
 });

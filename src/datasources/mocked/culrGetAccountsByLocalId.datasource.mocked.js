@@ -26,7 +26,7 @@ export async function load({ agencyId, userId }, context) {
   };
 
   // Success - 1 account
-  if (agencyId === "812345" && userId === "C000000001") {
+  if (agencyId === "800002" && userId === "C000000002") {
     response = {
       status: 200,
       body: `<?xml version='1.0' encoding='UTF-8'?>
