@@ -20,7 +20,7 @@ describe("Culr", () => {
   });
 
   const createAccount = `
-    mutation Example_CreateAccount($input: CreateAccountInput!) {
+    mutation Test_CreateAccount($input: CreateAccountInput!) {
         culr {
             createAccount(input: $input, dryRun: false) {
                 status
@@ -29,7 +29,7 @@ describe("Culr", () => {
     } `;
 
   const deleteAccount = `
-    mutation Example_CreateAccount($input: DeleteAccountInput!) {
+    mutation Test_DeleteAccount($input: DeleteAccountInput!) {
         culr {
             deleteAccount(input: $input, dryRun: false) {
                 status
@@ -37,10 +37,10 @@ describe("Culr", () => {
         }
     } `;
 
-  const getAccountsByLocalId = `
-    mutation Example_CreateAccount($input: GetAccountsByLocalIdInput!) {
+  const getAccounts = `
+    mutation Test_GetAccounts($input: GetAccountsInput) {
       culr {
-        getAccountsByLocalId(input: $input) {
+        getAccounts(input: $input) {
           municipalityNo
           guid
           accounts {
@@ -57,9 +57,9 @@ describe("Culr", () => {
       query: createAccount,
       variables: {
         input: {
-          agencyId: "800010",
-          localId: "C012345678",
-          cpr: "0123456789",
+          tokens: {
+            ffu: "FFU_AUTHENTICATED_TOKEN",
+          },
         },
       },
       context: {
@@ -84,13 +84,14 @@ describe("Culr", () => {
       query: createAccount,
       variables: {
         input: {
-          agencyId: "800010",
-          localId: "C012345678",
-          cpr: "1234",
+          tokens: {
+            ffu: "FFU_AUTHENTICATED_TOKEN",
+            folk: "FOLK_UNAUTHENTICATED_TOKEN",
+          },
         },
       },
       context: {
-        smaug: { user: { id: "0102033690" } },
+        smaug: { user: { id: "1234" } },
         datasources: createMockedDataLoaders(),
         accessToken: "AUTHENTICATED_TOKEN",
       },
@@ -107,14 +108,43 @@ describe("Culr", () => {
     });
   });
 
+  it("CreateAccount | Should give status ERROR_CPR_MISMATCH", async () => {
+    const result = await performTestQuery({
+      query: createAccount,
+      variables: {
+        input: {
+          tokens: {
+            ffu: "FFU_AUTHENTICATED_TOKEN",
+            folk: "AUTHENTICATED_TOKEN_USER1",
+          },
+        },
+      },
+      context: {
+        smaug: { user: { id: "0102033692" } },
+        datasources: createMockedDataLoaders(),
+        accessToken: "AUTHENTICATED_TOKEN_USER2",
+      },
+    });
+
+    expect(result).toEqual({
+      data: {
+        culr: {
+          createAccount: {
+            status: "ERROR_CPR_MISMATCH",
+          },
+        },
+      },
+    });
+  });
+
   it("CreateAccount | Should give status ERROR_INVALID_AGENCY", async () => {
     const result = await performTestQuery({
       query: createAccount,
       variables: {
         input: {
-          agencyId: "123456",
-          localId: "C012345678",
-          cpr: "0102033690",
+          tokens: {
+            ffu: "AUTHENTICATED_TOKEN_USER2",
+          },
         },
       },
       context: {
@@ -140,15 +170,16 @@ describe("Culr", () => {
       query: createAccount,
       variables: {
         input: {
-          agencyId: "812345",
-          localId: "C000000001",
-          cpr: "0102033690",
+          tokens: {
+            ffu: "FFU_AUTHENTICATED_TOKEN",
+            folk: "AUTHENTICATED_TOKEN_USER2",
+          },
         },
       },
       context: {
-        smaug: { user: { id: "0102033690" } },
+        smaug: { user: { id: "0102033692" } },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "AUTHENTICATED_TOKEN_USER2",
       },
     });
 
@@ -163,48 +194,21 @@ describe("Culr", () => {
     });
   });
 
-  it("CreateAccount | Should give status ERROR_AGENCYID_NOT_PERMITTED", async () => {
-    const result = await performTestQuery({
-      query: createAccount,
-      variables: {
-        input: {
-          agencyId: "800000",
-          localId: "C000000002",
-          cpr: "0102033690",
-        },
-      },
-      context: {
-        smaug: { user: { id: "0102033690" } },
-        datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
-      },
-    });
-
-    expect(result).toEqual({
-      data: {
-        culr: {
-          createAccount: {
-            status: "ERROR_AGENCYID_NOT_PERMITTED",
-          },
-        },
-      },
-    });
-  });
-
   it("CreateAccount | Should give status OK - successfully created account", async () => {
     const result = await performTestQuery({
       query: createAccount,
       variables: {
         input: {
-          agencyId: "812345",
-          localId: "C000000002",
-          cpr: "0102033690",
+          tokens: {
+            ffu: "FFU_AUTHENTICATED_TOKEN",
+            folk: "AUTHENTICATED_TOKEN_USER1",
+          },
         },
       },
       context: {
         smaug: { user: { id: "0102033690" } },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "AUTHENTICATED_TOKEN_USER1",
       },
     });
 
@@ -219,14 +223,12 @@ describe("Culr", () => {
     });
   });
 
-  it("CreateAccount | Should give status OK - successfully created account", async () => {
+  it("GetAccounts | Should give status ERROR_ACCOUNT_DOES_NOT_EXIST on provided token", async () => {
     const result = await performTestQuery({
-      query: createAccount,
+      query: getAccounts,
       variables: {
         input: {
-          agencyId: "812345",
-          localId: "C000000002",
-          cpr: "0102033690",
+          accessToken: "AUTHENTICATED_TOKEN_NO_ACCOUNTS",
         },
       },
       context: {
@@ -239,128 +241,7 @@ describe("Culr", () => {
     expect(result).toEqual({
       data: {
         culr: {
-          createAccount: {
-            status: "OK",
-          },
-        },
-      },
-    });
-  });
-
-  it("GetAccountsByLocalId | Should give status ERROR_ACCOUNT_DOES_NOT_EXIST", async () => {
-    const result = await performTestQuery({
-      query: getAccountsByLocalId,
-      variables: {
-        input: {
-          agencyId: "800002",
-          localId: "C000000004",
-        },
-      },
-      context: {
-        smaug: { user: { id: "0102033690" } },
-        datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
-      },
-    });
-
-    expect(result).toEqual({
-      data: {
-        culr: {
-          getAccountsByLocalId: null,
-        },
-      },
-    });
-  });
-
-  it("GetAccountsByLocalId | Should Retrieve accounts", async () => {
-    const result = await performTestQuery({
-      query: getAccountsByLocalId,
-      variables: {
-        input: {
-          agencyId: "800001",
-          localId: "C000000003",
-        },
-      },
-      context: {
-        smaug: { user: { id: "0102033690" } },
-        datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
-      },
-    });
-
-    expect(result).toEqual({
-      data: {
-        culr: {
-          getAccountsByLocalId: {
-            municipalityNo: null,
-            guid: "4e6b3143-1df7-4db1-b8b4-f19d413437cb",
-            accounts: [
-              {
-                agencyId: "800001",
-                userIdType: "LOCAL",
-                userIdValue: "C000000003",
-              },
-              {
-                agencyId: "800002",
-                userIdType: "LOCAL",
-                userIdValue: "C000000004",
-              },
-            ],
-          },
-        },
-      },
-    });
-  });
-
-  it("DeleteAccount | Should give status ERROR_ACCOUNT_DOES_NOT_EXIST", async () => {
-    const result = await performTestQuery({
-      query: deleteAccount,
-      variables: {
-        input: {
-          agencyId: "800001",
-          localId: "C000000001",
-        },
-      },
-      context: {
-        smaug: { user: { id: "0102033690" } },
-        datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
-      },
-    });
-
-    expect(result).toEqual({
-      data: {
-        culr: {
-          deleteAccount: {
-            status: "ERROR_ACCOUNT_DOES_NOT_EXIST",
-          },
-        },
-      },
-    });
-  });
-
-  it("DeleteAccount | Should give status OK", async () => {
-    const result = await performTestQuery({
-      query: deleteAccount,
-      variables: {
-        input: {
-          agencyId: "800001",
-          localId: "C000000002",
-        },
-      },
-      context: {
-        smaug: { user: { id: "0102033690" } },
-        datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
-      },
-    });
-
-    expect(result).toEqual({
-      data: {
-        culr: {
-          deleteAccount: {
-            status: "OK",
-          },
+          getAccounts: null,
         },
       },
     });

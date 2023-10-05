@@ -1,5 +1,6 @@
 .wrap {
   pointer-events: none;
+  display: none;
 }
 
 .rain {
@@ -43,4 +44,8 @@
   100% {
     opacity: 0;
   }
+}
+
+:global(body.dark) .wrap {
+  display: block;
 }
