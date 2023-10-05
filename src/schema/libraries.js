@@ -2,9 +2,10 @@
  * @file libraries type definition and resolvers
  *
  */
-
 import { orderBy } from "lodash";
 import { resolveBorrowerCheck } from "../utils/utils";
+import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
+import isEmpty from "lodash/isEmpty";
 export const typeDef = `
   enum LibraryStatus {
     SLETTET
@@ -40,7 +41,7 @@ export const typeDef = `
     postalAddress: String
     postalCode: String
     userParameters: [UserParameter!]!
-    orderPolicy(pid:String!): CheckOrderPolicy @complexity(value: 5)
+    orderPolicy(pid:String, pids: [String!]!): CheckOrderPolicy @complexity(value: 5, multipliers: ["pids"])
     city: String
     pickupAllowed: Boolean!
     highlights: [Highlight!]!
@@ -52,17 +53,27 @@ export const typeDef = `
     branchCatalogueUrl: String
     lookupUrl: String
 
-    """
+     """
     When user is not logged in, this is null
     Otherwise true or false
     """
-    userIsBlocked: Boolean
+    userIsBlocked: Boolean @deprecated(reason: "Use 'BranchResult.borrowerStatus' instead")
   }
   
   type BranchResult{
     hitcount: Int!
+    borrowerStatus: BorrowerStatus
     result: [Branch!]!
     agencyUrl: String
+  }
+
+  """
+    Indicates if user is blocked for a given agency or 
+    if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
+    """
+  type BorrowerStatus{
+    allowed: Boolean!
+    statusCode: String!
   }
 
   type Highlight{
@@ -199,9 +210,11 @@ export const resolvers = {
       return orderBy(result, "order");
     },
     async orderPolicy(parent, args, context, info) {
+      const { pids } = args;
+
       return await context.datasources.getLoader("checkorder").load({
         pickupBranch: parent.branchId,
-        pid: args.pid,
+        pids: !isEmpty(pids) ? pids : [],
       });
     },
     pickupAllowed(parent, args, context, info) {
@@ -331,6 +344,16 @@ export const resolvers = {
     },
     result(parent, args, context, info) {
       return parent.result;
+    },
+    async borrowerStatus(parent, args, context, info) {
+      const { status, statusCode } = await getUserBorrowerStatus(
+        { agencyId: parent.result[0].agencyId },
+        context
+      );
+      return {
+        allowed: status,
+        statusCode,
+      };
     },
     agencyUrl(parent, args, context, info) {
       return (

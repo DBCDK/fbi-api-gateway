@@ -8,14 +8,13 @@ import { createHistogram } from "../utils/monitor";
 import {
   fetchOrderStatus,
   getUserId,
-  resolveBorrowerCheck,
   resolveLocalizations,
   resolveLocalizationsWithHoldings,
   resolveManifestation,
   resolveWork,
 } from "../utils/utils";
+
 import translations from "../utils/translations.json";
-import { resolveAccess } from "./draft/draft_utils_manifestations";
 import isEmpty from "lodash/isEmpty";
 
 /**
@@ -86,7 +85,6 @@ type Query {
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches:Boolean): BranchResult! @complexity(value: 5, multipliers: ["limit"])
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
-  borchk(input: BorchkInput!): BorchkResponse!
   infomedia(id: String!): InfomediaResponse!
   session: Session
   howru:String
@@ -307,9 +305,6 @@ export const resolvers = {
     },
     recommend(parent, args, context, info) {
       return args;
-    },
-    async borchk(parent, args, context, info) {
-      return context.datasources.getLoader("borchk").load(args.input);
     },
     infomedia(parent, args, context, info) {
       return args;

@@ -275,39 +275,6 @@ type AdminData {
   requestButton: Boolean
 }
 
-enum BorchkResponseStatus {
-  OK
-  SERVICE_NOT_LICENSED
-  SERVICE_UNAVAILABLE
-  LIBRARY_NOT_FOUND
-  BORROWERCHECK_NOT_ALLOWED
-  BORROWER_NOT_FOUND
-  BORROWER_NOT_IN_MUNICIPALITY
-  MUNICIPALITY_CHECK_NOT_SUPPORTED_BY_LIBRARY
-  NO_USER_IN_REQUEST
-  ERROR_IN_REQUEST
-}
-
-input BorchkInput {
-  libraryCode: String!
-  userId: String!
-  userPincode: String
-}
-
-type BorchkResponse {
-  \\"\\"\\"UserId of the requesting user (always the same as requested)\\"\\"\\"
-  userId: String!
-
-  \\"\\"\\"The status of the requesting user\\"\\"\\"
-  status: BorchkResponseStatus!
-
-  \\"\\"\\"MunicipalityNumber of the requesting user\\"\\"\\"
-  municipalityNumber: String
-
-  \\"\\"\\"Returns if the requesting user is blocked or not\\"\\"\\"
-  blocked: Boolean
-}
-
 type Category {
   title: String!
   result(limit: Int): [CategoryResult!]!
@@ -326,14 +293,15 @@ type Categories {
 enum OrderPossibleReason {
   OWNED_ACCEPTED
   NOT_OWNED_ILL_LOC
-  OWNED_WRONG_MEDIUMTYPE
-  NOT_OWNED_WRONG_ILL_MEDIUMTYPE
+  OWNED_WRONG_MEDIUM_TYPE
+  NOT_OWNED_WRONG_ILL_MEDIUM_TYPE
   NOT_OWNED_NO_ILL_LOC
   OWNED_OWN_CATALOGUE
   NOT_OWNED_ACCEPTED_BY_CONSORTIA
 }
 
 type CheckOrderPolicy {
+  lookUpUrls: [String!]!
   lookUpUrl: String
   orderPossible: Boolean
   orderPossibleReason: OrderPossibleReason
@@ -2161,7 +2129,7 @@ type Branch {
   postalAddress: String
   postalCode: String
   userParameters: [UserParameter!]!
-  orderPolicy(pid: String!): CheckOrderPolicy
+  orderPolicy(pid: String, pids: [String!]!): CheckOrderPolicy
   city: String
   pickupAllowed: Boolean!
   highlights: [Highlight!]!
@@ -2177,13 +2145,23 @@ type Branch {
   When user is not logged in, this is null
   Otherwise true or false
   \\"\\"\\"
-  userIsBlocked: Boolean
+  userIsBlocked: Boolean @deprecated(reason: \\"Use 'BranchResult.borrowerStatus' instead\\")
 }
 
 type BranchResult {
   hitcount: Int!
+  borrowerStatus: BorrowerStatus
   result: [Branch!]!
   agencyUrl: String
+}
+
+\\"\\"\\"
+Indicates if user is blocked for a given agency or 
+if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
+\\"\\"\\"
+type BorrowerStatus {
+  allowed: Boolean!
+  statusCode: String!
 }
 
 type Highlight {
@@ -2452,7 +2430,6 @@ type Query {
   help(q: String!, language: LanguageCode): HelpResponse
   branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches: Boolean): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
-  borchk(input: BorchkInput!): BorchkResponse!
   infomedia(id: String!): InfomediaResponse!
   session: Session
   howru: String
@@ -2675,14 +2652,21 @@ type User {
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
-  bookmarks: [BookMark!]!
+  bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
+  isCPRValidated: Boolean!
 }
 
 type UserSubscriptions {
   infomedia: Boolean!
   digitalArticleService: Boolean!
   demandDrivenAcquisition: Boolean!
+}
+
+\\"\\"\\"Response object for bookmark request\\"\\"\\"
+type BookMarkResponse {
+  result: [BookMark!]!
+  hitcount: Int!
 }
 
 \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
@@ -2752,6 +2736,11 @@ type BookMarkId {
   bookMarkId: Int!
 }
 
+enum BookMarkOrderBy {
+  createdAt
+  title
+}
+
 type BookMark {
   materialType: String!
   materialId: String!
@@ -2767,6 +2756,11 @@ type BookmarkResponse {
 input BookMarkInput {
   materialType: String!
   materialId: String!
+  title: String!
+}
+
+type BookMarkDeleteResponse {
+  IdsDeletedCount: Int!
 }
 
 type UserMutations {
@@ -2801,7 +2795,7 @@ type UserMutations {
   addBookmarks(bookmarks: [BookMarkInput!]!): BookmarkResponse
 
   \\"\\"\\"Delete a bookmark\\"\\"\\"
-  deleteBookmark(bookmarkId: Int!): Int!
+  deleteBookmarks(bookmarkIds: [Int!]!): BookMarkDeleteResponse
 }
 "
 `;

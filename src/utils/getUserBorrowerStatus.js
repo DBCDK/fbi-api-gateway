@@ -9,7 +9,7 @@
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
-import { resolveBorrowerCheck } from "../utils/utils";
+import { resolveBorrowerCheck } from "./utils";
 
 // all possible id field types
 const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
@@ -45,7 +45,7 @@ const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
  * BORCHK_USER_NOT_VERIFIED
  *  
  */
-export default async function getUserOrderAllowedStatus(
+export default async function getUserBorrowerStatus(
   { agencyId, userIds = null },
   context
 ) {
@@ -132,7 +132,7 @@ export default async function getUserOrderAllowedStatus(
     }
 
     // Check authenticated user
-    const result = await checkUserOrderAllowedStatus(
+    const result = await checkUserBorrowerStatus(
       { agencyId, userId: _userId, isAccount: _isAccount },
       context
     );
@@ -140,7 +140,7 @@ export default async function getUserOrderAllowedStatus(
     // Return if status blocked - No further checks needed
     if (result.borchk?.blocked) {
       log.warn(
-        `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
+        `checkUserBorrowerStatus: User is NOT allowed to place an order. ${JSON.stringify(
           { ...result, ...summary }
         )}`
       );
@@ -155,7 +155,7 @@ export default async function getUserOrderAllowedStatus(
     // Return if status true - No further checks needed
     if (result.status) {
       log.info(
-        `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
+        `checkUserBorrowerStatus: User allowed to placed an order. ${JSON.stringify(
           { ...result, ...summary }
         )}`
       );
@@ -182,7 +182,7 @@ export default async function getUserOrderAllowedStatus(
   // Check all the provided userIds
   const statusMap = await Promise.all(
     Object.entries(userIds).map(async ([k, v]) => ({
-      ...(await checkUserOrderAllowedStatus({ agencyId, userId: v }, context)),
+      ...(await checkUserBorrowerStatus({ agencyId, userId: v }, context)),
       type: k,
     }))
   );
@@ -195,7 +195,7 @@ export default async function getUserOrderAllowedStatus(
   // user is blocked by agency
   if (hasBlocked) {
     log.warn(
-      `getUserOrderAllowedStatus: User is NOT allowed to place an order. ${JSON.stringify(
+      `checkUserBorrowerStatus: User is NOT allowed to place an order. ${JSON.stringify(
         { ...hasBlocked, ...summary }
       )}`
     );
@@ -219,7 +219,7 @@ export default async function getUserOrderAllowedStatus(
   // Return match
   if (match) {
     log.info(
-      `getUserOrderAllowedStatus: User allowed to placed an order. ${JSON.stringify(
+      `checkUserBorrowerStatus: User allowed to placed an order. ${JSON.stringify(
         { ...match, ...summary }
       )}`
     );
@@ -233,7 +233,7 @@ export default async function getUserOrderAllowedStatus(
 
   // User is not allowed to place an order - no account found for provided credentials
   log.warn(
-    `getUserOrderAllowedStatus: User is NOT allowed to placed an order. ${JSON.stringify(
+    `checkUserBorrowerStatus: User is NOT allowed to placed an order. ${JSON.stringify(
       {
         status: false,
         statusCode: "UNKNOWN_USER",
@@ -253,7 +253,7 @@ export default async function getUserOrderAllowedStatus(
  *
  * Function to perform the actual borchk status check
  */
-async function checkUserOrderAllowedStatus(
+async function checkUserBorrowerStatus(
   { agencyId, userId = null, isAccount = false },
   context
 ) {

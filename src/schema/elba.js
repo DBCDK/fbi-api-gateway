@@ -1,6 +1,6 @@
 import { resolveAccess } from "./draft/draft_utils_manifestations";
 import { getHomeAgencyAccount } from "../utils/utils";
-import getUserOrderAllowedStatus from "../utils/userOrderAllowedStatus";
+import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 
 export const typeDef = `
 
@@ -158,7 +158,7 @@ export const resolvers = {
 
       // Verify that the user is allowed to place an order
       // checking the municipality exist is redundant - but we still want the blocked check.
-      const { status, statusCode } = await getUserOrderAllowedStatus(
+      const { status, statusCode } = await getUserBorrowerStatus(
         { agencyId: user.municipalityAgencyId },
         context
       );
