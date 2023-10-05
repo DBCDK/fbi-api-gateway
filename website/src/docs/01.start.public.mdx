@@ -28,13 +28,13 @@ Currently only Danish libraries can get access to the API. So, in order to get s
    Get an _anonymous access token_ to access the API on behalf of the application:
 
    ```
-   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://auth.dbc.dk/oauth/token -d "grant_type=password&username=@&password=@"
+   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://login.bib.dk/oauth/token -d "grant_type=password&username=@&password=@"
    ```
 
    Or get an _authenticated access token_ to access the API on behalf of an end user.
 
    ```
-   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://auth.dbc.dk/oauth/token -d "grant_type=password&username=${USERNAME}&password=${PASSWORD}"
+   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://login.bib.dk/oauth/token -d "grant_type=password&username=${USERNAME}&password=${PASSWORD}"
    ```
 
    `${USERNAME}` is Loanernumber@library-agencyId and `${PASSWORD}` is the end user's pincode.

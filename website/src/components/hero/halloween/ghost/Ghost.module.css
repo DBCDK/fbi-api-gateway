@@ -1,5 +1,4 @@
 .container {
-  width: 400px;
   height: 400px;
   padding: 0;
   box-sizing: border-box;
@@ -7,20 +6,29 @@
 
   /* position */
   position: absolute;
-  right: 0%;
   top: 60%;
-
-  left: 15%;
-
-  transform: scale(0.6);
+  right: 5%;
+  transform: scale(0.75);
 }
 
 @media screen and (min-width: 576px) {
   .container {
-    top: 40%;
+    top: 50%;
+    transform: scale(0.85);
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .container {
     right: 10%;
-    left: unset;
     transform: scale(1);
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .container {
+    top: 40%;
+    right: 15%;
   }
 }
 
