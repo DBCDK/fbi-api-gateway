@@ -18,7 +18,7 @@ export function isFFUAgency(agencyId) {
  */
 export const deleteFFUAccount = async ({
   agencyId,
-  localId,
+  //localId,
   dryRun,
   context,
 }) => {
@@ -48,13 +48,26 @@ export const deleteFFUAccount = async ({
         status: "ERROR_INVALID_LOCALID",
       };
     }
+
+    // Get token user accounts
+    const account = await getAccount(context.accessToken, context, {
+      agency: agencyId,
+      type: "LOCAL",
+    });
+
+    if (!account) {
+      return {
+        status: "ERROR_ACCOUNT_DOES_NOT_EXIST",
+      };
+    }
+
     // Check for dryRun
     if (dryRun) {
       return {
         status: "OK",
       };
     }
-
+const localId = account.userIdValue;
     // Get agencies informations from login.bib.dk /userinfo endpoint
     const response = await context.datasources
       .getLoader("culrDeleteAccount")

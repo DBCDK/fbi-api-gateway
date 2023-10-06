@@ -47,7 +47,7 @@ export default function Token({
   const hasFocus = !!state.focus;
   const hasValue = !!(state.value && state.value !== "");
   const isToken = state.value === selectedToken?.token;
-  const isAuthenticated = !!configuration?.uniqueId;
+  const isAuthenticated = !!configuration?.userId;
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 

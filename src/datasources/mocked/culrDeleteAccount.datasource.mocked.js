@@ -26,7 +26,7 @@ export async function load({ agencyId, localId }, context) {
   };
 
   // success
-  if (agencyId === "800001" && localId === "C000000002") {
+  if (agencyId === "800002" && localId === "C000000002") {
     response = {
       status: 200,
       body: `<?xml version='1.0' encoding='UTF-8'?>
