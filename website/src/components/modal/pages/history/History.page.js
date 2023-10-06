@@ -110,9 +110,12 @@ function Item({
   const [removed, setRemoved] = useState(false);
   const [distance, setDistance] = useState(false);
 
+  console.log("configuration", configuration);
+
   const displayName = configuration?.displayName;
   const clientId = configuration?.clientId;
-  const authenticated = !!configuration?.uniqueId;
+  const isAuthenticated = !!configuration?.userId;
+  const hasCulrAccount = !!configuration?.uniqueId;
   const missingConfiguration = !profile || !configuration?.agency;
   const submitted = {
     date: dateConverter(timestamp),
@@ -182,9 +185,14 @@ function Item({
               </Text>
               <Text className={styles.authentication}>
                 {`This token is ${
-                  authenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
+                  isAuthenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
                 }`}
               </Text>
+              {isAuthenticated && !hasCulrAccount && (
+                <Text className={styles.culr}>
+                  {"⚠️ This user doesn't exist in CULR"}
+                </Text>
+              )}
 
               {missingConfiguration && (
                 <Text type="text4" className={styles.missingConfigWarn}>
@@ -238,9 +246,9 @@ function Item({
             </div>
           </div>
 
-          {authenticated && user && <hr className={styles.divider} />}
+          {isAuthenticated && <hr className={styles.divider} />}
 
-          {authenticated && user && (
+          {isAuthenticated && (
             <div className={styles.user}>
               <div className={styles.heading}>
                 <Text type="text1">Token user details</Text>
@@ -270,6 +278,14 @@ function Item({
                   <Text type="text1">{user?.municipalityAgencyId}</Text>
                 </div>
               )}
+
+              <div className={styles.culr}>
+                <Text type="text4">CULR</Text>
+                <Text type="text1">{`This user ${
+                  hasCulrAccount ? "exists" : "does not exist"
+                } in CULR`}</Text>
+              </div>
+
               {agencies?.length > 0 && (
                 <div className={styles.agencies}>
                   <Text type="text4">Token user agencies</Text>

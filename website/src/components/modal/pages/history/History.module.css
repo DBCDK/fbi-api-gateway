@@ -87,10 +87,15 @@
   transition: font-size 0.25s, color 0.25s linear 0s;
 }
 
-.authentication {
+.authentication,
+.culr {
   font-size: 11px;
   color: var(--text-light);
   letter-spacing: 0.6px;
+}
+
+.culr {
+  margin-top: var(--pt2);
 }
 
 .missingConfigWarn {
@@ -104,7 +109,9 @@
 
 .content .collapsed > div,
 .content .collapsed .user > div {
+  color: var(--text);
   margin-bottom: var(--pt1);
+  margin-top: var(--pt1);
 }
 
 /* expires */
