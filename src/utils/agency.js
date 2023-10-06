@@ -1,3 +1,5 @@
+import { getAccount } from "./culr";
+
 /**
  * Function to check if an agencyId is a FFU library
  *
@@ -70,7 +72,7 @@ export const deleteFFUAccount = async ({
     // Get agencies informations from login.bib.dk /userinfo endpoint
     const response = await context.datasources
       .getLoader("culrDeleteAccount")
-      .load({ agencyId, localId:account.userIdValue });
+      .load({ agencyId, localId: account.userIdValue });
 
     // Response errors - account does not exist
     if (response.code === "ACCOUNT_DOES_NOT_EXIST") {

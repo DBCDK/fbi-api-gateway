@@ -608,7 +608,7 @@ export const resolvers = {
         const deleteRequests = ffuLibraries.map((ffLibrary) => {
           return deleteFFUAccount({
             agencyId: ffLibrary.agencyId,
-            context
+            context,
           });
         });
 
