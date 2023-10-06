@@ -601,7 +601,7 @@ export const resolvers = {
 
         // Check if user has a CPR validated account
         const accounts = userinfo.attributes?.agencies;
-        console.log("accounts", accounts);
+
         const ffuLibraries = accounts?.filter(
           (account) => account?.agencyId[0] === "8"
         );

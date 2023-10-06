@@ -19,10 +19,8 @@ export async function load({ smaugUserId, limit, offset, orderBy }, context) {
         orderBy,
       }),
     });
-    console.log("\n\nbookmarks.body", bookmarks.body);
     return bookmarks.body;
   } catch (e) {
-    console.log("\n\n\nERror ", e);
     // @TODO log
     return [];
   }
