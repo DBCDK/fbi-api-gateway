@@ -23,7 +23,6 @@ export const deleteFFUAccount = async ({
   context,
 }) => {
   try {
-    console.log("\n\n\nparams: ", agencyId, localId, dryRun);
     // settings
     const ENABLE_FFU_CHECK = true;
 
@@ -67,11 +66,11 @@ export const deleteFFUAccount = async ({
         status: "OK",
       };
     }
-const localId = account.userIdValue;
+
     // Get agencies informations from login.bib.dk /userinfo endpoint
     const response = await context.datasources
       .getLoader("culrDeleteAccount")
-      .load({ agencyId, localId });
+      .load({ agencyId, localId:account.userIdValue });
 
     // Response errors - account does not exist
     if (response.code === "ACCOUNT_DOES_NOT_EXIST") {
