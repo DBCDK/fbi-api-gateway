@@ -18,12 +18,7 @@ export function isFFUAgency(agencyId) {
  * will delete a users relation to a FFU library. Deletes the library account in Culr.
  * @returns
  */
-export const deleteFFUAccount = async ({
-  agencyId,
-  //localId,
-  dryRun,
-  context,
-}) => {
+export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
   try {
     // settings
     const ENABLE_FFU_CHECK = true;
