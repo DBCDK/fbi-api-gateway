@@ -602,17 +602,19 @@ export const resolvers = {
         // Check if user has a CPR validated account
         const accounts = userinfo.attributes?.agencies;
 
+        //find all FFU libraries
         const ffuLibraries = accounts?.filter(
           (account) => account?.agencyId[0] === "8"
         );
+        //delete all ffuLibraries
         const deleteRequests = ffuLibraries.map((ffLibrary) => {
           return deleteFFUAccount({
             agencyId: ffLibrary.agencyId,
             context,
           });
         });
-
         let responses = await Promise.all(deleteRequests);
+        //check that all deletion request are successfull
         const deletedAllFFuLibraries = responses.every(
           (obj) => obj.status === "OK"
         );
@@ -621,6 +623,7 @@ export const resolvers = {
         if (!deletedAllFFuLibraries) {
           throw new Error("Could not delete all FFU libraries");
         }
+        //delete user data from userData service (bookmarks, orderhistory etc.)
         await context.datasources.getLoader("userDataDeleteUser").load({
           smaugUserId: smaugUserId,
         });
