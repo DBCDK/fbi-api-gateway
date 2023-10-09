@@ -17,7 +17,7 @@ type GeneralMaterialType {
   """
   code for materialType # @TODO - is this a finite list ?? - and where to get it
   """
-  code: String!
+  code: GeneralMaterialTypeCode!
   """
   Ths string to display
   """
@@ -28,7 +28,7 @@ type SpecificMaterialType {
   """
   code for materialType # @TODO - is this a finite list ?? - and where to get it
   """
-  code: String!
+  code: SpecificMaterialTypeCode!
   """
   Ths string to display
   """
