@@ -92,7 +92,7 @@ type Query {
   """
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   """
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int): Localizations 
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches:Boolean): Localizations 
   refWorks(pid:String!):String!
   ris(pid:String!):String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
@@ -205,12 +205,18 @@ export const resolvers = {
 
       const offset = args.offset ?? 0;
       const limit = args.limit ?? 10;
+      const language = args.language ?? "da";
+      const status = args.status ?? "ALLE";
+      const bibdkExcludeBranches = args.bibdkExcludeBranches;
 
       return await resolveLocalizationsWithHoldings({
         args: args,
         context: context,
         offset: offset,
         limit: limit,
+        language: language,
+        status: status,
+        bibdkExcludeBranches: bibdkExcludeBranches,
       });
     },
     howru(parent, args, context, info) {
