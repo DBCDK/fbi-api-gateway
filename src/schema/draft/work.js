@@ -17,7 +17,7 @@ type GeneralMaterialType {
   """
   code for materialType # @TODO - is this a finite list ?? - and where to get it
   """
-  code: GeneralMaterialTypeCode!
+  code: String!
   """
   Ths string to display
   """
@@ -28,7 +28,7 @@ type SpecificMaterialType {
   """
   code for materialType # @TODO - is this a finite list ?? - and where to get it
   """
-  code: SpecificMaterialTypeCode!
+  code: String!
   """
   Ths string to display
   """
@@ -39,24 +39,22 @@ type MaterialType {
   """
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
   """
-  general: String!
+  general: String! @deprecated(reason: "Use 'materialTypeGenerel' instead")
 
   """
   The type of material of the manifestation based on bibliotek.dk types
   """
-  specific: String!
+  specific: String! @deprecated(reason: "Use 'materialtTypeSpecific' instead")
     
   """
   jed 1.1 - the general materialtype
   """
-  MaterialTypeGeneral: GeneralMaterialType!
+  materialTypeGeneral: GeneralMaterialType!
   
   """
   jed 1.1 - the specific materialtType
   """
-  MaterialTypeSpecific: SpecificMaterialType!
-  
-  }
+  materialTypeSpecific: SpecificMaterialType!
 }
 
 
@@ -319,26 +317,18 @@ export const resolvers = {
       };
     },
   },
-  // MaterialType: {
-  //   general(parent, args, context, info) {
-  //     console.log(parent, "FISK");
-  //     return null;
-  //   },
-  //
-  //   //   """
-  //   // The type of material of the manifestation based on bibliotek.dk types
-  //   // """
-  //   // specific: String!
-  //   //
-  //   //   """
-  //   // jed 1.1 - the general materialtype
-  //   // """
-  //   // MaterialTypeGeneral: GeneralMaterialType!
-  //   //
-  //   //   """
-  //   // jed 1.1 - the specific materialtType
-  //   // """
-  //   // MaterialTypeSpecific: SpecificMaterialType!
-  //   //
-  // },
+  MaterialType: {
+    general(parent, args, context, info) {
+      return parent.general.display;
+    },
+    specific(parent, args, context, info) {
+      return parent.specific.display;
+    },
+    materialTypeGeneral(parent, args, context, info) {
+      return parent.general;
+    },
+    materialTypeSpecific(parent, args, context, info) {
+      return parent.specific;
+    },
+  },
 };
