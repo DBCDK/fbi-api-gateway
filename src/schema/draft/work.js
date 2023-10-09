@@ -26,7 +26,7 @@ type GeneralMaterialType {
   
 type SpecificMaterialType {
   """
-  code for materialType # @TODO - is this a finite list ?? - and where to get it
+  code for materialType
   """
   code: SpecificMaterialTypeCode!
   """
