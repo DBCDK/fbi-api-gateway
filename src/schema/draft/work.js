@@ -38,11 +38,13 @@ type SpecificMaterialType {
 type MaterialType {
   """
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
+  @TODO - this on is deprecated pr. 1/2 '24
   """
   general: String! @deprecated(reason: "Use 'materialTypeGenerel' instead")
 
   """
   The type of material of the manifestation based on bibliotek.dk types
+  @TODO - this on is deprecated pr. 1/2 '24
   """
   specific: String! @deprecated(reason: "Use 'materialtTypeSpecific' instead")
     
