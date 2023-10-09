@@ -12,6 +12,29 @@ type Language {
   """
   isoCode: String!
 }
+
+type GeneralMaterialType {
+  """
+  code for materialType # @TODO - is this a finite list ?? - and where to get it
+  """
+  code: GeneralMaterialTypeCode!
+  """
+  Ths string to display
+  """
+  display: String!
+  }
+  
+type SpecificMaterialType {
+  """
+  code for materialType # @TODO - is this a finite list ?? - and where to get it
+  """
+  code: SpecificMaterialTypeCode!
+  """
+  Ths string to display
+  """
+  display: String!
+  }
+  
 type MaterialType {
   """
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
@@ -22,7 +45,22 @@ type MaterialType {
   The type of material of the manifestation based on bibliotek.dk types
   """
   specific: String!
+    
+  """
+  jed 1.1 - the general materialtype
+  """
+  MaterialTypeGeneral: GeneralMaterialType!
+  
+  """
+  jed 1.1 - the specific materialtType
+  """
+  MaterialTypeSpecific: SpecificMaterialType!
+  
+  }
 }
+
+
+
 enum FictionNonfictionCode {
   FICTION
   NONFICTION
@@ -281,4 +319,26 @@ export const resolvers = {
       };
     },
   },
+  // MaterialType: {
+  //   general(parent, args, context, info) {
+  //     console.log(parent, "FISK");
+  //     return null;
+  //   },
+  //
+  //   //   """
+  //   // The type of material of the manifestation based on bibliotek.dk types
+  //   // """
+  //   // specific: String!
+  //   //
+  //   //   """
+  //   // jed 1.1 - the general materialtype
+  //   // """
+  //   // MaterialTypeGeneral: GeneralMaterialType!
+  //   //
+  //   //   """
+  //   // jed 1.1 - the specific materialtType
+  //   // """
+  //   // MaterialTypeSpecific: SpecificMaterialType!
+  //   //
+  // },
 };

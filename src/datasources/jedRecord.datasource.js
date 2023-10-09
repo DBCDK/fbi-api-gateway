@@ -17,12 +17,16 @@ export async function batchLoader(keys, context) {
     }),
   });
 
-  return keys.map((k) => res.body.records[k.id]);
+  const fisk = keys.map((k) => res.body.records[k.id]);
+
+  console.log(fisk?.[0]?.materialTypes, "FISK");
+
+  return fisk;
 }
 
-export const options = {
+/*export const options = {
   redis: {
     prefix,
     ttl,
   },
-};
+};*/
