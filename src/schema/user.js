@@ -22,6 +22,10 @@ type User {
   name: String
   favoritePickUpBranch: String
   """
+  Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
+  """  
+  createdAt: DateTime
+  """
   We can store userdata for more than 30 days if set to true.
   """
   persistUserData: Boolean!
@@ -304,6 +308,26 @@ export const resolvers = {
             smaugUserId: smaugUserId,
           });
         return res?.favoritePickUpBranch || null;
+      } catch (error) {
+        return null;
+      }
+    },
+
+    async createdAt(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        if (!smaugUserId) {
+          throw "Not authorized";
+        }
+        if (isCPRNumber(smaugUserId)) {
+          throw "User not found in CULR";
+        }
+        const res = await context.datasources
+          .getLoader("userDataGetUser")
+          .load({
+            smaugUserId: smaugUserId,
+          });
+        return res?.createdAt || null;
       } catch (error) {
         return null;
       }
