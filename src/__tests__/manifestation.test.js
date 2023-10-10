@@ -324,6 +324,14 @@ describe("Manifestation", () => {
           materialTypes {
             general
             specific
+            materialTypeGeneral{
+              code
+              display
+            }
+            materialTypeSpecific{
+              code
+              display
+            }
           }
           notes {
             type
@@ -393,6 +401,7 @@ describe("Manifestation", () => {
       variables: { faust: "26521556" },
       context: { datasources: createMockedDataLoaders() },
     });
+
     expect(result).toMatchSnapshot();
   });
 });

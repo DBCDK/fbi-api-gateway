@@ -283,8 +283,8 @@ export const FAKE_MANIFESTATION_PARTS = {
 };
 
 export const FAKE_MATERIALTYPE = {
-  general: "Dummy general type",
-  specific: "Dummy bog",
+  general: { code: "AUDIO_BOOKS", display: "Dummy bøger" },
+  specific: { code: "AUDIO_BOOK", display: "Dummy bog" },
 };
 
 export const FAKE_NOTES = {
