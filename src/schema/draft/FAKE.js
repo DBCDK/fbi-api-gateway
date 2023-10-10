@@ -142,8 +142,8 @@ export const FAKE_AUDIENCE = {
   childrenOrAdults: [{ display: "Dummy til børn", code: "FOR_CHILDREN" }],
   schoolUse: [{ display: "Dummy til skolebrug", code: "FOR_SCHOOL_USE" }],
   primaryTarget: ["Dummy Some primary target"],
-  let: "Dummy some let",
-  lix: "Dummy some lix",
+  let: { display: "Dummy some let" },
+  lix: { display: "Dummy some lix" },
 };
 
 export const FAKE_CLASSIFICATION = {
