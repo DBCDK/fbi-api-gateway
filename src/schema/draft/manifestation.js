@@ -874,7 +874,7 @@ export const resolvers = {
         // no coverimage has been returned - get a default one
         const params = {
           title: parent?.titles?.main?.[0],
-          materialType: parent?.materialTypes?.[0]?.specific,
+          materialType: parent?.materialTypes?.[0]?.specific?.display,
           colors,
         };
         const defaultForsiderCoverImage = await context.datasources
