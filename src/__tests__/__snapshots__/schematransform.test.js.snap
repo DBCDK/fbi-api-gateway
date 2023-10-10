@@ -2761,8 +2761,13 @@ type User {
   name: String
   favoritePickUpBranch: String
 
-  \\"\\"\\"We can store userdata for more than 30 days if set to true.\\"\\"\\"
-  persistUserData: Boolean!
+  \\"\\"\\"
+  Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
+  \\"\\"\\"
+  createdAt: DateTime
+
+  \\"\\"\\"We are allowed to store userdata for more than 30 days if set to true.\\"\\"\\"
+  persistUserData: Boolean
 
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
