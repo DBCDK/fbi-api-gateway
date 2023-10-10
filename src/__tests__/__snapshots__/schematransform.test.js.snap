@@ -2720,7 +2720,7 @@ type User {
   \\"\\"\\"
   createdAt: DateTime
 
-  \\"\\"\\"We can store userdata for more than 30 days if set to true.\\"\\"\\"
+  \\"\\"\\"We are allowed to store userdata for more than 30 days if set to true.\\"\\"\\"
   persistUserData: Boolean
 
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"

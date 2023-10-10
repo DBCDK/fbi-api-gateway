@@ -26,7 +26,7 @@ type User {
   """  
   createdAt: DateTime
   """
-  We can store userdata for more than 30 days if set to true.
+  We are allowed to store userdata for more than 30 days if set to true.
   """
   persistUserData: Boolean
   """
@@ -213,7 +213,7 @@ function isEmail(email) {
 
 /**
  * returns true if input has CPR-number format (10 digits)
- * @param {String} uniqueId
+ * @param {string} uniqueId
  */
 function isCPRNumber(uniqueId) {
   return /^\d{10}$/.test(uniqueId);
@@ -221,7 +221,7 @@ function isCPRNumber(uniqueId) {
 
 /**
  * Validates smaugUserId
- * @param {String} uniqueId
+ * @param {string} uniqueId
  */
 function validateUserId(smaugUserId) {
   if (!smaugUserId) {
