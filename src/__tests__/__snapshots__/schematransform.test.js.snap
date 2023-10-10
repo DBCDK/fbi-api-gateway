@@ -2715,6 +2715,11 @@ type User {
   name: String
   favoritePickUpBranch: String
 
+  \\"\\"\\"
+  Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
+  \\"\\"\\"
+  createdAt: DateTime
+
   \\"\\"\\"We can store userdata for more than 30 days if set to true.\\"\\"\\"
   persistUserData: Boolean!
 
