@@ -2721,7 +2721,7 @@ type User {
   createdAt: DateTime
 
   \\"\\"\\"We can store userdata for more than 30 days if set to true.\\"\\"\\"
-  persistUserData: Boolean!
+  persistUserData: Boolean
 
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
