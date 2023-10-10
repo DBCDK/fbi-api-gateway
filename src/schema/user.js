@@ -28,7 +28,7 @@ type User {
   """
   We can store userdata for more than 30 days if set to true.
   """
-  persistUserData: Boolean!
+  persistUserData: Boolean
   """
   Orders made through bibliotek.dk
   """
@@ -220,6 +220,19 @@ function isCPRNumber(uniqueId) {
 }
 
 /**
+ * Validates smaugUserId
+ * @param {String} uniqueId
+ */
+function validateUserId(smaugUserId) {
+  if (!smaugUserId) {
+    throw "Not authorized";
+  }
+  if (isCPRNumber(smaugUserId)) {
+    throw "User not found in CULR";
+  }
+}
+
+/**
  * Resolvers for the Profile type
  */
 export const resolvers = {
@@ -296,12 +309,8 @@ export const resolvers = {
     async favoritePickUpBranch(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
+
         const res = await context.datasources
           .getLoader("userDataGetUser")
           .load({
@@ -316,12 +325,8 @@ export const resolvers = {
     async createdAt(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
+
         const res = await context.datasources
           .getLoader("userDataGetUser")
           .load({
@@ -336,12 +341,7 @@ export const resolvers = {
     async persistUserData(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
         const res = await context.datasources
           .getLoader("userDataGetUser")
           .load({
@@ -357,12 +357,8 @@ export const resolvers = {
       const smaugUserId = context?.smaug?.user?.uniqueId;
       const { limit, offset } = args;
 
-      if (!smaugUserId) {
-        throw "Not authorized";
-      }
-      if (isCPRNumber(smaugUserId)) {
-        throw "User not found in CULR";
-      }
+      validateUserId(smaugUserId);
+
       const res = await context.datasources
         .getLoader("bibliotekDkOrders")
         .load({
@@ -539,9 +535,9 @@ export const resolvers = {
     async bookmarks(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
+
+        validateUserId(smaugUserId);
+
         const { limit, offset, orderBy } = args;
 
         const res = await context.datasources
@@ -637,12 +633,7 @@ export const resolvers = {
         const { favoritePickUpBranch } = args;
         const smaugUserId = context?.smaug?.user?.uniqueId;
 
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
 
         //validate that favoritePickUpBranch is a valid user branch id
         const userBranchIds = await getUserBranchIds(context);
@@ -666,12 +657,8 @@ export const resolvers = {
     async clearFavoritePickUpBranch(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
+
         await context.datasources
           .getLoader("userDataFavoritePickupBranch")
           .load({
@@ -688,12 +675,8 @@ export const resolvers = {
         const { orderId } = args;
 
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
+
         await context.datasources.getLoader("userDataAddOrder").load({
           smaugUserId: smaugUserId,
           orderId: orderId,
@@ -708,12 +691,8 @@ export const resolvers = {
         const { orderId } = args;
 
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
+
         const res = await context.datasources
           .getLoader("userDataRemoveOrder")
           .load({
