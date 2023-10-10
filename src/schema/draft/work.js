@@ -28,7 +28,7 @@ type SpecificMaterialType {
   """
   code for materialType
   """
-  code: SpecificMaterialTypeCode!
+  code: String!
   """
   Ths string to display
   """
