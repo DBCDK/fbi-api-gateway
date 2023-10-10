@@ -142,8 +142,8 @@ export const FAKE_AUDIENCE = {
   childrenOrAdults: [{ display: "Dummy til børn", code: "FOR_CHILDREN" }],
   schoolUse: [{ display: "Dummy til skolebrug", code: "FOR_SCHOOL_USE" }],
   primaryTarget: ["Dummy Some primary target"],
-  let: "Dummy some let",
-  lix: "Dummy some lix",
+  let: { display: "Dummy some let" },
+  lix: { display: "Dummy some lix" },
 };
 
 export const FAKE_CLASSIFICATION = {
@@ -283,8 +283,8 @@ export const FAKE_MANIFESTATION_PARTS = {
 };
 
 export const FAKE_MATERIALTYPE = {
-  general: "Dummy general type",
-  specific: "Dummy bog",
+  general: { code: "AUDIO_BOOKS", display: "Dummy bøger" },
+  specific: { code: "AUDIO_BOOK", display: "Dummy bog" },
 };
 
 export const FAKE_NOTES = {

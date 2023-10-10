@@ -1,0 +1,19 @@
+export const typeDef = `
+enum GeneralMaterialTypeCode {
+  ARTICLES
+  AUDIO_BOOKS
+  BOARD_GAMES
+  BOOKS
+  COMICS
+  COMPUTER_GAMES
+  EBOOKS
+  FILMS
+  IMAGE_MATERIALS
+  MUSIC
+  NEWSPAPER_JOURNALS
+  OTHER
+  PODCASTS
+  SHEET_MUSIC
+  TV_SERIES
+  }
+`;

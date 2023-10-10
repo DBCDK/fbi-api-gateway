@@ -757,6 +757,12 @@ export const resolvers = {
           : parent.ages
         : [];
     },
+    lix(parent) {
+      return parent?.lix?.display;
+    },
+    let(parent) {
+      return parent?.let?.display;
+    },
   },
   Identifier: {
     type(parent) {
