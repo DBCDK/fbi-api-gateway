@@ -47,6 +47,7 @@ type User {
   bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
+  identityProviderUsed: String!
 }
 
 type UserSubscriptions {
@@ -237,6 +238,14 @@ function validateUserId(smaugUserId) {
  */
 export const resolvers = {
   User: {
+    async identityProviderUsed(parent, args, context, info) {
+      // fetch culr accounts from userinfo
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      return userinfo?.attributes?.idpUsed;
+    },
     async isCPRValidated(parent, args, context, info) {
       // fetch culr accounts from userinfo
       const userinfo = await context.datasources.getLoader("userinfo").load({

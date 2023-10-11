@@ -109,8 +109,7 @@ function Item({
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
   const [distance, setDistance] = useState(false);
-
-  console.log("configuration", configuration);
+  const [isScrolled, setIsScrolled] = useState(null);
 
   const displayName = configuration?.displayName;
   const clientId = configuration?.clientId;
@@ -143,7 +142,26 @@ function Item({
 
   const expireStatusClass = getExpirationClass(configuration?.expires);
 
+  const isScrolledClass = isScrolled ? styles.scrolled : "";
+
   const elRef = useRef();
+  const scrollRef = useRef();
+
+  useEffect(() => {
+    function handleScroll(e) {
+      const isTop = e.target.scrollTop === 0;
+      if (isTop !== isScrolled) {
+        setIsScrolled(!isTop);
+      }
+    }
+
+    const el = scrollRef.current;
+
+    if (el) {
+      el.addEventListener("scroll", handleScroll);
+      () => el.removeEventListener("scroll", handleScroll);
+    }
+  }, [scrollRef.current]);
 
   useEffect(() => {
     if (elRef.current?.offsetTop + 2) {
@@ -155,7 +173,7 @@ function Item({
   return (
     <div
       ref={elRef}
-      className={`${styles.item} ${expiredClass} ${expireStatusClass} ${inUseClass} ${exapandedClass} ${exapandedClassGlobal} ${missingConfigClass} ${removedClass}`}
+      className={`${styles.item} ${expiredClass} ${expireStatusClass} ${inUseClass} ${exapandedClass} ${exapandedClassGlobal} ${isScrolledClass} ${missingConfigClass} ${removedClass}`}
     >
       <div
         className={styles.content}
@@ -180,9 +198,7 @@ function Item({
             </div>
           ) : (
             <>
-              <Text type={open ? "text6" : "text4"} className={styles.display}>
-                {displayName}
-              </Text>
+              <Text type={open ? "text6" : "text4"}>{displayName}</Text>
               <Text className={styles.authentication}>
                 {`This token is ${
                   isAuthenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
@@ -204,7 +220,7 @@ function Item({
             </>
           )}
         </div>
-        <div className={styles.collapsed}>
+        <div className={styles.collapsed} ref={scrollRef}>
           <div className={styles.submitted}>
             <Text type="text4">Submitted at</Text>
             <Text type="text1">
@@ -266,12 +282,14 @@ function Item({
                   <Text type="text1">{user?.mail}</Text>
                 </div>
               )}
-              {typeof user?.blocked !== "undefined" && (
-                <div className={styles.blocked}>
-                  <Text type="text4">Blocked</Text>
-                  <Text type="text1">{JSON.stringify(user?.blocked)}</Text>
+
+              {user?.isCPRValidated && (
+                <div className={styles.isCPRValidated}>
+                  <Text type="text4">IsCPRValidated</Text>
+                  <Text type="text1">{user?.isCPRValidated.toString()}</Text>
                 </div>
               )}
+
               {user?.municipalityAgencyId && (
                 <div className={styles.municipalityAgencyId}>
                   <Text type="text4">MunicipalityAgencyId</Text>
@@ -279,11 +297,28 @@ function Item({
                 </div>
               )}
 
+              <div className={styles.details}>
+                {user?.loggedInBranchId && (
+                  <div className={styles.loggedInBranchId}>
+                    <Text type="text4">LoggedInBranchId</Text>
+                    <Text type="text1">{user?.loggedInBranchId}</Text>
+                  </div>
+                )}
+                {user?.identityProviderUsed && (
+                  <div className={styles.i}>
+                    <Text type="text4">IdentityProviderUsed</Text>
+                    <Text type="text1">{user?.identityProviderUsed}</Text>
+                  </div>
+                )}
+              </div>
+
               <div className={styles.culr}>
-                <Text type="text4">CULR</Text>
-                <Text type="text1">{`This user ${
-                  hasCulrAccount ? "exists" : "does not exist"
-                } in CULR`}</Text>
+                <Text type="text4">CULR status</Text>
+                <Text type="text1">
+                  {hasCulrAccount
+                    ? "User exists in CULR"
+                    : "⚠️ User doesn't exist in CULR"}
+                </Text>
               </div>
 
               {agencies?.length > 0 && (

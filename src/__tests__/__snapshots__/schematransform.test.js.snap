@@ -2785,6 +2785,7 @@ type User {
   bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
+  identityProviderUsed: String!
 }
 
 type UserSubscriptions {
