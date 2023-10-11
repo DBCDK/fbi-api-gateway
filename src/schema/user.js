@@ -139,6 +139,7 @@ type BookMark{
   materialId: String!
   bookmarkId: Int
   createdAt: DateTime
+  workId: String
 }
 
 type BookmarkResponse {
@@ -150,6 +151,7 @@ input BookMarkInput {
   materialType: String!
   materialId: String!
   title: String!
+  workId: String
 }
 
 type BookMarkDeleteResponse {
@@ -733,8 +735,7 @@ export const resolvers = {
       /**
        * Handles single or multiple additions to bookmarks.
        *
-       * For multiple, {smaugUserId: string, bookmarks: [{materialType, string, materialId: string}]}
-       * For single, {smaugUserId: string, materialType, string, materialId: string}
+       * @param {smaugUserId: string, bookmarks: [{materialType, string, materialId: string, title: string, workId?: string}]}
        *
        * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
        * while we espect single additions to throw an error if this bookmark already exists
@@ -760,6 +761,7 @@ export const resolvers = {
             smaugUserId: smaugUserId,
             bookmarks: args.bookmarks.map((bookmark) => {
               return {
+                workId: bookmark.workId,
                 materialType: bookmark.materialType,
                 materialId: bookmark.materialId,
                 title: bookmark.title,
