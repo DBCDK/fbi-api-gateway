@@ -2876,6 +2876,7 @@ type BookMark {
   materialId: String!
   bookmarkId: Int
   createdAt: DateTime
+  workId: String
 }
 
 type BookmarkResponse {
@@ -2887,6 +2888,7 @@ input BookMarkInput {
   materialType: String!
   materialId: String!
   title: String!
+  workId: String
 }
 
 type BookMarkDeleteResponse {
