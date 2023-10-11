@@ -1,4 +1,8 @@
-import { parseJedSubjects, resolveManifestation } from "../../utils/utils";
+import {
+  parseJedSubjects,
+  resolveManifestation,
+  resolveWork,
+} from "../../utils/utils";
 import { log } from "dbc-node-logger";
 
 const IDENTIFIER_TYPES = new Set([
@@ -946,8 +950,7 @@ export const resolvers = {
 
       if (manifestation.workId) {
         // ownerWork is not included in the JED rest endpoint (workId is used instead)
-        manifestation.ownerWork = parent?.workId;
-        return manifestation;
+        return await resolveWork({ id: parent?.workId }, context);
       }
 
       // Debug error - No workId found on manifestation
