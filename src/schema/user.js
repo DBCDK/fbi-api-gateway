@@ -9,10 +9,12 @@ import {
   getHomeAgencyAccount,
   getUserBranchIds,
   resolveManifestation,
+  isCPRNumber,
 } from "../utils/utils";
 
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
+import { deleteFFUAccount } from "../utils/agency";
 
 /**
  * The Profile type definition
@@ -212,14 +214,6 @@ extend type Mutation {
 
 function isEmail(email) {
   return /\S+@\S+\.\S+/.test(email);
-}
-
-/**
- * returns true if input has CPR-number format (10 digits)
- * @param {string} uniqueId
- */
-function isCPRNumber(uniqueId) {
-  return /^\d{10}$/.test(uniqueId);
 }
 
 /**
@@ -631,6 +625,36 @@ export const resolvers = {
           throw "Not authorized";
         }
 
+        // fetch culr accounts from userinfo
+        const userinfo = await context.datasources.getLoader("userinfo").load({
+          accessToken: context.accessToken,
+        });
+
+        // Check if user has a CPR validated account
+        const accounts = userinfo.attributes?.agencies;
+
+        //find all FFU libraries
+        const ffuLibraries = accounts?.filter(
+          (account) => account?.agencyId[0] === "8"
+        );
+        //delete all ffuLibraries
+        const deleteRequests = ffuLibraries.map((ffLibrary) => {
+          return deleteFFUAccount({
+            agencyId: ffLibrary.agencyId,
+            context,
+          });
+        });
+        let responses = await Promise.all(deleteRequests);
+        //check that all deletion request are successfull
+        const deletedAllFFuLibraries = responses.every(
+          (obj) => obj.status === "OK"
+        );
+
+        //throw error if not all FFu libraries are deleted
+        if (!deletedAllFFuLibraries) {
+          throw new Error("Could not delete all FFU libraries");
+        }
+        //delete user data from userData service (bookmarks, orderhistory etc.)
         await context.datasources.getLoader("userDataDeleteUser").load({
           smaugUserId: smaugUserId,
         });

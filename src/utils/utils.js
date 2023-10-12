@@ -2,6 +2,7 @@ import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
 import { assign, get, intersectionWith, sortBy, uniq } from "lodash";
 import { log } from "dbc-node-logger";
+import { isFFUAgency } from "./agency";
 
 export async function performTestQuery({
   query,
@@ -727,4 +728,12 @@ export async function resolveLocalizationsWithHoldings({
     count: intersectingAgencyIdsFromLibrary.length,
     agencies: intersectingAgencyIdsFromLibrary.slice(offset, offset + limit),
   };
+}
+
+/**
+ * returns true if input has CPR-number format (10 digits)
+ * @param {String} uniqueId
+ */
+export function isCPRNumber(uniqueId) {
+  return /^\d{10}$/.test(uniqueId);
 }
