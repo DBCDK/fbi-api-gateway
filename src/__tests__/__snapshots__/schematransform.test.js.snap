@@ -2782,7 +2782,7 @@ type User {
   orders: [Order!]!
   loans: [Loan!]!
   debt: [Debt!]!
-  bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
+  bookmarks(orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
   identityProviderUsed: String!
