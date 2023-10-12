@@ -46,6 +46,7 @@ pipeline {
                anyOf {
                    branch 'master'
                    branch 'prod'
+               }
            }
             steps {
                 script {
