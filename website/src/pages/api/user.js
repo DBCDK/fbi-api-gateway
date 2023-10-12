@@ -6,6 +6,9 @@ query User_Details {
     name
     mail
     municipalityAgencyId
+    loggedInBranchId
+    isCPRValidated
+    identityProviderUsed
     agencies {
       hitcount
       borrowerStatus{
