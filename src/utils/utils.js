@@ -1,6 +1,6 @@
 import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
-import { get, uniq } from "lodash";
+import { assign, get, intersectionWith, sortBy, uniq } from "lodash";
 import { log } from "dbc-node-logger";
 import { isFFUAgency } from "./agency";
 
@@ -654,6 +654,9 @@ export async function resolveLocalizationsWithHoldings({
   context,
   offset,
   limit,
+  language,
+  status,
+  bibdkExcludeBranches,
 }) {
   const localizations = await resolveLocalizations(args, context);
 
@@ -691,14 +694,39 @@ export async function resolveLocalizationsWithHoldings({
     localizationsWithHoldings
   );
 
-  const shuffledLocalizationsWithHoldings = localizationsWithHoldingsAndHandledKglBibliotek
-    .map((value) => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ value }) => value);
+  // AgencyNames for sorting by agencyName, via library datasource from vipCore
+  const libraryDatasourcePromise = localizationsWithHoldingsAndHandledKglBibliotek
+    ?.map((library) => library?.agencyId)
+    ?.map(async (agencyId) => {
+      const res = await context.datasources.getLoader("library").load({
+        agencyid: agencyId,
+        limit: 1,
+        language: language,
+        status: status || "ALLE",
+        bibdkExcludeBranches: bibdkExcludeBranches ?? false,
+      });
+      return {
+        agencyId: agencyId,
+        agencyName: await res.result?.[0]?.agencyName,
+      };
+    });
+
+  const libraryDatasource = await Promise.all(libraryDatasourcePromise);
+
+  // IntersectionWith merges the arrays on agencyIds (merge by assign) without duplicate objects
+  //   sortBy sorts the rest by agencyName
+  const intersectingAgencyIdsFromLibrary = sortBy(
+    intersectionWith(
+      localizationsWithHoldingsAndHandledKglBibliotek,
+      libraryDatasource,
+      (a, b) => a.agencyId === b.agencyId && assign(a, b)
+    ),
+    "agencyName"
+  );
 
   return {
-    count: shuffledLocalizationsWithHoldings.length,
-    agencies: shuffledLocalizationsWithHoldings.slice(offset, offset + limit),
+    count: intersectingAgencyIdsFromLibrary.length,
+    agencies: intersectingAgencyIdsFromLibrary.slice(offset, offset + limit),
   };
 }
 

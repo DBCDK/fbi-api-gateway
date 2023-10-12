@@ -1442,6 +1442,24 @@ type ManifestationTitles {
   tvSeries: TvSeries
 }
 
+enum GeneralMaterialTypeCode {
+  ARTICLES
+  AUDIO_BOOKS
+  BOARD_GAMES
+  BOOKS
+  COMICS
+  COMPUTER_GAMES
+  EBOOKS
+  FILMS
+  IMAGE_MATERIALS
+  MUSIC
+  NEWSPAPER_JOURNALS
+  OTHER
+  PODCASTS
+  SHEET_MUSIC
+  TV_SERIES
+}
+
 type DigitalArticleServiceResponse {
   msg: String!
 }
@@ -1907,14 +1925,42 @@ type Language {
   isoCode: String!
 }
 
+type GeneralMaterialType {
+  \\"\\"\\"
+  code for materialType # @TODO - is this a finite list ?? - and where to get it
+  \\"\\"\\"
+  code: GeneralMaterialTypeCode!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
+type SpecificMaterialType {
+  \\"\\"\\"code for materialType\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
 type MaterialType {
   \\"\\"\\"
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
+  @TODO - this on is deprecated pr. 1/2 '24
   \\"\\"\\"
-  general: String!
+  general: String! @deprecated(reason: \\"Use 'materialTypeGenerel' instead\\")
 
-  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  specific: String!
+  \\"\\"\\"
+  The type of material of the manifestation based on bibliotek.dk types
+  @TODO - this on is deprecated pr. 1/2 '24
+  \\"\\"\\"
+  specific: String! @deprecated(reason: \\"Use 'materialtTypeSpecific' instead\\")
+
+  \\"\\"\\"jed 1.1 - the general materialtype\\"\\"\\"
+  materialTypeGeneral: GeneralMaterialType!
+
+  \\"\\"\\"jed 1.1 - the specific materialtType\\"\\"\\"
+  materialTypeSpecific: SpecificMaterialType!
 }
 
 enum FictionNonfictionCode {
@@ -2517,7 +2563,7 @@ type Query {
   \\"\\"\\"
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   \\"\\"\\"
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int): Localizations
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
   refWorks(pid: String!): String!
   ris(pid: String!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
@@ -2715,8 +2761,13 @@ type User {
   name: String
   favoritePickUpBranch: String
 
-  \\"\\"\\"We can store userdata for more than 30 days if set to true.\\"\\"\\"
-  persistUserData: Boolean!
+  \\"\\"\\"
+  Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
+  \\"\\"\\"
+  createdAt: DateTime
+
+  \\"\\"\\"We are allowed to store userdata for more than 30 days if set to true.\\"\\"\\"
+  persistUserData: Boolean
 
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
@@ -2734,6 +2785,7 @@ type User {
   bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
+  identityProviderUsed: String!
 }
 
 type UserSubscriptions {
@@ -2825,6 +2877,7 @@ type BookMark {
   materialId: String!
   bookmarkId: Int
   createdAt: DateTime
+  workId: String
 }
 
 type BookmarkResponse {
@@ -2836,6 +2889,7 @@ input BookMarkInput {
   materialType: String!
   materialId: String!
   title: String!
+  workId: String
 }
 
 type BookMarkDeleteResponse {
@@ -3768,6 +3822,24 @@ type ManifestationTitles {
   tvSeries: TvSeries
 }
 
+enum GeneralMaterialTypeCode {
+  ARTICLES
+  AUDIO_BOOKS
+  BOARD_GAMES
+  BOOKS
+  COMICS
+  COMPUTER_GAMES
+  EBOOKS
+  FILMS
+  IMAGE_MATERIALS
+  MUSIC
+  NEWSPAPER_JOURNALS
+  OTHER
+  PODCASTS
+  SHEET_MUSIC
+  TV_SERIES
+}
+
 type Recommendation {
   \\"\\"\\"The recommended work\\"\\"\\"
   work: Work!
@@ -4123,14 +4195,42 @@ type Language {
   isoCode: String!
 }
 
+type GeneralMaterialType {
+  \\"\\"\\"
+  code for materialType # @TODO - is this a finite list ?? - and where to get it
+  \\"\\"\\"
+  code: GeneralMaterialTypeCode!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
+type SpecificMaterialType {
+  \\"\\"\\"code for materialType\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
 type MaterialType {
   \\"\\"\\"
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
+  @TODO - this on is deprecated pr. 1/2 '24
   \\"\\"\\"
-  general: String!
+  general: String! @deprecated(reason: \\"Use 'materialTypeGenerel' instead\\")
 
-  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  specific: String!
+  \\"\\"\\"
+  The type of material of the manifestation based on bibliotek.dk types
+  @TODO - this on is deprecated pr. 1/2 '24
+  \\"\\"\\"
+  specific: String! @deprecated(reason: \\"Use 'materialtTypeSpecific' instead\\")
+
+  \\"\\"\\"jed 1.1 - the general materialtype\\"\\"\\"
+  materialTypeGeneral: GeneralMaterialType!
+
+  \\"\\"\\"jed 1.1 - the specific materialtType\\"\\"\\"
+  materialTypeSpecific: SpecificMaterialType!
 }
 
 enum FictionNonfictionCode {
@@ -5302,6 +5402,24 @@ type ManifestationTitles {
   tvSeries: TvSeries
 }
 
+enum GeneralMaterialTypeCode {
+  ARTICLES
+  AUDIO_BOOKS
+  BOARD_GAMES
+  BOOKS
+  COMICS
+  COMPUTER_GAMES
+  EBOOKS
+  FILMS
+  IMAGE_MATERIALS
+  MUSIC
+  NEWSPAPER_JOURNALS
+  OTHER
+  PODCASTS
+  SHEET_MUSIC
+  TV_SERIES
+}
+
 type Relations {
   \\"\\"\\"
   The story of this article is continued in this or these other article(s)
@@ -5693,14 +5811,42 @@ type Language {
   isoCode: String!
 }
 
+type GeneralMaterialType {
+  \\"\\"\\"
+  code for materialType # @TODO - is this a finite list ?? - and where to get it
+  \\"\\"\\"
+  code: GeneralMaterialTypeCode!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
+type SpecificMaterialType {
+  \\"\\"\\"code for materialType\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
 type MaterialType {
   \\"\\"\\"
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
+  @TODO - this on is deprecated pr. 1/2 '24
   \\"\\"\\"
-  general: String!
+  general: String! @deprecated(reason: \\"Use 'materialTypeGenerel' instead\\")
 
-  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  specific: String!
+  \\"\\"\\"
+  The type of material of the manifestation based on bibliotek.dk types
+  @TODO - this on is deprecated pr. 1/2 '24
+  \\"\\"\\"
+  specific: String! @deprecated(reason: \\"Use 'materialtTypeSpecific' instead\\")
+
+  \\"\\"\\"jed 1.1 - the general materialtype\\"\\"\\"
+  materialTypeGeneral: GeneralMaterialType!
+
+  \\"\\"\\"jed 1.1 - the specific materialtType\\"\\"\\"
+  materialTypeSpecific: SpecificMaterialType!
 }
 
 enum FictionNonfictionCode {

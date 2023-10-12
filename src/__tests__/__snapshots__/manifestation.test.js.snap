@@ -249,7 +249,15 @@ Object {
       },
       "materialTypes": Array [
         Object {
-          "general": "Dummy general type",
+          "general": "Dummy bøger",
+          "materialTypeGeneral": Object {
+            "code": "AUDIO_BOOKS",
+            "display": "Dummy bøger",
+          },
+          "materialTypeSpecific": Object {
+            "code": "AUDIO_BOOK",
+            "display": "Dummy bog",
+          },
           "specific": "Dummy bog",
         },
       ],

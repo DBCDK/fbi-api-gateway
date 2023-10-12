@@ -24,9 +24,13 @@ type User {
   name: String
   favoritePickUpBranch: String
   """
-  We can store userdata for more than 30 days if set to true.
+  Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
+  """  
+  createdAt: DateTime
   """
-  persistUserData: Boolean!
+  We are allowed to store userdata for more than 30 days if set to true.
+  """
+  persistUserData: Boolean
   """
   Orders made through bibliotek.dk
   """
@@ -45,6 +49,7 @@ type User {
   bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
+  identityProviderUsed: String!
 }
 
 type UserSubscriptions {
@@ -137,6 +142,7 @@ type BookMark{
   materialId: String!
   bookmarkId: Int
   createdAt: DateTime
+  workId: String
 }
 
 type BookmarkResponse {
@@ -148,6 +154,7 @@ input BookMarkInput {
   materialType: String!
   materialId: String!
   title: String!
+  workId: String
 }
 
 type BookMarkDeleteResponse {
@@ -210,10 +217,31 @@ function isEmail(email) {
 }
 
 /**
+ * Validates smaugUserId
+ * @param {string} uniqueId
+ */
+function validateUserId(smaugUserId) {
+  if (!smaugUserId) {
+    throw "Not authorized";
+  }
+  if (isCPRNumber(smaugUserId)) {
+    throw "User not found in CULR";
+  }
+}
+
+/**
  * Resolvers for the Profile type
  */
 export const resolvers = {
   User: {
+    async identityProviderUsed(parent, args, context, info) {
+      // fetch culr accounts from userinfo
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      return userinfo?.attributes?.idpUsed;
+    },
     async isCPRValidated(parent, args, context, info) {
       // fetch culr accounts from userinfo
       const userinfo = await context.datasources.getLoader("userinfo").load({
@@ -286,12 +314,8 @@ export const resolvers = {
     async favoritePickUpBranch(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
+
         const res = await context.datasources
           .getLoader("userDataGetUser")
           .load({
@@ -303,15 +327,26 @@ export const resolvers = {
       }
     },
 
+    async createdAt(parent, args, context, info) {
+      try {
+        const smaugUserId = context?.smaug?.user?.uniqueId;
+        validateUserId(smaugUserId);
+
+        const res = await context.datasources
+          .getLoader("userDataGetUser")
+          .load({
+            smaugUserId: smaugUserId,
+          });
+        return res?.createdAt || null;
+      } catch (error) {
+        return null;
+      }
+    },
+
     async persistUserData(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
         const res = await context.datasources
           .getLoader("userDataGetUser")
           .load({
@@ -327,12 +362,8 @@ export const resolvers = {
       const smaugUserId = context?.smaug?.user?.uniqueId;
       const { limit, offset } = args;
 
-      if (!smaugUserId) {
-        throw "Not authorized";
-      }
-      if (isCPRNumber(smaugUserId)) {
-        throw "User not found in CULR";
-      }
+      validateUserId(smaugUserId);
+
       const res = await context.datasources
         .getLoader("bibliotekDkOrders")
         .load({
@@ -509,9 +540,9 @@ export const resolvers = {
     async bookmarks(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
+
+        validateUserId(smaugUserId);
+
         const { limit, offset, orderBy } = args;
 
         const res = await context.datasources
@@ -637,12 +668,7 @@ export const resolvers = {
         const { favoritePickUpBranch } = args;
         const smaugUserId = context?.smaug?.user?.uniqueId;
 
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
 
         //validate that favoritePickUpBranch is a valid user branch id
         const userBranchIds = await getUserBranchIds(context);
@@ -666,12 +692,8 @@ export const resolvers = {
     async clearFavoritePickUpBranch(parent, args, context, info) {
       try {
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
+
         await context.datasources
           .getLoader("userDataFavoritePickupBranch")
           .load({
@@ -688,12 +710,8 @@ export const resolvers = {
         const { orderId } = args;
 
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
+
         await context.datasources.getLoader("userDataAddOrder").load({
           smaugUserId: smaugUserId,
           orderId: orderId,
@@ -708,12 +726,8 @@ export const resolvers = {
         const { orderId } = args;
 
         const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
-          throw "Not authorized";
-        }
-        if (isCPRNumber(smaugUserId)) {
-          throw "User not found in CULR";
-        }
+        validateUserId(smaugUserId);
+
         const res = await context.datasources
           .getLoader("userDataRemoveOrder")
           .load({
@@ -754,8 +768,7 @@ export const resolvers = {
       /**
        * Handles single or multiple additions to bookmarks.
        *
-       * For multiple, {smaugUserId: string, bookmarks: [{materialType, string, materialId: string}]}
-       * For single, {smaugUserId: string, materialType, string, materialId: string}
+       * @param {smaugUserId: string, bookmarks: [{materialType, string, materialId: string, title: string, workId?: string}]}
        *
        * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
        * while we espect single additions to throw an error if this bookmark already exists
@@ -781,6 +794,7 @@ export const resolvers = {
             smaugUserId: smaugUserId,
             bookmarks: args.bookmarks.map((bookmark) => {
               return {
+                workId: bookmark.workId,
                 materialType: bookmark.materialType,
                 materialId: bookmark.materialId,
                 title: bookmark.title,

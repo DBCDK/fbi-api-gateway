@@ -12,17 +12,55 @@ type Language {
   """
   isoCode: String!
 }
+
+type GeneralMaterialType {
+  """
+  code for materialType # @TODO - is this a finite list ?? - and where to get it
+  """
+  code: GeneralMaterialTypeCode!
+  """
+  Ths string to display
+  """
+  display: String!
+  }
+  
+type SpecificMaterialType {
+  """
+  code for materialType
+  """
+  code: String!
+  """
+  Ths string to display
+  """
+  display: String!
+  }
+  
 type MaterialType {
   """
   The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
+  @TODO - this on is deprecated pr. 1/2 '24
   """
-  general: String!
+  general: String! @deprecated(reason: "Use 'materialTypeGenerel' instead")
 
   """
   The type of material of the manifestation based on bibliotek.dk types
+  @TODO - this on is deprecated pr. 1/2 '24
   """
-  specific: String!
+  specific: String! @deprecated(reason: "Use 'materialtTypeSpecific' instead")
+    
+  """
+  jed 1.1 - the general materialtype
+  """
+  materialTypeGeneral: GeneralMaterialType!
+  
+  """
+  jed 1.1 - the specific materialtType
+  """
+  materialTypeSpecific: SpecificMaterialType!
 }
+
+
+
 enum FictionNonfictionCode {
   FICTION
   NONFICTION
@@ -279,6 +317,20 @@ export const resolvers = {
         bestRepresentation,
         mostRelevant,
       };
+    },
+  },
+  MaterialType: {
+    general(parent, args, context, info) {
+      return parent.general.display;
+    },
+    specific(parent, args, context, info) {
+      return parent.specific.display;
+    },
+    materialTypeGeneral(parent, args, context, info) {
+      return parent.general;
+    },
+    materialTypeSpecific(parent, args, context, info) {
+      return parent.specific;
     },
   },
 };

@@ -21,8 +21,6 @@ function createRequest(pid) {
 }
 
 function parseResponse(response) {
-  console.log(response, "RESPONSE");
-
   return response?.formatResponse?.ris[0]?.$ || "ERROR";
 }
 
