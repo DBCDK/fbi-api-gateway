@@ -4,7 +4,7 @@ exports[`library - get all 1`] = `
 Object {
   "data": Object {
     "branches": Object {
-      "hitcount": 1280,
+      "hitcount": 6541,
       "result": Array [
         Object {
           "agencyId": "800010",
@@ -145,17 +145,18 @@ Object {
           ],
         },
         Object {
-          "agencyId": "800010",
-          "agencyName": "Det Kgl. Bibliotek",
+          "agencyId": "852130",
+          "agencyName": "AU Library, Kalø",
           "borrowerCheck": true,
-          "branchId": "800043",
-          "city": "Højbjerg",
+          "branchId": "852130",
+          "city": "Rønde",
           "digitalCopyAccess": false,
-          "name": "AU Moesgård, Højbjerg",
-          "openingHours": null,
+          "name": "AU Library, Kalø",
+          "openingHours": "8-16",
           "pickupAllowed": true,
-          "postalAddress": "Moesgård Allé 20",
-          "postalCode": "8270",
+          "postalAddress": "Grenåvej 14
+Kalø",
+          "postalCode": "8410",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
@@ -168,18 +169,17 @@ Object {
           ],
         },
         Object {
-          "agencyId": "800010",
-          "agencyName": "Det Kgl. Bibliotek",
+          "agencyId": "831040",
+          "agencyName": "AU Library Katrinebjerg",
           "borrowerCheck": true,
-          "branchId": "800045",
-          "city": "Aarhus C",
+          "branchId": "872120",
+          "city": "Aarhus N",
           "digitalCopyAccess": false,
-          "name": "AU Nobelparken, Aarhus",
-          "openingHours": null,
+          "name": "AU Library, Katrinebjerg",
+          "openingHours": "Mandag-fredag kl. 10.00-15.00",
           "pickupAllowed": true,
-          "postalAddress": "Jens Chr. Skous Vej 5
-Bygning 1461-1463, 1. etage",
-          "postalCode": "8000",
+          "postalAddress": "Helsingforsgade 12 Bygning 5335 - 1. sal",
+          "postalCode": "8200",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
@@ -192,17 +192,21 @@ Bygning 1461-1463, 1. etage",
           ],
         },
         Object {
-          "agencyId": "800010",
-          "agencyName": "Det Kgl. Bibliotek",
+          "agencyId": "820010",
+          "agencyName": "Det Kgl. Bibliotek - Aarhus",
           "borrowerCheck": true,
-          "branchId": "800046",
-          "city": "Aarhus C",
+          "branchId": "850920",
+          "city": "Risskov",
           "digitalCopyAccess": false,
-          "name": "AU Ny Munkegade, Aarhus",
-          "openingHours": null,
+          "name": "AU Library, Psykiatri",
+          "openingHours": "Mandag kl. 9-15
+Tirsdag  kl. 9-15
+Onsdag kl. 12-15
+Torsdag kl. 9-15
+Fredag   kl. 9-15",
           "pickupAllowed": true,
-          "postalAddress": "Ny Munkegade 118",
-          "postalCode": "8000",
+          "postalAddress": "Skovagervej 2, Indg. 34,  1. sal tv.",
+          "postalCode": "8240",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
@@ -215,18 +219,17 @@ Bygning 1461-1463, 1. etage",
           ],
         },
         Object {
-          "agencyId": "800010",
-          "agencyName": "Det Kgl. Bibliotek",
+          "agencyId": "850800",
+          "agencyName": "AU Library, Silkeborg",
           "borrowerCheck": true,
-          "branchId": "800047",
-          "city": "Aarhus C",
+          "branchId": "850801",
+          "city": "Roskilde",
           "digitalCopyAccess": false,
-          "name": "AU Sundhedsvidenskab, Aarhus",
-          "openingHours": null,
+          "name": "AU Library, Roskilde",
+          "openingHours": "Henvendelse via e-mail: bibldmu@dmu.dk",
           "pickupAllowed": true,
-          "postalAddress": "Victor Albeck Bygningen
-Vennelyst Boulevard 4",
-          "postalCode": "8000",
+          "postalAddress": "Frederiksborgvej 399",
+          "postalCode": "4000",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
@@ -248,7 +251,7 @@ exports[`library - get branches for agency 1`] = `
 Object {
   "data": Object {
     "branches": Object {
-      "hitcount": 21,
+      "hitcount": 25,
       "result": Array [
         Object {
           "agencyId": "710100",
@@ -280,7 +283,7 @@ bibliotek.kk.dk/biblioteker/",
           "branchId": "710114",
           "city": "København S",
           "digitalCopyAccess": false,
-          "name": "Bibliotekshuset",
+          "name": "Bibliotekshuset Rodosvej",
           "openingHours": "Åbningstider
 Se åbningstider på:
 bibliotek.kk.dk/biblioteker/",
@@ -307,7 +310,7 @@ bibliotek.kk.dk/biblioteker/",
           "name": "Blågårdens Bibliotek",
           "openingHours": "Åbningstider
 Se åbningstider på:
-bibliotek.kk.dk/biblioteker/",
+bibliotek.kk.dk/biblioteker",
           "pickupAllowed": true,
           "postalAddress": "Blågårds Plads 5",
           "postalCode": "2200",
@@ -470,14 +473,17 @@ bibliotek.kk.dk/biblioteker/",
         Object {
           "agencyId": "710100",
           "borrowerCheck": true,
-          "branchId": "710123",
-          "city": "Albertslund",
+          "branchId": "710111",
+          "city": "København N",
           "digitalCopyAccess": false,
-          "name": "Københavns Bibliotekers centrale sortering",
-          "openingHours": "ma-fre: 9-16",
+          "name": "Nørrebro Bibliotek",
+          "openingHours": "Åbningstider
+Se åbningstider på:
+bibliotek.kk.dk/biblioteker/",
           "pickupAllowed": true,
-          "postalAddress": "Djursvang 7C",
-          "postalCode": "2620",
+          "postalAddress": "Nørrebrohallen
+Nørrebrogade 208",
+          "postalCode": "2200",
           "userParameters": Array [
             Object {
               "parameterRequired": true,

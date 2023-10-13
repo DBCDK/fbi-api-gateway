@@ -124,7 +124,6 @@ export async function search(props, getFunc) {
         branches = (await fetchingPromise).map((branch) => ({
           ...branch,
           id: branch.branchId,
-          name: branch.branchName,
         }));
 
         branchesMap = {};
