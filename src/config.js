@@ -176,6 +176,17 @@ export default {
       prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
     },
+
+    libarysearch: {
+      excludeBranches:
+        process.env.LIBRARY_SEARCH_EXCLUDE_BRANCHES === "true" ||
+        process.env.LIBRARY_SEARCH_EXCLUDE_BRANCHES == "1",
+      url:
+        process.env.LIBRARY_SEARCH_URL ||
+        "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk:8080/1.0/api/alllibraries",
+      prefix: process.env.LIBRARY_SEARCH_PREFIX || "librarysearch-1",
+      ttl: process.env.LIBRARY_SEARCH_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+    },
     idp: {
       url:
         process.env.IDP_URL ||

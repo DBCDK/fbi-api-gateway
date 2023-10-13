@@ -2,12 +2,10 @@
  * @file libraries type definition and resolvers
  *
  */
-
 import { orderBy } from "lodash";
 import { resolveBorrowerCheck } from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
-
 export const typeDef = `
   enum LibraryStatus {
     SLETTET
@@ -117,25 +115,7 @@ export const resolvers = {
         }))
         .filter((highlight) => highlight.value.includes("<mark>"));
     },
-    name(parent, args, context, info) {
-      // first item is danish
-      // second item is english
-      return (
-        parent.branchName[parent.language === "da" ? 0 : 1] ||
-        parent.branchName[0]
-      );
-    },
-    openingHours(parent, args, context, info) {
-      // first item is danish
-      // second item is english
-      if (!parent.openingHours) {
-        return null;
-      }
-      return (
-        parent.openingHours[parent.language === "da" ? 0 : 1] ||
-        parent.openingHours[0]
-      );
-    },
+
     userStatusUrl(parent, args, context, info) {
       return parent.userStatusUrl || parent.branchWebsiteUrl || "";
     },

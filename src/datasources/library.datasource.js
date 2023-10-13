@@ -11,20 +11,17 @@ import request from "superagent";
 import config from "../config";
 import { createIndexer } from "../utils/searcher";
 
-// this endpoint is not in use right now. wait for fbiscrum to
-// fix vip-core.
-const endpoint = "/findlibrary/all?trackingId=betabib";
-
 const fields = [
   "name",
   "agencyName",
+  "agencyNames",
   "agencyId",
   "branchId",
   "city",
   "postalCode",
 ];
 
-const storeFields = [...fields, "libraryStatus", "pickupAllowed"];
+const storeFields = [...fields, "libraryStatus", "pickupAllowed", "status"];
 
 // Indexer options
 const options = {
@@ -49,7 +46,7 @@ const searchOptions = {
 
 // exclude branches - set this to false if you do NOT want to filter
 // out branches
-const excludeBranches = config.datasources.vipcore.excludeBranches;
+const excludeBranches = config.datasources.libarysearch.excludeBranches;
 
 // We cache the docs for 30 minutes
 let branches;
@@ -60,30 +57,12 @@ const index = createIndexer({ options });
 const timeToLiveMS = 1000 * 60 * 30;
 
 /**
- * Not in use at the moment - a bug in vip-core. To get libraries to
- * show in bibliotek.dk use libraryStatus="AKTIVE"
+ * Get ALL libraries
  * @returns {Promise<*>}
  */
 async function get() {
-  const url = config.datasources.vipcore.url + endpoint;
-  const result = (await request.get(url)).body.pickupAgency;
-
-  return result;
-}
-
-/**
- * Do a post with given library status
- * @param status
- * @returns {Promise<*>}
- */
-async function post(status) {
-  const url =
-    config.datasources.vipcore.url + "/findlibrary?trackingId=betabib";
-  return (
-    await request.post(url).send({
-      libraryStatus: status,
-    })
-  ).body.pickupAgency;
+  const url = config.datasources.libarysearch.url;
+  return (await request.get(url)).body.allLibraries;
 }
 
 /**
@@ -101,42 +80,17 @@ const age = () => {
  * @returns {Promise<(*&{branchShortName, branchName, openingHours, illOrderReceiptText})[]>}
  */
 async function doRequest() {
-  let result;
+  const libraries = await get();
 
-  // get active libraries first (librarStatus:"AKTIVE")
-  const active = await post("AKTIVE");
-  // set active status on active libraries
-  active.forEach((del) => (del.libraryStatus = "AKTIVE"));
-  // now get deleted libraries (libraryStatus: "SLETTET")
-  const deleted = await post("SLETTET");
-  // set deleted status on deleted libraries
-  deleted.forEach((del) => (del.libraryStatus = "SLETTET"));
-  // now get invisible libraries (libraryStatus:"USYNLIG")
-  // invisible libraries are also included in active
-  const invisible = await post("USYNLIG");
-  // set invisible status on invisible libraries
-  invisible.forEach((del) => (del.libraryStatus = "USYNLIG"));
-  // merge arrays to get ALL libraries with libraryStatus set on relevant ones
-  const alllibrarieswithstatus = [...invisible, ...active, ...deleted];
-  // filter out duplicates
-  const uniqueLibraries = uniqBy(alllibrarieswithstatus, "branchId");
-
-  result = uniqueLibraries.map((branch) => {
-    return {
-      ...branch,
-      branchName:
-        branch.branchName && branch.branchName.map((entry) => entry.value),
-      branchShortName:
-        branch.branchShortName &&
-        branch.branchShortName.map((entry) => entry.value),
-      openingHours:
-        branch.openingHours && branch.openingHours.map((entry) => entry.value),
-      illOrderReceiptText:
-        branch.illOrderReceiptText &&
-        branch.illOrderReceiptText.map((entry) => entry.value),
-    };
-  });
-  return result;
+  return libraries.map((branch) => ({
+    ...branch,
+    agencyName: branch.agencyName,
+    agencyNames: branch.agencyNames,
+    branchName: branch.name && branch.name,
+    illOrderReceiptText:
+      branch.illOrderReceiptText &&
+      branch.illOrderReceiptText.map((entry) => entry.value),
+  }));
 }
 
 /**
@@ -185,14 +139,27 @@ export async function search(props, getFunc) {
   }
   // filter on requested status
   const filterMe = status !== "ALLE";
+
   // filter function to be used in all cases
+  // We need to translate status enum to not brake api
+  // @TODO whatabout 'internal' ??
+  const translatedStatue = (enumStatus) => {
+    const trans = {
+      SLETTET: "deleted",
+      AKTIVE: "active",
+      USYNLIG: "invisible",
+    };
+
+    return trans[enumStatus];
+  };
   const filterAndExclude = (branch) => {
     return (
       (bibdkExcludeBranches
         ? digitalAccessSubscriptions[branch.agencyId] ||
           infomediaSubscriptions[branch.agencyId] ||
           branch.pickupAllowed
-        : true) && (filterMe ? branch.libraryStatus === status : true)
+        : true) &&
+      (filterMe ? branch.status === translatedStatue(status) : true)
     );
   };
 
