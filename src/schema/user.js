@@ -46,7 +46,7 @@ type User {
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
-  bookmarks(offset: Int, limit: PaginationLimit, orderBy: BookMarkOrderBy): BookMarkResponse!
+  bookmarks(orderBy:BookMarkOrderBy): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
   identityProviderUsed: String!
@@ -543,18 +543,16 @@ export const resolvers = {
 
         validateUserId(smaugUserId);
 
-        const { limit, offset, orderBy } = args;
+        const { orderBy } = args;
 
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
           .load({
             smaugUserId: smaugUserId,
-            limit,
-            offset,
             orderBy,
           });
 
-        return { result: res.result, hitcount: res?.hitcount || 0 };
+        return { result: res?.result, hitcount: res?.result?.length || 0 };
       } catch (error) {
         log.error(
           `Failed to get bookmarks from userData service. Message: ${error.message}`
