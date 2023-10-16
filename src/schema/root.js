@@ -268,7 +268,7 @@ export const resolvers = {
       return { ...args };
     },
     async user(parent, args, context, info) {
-      if (!context?.smaug?.user?.uniqueId) {
+      if (!context?.smaug?.user?.id) {
         return null;
       }
       return { ...args };
