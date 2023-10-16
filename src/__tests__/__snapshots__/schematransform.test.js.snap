@@ -2612,6 +2612,8 @@ enum FacetField {
   subjects
   creators
   canAlwaysBeLoaned
+  year
+  dk5
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -2627,6 +2629,8 @@ input SearchFilters {
   materialTypesSpecific: [String!]
   subjects: [String!]
   workTypes: [String!]
+  year: [String!]
+  dk5: [String!]
   branchId: [String!]
   department: [String!]
   location: [String!]
@@ -4512,6 +4516,8 @@ enum FacetField {
   subjects
   creators
   canAlwaysBeLoaned
+  year
+  dk5
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -4527,6 +4533,8 @@ input SearchFilters {
   materialTypesSpecific: [String!]
   subjects: [String!]
   workTypes: [String!]
+  year: [String!]
+  dk5: [String!]
   branchId: [String!]
   department: [String!]
   location: [String!]
