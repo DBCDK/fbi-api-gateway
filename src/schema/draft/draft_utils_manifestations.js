@@ -468,7 +468,7 @@ export function getProxyUrl(url, user) {
     url.indexOf("ebookcentral") !== -1 || url.indexOf("ebscohost") !== -1;
   if (proxyMe) {
     // check if user is logged in
-    if (user?.uniqueId) {
+    if (user?.id) {
       const realUrl = `https://bib${parseForMunicipalityNumber(
         user?.agency
       )}.bibbaser.dk/login?url=${url}`;

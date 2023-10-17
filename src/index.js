@@ -113,7 +113,8 @@ promExporterApp.listen(9599, () => {
         userAgent,
         userAgentIsBot: isbot(userAgent),
         ip: req?.smaug?.app?.ips?.[0],
-        isAuthenticatedToken: !!req.smaug?.user?.uniqueId,
+        isAuthenticatedToken: !!req.smaug?.user?.id,
+        hasUniqueId: !!req.smaug?.user?.uniqueId,
         accessTokenHash,
       });
       // monitorName is added to context/req in the monitor resolver
