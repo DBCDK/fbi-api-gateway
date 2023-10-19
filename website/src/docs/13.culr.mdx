@@ -80,7 +80,7 @@ All libraries are supported.
 
 <InlineGraphiQL
   query={`
-    mutation Example_GetAccounts {
+    query Example_GetAccounts {
       culr {
         getAccounts {
           municipalityNo
@@ -94,7 +94,7 @@ All libraries are supported.
       }
     }
 `}
-  variables={{}}
+  variables={""}
 />
 
 A `type` argument can be added, to force a selection between _getAccountsByLocalId_ and _getAccountsByGlobalId_
@@ -107,7 +107,7 @@ The provided _type_ can be one of the following:
 
 <InlineGraphiQL
   query={`
-    mutation Example_GetAccounts($input: GetAccountsInput) {
+    query Example_GetAccounts($input: GetAccountsInput) {
         culr {
             getAccounts(input: $input, type: GLOBAL) {
                 municipalityNo

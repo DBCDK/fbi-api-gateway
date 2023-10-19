@@ -38,7 +38,7 @@ describe("Culr", () => {
     } `;
 
   const getAccounts = `
-    mutation Test_GetAccounts($input: GetAccountsInput) {
+    query Test_GetAccounts($input: GetAccountsInput) {
       culr {
         getAccounts(input: $input) {
           municipalityNo

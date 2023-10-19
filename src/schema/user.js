@@ -485,12 +485,9 @@ export const resolvers = {
       return context.smaug.user.agency;
     },
     async agencies(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load(
-        {
-          accessToken: context.accessToken,
-        },
-        context
-      );
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
 
       const agencies = filterDuplicateAgencies(
         userinfo?.attributes?.agencies

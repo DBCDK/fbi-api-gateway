@@ -179,7 +179,7 @@ input GetAccountsInput {
 }
 
 
-type CulrService {
+type CulrMutate {
 
     """
     Add an agency to a CPR validated user
@@ -202,30 +202,26 @@ type CulrService {
     Used for testing
     """
     dryRun: Boolean): DeleteAccountResponse!
+}
 
+type CulrQuery {
+  """
+  Get all user accounts within the given agency by a global id
+  """
+  getAccounts(input: GetAccountsInput, 
+    
     """
-    Get all user accounts within the given agency by a localId
+    Force a specific dataloader
     """
-    getAccountsByLocalId(input: GetAccountsInput): CulrAccountResponse
-
-    """
-    Get all user accounts within the given agency by a global id
-    """
-    getAccountsByGlobalId(input: GetAccountsInput): CulrAccountResponse
-
-    """
-    Get all user accounts within the given agency by a global id
-    """
-    getAccounts(input: GetAccountsInput, 
-      
-      """
-      Force a specific dataloader
-      """
-      type: GetAccountsType): CulrAccountResponse
+    type: GetAccountsType): CulrAccountResponse
 }
 
 extend type Mutation {
-    culr: CulrService!
+    culr: CulrMutate!
+}
+
+extend type Query {
+  culr: CulrQuery!
 }
  `;
 
@@ -236,7 +232,13 @@ export const resolvers = {
     },
   },
 
-  CulrService: {
+  Query: {
+    async culr(parent, args, context, info) {
+      return {};
+    },
+  },
+
+  CulrMutate: {
     async createAccount(parent, args, context, info) {
       const accessToken = context.accessToken;
       const ffuToken = args.input?.tokens?.ffu;
@@ -282,8 +284,6 @@ export const resolvers = {
       user.bearer = await getAccount(accessToken, context, {
         type: "CPR",
       });
-
-      console.error("########", user);
 
       // Ensure that userId from the fetched account is a valid CPR
       if (ENABLE_CPR_CHECK && !isValidCpr(user.bearer?.userIdValue)) {
@@ -372,76 +372,12 @@ export const resolvers = {
 
     async deleteAccount(parent, args, context, info) {
       const agencyId = args.input?.agencyId;
-
-      const status = deleteFFUAccount({
-        agencyId,
-        localId,
-        dryRun: args.dryRuncontext,
-      });
-      return status;
+      const dryRun = args.dryRun;
+      return deleteFFUAccount({ agencyId, dryRun, context });
     },
+  },
 
-    async getAccountsByLocalId(parent, args, context, info) {
-      const accessToken = args.input?.accessToken;
-
-      let user = context.smaug?.user;
-      if (accessToken) {
-        user = (
-          await context.datasources.getLoader("smaug").load({
-            accessToken,
-          })
-        ).user;
-      }
-
-      if (!user?.id) {
-        return null;
-      }
-
-      // Retrieve user culr account
-      const response = await context.datasources
-        .getLoader("culrGetAccountsByLocalId")
-        .load({
-          userId: user.id,
-          agencyId: user.agency,
-        });
-
-      if (!response.guid) {
-        return null;
-      }
-
-      return response;
-    },
-
-    async getAccountsByGlobalId(parent, args, context, info) {
-      const accessToken = args.input?.accessToken;
-
-      let user = context.smaug?.user;
-      if (accessToken) {
-        user = (
-          await context.datasources.getLoader("smaug").load({
-            accessToken,
-          })
-        ).user;
-      }
-
-      if (!user?.id) {
-        return null;
-      }
-
-      // Retrieve user culr account
-      const response = await context.datasources
-        .getLoader("culrGetAccountsByGlobalId")
-        .load({
-          userId: user.id,
-        });
-
-      if (!response.guid) {
-        return null;
-      }
-
-      return response;
-    },
-
+  CulrQuery: {
     async getAccounts(parent, args, context, info) {
       const accessToken = args.input?.accessToken;
       const type = args.type;

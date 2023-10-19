@@ -497,7 +497,7 @@ input GetAccountsInput {
   accessToken: String!
 }
 
-type CulrService {
+type CulrMutate {
   \\"\\"\\"Add an agency to a CPR validated user\\"\\"\\"
   createAccount(
     input: CreateAccountInput!
@@ -519,13 +519,9 @@ type CulrService {
     \\"\\"\\"
     dryRun: Boolean
   ): DeleteAccountResponse!
+}
 
-  \\"\\"\\"Get all user accounts within the given agency by a localId\\"\\"\\"
-  getAccountsByLocalId(input: GetAccountsInput): CulrAccountResponse
-
-  \\"\\"\\"Get all user accounts within the given agency by a global id\\"\\"\\"
-  getAccountsByGlobalId(input: GetAccountsInput): CulrAccountResponse
-
+type CulrQuery {
   \\"\\"\\"Get all user accounts within the given agency by a global id\\"\\"\\"
   getAccounts(
     input: GetAccountsInput
@@ -536,7 +532,7 @@ type CulrService {
 }
 
 type Mutation {
-  culr: CulrService!
+  culr: CulrMutate!
 
   \\"\\"\\"
   Order digital article through Digital Article Service
@@ -582,6 +578,65 @@ type Mutation {
   submitSession(input: SessionInput!): String!
   deleteSession: String!
   users: UserMutations!
+}
+
+type Query {
+  culr: CulrQuery!
+  manifestation(pid: String, faust: String): Manifestation
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
+  monitor(name: String!): String!
+  user: User
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
+  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
+  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
+  linkCheck: LinkCheckService!
+  localSuggest(
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: [SuggestionType!]
+
+    \\"\\"\\"Number of items to return\\"\\"\\"
+    limit: Int
+
+    \\"\\"\\"Id of branch to filter by\\"\\"\\"
+    branchId: String
+  ): localSuggestResponse!
+  suggest(
+    workType: WorkType
+
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: SuggestionType
+
+    \\"\\"\\"Number of items to return\\"\\"\\"
+    limit: Int
+  ): SuggestResponse!
+
+  \\"\\"\\"Get recommendations\\"\\"\\"
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
+  help(q: String!, language: LanguageCode): HelpResponse
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches: Boolean): BranchResult!
+  deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
+  infomedia(id: String!): InfomediaResponse!
+  session: Session
+  howru: String
+  localizations(pids: [String!]!): Localizations
+
+  \\"\\"\\"
+  localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
+  \\"\\"\\"
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
+  refWorks(pid: String!): String!
+  ris(pid: String!): String!
+  relatedSubjects(q: [String!]!, limit: Int): [String!]
+  inspiration(language: LanguageCode, limit: Int): Inspiration!
+  orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
+  stats: Stats
 }
 
 type Lamp {
@@ -2514,64 +2569,6 @@ type PeriodicaArticleOrderResponse {
   status: PeriodicaArticleOrderStatus!
 }
 
-type Query {
-  manifestation(pid: String, faust: String): Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
-  monitor(name: String!): String!
-  user: User
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
-  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
-  linkCheck: LinkCheckService!
-  localSuggest(
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: [SuggestionType!]
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-
-    \\"\\"\\"Id of branch to filter by\\"\\"\\"
-    branchId: String
-  ): localSuggestResponse!
-  suggest(
-    workType: WorkType
-
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: SuggestionType
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-  ): SuggestResponse!
-
-  \\"\\"\\"Get recommendations\\"\\"\\"
-  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-  help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches: Boolean): BranchResult!
-  deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
-  infomedia(id: String!): InfomediaResponse!
-  session: Session
-  howru: String
-  localizations(pids: [String!]!): Localizations
-
-  \\"\\"\\"
-  localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
-  \\"\\"\\"
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
-  refWorks(pid: String!): String!
-  ris(pid: String!): String!
-  relatedSubjects(q: [String!]!, limit: Int): [String!]
-  inspiration(language: LanguageCode, limit: Int): Inspiration!
-  orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
-  stats: Stats
-}
-
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
 scalar PaginationLimit
 
@@ -3015,6 +3012,48 @@ type Cover {
 type Mutation {
   elba: ElbaServices!
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
+}
+
+type Query {
+  manifestation(pid: String, faust: String): Manifestation
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
+  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
+  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
+  linkCheck: LinkCheckService!
+  localSuggest(
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: [SuggestionType!]
+
+    \\"\\"\\"Number of items to return\\"\\"\\"
+    limit: Int
+
+    \\"\\"\\"Id of branch to filter by\\"\\"\\"
+    branchId: String
+  ): localSuggestResponse!
+  suggest(
+    workType: WorkType
+
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: SuggestionType
+
+    \\"\\"\\"Number of items to return\\"\\"\\"
+    limit: Int
+  ): SuggestResponse!
+
+  \\"\\"\\"Get recommendations\\"\\"\\"
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
+  infomedia(id: String!): InfomediaResponse!
+  refWorks(pid: String!): String!
+  ris(pid: String!): String!
+  relatedSubjects(q: [String!]!, limit: Int): [String!]
 }
 
 enum AccessTypeCode {
@@ -4439,48 +4478,6 @@ type PeriodicaArticleOrderResponse {
   status: PeriodicaArticleOrderStatus!
 }
 
-type Query {
-  manifestation(pid: String, faust: String): Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
-  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
-  linkCheck: LinkCheckService!
-  localSuggest(
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: [SuggestionType!]
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-
-    \\"\\"\\"Id of branch to filter by\\"\\"\\"
-    branchId: String
-  ): localSuggestResponse!
-  suggest(
-    workType: WorkType
-
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: SuggestionType
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-  ): SuggestResponse!
-
-  \\"\\"\\"Get recommendations\\"\\"\\"
-  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-  infomedia(id: String!): InfomediaResponse!
-  refWorks(pid: String!): String!
-  ris(pid: String!): String!
-  relatedSubjects(q: [String!]!, limit: Int): [String!]
-}
-
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
 scalar PaginationLimit
 
@@ -4609,6 +4606,10 @@ exports[`limited access to root fields 1`] = `
 "\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
+type Query {
+  help(q: String!, language: LanguageCode): HelpResponse
+}
+
 type HelpRow {
   nid: Int!
   group: String!
@@ -4625,16 +4626,16 @@ enum LanguageCode {
   da
   en
 }
-
-type Query {
-  help(q: String!, language: LanguageCode): HelpResponse
-}
 "
 `;
 
 exports[`remove all fields by type 1`] = `
 "\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
+
+type Query {
+  manifestation(pid: String, faust: String): Manifestation
+}
 
 enum AccessTypeCode {
   PHYSICAL
@@ -5960,10 +5961,6 @@ type TvSeries {
 type TvSeriesDetails {
   display: String
   numbers: [Int!]
-}
-
-type Query {
-  manifestation(pid: String, faust: String): Manifestation
 }
 "
 `;

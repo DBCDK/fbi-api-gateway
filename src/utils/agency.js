@@ -38,13 +38,6 @@ export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
       };
     }
 
-    // validate localId
-    if (!localId || isCPRNumber(localId)) {
-      return {
-        status: "ERROR_INVALID_LOCALID",
-      };
-    }
-
     // Get token user accounts
     const account = await getAccount(context.accessToken, context, {
       agency: agencyId,
