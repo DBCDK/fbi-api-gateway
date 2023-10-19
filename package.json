@@ -28,7 +28,7 @@
     "dbc-node-logger": "^2.0.10",
     "esm-wallaby": "^3.2.25",
     "express": "^4.17.1",
-    "graphiql": "^1.5.17",
+    "graphiql": "^1.11.5",
     "graphql": "^15.8.0",
     "graphql-http": "^1.14.0",
     "graphql-query-complexity": "^0.12.0",
