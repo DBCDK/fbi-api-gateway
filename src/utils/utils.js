@@ -547,7 +547,6 @@ export const fetchOrderStatus = async (args, context) => {
           errorMessage: "Could not fetch order info from ors-maintenance.",
         };
       }
-
       return {
         orderId: order.orderId,
         closed: order.orderJSON?.closed,
@@ -556,8 +555,9 @@ export const fetchOrderStatus = async (args, context) => {
         pickupAgencyId: order.pickupAgencyId,
         pid: order.orderJSON?.pid,
         pidOfPrimaryObject: order.orderJSON?.pidOfPrimaryObject,
-        author: order.orderJSON?.author,
-        title: order.orderJSON?.title,
+        //Only "tidsskrifter" and "artikler" has titleOfComponent and authorOfComponent.
+        author: order.orderJSON?.authorOfComponent || order.orderJSON?.author,
+        title: order.orderJSON?.titleOfComponent || order.orderJSON?.title,
         creationDate: order.orderJSON?.creationDate,
       };
     })
