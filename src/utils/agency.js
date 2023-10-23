@@ -19,6 +19,8 @@ export function isFFUAgency(agencyId) {
  * @returns
  */
 export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
+  const accessToken = context.accessToken;
+
   try {
     // settings
     const ENABLE_FFU_CHECK = true;
@@ -39,7 +41,7 @@ export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
     }
 
     // Get token user accounts
-    const account = await getAccount(context.accessToken, context, {
+    const account = await getAccount(accessToken, context, {
       agency: agencyId,
       type: "LOCAL",
     });
@@ -77,6 +79,11 @@ export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
     }
 
     if (response.code === "OK200") {
+      // clear user redis cache for userinfo
+      await context.datasources
+        .getLoader("userinfo")
+        .clearRedis({ accessToken });
+
       return {
         status: "OK",
       };

@@ -282,6 +282,15 @@ export function withRedis(
 }
 
 /**
+ * Delete a Redis cache by prefixed key
+ *
+ */
+export async function clearRedis(prefix, key) {
+  const prefixedKey = createPrefixedKey(prefix, key);
+  await redis.del(prefixedKey);
+}
+
+/**
  * The status function
  *
  * @throws Will throw error if service is down

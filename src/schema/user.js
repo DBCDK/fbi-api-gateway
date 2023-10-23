@@ -12,6 +12,8 @@ import {
   isCPRNumber,
 } from "../utils/utils";
 
+import uniqBy from "lodash/uniqBy";
+
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
 import { deleteFFUAccount } from "../utils/agency";

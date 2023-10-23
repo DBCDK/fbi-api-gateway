@@ -1,7 +1,7 @@
 import DataLoader from "dataloader";
 
 import { log } from "dbc-node-logger";
-import { withRedis } from "./datasources/redis.datasource";
+import { withRedis, clearRedis } from "./datasources/redis.datasource";
 import { createFetchWithConcurrencyLimit } from "./utils/fetchWithLimit";
 import { getFilesRecursive } from "./utils/utils";
 import config from "./config";
@@ -184,6 +184,10 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
     cacheKeyFn: (key) => (typeof key === "object" ? JSON.stringify(key) : key),
     maxBatchSize: 100,
   });
+
+  if (options?.redis?.prefix) {
+    loader.clearRedis = (key) => clearRedis(options?.redis?.prefix, key);
+  }
 
   return {
     loader,
