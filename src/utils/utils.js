@@ -535,6 +535,7 @@ export const fetchOrderStatus = async (args, context) => {
   //fetch order data for each orderID provided in the orderIds List
   const orders = await Promise.all(
     orderIds.map(async (orderId) => {
+      console.log("\n\n\nORDERID: ", orderId);
       const order = await context.datasources
         .getLoader("orderStatus")
         .load({ orderId });
@@ -556,8 +557,8 @@ export const fetchOrderStatus = async (args, context) => {
         pickupAgencyId: order.pickupAgencyId,
         pid: order.orderJSON?.pid,
         pidOfPrimaryObject: order.orderJSON?.pidOfPrimaryObject,
-        author: order.orderJSON?.author,
-        title: order.orderJSON?.title,
+        author: order.orderJSON?.authorOfComponent || order.orderJSON?.author,
+        title: order.orderJSON?.titleOfComponent || order.orderJSON?.title,
         creationDate: order.orderJSON?.creationDate,
       };
     })
