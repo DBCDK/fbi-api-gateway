@@ -237,10 +237,13 @@ export function createMockedDataLoaders() {
       ...file,
       name: file.file.replace(".datasource.mocked.js", ""),
       load: require(file.path).load,
+      clearRedis: () => {},
     }))
     .forEach((loader) => {
       mockedDatasources[loader.name] = loader;
     });
+
   mockedDatasources.getLoader = (name) => mockedDatasources[name];
+
   return mockedDatasources;
 }
