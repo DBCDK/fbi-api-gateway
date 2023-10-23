@@ -362,6 +362,11 @@ export const resolvers = {
       }
 
       if (response.code === "OK200") {
+        // clear user redis cache for userinfo
+        await context.datasources
+          .getLoader("userinfo")
+          .clearRedis({ accessToken });
+
         return {
           status: "OK",
         };

@@ -1,7 +1,7 @@
 import DataLoader from "dataloader";
 
 import { log } from "dbc-node-logger";
-import { withRedis } from "./datasources/redis.datasource";
+import { withRedis, clearRedis } from "./datasources/redis.datasource";
 import { createFetchWithConcurrencyLimit } from "./utils/fetchWithLimit";
 import { getFilesRecursive } from "./utils/utils";
 import config from "./config";
@@ -185,6 +185,10 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
     maxBatchSize: 100,
   });
 
+  if (options?.redis?.prefix) {
+    loader.clearRedis = (key) => clearRedis(options?.redis?.prefix, key);
+  }
+
   return {
     loader,
   };
@@ -233,10 +237,13 @@ export function createMockedDataLoaders() {
       ...file,
       name: file.file.replace(".datasource.mocked.js", ""),
       load: require(file.path).load,
+      clearRedis: () => {},
     }))
     .forEach((loader) => {
       mockedDatasources[loader.name] = loader;
     });
+
   mockedDatasources.getLoader = (name) => mockedDatasources[name];
+
   return mockedDatasources;
 }
