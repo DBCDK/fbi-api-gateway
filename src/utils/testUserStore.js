@@ -76,7 +76,6 @@ export async function getTestUser(context) {
   res.merged = res.accounts.filter(
     (account) => account.uniqueId === res.loginAgency.uniqueId
   );
-  res.culrAgencies = accountsToCulr(res.merged);
 
   return res;
 }
@@ -84,7 +83,7 @@ export async function getTestUser(context) {
 /**
  * Create accounts in Culr format
  */
-function accountsToCulr(accounts) {
+export function accountsToCulr(accounts) {
   const res = [];
   accounts.forEach((account) => {
     res.push({

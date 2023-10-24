@@ -1,5 +1,5 @@
 import config from "../config";
-import { getTestUser } from "../utils/testUserStore";
+import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.userInfo;
 /**
@@ -25,7 +25,7 @@ export async function testLoad({ accessToken }, context) {
       userId: loginAgency.cpr || loginAgency.localId,
       blocked: false,
       uniqueId: loginAgency?.uniqueId,
-      agencies: testUser.culrAgencies,
+      agencies: accountsToCulr(testUser.merged),
       municipalityAgencyId: "715100",
     },
   };

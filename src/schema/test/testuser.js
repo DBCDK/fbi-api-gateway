@@ -79,7 +79,6 @@ export const resolvers = {
       if (!context.testUser) {
         return null;
       }
-      console.log({ context });
       return getTestUser(context);
     },
   },
