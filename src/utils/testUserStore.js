@@ -1,16 +1,26 @@
 /**
- * @file a mocked culr that uses Redis as data store
+ * @file Redis Test User Store
+ *
+ * This file serves as a Redis store for managing test users. It is particularly useful
+ * for creating test user scenarios where setting up a test environment is challenging, like:
+ *
+ * - nemlogin (where we don't have a test user)
+ * - users on local libraries (where we for instance wants to be blocked)
+ * - Merging different types of library accounts (FFU and Folkebibliotek) in Culr
  */
+
 import { v5 as uuid } from "uuid";
 import { set, get } from "../datasources/redis.datasource";
 const TIME_TO_LIVE_SECONDS = 60 * 60 * 24 * 30;
 
-/*
+/**
  * Generate a key from context, used to store data in Redis
  */
 const getKey = (context) => `test_user_1:${context.testUser.key}`;
 
-// Generate uuid deterministically based on a string
+/**
+ * Generate uuid deterministically based on a string
+ */
 function uuidFromString(str, context) {
   return (
     "test:" +
@@ -18,13 +28,21 @@ function uuidFromString(str, context) {
   );
 }
 
+/**
+ * Store test user object in Redis
+ */
 export async function storeTestUser(object, context) {
   await set(getKey(context), TIME_TO_LIVE_SECONDS, object);
 }
 
+/**
+ * Get test user object from Redis, and create a proper structured
+ * test user object.
+ */
 export async function getTestUser(context) {
   let res = (await get(getKey(context)))?.val;
 
+  // Get info for login agency
   const branch = (
     await (context?.datasources?.getLoader || context.getLoader)(
       "library"
@@ -61,6 +79,9 @@ export async function getTestUser(context) {
   return res;
 }
 
+/**
+ * Create accounts in Culr format
+ */
 function accountsToCulr(accounts) {
   const res = [];
   accounts.forEach((reg) => {
