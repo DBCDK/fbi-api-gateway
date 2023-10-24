@@ -255,3 +255,22 @@ export function createMockedDataLoaders() {
 
   return mockedDatasources;
 }
+
+export function createTestUserDataLoaders() {
+  const mockedDataLoaders = createMockedDataLoaders();
+  getFilesRecursive("./src/datasources")
+    .filter(
+      (file) =>
+        file.path.endsWith("datasource.js") && require(file.path).testLoad
+    )
+    .map((file) => ({
+      ...file,
+      name: file.file.replace(".datasource.js", ""),
+      load: require(file.path).testLoad,
+    }))
+    .forEach((loader) => {
+      mockedDataLoaders[loader.name] = loader;
+    });
+
+  return mockedDataLoaders;
+}

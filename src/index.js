@@ -27,6 +27,7 @@ import createDataLoaders from "./datasourceLoader";
 
 import { v4 as uuid } from "uuid";
 import isbot from "isbot";
+import { parseTestToken } from "./utils/testUserStore";
 
 // this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
@@ -136,13 +137,9 @@ promExporterApp.listen(9599, () => {
     if (req.isTestToken) {
       // Using a test token will automatically mock certain datasources
       // making it possible to have test users
-      const [testTokenType, accessToken] = req.rawAccessToken.split(":");
-      const [_test, loginAgency, key] = testTokenType.split("_");
-      req.testUser = {
-        loginAgency,
-        key,
-      };
-      req.accessToken = accessToken;
+      const testToken = parseTestToken(req.rawAccessToken);
+      req.testUser = testToken.testUser;
+      req.accessToken = testToken.accessToken;
     } else {
       req.accessToken = req.rawAccessToken;
     }

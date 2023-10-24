@@ -76,6 +76,9 @@ export const resolvers = {
   },
   Test: {
     async user(parent, args, context, info) {
+      if (!context.testUser) {
+        return null;
+      }
       console.log({ context });
       return getTestUser(context);
     },
@@ -87,6 +90,9 @@ export const resolvers = {
   },
   TestMutation: {
     async user(parent, args, context, info) {
+      if (!context.testUser) {
+        return "Not a valid test token";
+      }
       const input = args.input;
       await storeTestUser(input, context);
 

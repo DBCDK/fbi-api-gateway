@@ -102,3 +102,15 @@ function accountsToCulr(accounts) {
   });
   return res;
 }
+
+export function parseTestToken(token) {
+  const [testTokenType, accessToken] = token.split(":");
+  const [_test, loginAgency, key] = testTokenType.split("_");
+  return {
+    accessToken,
+    testUser: {
+      loginAgency,
+      key,
+    },
+  };
+}
