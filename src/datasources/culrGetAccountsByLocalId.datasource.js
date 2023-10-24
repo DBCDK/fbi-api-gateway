@@ -7,6 +7,7 @@ import { log } from "dbc-node-logger";
 
 import config from "../config";
 import { getAccountsByLocalId } from "../utils/redisTestCulr";
+import { getTestUser } from "../utils/testUserStore";
 
 const {
   url,
@@ -102,9 +103,23 @@ export async function load({ agencyId, userId }, context) {
  * Gets the CULR account information
  */
 export async function testLoad({ agencyId, userId }, context) {
-  const res = await getAccountsByLocalId(
-    { agencyId, localId: userId },
-    context
+  const testUser = await getTestUser(context);
+  const accounts = testUser.culrAgencies.filter(
+    (reg) => agencyId === reg.agencyId
   );
-  return res;
+
+  if (accounts.length === 0) {
+    return { code: "ACCOUNT_DOES_NOT_EXIST" };
+  }
+
+  return {
+    guid: testUser.loginAgency.uniqueId,
+    municipalityNo: testUser.merged
+      .find((account) => account.isMunicipality)
+      ?.agency?.substring(1, 4),
+    accounts: testUser.culrAgencies.map((agency) => ({
+      ...agency,
+      userIdValue: agency.userId,
+    })),
+  };
 }

@@ -6,7 +6,7 @@ import { parseString } from "xml2js";
 import { log } from "dbc-node-logger";
 
 import config from "../config";
-import { createAccount } from "../utils/redisTestCulr";
+import { getTestUser, storeTestUser } from "../utils/testUserStore";
 
 const {
   url,
@@ -95,6 +95,12 @@ export async function load({ agencyId, cpr, localId }, context) {
 }
 
 export async function testLoad({ agencyId, cpr, localId }, context) {
-  const res = await createAccount({ agencyId, cpr, localId }, context);
-  return res;
+  const testUser = await getTestUser(context);
+  const accounts = testUser.accounts.filter(
+    (agency) => agencyId !== agency.agency
+  );
+  accounts.push({ agency: agencyId, cpr, localId });
+  await storeTestUser({ ...testUser, accounts: accounts }, context);
+
+  return { code: "OK200" };
 }

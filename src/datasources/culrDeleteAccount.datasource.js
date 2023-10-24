@@ -7,6 +7,7 @@ import { log } from "dbc-node-logger";
 
 import config from "../config";
 import { deleteAccount } from "../utils/redisTestCulr";
+import { getTestUser, storeTestUser } from "../utils/testUserStore";
 
 const {
   url,
@@ -91,6 +92,10 @@ export async function load({ agencyId, localId }, context) {
 }
 
 export async function testLoad({ agencyId, localId }, context) {
-  const res = await deleteAccount({ agencyId, localId }, context);
-  return res;
+  const testUser = await getTestUser(context);
+  const accounts = testUser.accounts.filter(
+    (agency) => agencyId !== agency.agency
+  );
+  await storeTestUser({ ...testUser, accounts: accounts }, context);
+  return { code: "OK200" };
 }

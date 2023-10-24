@@ -1,5 +1,5 @@
 import config from "../config";
-import { getAccountsByLocalId } from "../utils/redisTestCulr";
+import { getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.userInfo;
 /**
@@ -18,26 +18,14 @@ export async function load({ accessToken }, context) {
  *
  */
 export async function testLoad({ accessToken }, context) {
-  const branch = (
-    await context.getLoader("library").load({
-      branchId: context.testUser.loginAgency,
-      status: "ALLE",
-    })
-  ).result[0];
-  const agencyId = branch.agencyId;
-  const localId = "123456";
-  let patron = await getAccountsByLocalId({ agencyId, localId }, context);
-
+  const testUser = await getTestUser(context);
+  const loginAgency = testUser?.loginAgency;
   return {
     attributes: {
-      userId: "0101011234",
+      userId: loginAgency.cpr || loginAgency.localId,
       blocked: false,
-      uniqueId: context?.smaug?.user?.uniqueId,
-      agencies: patron.accounts.map((account) => ({
-        agencyId: account.agencyId,
-        userId: account.userIdValue,
-        userIdType: account.userIdType,
-      })),
+      uniqueId: loginAgency?.uniqueId,
+      agencies: testUser.culrAgencies,
       municipalityAgencyId: "715100",
     },
   };
