@@ -41,7 +41,7 @@ Object {
           Object {
             "agency": Object {
               "agencyId": "190101",
-              "agencyName": "nemlogin",
+              "agencyName": "bibliotek.dk",
             },
             "blocked": false,
             "cpr": "0101011234",
@@ -75,7 +75,7 @@ Object {
           Object {
             "agency": Object {
               "agencyId": "190101",
-              "agencyName": "nemlogin",
+              "agencyName": "bibliotek.dk",
             },
             "blocked": false,
             "cpr": "0101011234",

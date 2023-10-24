@@ -638,6 +638,7 @@ type Query {
   inspiration(language: LanguageCode, limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
+  test: Test
 }
 
 type Lamp {
@@ -2579,69 +2580,6 @@ type PeriodicaArticleOrderResponse {
   status: PeriodicaArticleOrderStatus!
 }
 
-<<<<<<< HEAD
-=======
-type Query {
-  manifestation(pid: String, faust: String): Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
-  monitor(name: String!): String!
-  user: User
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
-  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
-  linkCheck: LinkCheckService!
-  localSuggest(
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: [SuggestionType!]
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-
-    \\"\\"\\"Id of branch to filter by\\"\\"\\"
-    branchId: String
-  ): localSuggestResponse!
-  suggest(
-    workType: WorkType
-
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: SuggestionType
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-  ): SuggestResponse!
-
-  \\"\\"\\"Get recommendations\\"\\"\\"
-  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-  help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches: Boolean): BranchResult!
-  deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
-  borchk(input: BorchkInput!): BorchkResponse!
-  infomedia(id: String!): InfomediaResponse!
-  session: Session
-  howru: String
-  localizations(pids: [String!]!): Localizations
-
-  \\"\\"\\"
-  localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
-  \\"\\"\\"
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int): Localizations
-  refWorks(pid: String!): String!
-  ris(pid: String!): String!
-  relatedSubjects(q: [String!]!, limit: Int): [String!]
-  inspiration(language: LanguageCode, limit: Int): Inspiration!
-  orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
-  stats: Stats
-  test: Test
-}
-
->>>>>>> 0ddc2c8 (added some tests)
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
 scalar PaginationLimit
 
