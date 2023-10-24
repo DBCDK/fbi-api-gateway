@@ -60,19 +60,21 @@ export async function getTestUser(context) {
   const cpr = branch?.agencyId ? null : "0101011234";
   const localId = "123456";
 
-  if (!res?.accounts?.find((reg) => reg.agency === agencyId)) {
+  if (!res?.accounts?.find((account) => account.agency === agencyId)) {
     res.accounts.push({ agency: agencyId, cpr });
     await storeTestUser(res, context);
   }
 
-  res.accounts = res.accounts?.map((reg) => ({
-    ...reg,
+  res.accounts = res.accounts?.map((account) => ({
+    ...account,
     localId,
-    uniqueId: uuidFromString(reg.cpr || reg.agency || "", context),
+    uniqueId: uuidFromString(account.cpr || account.agency || "", context),
   }));
-  res.loginAgency = res?.accounts?.find((reg) => reg.agency === agencyId);
+  res.loginAgency = res?.accounts?.find(
+    (account) => account.agency === agencyId
+  );
   res.merged = res.accounts.filter(
-    (reg) => reg.uniqueId === res.loginAgency.uniqueId
+    (account) => account.uniqueId === res.loginAgency.uniqueId
   );
   res.culrAgencies = accountsToCulr(res.merged);
 
@@ -84,16 +86,16 @@ export async function getTestUser(context) {
  */
 function accountsToCulr(accounts) {
   const res = [];
-  accounts.forEach((reg) => {
+  accounts.forEach((account) => {
     res.push({
-      agencyId: reg.agency,
-      userId: reg.localId,
+      agencyId: account.agency,
+      userId: account.localId,
       userIdType: "LOCAL",
     });
-    if (reg.cpr) {
+    if (account.cpr) {
       res.push({
-        agencyId: reg.agency,
-        userId: reg.cpr,
+        agencyId: account.agency,
+        userId: account.cpr,
         userIdType: "CPR",
       });
     }
