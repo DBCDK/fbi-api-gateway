@@ -26,7 +26,9 @@ export async function testLoad({ accessToken }, context) {
       blocked: false,
       uniqueId: loginAgency?.uniqueId,
       agencies: accountsToCulr(testUser.merged),
-      municipalityAgencyId: "715100",
+      municipalityAgencyId: testUser.merged.find(
+        (account) => account.isMunicipality
+      )?.agency,
     },
   };
 }
