@@ -32,7 +32,12 @@ function uuidFromString(str, context) {
  * Store test user object in Redis
  */
 export async function storeTestUser(object, context) {
+  const getLoader = context?.datasources?.getLoader || context.getLoader;
+
   await set(getKey(context), TIME_TO_LIVE_SECONDS, object);
+
+  // Clear redis entries
+  await getLoader("userinfo").clearRedis({ accessToken: context.accessToken });
 }
 
 /**
