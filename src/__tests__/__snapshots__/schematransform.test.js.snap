@@ -620,7 +620,7 @@ type Query {
   \\"\\"\\"Get recommendations\\"\\"\\"
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches: Boolean): BranchResult!
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, bibdkExcludeBranches: Boolean, agencyTypes: [AgencyType!]): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   infomedia(id: String!): InfomediaResponse!
   session: Session
@@ -2292,6 +2292,14 @@ enum VipUserParameter {
   userTelephone
 }
 
+enum AgencyType {
+  ALLE
+  SKOLEBIBLIOTEK
+  FOLKEBIBLIOTEK
+  FORSKNINGSBIBLIOTEK
+  ANDRE
+}
+
 type UserParameter {
   userParameterType: VipUserParameter!
   parameterRequired: Boolean!
@@ -2304,6 +2312,7 @@ type Branch {
   agencyName: String
   agencyId: String!
   branchId: String!
+  agencyType: AgencyType!
   name: String!
   openingHours: String
   postalAddress: String
