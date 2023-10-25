@@ -6,7 +6,7 @@
  * it does not support highlighting and "one field search"
  *
  */
-import { orderBy, uniqBy } from "lodash";
+import { orderBy } from "lodash";
 import request from "superagent";
 import config from "../config";
 import { createIndexer } from "../utils/searcher";
@@ -21,7 +21,13 @@ const fields = [
   "postalCode",
 ];
 
-const storeFields = [...fields, "libraryStatus", "pickupAllowed", "status"];
+const storeFields = [
+  ...fields,
+  "libraryStatus",
+  "pickupAllowed",
+  "status",
+  "agencyType",
+];
 
 // Indexer options
 const options = {
@@ -43,10 +49,6 @@ const searchOptions = {
   combineWith: "AND",
   prefix: true,
 };
-
-// exclude branches - set this to false if you do NOT want to filter
-// out branches
-const excludeBranches = config.datasources.libarysearch.excludeBranches;
 
 // We cache the docs for 30 minutes
 let branches;
@@ -73,6 +75,31 @@ const age = () => {
   return lastUpdateMS ? new Date().getTime() - lastUpdateMS : 0;
 };
 
+// We need to translate agencyType enum to not brake api
+const translatedAgencyType = (enumType) => {
+  const obj = {
+    Skolebibliotek: "SKOLEBIBLIOTEK",
+    Folkebibliotek: "FOLKEBIBLIOTEK",
+    Forskningsbibliotek: "FORSKNINGSBIBLIOTEK",
+    Other: "ANDRE",
+  };
+
+  return obj[enumType];
+};
+
+// filter function to be used in all cases
+// We need to translate status enum to not brake api
+// @TODO whatabout 'internal' ??
+const translatedStatus = (enumStatus) => {
+  const trans = {
+    SLETTET: "deleted",
+    AKTIVE: "active",
+    USYNLIG: "invisible",
+  };
+
+  return trans[enumStatus];
+};
+
 /**
  * Do request(s) - we do several requests to get hold of all libraries (active, deleted, invisible)
  * and set a library status to filter on.
@@ -81,12 +108,9 @@ const age = () => {
  */
 async function doRequest() {
   const libraries = await get();
-
   return libraries.map((branch) => ({
     ...branch,
-    agencyName: branch.agencyName,
-    agencyNames: branch.agencyNames,
-    branchName: branch.name && branch.name,
+    agencyType: translatedAgencyType(branch.agencyType) || "ANDRE",
     illOrderReceiptText:
       branch.illOrderReceiptText &&
       branch.illOrderReceiptText.map((entry) => entry.value),
@@ -110,8 +134,10 @@ export async function search(props, getFunc) {
     digitalAccessSubscriptions,
     infomediaSubscriptions,
     status = "ALLE",
+    agencyTypes = ["ALLE"],
     bibdkExcludeBranches,
   } = props;
+
   if (!branches || age() > timeToLiveMS) {
     //if (true) {
     try {
@@ -136,39 +162,42 @@ export async function search(props, getFunc) {
       fetchingPromise = null;
     }
   }
+
   // filter on requested status
-  const filterMe = status !== "ALLE";
+  const useAgencyTypesFilter = !agencyTypes.includes("ALLE");
+  const useStatusFilter = status !== "ALLE";
 
-  // filter function to be used in all cases
-  // We need to translate status enum to not brake api
-  // @TODO whatabout 'internal' ??
-  const translatedStatue = (enumStatus) => {
-    const trans = {
-      SLETTET: "deleted",
-      AKTIVE: "active",
-      USYNLIG: "invisible",
-    };
+  const shouldFilter =
+    bibdkExcludeBranches || useStatusFilter || useAgencyTypesFilter;
 
-    return trans[enumStatus];
-  };
   const filterAndExclude = (branch) => {
-    return (
-      (bibdkExcludeBranches
-        ? digitalAccessSubscriptions[branch.agencyId] ||
-          infomediaSubscriptions[branch.agencyId] ||
-          branch.pickupAllowed
-        : true) &&
-      (filterMe ? branch.status === translatedStatue(status) : true)
-    );
+    let include = true;
+    if (bibdkExcludeBranches) {
+      include =
+        digitalAccessSubscriptions[branch.agencyId] ||
+        infomediaSubscriptions[branch.agencyId] ||
+        branch.pickupAllowed;
+    }
+
+    if (include && useStatusFilter) {
+      include = branch.status === translatedStatus(status);
+    }
+
+    if (include && useAgencyTypesFilter) {
+      include = agencyTypes.includes(branch.agencyType);
+    }
+
+    return include;
   };
 
   let result = branches;
+
   if (q) {
     // query given
     // prefix match
     result = index.search(q, branches, {
       ...searchOptions,
-      ...((filterMe || bibdkExcludeBranches) && { filter: filterAndExclude }),
+      ...(shouldFilter && { filter: filterAndExclude }),
     });
 
     // If no match use fuzzy to find the nearest match
@@ -176,12 +205,14 @@ export async function search(props, getFunc) {
       // try fuzzy  match
       result = index.search(q, branches, {
         ...searchOptions,
-        ...((filterMe || bibdkExcludeBranches) && { filter: filterAndExclude }),
+        ...(shouldFilter && { filter: filterAndExclude }),
         fuzzy: 0.4,
       });
     }
-  } // no query given - result is all branches - filter if requested
-  else if (filterMe || bibdkExcludeBranches) {
+  }
+
+  // no query given - result is all branches - filter if requested
+  else if (shouldFilter) {
     result = result.filter(filterAndExclude);
   }
 

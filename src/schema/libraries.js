@@ -25,6 +25,13 @@ export const typeDef = `
     userMail
     userTelephone
   }
+  enum AgencyType {
+    ALLE
+    SKOLEBIBLIOTEK,
+    FOLKEBIBLIOTEK,
+    FORSKNINGSBIBLIOTEK,
+    ANDRE
+  }
   type UserParameter {
     userParameterType: VipUserParameter!
     parameterRequired: Boolean!
@@ -36,6 +43,7 @@ export const typeDef = `
     agencyName: String
     agencyId: String!
     branchId: String!
+    agencyType: AgencyType!
     name: String!
     openingHours: String
     postalAddress: String
