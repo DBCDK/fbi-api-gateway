@@ -48,6 +48,12 @@ const proxy = createProxyMiddleware("http://127.0.0.1:3001", {
   logLevel: "silent",
 });
 
+const testUserLoginProxy = createProxyMiddleware("http://127.0.0.1:3002", {
+  changeOrigin: true,
+  ws: true,
+  logLevel: "silent",
+});
+
 const promExporterApp = express();
 // Setup route handler for metrics
 promExporterApp.get("/metrics", metrics);
@@ -310,6 +316,10 @@ promExporterApp.listen(9599, () => {
     res.send({ complexity: queryComplexity });
   });
 
+  // Proxy to test user login website
+  app.use("/test", testUserLoginProxy);
+
+  // Proxy to docs website
   app.use(proxy);
 
   // Default error handler
