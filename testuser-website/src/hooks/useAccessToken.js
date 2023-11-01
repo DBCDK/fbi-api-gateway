@@ -4,8 +4,6 @@ import config from "@/config";
 const SEED_STORAGE_KEY = "testUserSeed";
 let seed = "";
 export default function useAccessToken() {
-  console.log("acc", JSON.stringify(config));
-
   const { data, mutate: mutateSeed } = useSWR("seed", () => seed);
 
   function setSeed(val) {

@@ -54,8 +54,6 @@ export default function useTestUser() {
     ...res?.data?.test?.user,
   };
 
-  console.log("jep", user, res);
-
   async function update(input) {
     const parsed = {
       accounts: input?.accounts.map((reg) => {
