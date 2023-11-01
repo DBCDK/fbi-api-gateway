@@ -6,6 +6,9 @@ WORKDIR /home/node/app
 # copy project file
 COPY . .
 
+RUN chown -R node /home/node/app
+USER node
+
 # install node packages
 RUN npm set progress=false && npm config set depth 0 && \
     npm install
