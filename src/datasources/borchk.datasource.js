@@ -9,6 +9,7 @@ import { log } from "dbc-node-logger";
 import config from "../config";
 
 import { parseString } from "xml2js";
+import { getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.borchk;
 
@@ -107,10 +108,15 @@ export async function load({ libraryCode, userId, userPincode }, context) {
  * Simulate that user is blocked on agency 715100, but not others
  */
 export async function testLoad({ libraryCode, userId, userPincode }, context) {
-  const BLOCKED_LIBRARY = "715100";
+  const testUser = await getTestUser(context);
+  const account = testUser.merged.find(
+    (account) => account.agency === libraryCode
+  );
+  const blocked = !account || account.blocked;
+
   return {
-    blocked: libraryCode === BLOCKED_LIBRARY ? true : false,
-    status: libraryCode === BLOCKED_LIBRARY ? "NOT_OK" : "OK",
+    blocked,
+    status: blocked ? "NOT_OK" : "OK",
   };
 }
 

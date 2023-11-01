@@ -38,6 +38,16 @@ export async function storeTestUser(object, context) {
 
   // Clear redis entries
   await getLoader("userinfo").clearRedis({ accessToken: context.accessToken });
+  if (object?.accounts.length > 0) {
+    await Promise.all(
+      object.accounts.map(async (account) => {
+        await getLoader("borchk").clearRedis({
+          userId: "123456",
+          libraryCode: account.agency,
+        });
+      })
+    );
+  }
 }
 
 /**

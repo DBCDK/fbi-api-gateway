@@ -6,7 +6,6 @@ import { parseString } from "xml2js";
 import { log } from "dbc-node-logger";
 
 import config from "../config";
-import { deleteAccount } from "../utils/redisTestCulr";
 import { getTestUser, storeTestUser } from "../utils/testUserStore";
 
 const {

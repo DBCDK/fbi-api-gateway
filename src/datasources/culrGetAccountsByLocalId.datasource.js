@@ -6,7 +6,6 @@ import { parseString } from "xml2js";
 import { log } from "dbc-node-logger";
 
 import config from "../config";
-import { getAccountsByLocalId } from "../utils/redisTestCulr";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
 const {
