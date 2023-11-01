@@ -267,6 +267,7 @@ export function createTestUserDataLoaders() {
       ...file,
       name: file.file.replace(".datasource.js", ""),
       load: require(file.path).testLoad,
+      clearRedis: () => {},
     }))
     .forEach((loader) => {
       mockedDataLoaders[loader.name] = loader;
