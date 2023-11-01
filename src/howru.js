@@ -24,6 +24,7 @@ const omitKeys = [
   "authenticationUser",
   "authenticationGroup",
   "authenticationPassword",
+  "token",
   "user",
   "password",
 ];
