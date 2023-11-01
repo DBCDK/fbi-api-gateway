@@ -105,7 +105,7 @@ export async function load({ libraryCode, userId, userPincode }, context) {
 }
 
 /*
- * Simulate that user is blocked on agency 715100, but not others
+ * For special test users, we check to test user configuration object
  */
 export async function testLoad({ libraryCode, userId, userPincode }, context) {
   const testUser = await getTestUser(context);
