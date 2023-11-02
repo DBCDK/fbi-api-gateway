@@ -37,8 +37,8 @@ export default function Home() {
               Biblioteksinfrastrutur”. The API allows access to metadata about
               libraries and their collections and services like search, order
               and recommendations.
-              <br />
-              <br />
+            </Text>
+            <Text as="span">
               The API is based on GraphQL, which provides benefits such as:
               <ul>
                 <li>

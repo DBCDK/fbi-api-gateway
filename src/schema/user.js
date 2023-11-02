@@ -255,36 +255,40 @@ export const resolvers = {
       );
     },
     async rights(parent, args, context, info) {
+      // rights defaults to false
       let subscriptions = {
         infomedia: false,
         digitalArticleService: false,
         demandDrivenAcquisition: false,
       };
 
-      // get municipality agency
-      const municipalityAgencyId = await this.municipalityAgencyId(
-        parent,
-        args,
-        context,
-        info
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      // filtered accounts
+      const userInfoAccounts = filterDuplicateAgencies(
+        userinfo?.attributes?.agencies
       );
 
-      //const userAgencies = await this.agencies(parent, args, context, info);
       // get rights from idp
       const idpRights = await context.datasources.getLoader("idp").load("");
 
-      // check for infomedia access - if either of users agencies subscribes
-      /** NOTE  we leave this (outcommented) for loop for now @TODO is it correct  ?? **/
-      //for (const agency of userAgencies?.[0]?.result) {
-      if (municipalityAgencyId && idpRights[municipalityAgencyId]) {
+      const hasAccess = userInfoAccounts.filter(
+        ({ agencyId }) => idpRights[agencyId]
+      );
+
+      // check for infomedia access - if any of users agencies subscribes
+      if (hasAccess.length > 0) {
         subscriptions.infomedia = true;
-        //   break;
       }
-      //}
+
       // check for digital article service
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
         .load("");
+
+      const municipalityAgencyId = userinfo?.attributes?.municipalityAgencyId;
 
       // check with municipality agency
       if (digitalAccessSubscriptions[municipalityAgencyId]) {
