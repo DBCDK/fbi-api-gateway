@@ -274,7 +274,7 @@ export const resolvers = {
       // get rights from idp
       const idpRights = await context.datasources.getLoader("idp").load("");
 
-      const hasAccess = userInfoAccounts.filter(
+      const hasAccess = userInfoAccounts?.filter(
         ({ agencyId }) => idpRights[agencyId]
       );
 
