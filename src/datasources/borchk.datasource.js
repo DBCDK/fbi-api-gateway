@@ -9,6 +9,7 @@ import { log } from "dbc-node-logger";
 import config from "../config";
 
 import { parseString } from "xml2js";
+import { getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.borchk;
 
@@ -101,6 +102,22 @@ export async function load({ libraryCode, userId, userPincode }, context) {
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
   );
+}
+
+/*
+ * For special test users, we check to test user configuration object
+ */
+export async function testLoad({ libraryCode, userId, userPincode }, context) {
+  const testUser = await getTestUser(context);
+  const account = testUser.merged.find(
+    (account) => account.agency === libraryCode
+  );
+  const blocked = !account || account.blocked;
+
+  return {
+    blocked,
+    status: blocked ? "NOT_OK" : "OK",
+  };
 }
 
 export const options = {

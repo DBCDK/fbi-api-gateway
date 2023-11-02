@@ -6,6 +6,7 @@ import { parseString } from "xml2js";
 import { log } from "dbc-node-logger";
 
 import config from "../config";
+import { getTestUser, storeTestUser } from "../utils/testUserStore";
 
 const {
   url,
@@ -87,4 +88,13 @@ export async function load({ agencyId, localId }, context) {
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
   );
+}
+
+export async function testLoad({ agencyId, localId }, context) {
+  const testUser = await getTestUser(context);
+  const accounts = testUser.accounts.filter(
+    (agency) => agencyId !== agency.agency
+  );
+  await storeTestUser({ ...testUser, accounts: accounts }, context);
+  return { code: "OK200" };
 }

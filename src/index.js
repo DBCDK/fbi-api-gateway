@@ -27,6 +27,7 @@ import createDataLoaders from "./datasourceLoader";
 
 import { v4 as uuid } from "uuid";
 import isbot from "isbot";
+import { parseTestToken } from "./utils/testUserStore";
 
 // this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
@@ -42,6 +43,12 @@ const app = express();
 let server;
 
 const proxy = createProxyMiddleware("http://127.0.0.1:3001", {
+  changeOrigin: true,
+  ws: true,
+  logLevel: "silent",
+});
+
+const testUserLoginProxy = createProxyMiddleware("http://127.0.0.1:3002", {
   changeOrigin: true,
   ws: true,
   logLevel: "silent",
@@ -116,6 +123,7 @@ promExporterApp.listen(9599, () => {
         isAuthenticatedToken: !!req.smaug?.user?.id,
         hasUniqueId: !!req.smaug?.user?.uniqueId,
         accessTokenHash,
+        isTestToken: req.isTestToken,
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
@@ -126,10 +134,30 @@ promExporterApp.listen(9599, () => {
   });
 
   /**
+   * Middleware for parsing access token
+   */
+  app.post("/:profile/graphql", async (req, res, next) => {
+    // Get bearer token from authorization header
+    req.rawAccessToken = req.headers.authorization?.replace(/bearer /i, "");
+    req.isTestToken = req.rawAccessToken?.startsWith("test");
+    if (req.isTestToken) {
+      // Using a test token will automatically mock certain datasources
+      // making it possible to have test users
+      const testToken = parseTestToken(req.rawAccessToken);
+      req.testUser = testToken.testUser;
+      req.accessToken = testToken.accessToken;
+    } else {
+      req.accessToken = req.rawAccessToken;
+    }
+
+    next();
+  });
+
+  /**
    * Middleware for initializing dataloaders
    */
   app.post("/:profile/graphql", async (req, res, next) => {
-    req.datasources = createDataLoaders(uuid());
+    req.datasources = createDataLoaders(uuid(), req.testUser, req.accessToken);
     next();
   });
 
@@ -137,11 +165,6 @@ promExporterApp.listen(9599, () => {
    * Middleware for validating access token, and fetching smaug configuration
    */
   app.post("/:profile/graphql", async (req, res, next) => {
-    // Get bearer token from authorization header
-    req.accessToken =
-      req.headers.authorization &&
-      req.headers.authorization.replace(/bearer /i, "");
-
     // Get graphQL params
     try {
       const graphQLParams = req.body;
@@ -293,6 +316,10 @@ promExporterApp.listen(9599, () => {
     res.send({ complexity: queryComplexity });
   });
 
+  // Proxy to test user login website
+  app.use("/test", testUserLoginProxy);
+
+  // Proxy to docs website
   app.use(proxy);
 
   // Default error handler

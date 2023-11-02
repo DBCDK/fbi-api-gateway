@@ -577,6 +577,7 @@ type Mutation {
   ): RenewLoanResponse
   submitSession(input: SessionInput!): String!
   deleteSession: String!
+  test: TestMutation
   users: UserMutations!
 }
 
@@ -637,6 +638,7 @@ type Query {
   inspiration(language: LanguageCode, limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
+  test: Test
 }
 
 type Lamp {
@@ -2765,6 +2767,41 @@ type ProfileStat {
 
 type Stats {
   weekly: [ProfileStat!]!
+}
+
+\\"\\"\\"\\"\\"\\"
+type AgencyAccount {
+  agency: Branch
+  uniqueId: String
+  cpr: String
+  debt: String
+  blocked: Boolean
+  isMunicipality: Boolean
+}
+
+type TestUser {
+  \\"\\"\\"All agencies which the user is registered on\\"\\"\\"
+  accounts: [AgencyAccount!]
+}
+
+type Test {
+  user: TestUser
+}
+
+input AgencyAccountInput {
+  agency: String
+  cpr: String
+  debt: String
+  blocked: Boolean
+  isMunicipality: Boolean
+}
+
+input TestUserInput {
+  accounts: [AgencyAccountInput!]
+}
+
+type TestMutation {
+  user(input: TestUserInput): String
 }
 
 type User {

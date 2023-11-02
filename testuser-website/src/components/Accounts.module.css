@@ -1,0 +1,17 @@
+.Bottom {
+  margin-top: 60px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.Bottom .Button {
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+  margin: 0;
+  margin-left: 24px;
+  align-self: flex-end;
+}

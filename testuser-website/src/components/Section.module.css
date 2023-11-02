@@ -1,0 +1,18 @@
+.Section {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
+  width: 100%;
+}
+
+.SectionChildren {
+  width: 800px;
+}
+
+.Section h2:first-child {
+  margin-top: 0;
+  margin-bottom: 48px;
+}
+.Section h1:first-child {
+  margin-bottom: 48px;
+}

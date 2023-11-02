@@ -76,7 +76,6 @@ export const get = monitor(
           localStore[key] = parsed;
         }
       }
-
       return parsed;
     } catch (e) {
       log.error(`Redis get failed`, {

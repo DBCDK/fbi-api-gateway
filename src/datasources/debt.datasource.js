@@ -1,4 +1,5 @@
 import config from "../config";
+import { getTestUser } from "../utils/testUserStore";
 import { filterDuplicateAgencies } from "../utils/utils";
 
 const { url } = config.datasources.openuserstatus;
@@ -78,4 +79,17 @@ export async function load({ userInfoAccounts }, context) {
 
   // Flatten the array
   return collectedDebts.flat().filter((debt) => !!debt);
+}
+
+export async function testLoad({ userInfoAccounts }, context) {
+  const testUser = await getTestUser(context);
+  return testUser.merged
+    .filter((account) => account.debt)
+    .map((account) => ({
+      amount: account.debt,
+      currency: "DKK",
+      title: "Fed titel",
+      date: "2007-12-03T10:15:30Z",
+      agencyId: account.agency,
+    }));
 }

@@ -26,7 +26,7 @@ const fetcher = async (url) => {
 };
 
 export default function useConfiguration(token) {
-  const url = `/api/smaug?token=${token?.token}`;
+  const url = `/api/smaug?token=${token?.token?.replace(/test.*:/, "")}`;
   const isValid = isToken(token?.token);
 
   const { data, error } = useSWR(isValid && url, fetcher, {

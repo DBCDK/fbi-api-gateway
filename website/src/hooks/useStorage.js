@@ -19,7 +19,8 @@ export default function useStorage() {
   }
 
   const isToken = (token) => {
-    return !!(token.length === 40);
+    const strippedToken = token?.replace(/test.*:/, "");
+    return !!(strippedToken.length === 40);
   };
 
   const setSelectedToken = (token, profile) => {

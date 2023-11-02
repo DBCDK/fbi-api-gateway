@@ -1,0 +1,49 @@
+body {
+  margin: 0;
+  font-family: Tahoma,Verdana,Segoe,sans-serif;
+  line-height: 32px;
+  font-size: 24px;
+  color: #191919;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+label {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 4px 0;
+  font-size: 18px;
+  line-height: 24px;
+}
+label > div {
+  width: 150px;
+}
+input[type="text"] {
+  flex-grow: 4;
+  max-width: 400px;
+  padding: 4px;
+  
+}
+input {
+  padding: 4px;
+  font-size: 18px;
+  line-height: 24px;
+}
+.disable {
+  pointer-events: none;
+  background: grey;
+  background-color: rgba(239, 239, 239, 0.3);
+  color: rgb(84, 84, 84);
+  border-color: rgba(118, 118, 118, 0.3);
+  border-width: 1px;
+}
+button {
+  font-size: 24px;
+  line-height: 32px;
+  margin-top: 24px;
+  padding: 8px 24px;
+  align-self: flex-end;
+}
