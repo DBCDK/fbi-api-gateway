@@ -4,13 +4,20 @@ import { Accounts } from "@/components/Accounts";
 import Section from "@/components/Section";
 import useAccessToken from "@/hooks/useAccessToken";
 import useTestUser from "@/hooks/useTestUser";
-import config, { setConfig } from "@/config";
+import { setConfig } from "@/config";
+import { useRouter } from "next/router";
+
+import globalConfig from "../../../src/config";
 
 export default function TestUserLogin({ config }) {
   setConfig(config);
-  const { seed, setSeed, params, csrfToken } = useAccessToken();
+  const router = useRouter();
+  const { seed, setSeed, params } = useAccessToken();
 
   const { user, testUserToken, loginAgencyName, loginAccount } = useTestUser();
+  if (!config.validRedirect) {
+    return <div>Der er noget galt med den der redirect_uri.</div>;
+  }
 
   return (
     <>
@@ -24,8 +31,20 @@ export default function TestUserLogin({ config }) {
             </>
           )}
         </div>
-        <form method="post" action={config.callbackUrl}>
-          <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+        <form
+          method="post"
+          onSubmit={(e) => {
+            // Prevent default form behaviour
+            e.preventDefault();
+
+            // We encode the test user token in the 'code'. This is not a security concern
+            // since this token will never give access to any real user information.
+            const code = btoa(testUserToken);
+
+            // redirect to some next-auth callback
+            location.href = `${router.query.redirect_uri}?code=${code}&state=${router.query.state}`;
+          }}
+        >
           <p>
             Brugeren dannes ud fra et Test ID du vælger. Benyt evt. dine
             DBC-initialer, for at få udleveret din helt egen testbruger.
@@ -73,7 +92,7 @@ export default function TestUserLogin({ config }) {
               readOnly
               name={name}
               type="text"
-              value={params?.get(name) || ""}
+              value={router.query[name] || ""}
             />
           </label>
         ))}
@@ -113,58 +132,67 @@ export default function TestUserLogin({ config }) {
   );
 }
 
-async function getBody({ req }) {
-  return new Promise((resolve) => {
-    let postBody = "";
-    req.on("data", (data) => {
-      postBody += data.toString();
-    });
-    req.on("end", () => {
-      resolve(postBody && qs.parse(postBody));
-    });
+/**
+ * Taken from hejmdal
+ */
+function validateRedirectUri(redirect_uri, client) {
+  const res =
+    client.redirectUris.filter((uri) => {
+      const req = new RegExp(
+        `^${uri.replace(/\./g, "\\.").replace(/\*/g, ".*")}$`,
+        "g"
+      );
+      return redirect_uri.match(req);
+    }).length > 0;
+
+  return res;
+}
+
+/**
+ * The usual anon token fetching
+ */
+async function fetchAnonToken(loginBibUrl, clientId) {
+  const res = await fetch(`${loginBibUrl}/oauth/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: `grant_type=password&username=@&password=@&client_id=${encodeURIComponent(
+      clientId
+    )}&client_secret=@`,
   });
+  return await res.json();
 }
 
-function getCookies(context) {
-  return Object.fromEntries(
-    context.req.headers?.cookie
-      .split("; ")
-      .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
+export async function getServerSideProps({ query }) {
+  // Fetch anonymous token. we use this later to generate the test user token
+  const loginBibUrl = new URL(globalConfig.datasources.userInfo.url).origin;
+
+  // clientId is either a query param, or if dev mode it may be an environment variable
+  const clientId =
+    query.client_id ||
+    (process.env.NODE_ENV === "development" && process.env.NEXT_DEV_CLIENT_ID);
+
+  // fetch token
+  const anonymousToken = await fetchAnonToken(loginBibUrl, clientId);
+
+  // We need the smaug config in order to validate redirect_uri
+  const smaugConfig = await fetch(
+    `${globalConfig.datasources.smaug.url}/configuration?token=${anonymousToken.access_token}`,
+    {
+      method: "GET",
+    }
   );
-}
-export async function getServerSideProps(context) {
-  // This may be an incoming POST request, lets check the body
-  const config = await getBody(context);
-  if (config) {
-    // Store body in a cookie, so we can get it if user refreshes browser window
-    context.res.setHeader(
-      "Set-Cookie",
-      `testusercontext=${JSON.stringify(config)}; Path=/; SameSite=Lax`
-    );
-    return { props: { config } };
-  }
+  const smaugConfigJson = await smaugConfig.json();
 
-  // Check if config is in cookies
-  const cookies = getCookies(context);
-  const configFromCookie =
-    cookies?.testusercontext && JSON.parse(cookies.testusercontext);
-
-  if (configFromCookie) {
-    return { props: { config: configFromCookie } };
-  }
-
-  // If config is not in a cookie, but we are in dev mode
-  if (process.env.NODE_ENV === "development") {
-    return {
-      props: {
-        config: {
-          accessToken: process.env.NEXT_PUBLIC_DEV_ACCESS_TOKEN,
-          fbiApiUrl: process.env.NEXT_PUBLIC_DEV_FBI_API_URL,
-        },
+  return {
+    props: {
+      config: {
+        anonymousToken,
+        validRedirect: query.redirect_uri
+          ? validateRedirectUri(query.redirect_uri, smaugConfigJson)
+          : true,
       },
-    };
-  }
-
-  // bummer
-  return { props: { config: {} } };
+    },
+  };
 }

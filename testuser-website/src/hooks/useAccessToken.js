@@ -1,9 +1,11 @@
 import { useEffect, useMemo } from "react";
 import useSWR from "swr";
 import config from "@/config";
+import { useRouter } from "next/router";
 const SEED_STORAGE_KEY = "testUserSeed";
 let seed = "";
 export default function useAccessToken() {
+  const router = useRouter();
   const { data, mutate: mutateSeed } = useSWR("seed", () => seed);
 
   function setSeed(val) {
@@ -18,23 +20,10 @@ export default function useAccessToken() {
     }
   }, []);
 
-  const res = useMemo(() => {
-    if (!seed) {
-      return {};
-    }
-    const params = new URLSearchParams(document.location.search);
-    const anonToken = config.anonAccessToken;
-    return {
-      accessToken: `test_${
-        params.get("agency") || params.get("idp")
-      }_${seed}:${anonToken}`,
-      params,
-      csrfToken: config.csrfToken,
-    };
-  }, [seed]);
-
   return {
-    ...res,
+    accessToken: `test_${router.query.agency || router.query.idp}_${seed}:${
+      config.anonymousToken.access_token
+    }`,
     seed: data,
     setSeed,
   };
