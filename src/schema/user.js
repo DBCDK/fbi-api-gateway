@@ -257,7 +257,7 @@ export const resolvers = {
       );
     },
     async rights(parent, args, context, info) {
-      // rights defaults to false
+      // rights default to false
       let subscriptions = {
         infomedia: false,
         digitalArticleService: false,
