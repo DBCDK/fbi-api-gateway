@@ -6,6 +6,13 @@ import { filterDuplicateAgencies } from "./utils";
 
 /**
  *
+ * Check whether any of the users libraries has access to Infomedia.
+ * The returned agencyId will be billed for infomedia access.
+ *
+ * First we check if the users login library has access to info media, if not,
+ * we check if any other og the users associated accounts has access to infomedia,
+ * if so, we return the first one found.
+ *
  * @param {object} context
  *
  * @returns {null | string} AgencyId
