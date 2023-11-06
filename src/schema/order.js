@@ -142,6 +142,11 @@ export const typeDef = `
     orsId: String
    }
 
+   type SubmitMultipleOrders {
+    failedAtCreation: [SubmitOrderInput!]!
+    successfullyCreated: [SubmitOrderStatus!]!
+   }
+
    enum OrderType {
       ESTIMATE,
       HOLD,
@@ -251,6 +256,8 @@ export const typeDef = `
 
    extend type Mutation {
     submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+
+    submitMultipleOrders(input: [SubmitOrderInput!]!, dryRun: Boolean)
   }
   `;
 
@@ -343,6 +350,108 @@ export const resolvers = {
       }
 
       return submitOrderRes;
+    },
+    async submitMultipleOrders(parent, args, context, info) {
+      if (!context?.smaug?.orderSystem) {
+        throw "invalid smaug configuration [orderSystem]";
+      }
+
+      const branch = (
+        await context.datasources.getLoader("library").load({
+          branchId: args.input.pickUpBranch,
+        })
+      ).result?.[0];
+
+      if (!branch) {
+        return {
+          status: "UNKNOWN_PICKUPAGENCY",
+        };
+      }
+
+      // PickUpBranch agencyId
+      const agencyId = branch?.agencyId;
+
+      // userIds from userParameters
+      const userIds = getUserIds(args?.input?.userParameters);
+
+      // Verify that the user is allowed to place an order
+      const { status, statusCode, userId } = await getUserBorrowerStatus(
+        { agencyId, userIds },
+        context
+      );
+
+      if (!status) {
+        return { ok: status, status: statusCode };
+      }
+
+      // We assume we will get the verified userId from the 'getUserBorrowerStatus' check.
+      // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
+      if (!userId && !context?.smaug?.user?.id && isEmpty(userIds)) {
+        // Order is not possible if no userId could be found or was provided for the user
+        return { ok: false, status: "UNKNOWN_USER" };
+      }
+
+      // return if dryrun
+      if (args.dryRun) {
+        return {
+          ok: true,
+          status: "OWNED_ACCEPTED",
+          orderId: "1234",
+          orsId: "4321",
+          deleted: false,
+        };
+      }
+      const successfullyCreated = [];
+      const failedAtCreation = [];
+
+      args.input.forEach(async (input) => {
+        // Place order
+        const submitOrderRes = await context.datasources
+          .getLoader("submitOrder")
+          .load({
+            userId: userId || context?.smaug?.user?.id || userIds.userId,
+            branch,
+            input: input,
+            accessToken: context.accessToken,
+            smaug: context.smaug,
+          });
+
+        if (!submitOrderRes) {
+          // Creation failed
+          failedAtCreation.push(input);
+          return;
+        }
+        successfullyCreated.push(submitOrderRes);
+
+        //if the request is coming from beta.bibliotek.dk, add the order id to userData service
+        if (context?.profile?.agency == 190101) {
+          const orderId = submitOrderRes?.orderId;
+          const smaugUserId = context?.smaug?.user?.uniqueId;
+          try {
+            if (!smaugUserId) {
+              throw new Error("Not authorized");
+            }
+            if (!orderId) {
+              throw new Error("Undefined orderId");
+            }
+            await context.datasources.getLoader("userDataAddOrder").load({
+              smaugUserId: smaugUserId,
+              orderId: orderId,
+            });
+          } catch (error) {
+            log.error(
+              `Failed to add order to userData service. Message: ${
+                error.message || JSON.stringify(error)
+              }`
+            );
+          }
+        }
+      });
+
+      return {
+        successfullyCreated,
+        failedAtCreation,
+      };
     },
   },
 
