@@ -12,6 +12,8 @@ import {
   isCPRNumber,
 } from "../utils/utils";
 
+import { hasInfomediaAccess } from "../utils/access";
+
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
 import { deleteFFUAccount } from "../utils/agency";
@@ -262,33 +264,20 @@ export const resolvers = {
         demandDrivenAcquisition: false,
       };
 
+      if (hasInfomediaAccess(context)) {
+        subscriptions.infomedia = true;
+      }
+
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
 
-      // filtered accounts
-      const userInfoAccounts = filterDuplicateAgencies(
-        userinfo?.attributes?.agencies
-      );
-
-      // get rights from idp
-      const idpRights = await context.datasources.getLoader("idp").load("");
-
-      const hasAccess = userInfoAccounts?.filter(
-        ({ agencyId }) => idpRights[agencyId]
-      );
-
-      // check for infomedia access - if any of users agencies subscribes
-      if (hasAccess.length > 0) {
-        subscriptions.infomedia = true;
-      }
+      const municipalityAgencyId = userinfo?.attributes?.municipalityAgencyId;
 
       // check for digital article service
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
         .load("");
-
-      const municipalityAgencyId = userinfo?.attributes?.municipalityAgencyId;
 
       // check with municipality agency
       if (digitalAccessSubscriptions[municipalityAgencyId]) {
