@@ -189,25 +189,25 @@ export const typeDef = `
   }
 
   input Material {
-    pids: [String!]!,
-    key: String!,
+    pids: [String!]!
+    key: String!
+    publicationDate: String
+    publicationDateOfComponent: String
+    volume: String
+    author: String
+    authorOfComponent: String
+    titleOfComponent: String
+    title: String
     exactEdition: Boolean
+    expires: String
+    orderType: OrderType
   }
 
   input SubmitMultipleOrdersInput{
-    orderType: OrderType,
-    materialsToOrder: [Material!]!,
-    pickUpBranch: String!,
-    expires: String
+    materialsToOrder: [Material!]!
+    pickUpBranch: String!
     userParameters: SubmitOrderUserParameters!
-    author: String
-    authorOfComponent: String
     pagination: String
-    publicationDate: String
-    publicationDateOfComponent: String
-    title: String
-    titleOfComponent: String
-    volume: String
   } 
   
   type DeleteOrderResponse {
