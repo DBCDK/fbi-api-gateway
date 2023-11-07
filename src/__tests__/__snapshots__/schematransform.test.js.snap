@@ -549,6 +549,7 @@ type Mutation {
   ): DigitalArticleServiceResponse!
   elba: ElbaServices!
   submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+  submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
   data_collect(input: DataCollectInput!): String!
   deleteOrder(
@@ -2470,6 +2471,12 @@ type SubmitOrder {
   orsId: String
 }
 
+type SubmitMultipleOrders {
+  failedAtCreation: [String!]!
+  successfullyCreated: [String!]!
+  ok: Boolean
+}
+
 enum OrderType {
   ESTIMATE
   HOLD
@@ -2496,7 +2503,30 @@ input SubmitOrderInput {
   orderType: OrderType
   pids: [String!]!
   pickUpBranch: String!
+  key: String
   exactEdition: Boolean
+  expires: String
+  userParameters: SubmitOrderUserParameters!
+  author: String
+  authorOfComponent: String
+  pagination: String
+  publicationDate: String
+  publicationDateOfComponent: String
+  title: String
+  titleOfComponent: String
+  volume: String
+}
+
+input Material {
+  pids: [String!]!
+  key: String!
+  exactEdition: Boolean
+}
+
+input SubmitMultipleOrdersInput {
+  orderType: OrderType
+  materialsToOrder: [Material!]!
+  pickUpBranch: String!
   expires: String
   userParameters: SubmitOrderUserParameters!
   author: String
