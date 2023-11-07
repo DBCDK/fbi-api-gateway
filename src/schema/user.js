@@ -12,6 +12,8 @@ import {
   isCPRNumber,
 } from "../utils/utils";
 
+import { hasInfomediaAccess } from "../utils/access";
+
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
 import { deleteFFUAccount } from "../utils/agency";
@@ -255,32 +257,23 @@ export const resolvers = {
       );
     },
     async rights(parent, args, context, info) {
+      // rights default to false
       let subscriptions = {
         infomedia: false,
         digitalArticleService: false,
         demandDrivenAcquisition: false,
       };
 
-      // get municipality agency
-      const municipalityAgencyId = await this.municipalityAgencyId(
-        parent,
-        args,
-        context,
-        info
-      );
-
-      //const userAgencies = await this.agencies(parent, args, context, info);
-      // get rights from idp
-      const idpRights = await context.datasources.getLoader("idp").load("");
-
-      // check for infomedia access - if either of users agencies subscribes
-      /** NOTE  we leave this (outcommented) for loop for now @TODO is it correct  ?? **/
-      //for (const agency of userAgencies?.[0]?.result) {
-      if (municipalityAgencyId && idpRights[municipalityAgencyId]) {
+      if (hasInfomediaAccess(context)) {
         subscriptions.infomedia = true;
-        //   break;
       }
-      //}
+
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      const municipalityAgencyId = userinfo?.attributes?.municipalityAgencyId;
+
       // check for digital article service
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")

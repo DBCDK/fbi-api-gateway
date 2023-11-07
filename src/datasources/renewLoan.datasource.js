@@ -77,3 +77,10 @@ export async function load(
     dueDate: res.body?.renewLoanResponse?.renewLoanStatus?.[0]?.dateDue?.$,
   };
 }
+
+export async function testLoad() {
+  return {
+    error: null,
+    dueDate: "2023-12-12",
+  };
+}
