@@ -391,20 +391,21 @@ export const resolvers = {
         return { ok: false, status: "UNKNOWN_USER" };
       }
 
-      // return if dryrun
-      if (args.dryRun) {
-        return {
-          ok: true,
-          status: "OWNED_ACCEPTED",
-          orderId: "1234",
-          orsId: "4321",
-          deleted: false,
-        };
-      }
       const successfullyCreated = [];
       const failedAtCreation = [];
 
       args.input.forEach(async (input) => {
+        // return if dryrun
+        if (args.dryRun) {
+          return {
+            ok: true,
+            status: "OWNED_ACCEPTED",
+            orderId: "1234",
+            orsId: "4321",
+            deleted: false,
+          };
+        }
+
         // Place order
         const submitOrderRes = await context.datasources
           .getLoader("submitOrder")
