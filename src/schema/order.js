@@ -143,8 +143,9 @@ export const typeDef = `
    }
 
    type SubmitMultipleOrders {
-    failedAtCreation: [SubmitOrderInput!]!
-    successfullyCreated: [SubmitOrderStatus!]!
+    failedAtCreation: [String!]!,
+    successfullyCreated: [String!]!,
+    ok: Boolean
    }
 
    enum OrderType {
@@ -173,7 +174,30 @@ export const typeDef = `
     orderType: OrderType,
     pids: [String!]!,
     pickUpBranch: String!,
+    key: String,
     exactEdition: Boolean
+    expires: String
+    userParameters: SubmitOrderUserParameters!
+    author: String
+    authorOfComponent: String
+    pagination: String
+    publicationDate: String
+    publicationDateOfComponent: String
+    title: String
+    titleOfComponent: String
+    volume: String
+  }
+
+  input Material {
+    pids: [String!]!,
+    key: String!,
+    exactEdition: Boolean
+  }
+
+  input SubmitMultipleOrdersInput{
+    orderType: OrderType,
+    materialsToOrder: [Material!]!,
+    pickUpBranch: String!,
     expires: String
     userParameters: SubmitOrderUserParameters!
     author: String
@@ -256,10 +280,35 @@ export const typeDef = `
 
    extend type Mutation {
     submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
-
-    submitMultipleOrders(input: [SubmitOrderInput!]!, dryRun: Boolean)
+    submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
   }
   `;
+
+const saveOrderToUserdata = async (context, submitOrderRes) => {
+  //if the request is coming from beta.bibliotek.dk, add the order id to userData service
+  if (context?.profile?.agency == 190101) {
+    const orderId = submitOrderRes?.orderId;
+    const smaugUserId = context?.smaug?.user?.uniqueId;
+    try {
+      if (!smaugUserId) {
+        throw new Error("Not authorized");
+      }
+      if (!orderId) {
+        throw new Error("Undefined orderId");
+      }
+      await context.datasources.getLoader("userDataAddOrder").load({
+        smaugUserId: smaugUserId,
+        orderId: orderId,
+      });
+    } catch (error) {
+      log.error(
+        `Failed to add order to userData service. Message: ${
+          error.message || JSON.stringify(error)
+        }`
+      );
+    }
+  }
+};
 
 export const resolvers = {
   Mutation: {
@@ -325,29 +374,7 @@ export const resolvers = {
           smaug: context.smaug,
         });
 
-      //if the request is coming from beta.bibliotek.dk, add the order id to userData service
-      if (context?.profile?.agency == 190101) {
-        const orderId = submitOrderRes?.orderId;
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        try {
-          if (!smaugUserId) {
-            throw new Error("Not authorized");
-          }
-          if (!orderId) {
-            throw new Error("Undefined orderId");
-          }
-          await context.datasources.getLoader("userDataAddOrder").load({
-            smaugUserId: smaugUserId,
-            orderId: orderId,
-          });
-        } catch (error) {
-          log.error(
-            `Failed to add order to userData service. Message: ${
-              error.message || JSON.stringify(error)
-            }`
-          );
-        }
-      }
+      await saveOrderToUserdata(context, submitOrderRes);
 
       return submitOrderRes;
     },
@@ -393,65 +420,42 @@ export const resolvers = {
 
       const successfullyCreated = [];
       const failedAtCreation = [];
-
-      args.input.forEach(async (input) => {
-        // return if dryrun
-        if (args.dryRun) {
-          return {
-            ok: true,
-            status: "OWNED_ACCEPTED",
-            orderId: "1234",
-            orsId: "4321",
-            deleted: false,
-          };
-        }
-
-        // Place order
-        const submitOrderRes = await context.datasources
-          .getLoader("submitOrder")
-          .load({
-            userId: userId || context?.smaug?.user?.id || userIds.userId,
-            branch,
-            input: input,
-            accessToken: context.accessToken,
-            smaug: context.smaug,
-          });
-
-        if (!submitOrderRes) {
-          // Creation failed
-          failedAtCreation.push(input);
-          return;
-        }
-        successfullyCreated.push(submitOrderRes);
-
-        //if the request is coming from beta.bibliotek.dk, add the order id to userData service
-        if (context?.profile?.agency == 190101) {
-          const orderId = submitOrderRes?.orderId;
-          const smaugUserId = context?.smaug?.user?.uniqueId;
-          try {
-            if (!smaugUserId) {
-              throw new Error("Not authorized");
-            }
-            if (!orderId) {
-              throw new Error("Undefined orderId");
-            }
-            await context.datasources.getLoader("userDataAddOrder").load({
-              smaugUserId: smaugUserId,
-              orderId: orderId,
-            });
-          } catch (error) {
-            log.error(
-              `Failed to add order to userData service. Message: ${
-                error.message || JSON.stringify(error)
-              }`
-            );
+      await Promise.all(
+        args.input.materialsToOrder.map(async (material) => {
+          if (args.dryRun) {
+            // return if dryrun
+            successfullyCreated.push(material.key);
+            return;
           }
-        }
-      });
+
+          // Place order
+          const submitOrderRes = await context.datasources
+            .getLoader("submitOrder")
+            .load({
+              userId: userId || context?.smaug?.user?.id || userIds.userId,
+              branch,
+              input: { ...args.input, ...material, key: null },
+              accessToken: context.accessToken,
+              smaug: context.smaug,
+            });
+
+          if (!submitOrderRes || !submitOrderRes.ok) {
+            // Creation failed
+            failedAtCreation.push(material.key);
+            return;
+          }
+          successfullyCreated.push(material.key);
+
+          await saveOrderToUserdata(context, submitOrderRes);
+        })
+      );
 
       return {
         successfullyCreated,
         failedAtCreation,
+        ok:
+          failedAtCreation.length === 0 &&
+          successfullyCreated.length === args.input.materialsToOrder.length,
       };
     },
   },
