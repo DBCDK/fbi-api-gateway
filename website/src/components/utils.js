@@ -45,8 +45,9 @@ export function timeConverter(timestamp) {
 }
 
 export function isToken(token) {
+  const strippedToken = token?.replace(/test.*:/, "");
   // alpha numeric and more than 32 characters
-  return !!token?.match?.(/^(?=.*[a-zA-Z])(?=.*[0-9]).{40}/);
+  return !!strippedToken?.match?.(/^(?=.*[a-zA-Z])(?=.*[0-9]).{40}/);
 }
 
 export function isEqual(token1, token2) {

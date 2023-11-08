@@ -1,4 +1,5 @@
 import config from "../config";
+import { generateName } from "../utils/nameGenerator";
 
 const { url } = config.datasources.openuserstatus;
 const {
@@ -56,4 +57,17 @@ export async function load({ homeAccount }, context) {
   });
 
   return reduceBody(res?.body);
+}
+
+/**
+ *
+ */
+export async function testLoad({ homeAccount }, context) {
+  return {
+    name: generateName(context?.testUser.key || ""),
+    mail: "test@test.dk",
+    address: "Some Address 10",
+    postalCode: "1010",
+    country: "DK",
+  };
 }

@@ -6,6 +6,9 @@ WORKDIR /home/node/app
 # copy project file
 COPY . .
 
+RUN chown -R node /home/node/app
+USER node
+
 # install node packages
 RUN npm set progress=false && npm config set depth 0 && \
     npm install
@@ -13,17 +16,9 @@ RUN npm set progress=false && npm config set depth 0 && \
 # test
 RUN npm test
 
-# install website node packages
-RUN cd website && \
-    npm set progress=false && npm config set depth 0 && \
-    npm install
-
 # build for production
-RUN cd website && \
-    npm run build && \
-    npm prune --production
+RUN npm run build
 
-#
 # ---- Release ----
 FROM $NODE_BASEIMAGE AS release
 WORKDIR /home/node/app

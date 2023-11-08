@@ -6,6 +6,7 @@ import { parseString } from "xml2js";
 import { log } from "dbc-node-logger";
 
 import config from "../config";
+import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
 const {
   url,
@@ -95,4 +96,32 @@ export async function load({ agencyId, userId }, context) {
   return new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
   );
+}
+
+/**
+ * Gets the CULR account information
+ */
+export async function testLoad({ agencyId, userId }, context) {
+  const testUser = await getTestUser(context);
+  const localAccount = testUser.accounts.find(
+    (account) => agencyId === account.agency && account.localId === userId
+  );
+
+  if (!localAccount) {
+    return { code: "ACCOUNT_DOES_NOT_EXIST" };
+  }
+  const merged = testUser.accounts.filter(
+    (account) => localAccount.uniqueId === account.uniqueId
+  );
+
+  return {
+    guid: localAccount.uniqueId,
+    municipalityNo: merged
+      .find((account) => account.isMunicipality)
+      ?.agency?.substring(1, 4),
+    accounts: accountsToCulr(merged).map((agency) => ({
+      ...agency,
+      userIdValue: agency.userId,
+    })),
+  };
 }

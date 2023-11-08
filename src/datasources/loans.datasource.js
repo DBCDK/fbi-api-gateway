@@ -82,3 +82,35 @@ export async function load({ userInfoAccounts }, context) {
   // Flatten the array
   return collectedLoans.flat().filter((loan) => !!loan);
 }
+
+/*
+ * Loans when using test token
+ */
+export async function testLoad({ userInfoAccounts }, context) {
+  const agencyId = userInfoAccounts[0].agencyId;
+  return [
+    {
+      loanId: "120200590",
+      dueDate: "2023-09-22T00:00:00+02:00",
+      titleId: "51701763",
+      title: "Vennebogen & Koglerier: to skuespil",
+      materialType: "Bog",
+      pages: "219 sider",
+      publisher: "Lindhardt og Ringhof 2001",
+      language: "dan",
+      agencyId,
+    },
+    {
+      loanId: "120200589",
+      edition: "1. udgave",
+      dueDate: "2023-09-24T00:00:00+02:00",
+      titleId: "23424916",
+      title: "Efter uvejret",
+      materialType: "Bog",
+      pages: "196 sider",
+      publisher: "Borgen 2007",
+      language: "dan",
+      agencyId,
+    },
+  ];
+}

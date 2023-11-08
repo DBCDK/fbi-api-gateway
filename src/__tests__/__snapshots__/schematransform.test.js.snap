@@ -549,6 +549,7 @@ type Mutation {
   ): DigitalArticleServiceResponse!
   elba: ElbaServices!
   submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+  submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
   data_collect(input: DataCollectInput!): String!
   deleteOrder(
@@ -577,6 +578,7 @@ type Mutation {
   ): RenewLoanResponse
   submitSession(input: SessionInput!): String!
   deleteSession: String!
+  test: TestMutation
   users: UserMutations!
 }
 
@@ -637,6 +639,7 @@ type Query {
   inspiration(language: LanguageCode, limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
+  test: Test
 }
 
 type Lamp {
@@ -878,7 +881,7 @@ enum InfomediaError {
   BORROWERCHECK_NOT_ALLOWED
   INTERNAL_SERVER_ERROR
   BORROWER_NOT_IN_MUNICIPALITY
-  NO_MUNICIPALITY
+  NO_AGENCYID
 }
 
 enum AccessStatus {
@@ -2468,6 +2471,12 @@ type SubmitOrder {
   orsId: String
 }
 
+type SubmitMultipleOrders {
+  failedAtCreation: [String!]!
+  successfullyCreated: [String!]!
+  ok: Boolean
+}
+
 enum OrderType {
   ESTIMATE
   HOLD
@@ -2494,6 +2503,7 @@ input SubmitOrderInput {
   orderType: OrderType
   pids: [String!]!
   pickUpBranch: String!
+  key: String
   exactEdition: Boolean
   expires: String
   userParameters: SubmitOrderUserParameters!
@@ -2505,6 +2515,28 @@ input SubmitOrderInput {
   title: String
   titleOfComponent: String
   volume: String
+}
+
+input Material {
+  pids: [String!]!
+  key: String!
+  publicationDate: String
+  publicationDateOfComponent: String
+  volume: String
+  author: String
+  authorOfComponent: String
+  titleOfComponent: String
+  title: String
+  exactEdition: Boolean
+  expires: String
+  orderType: OrderType
+}
+
+input SubmitMultipleOrdersInput {
+  materialsToOrder: [Material!]!
+  pickUpBranch: String!
+  userParameters: SubmitOrderUserParameters!
+  pagination: String
 }
 
 type DeleteOrderResponse {
@@ -2765,6 +2797,41 @@ type ProfileStat {
 
 type Stats {
   weekly: [ProfileStat!]!
+}
+
+\\"\\"\\"\\"\\"\\"
+type AgencyAccount {
+  agency: Branch
+  uniqueId: String
+  cpr: String
+  debt: String
+  blocked: Boolean
+  isMunicipality: Boolean
+}
+
+type TestUser {
+  \\"\\"\\"All agencies which the user is registered on\\"\\"\\"
+  accounts: [AgencyAccount!]
+}
+
+type Test {
+  user: TestUser
+}
+
+input AgencyAccountInput {
+  agency: String
+  cpr: String
+  debt: String
+  blocked: Boolean
+  isMunicipality: Boolean
+}
+
+input TestUserInput {
+  accounts: [AgencyAccountInput!]
+}
+
+type TestMutation {
+  user(input: TestUserInput): String
 }
 
 type User {
@@ -3261,7 +3328,7 @@ enum InfomediaError {
   BORROWERCHECK_NOT_ALLOWED
   INTERNAL_SERVER_ERROR
   BORROWER_NOT_IN_MUNICIPALITY
-  NO_MUNICIPALITY
+  NO_AGENCYID
 }
 
 type InfomediaResponse {

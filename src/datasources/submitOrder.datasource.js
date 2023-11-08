@@ -131,3 +131,11 @@ export async function load(
     return null;
   }
 }
+
+export async function testLoad({ input }, context) {
+  return {
+    ok: true,
+    status: "",
+    orderId: JSON.stringify(input),
+  };
+}

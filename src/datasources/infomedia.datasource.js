@@ -1,11 +1,10 @@
 import request from "superagent";
 import config from "../config";
-import { log } from "dbc-node-logger";
 import { getInfomediaDetails } from "../utils/utils";
 
 const { url, ttl, prefix } = config.datasources.infomedia;
 
-function createSoap({ articleId, userId, municipalityAgencyId }) {
+function createSoap({ articleId, userId, agencyId }) {
   return `
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope"
   xmlns:xml="http://www.w3.org/XML/1998/namespace"
@@ -20,26 +19,23 @@ function createSoap({ articleId, userId, municipalityAgencyId }) {
       <uaim:file>${articleId}</uaim:file>
     </uaim:articleIdentifier>
     <uaim:userId>${userId}</uaim:userId>
-    <uaim:libraryCode>${municipalityAgencyId.replace(
-      /[^0-9]+/g,
-      ""
-    )}</uaim:libraryCode>
+    <uaim:libraryCode>${agencyId.replace(/[^0-9]+/g, "")}</uaim:libraryCode>
     <uaim:outputType>json</uaim:outputType>
   </uaim:getArticleRequest>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>`;
 }
 
-export async function load({ articleId, userId, municipalityAgencyId }) {
-  // municipalityAgencyId might be empty
-  if (!municipalityAgencyId) {
-    return { error: "NO_MUNICIPALITY" };
+export async function load({ articleId, userId, agencyId }) {
+  // agencyId might be empty
+  if (!agencyId) {
+    return { error: "NO_AGENCYID" };
   }
 
   try {
     const res = await request
       .post(url)
-      .field("xml", createSoap({ articleId, userId, municipalityAgencyId }));
+      .field("xml", createSoap({ articleId, userId, agencyId }));
     const html =
       res?.body?.getArticleResponse?.getArticleResponseDetails?.[0]?.imArticle
         ?.$;

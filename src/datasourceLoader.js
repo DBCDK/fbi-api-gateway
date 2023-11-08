@@ -107,7 +107,7 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
     if (!file.path.endsWith(".datasource.js")) {
       return;
     }
-    const { load, options, batchLoader, status } = require(file.path);
+    const { load, options, batchLoader, status, testLoad } = require(file.path);
     if (!load && !batchLoader) {
       return;
     }
@@ -116,6 +116,7 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
     const name = file.file.replace(".datasource.js", "");
 
     return {
+      testLoad,
       load,
       batchLoader,
       name,
@@ -143,10 +144,15 @@ log.debug(
  *
  * It collects performance metrics for the datasource.
  */
-function setupDataloader({ name, load, options, batchLoader }, context) {
+function setupDataloader(
+  { name, load, options, batchLoader, testLoad },
+  context
+) {
+  const loadImpl = context?.testUser && testLoad ? testLoad : load;
+
   let batchLoaderWithContext = batchLoader
     ? (keys) => batchLoader(keys, context)
-    : (keys) => Promise.all(keys.map((key) => load(key, context)));
+    : (keys) => Promise.all(keys.map((key) => loadImpl(key, context)));
 
   if (options?.redis?.prefix && options?.redis?.ttl) {
     batchLoaderWithContext = withRedis(batchLoaderWithContext, {
@@ -198,7 +204,7 @@ function setupDataloader({ name, load, options, batchLoader }, context) {
  * Will instantiate dataloaders from datasources.
  * This should be done for every incoming GraphQL request
  */
-export default function createDataLoaders(uuid) {
+export default function createDataLoaders(uuid, testUser, accessToken) {
   const result = {};
   const track = trackMe().start(uuid);
 
@@ -215,6 +221,8 @@ export default function createDataLoaders(uuid) {
         track,
         fetch: (url, options) => fetchWithConcurrencyLimit(url, options, name),
         trackingId: uuid,
+        testUser,
+        accessToken,
       })?.loader;
     }
     return result[name];
@@ -246,4 +254,24 @@ export function createMockedDataLoaders() {
   mockedDatasources.getLoader = (name) => mockedDatasources[name];
 
   return mockedDatasources;
+}
+
+export function createTestUserDataLoaders() {
+  const mockedDataLoaders = createMockedDataLoaders();
+  getFilesRecursive("./src/datasources")
+    .filter(
+      (file) =>
+        file.path.endsWith("datasource.js") && require(file.path).testLoad
+    )
+    .map((file) => ({
+      ...file,
+      name: file.file.replace(".datasource.js", ""),
+      load: require(file.path).testLoad,
+      clearRedis: () => {},
+    }))
+    .forEach((loader) => {
+      mockedDataLoaders[loader.name] = loader;
+    });
+
+  return mockedDataLoaders;
 }
