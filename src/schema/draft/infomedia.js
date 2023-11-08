@@ -50,7 +50,7 @@ async function fetchArticle(parent, context) {
   const userId = context.smaug?.user?.id;
 
   // users access given agencyId
-  const agencyId = getInfomediaAgencyId(context);
+  const agencyId = await getInfomediaAgencyId(context);
 
   const article = await context.datasources.getLoader("infomedia").load({
     articleId,
