@@ -58,8 +58,8 @@ async function infomedia(context) {
  *
  * @returns {null | string} AgencyId
  */
-export function getInfomediaAgencyId(context) {
-  return infomedia(context);
+export async function getInfomediaAgencyId(context) {
+  return await infomedia(context);
 }
 
 /**
@@ -68,6 +68,6 @@ export function getInfomediaAgencyId(context) {
  *
  * @returns {boolean}
  */
-export function hasInfomediaAccess(context) {
-  return !!infomedia(context);
+export async function hasInfomediaAccess(context) {
+  return !!(await infomedia(context));
 }

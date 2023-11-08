@@ -264,7 +264,7 @@ export const resolvers = {
         demandDrivenAcquisition: false,
       };
 
-      if (hasInfomediaAccess(context)) {
+      if (await hasInfomediaAccess(context)) {
         subscriptions.infomedia = true;
       }
 
