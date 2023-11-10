@@ -298,10 +298,10 @@ function Item({
               )}
 
               <div className={styles.details}>
-                {user?.loggedInBranchId && (
-                  <div className={styles.loggedInBranchId}>
-                    <Text type="text4">LoggedInBranchId</Text>
-                    <Text type="text1">{user?.loggedInBranchId}</Text>
+                {user?.loggedInAgencyId && (
+                  <div className={styles.loggedInAgencyId}>
+                    <Text type="text4">LoggedInAgencyId</Text>
+                    <Text type="text1">{user?.loggedInAgencyId}</Text>
                   </div>
                 )}
                 {user?.identityProviderUsed && (
