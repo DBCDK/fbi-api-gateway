@@ -6,7 +6,7 @@ query User_Details {
     name
     mail
     municipalityAgencyId
-    loggedInBranchId
+    loggedInAgencyId
     isCPRValidated
     identityProviderUsed
     agencies {

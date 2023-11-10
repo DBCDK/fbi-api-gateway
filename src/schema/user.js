@@ -38,7 +38,8 @@ type User {
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
-  loggedInBranchId: String
+  loggedInBranchId: String @deprecated(reason: "Use 'User.loggedInAgencyId' instead")
+  loggedInAgencyId: String
   municipalityAgencyId: String
   address: String
   postalCode: String
@@ -475,6 +476,9 @@ export const resolvers = {
       return agencyWithEmail && agencyWithEmail.userId;
     },
     async loggedInBranchId(parent, args, context, info) {
+      return context.smaug.user.agency;
+    },
+    async loggedInAgencyId(parent, args, context, info) {
       return context.smaug.user.agency;
     },
     async agencies(parent, args, context, info) {
