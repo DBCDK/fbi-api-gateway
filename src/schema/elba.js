@@ -71,7 +71,7 @@ export const resolvers = {
       const { pid, userName, userMail } = args.input;
 
       // token is not authenticated
-      if (!context?.smaug?.user?.uniqueId) {
+      if (!context?.smaug?.user?.id) {
         return {
           status: "ERROR_UNAUTHENTICATED_USER",
         };
