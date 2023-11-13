@@ -70,7 +70,7 @@ type Series {
   """
   The number in the series as text qoutation and a number
   """
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: "field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned")
 
   """
   Information about whether this work in the series should be read first
@@ -138,8 +138,21 @@ export const resolvers = {
     description(parent, args, context, info) {
       return parent.seriesDescription;
     },
+    isPopular(parent, args, context, info) {
+      return parent.type === "isPopular";
+    },
     numberInSeries(parent, args, context, info) {
-      return parent.numberInSeries || null;
+      if (!parent.numberInSeries) {
+        return null;
+      }
+
+      const display = parent.numberInSeries;
+      const match = parent.numberInSeries.match(/\d+/g);
+
+      return {
+        display,
+        number: match?.map((str) => parseInt(str, 10)),
+      };
     },
     readThisFirst(parent, args, context, info) {
       if (typeof parent.readThisFirst === "undefined") {
