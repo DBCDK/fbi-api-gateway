@@ -6,10 +6,11 @@
   for details.
 </DeprecationBox>
 
-
 <DeprecationBox deprecated="01/11-2023" expires="01/2-2024">
-  Please note that Fields `Work.materialTypes.specific` and Work.materialTypes.general are deprecated and will be removed.
-  Use `Work.materialTypes.materialTypeGeneral.display` and `Work.materialTypes.materialTypeSpecific.display` instead.
+  Please note that Fields `Work.materialTypes.specific` and
+  Work.materialTypes.general are deprecated and will be removed. Use
+  `Work.materialTypes.materialTypeGeneral.display` and
+  `Work.materialTypes.materialTypeSpecific.display` instead.
 </DeprecationBox>
 
 A work is some creation like a book, article, movie etc. It may exist in many different variants -
@@ -272,6 +273,12 @@ does not require substitution.
 />
 
 ## Series
+
+<DeprecationBox deprecated="15/11-2023" expires="15/02-2024">
+  Please note that field `NumberInSeries.number` is removed and only the String
+  value of `NumberInSeries.display` is returned for field `numberInSeries` in
+  future
+</DeprecationBox>
 
 A work may be part of one or more series. The example below fetches the series title,
 some information about how the work itself fits inside the series and all members of the serie as works.
