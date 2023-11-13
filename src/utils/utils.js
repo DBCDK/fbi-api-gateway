@@ -56,7 +56,11 @@ export function matchYear(str) {
 
 // we need to export this function to write a unit test
 export function resolveSeries(data, parent) {
-  const workId = parent.workId;
+  const workId = parent?.workId;
+
+  if (!workId) {
+    return [];
+  }
 
   return (
     data?.series?.map((serie) => {
