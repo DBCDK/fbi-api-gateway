@@ -1,27 +1,6 @@
-import { getArray, resolveManifestation, resolveWork } from "../../utils/utils";
-
-const reviews = {
-  heading: {
-    ALL: { da: null },
-    ABOUT: { da: "Kort om bogen" },
-    DESCRIPTION: { da: "Beskrivelse" },
-    EVALUATION: { da: "Vurdering" },
-    OTHER: { da: "Andre bøger om samme emne" },
-    LIBRARY: { da: null },
-    USE: { da: null },
-    OLDDESCRIPTION: { da: null },
-    COMPARE: { da: null },
-    CONCLUSION: { da: null },
-  },
-};
+import { resolveManifestation } from "../../utils/utils";
 
 export const typeDef = `
-
-
-
-
-
-
 enum ReviewElementType {
   ABSTRACT
   ACQUISITION_RECOMMENDATIONS
