@@ -21,6 +21,6 @@
       "relatedSubjects",
       "linkCheck"
     ],
-    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO", "WorkReview"]
+    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO"]
   }
 }
