@@ -61,6 +61,11 @@ enum FacetField {
   canAlwaysBeLoaned
   year
   dk5
+  age
+  lix
+  let
+  generalAudience
+  libraryRecommendation
 }
 
 """
