@@ -1450,6 +1450,9 @@ type Manifestation {
 
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
+
+  \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
+  review: ManifestationReview
 }
 
 type ManifestationTitles {
@@ -1672,6 +1675,39 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+}
+
+enum ReviewElementType {
+  ABSTRACT
+  ACQUISITION_RECOMMENDATIONS
+  AUDIENCE
+  CONCLUSION
+  DESCRIPTION
+  EVALUATION
+  SIMILAR_MATERIALS
+}
+
+type ReviewElement {
+  content: String
+
+  \\"\\"\\"
+  This is a paragraph containing markup where links to manifestations
+  can be inserted. For instance '\\"Axel Steens nye job minder om [870970-basis:20307021] fra ...'.
+  Relevant manifestations are located in the manifestations field. 
+  \\"\\"\\"
+  contentSubstitute: String
+  heading: String
+
+  \\"\\"\\"
+  Manifestations that can be used to generate and insert links into 'contentSubsitute'.
+  \\"\\"\\"
+  manifestations: [Manifestation]
+  type: ReviewElementType
+}
+
+type ManifestationReview {
+  rating: String
+  reviewByLibrarians: [ReviewElement]
 }
 
 type Universe {
@@ -3755,6 +3791,9 @@ type Manifestation {
 
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
+
+  \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
+  review: ManifestationReview
 }
 
 type ManifestationTitles {
@@ -3973,6 +4012,39 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+}
+
+enum ReviewElementType {
+  ABSTRACT
+  ACQUISITION_RECOMMENDATIONS
+  AUDIENCE
+  CONCLUSION
+  DESCRIPTION
+  EVALUATION
+  SIMILAR_MATERIALS
+}
+
+type ReviewElement {
+  content: String
+
+  \\"\\"\\"
+  This is a paragraph containing markup where links to manifestations
+  can be inserted. For instance '\\"Axel Steens nye job minder om [870970-basis:20307021] fra ...'.
+  Relevant manifestations are located in the manifestations field. 
+  \\"\\"\\"
+  contentSubstitute: String
+  heading: String
+
+  \\"\\"\\"
+  Manifestations that can be used to generate and insert links into 'contentSubsitute'.
+  \\"\\"\\"
+  manifestations: [Manifestation]
+  type: ReviewElementType
+}
+
+type ManifestationReview {
+  rating: String
+  reviewByLibrarians: [ReviewElement]
 }
 
 type Universe {
@@ -5270,6 +5342,9 @@ type Manifestation {
 
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
+
+  \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
+  review: ManifestationReview
 }
 
 type ManifestationTitles {
@@ -5473,6 +5548,39 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+}
+
+enum ReviewElementType {
+  ABSTRACT
+  ACQUISITION_RECOMMENDATIONS
+  AUDIENCE
+  CONCLUSION
+  DESCRIPTION
+  EVALUATION
+  SIMILAR_MATERIALS
+}
+
+type ReviewElement {
+  content: String
+
+  \\"\\"\\"
+  This is a paragraph containing markup where links to manifestations
+  can be inserted. For instance '\\"Axel Steens nye job minder om [870970-basis:20307021] fra ...'.
+  Relevant manifestations are located in the manifestations field. 
+  \\"\\"\\"
+  contentSubstitute: String
+  heading: String
+
+  \\"\\"\\"
+  Manifestations that can be used to generate and insert links into 'contentSubsitute'.
+  \\"\\"\\"
+  manifestations: [Manifestation]
+  type: ReviewElementType
+}
+
+type ManifestationReview {
+  rating: String
+  reviewByLibrarians: [ReviewElement]
 }
 
 type Universe {
