@@ -56,28 +56,27 @@ export function matchYear(str) {
 
 // we need to export this function to write a unit test
 export function resolveSeries(data, parent) {
+  const workId = parent?.workId;
+
+  if (!workId) {
+    return [];
+  }
+
   return (
     data?.series?.map((serie) => {
       const match = serie.works?.find(
-        ({ persistentWorkId }) => persistentWorkId === parent.workId
+        ({ persistentWorkId }) => persistentWorkId === workId
       );
 
-      const readThisFirst = match?.readThisFirst;
-      const readThisWhenever = match?.readThisWhenever;
-      // NumberInSeries is returned from JED because of the structure
-      const numberInSeries = parent.series?.find(
-        (serie) => serie.numberInSeries
-      )?.numberInSeries;
-
-      //
-      const isPopular = parent.series?.find((serie) => serie.isPopular)
-        ?.isPopular;
+      // Select from specific member and add to series level
+      const readThisFirst = match?.readThisFirst || null;
+      const readThisWhenever = match?.readThisWhenever || null;
+      const numberInSeries = match?.numberInSeries || null;
 
       return {
         numberInSeries,
         readThisFirst,
         readThisWhenever,
-        isPopular,
         ...serie,
       };
     }) || []

@@ -1726,7 +1726,7 @@ type Series {
   parallelTitles: [String!]!
 
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: \\"field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned\\")
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean
@@ -4027,7 +4027,7 @@ type Series {
   parallelTitles: [String!]!
 
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: \\"field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned\\")
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean
@@ -5527,7 +5527,7 @@ type Series {
   parallelTitles: [String!]!
 
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: \\"field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned\\")
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean

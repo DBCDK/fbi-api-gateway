@@ -11,7 +11,7 @@ export async function load({ workId }) {
           {
             numberInSeries: "1",
             readThisFirst: true,
-            persistentWorkId: "work-of:870970-basis:52557240",
+            persistentWorkId: "work-of:870970-basis:26521556",
           },
           {
             numberInSeries: "2",
