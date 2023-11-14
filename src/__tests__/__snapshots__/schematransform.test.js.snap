@@ -2652,6 +2652,11 @@ enum FacetField {
   canAlwaysBeLoaned
   year
   dk5
+  age
+  lix
+  let
+  generalAudience
+  libraryRecommendation
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -4592,6 +4597,11 @@ enum FacetField {
   canAlwaysBeLoaned
   year
   dk5
+  age
+  lix
+  let
+  generalAudience
+  libraryRecommendation
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
