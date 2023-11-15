@@ -68,7 +68,7 @@ type Query {
     """
     q: String!
     """    
-    suggest type to include in result
+    the type of index to get suggestions from
     """
     type: ComplexSuggestionType!    
   ): ComplexSuggestResponse!
