@@ -345,9 +345,16 @@ export const resolvers = {
         return { ok: status, status: statusCode };
       }
 
+      // userInfo
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      const authUserId = userinfo?.attributes?.userId;
+
       // We assume we will get the verified userId from the 'getUserBorrowerStatus' check.
       // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
-      if (!userId && !context?.smaug?.user?.id && isEmpty(userIds)) {
+      if (!userId && !authUserId && isEmpty(userIds)) {
         // Order is not possible if no userId could be found or was provided for the user
         return { ok: false, status: "UNKNOWN_USER" };
       }
@@ -367,11 +374,12 @@ export const resolvers = {
       const submitOrderRes = await context.datasources
         .getLoader("submitOrder")
         .load({
-          userId: userId || context?.smaug?.user?.id || userIds.userId,
+          userId: userId || authUserId || userIds.userId,
           branch,
           input: args.input,
           accessToken: context.accessToken,
           smaug: context.smaug,
+          authUserId,
         });
 
       await saveOrderToUserdata(context, submitOrderRes);
