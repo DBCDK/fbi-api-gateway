@@ -15,9 +15,9 @@ enum ComplexSuggestionType {
 
 type ComplexSearchSuggestion {
   """
-  The type of suggestion: creator, subject or title
+  The weight/relevanse? of suggestion
   """
-  type: ComplexSuggestionType!
+  weight: String!
 
   """
   The suggested term which can be searched for
@@ -69,6 +69,11 @@ export const resolvers = {
       return resolveWork({ id: parent.work }, context);
     },
   },
+  ComplexSearchSuggestion: {
+    async work(parent, args, context, info) {
+      return resolveWork({ id: parent.work }, context);
+    },
+  },
   SuggestResponse: {
     async result(parent, args, context, info) {
       const res = await context.datasources.getLoader("suggester").load({
@@ -81,12 +86,8 @@ export const resolvers = {
   },
   ComplexSuggestResponse: {
     async result(parent, args, context, info) {
-      console.log("FISK");
-
-      console.log(args, parent, "INPUT");
-
       const res = await context.datasources.getLoader("complexSuggest").load({
-        type: parent.type.toLowerCase(),
+        type: parent.type,
         q: parent.q,
         profile: context.profile,
       });

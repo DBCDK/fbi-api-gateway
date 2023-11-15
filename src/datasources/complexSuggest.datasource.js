@@ -8,8 +8,6 @@ import config from "../config";
 const { url, prefix, ttl } = config.datasources.complexsearchsuggest;
 
 export async function load({ q, type }, context) {
-  console.log("COMPLEX SUGGEST");
-
   const res = await context.fetch(
     `${url}?${new URLSearchParams({
       q: q,
@@ -18,8 +16,6 @@ export async function load({ q, type }, context) {
   );
 
   const body = res.body;
-
-  console.log(body, "BODY");
 
   if (Array.isArray(body)) {
     return body;
