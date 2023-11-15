@@ -151,6 +151,38 @@ If multiple filters are added for the same category, they are OR'ed together.
 For instance, _works_ must be Svensk OR Engelsk. Filters applied across categories
 are AND'ed together. For instance (Svensk OR Engelsk) AND dvd.
 
+## Range facets
+
+Some facets supports range. The following example uses ageRange. Other facets are lixRange and letRange.
+<InlineGraphiQL
+query={`query Example_FilterRange($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFilters!) {
+  search(q: $q, filters: $filters) {
+    hitcount
+    facets(facets: $facets) {
+      name
+      values(limit: $facetLimit) {
+        term
+        score
+      }
+    }
+  }
+}`}
+variables={{
+             q: {
+               all: "den grimme ælling"
+             },
+             filters: {
+               ageRange: [
+                 "4-6"
+               ]
+             },
+             facetLimit: 5,
+             facets: [
+               "age"
+             ]
+           }}
+           />
+
 ## Facet performance :warning:
 
 While it is possible to fetch both _facets_ and _works_ in a single request, it is not recommended.
