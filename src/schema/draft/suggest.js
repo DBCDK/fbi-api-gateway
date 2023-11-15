@@ -15,9 +15,9 @@ enum ComplexSuggestionType {
 
 type ComplexSearchSuggestion {
   """
-  The weight/relevanse? of suggestion
+  The type of suggestion
   """
-  weight: String!
+  type: String!
 
   """
   The suggested term which can be searched for
