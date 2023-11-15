@@ -3,6 +3,7 @@
  */
 
 import config from "../config";
+import { mapFilters } from "../utils/filtersAndFacetsMap";
 
 const { url, prefix, ttl, token } = config.datasources.simplesearch;
 
@@ -20,10 +21,12 @@ export async function load(
     debug: false,
     search_exact: search_exact,
   };
+
+  const mappedFilters = mapFilters(filters);
   // merge variables and statics
   const query = {
     q,
-    filters,
+    filters: mappedFilters,
     start: offset,
     rows: limit,
     ...statics,

@@ -92,6 +92,13 @@ input SearchFilters {
   sublocation: [String!]
   status: [HoldingsStatus!]
   canAlwaysBeLoaned: [String!]
+  
+  age: [String!]
+  ageRange: [String!]
+  lixRange: [String!]
+  letRange: [String!]
+  generalAudience: [String!]
+  libraryRecommendation: [String!]
 }
 
 enum HoldingsStatus {
