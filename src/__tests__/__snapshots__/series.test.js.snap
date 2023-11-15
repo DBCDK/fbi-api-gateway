@@ -10,7 +10,7 @@ Object {
             Object {
               "numberInSeries": "1",
               "work": Object {
-                "workId": "work-of:870970-basis:52557240",
+                "workId": "work-of:870970-basis:26521556",
               },
             },
             Object {
@@ -57,9 +57,9 @@ Object {
             },
           ],
           "numberInSeries": Object {
-            "display": "Dummy number one",
+            "display": "7",
             "number": Array [
-              1,
+              7,
             ],
           },
           "readThisFirst": null,

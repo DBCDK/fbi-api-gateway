@@ -34,5 +34,11 @@
     "reason": "Replaced by Elba.placeCopyRequest",
     "deprecated": "15/09-2023",
     "expired": "15/12-2023"
+  },
+  {
+    "field": "NumberInSeries.number",
+    "reason": "field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned",
+    "deprecated": "15/11-2023",
+    "expired": "15/02-2024"
   }
 ]

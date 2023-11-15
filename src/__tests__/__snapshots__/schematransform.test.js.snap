@@ -1624,9 +1624,6 @@ type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
-  \\"\\"\\"The new reviews\\"\\"\\"
-  workReviews: [WorkReview!]! @deprecated(reason: \\"Use 'Work.relations.hasReview' instead\\")
-
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
   \\"\\"\\"
@@ -1678,109 +1675,6 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
-}
-
-enum LibrariansReviewSectionCode {
-  ALL
-  ABOUT
-  DESCRIPTION
-  EVALUATION
-  OTHER
-  LIBRARY
-  USE
-  OLDDESCRIPTION
-  COMPARE
-  CONCLUSION
-}
-
-type LibrariansReviewSection {
-  \\"\\"\\"a code indicating the content type of the section\\"\\"\\"
-  code: LibrariansReviewSectionCode!
-
-  \\"\\"\\"The heading of the section\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"A piece of text, maybe mentioning a work at the end.\\"\\"\\"
-  text: String!
-
-  \\"\\"\\"
-  The work the text is refering to. When work is null, the text does not refer to a work.
-  \\"\\"\\"
-  work: Work
-}
-
-interface Review {
-  author: String
-  date: String
-}
-
-type ExternalReview implements Review {
-  author: String
-  date: String
-  rating: String
-  urls: [AccessUrl!]!
-}
-
-type InfomediaReview implements Review {
-  author: String
-  date: String
-  origin: String
-  rating: String
-  id: String!
-}
-
-type LibrariansReview implements Review {
-  author: String
-  date: String
-  sections: [LibrariansReviewSection!]!
-
-  \\"\\"\\" This is a pid \\"\\"\\"
-  id: String!
-}
-
-type WorkReview {
-  \\"\\"\\"Author of the review\\"\\"\\"
-  author: String
-
-  \\"\\"\\"Date of the review in the format YYYY-MM-DD\\"\\"\\"
-  date: String
-
-  \\"\\"\\"
-  When this is not null, the review can be retrieved from infomedia using the infomediaId
-  \\"\\"\\"
-  infomediaId: String
-
-  \\"\\"\\"
-  When this is not null, this review is created by a librarian, 
-  and the sections of the review are available here
-  \\"\\"\\"
-  librariansReview: [LibrariansReviewSection!]
-
-  \\"\\"\\"The origin of review. E.g. 'Politiken'\\"\\"\\"
-  origin: String
-
-  \\"\\"\\"When this is not null, the review is located in a periodica\\"\\"\\"
-  periodica: PeriodicaReviewDetails
-
-  \\"\\"\\"The pid of the review\\"\\"\\"
-  pid: String!
-
-  \\"\\"\\"The authors rating of the work. E.g '5/6'\\"\\"\\"
-  rating: String
-
-  \\"\\"\\"This may contain URL's where the review can be read\\"\\"\\"
-  urls: [AccessUrl!]!
-}
-
-type PeriodicaReviewDetails {
-  \\"\\"\\"Specifies the volume of the periodica where the review is located\\"\\"\\"
-  volume: String
-
-  \\"\\"\\"Specifies which pages of the volume the review is located\\"\\"\\"
-  pages: String
-
-  \\"\\"\\"A reference to the host publication\\"\\"\\"
-  hostPublication: Work
 }
 
 enum ReviewElementType {
@@ -1868,7 +1762,7 @@ type Series {
   parallelTitles: [String!]!
 
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: \\"field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned\\")
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean
@@ -2680,6 +2574,12 @@ input SearchFilters {
   sublocation: [String!]
   status: [HoldingsStatus!]
   canAlwaysBeLoaned: [String!]
+  age: [String!]
+  ageRange: [String!]
+  lixRange: [String!]
+  letRange: [String!]
+  generalAudience: [String!]
+  libraryRecommendation: [String!]
 }
 
 enum HoldingsStatus {
@@ -4205,7 +4105,7 @@ type Series {
   parallelTitles: [String!]!
 
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: \\"field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned\\")
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean
@@ -4625,6 +4525,12 @@ input SearchFilters {
   sublocation: [String!]
   status: [HoldingsStatus!]
   canAlwaysBeLoaned: [String!]
+  age: [String!]
+  ageRange: [String!]
+  lixRange: [String!]
+  letRange: [String!]
+  generalAudience: [String!]
+  libraryRecommendation: [String!]
 }
 
 enum HoldingsStatus {
@@ -5603,9 +5509,6 @@ type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
-  \\"\\"\\"The new reviews\\"\\"\\"
-  workReviews: [WorkReview!]! @deprecated(reason: \\"Use 'Work.relations.hasReview' instead\\")
-
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
   \\"\\"\\"
@@ -5657,80 +5560,6 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
-}
-
-enum LibrariansReviewSectionCode {
-  ALL
-  ABOUT
-  DESCRIPTION
-  EVALUATION
-  OTHER
-  LIBRARY
-  USE
-  OLDDESCRIPTION
-  COMPARE
-  CONCLUSION
-}
-
-type LibrariansReviewSection {
-  \\"\\"\\"a code indicating the content type of the section\\"\\"\\"
-  code: LibrariansReviewSectionCode!
-
-  \\"\\"\\"The heading of the section\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"A piece of text, maybe mentioning a work at the end.\\"\\"\\"
-  text: String!
-
-  \\"\\"\\"
-  The work the text is refering to. When work is null, the text does not refer to a work.
-  \\"\\"\\"
-  work: Work
-}
-
-type WorkReview {
-  \\"\\"\\"Author of the review\\"\\"\\"
-  author: String
-
-  \\"\\"\\"Date of the review in the format YYYY-MM-DD\\"\\"\\"
-  date: String
-
-  \\"\\"\\"
-  When this is not null, the review can be retrieved from infomedia using the infomediaId
-  \\"\\"\\"
-  infomediaId: String
-
-  \\"\\"\\"
-  When this is not null, this review is created by a librarian, 
-  and the sections of the review are available here
-  \\"\\"\\"
-  librariansReview: [LibrariansReviewSection!]
-
-  \\"\\"\\"The origin of review. E.g. 'Politiken'\\"\\"\\"
-  origin: String
-
-  \\"\\"\\"When this is not null, the review is located in a periodica\\"\\"\\"
-  periodica: PeriodicaReviewDetails
-
-  \\"\\"\\"The pid of the review\\"\\"\\"
-  pid: String!
-
-  \\"\\"\\"The authors rating of the work. E.g '5/6'\\"\\"\\"
-  rating: String
-
-  \\"\\"\\"This may contain URL's where the review can be read\\"\\"\\"
-  urls: [AccessUrl!]!
-}
-
-type PeriodicaReviewDetails {
-  \\"\\"\\"Specifies the volume of the periodica where the review is located\\"\\"\\"
-  volume: String
-
-  \\"\\"\\"Specifies which pages of the volume the review is located\\"\\"\\"
-  pages: String
-
-  \\"\\"\\"A reference to the host publication\\"\\"\\"
-  hostPublication: Work
 }
 
 enum ReviewElementType {
@@ -5818,7 +5647,7 @@ type Series {
   parallelTitles: [String!]!
 
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: \\"field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned\\")
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean
