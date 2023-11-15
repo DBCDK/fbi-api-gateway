@@ -7,6 +7,29 @@ enum SuggestionType {
   CREATOR
   COMPOSIT
 }
+
+enum ComplexSuggestionType {
+  title
+  creator
+}
+
+type ComplexSearchSuggestion {
+  """
+  The type of suggestion: creator, subject or title
+  """
+  type: ComplexSuggestionType!
+
+  """
+  The suggested term which can be searched for
+  """
+  term: String!
+
+  """
+  A work related to the term
+  """
+  work: Work @complexity(value: 5)
+}
+
 type Suggestion {
   """
   The type of suggestion: creator, subject or title
@@ -23,12 +46,17 @@ type Suggestion {
   """
   work: Work @complexity(value: 5)
 }
+
+type ComplexSuggestResponse {
+  result: [ComplexSearchSuggestion!]!
+}
+
 type SuggestResponse {
   result: [Suggestion!]!
 }
 
 type localSuggestResponse{
-result: [Suggestion!]!
+  result: [Suggestion!]!
 }
 `;
 
@@ -46,6 +74,20 @@ export const resolvers = {
       const res = await context.datasources.getLoader("suggester").load({
         ...parent,
         ...args,
+        profile: context.profile,
+      });
+      return res;
+    },
+  },
+  ComplexSuggestResponse: {
+    async result(parent, args, context, info) {
+      console.log("FISK");
+
+      console.log(args, parent, "INPUT");
+
+      const res = await context.datasources.getLoader("complexSuggest").load({
+        type: parent.type.toLowerCase(),
+        q: parent.q,
         profile: context.profile,
       });
       return res;
