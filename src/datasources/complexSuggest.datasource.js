@@ -15,13 +15,7 @@ export async function load({ q, type }, context) {
     })}`
   );
 
-  const body = res.body;
-
-  if (Array.isArray(body)) {
-    return body;
-  }
-
-  return body.response;
+  return res.body.response;
 }
 
 export const options = {
