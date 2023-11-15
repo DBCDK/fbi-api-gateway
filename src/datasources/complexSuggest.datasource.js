@@ -24,9 +24,9 @@ export async function load({ q, type }, context) {
   return body.response;
 }
 
-/*export const options = {
+export const options = {
   redis: {
     prefix,
     ttl,
   },
-};*/
+};
