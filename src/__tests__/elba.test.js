@@ -21,9 +21,9 @@ test("PeriodicaArticleOrder, unauthenticated token, should give error", async ()
     },
     context: {
       datasources: createMockedDataLoaders(),
-      accessToken: "DUMMY_TOKEN",
+      accessToken: "ANONYMOUS_TOKEN",
       smaug: {
-        user: { id: null, agency: null, uniqueId: null },
+        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -44,7 +44,7 @@ test("PeriodicaArticleOrder, municiapalityAgencyId not subscribed, should give e
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_UNSUBSCRIPED_MUNICIPALITY",
       smaug: {
-        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
+        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -65,7 +65,7 @@ test("PeriodicaArticleOrder, no municiapalityAgencyId, should give error", async
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MUNICIPALITY",
       smaug: {
-        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
+        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -86,7 +86,7 @@ test("PeriodicaArticleOrder, manifestation not part of statsbibliotek journal sh
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
+        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -107,7 +107,7 @@ test("PeriodicaArticleOrder, missing mail on user and input, should give error",
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MAIL",
       smaug: {
-        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
+        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -129,7 +129,7 @@ test("PeriodicaArticleOrder, missing mail in user, but given in input, order suc
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MAIL",
       smaug: {
-        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
+        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -152,7 +152,7 @@ test("PeriodicaArticleOrder, userName and userMail set in input, order success",
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
+        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -173,7 +173,7 @@ test("PeriodicaArticleOrder, order success", async () => {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
+        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -194,7 +194,7 @@ test("PeriodicaArticleOrder, originRequester missing from smaug configuration", 
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: { id: "123", agency: "715100", uniqueId: "1234561234" },
+        user: {},
       },
     },
   });
@@ -212,9 +212,9 @@ test("PeriodicaArticleOrder, user blocked by municipality - should give error", 
     },
     context: {
       datasources: createMockedDataLoaders(),
-      accessToken: "DUMMY_TOKEN",
+      accessToken: "DUMMY_TOKEN_BLOCKED",
       smaug: {
-        user: { id: "0123456799", agency: "715100", uniqueId: "1234561234" },
+        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },

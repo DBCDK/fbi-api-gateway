@@ -59,9 +59,9 @@ test("submitorder failed when user is blocked by pickupBranch (Agency)", async (
     variables: {},
     context: {
       datasources: createMockedDataLoaders(),
-      accessToken: "DUMMY_TOKEN",
+      accessToken: "DUMMY_TOKEN_BLOCKED",
       smaug: {
-        user: { id: "0123456799", agency: "715100" },
+        user: {},
         app: { id: "app-name", ips: ["1.1.1.1"] },
         orderSystem: "bibliotekdk_21",
       },
@@ -77,7 +77,7 @@ test("submitorder failed when user is not found on pickupbranch (borchk)", async
             submitOrder(
               input: {
                 pids: ["870970-basis:25574486"],
-                pickUpBranch: "715100",
+                pickUpBranch: "790900",
                 userParameters: {
                   userAddress: "test",
                   userName: "Test Testesen",
@@ -93,7 +93,7 @@ test("submitorder failed when user is not found on pickupbranch (borchk)", async
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_USER_NOT_ON_PICKUPAGENCY",
       smaug: {
-        user: { id: "321", agency: "710100" },
+        user: {},
         app: { id: "app-name", ips: ["1.1.1.1"] },
         orderSystem: "bibliotekdk_21",
       },
@@ -125,7 +125,7 @@ test("submitorder succedes when user is authenticated, and no userId provided", 
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
       smaug: {
-        user: { id: "123", agency: "715100" },
+        user: {},
         app: { id: "app-name", ips: ["1.1.1.1"] },
         orderSystem: "bibliotekdk_21",
       },
@@ -143,7 +143,7 @@ test("submitorder succedes when user is not authenticated, but userId provided",
                 pids: ["870970-basis:25574486"],
                 pickUpBranch: "715100",
                 userParameters: {
-                  userId: "123",
+                  userId: "some-id",
                   userAddress: "test",
                   userName: "Test Testesen",
                   userMail: "test@test.dk"

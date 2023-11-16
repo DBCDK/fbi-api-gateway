@@ -20,7 +20,7 @@ test("user - get basic data", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "some-id", uniqueId: "some-unique-id" } },
+      smaug: {},
     },
   });
   expect(result).toMatchSnapshot();

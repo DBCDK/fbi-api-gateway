@@ -70,8 +70,13 @@ export const resolvers = {
     async placeCopyRequest(parent, args, context, info) {
       const { pid, userName, userMail } = args.input;
 
+      // Detailed user informations (e.g. municipalityAgencyId)
+      const userInfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
       // token is not authenticated
-      if (!context?.smaug?.user?.id) {
+      if (!userInfo?.attributes?.userId) {
         return {
           status: "ERROR_UNAUTHENTICATED_USER",
         };
@@ -83,18 +88,6 @@ export const resolvers = {
       if (!originRequester) {
         return {
           status: "ERROR_MISSING_CLIENT_CONFIGURATION",
-        };
-      }
-
-      // Detailed user informations (e.g. municipalityAgencyId)
-      let userInfo;
-      try {
-        userInfo = await context.datasources.getLoader("userinfo").load({
-          accessToken: context.accessToken,
-        });
-      } catch (e) {
-        return {
-          status: "ERROR_UNAUTHENTICATED_USER",
         };
       }
 
@@ -159,7 +152,7 @@ export const resolvers = {
       // Verify that the user is allowed to place an order
       // checking the municipality exist is redundant - but we still want the blocked check.
       const { status, statusCode } = await getUserBorrowerStatus(
-        { agencyId: user.municipalityAgencyId },
+        { agencyId: user.municipalityAgencyId, user },
         context
       );
 

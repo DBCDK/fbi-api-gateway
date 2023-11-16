@@ -1,6 +1,8 @@
 const DEFAULT = {
+  userId: "some-id",
   uniqueId: "some-unique-id",
   municipalityAgencyId: "715100",
+  loggedInAgencyId: "715100",
   agencies: [
     {
       agencyId: "715100",
@@ -17,6 +19,12 @@ const data = {
       ...DEFAULT,
     },
   },
+  DUMMY_TOKEN_BLOCKED: {
+    attributes: {
+      ...DEFAULT,
+      userId: "some-blocked-id",
+    },
+  },
   DUMMY_TOKEN_NO_MAIL: {
     attributes: {
       ...DEFAULT,
@@ -28,7 +36,7 @@ const data = {
       agencies: [
         {
           agencyId: "710100",
-          userId: "321",
+          userId: "some-random-id",
           userIdType: "LOCAL",
         },
       ],

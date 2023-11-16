@@ -46,7 +46,7 @@ const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
  *  
  */
 export default async function getUserBorrowerStatus(
-  { agencyId, userIds = null },
+  { agencyId, userIds = null, user },
   context
 ) {
   // Summary log
@@ -58,7 +58,7 @@ export default async function getUserBorrowerStatus(
   }
 
   // Authenticated or anonymous order
-  const isAuthenticated = !!context.smaug?.user?.id;
+  const isAuthenticated = !!user?.userId;
 
   // add to summary log
   summary.isAuthenticated = isAuthenticated;
@@ -92,7 +92,7 @@ export default async function getUserBorrowerStatus(
   if (isAuthenticated) {
     // Check if the user is authenticated on the given pickUpBranch
     const verifiedOnPickUpBranch = !!(
-      context.smaug?.user?.id && context.smaug?.user?.agency === agencyId
+      user?.userId && user?.loggedInAgencyId === agencyId
     );
 
     // add to summary log
@@ -100,7 +100,7 @@ export default async function getUserBorrowerStatus(
 
     // If so, we check if the user is allowed to place an order here.
     if (verifiedOnPickUpBranch) {
-      _userId = context.smaug?.user?.id;
+      _userId = user?.userId;
     }
     // If NOT, we fetch the authenticated users other accounts
     // User may have placed an order to a different account/agency, than they orignally signed-in at.
@@ -130,6 +130,8 @@ export default async function getUserBorrowerStatus(
         summary.fromOtherUserAccount = true;
       }
     }
+
+    console.error("ffffffffffff", summary);
 
     // Check authenticated user
     const result = await checkUserBorrowerStatus(
@@ -259,6 +261,8 @@ async function checkUserBorrowerStatus(
 ) {
   // status summary
   const summary = { status: true };
+
+  console.error("#################", { userId: userId, libraryCode: agencyId });
 
   // Get Borchk status
   const { status, blocked } = await context.datasources

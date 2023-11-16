@@ -317,6 +317,8 @@ export const resolvers = {
         throw "invalid smaug configuration [orderSystem]";
       }
 
+      console.error("ddddddddddddd", args.input.pickUpBranch);
+
       const branch = (
         await context.datasources.getLoader("library").load({
           branchId: args.input.pickUpBranch,
@@ -335,9 +337,16 @@ export const resolvers = {
       // userIds from userParameters
       const userIds = getUserIds(args?.input?.userParameters);
 
+      // userInfo
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      const user = userinfo?.attributes;
+
       // Verify that the user is allowed to place an order
       const { status, statusCode, userId } = await getUserBorrowerStatus(
-        { agencyId, userIds },
+        { agencyId, userIds, user },
         context
       );
 
@@ -345,12 +354,7 @@ export const resolvers = {
         return { ok: status, status: statusCode };
       }
 
-      // userInfo
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
-      const authUserId = userinfo?.attributes?.userId;
+      const authUserId = user?.userId;
 
       // We assume we will get the verified userId from the 'getUserBorrowerStatus' check.
       // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
