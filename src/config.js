@@ -151,7 +151,7 @@ export default {
       url:
         process.env.CS_SUGGEST_URL ||
         "http://cs-suggest.cisterne.svc.cloud.dbc.dk/api/v1/suggestions",
-      prefix: process.env.CS_SUGGEST_PREFIX || "prosper-1",
+      prefix: process.env.CS_SUGGEST_PREFIX || "complexsearch-1",
       ttl: process.env.CS_SUGGEST_TIME_TO_LIVE_SECONDS || 10,
     },
     suggester: {
