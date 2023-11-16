@@ -62,6 +62,17 @@ type Query {
     branchId: String    
   ): localSuggestResponse! @complexity(value: 2, multipliers: ["limit"])
   
+  complexSuggest(
+    """
+    The query to get suggestions for
+    """
+    q: String!
+    """    
+    the type of index to get suggestions from
+    """
+    type: ComplexSuggestionType!    
+  ): ComplexSuggestResponse!
+  
   suggest(
     workType: WorkType
     """
@@ -307,6 +318,10 @@ export const resolvers = {
     async suggest(parent, args, context, info) {
       return args;
     },
+    async complexSuggest(parent, args, context, info) {
+      return args;
+    },
+
     async localSuggest(parent, args, context, info) {
       return args;
     },
