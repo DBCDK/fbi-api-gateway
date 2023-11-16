@@ -128,6 +128,14 @@ is applied resulting in an updated facet result.
   query={`query Example_SearchFilters ($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFilters!) {
       search(q: $q, filters: $filters) {
         hitcount
+        works(offset: 0, limit: 10) {
+          titles {
+            main
+          }
+          mainLanguages {
+            display
+          }
+        }
         facets(facets: $facets) {
           name
           values(limit: $facetLimit) {
@@ -139,7 +147,7 @@ is applied resulting in an updated facet result.
     }`}
   variables={{
     q: {
-      all: "harry",
+      all: "pippi",
     },
     filters: { mainLanguages: ["Svensk"] },
     facetLimit: 5,
@@ -151,13 +159,27 @@ If multiple filters are added for the same category, they are OR'ed together.
 For instance, _works_ must be Svensk OR Engelsk. Filters applied across categories
 are AND'ed together. For instance (Svensk OR Engelsk) AND dvd.
 
-## Range facets
+## Range filters
 
-Some facets supports range. The following example uses ageRange. Other facets are lixRange and letRange.
+Some filters supports range. The following example uses ageRange. Other filters are lixRange and letRange.
 <InlineGraphiQL
 query={`query Example_FilterRange($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFilters!) {
   search(q: $q, filters: $filters) {
     hitcount
+    works(offset: 0, limit: 10) {
+      titles {
+        main
+      }
+      manifestations {
+        bestRepresentation {
+          audience {
+            ages {
+              display
+            }
+          }
+        }
+      }
+    }
     facets(facets: $facets) {
       name
       values(limit: $facetLimit) {
