@@ -14,7 +14,7 @@ const fetcher = async (url) => {
 
   const res = await response.json();
 
-  return res.data?.user;
+  return res.user;
 };
 
 export default function useUser({ token, profile }) {
@@ -24,6 +24,8 @@ export default function useUser({ token, profile }) {
   const { data, error } = useSWR(isValid && url, fetcher, {
     fallback: {},
   });
+
+  console.log("ffffffff", data);
 
   return { user: data, isLoading: !data && !error && isValid } || {};
 }

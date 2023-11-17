@@ -88,7 +88,7 @@ export default async function handler(req, res) {
         // if NOT, token is from a different environment stg/prod
         const userinfo_response = await getUserinfo(token);
         if (userinfo_response.status !== 200) {
-          res.status(401).send({});
+          return res.status(401).send({});
         }
       }
 

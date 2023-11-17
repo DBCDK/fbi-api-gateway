@@ -237,10 +237,10 @@ promExporterApp.listen(9599, () => {
   });
 
   /**
-   * Middleware for validating access token, and fetching smaug configuration
+   * Middleware for fetching user information (for authenticated tokens)
    */
   app.post("/:profile/graphql", async (req, res, next) => {
-    // Fetch Smaug client configuration
+    // Fetch login.bib.dk userinfo
     try {
       const userinfo =
         req.accessToken &&
