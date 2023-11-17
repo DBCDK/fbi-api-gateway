@@ -230,7 +230,7 @@ export async function resolveBorrowerCheck(agencyId, context) {
  * @returns {string}
  */
 export async function getInfomediaAccessStatus(context) {
-  if (!context?.smaug?.user?.id) {
+  if (!context?.user?.userId) {
     return "USER_NOT_LOGGED_IN";
   }
 
@@ -265,7 +265,7 @@ export async function getInfomediaAccessStatus(context) {
  * @returns {string}
  */
 export async function getDigitalArticleAccessStatus(context) {
-  if (!context?.smaug?.user?.id) {
+  if (!context?.user?.userId) {
     return "USER_NOT_LOGGED_IN";
   }
 

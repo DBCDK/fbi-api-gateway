@@ -43,10 +43,10 @@ const reduceBody = (body) => ({
  * Fetch user info
  * @param homeAccount: {agencyId: String, userId: String, userIdType: String}
  */
-export async function load({ homeAccount, agencyId, userId }, context) {
+export async function load({ agencyId, userId }, context) {
   const soap = constructSoap({
-    agencyId: agencyId || homeAccount?.agencyId,
-    userId: userId || homeAccount?.userId,
+    agencyId,
+    userId,
   });
   const res = await context?.fetch(url, {
     method: "POST",
@@ -56,15 +56,13 @@ export async function load({ homeAccount, agencyId, userId }, context) {
     body: soap,
   });
 
-  console.log("rrrrrrrrr", res, reduceBody(res?.body));
-
   return reduceBody(res?.body);
 }
 
 /**
  *
  */
-export async function testLoad({ homeAccount }, context) {
+export async function testLoad({ agencyId, userId }, context) {
   return {
     name: generateName(context?.testUser.key || ""),
     mail: "test@test.dk",

@@ -468,9 +468,9 @@ export function getProxyUrl(url, user) {
     url.indexOf("ebookcentral") !== -1 || url.indexOf("ebscohost") !== -1;
   if (proxyMe) {
     // check if user is logged in
-    if (user?.id) {
+    if (user?.userId) {
       const realUrl = `https://bib${parseForMunicipalityNumber(
-        user?.agency
+        user?.loggedInAgencyId
       )}.bibbaser.dk/login?url=${url}`;
       return { proxyUrl: realUrl, loginRequired: proxyMe };
     }
@@ -506,7 +506,7 @@ export async function resolveAccess(manifestation, context) {
   parent?.access?.accessUrls?.forEach((entry) => {
     const { proxyUrl, loginRequired } = getProxyUrl(
       entry.url || "",
-      context.smaug?.user
+      context.user
     );
     res.push({
       __typename: "AccessUrl",

@@ -22,7 +22,7 @@ async function infomedia(context) {
   const idpRights = await context.datasources.getLoader("idp").load("");
 
   // check if users loggedInAgency has infomedia access
-  const loggedInAgencyId = context?.smaug?.user?.agency;
+  const loggedInAgencyId = context?.user?.loggedInAgencyId;
 
   if (loggedInAgencyId && idpRights[loggedInAgencyId]) {
     return loggedInAgencyId;

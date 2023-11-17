@@ -94,10 +94,10 @@ export const resolvers = {
       // Basic user information (e.g. name, email)
       let userData;
       try {
-        const homeAccount = getHomeAgencyAccount(userInfo);
         userData = await context.datasources.getLoader("user").load({
-          homeAccount: homeAccount,
-          accessToken: context.accessToken, // Required for testing
+          userId: userInfo?.attributes?.userId,
+          agencyId: userInfo?.attributes?.loggedInAgencyId,
+          accessToken: context.accessToken,
         });
       } catch (e) {
         return {
