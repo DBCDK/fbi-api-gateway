@@ -4,7 +4,7 @@ const { url, ttl, prefix } = config.datasources.userdata;
 /**
  * Get a user
  */
-export async function load({ smaugUserId }, context) {
+export async function load({ uniqueId }, context) {
   const endpoint = url + "user/get";
 
   const user = await context.fetch(endpoint, {
@@ -12,7 +12,7 @@ export async function load({ smaugUserId }, context) {
       "Content-Type": "application/json",
     },
     method: "POST",
-    body: JSON.stringify({ smaugUserId }),
+    body: JSON.stringify({ smaugUserId: uniqueId }),
   });
 
   return user.body;

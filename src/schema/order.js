@@ -296,10 +296,9 @@ const saveOrderToUserdata = async (user, submitOrderRes, context) => {
       if (!orderId) {
         throw new Error("Undefined orderId");
       }
-      await context.datasources.getLoader("userDataAddOrder").load({
-        smaugUserId: uniqueId,
-        orderId,
-      });
+      await context.datasources
+        .getLoader("userDataAddOrder")
+        .load({ uniqueId, orderId });
     } catch (error) {
       log.error(
         `Failed to add order to userData service. Message: ${

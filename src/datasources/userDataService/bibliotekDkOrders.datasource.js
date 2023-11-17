@@ -4,7 +4,7 @@ const { url, ttl, prefix } = config.datasources.userdata;
 /**
  * Fetch orders for a user from userdata service
  */
-export async function load({ smaugUserId, limit, offset }, context) {
+export async function load({ uniqueId, limit, offset }, context) {
   const endpoint = url + "order/get";
 
   const user = await context.fetch(endpoint, {
@@ -12,7 +12,7 @@ export async function load({ smaugUserId, limit, offset }, context) {
       "Content-Type": "application/json",
     },
     method: "POST",
-    body: JSON.stringify({ smaugUserId: smaugUserId, limit, offset }),
+    body: JSON.stringify({ smaugUserId: uniqueId, limit, offset }),
   });
   return user.body;
 }

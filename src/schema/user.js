@@ -222,7 +222,7 @@ function isEmail(email) {
 }
 
 /**
- * Validates smaugUserId
+ * Validates uniqueId
  * @param {string} uniqueId
  */
 function validateUserId(uniqueId) {
@@ -319,9 +319,7 @@ export const resolvers = {
 
         const res = await context.datasources
           .getLoader("userDataGetUser")
-          .load({
-            smaugUserId: uniqueId,
-          });
+          .load({ uniqueId });
         return res?.favoritePickUpBranch || null;
       } catch (error) {
         return null;
@@ -337,9 +335,7 @@ export const resolvers = {
 
         const res = await context.datasources
           .getLoader("userDataGetUser")
-          .load({
-            smaugUserId: uniqueId,
-          });
+          .load({ uniqueId });
         return res?.createdAt || null;
       } catch (error) {
         return null;
@@ -355,9 +351,7 @@ export const resolvers = {
 
         const res = await context.datasources
           .getLoader("userDataGetUser")
-          .load({
-            smaugUserId: uniqueId,
-          });
+          .load({ uniqueId });
 
         return res?.persistUserData;
       } catch (error) {
@@ -376,7 +370,7 @@ export const resolvers = {
       const res = await context.datasources
         .getLoader("bibliotekDkOrders")
         .load({
-          smaugUserId: uniqueId,
+          uniqueId,
           limit,
           offset,
         });
@@ -541,10 +535,7 @@ export const resolvers = {
 
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
-          .load({
-            smaugUserId: uniqueId,
-            orderBy,
-          });
+          .load({ uniqueId, orderBy });
 
         return { result: res?.result, hitcount: res?.result?.length || 0 };
       } catch (error) {
@@ -611,7 +602,7 @@ export const resolvers = {
           throw "Not authorized";
         }
         await context.datasources.getLoader("userDataCreateUser").load({
-          smaugUserId: uniqueId,
+          uniqueId,
         });
         return { success: true };
       } catch (error) {
@@ -657,7 +648,7 @@ export const resolvers = {
         }
         //delete user data from userData service (bookmarks, orderhistory etc.)
         await context.datasources.getLoader("userDataDeleteUser").load({
-          smaugUserId: uniqueId,
+          uniqueId,
         });
         return { success: true };
       } catch (error) {
@@ -680,13 +671,7 @@ export const resolvers = {
         }
         await context.datasources
           .getLoader("userDataFavoritePickupBranch")
-          .load(
-            {
-              smaugUserId: uniqueId,
-              favoritePickUpBranch: favoritePickUpBranch,
-            },
-            context
-          );
+          .load({ uniqueId, favoritePickUpBranch }, context);
         return { success: true };
       } catch (error) {
         return { success: false, errorMessage: error?.message };
@@ -701,10 +686,7 @@ export const resolvers = {
 
         await context.datasources
           .getLoader("userDataFavoritePickupBranch")
-          .load({
-            smaugUserId: uniqueId,
-            favoritePickUpBranch: null,
-          });
+          .load({ uniqueId, favoritePickUpBranch: null });
         return { success: true };
       } catch (error) {
         return { success: false };
@@ -719,10 +701,9 @@ export const resolvers = {
         const uniqueId = user?.uniqueId;
         validateUserId(uniqueId);
 
-        await context.datasources.getLoader("userDataAddOrder").load({
-          smaugUserId: uniqueId,
-          orderId: orderId,
-        });
+        await context.datasources
+          .getLoader("userDataAddOrder")
+          .load({ uniqueId, orderId });
         return { success: true };
       } catch (error) {
         return { success: false, errorMessage: error?.message };
@@ -739,10 +720,7 @@ export const resolvers = {
 
         const res = await context.datasources
           .getLoader("userDataRemoveOrder")
-          .load({
-            smaugUserId: uniqueId,
-            orderId: orderId,
-          });
+          .load({ uniqueId, orderId });
 
         return { success: !res?.error, errorMessage: res?.error };
       } catch (error) {
@@ -765,10 +743,7 @@ export const resolvers = {
 
         const res = await context.datasources
           .getLoader("userDataDataConsent")
-          .load({
-            smaugUserId: uniqueId,
-            persistUserData: persistUserData,
-          });
+          .load({ uniqueId, persistUserData });
 
         return { success: !res?.error, errorMessage: res?.error };
       } catch (error) {
@@ -781,7 +756,7 @@ export const resolvers = {
       /**
        * Handles single or multiple additions to bookmarks.
        *
-       * @param {smaugUserId: string, bookmarks: [{materialType, string, materialId: string, title: string, workId?: string}]}
+       * @param {uniqueId: string, bookmarks: [{materialType, string, materialId: string, title: string, workId?: string}]}
        *
        * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
        * while we espect single additions to throw an error if this bookmark already exists
@@ -804,7 +779,7 @@ export const resolvers = {
         const res = await context.datasources
           .getLoader("userDataAddBookmarks")
           .load({
-            smaugUserId: uniqueId,
+            uniqueId,
             bookmarks: args.bookmarks.map((bookmark) => {
               return {
                 workId: bookmark.workId,
@@ -839,10 +814,7 @@ export const resolvers = {
 
         const res = await context.datasources
           .getLoader("userDataDeleteBookmark")
-          .load({
-            smaugUserId: uniqueId,
-            bookmarkIds: args.bookmarkIds,
-          });
+          .load({ uniqueId, bookmarkIds: args.bookmarkIds });
 
         return res;
       } catch (error) {
