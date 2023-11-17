@@ -22,8 +22,8 @@ test("PeriodicaArticleOrder, unauthenticated token, should give error", async ()
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "ANONYMOUS_TOKEN",
+      user: null,
       smaug: {
-        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -43,8 +43,12 @@ test("PeriodicaArticleOrder, municiapalityAgencyId not subscribed, should give e
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_UNSUBSCRIPED_MUNICIPALITY",
+      user: {
+        userId: "some-id",
+        loggedInAgencyId: "715100",
+        municipalityAgencyId: "100200",
+      },
       smaug: {
-        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -64,8 +68,12 @@ test("PeriodicaArticleOrder, no municiapalityAgencyId, should give error", async
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MUNICIPALITY",
+      user: {
+        userId: "some-id",
+        loggedInAgencyId: "715100",
+        municipalityAgencyId: "715100",
+      },
       smaug: {
-        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -85,8 +93,12 @@ test("PeriodicaArticleOrder, manifestation not part of statsbibliotek journal sh
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      user: {
+        userId: "some-id",
+        loggedInAgencyId: "715100",
+        municipalityAgencyId: "715100",
+      },
       smaug: {
-        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -106,8 +118,12 @@ test("PeriodicaArticleOrder, missing mail on user and input, should give error",
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MAIL",
+      user: {
+        userId: "some-id",
+        loggedInAgencyId: "715100",
+        municipalityAgencyId: "715100",
+      },
       smaug: {
-        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -128,8 +144,12 @@ test("PeriodicaArticleOrder, missing mail in user, but given in input, order suc
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MAIL",
+      user: {
+        userId: "some-id",
+        loggedInAgencyId: "715100",
+        municipalityAgencyId: "715100",
+      },
       smaug: {
-        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -151,8 +171,12 @@ test("PeriodicaArticleOrder, userName and userMail set in input, order success",
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      user: {
+        userId: "some-id",
+        loggedInAgencyId: "715100",
+        municipalityAgencyId: "715100",
+      },
       smaug: {
-        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -172,8 +196,12 @@ test("PeriodicaArticleOrder, order success", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      user: {
+        userId: "some-id",
+        loggedInAgencyId: "715100",
+        municipalityAgencyId: "715100",
+      },
       smaug: {
-        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },
@@ -193,9 +221,12 @@ test("PeriodicaArticleOrder, originRequester missing from smaug configuration", 
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: {
-        user: {},
+      user: {
+        userId: "some-id",
+        loggedInAgencyId: "715100",
+        municipalityAgencyId: "715100",
       },
+      smaug: {},
     },
   });
 
@@ -213,8 +244,12 @@ test("PeriodicaArticleOrder, user blocked by municipality - should give error", 
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_BLOCKED",
+      user: {
+        userId: "some-blocked-id",
+        loggedInAgencyId: "715100",
+        municipalityAgencyId: "715100",
+      },
       smaug: {
-        user: {},
         digitalArticleService: { originRequester: "bibdk" },
       },
     },

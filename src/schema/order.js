@@ -334,22 +334,17 @@ export const resolvers = {
       // userIds from userParameters
       const userIds = getUserIds(args?.input?.userParameters);
 
-      // userInfo
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
-      const user = userinfo?.attributes;
-
       // Verify that the user is allowed to place an order
       const { status, statusCode, userId } = await getUserBorrowerStatus(
-        { agencyId, userIds, user },
+        { agencyId, userIds },
         context
       );
 
       if (!status) {
         return { ok: status, status: statusCode };
       }
+
+      const user = context.user;
 
       const authUserId = user?.userId;
 
@@ -404,18 +399,13 @@ export const resolvers = {
         };
       }
 
+      const user = context.user;
+
       // PickUpBranch agencyId
       const agencyId = branch?.agencyId;
 
       // userIds from userParameters
       const userIds = getUserIds(args?.input?.userParameters);
-
-      // userInfo
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
-      const user = userinfo?.attributes;
 
       // Verify that the user is allowed to place an order
       const { status, statusCode, userId } = await getUserBorrowerStatus(

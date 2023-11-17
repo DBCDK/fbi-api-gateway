@@ -378,6 +378,7 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
+
       const userId = await getUserId({ agencyId, userinfo });
 
       if (!userId) {

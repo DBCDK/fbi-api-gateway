@@ -46,7 +46,7 @@ const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
  *  
  */
 export default async function getUserBorrowerStatus(
-  { agencyId, userIds = null, user },
+  { agencyId, userIds = null },
   context
 ) {
   // Summary log
@@ -58,7 +58,7 @@ export default async function getUserBorrowerStatus(
   }
 
   // Authenticated or anonymous order
-  const isAuthenticated = !!user?.userId;
+  const isAuthenticated = !!context?.user?.userId;
 
   // add to summary log
   summary.isAuthenticated = isAuthenticated;
@@ -90,6 +90,8 @@ export default async function getUserBorrowerStatus(
   let _isAccount;
 
   if (isAuthenticated) {
+    const user = context?.user;
+
     // Check if the user is authenticated on the given pickUpBranch
     const verifiedOnPickUpBranch = !!(
       user?.userId && user?.loggedInAgencyId === agencyId
@@ -105,13 +107,8 @@ export default async function getUserBorrowerStatus(
     // If NOT, we fetch the authenticated users other accounts
     // User may have placed an order to a different account/agency, than they orignally signed-in at.
     else {
-      // Fetch specific account between the loggedIn user accounts
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
       // user account list
-      const accounts = userinfo.attributes?.agencies;
+      const accounts = user?.agencies;
 
       // fetch requested account from list
       // Local (type) account is preferred, because it will always exist

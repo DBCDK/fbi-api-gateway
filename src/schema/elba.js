@@ -12,6 +12,7 @@ export const typeDef = `
    ERROR_PID_NOT_RESERVABLE
    ERROR_MISSING_CLIENT_CONFIGURATION
    ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+   ERROR_MISSING_MUNICIPALITYAGENCYID
 
    UNKNOWN_USER
    BORCHK_USER_BLOCKED_BY_AGENCY
@@ -70,13 +71,8 @@ export const resolvers = {
     async placeCopyRequest(parent, args, context, info) {
       const { pid, userName, userMail } = args.input;
 
-      // Detailed user informations (e.g. municipalityAgencyId)
-      const userInfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
       // token is not authenticated
-      if (!userInfo?.attributes?.userId) {
+      if (!context.user?.userId) {
         return {
           status: "ERROR_UNAUTHENTICATED_USER",
         };
@@ -95,8 +91,8 @@ export const resolvers = {
       let userData;
       try {
         userData = await context.datasources.getLoader("user").load({
-          userId: userInfo?.attributes?.userId,
-          agencyId: userInfo?.attributes?.loggedInAgencyId,
+          userId: context.user?.userId,
+          agencyId: context.user?.loggedInAgencyId,
           accessToken: context.accessToken,
         });
       } catch (e) {
@@ -105,7 +101,7 @@ export const resolvers = {
         };
       }
 
-      const user = { ...userData, ...userInfo?.attributes };
+      const user = { ...userData, ...context.user };
 
       // Ensure a pair of email and name can be set
       if (!((userName || user.name) && (userMail || user.mail))) {
@@ -152,7 +148,7 @@ export const resolvers = {
       // Verify that the user is allowed to place an order
       // checking the municipality exist is redundant - but we still want the blocked check.
       const { status, statusCode } = await getUserBorrowerStatus(
-        { agencyId: user.municipalityAgencyId, user },
+        { agencyId: user.municipalityAgencyId },
         context
       );
 

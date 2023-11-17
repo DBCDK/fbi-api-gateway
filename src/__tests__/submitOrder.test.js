@@ -28,8 +28,8 @@ test("submitorder fails when user is not authenticated, and no userId provided",
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "ANONYMOUS_TOKEN",
+      user: null,
       smaug: {
-        user: {},
         app: { id: "app-name", ips: ["1.1.1.1"] },
         orderSystem: "bibliotekdk_21",
       },
@@ -60,8 +60,8 @@ test("submitorder failed when user is blocked by pickupBranch (Agency)", async (
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_BLOCKED",
+      user: { userId: "some-blocked-id", loggedInAgencyId: "715100" },
       smaug: {
-        user: {},
         app: { id: "app-name", ips: ["1.1.1.1"] },
         orderSystem: "bibliotekdk_21",
       },
@@ -92,8 +92,8 @@ test("submitorder failed when user is not found on pickupbranch (borchk)", async
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_USER_NOT_ON_PICKUPAGENCY",
+      user: {},
       smaug: {
-        user: {},
         app: { id: "app-name", ips: ["1.1.1.1"] },
         orderSystem: "bibliotekdk_21",
       },
@@ -124,8 +124,8 @@ test("submitorder succedes when user is authenticated, and no userId provided", 
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      user: { userId: "some-id", loggedInAgencyId: "715100" },
       smaug: {
-        user: {},
         app: { id: "app-name", ips: ["1.1.1.1"] },
         orderSystem: "bibliotekdk_21",
       },
@@ -157,8 +157,8 @@ test("submitorder succedes when user is not authenticated, but userId provided",
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "ANONYMOUS_TOKEN",
+      user: null,
       smaug: {
-        user: {},
         app: { id: "app-name", ips: ["1.1.1.1"] },
         orderSystem: "bibliotekdk_21",
       },

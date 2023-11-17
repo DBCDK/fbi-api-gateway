@@ -63,6 +63,8 @@ describe("Culr", () => {
         },
       },
       context: {
+        user: null,
+        smaug: {},
         datasources: createMockedDataLoaders(),
         accessToken: "UNAUTHENTICATED_TOKEN",
       },
@@ -91,7 +93,8 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "1234" } },
+        smaug: {},
+        user: { userId: "some-random-not-cpr" },
         datasources: createMockedDataLoaders(),
         accessToken: "DUMMY_TOKEN",
       },
@@ -120,7 +123,8 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: {} },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
         accessToken: "AUTHENTICATED_TOKEN_USER2",
       },
@@ -148,7 +152,8 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: {} },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
         accessToken: "DUMMY_TOKEN",
       },
@@ -177,7 +182,8 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "0102033692" } },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
         accessToken: "AUTHENTICATED_TOKEN_USER2",
       },
@@ -206,7 +212,8 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "0102033690" } },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
         accessToken: "AUTHENTICATED_TOKEN_USER1",
       },
@@ -232,7 +239,8 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "0102033690" } },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
         accessToken: "DUMMY_TOKEN",
       },

@@ -34,6 +34,8 @@ export async function load(
   { libraryCode, userId, userPincode = null },
   context
 ) {
+  console.error("-------------", userId, libraryCode);
+
   const props = { libraryCode, userId };
 
   // library not found status

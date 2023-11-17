@@ -250,14 +250,9 @@ export const resolvers = {
       const ENABLE_FFU_CHECK = true;
       const ENABLE_CREATED_CHECK = true;
 
-      // userInfo
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken,
-      });
-
       // token is not authenticated - anonymous token used
       // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
-      if (!userinfo?.attributes?.userId) {
+      if (!context.user?.userId) {
         return {
           status: "ERROR_UNAUTHENTICATED_TOKEN",
         };
@@ -331,8 +326,6 @@ export const resolvers = {
         agency: agencyId,
       });
 
-      console.error("aaaaaaaaaccounts", { accounts, localId, agencyId });
-
       // Check if user is already subscribed to agency
       if (ENABLE_CREATED_CHECK && accounts.length > 0) {
         return {
@@ -399,11 +392,16 @@ export const resolvers = {
       const isGlobal = type === "GLOBAL";
 
       // userInfo
-      let user = (
-        await context.datasources.getLoader("userinfo").load({
-          accessToken: accessToken || context.accessToken,
-        })
-      ).attributes;
+      let user = context.user;
+
+      // update user for provided accessToken
+      if (accessToken) {
+        user = (
+          await context.datasources.getLoader("userinfo").load({
+            accessToken,
+          })
+        ).attributes;
+      }
 
       if (!user?.userId) {
         return null;

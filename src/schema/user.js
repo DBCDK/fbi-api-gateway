@@ -240,25 +240,16 @@ function validateUserId(uniqueId) {
 export const resolvers = {
   Query: {
     async user(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
-      const user = userinfo?.attributes;
-
-      if (!user.userId) {
-        return null;
-      }
-
-      return { user };
+      return {};
     },
   },
+
   User: {
     async identityProviderUsed(parent, args, context, info) {
-      return parent.user.idpUsed;
+      return context.user?.idpUsed;
     },
     async isCPRValidated(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       // Check if user has a CPR validated account
       const accounts = user?.agencies;
@@ -267,7 +258,7 @@ export const resolvers = {
       );
     },
     async rights(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       // rights default to false
       let subscriptions = {
@@ -300,7 +291,7 @@ export const resolvers = {
       return subscriptions;
     },
     async name(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const res = await context.datasources.getLoader("user").load({
         userId: user?.userId,
@@ -311,7 +302,7 @@ export const resolvers = {
     },
 
     async favoritePickUpBranch(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const uniqueId = user?.uniqueId;
@@ -327,7 +318,7 @@ export const resolvers = {
     },
 
     async createdAt(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const uniqueId = user?.uniqueId;
@@ -343,7 +334,7 @@ export const resolvers = {
     },
 
     async persistUserData(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const uniqueId = user?.uniqueId;
@@ -360,7 +351,7 @@ export const resolvers = {
     },
 
     async bibliotekDkOrders(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const { limit, offset } = args;
       const uniqueId = user?.uniqueId;
@@ -384,7 +375,7 @@ export const resolvers = {
       return { result: [], hitcount: 0 };
     },
     async address(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const res = await context.datasources.getLoader("user").load({
         userId: user.userId,
@@ -395,12 +386,12 @@ export const resolvers = {
       return res?.address;
     },
     async municipalityAgencyId(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       return user?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const userInfoAccounts = filterDuplicateAgencies(user?.agencies);
       return await context.datasources.getLoader("debt").load({
@@ -409,7 +400,7 @@ export const resolvers = {
       });
     },
     async loans(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const userInfoAccounts = filterDuplicateAgencies(user?.agencies);
       return await context.datasources.getLoader("loans").load({
@@ -418,7 +409,7 @@ export const resolvers = {
       });
     },
     async orders(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const userInfoAccounts = filterDuplicateAgencies(user?.agencies);
       return await context.datasources.getLoader("orders").load({
@@ -427,7 +418,7 @@ export const resolvers = {
       });
     },
     async postalCode(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const res = await context.datasources.getLoader("user").load({
         userId: user.userId,
@@ -438,7 +429,7 @@ export const resolvers = {
       return res?.postalCode;
     },
     async mail(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const res = await context.datasources.getLoader("user").load({
         userId: user.userId,
@@ -449,7 +440,7 @@ export const resolvers = {
       return res?.mail;
     },
     async country(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const res = await context.datasources.getLoader("user").load({
         userId: user.userId,
@@ -460,7 +451,7 @@ export const resolvers = {
       return res?.country;
     },
     async culrMail(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const agencyWithEmail = user?.agencies?.find((agency) =>
         isEmail(agency?.userId)
@@ -468,17 +459,17 @@ export const resolvers = {
       return agencyWithEmail?.userId;
     },
     async loggedInBranchId(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       return user.loggedInAgencyId;
     },
     async loggedInAgencyId(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       return user.loggedInAgencyId;
     },
     async agencies(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       const agencies = filterDuplicateAgencies(user?.agencies)?.map(
         (account) => account.agencyId
@@ -525,7 +516,7 @@ export const resolvers = {
       return sortedAgencies;
     },
     async bookmarks(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const uniqueId = user?.uniqueId;
@@ -579,22 +570,12 @@ export const resolvers = {
   },
   Mutation: {
     async users(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
-      const user = userinfo?.attributes;
-
-      if (!user.userId) {
-        return {};
-      }
-
-      return { user };
+      return {};
     },
   },
   UserMutations: {
     async addUserToUserDataService(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const uniqueId = user?.uniqueId;
@@ -614,7 +595,7 @@ export const resolvers = {
       }
     },
     async deleteUserFromUserDataService(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const uniqueId = user?.uniqueId;
@@ -656,7 +637,7 @@ export const resolvers = {
       }
     },
     async setFavoritePickUpBranch(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const { favoritePickUpBranch } = args;
@@ -678,7 +659,7 @@ export const resolvers = {
       }
     },
     async clearFavoritePickUpBranch(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const uniqueId = user?.uniqueId;
@@ -693,7 +674,7 @@ export const resolvers = {
       }
     },
     async addOrderToUserData(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const { orderId } = args;
@@ -710,7 +691,7 @@ export const resolvers = {
       }
     },
     async deleteOrderFromUserData(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const { orderId } = args;
@@ -728,7 +709,7 @@ export const resolvers = {
       }
     },
     async setPersistUserDataValue(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const { persistUserData } = args;
@@ -751,7 +732,7 @@ export const resolvers = {
       }
     },
     async addBookmarks(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       /**
        * Handles single or multiple additions to bookmarks.
@@ -800,7 +781,7 @@ export const resolvers = {
       }
     },
     async deleteBookmarks(parent, args, context, info) {
-      const user = parent?.user;
+      const user = context.user;
 
       try {
         const uniqueId = user?.uniqueId;
