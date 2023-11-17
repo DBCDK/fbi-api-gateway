@@ -56,6 +56,8 @@ export async function load({ homeAccount, agencyId, userId }, context) {
     body: soap,
   });
 
+  console.log("rrrrrrrrr", res, reduceBody(res?.body));
+
   return reduceBody(res?.body);
 }
 

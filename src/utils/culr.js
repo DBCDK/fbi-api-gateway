@@ -32,25 +32,26 @@ export async function getAccount(accessToken, context, props) {
  * @returns {Promise} (Array)
  */
 export async function getAccounts(accessToken, context, props) {
-  const user = (
-    await context.datasources.getLoader("smaug").load({
-      accessToken,
-    })
-  ).user;
+  // userInfo
+  const userinfo = await context.datasources.getLoader("userinfo").load({
+    accessToken,
+  });
 
-  if (!user?.id) {
+  const user = userinfo?.attributes;
+
+  if (!user?.userId) {
     return [];
   }
 
   // select dataloader
-  let dataloader = isValidCpr(user.id)
+  let dataloader = isValidCpr(user.userId)
     ? "culrGetAccountsByGlobalId"
     : "culrGetAccountsByLocalId";
 
   // Retrieve user culr account
   const response = await context.datasources.getLoader(dataloader).load({
-    userId: user.id,
-    agencyId: user.agency,
+    userId: user.userId,
+    agencyId: user.loggedInAgencyId,
   });
 
   return filterAccountsByProps(response.accounts, props);

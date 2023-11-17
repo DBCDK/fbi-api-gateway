@@ -250,9 +250,14 @@ export const resolvers = {
       const ENABLE_FFU_CHECK = true;
       const ENABLE_CREATED_CHECK = true;
 
+      // userInfo
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken,
+      });
+
       // token is not authenticated - anonymous token used
       // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
-      if (!context?.smaug?.user?.id) {
+      if (!userinfo?.attributes?.userId) {
         return {
           status: "ERROR_UNAUTHENTICATED_TOKEN",
         };
@@ -262,10 +267,10 @@ export const resolvers = {
 
       // Get user from provided ffuToken (only smaug config contains the loggedInAgencyId)
       user.ffu = (
-        await context.datasources.getLoader("smaug").load({
+        await context.datasources.getLoader("userinfo").load({
           accessToken: ffuToken,
         })
-      ).user;
+      )?.attributes;
 
       if (!user.ffu) {
         return {
@@ -274,7 +279,7 @@ export const resolvers = {
       }
 
       // Validate FFU Agency from FFU user credentials
-      if (ENABLE_FFU_CHECK && !isFFUAgency(user.ffu?.agency)) {
+      if (ENABLE_FFU_CHECK && !isFFUAgency(user.ffu?.loggedInAgencyId)) {
         return {
           status: "ERROR_INVALID_AGENCY",
         };
@@ -317,14 +322,16 @@ export const resolvers = {
       const cpr = user.bearer?.userIdValue;
 
       // FFU credentials
-      const localId = user.ffu?.id;
-      const agencyId = user.ffu?.agency;
+      const localId = user.ffu?.userId;
+      const agencyId = user.ffu?.loggedInAgencyId;
 
       // Ensure account is not already attached to user
       const accounts = await getAccounts(accessToken, context, {
         id: localId,
         agency: agencyId,
       });
+
+      console.error("aaaaaaaaaccounts", { accounts, localId, agencyId });
 
       // Check if user is already subscribed to agency
       if (ENABLE_CREATED_CHECK && accounts.length > 0) {
@@ -391,21 +398,19 @@ export const resolvers = {
       const isLocal = type === "LOCAL";
       const isGlobal = type === "GLOBAL";
 
-      let user = context.smaug?.user;
-      if (accessToken) {
-        user = (
-          await context.datasources.getLoader("smaug").load({
-            accessToken,
-          })
-        ).user;
-      }
+      // userInfo
+      let user = (
+        await context.datasources.getLoader("userinfo").load({
+          accessToken: accessToken || context.accessToken,
+        })
+      ).attributes;
 
-      if (!user?.id) {
+      if (!user?.userId) {
         return null;
       }
 
       // select dataloader
-      let dataloader = isValidCpr(user.id)
+      let dataloader = isValidCpr(user.userId)
         ? "culrGetAccountsByGlobalId"
         : "culrGetAccountsByLocalId";
 
@@ -420,8 +425,8 @@ export const resolvers = {
 
       // Retrieve user culr account
       const response = await context.datasources.getLoader(dataloader).load({
-        userId: user.id,
-        agencyId: user.agency,
+        userId: user.userId,
+        agencyId: user.loggedInAgencyId,
       });
 
       if (!response.guid) {

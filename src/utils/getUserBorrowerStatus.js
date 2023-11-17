@@ -131,8 +131,6 @@ export default async function getUserBorrowerStatus(
       }
     }
 
-    console.error("ffffffffffff", summary);
-
     // Check authenticated user
     const result = await checkUserBorrowerStatus(
       { agencyId, userId: _userId, isAccount: _isAccount },
@@ -261,8 +259,6 @@ async function checkUserBorrowerStatus(
 ) {
   // status summary
   const summary = { status: true };
-
-  console.error("#################", { userId: userId, libraryCode: agencyId });
 
   // Get Borchk status
   const { status, blocked } = await context.datasources

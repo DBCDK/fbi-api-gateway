@@ -86,14 +86,14 @@ describe("Culr", () => {
         input: {
           tokens: {
             ffu: "FFU_AUTHENTICATED_TOKEN",
-            folk: "FOLK_UNAUTHENTICATED_TOKEN",
+            folk: "ANONYMOUS_TOKEN",
           },
         },
       },
       context: {
         smaug: { user: { id: "1234" } },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "DUMMY_TOKEN",
       },
     });
 
@@ -120,7 +120,7 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "0102033692" } },
+        smaug: { user: {} },
         datasources: createMockedDataLoaders(),
         accessToken: "AUTHENTICATED_TOKEN_USER2",
       },
@@ -148,9 +148,9 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "0102033690" } },
+        smaug: { user: {} },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "DUMMY_TOKEN",
       },
     });
 
@@ -228,13 +228,13 @@ describe("Culr", () => {
       query: getAccounts,
       variables: {
         input: {
-          accessToken: "AUTHENTICATED_TOKEN_NO_ACCOUNTS",
+          accessToken: "DUMMY_TOKEN_NO_ACCOUNTS",
         },
       },
       context: {
         smaug: { user: { id: "0102033690" } },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "DUMMY_TOKEN",
       },
     });
 

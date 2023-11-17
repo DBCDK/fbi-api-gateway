@@ -6,7 +6,6 @@
 import {
   fetchOrderStatus,
   filterDuplicateAgencies,
-  getHomeAgencyAccount,
   getUserBranchIds,
   resolveManifestation,
   isCPRNumber,
@@ -259,6 +258,8 @@ export const resolvers = {
       return parent.user.idpUsed;
     },
     async isCPRValidated(parent, args, context, info) {
+      const user = parent?.user;
+
       // Check if user has a CPR validated account
       const accounts = user?.agencies;
       return !!accounts?.find(
@@ -266,6 +267,8 @@ export const resolvers = {
       );
     },
     async rights(parent, args, context, info) {
+      const user = parent?.user;
+
       // rights default to false
       let subscriptions = {
         infomedia: false,

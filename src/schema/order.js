@@ -284,21 +284,21 @@ export const typeDef = `
   }
   `;
 
-const saveOrderToUserdata = async (context, submitOrderRes) => {
+const saveOrderToUserdata = async (user, submitOrderRes, context) => {
   //if the request is coming from beta.bibliotek.dk, add the order id to userData service
   if (context?.profile?.agency == 190101) {
     const orderId = submitOrderRes?.orderId;
-    const smaugUserId = context?.smaug?.user?.uniqueId;
+    const uniqueId = user?.uniqueId;
     try {
-      if (!smaugUserId) {
+      if (!uniqueId) {
         throw new Error("Not authorized");
       }
       if (!orderId) {
         throw new Error("Undefined orderId");
       }
       await context.datasources.getLoader("userDataAddOrder").load({
-        smaugUserId: smaugUserId,
-        orderId: orderId,
+        smaugUserId: uniqueId,
+        orderId,
       });
     } catch (error) {
       log.error(
@@ -316,8 +316,6 @@ export const resolvers = {
       if (!context?.smaug?.orderSystem) {
         throw "invalid smaug configuration [orderSystem]";
       }
-
-      console.error("ddddddddddddd", args.input.pickUpBranch);
 
       const branch = (
         await context.datasources.getLoader("library").load({
@@ -413,6 +411,13 @@ export const resolvers = {
       // userIds from userParameters
       const userIds = getUserIds(args?.input?.userParameters);
 
+      // userInfo
+      const userinfo = await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      });
+
+      const user = userinfo?.attributes;
+
       // Verify that the user is allowed to place an order
       const { status, statusCode, userId } = await getUserBorrowerStatus(
         { agencyId, userIds },
@@ -425,7 +430,7 @@ export const resolvers = {
 
       // We assume we will get the verified userId from the 'getUserBorrowerStatus' check.
       // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
-      if (!userId && !context?.smaug?.user?.id && isEmpty(userIds)) {
+      if (!userId && !user?.userId && isEmpty(userIds)) {
         // Order is not possible if no userId could be found or was provided for the user
         return { ok: false, status: "UNKNOWN_USER" };
       }
@@ -444,7 +449,7 @@ export const resolvers = {
           const submitOrderRes = await context.datasources
             .getLoader("submitOrder")
             .load({
-              userId: userId || context?.smaug?.user?.id || userIds.userId,
+              userId: userId || user?.userId || userIds.userId,
               branch,
               input: { ...args.input, ...material, key: null },
               accessToken: context.accessToken,
@@ -458,7 +463,7 @@ export const resolvers = {
           }
           successfullyCreated.push(material.key);
 
-          await saveOrderToUserdata(context, submitOrderRes);
+          await saveOrderToUserdata(user, submitOrderRes, context);
         })
       );
 
