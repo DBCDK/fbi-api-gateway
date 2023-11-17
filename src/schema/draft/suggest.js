@@ -11,6 +11,8 @@ enum SuggestionType {
 enum ComplexSuggestionType {
   title
   creator
+  subject
+  default
 }
 
 type ComplexSearchSuggestion {
