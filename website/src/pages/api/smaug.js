@@ -6,12 +6,7 @@ import config from "../../../../src/config.js";
  * remote smaug api call
  */
 async function getUserinfo(token) {
-  // const url = config.datasources.userInfo.url;
-
-  const url =
-    config.datasources.userInfo.url || "https://login.bib.dk/userinfo";
-
-  console.log("uuuuuuuuuurl", url);
+  const url = config.datasources.userInfo.url;
 
   return await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
