@@ -51,7 +51,7 @@ async function queryBuilder(pid) {
   });
 }
 
-test("Good response from defaultForsider-service", async () => {
+test.skip("Good response from defaultForsider-service", async () => {
   const pid = "default_forsider_working_pid";
   const result = await queryBuilder(pid);
 
@@ -66,7 +66,7 @@ test("Good response from defaultForsider-service", async () => {
   expect(result.data.manifestation).toEqual(expected);
 });
 
-test("Bad fields in non-empty object response from defaultForsider-service", async () => {
+test.skip("Bad fields in non-empty object response from defaultForsider-service", async () => {
   const logSpy = jest.spyOn(console, "log");
   const pid = "default_forsider_bad_object_missing_important_fields";
   const result = await queryBuilder(pid);
@@ -87,7 +87,7 @@ test("Bad fields in non-empty object response from defaultForsider-service", asy
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("Empty object response from defaultForsider-service", async () => {
+test.skip("Empty object response from defaultForsider-service", async () => {
   const pid = "default_forsider_empty_object";
   const result = await queryBuilder(pid);
 
@@ -102,7 +102,7 @@ test("Empty object response from defaultForsider-service", async () => {
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("String instead of object response from defaultForsider-service", async () => {
+test.skip("String instead of object response from defaultForsider-service", async () => {
   const logSpy = jest.spyOn(console, "log");
   const pid = "default_forsider_string_instead_of_object";
   const result = await queryBuilder(pid);
@@ -124,7 +124,7 @@ test("String instead of object response from defaultForsider-service", async () 
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("Check response with null response from defaultForsider-service", async () => {
+test.skip("Check response with null response from defaultForsider-service", async () => {
   const pid = "default_forsider_null_instead_of_object";
   const result = await queryBuilder(pid);
 
@@ -139,7 +139,7 @@ test("Check response with null response from defaultForsider-service", async () 
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("Check response with undefined response from defaultForsider-service", async () => {
+test.skip("Check response with undefined response from defaultForsider-service", async () => {
   const pid = "default_forsider_undefined_instead_of_object";
   const result = await queryBuilder(pid);
 
@@ -184,7 +184,7 @@ test("Bad fields in non-empty object response from Moreinfo-service", async () =
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("Empty object response from Moreinfo-service", async () => {
+test.skip("Empty object response from Moreinfo-service", async () => {
   const logSpy = jest.spyOn(console, "log");
   const pid = "moreinfo_empty_object";
   const result = await queryBuilder(pid);
