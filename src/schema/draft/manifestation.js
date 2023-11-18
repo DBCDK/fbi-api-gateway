@@ -872,6 +872,9 @@ export const resolvers = {
           return moreinfoCoverImage;
         }
 
+        // no coverImage
+        return {};
+
         // Maybe the smaug client has a custom color palette
         const colors = context?.smaug?.defaultForsider?.colors;
 
