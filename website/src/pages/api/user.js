@@ -99,20 +99,25 @@ export default async function handler(req, res) {
     if (userinfo_response.status === 200) {
       const userinfo_data = (await userinfo_response.json()).attributes;
 
-      //   user = { ...user, ...userinfo_data?.attributes };
+      const agencies = userinfo_data.agencies.map(({ agencyId }) => agencyId);
+
+      const hasCPRValidatedAccount = !!userinfo_data.agencies.find(
+        (a) => a.userIdType === "CPR"
+      );
 
       user.userId = userinfo_data.userId;
       user.identityProviderUsed = userinfo_data.idpUsed;
       user.hasCulrUniqueId = !!userinfo_data.uniqueId;
       user.isAuthenticated = !!userinfo_data.userId;
       user.municipalityAgencyId = userinfo_data.municipalityAgencyId;
-      user.agencies = userinfo_data.agencies.map(({ agencyId }) => agencyId);
+      user.agencies = agencies.length > 0 ? agencies : null;
+      user.isCPRValidated =
+        userinfo_data.idpUsed === "nemlogin" || hasCPRValidatedAccount;
 
-      user.isCPRValidated = !!userinfo_data.agencies.find(
-        (a) => a.userIdType === "CPR"
-      );
-
-      const userstatus_response = await getOpenUserStatus(user);
+      const userstatus_response = await getOpenUserStatus({
+        loggedInAgencyId: user?.loggedInAgencyId,
+        userId: user?.userId,
+      });
 
       if (userstatus_response.status === 200) {
         const userstatus_data = reduceBody(await userstatus_response.json());

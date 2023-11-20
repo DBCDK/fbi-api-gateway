@@ -25,9 +25,9 @@ const fetcher = async (url) => {
   return { config, statusCode: 200, status: "OK" };
 };
 
-export default function useConfiguration(token) {
-  const url = `/api/smaug?token=${token?.token?.replace(/test.*:/, "")}`;
-  const isValid = isToken(token?.token);
+export default function useConfiguration({ token } = {}) {
+  const url = `/api/smaug?token=${token?.replace(/test.*:/, "")}`;
+  const isValid = isToken(token);
 
   const { data, error } = useSWR(isValid && url, fetcher, {
     fallback: { config: {}, status: null, statusCode: null },

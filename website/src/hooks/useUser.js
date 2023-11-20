@@ -17,15 +17,13 @@ const fetcher = async (url) => {
   return res.user;
 };
 
-export default function useUser({ token, profile }) {
+export default function useUser({ token, profile } = {}) {
   const url = `/api/user?token=${token}&profile=${profile}`;
   const isValid = isToken(token);
 
   const { data, error } = useSWR(isValid && url, fetcher, {
     fallback: {},
   });
-
-  console.log("ffffffff", data);
 
   return { user: data, isLoading: !data && !error && isValid } || {};
 }

@@ -113,8 +113,8 @@ function Item({
 
   const displayName = configuration?.displayName;
   const clientId = configuration?.clientId;
-  const isAuthenticated = !!configuration?.userId;
-  const hasCulrAccount = !!configuration?.uniqueId;
+  const isAuthenticated = user?.isAuthenticated;
+  const hasCulrAccount = user?.hasCulrUniqueId;
   const missingConfiguration = !profile || !configuration?.agency;
   const submitted = {
     date: dateConverter(timestamp),
@@ -131,7 +131,8 @@ function Item({
   const modal = document.getElementById("modal");
   const containerScrollY = modal?.scrollTop;
 
-  const agencies = parseAgencies(user?.agencies);
+  // const agencies = parseAgencies(user?.agencies);
+  const agencies = user?.agencies;
 
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = hasValidationError ? styles.expired : "";
@@ -200,15 +201,13 @@ function Item({
             <>
               <Text type={open ? "text6" : "text4"}>{displayName}</Text>
               <Text className={styles.authentication}>
-                {`This token is ${
-                  isAuthenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
-                }`}
+                <>
+                  {`This token is ${
+                    isAuthenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
+                  }`}
+                  {isAuthenticated && !hasCulrAccount && "⚠️"}
+                </>
               </Text>
-              {isAuthenticated && !hasCulrAccount && (
-                <Text className={styles.culr}>
-                  {"⚠️ This user doesn't exist in CULR"}
-                </Text>
-              )}
 
               {missingConfiguration && (
                 <Text type="text4" className={styles.missingConfigWarn}>
@@ -297,6 +296,31 @@ function Item({
                 </div>
               )}
 
+              {agencies?.length > 0 && (
+                <div className={styles.agencies}>
+                  <Text type="text4">Token user agencies</Text>
+                  {agencies?.map((agencyId, i) => {
+                    return (
+                      <div key={`${agencyId}-${i}`} className={styles.list}>
+                        <Text as="span" type="text1">
+                          {agencyId}
+                        </Text>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {isAuthenticated && <hr className={styles.divider} />}
+
+          {isAuthenticated && (
+            <div className={styles.user}>
+              <div className={styles.heading}>
+                <Text type="text1">Token login details</Text>
+              </div>
+
               <div className={styles.details}>
                 {user?.loggedInAgencyId && (
                   <div className={styles.loggedInAgencyId}>
@@ -313,15 +337,13 @@ function Item({
               </div>
 
               <div className={styles.culr}>
-                <Text type="text4">CULR status</Text>
-                <Text type="text1">
-                  {hasCulrAccount
-                    ? "User exists in CULR"
-                    : "⚠️ User doesn't exist in CULR"}
-                </Text>
+                <Text type="text4">HasCulrUniqueId</Text>
+                <Text type="text1">{`${hasCulrAccount.toString()} ${
+                  !hasCulrAccount ? " ⚠️" : ""
+                }`}</Text>
               </div>
 
-              {agencies?.length > 0 && (
+              {false && agencies?.length > 0 && (
                 <div className={styles.agencies}>
                   <Text type="text4">Token user agencies</Text>
                   {agencies?.map((a, i) => {

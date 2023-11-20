@@ -337,16 +337,23 @@
 }
 
 .item .agencies p {
-  font-size: 12px;
+  /* font-size: 12px;
   font-family: var(--font-mono-regular);
-  margin: var(--pt2) 0 var(--pt1) 0;
+  margin: var(--pt2) 0 var(--pt1) 0; */
 }
 
 .item .agencies .list {
-  margin-bottom: var(--pt2);
+  display: inline-block;
+  margin: var(--pt1) var(--pt1) 0 0;
+  background-color: lightgray;
+  padding: var(--pt05);
 }
 
-.item .agencies .list > span {
+/* .item .agencies .list {
+  margin-bottom: var(--pt2);
+} */
+
+/* .item .agencies .list > span {
   display: block;
 }
 
@@ -367,7 +374,7 @@
 .item .agencies .list .branches > span:is(:hover) {
   font-family: var(--font-mono-semibold);
   cursor: pointer;
-}
+} */
 
 /* loading */
 
