@@ -13,6 +13,9 @@ enum ComplexSuggestionType {
   creator
   subject
   default
+  hostpublication
+  fictionalcharacter
+  contributor
 }
 
 type ComplexSearchSuggestion {
