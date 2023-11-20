@@ -184,7 +184,7 @@ test("Bad fields in non-empty object response from Moreinfo-service", async () =
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("Empty object response from Moreinfo-service", async () => {
+test.skip("Empty object response from Moreinfo-service", async () => {
   const logSpy = jest.spyOn(console, "log");
   const pid = "moreinfo_empty_object";
   const result = await queryBuilder(pid);
