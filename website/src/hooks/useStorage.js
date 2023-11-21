@@ -23,12 +23,14 @@ export default function useStorage() {
     return !!(strippedToken.length === 40);
   };
 
-  const setSelectedToken = (token, profile) => {
+  const setSelectedToken = (token, profile, note = "") => {
+    console.log("......setSelectedToken", token, profile, note);
+
     if (isToken(token)) {
-      const val = { token, profile };
+      const val = { token, profile, note };
       sessionStorage.setItem("selectedToken", JSON.stringify(val));
       mutateSelectedToken(val, false);
-      setHistory(token, profile);
+      setHistory(val);
     }
   };
 
@@ -41,29 +43,43 @@ export default function useStorage() {
     mutateSelectedToken(null, false);
   };
 
-  const setHistory = (token, profile) => {
+  const setHistory = ({ token, profile, note }) => {
+    console.log("......setHistory", { token, profile, note });
+
     const timestamp = Date.now();
 
     // Find existing
     const existing = history.find((obj) => obj.token === token);
 
-    // remove duplicate
-    const uniq = history.filter((obj) => !(obj.token === token));
+    const index = history.findIndex((obj) => {
+      console.log("...... obj", obj.token, token);
+      return obj.token === token;
+    });
+
+    let uniq;
 
     if (existing) {
+      uniq = [...history];
+
       // update only the profile if token already exist
-      uniq.unshift({
+      uniq[index] = {
         ...existing,
         profile,
-      });
+        note,
+      };
     } else {
+      // remove duplicate
+      uniq = history.filter((obj) => !(obj.token === token));
       // add to beginning of array
       uniq.unshift({
         token,
         profile,
+        note,
         timestamp,
       });
     }
+
+    console.log("...... qwerty", { history, uniq, index });
 
     // slice
     const sliced = uniq.slice(0, 10);

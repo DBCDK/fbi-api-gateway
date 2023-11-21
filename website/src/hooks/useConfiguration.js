@@ -29,6 +29,8 @@ export default function useConfiguration({ token } = {}) {
   const url = `/api/smaug?token=${token?.replace(/test.*:/, "")}`;
   const isValid = isToken(token);
 
+  console.log("urlurl", url);
+
   const { data, error } = useSWR(isValid && url, fetcher, {
     fallback: { config: {}, status: null, statusCode: null },
   });

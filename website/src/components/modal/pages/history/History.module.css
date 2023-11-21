@@ -114,6 +114,48 @@
   letter-spacing: 0.6px;
 }
 
+.item .content .note input {
+  display: inline-block;
+  width: 90%;
+  font-size: 12px;
+  margin: var(--pt2) 0 0 0;
+  border: 0;
+  color: var(--text-light);
+}
+
+.item .content .note input:disabled {
+  opacity: 0.65;
+}
+
+.item.expanded .content .note input {
+  font-size: 12px;
+  margin: var(--pt2) 0 0 var(--pt1);
+  border: 0;
+  color: var(--text-light);
+  transition: margin 0.3s;
+}
+
+.content .note input:focus {
+  color: var(--text);
+}
+
+.content .note input:focus::placeholder {
+  color: transparent;
+}
+
+.item .content .note label {
+  font-size: 12px;
+  width: 0;
+  opacity: 0;
+  display: inline-block;
+  transition: margin 0.3s, width 0.3s, opacity 0.3s;
+}
+
+.item.expanded .content .note label {
+  width: 16px;
+  opacity: unset;
+}
+
 .display .culr {
   margin-top: var(--pt2);
 }
