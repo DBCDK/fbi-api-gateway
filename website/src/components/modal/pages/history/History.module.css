@@ -100,7 +100,7 @@
 }
 
 .display {
-  padding-bottom: var(--pt2);
+  padding-bottom: var(--pt1);
 }
 
 .display p {
@@ -118,6 +118,7 @@
   display: inline-block;
   width: 90%;
   font-size: 12px;
+  line-height: 20px;
   margin: var(--pt2) 0 0 0;
   border: 0;
   color: var(--text-light);

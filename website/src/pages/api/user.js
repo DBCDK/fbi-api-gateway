@@ -110,7 +110,7 @@ export default async function handler(req, res) {
       user.hasCulrUniqueId = !!userinfo_data.uniqueId;
       user.isAuthenticated = !!userinfo_data.userId;
       user.municipalityAgencyId = userinfo_data.municipalityAgencyId;
-      user.agencies = agencies.length > 0 ? agencies : null;
+      user.agencies = agencies.length > 0 ? agencies : [];
       user.isCPRValidated =
         userinfo_data.idpUsed === "nemlogin" || hasCPRValidatedAccount;
 

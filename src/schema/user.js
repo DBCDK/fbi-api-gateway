@@ -251,6 +251,11 @@ export const resolvers = {
     async isCPRValidated(parent, args, context, info) {
       const user = context.user;
 
+      // Check if login provider is 'nemlogin'
+      if (user.idpUsed === "nemlogin") {
+        return true;
+      }
+
       // Check if user has a CPR validated account
       const accounts = user?.agencies;
       return !!accounts?.find(
