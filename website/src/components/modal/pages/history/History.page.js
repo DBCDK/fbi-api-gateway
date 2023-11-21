@@ -220,8 +220,6 @@ function Item({
               <ExpandButton onClick={() => setOpen(!open)} open={open} />
 
               <div className={styles.note}>
-                {/* <span>🗒️</span> */}
-                {/* <span>📝</span> */}
                 <label htmlFor={`input-note-${token}`}>✏️</label>
                 <input
                   id={`input-note-${token}`}
@@ -233,7 +231,9 @@ function Item({
                       el.blur();
                     }
                   }}
-                  placeholder={"Token note ..."}
+                  autocomplete="off"
+                  maxlength="50"
+                  placeholder={open ? " Some token note . . ." : false}
                   onChange={(e) => setNote(e.target.value)}
                   onBlur={() => setHistory({ token, profile, note })}
                 />

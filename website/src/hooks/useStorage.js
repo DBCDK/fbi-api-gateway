@@ -44,8 +44,6 @@ export default function useStorage() {
   };
 
   const setHistory = ({ token, profile, note }) => {
-    console.log("......setHistory", { token, profile, note });
-
     const timestamp = Date.now();
 
     // Find existing
@@ -56,22 +54,21 @@ export default function useStorage() {
       return obj.token === token;
     });
 
-    let uniq;
-
+    let arr;
     if (existing) {
-      uniq = [...history];
-
+      // history copy
+      arr = [...history];
       // update only the profile if token already exist
-      uniq[index] = {
+      arr[index] = {
         ...existing,
         profile,
         note,
       };
     } else {
       // remove duplicate
-      uniq = history.filter((obj) => !(obj.token === token));
+      arr = history.filter((obj) => !(obj.token === token));
       // add to beginning of array
-      uniq.unshift({
+      arr.unshift({
         token,
         profile,
         note,
@@ -79,10 +76,8 @@ export default function useStorage() {
       });
     }
 
-    console.log("...... qwerty", { history, uniq, index });
-
     // slice
-    const sliced = uniq.slice(0, 10);
+    const sliced = arr.slice(0, 10);
     // store
     const stringified = JSON.stringify(sliced);
     localStorage.setItem("history", stringified);

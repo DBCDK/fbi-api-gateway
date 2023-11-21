@@ -148,7 +148,7 @@
   width: 0;
   opacity: 0;
   display: inline-block;
-  transition: margin 0.3s, width 0.3s, opacity 0.3s;
+  transition: margin 0.3s, width 0.3s;
 }
 
 .item.expanded .content .note label {
