@@ -104,8 +104,8 @@ type Query {
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   """
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches:Boolean): Localizations 
-  refWorks(pid:String!):String!
-  ris(pid:String!):String!
+  refWorks(pids: [String!]!): String!
+  ris(pids: [String!]!): String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
   inspiration(language: LanguageCode, limit: Int): Inspiration! 
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
@@ -196,14 +196,21 @@ export const resolvers = {
     },
     async ris(parent, args, context, info) {
       const ris = await context.datasources.getLoader("ris").load({
-        pid: args.pid,
+        pids: args.pids,
       });
-      return ris;
+
+      /**
+       * Temporary fix until openformat handles multiple pids
+       * Removes trailing string "ER - " which isn't closed
+       */
+      const formated = ris.replaceAll("ER  -", "");
+
+      return formated;
     },
     async refWorks(parent, args, context, info) {
       const ref = await context.datasources
         .getLoader("refworks")
-        .load(args.pid);
+        .load({pids: args.pids});
       return ref;
     },
     async localizations(parent, args, context, info) {
