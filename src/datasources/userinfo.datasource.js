@@ -4,6 +4,8 @@ import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 const { url, ttl, prefix } = config.datasources.userInfo;
 /**
  * Fetch user info
+ *
+ * ?skipBorchk=1 param to skip Borchk
  */
 export async function load({ accessToken }, context) {
   const res = await context?.fetch(`${url}?skipBorchk=1`, {
@@ -50,7 +52,8 @@ export async function testLoad({ accessToken }, context) {
 
 export const options = {
   redis: {
-    prefix: prefix,
-    ttl: ttl,
+    prefix,
+    staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
+    ttl,
   },
 };

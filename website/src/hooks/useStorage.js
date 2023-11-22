@@ -23,9 +23,7 @@ export default function useStorage() {
     return !!(strippedToken.length === 40);
   };
 
-  const setSelectedToken = (token, profile, note = "") => {
-    console.log("......setSelectedToken", token, profile, note);
-
+  const setSelectedToken = (token, profile, note) => {
     if (isToken(token)) {
       const val = { token, profile, note };
       sessionStorage.setItem("selectedToken", JSON.stringify(val));
@@ -49,10 +47,7 @@ export default function useStorage() {
     // Find existing
     const existing = history.find((obj) => obj.token === token);
 
-    const index = history.findIndex((obj) => {
-      console.log("...... obj", obj.token, token);
-      return obj.token === token;
-    });
+    const index = history.findIndex((obj) => obj.token === token);
 
     let arr;
     if (existing) {
@@ -62,7 +57,7 @@ export default function useStorage() {
       arr[index] = {
         ...existing,
         profile,
-        note,
+        note: typeof note === "string" ? note : "",
       };
     } else {
       // remove duplicate
