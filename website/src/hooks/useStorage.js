@@ -23,12 +23,12 @@ export default function useStorage() {
     return !!(strippedToken.length === 40);
   };
 
-  const setSelectedToken = (token, profile, note) => {
+  const setSelectedToken = (token, profile) => {
     if (isToken(token)) {
-      const val = { token, profile, note };
+      const val = { token, profile };
       sessionStorage.setItem("selectedToken", JSON.stringify(val));
       mutateSelectedToken(val, false);
-      setHistory(val);
+      setHistory(val, false);
     }
   };
 
@@ -41,29 +41,32 @@ export default function useStorage() {
     mutateSelectedToken(null, false);
   };
 
-  const setHistory = ({ token, profile, note }) => {
+  const setHistory = ({ token, profile, note: _note }, shallow = true) => {
     const timestamp = Date.now();
 
     // Find existing
     const existing = history.find((obj) => obj.token === token);
 
-    const index = history.findIndex((obj) => obj.token === token);
+    const note = typeof _note === "string" ? _note : existing?.note || "";
 
-    let arr;
-    if (existing) {
-      // history copy
-      arr = [...history];
+    // history copy
+    let copy = [...history];
+
+    if (shallow) {
+      const index = history.findIndex((obj) => obj.token === token);
+
       // update only the profile if token already exist
-      arr[index] = {
+      copy[index] = {
         ...existing,
         profile,
-        note: typeof note === "string" ? note : "",
+        note,
       };
     } else {
       // remove duplicate
-      arr = history.filter((obj) => !(obj.token === token));
+      copy = copy.filter((obj) => !(obj.token === token));
+
       // add to beginning of array
-      arr.unshift({
+      copy.unshift({
         token,
         profile,
         note,
@@ -72,7 +75,7 @@ export default function useStorage() {
     }
 
     // slice
-    const sliced = arr.slice(0, 10);
+    const sliced = copy.slice(0, 10);
     // store
     const stringified = JSON.stringify(sliced);
     localStorage.setItem("history", stringified);
