@@ -5,7 +5,10 @@ const { url, ttl, prefix } = config.datasources.complexsearch;
 /**
  * Search via complex search
  */
-export async function load({ cql, offset, limit, profile, filters }, context) {
+export async function load(
+  { cql, offset, limit, profile, filters, sort },
+  context
+) {
   // TODO service needs to support profile ...
   const res = await context?.fetch(`${url}/cqlquery`, {
     method: "POST",
@@ -17,6 +20,7 @@ export async function load({ cql, offset, limit, profile, filters }, context) {
         profile: profile.name,
       },
       filters: filters,
+      ...(sort && { sort: sort }),
     }),
     allowedErrorStatusCodes: [400],
   });

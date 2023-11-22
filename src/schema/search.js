@@ -1,6 +1,7 @@
 import translations from "../utils/translations.json";
 import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
+import { mapFacets } from "../utils/filtersAndFacetsMap";
 
 /**
  * define a searchquery
@@ -92,6 +93,13 @@ input SearchFilters {
   sublocation: [String!]
   status: [HoldingsStatus!]
   canAlwaysBeLoaned: [String!]
+  
+  age: [String!]
+  ageRange: [String!]
+  lixRange: [String!]
+  letRange: [String!]
+  generalAudience: [String!]
+  libraryRecommendation: [String!]
 }
 
 enum HoldingsStatus {
@@ -274,8 +282,10 @@ export const resolvers = {
 
       args.facets.forEach((key) => {
         const values = parent?.filters?.[key] || [];
-        const facet = res.find((obj) => obj.name === key);
-        const copy = { name: key, ...facet, values: [] };
+        /** we need to map some facets - name has changed in response : lix -> lix_range, let->let_range **/
+        const facet = res.find((obj) => obj.name === mapFacets([key])[0]);
+        // now we find the facet
+        const copy = { ...facet, name: key, values: [] };
         values.forEach((value) => {
           // get selected term props
           const selected = facet?.values.find((obj) => obj.term === value);
@@ -304,7 +314,6 @@ export const resolvers = {
 
         response.push(copy);
       });
-
       return response;
     },
   },

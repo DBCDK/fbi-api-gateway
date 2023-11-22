@@ -147,6 +147,13 @@ export default {
       token: process.env.SUGGESTER_TOKEN,
       ttl: process.env.PROSPER_TIME_TO_LIVE_SECONDS || 10,
     },
+    complexsearchsuggest: {
+      url:
+        process.env.CS_SUGGEST_URL ||
+        "http://cs-suggest.cisterne.svc.cloud.dbc.dk/api/v1/suggestions",
+      prefix: process.env.CS_SUGGEST_PREFIX || "complexsearch-1",
+      ttl: process.env.CS_SUGGEST_TIME_TO_LIVE_SECONDS || 10,
+    },
     suggester: {
       url:
         process.env.SUGGESTER_URL ||

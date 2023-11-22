@@ -337,6 +337,16 @@ input ComplexSearchFilters {
   issueId: [String!]
 }
 
+enum SortOrder {
+  asc
+  desc
+}
+
+input Sort {
+  index: String!
+  order: SortOrder!
+}
+
 \\"\\"\\"The search response\\"\\"\\"
 type ComplexSearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
@@ -345,7 +355,7 @@ type ComplexSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimit!, sort: [Sort!]): [Work!]!
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
@@ -605,6 +615,13 @@ type Query {
     \\"\\"\\"Id of branch to filter by\\"\\"\\"
     branchId: String
   ): localSuggestResponse!
+  complexSuggest(
+    \\"\\"\\"The query to get suggestions for\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"the type of index to get suggestions from\\"\\"\\"
+    type: ComplexSuggestionType!
+  ): ComplexSuggestResponse!
   suggest(
     workType: WorkType
 
@@ -1850,6 +1867,27 @@ enum SuggestionType {
   COMPOSIT
 }
 
+enum ComplexSuggestionType {
+  title
+  creator
+  subject
+  default
+  hostpublication
+  fictionalcharacter
+  contributor
+}
+
+type ComplexSearchSuggestion {
+  \\"\\"\\"The type of suggestion\\"\\"\\"
+  type: String!
+
+  \\"\\"\\"The suggested term which can be searched for\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"A work related to the term\\"\\"\\"
+  work: Work
+}
+
 type Suggestion {
   \\"\\"\\"The type of suggestion: creator, subject or title\\"\\"\\"
   type: SuggestionType!
@@ -1859,6 +1897,10 @@ type Suggestion {
 
   \\"\\"\\"A work related to the term\\"\\"\\"
   work: Work
+}
+
+type ComplexSuggestResponse {
+  result: [ComplexSearchSuggestion!]!
 }
 
 type SuggestResponse {
@@ -2575,6 +2617,12 @@ input SearchFilters {
   sublocation: [String!]
   status: [HoldingsStatus!]
   canAlwaysBeLoaned: [String!]
+  age: [String!]
+  ageRange: [String!]
+  lixRange: [String!]
+  letRange: [String!]
+  generalAudience: [String!]
+  libraryRecommendation: [String!]
 }
 
 enum HoldingsStatus {
@@ -2950,6 +2998,16 @@ input ComplexSearchFilters {
   issueId: [String!]
 }
 
+enum SortOrder {
+  asc
+  desc
+}
+
+input Sort {
+  index: String!
+  order: SortOrder!
+}
+
 \\"\\"\\"The search response\\"\\"\\"
 type ComplexSearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
@@ -2958,7 +3016,7 @@ type ComplexSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimit!, sort: [Sort!]): [Work!]!
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
@@ -4521,6 +4579,12 @@ input SearchFilters {
   sublocation: [String!]
   status: [HoldingsStatus!]
   canAlwaysBeLoaned: [String!]
+  age: [String!]
+  ageRange: [String!]
+  lixRange: [String!]
+  letRange: [String!]
+  generalAudience: [String!]
+  libraryRecommendation: [String!]
 }
 
 enum HoldingsStatus {

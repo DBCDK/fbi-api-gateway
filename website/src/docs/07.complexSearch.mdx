@@ -4,21 +4,37 @@ Version 1 of complex search.
 Complex search is a searchengine which supports bibliographic queries via CQL
 Currently supports the following indexes in the CQL query: [Full list of indexes](https://fbi-api.dbc.dk/indexmapper/)
 
+Currently complexSearch supports:
+- cql
+- filters
+
+Works from complexSearch supports:
+- sort
+- offset
+- limit
+
+
 <InlineGraphiQL
-  query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!) {
+  query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!, $sort: [Sort!]) {
   complexSearch(cql: $cql, filters: $filters) {
     hitcount
     errorMessage
-    works(offset: $offset, limit: $limit) {
+    works(offset: $offset, limit: $limit, sort: $sort) {
       titles {
         main
+      }
+      manifestations {
+        latest {
+          recordCreationDate
+        }
       }
     }
   }
 }`}
   variables={{
-    cql: "title=snemand*",
+    cql: "term.title=snemand*",
     filters: { branchId: ["775122"], status: ["OnShelf"] },
+    sort: [{ index: "sort.latestpublicationdate", order: "asc"}],
     offset: 0,
     limit: 5,
   }}
