@@ -453,8 +453,12 @@ export const resolvers = {
             return;
           }
           successfullyCreated.push(material.key);
-          //todo fix
-        //  await saveOrderToUserdata(context, "test 2 submitOrderRes multiple");
+          console.log('\n\n\n\nMMULTIPLE ORDRS.material',material)
+          console.log('\n\n\n\nMMULTIPLE ORDRS.submitOrderRes',submitOrderRes)
+          console.log('\n\n\n\nMMULTIPLE ORDRS.args',args)
+
+          const pidToOrder = material.pids[0];
+          await saveOrderToUserdata({context, submitOrderRes, pid:pidToOrder});
         })
       );
 
