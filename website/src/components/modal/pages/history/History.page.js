@@ -231,8 +231,8 @@ function Item({
                       el.blur();
                     }
                   }}
-                  autocomplete="off"
-                  maxlength="50"
+                  autoComplete="off"
+                  maxLength="50"
                   placeholder={open ? " Some token note . . ." : false}
                   onChange={(e) => setNote(e.target.value)}
                   onBlur={() => setHistory({ token, profile, note })}
