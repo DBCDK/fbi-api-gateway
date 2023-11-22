@@ -382,7 +382,7 @@ export const resolvers = {
 
       //first pid in pids to order
       const pidToOrder = args.input.pids[0];
-      await saveOrderToUserdata({ context, submitOrderRes, pid:pidToOrder });
+      await saveOrderToUserdata({ context, submitOrderRes, pid: pidToOrder });
 
       return submitOrderRes;
     },
@@ -453,12 +453,13 @@ export const resolvers = {
             return;
           }
           successfullyCreated.push(material.key);
-          console.log('\n\n\n\nMMULTIPLE ORDRS.material',material)
-          console.log('\n\n\n\nMMULTIPLE ORDRS.submitOrderRes',submitOrderRes)
-          console.log('\n\n\n\nMMULTIPLE ORDRS.args',args)
 
           const pidToOrder = material.pids[0];
-          await saveOrderToUserdata({context, submitOrderRes, pid:pidToOrder});
+          await saveOrderToUserdata({
+            context,
+            submitOrderRes,
+            pid: pidToOrder,
+          });
         })
       );
 
