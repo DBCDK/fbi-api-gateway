@@ -47,7 +47,7 @@ type InfomediaArticle {
 
 async function fetchArticle(parent, context) {
   const articleId = parent?.id;
-  const userId = context.user?.userId;
+  const userId = context?.user?.userId;
 
   // users access given agencyId
   const agencyId = await getInfomediaAgencyId(context);
@@ -64,7 +64,7 @@ async function fetchArticle(parent, context) {
 export const resolvers = {
   InfomediaResponse: {
     async error(parent, args, context, info) {
-      if (!context.user?.userId) {
+      if (!context?.user?.userId) {
         return "BORROWER_NOT_LOGGED_IN";
       }
       const article = await fetchArticle(parent, context);

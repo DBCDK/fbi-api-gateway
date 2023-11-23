@@ -252,7 +252,7 @@ export const resolvers = {
 
       // token is not authenticated - anonymous token used
       // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
-      if (!context.user?.userId) {
+      if (!context?.user?.userId) {
         return {
           status: "ERROR_UNAUTHENTICATED_TOKEN",
         };
@@ -392,7 +392,7 @@ export const resolvers = {
       const isGlobal = type === "GLOBAL";
 
       // userInfo
-      let user = context.user;
+      let user = context?.user;
 
       // update user for provided accessToken
       if (accessToken) {

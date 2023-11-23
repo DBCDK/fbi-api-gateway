@@ -506,7 +506,7 @@ export async function resolveAccess(manifestation, context) {
   parent?.access?.accessUrls?.forEach((entry) => {
     const { proxyUrl, loginRequired } = getProxyUrl(
       entry.url || "",
-      context.user
+      context?.user
     );
     res.push({
       __typename: "AccessUrl",

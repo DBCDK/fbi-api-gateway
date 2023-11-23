@@ -99,10 +99,15 @@ export default async function handler(req, res) {
     if (userinfo_response.status === 200) {
       const userinfo_data = (await userinfo_response.json()).attributes;
 
-      const agencies = userinfo_data.agencies.map(({ agencyId }) => agencyId);
-
       const hasCPRValidatedAccount = !!userinfo_data.agencies.find(
         (a) => a.userIdType === "CPR"
+      );
+
+      // unique agencyId list
+      const agencies = [];
+      userinfo_data.agencies.forEach(
+        ({ agencyId }) =>
+          !agencies.includes(agencyId) && agencies.push(agencyId)
       );
 
       user.userId = userinfo_data.userId;

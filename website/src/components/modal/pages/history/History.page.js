@@ -77,15 +77,6 @@ function ExpandButton({ onClick, open }) {
   );
 }
 
-function parseAgencies(agencies) {
-  return agencies?.map((a) => ({
-    ...a,
-    agencyId: a?.result?.[0]?.agencyId,
-    agencyName: a?.result?.[0]?.agencyName,
-    isBlocked: !a?.borrowerStatus?.allowed,
-  }));
-}
-
 /**
  * The Component function
  *
@@ -133,7 +124,6 @@ function Item({
   const modal = document.getElementById("modal");
   const containerScrollY = modal?.scrollTop;
 
-  // const agencies = parseAgencies(user?.agencies);
   const agencies = user?.agencies;
 
   const inUseClass = inUse ? styles.inUse : "";
@@ -219,29 +209,31 @@ function Item({
 
               <ExpandButton onClick={() => setOpen(!open)} open={open} />
 
-              <div className={styles.note}>
-                <label htmlFor={`input-note-${token}`}>✏️</label>
-                <input
-                  id={`input-note-${token}`}
-                  value={note}
-                  disabled={!open}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.keyCode === 13) {
-                      const el = document.getElementById(`input-note-${token}`);
-                      el.blur();
-                    }
-                  }}
-                  autoComplete="off"
-                  maxLength="50"
-                  placeholder={open ? " Some token note . . ." : false}
-                  onChange={(e) => setNote(e.target.value)}
-                  onBlur={() => setHistory({ token, profile, note })}
-                />
-              </div>
+              <Text className={styles.note}>{note}</Text>
             </>
           )}
         </div>
         <div className={styles.collapsed} ref={scrollRef}>
+          <div className={styles.note}>
+            <label htmlFor={`input-note-${token}`}>✏️</label>
+            <input
+              id={`input-note-${token}`}
+              value={note}
+              disabled={!open}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.keyCode === 13) {
+                  const el = document.getElementById(`input-note-${token}`);
+                  el.blur();
+                }
+              }}
+              autoComplete="off"
+              maxLength="50"
+              placeholder={open ? " Some token note ..." : false}
+              onChange={(e) => setNote(e.target.value)}
+              onBlur={() => setHistory({ token, profile, note })}
+            />
+          </div>
+
           <hr className={styles.divider} />
 
           <div className={styles.user}>
@@ -312,19 +304,28 @@ function Item({
                 </div>
               )}
 
-              {user?.isCPRValidated && (
-                <div className={styles.isCPRValidated}>
-                  <Text type="text4">IsCPRValidated</Text>
-                  <Text type="text1">{user?.isCPRValidated.toString()}</Text>
-                </div>
-              )}
-
               {user?.municipalityAgencyId && (
                 <div className={styles.municipalityAgencyId}>
                   <Text type="text4">MunicipalityAgencyId</Text>
                   <Text type="text1">{user?.municipalityAgencyId}</Text>
                 </div>
               )}
+
+              <div className={styles.details}>
+                {user?.isCPRValidated && (
+                  <div className={styles.isCPRValidated}>
+                    <Text type="text4">IsCPRValidated</Text>
+                    <Text type="text1">{user?.isCPRValidated.toString()}</Text>
+                  </div>
+                )}
+
+                <div className={styles.culr}>
+                  <Text type="text4">HasCulrUniqueId</Text>
+                  <Text type="text1">{`${hasCulrAccount.toString()} ${
+                    !hasCulrAccount ? " ⚠️" : ""
+                  }`}</Text>
+                </div>
+              </div>
 
               {agencies?.length > 0 && (
                 <div className={styles.agencies}>
@@ -365,49 +366,6 @@ function Item({
                   </div>
                 )}
               </div>
-
-              <div className={styles.culr}>
-                <Text type="text4">HasCulrUniqueId</Text>
-                <Text type="text1">{`${hasCulrAccount.toString()} ${
-                  !hasCulrAccount ? " ⚠️" : ""
-                }`}</Text>
-              </div>
-
-              {false && agencies?.length > 0 && (
-                <div className={styles.agencies}>
-                  <Text type="text4">Token user agencies</Text>
-                  {agencies?.map((a, i) => {
-                    return (
-                      <div key={`${a.agencyId}-${i}`} className={styles.list}>
-                        <Text as="span" type="text1">
-                          {a.agencyName}
-                        </Text>
-                        <Text as="span" type="text1">
-                          {a.agencyId}
-                        </Text>
-                        <Text as="span" type="text1">
-                          {`Blocked: ${a.isBlocked?.toString()}`}
-                        </Text>
-                        {/* removed for now until design is ready */}
-                        {false && (
-                          <div className={styles.branches}>
-                            {a?.result?.map((r, i) => (
-                              <Text
-                                as="span"
-                                key={`${r.branchId}-${i}`}
-                                type="text1"
-                                title={r.name}
-                              >
-                                {r.branchId + " "}
-                              </Text>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           )}
         </div>

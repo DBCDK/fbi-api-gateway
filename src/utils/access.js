@@ -18,7 +18,7 @@ import { filterDuplicateAgencies } from "./utils";
  * @returns {null | string} AgencyId
  */
 async function infomedia(context) {
-  const user = context.user;
+  const user = context?.user;
 
   // get rights from idp
   const idpRights = await context.datasources.getLoader("idp").load("");

@@ -5,10 +5,9 @@ const { url, ttl, prefix } = config.datasources.userInfo;
 /**
  * Fetch user info
  *
- * ?skipBorchk=1 param to skip Borchk
  */
 export async function load({ accessToken }, context) {
-  const res = await context?.fetch(`${url}?skipBorchk=1`, {
+  const res = await context?.fetch(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
     allowedErrorStatusCodes: [401],
   });

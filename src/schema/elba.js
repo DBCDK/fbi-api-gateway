@@ -72,7 +72,7 @@ export const resolvers = {
       const { pid, userName, userMail } = args.input;
 
       // token is not authenticated
-      if (!context.user?.userId) {
+      if (!context?.user?.userId) {
         return {
           status: "ERROR_UNAUTHENTICATED_USER",
         };
@@ -91,8 +91,8 @@ export const resolvers = {
       let userData;
       try {
         userData = await context.datasources.getLoader("user").load({
-          userId: context.user?.userId,
-          agencyId: context.user?.loggedInAgencyId,
+          userId: context?.user?.userId,
+          agencyId: context?.user?.loggedInAgencyId,
           accessToken: context.accessToken,
         });
       } catch (e) {
@@ -101,7 +101,7 @@ export const resolvers = {
         };
       }
 
-      const user = { ...userData, ...context.user };
+      const user = { ...userData, ...context?.user };
 
       // Ensure a pair of email and name can be set
       if (!((userName || user.name) && (userMail || user.mail))) {

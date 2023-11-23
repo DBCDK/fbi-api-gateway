@@ -344,7 +344,7 @@ export const resolvers = {
         return { ok: status, status: statusCode };
       }
 
-      const user = context.user;
+      const user = context?.user;
 
       const authUserId = user?.userId;
 
@@ -399,7 +399,7 @@ export const resolvers = {
         };
       }
 
-      const user = context.user;
+      const user = context?.user;
 
       // PickUpBranch agencyId
       const agencyId = branch?.agencyId;

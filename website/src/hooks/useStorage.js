@@ -41,6 +41,7 @@ export default function useStorage() {
     mutateSelectedToken(null, false);
   };
 
+  // Shallow true will update history items without reordering the items (last updated first)
   const setHistory = ({ token, profile, note: _note }, shallow = true) => {
     const timestamp = Date.now();
 

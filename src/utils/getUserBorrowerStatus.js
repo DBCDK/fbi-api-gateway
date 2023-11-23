@@ -92,16 +92,16 @@ export default async function getUserBorrowerStatus(
   if (isAuthenticated) {
     const user = context?.user;
 
-    // Check if the user is authenticated on the given pickUpBranch
-    const verifiedOnPickUpBranch = !!(
+    // Check if the user is authenticated on the provided agencyId
+    const verifiedOnAgencyId = !!(
       user?.userId && user?.loggedInAgencyId === agencyId
     );
 
     // add to summary log
-    summary.verifiedOnPickUpBranch = verifiedOnPickUpBranch;
+    summary.verifiedOnAgencyId = verifiedOnAgencyId;
 
     // If so, we check if the user is allowed to place an order here.
-    if (verifiedOnPickUpBranch) {
+    if (verifiedOnAgencyId) {
       _userId = user?.userId;
     }
     // If NOT, we fetch the authenticated users other accounts
