@@ -201,10 +201,9 @@ export const resolvers = {
 
       /**
        * Temporary fix until openformat handles multiple pids
-       * Removes trailing string "ER - " which isn't closed
+       * Add newline after "ER  -" to correct format
        */
-      const formated = ris.replaceAll("ER  -", "");
-
+      const formated = ris.replaceAll("ER  -", "ER  -\n");
       return formated;
     },
     async refWorks(parent, args, context, info) {
