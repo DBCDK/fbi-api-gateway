@@ -250,7 +250,7 @@ promExporterApp.listen(9599, () => {
 
       req.user = userinfo?.attributes || null;
     } catch (e) {
-      log.error("Error fetching from smaug", { response: e });
+      log.error("Error fetching from userinfo", { response: e });
       res.status(500);
       return res.send({
         statusCode: 500,
