@@ -452,8 +452,6 @@ export const resolvers = {
       const successfullyCreated = [];
       const failedAtCreation = [];
 
-      console.log("USER PARAMS", args?.input);
-      console.log("CNTXT", context.user);
       const periodicaOrders = args.input.materialsToOrder.filter(
         (material) =>
           material.periodicaForm &&
@@ -477,17 +475,13 @@ export const resolvers = {
           status: "ERROR_AGENCY_NOT_SUBSCRIBED",
         };
       }
-
-      console.log("periodicaOrders", periodicaOrders);
-      console.log("otherOrders", otherOrders);
-
       await Promise.all(
         periodicaOrders.map(async (material) => {
-          // if (args.dryRun) {
-          //   // return if dryrun
-          //   successfullyCreated.push(material.key);
-          //   return;
-          // }
+          if (args.dryRun) {
+            // return if dryrun
+            successfullyCreated.push(material.key);
+            return;
+          }
 
           // Pid must be a manifestation with a valid issn (valid journal)
           let issn;
@@ -497,7 +491,6 @@ export const resolvers = {
               context
             );
             issn = onlineAccess.find((entry) => entry.issn);
-            console.log("ISSN ", issn);
           } catch (e) {
             return {
               status: "ERROR_PID_NOT_RESERVABLE",
@@ -519,8 +512,6 @@ export const resolvers = {
               dryRun: args.dryRun,
             });
 
-          console.log("submitOrderRes", submitOrderRes);
-
           if (!submitOrderRes || submitOrderRes.status !== "OK") {
             // Creation failed
             failedAtCreation.push(material.key);
@@ -528,7 +519,8 @@ export const resolvers = {
           }
           successfullyCreated.push(material.key);
 
-          //await saveOrderToUserdata(user, submitOrderRes, context); //TODO  - we dont save single periodica orders to userData, therefor i dont save multi-periodica either
+          //TODO  - we dont save single periodica orders to userData, therefor i dont save multi-periodica either
+          //await saveOrderToUserdata(user, submitOrderRes, context);
         })
       );
 
