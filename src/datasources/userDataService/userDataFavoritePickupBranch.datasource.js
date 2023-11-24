@@ -4,7 +4,7 @@ const { url, ttl, prefix } = config.datasources.userdata;
 /**
  * set favorite pickup branch in userdata service
  */
-export async function load({ smaugUserId, favoritePickUpBranch }, context) {
+export async function load({ uniqueId, favoritePickUpBranch }, context) {
   const endpoint = url + "user/favoritePickupBranch";
   const res = await context?.fetch(endpoint, {
     headers: {
@@ -12,8 +12,8 @@ export async function load({ smaugUserId, favoritePickUpBranch }, context) {
     },
     method: "POST",
     body: JSON.stringify({
-      smaugUserId: smaugUserId,
-      favoritePickUpBranch: favoritePickUpBranch,
+      smaugUserId: uniqueId,
+      favoritePickUpBranch,
     }),
   });
 

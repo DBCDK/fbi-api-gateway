@@ -120,8 +120,8 @@ promExporterApp.listen(9599, () => {
         userAgent,
         userAgentIsBot: isbot(userAgent),
         ip: req?.smaug?.app?.ips?.[0],
-        isAuthenticatedToken: !!req.smaug?.user?.id,
-        hasUniqueId: !!req.smaug?.user?.uniqueId,
+        isAuthenticatedToken: !!req.user?.userId,
+        hasUniqueId: !!req.user?.uniqueId,
         accessTokenHash,
         isTestToken: req.isTestToken,
       });
@@ -231,6 +231,31 @@ promExporterApp.listen(9599, () => {
             "Invalid client configuration. Missing agency in configuration for client.",
         });
       }
+    }
+
+    next();
+  });
+
+  /**
+   * Middleware for fetching user information (for authenticated tokens)
+   */
+  app.post("/:profile/graphql", async (req, res, next) => {
+    // Fetch login.bib.dk userinfo
+    try {
+      const userinfo =
+        req.accessToken &&
+        (await req.datasources.getLoader("userinfo").load({
+          accessToken: req.accessToken,
+        }));
+
+      req.user = userinfo?.attributes || null;
+    } catch (e) {
+      log.error("Error fetching from userinfo", { response: e });
+      res.status(500);
+      return res.send({
+        statusCode: 500,
+        message: "Internal server error",
+      });
     }
 
     next();

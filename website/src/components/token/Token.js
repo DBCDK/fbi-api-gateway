@@ -5,6 +5,7 @@ import Overlay from "@/components/base/overlay";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
+import useUser from "@/hooks/useUser";
 
 import Button from "@/components/base/button";
 import Text from "@/components/base/text";
@@ -21,6 +22,8 @@ export default function Token({
   // useToken custom hook
   const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
   const { configuration, status, isLoading } = useConfiguration(selectedToken);
+  const { user } = useUser(selectedToken);
+
   // internal state
   const [state, setState] = useState({
     value: "",
@@ -47,7 +50,7 @@ export default function Token({
   const hasFocus = !!state.focus;
   const hasValue = !!(state.value && state.value !== "");
   const isToken = state.value === selectedToken?.token;
-  const isAuthenticated = !!configuration?.userId;
+  const isAuthenticated = user?.isAuthenticated;
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 

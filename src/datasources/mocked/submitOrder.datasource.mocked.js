@@ -3,7 +3,7 @@ import { buildParameters, parseOrder } from "../submitOrder.datasource";
 export async function load({ userId, input }) {
   const params = buildParameters({ userId, input, orderSystem: "TEST" });
 
-  if (params.userId === "123") {
+  if (params.userId === "123" || userId === "some-id") {
     return parseOrder({
       status: 200,
       body: {

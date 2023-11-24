@@ -77,15 +77,6 @@ function ExpandButton({ onClick, open }) {
   );
 }
 
-function parseAgencies(agencies) {
-  return agencies?.map((a) => ({
-    ...a,
-    agencyId: a?.result?.[0]?.agencyId,
-    agencyName: a?.result?.[0]?.agencyName,
-    isBlocked: !a?.borrowerStatus?.allowed,
-  }));
-}
-
 /**
  * The Component function
  *
@@ -98,23 +89,25 @@ function parseAgencies(agencies) {
 function Item({
   token,
   profile,
+  note: _note,
   timestamp,
   inUse,
   configuration,
   user,
   configurationStatus,
 }) {
-  const { setSelectedToken, removeHistoryItem } = useStorage();
+  const { setSelectedToken, setHistory, removeHistoryItem } = useStorage();
 
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
   const [distance, setDistance] = useState(false);
   const [isScrolled, setIsScrolled] = useState(null);
+  const [note, setNote] = useState(_note);
 
   const displayName = configuration?.displayName;
   const clientId = configuration?.clientId;
-  const isAuthenticated = !!configuration?.userId;
-  const hasCulrAccount = !!configuration?.uniqueId;
+  const isAuthenticated = user?.isAuthenticated;
+  const hasCulrAccount = user?.hasCulrUniqueId;
   const missingConfiguration = !profile || !configuration?.agency;
   const submitted = {
     date: dateConverter(timestamp),
@@ -131,7 +124,7 @@ function Item({
   const modal = document.getElementById("modal");
   const containerScrollY = modal?.scrollTop;
 
-  const agencies = parseAgencies(user?.agencies);
+  const agencies = user?.agencies;
 
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = hasValidationError ? styles.expired : "";
@@ -200,15 +193,13 @@ function Item({
             <>
               <Text type={open ? "text6" : "text4"}>{displayName}</Text>
               <Text className={styles.authentication}>
-                {`This token is ${
-                  isAuthenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
-                }`}
+                <>
+                  {`This token is ${
+                    isAuthenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
+                  }`}
+                  {isAuthenticated && !hasCulrAccount && "⚠️"}
+                </>
               </Text>
-              {isAuthenticated && !hasCulrAccount && (
-                <Text className={styles.culr}>
-                  {"⚠️ This user doesn't exist in CULR"}
-                </Text>
-              )}
 
               {missingConfiguration && (
                 <Text type="text4" className={styles.missingConfigWarn}>
@@ -217,48 +208,78 @@ function Item({
               )}
 
               <ExpandButton onClick={() => setOpen(!open)} open={open} />
+
+              <Text className={styles.note}>{note}</Text>
             </>
           )}
         </div>
         <div className={styles.collapsed} ref={scrollRef}>
-          <div className={styles.submitted}>
-            <Text type="text4">Submitted at</Text>
-            <Text type="text1">
-              {submitted.date} <span>{submitted.time}</span>
-            </Text>
+          <div className={styles.note}>
+            <label htmlFor={`input-note-${token}`}>✏️</label>
+            <input
+              id={`input-note-${token}`}
+              value={note}
+              disabled={!open}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.keyCode === 13) {
+                  const el = document.getElementById(`input-note-${token}`);
+                  el.blur();
+                }
+              }}
+              autoComplete="off"
+              maxLength="50"
+              placeholder={open ? " Some token note ..." : false}
+              onChange={(e) => setNote(e.target.value)}
+              onBlur={() => setHistory({ token, profile, note })}
+            />
           </div>
 
-          <div className={`${styles.expires} `}>
-            <Text type="text4">Expiration date</Text>
-            <div>
-              <i className={`${styles.indicator} ${expireStatusClass}`} />
+          <hr className={styles.divider} />
+
+          <div className={styles.user}>
+            <div className={styles.heading}>
+              <Text type="text1">Client details</Text>
+            </div>
+
+            <div className={styles.submitted}>
+              <Text type="text4">Submitted at</Text>
               <Text type="text1">
-                {expires.date}
-                <span>{expires.time}</span>
+                {submitted.date} <span>{submitted.time}</span>
               </Text>
             </div>
-          </div>
 
-          <div className={styles.token}>
-            <Text type="text4">Access token</Text>
-            <Text type="text1">{token}</Text>
-          </div>
-
-          <div className={styles.clientId}>
-            <Text type="text4">ClientID</Text>
-            <Text type="text1">{clientId}</Text>
-          </div>
-
-          <div className={styles.details}>
-            <div>
-              <Text type="text4">Agency</Text>
-              <Text type="text1">
-                {configuration?.agency || "Missing 😵‍💫"}
-              </Text>
+            <div className={`${styles.expires} `}>
+              <Text type="text4">Expiration date</Text>
+              <div>
+                <i className={`${styles.indicator} ${expireStatusClass}`} />
+                <Text type="text1">
+                  {expires.date}
+                  <span>{expires.time}</span>
+                </Text>
+              </div>
             </div>
-            <div>
-              <Text type="text4">Profile</Text>
-              <Text type="text1">{profile || "None 😵‍💫"}</Text>
+
+            <div className={styles.token}>
+              <Text type="text4">Access token</Text>
+              <Text type="text1">{token}</Text>
+            </div>
+
+            <div className={styles.clientId}>
+              <Text type="text4">ClientID</Text>
+              <Text type="text1">{clientId}</Text>
+            </div>
+
+            <div className={styles.details}>
+              <div>
+                <Text type="text4">Agency</Text>
+                <Text type="text1">
+                  {configuration?.agency || "Missing 😵‍💫"}
+                </Text>
+              </div>
+              <div>
+                <Text type="text4">Profile</Text>
+                <Text type="text1">{profile || "None 😵‍💫"}</Text>
+              </div>
             </div>
           </div>
 
@@ -267,7 +288,7 @@ function Item({
           {isAuthenticated && (
             <div className={styles.user}>
               <div className={styles.heading}>
-                <Text type="text1">Token user details</Text>
+                <Text type="text1">User informations</Text>
               </div>
 
               {user?.name && (
@@ -283,19 +304,53 @@ function Item({
                 </div>
               )}
 
-              {user?.isCPRValidated && (
-                <div className={styles.isCPRValidated}>
-                  <Text type="text4">IsCPRValidated</Text>
-                  <Text type="text1">{user?.isCPRValidated.toString()}</Text>
-                </div>
-              )}
-
               {user?.municipalityAgencyId && (
                 <div className={styles.municipalityAgencyId}>
                   <Text type="text4">MunicipalityAgencyId</Text>
                   <Text type="text1">{user?.municipalityAgencyId}</Text>
                 </div>
               )}
+
+              <div className={styles.details}>
+                {user?.isCPRValidated && (
+                  <div className={styles.isCPRValidated}>
+                    <Text type="text4">IsCPRValidated</Text>
+                    <Text type="text1">{user?.isCPRValidated.toString()}</Text>
+                  </div>
+                )}
+
+                <div className={styles.culr}>
+                  <Text type="text4">HasCulrUniqueId</Text>
+                  <Text type="text1">{`${hasCulrAccount.toString()} ${
+                    !hasCulrAccount ? " ⚠️" : ""
+                  }`}</Text>
+                </div>
+              </div>
+
+              {agencies?.length > 0 && (
+                <div className={styles.agencies}>
+                  <Text type="text4">Token user agencies</Text>
+                  {agencies?.map((agencyId, i) => {
+                    return (
+                      <div key={`${agencyId}-${i}`} className={styles.list}>
+                        <Text as="span" type="text1">
+                          {agencyId}
+                        </Text>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {isAuthenticated && <hr className={styles.divider} />}
+
+          {isAuthenticated && (
+            <div className={styles.user}>
+              <div className={styles.heading}>
+                <Text type="text1">Login details</Text>
+              </div>
 
               <div className={styles.details}>
                 {user?.loggedInAgencyId && (
@@ -311,51 +366,6 @@ function Item({
                   </div>
                 )}
               </div>
-
-              <div className={styles.culr}>
-                <Text type="text4">CULR status</Text>
-                <Text type="text1">
-                  {hasCulrAccount
-                    ? "User exists in CULR"
-                    : "⚠️ User doesn't exist in CULR"}
-                </Text>
-              </div>
-
-              {agencies?.length > 0 && (
-                <div className={styles.agencies}>
-                  <Text type="text4">Token user agencies</Text>
-                  {agencies?.map((a, i) => {
-                    return (
-                      <div key={`${a.agencyId}-${i}`} className={styles.list}>
-                        <Text as="span" type="text1">
-                          {a.agencyName}
-                        </Text>
-                        <Text as="span" type="text1">
-                          {a.agencyId}
-                        </Text>
-                        <Text as="span" type="text1">
-                          {`Blocked: ${a.isBlocked?.toString()}`}
-                        </Text>
-                        {/* removed for now until design is ready */}
-                        {false && (
-                          <div className={styles.branches}>
-                            {a?.result?.map((r, i) => (
-                              <Text
-                                as="span"
-                                key={`${r.branchId}-${i}`}
-                                type="text1"
-                                title={r.name}
-                              >
-                                {r.branchId + " "}
-                              </Text>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           )}
         </div>

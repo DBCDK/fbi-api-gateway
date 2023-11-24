@@ -36,7 +36,6 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation @complexity(value: 3)
   manifestations(faust: [String!], pid: [String!]): [Manifestation]! @complexity(value: 3, multipliers: ["pid", "faust"])
   monitor(name: String!): String!
-  user: User
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
@@ -284,12 +283,7 @@ export const resolvers = {
     async help(parent, args, context, info) {
       return { ...args };
     },
-    async user(parent, args, context, info) {
-      if (!context?.smaug?.user?.id) {
-        return null;
-      }
-      return { ...args };
-    },
+
     async work(parent, args, context, info) {
       return resolveWork(args, context);
     },
@@ -405,6 +399,7 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
+
       const userId = await getUserId({ agencyId, userinfo });
 
       if (!userId) {

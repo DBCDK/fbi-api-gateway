@@ -230,20 +230,13 @@ export async function resolveBorrowerCheck(agencyId, context) {
  * @returns {string}
  */
 export async function getInfomediaAccessStatus(context) {
-  if (!context?.smaug?.user?.id) {
+  const user = context?.user;
+
+  if (!user?.userId) {
     return "USER_NOT_LOGGED_IN";
   }
 
-  let userInfo;
-  try {
-    userInfo = await context.datasources.getLoader("userinfo").load({
-      accessToken: context.accessToken,
-    });
-  } catch (e) {
-    return "USER_NOT_LOGGED_IN";
-  }
-
-  const municipalityAgencyId = userInfo?.attributes?.municipalityAgencyId;
+  const municipalityAgencyId = user?.municipalityAgencyId;
 
   const infomediaSubscriptions = await context.datasources
     .getLoader("idp")
@@ -265,20 +258,13 @@ export async function getInfomediaAccessStatus(context) {
  * @returns {string}
  */
 export async function getDigitalArticleAccessStatus(context) {
-  if (!context?.smaug?.user?.id) {
+  const user = context?.user;
+
+  if (!user?.userId) {
     return "USER_NOT_LOGGED_IN";
   }
 
-  let userInfo;
-  try {
-    userInfo = await context.datasources.getLoader("userinfo").load({
-      accessToken: context.accessToken,
-    });
-  } catch (e) {
-    return "USER_NOT_LOGGED_IN";
-  }
-
-  const municipalityAgencyId = userInfo?.attributes?.municipalityAgencyId;
+  const municipalityAgencyId = user?.municipalityAgencyId;
 
   const digitalArticleSubscriptions = await context.datasources
     .getLoader("statsbiblioteketSubscribers")
@@ -497,11 +483,9 @@ export const filterDuplicateAgencies = (userInfoAccounts) => {
  * @returns an array of users branch ids
  */
 export const getUserBranchIds = async (context) => {
-  //get users agencies
-  const userinfo = await context.datasources.getLoader("userinfo").load({
-    accessToken: context.accessToken,
-  });
-  const agencies = filterDuplicateAgencies(userinfo?.attributes?.agencies)?.map(
+  const user = context?.user;
+
+  const agencies = filterDuplicateAgencies(user?.agencies)?.map(
     (account) => account.agencyId
   );
   //fetch branches for each agency

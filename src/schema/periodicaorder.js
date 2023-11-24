@@ -61,12 +61,12 @@ export const resolvers = {
 
       // If branch has borrowerCheck, we require the user to be authenticated via that agency
       if (hasBorrowerCheck) {
-        if (!context.smaug || !context.smaug.user || !context.smaug.user.id) {
+        if (!context?.user?.userId) {
           return {
             status: "ERROR_UNAUTHORIZED_USER",
           };
         }
-        const agencyId = context.smaug.user.agency;
+        const agencyId = context?.user?.loggedInAgencyId;
         if (branch.agencyId !== agencyId) {
           return {
             status: "ERROR_INVALID_PICKUP_BRANCH",

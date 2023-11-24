@@ -36,7 +36,8 @@ test("PeriodicaArticleOrder, unknown pickupBranch should give error", async () =
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "1234561234" } },
+      user: { userId: "1234561234" },
+      smaug: {},
     },
   });
 
@@ -55,7 +56,8 @@ test("PeriodicaArticleOrder, agency not subscribed should give error", async () 
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "1234561234", agency: "100200" } },
+      user: { userId: "1234561234", loggedInAgencyId: "100200" },
+      smaug: {},
     },
   });
 
@@ -74,7 +76,8 @@ test("PeriodicaArticleOrder, manifestation not part of statsbibliotek journal sh
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "1234561234", agency: "715100" } },
+      user: { userId: "1234561234", loggedInAgencyId: "715100" },
+      smaug: {},
     },
   });
 
@@ -98,7 +101,8 @@ test("PeriodicaArticleOrder, order success", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "1234561234", agency: "715100" } },
+      user: { userId: "1234561234", loggedInAgencyId: "715100" },
+      smaug: {},
     },
   });
 

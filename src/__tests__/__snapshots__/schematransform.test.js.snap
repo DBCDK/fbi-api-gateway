@@ -597,7 +597,6 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
-  user: User
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
@@ -657,6 +656,7 @@ type Query {
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
   test: Test
+  user: User
 }
 
 type Lamp {
@@ -2070,6 +2070,7 @@ enum CopyRequestStatus {
   ERROR_PID_NOT_RESERVABLE
   ERROR_MISSING_CLIENT_CONFIGURATION
   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  ERROR_MISSING_MUNICIPALITYAGENCYID
   UNKNOWN_USER
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
@@ -4423,6 +4424,7 @@ enum CopyRequestStatus {
   ERROR_PID_NOT_RESERVABLE
   ERROR_MISSING_CLIENT_CONFIGURATION
   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  ERROR_MISSING_MUNICIPALITYAGENCYID
   UNKNOWN_USER
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY

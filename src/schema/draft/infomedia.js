@@ -47,7 +47,7 @@ type InfomediaArticle {
 
 async function fetchArticle(parent, context) {
   const articleId = parent?.id;
-  const userId = context.smaug?.user?.id;
+  const userId = context?.user?.userId;
 
   // users access given agencyId
   const agencyId = await getInfomediaAgencyId(context);
@@ -64,7 +64,7 @@ async function fetchArticle(parent, context) {
 export const resolvers = {
   InfomediaResponse: {
     async error(parent, args, context, info) {
-      if (!context?.smaug?.user?.id) {
+      if (!context?.user?.userId) {
         return "BORROWER_NOT_LOGGED_IN";
       }
       const article = await fetchArticle(parent, context);
@@ -82,7 +82,7 @@ export const resolvers = {
       }
     },
     async article(parent, args, context, info) {
-      if (!context?.smaug?.user?.id) {
+      if (!context?.user?.userId) {
         return null;
       }
       const article = await fetchArticle(parent, context);

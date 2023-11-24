@@ -28,7 +28,7 @@ export default function useStorage() {
       const val = { token, profile };
       sessionStorage.setItem("selectedToken", JSON.stringify(val));
       mutateSelectedToken(val, false);
-      setHistory(token, profile);
+      setHistory(val, false);
     }
   };
 
@@ -41,32 +41,42 @@ export default function useStorage() {
     mutateSelectedToken(null, false);
   };
 
-  const setHistory = (token, profile) => {
+  // Shallow true will update history items without reordering the items (last updated first)
+  const setHistory = ({ token, profile, note: _note }, shallow = true) => {
     const timestamp = Date.now();
 
     // Find existing
     const existing = history.find((obj) => obj.token === token);
 
-    // remove duplicate
-    const uniq = history.filter((obj) => !(obj.token === token));
+    const note = typeof _note === "string" ? _note : existing?.note || "";
 
-    if (existing) {
+    // history copy
+    let copy = [...history];
+
+    if (shallow) {
+      const index = history.findIndex((obj) => obj.token === token);
+
       // update only the profile if token already exist
-      uniq.unshift({
+      copy[index] = {
         ...existing,
         profile,
-      });
+        note,
+      };
     } else {
+      // remove duplicate
+      copy = copy.filter((obj) => !(obj.token === token));
+
       // add to beginning of array
-      uniq.unshift({
+      copy.unshift({
         token,
         profile,
+        note,
         timestamp,
       });
     }
 
     // slice
-    const sliced = uniq.slice(0, 10);
+    const sliced = copy.slice(0, 10);
     // store
     const stringified = JSON.stringify(sliced);
     localStorage.setItem("history", stringified);

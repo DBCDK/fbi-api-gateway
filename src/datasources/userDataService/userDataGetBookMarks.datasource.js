@@ -4,7 +4,7 @@ const { url } = config.datasources.userdata;
 /**
  * Fetch bookmarks for logged in user
  */
-export async function load({ smaugUserId, orderBy }, context) {
+export async function load({ uniqueId, orderBy }, context) {
   const endpoint = url + "bookmark/get";
   try {
     const bookmarks = await context.fetch(endpoint, {
@@ -13,7 +13,7 @@ export async function load({ smaugUserId, orderBy }, context) {
       },
       method: "POST",
       body: JSON.stringify({
-        smaugUserId: smaugUserId,
+        smaugUserId: uniqueId,
         orderBy,
       }),
     });

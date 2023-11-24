@@ -1,6 +1,20 @@
 import { createMockedDataLoaders } from "../datasourceLoader";
 import { performTestQuery } from "../utils/utils";
 
+const DEFAULT_USER = {
+  userId: "some-id",
+  uniqueId: "some-unique-id",
+  municipalityAgencyId: "715100",
+  loggedInAgencyId: "715100",
+  agencies: [
+    {
+      agencyId: "715100",
+      userId: "some@mail.com",
+      userIdType: "LOCAL",
+    },
+  ],
+};
+
 test("user - get basic data", async () => {
   const result = await performTestQuery({
     query: `
@@ -20,7 +34,8 @@ test("user - get basic data", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "some-id", uniqueId: "some-unique-id" } },
+      user: { ...DEFAULT_USER },
+      smaug: {},
     },
   });
   expect(result).toMatchSnapshot();
@@ -48,7 +63,8 @@ test("user - get agency danish", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "some-id", uniqueId: "some-unique-id" } },
+      user: { ...DEFAULT_USER },
+      smaug: {},
     },
   });
   expect(result).toMatchSnapshot();
@@ -76,7 +92,8 @@ test("user - get agency english", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "some-id", uniqueId: "some-unique-id" } },
+      user: { ...DEFAULT_USER },
+      smaug: {},
     },
   });
   expect(result).toMatchSnapshot();
@@ -111,7 +128,8 @@ test("user - get orders", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "some-id", uniqueId: "some-unique-id" } },
+      user: { ...DEFAULT_USER },
+      smaug: {},
     },
   });
   expect(result).toMatchSnapshot();
@@ -136,7 +154,8 @@ test("user - get debt", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "some-id", uniqueId: "some-unique-id" } },
+      user: { ...DEFAULT_USER },
+      smaug: {},
     },
   });
   expect(result).toMatchSnapshot();
@@ -179,12 +198,8 @@ test("user - get loans", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
-      smaug: { user: { id: "some-id", uniqueId: "some-unique-id" } },
-      homeAccount: {
-        agencyId: "715100",
-        userId: "some@mail.com",
-        userIdType: "LOCAL",
-      },
+      user: { ...DEFAULT_USER },
+      smaug: {},
     },
   });
   expect(result).toMatchSnapshot();

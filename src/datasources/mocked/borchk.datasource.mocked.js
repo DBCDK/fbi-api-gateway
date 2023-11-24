@@ -61,11 +61,11 @@ export async function load(
     return constructResponse(props, "ok");
   }
 
-  if (userId === "0123456799" && libraryCode === "715100") {
+  if (userId === "some-blocked-id" && libraryCode === "715100") {
     return constructResponse({ ...props, blocked: true }, "ok");
   }
 
-  if (userId === "123" && libraryCode === "715100") {
+  if (userId === "some-id" && libraryCode === "715100") {
     return constructResponse(props, "ok");
   }
 
