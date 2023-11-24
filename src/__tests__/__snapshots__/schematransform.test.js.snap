@@ -2467,6 +2467,7 @@ input Material {
   exactEdition: Boolean
   expires: String
   orderType: OrderType
+  periodicaForm: CopyRequestInput
 }
 
 input SubmitMultipleOrdersInput {
