@@ -86,6 +86,7 @@ function createRequestString(input) {
  */
 export async function load(params, context) {
   const requestString = createRequestString(params);
+  console.log("_________REQUEST ", params);
   const endpoint = `${url}/elba-webservices/services/placecopyrequest`;
 
   if (params.dryRun) {
