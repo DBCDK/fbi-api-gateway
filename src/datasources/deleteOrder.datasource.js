@@ -74,3 +74,9 @@ export async function load(
         ?.$,
   };
 }
+
+export async function testLoad() {
+  return {
+    error: null,
+  };
+}

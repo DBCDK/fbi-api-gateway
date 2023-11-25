@@ -4,6 +4,7 @@
 
 import config from "../config";
 import uniq from "lodash/uniq";
+import { mapFacets, mapFilters } from "../utils/filtersAndFacetsMap";
 
 const {
   url,
@@ -26,18 +27,24 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
     profile: name,
   };
 
+  const mappedFacets = mapFacets(facets);
+  const mappedFilters = mapFilters(filters);
+
   // merge variables and statics
   const query = {
     q,
-    filters,
-    facets: uniq(facets),
+    filters: mappedFilters,
+    facets: uniq(mappedFacets),
     disable_fuzzy_search: disableFuzzySearch,
     ...statics,
   };
 
-  const res = (
-    await context.fetch(url, { method: "POST", body: JSON.stringify(query) })
-  ).body;
+  const result = await context.fetch(url, {
+    method: "POST",
+    body: JSON.stringify(query),
+  });
+
+  const res = result.body;
 
   return Object.entries(res.facets).map(([name, facetResult]) => {
     return {

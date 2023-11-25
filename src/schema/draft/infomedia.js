@@ -1,3 +1,5 @@
+import { getInfomediaAgencyId } from "../../utils/access";
+
 const errors = [
   "SERVICE_NOT_LICENSED",
   "SERVICE_UNAVAILABLE",
@@ -6,21 +8,14 @@ const errors = [
   "BORROWER_NOT_LOGGED_IN",
   "BORROWER_NOT_FOUND",
   "BORROWERCHECK_NOT_ALLOWED",
+  "INTERNAL_SERVER_ERROR",
   "BORROWER_NOT_IN_MUNICIPALITY",
-  "NO_MUNICIPALITY",
+  "NO_AGENCYID",
 ];
+
 export const typeDef = `
 enum InfomediaError {
-  SERVICE_NOT_LICENSED
-  SERVICE_UNAVAILABLE
-  LIBRARY_NOT_FOUND
-  ERROR_IN_REQUEST
-  BORROWER_NOT_LOGGED_IN
-  BORROWER_NOT_FOUND
-  BORROWERCHECK_NOT_ALLOWED
-  INTERNAL_SERVER_ERROR
-  BORROWER_NOT_IN_MUNICIPALITY
-  NO_MUNICIPALITY  
+  ${errors}
 }
 enum AccessStatus {
   OK
@@ -52,17 +47,15 @@ type InfomediaArticle {
 
 async function fetchArticle(parent, context) {
   const articleId = parent?.id;
-  const userId = context.smaug?.user?.id;
-  const municipalityAgencyId = (
-    await context.datasources.getLoader("userinfo").load({
-      accessToken: context.accessToken,
-    })
-  )?.attributes?.municipalityAgencyId;
+  const userId = context?.user?.userId;
+
+  // users access given agencyId
+  const agencyId = await getInfomediaAgencyId(context);
 
   const article = await context.datasources.getLoader("infomedia").load({
     articleId,
     userId,
-    municipalityAgencyId,
+    agencyId,
   });
 
   return article;
@@ -71,7 +64,7 @@ async function fetchArticle(parent, context) {
 export const resolvers = {
   InfomediaResponse: {
     async error(parent, args, context, info) {
-      if (!context?.smaug?.user?.id) {
+      if (!context?.user?.userId) {
         return "BORROWER_NOT_LOGGED_IN";
       }
       const article = await fetchArticle(parent, context);
@@ -89,7 +82,7 @@ export const resolvers = {
       }
     },
     async article(parent, args, context, info) {
-      if (!context?.smaug?.user?.id) {
+      if (!context?.user?.userId) {
         return null;
       }
       const article = await fetchArticle(parent, context);

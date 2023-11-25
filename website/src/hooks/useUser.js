@@ -14,12 +14,12 @@ const fetcher = async (url) => {
 
   const res = await response.json();
 
-  return res.data?.user;
+  return res.user;
 };
 
-export default function useUser({ token, profile }) {
-  const url = `/api/user?token=${token}&profile=${profile}`;
-  const isValid = isToken(token);
+export default function useUser(props) {
+  const url = `/api/user?token=${props?.token}&profile=${props?.profile}`;
+  const isValid = isToken(props?.token);
 
   const { data, error } = useSWR(isValid && url, fetcher, {
     fallback: {},

@@ -71,22 +71,22 @@ Object {
       "series": Array [
         Object {
           "alternativeTitles": Array [],
-          "isPopular": true,
+          "isPopular": false,
           "numberInSeries": Object {
-            "display": "Dummy number one",
+            "display": "1",
             "number": Array [
               1,
             ],
           },
           "parallelTitles": Array [],
-          "readThisFirst": null,
+          "readThisFirst": true,
           "readThisWhenever": null,
           "title": "De syv søstre-serien",
         },
       ],
       "seriesMembers": Array [
         Object {
-          "workId": "work-of:870970-basis:52557240",
+          "workId": "work-of:870970-basis:26521556",
         },
         Object {
           "workId": "work-of:870970-basis:52970628",

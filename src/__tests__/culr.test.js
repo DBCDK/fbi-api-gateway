@@ -63,6 +63,8 @@ describe("Culr", () => {
         },
       },
       context: {
+        user: null,
+        smaug: {},
         datasources: createMockedDataLoaders(),
         accessToken: "UNAUTHENTICATED_TOKEN",
       },
@@ -86,14 +88,15 @@ describe("Culr", () => {
         input: {
           tokens: {
             ffu: "FFU_AUTHENTICATED_TOKEN",
-            folk: "FOLK_UNAUTHENTICATED_TOKEN",
+            folk: "ANONYMOUS_TOKEN",
           },
         },
       },
       context: {
-        smaug: { user: { id: "1234" } },
+        smaug: {},
+        user: { userId: "some-random-not-cpr" },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "DUMMY_TOKEN",
       },
     });
 
@@ -120,7 +123,8 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "0102033692" } },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
         accessToken: "AUTHENTICATED_TOKEN_USER2",
       },
@@ -148,9 +152,10 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "0102033690" } },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "DUMMY_TOKEN",
       },
     });
 
@@ -177,7 +182,8 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "0102033692" } },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
         accessToken: "AUTHENTICATED_TOKEN_USER2",
       },
@@ -206,7 +212,8 @@ describe("Culr", () => {
         },
       },
       context: {
-        smaug: { user: { id: "0102033690" } },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
         accessToken: "AUTHENTICATED_TOKEN_USER1",
       },
@@ -228,13 +235,14 @@ describe("Culr", () => {
       query: getAccounts,
       variables: {
         input: {
-          accessToken: "AUTHENTICATED_TOKEN_NO_ACCOUNTS",
+          accessToken: "DUMMY_TOKEN_NO_ACCOUNTS",
         },
       },
       context: {
-        smaug: { user: { id: "0102033690" } },
+        smaug: {},
+        user: { userId: "some-id" },
         datasources: createMockedDataLoaders(),
-        accessToken: "AUTHENTICATED_TOKEN",
+        accessToken: "DUMMY_TOKEN",
       },
     });
 

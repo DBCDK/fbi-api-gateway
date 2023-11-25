@@ -87,7 +87,7 @@ export function parseOrder(orderFromService) {
  */
 
 export async function load(
-  { userId, input, branch, accessToken, smaug },
+  { userId, input, branch, accessToken, smaug, authUserId },
   context
 ) {
   const orderSystem = smaug?.orderSystem;
@@ -109,7 +109,7 @@ export async function load(
     }
 
     // userID for log trace
-    const _userId = smaug.user.id || userId;
+    const _userId = authUserId || userId;
 
     // some logging
     auditTrace(
@@ -130,4 +130,12 @@ export async function load(
     log.error("SUBMIT ORDER: Error placing order", { parameters });
     return null;
   }
+}
+
+export async function testLoad({ input }, context) {
+  return {
+    ok: true,
+    status: "",
+    orderId: JSON.stringify(input),
+  };
 }

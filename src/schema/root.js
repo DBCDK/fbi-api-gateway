@@ -36,7 +36,6 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation @complexity(value: 3)
   manifestations(faust: [String!], pid: [String!]): [Manifestation]! @complexity(value: 3, multipliers: ["pid", "faust"])
   monitor(name: String!): String!
-  user: User
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
@@ -61,6 +60,17 @@ type Query {
     """
     branchId: String    
   ): localSuggestResponse! @complexity(value: 2, multipliers: ["limit"])
+  
+  complexSuggest(
+    """
+    The query to get suggestions for
+    """
+    q: String!
+    """    
+    the type of index to get suggestions from
+    """
+    type: ComplexSuggestionType!    
+  ): ComplexSuggestResponse!
   
   suggest(
     workType: WorkType
@@ -93,8 +103,8 @@ type Query {
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   """
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches:Boolean): Localizations 
-  refWorks(pid:String!):String!
-  ris(pid:String!):String!
+  refWorks(pids: [String!]!): String!
+  ris(pids: [String!]!): String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
   inspiration(language: LanguageCode, limit: Int): Inspiration! 
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
@@ -185,14 +195,20 @@ export const resolvers = {
     },
     async ris(parent, args, context, info) {
       const ris = await context.datasources.getLoader("ris").load({
-        pid: args.pid,
+        pids: args.pids,
       });
-      return ris;
+
+      /**
+       * Temporary fix until openformat handles multiple pids
+       * Add newline after "ER  -" to correct format
+       */
+      const formated = ris.replaceAll("ER  -", "ER  -\n");
+      return formated;
     },
     async refWorks(parent, args, context, info) {
       const ref = await context.datasources
         .getLoader("refworks")
-        .load(args.pid);
+        .load({pids: args.pids});
       return ref;
     },
     async localizations(parent, args, context, info) {
@@ -267,12 +283,7 @@ export const resolvers = {
     async help(parent, args, context, info) {
       return { ...args };
     },
-    async user(parent, args, context, info) {
-      if (!context?.smaug?.user?.id) {
-        return null;
-      }
-      return { ...args };
-    },
+
     async work(parent, args, context, info) {
       return resolveWork(args, context);
     },
@@ -307,6 +318,10 @@ export const resolvers = {
     async suggest(parent, args, context, info) {
       return args;
     },
+    async complexSuggest(parent, args, context, info) {
+      return args;
+    },
+
     async localSuggest(parent, args, context, info) {
       return args;
     },
@@ -384,6 +399,7 @@ export const resolvers = {
       const userinfo = await context.datasources.getLoader("userinfo").load({
         accessToken: context.accessToken,
       });
+
       const userId = await getUserId({ agencyId, userinfo });
 
       if (!userId) {

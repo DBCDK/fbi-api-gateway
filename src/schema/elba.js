@@ -12,6 +12,7 @@ export const typeDef = `
    ERROR_PID_NOT_RESERVABLE
    ERROR_MISSING_CLIENT_CONFIGURATION
    ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+   ERROR_MISSING_MUNICIPALITYAGENCYID
 
    UNKNOWN_USER
    BORCHK_USER_BLOCKED_BY_AGENCY
@@ -71,7 +72,7 @@ export const resolvers = {
       const { pid, userName, userMail } = args.input;
 
       // token is not authenticated
-      if (!context?.smaug?.user?.uniqueId) {
+      if (!context?.user?.userId) {
         return {
           status: "ERROR_UNAUTHENTICATED_USER",
         };
@@ -86,10 +87,12 @@ export const resolvers = {
         };
       }
 
-      // Detailed user informations (e.g. municipalityAgencyId)
-      let userInfo;
+      // Basic user information (e.g. name, email)
+      let userData;
       try {
-        userInfo = await context.datasources.getLoader("userinfo").load({
+        userData = await context.datasources.getLoader("user").load({
+          userId: context?.user?.userId,
+          agencyId: context?.user?.loggedInAgencyId,
           accessToken: context.accessToken,
         });
       } catch (e) {
@@ -98,21 +101,7 @@ export const resolvers = {
         };
       }
 
-      // Basic user information (e.g. name, email)
-      let userData;
-      try {
-        const homeAccount = getHomeAgencyAccount(userInfo);
-        userData = await context.datasources.getLoader("user").load({
-          homeAccount: homeAccount,
-          accessToken: context.accessToken, // Required for testing
-        });
-      } catch (e) {
-        return {
-          status: "ERROR_UNAUTHENTICATED_USER",
-        };
-      }
-
-      const user = { ...userData, ...userInfo?.attributes };
+      const user = { ...userData, ...context?.user };
 
       // Ensure a pair of email and name can be set
       if (!((userName || user.name) && (userMail || user.mail))) {

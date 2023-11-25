@@ -4,14 +4,14 @@ const { url, ttl, prefix } = config.datasources.userdata;
 /**
  * Add order in userdata service
  */
-export async function load({ smaugUserId, orderId }, context) {
+export async function load({ uniqueId, orderId }, context) {
   const endpoint = url + "order/add";
   const res = await context.fetch(endpoint, {
     headers: {
       "Content-Type": "application/json",
     },
     method: "POST",
-    body: JSON.stringify({ smaugUserId: smaugUserId, orderId: orderId }),
+    body: JSON.stringify({ smaugUserId: uniqueId, orderId: orderId }),
   });
 
   if (res?.status !== 200) {

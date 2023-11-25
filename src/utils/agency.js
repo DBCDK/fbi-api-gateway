@@ -27,7 +27,7 @@ export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
 
     // token is not authenticated - anonymous token used
     // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
-    if (!context?.smaug?.user?.id) {
+    if (!context?.user?.userId) {
       return {
         status: "ERROR_UNAUTHENTICATED_TOKEN",
       };

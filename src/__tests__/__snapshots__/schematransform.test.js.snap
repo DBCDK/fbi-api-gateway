@@ -337,6 +337,16 @@ input ComplexSearchFilters {
   issueId: [String!]
 }
 
+enum SortOrder {
+  asc
+  desc
+}
+
+input Sort {
+  index: String!
+  order: SortOrder!
+}
+
 \\"\\"\\"The search response\\"\\"\\"
 type ComplexSearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
@@ -345,7 +355,7 @@ type ComplexSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimit!, sort: [Sort!]): [Work!]!
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
@@ -549,6 +559,7 @@ type Mutation {
   ): DigitalArticleServiceResponse!
   elba: ElbaServices!
   submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+  submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
   submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
   data_collect(input: DataCollectInput!): String!
   deleteOrder(
@@ -586,7 +597,6 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
-  user: User
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
@@ -605,6 +615,13 @@ type Query {
     \\"\\"\\"Id of branch to filter by\\"\\"\\"
     branchId: String
   ): localSuggestResponse!
+  complexSuggest(
+    \\"\\"\\"The query to get suggestions for\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"the type of index to get suggestions from\\"\\"\\"
+    type: ComplexSuggestionType!
+  ): ComplexSuggestResponse!
   suggest(
     workType: WorkType
 
@@ -632,13 +649,14 @@ type Query {
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   \\"\\"\\"
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
-  refWorks(pid: String!): String!
-  ris(pid: String!): String!
+  refWorks(pids: [String!]!): String!
+  ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
   inspiration(language: LanguageCode, limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
   test: Test
+  user: User
 }
 
 type Lamp {
@@ -880,7 +898,7 @@ enum InfomediaError {
   BORROWERCHECK_NOT_ALLOWED
   INTERNAL_SERVER_ERROR
   BORROWER_NOT_IN_MUNICIPALITY
-  NO_MUNICIPALITY
+  NO_AGENCYID
 }
 
 enum AccessStatus {
@@ -1623,9 +1641,6 @@ type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
-  \\"\\"\\"The new reviews\\"\\"\\"
-  workReviews: [WorkReview!]! @deprecated(reason: \\"Use 'Work.relations.hasReview' instead\\")
-
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
   \\"\\"\\"
@@ -1677,109 +1692,6 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
-}
-
-enum LibrariansReviewSectionCode {
-  ALL
-  ABOUT
-  DESCRIPTION
-  EVALUATION
-  OTHER
-  LIBRARY
-  USE
-  OLDDESCRIPTION
-  COMPARE
-  CONCLUSION
-}
-
-type LibrariansReviewSection {
-  \\"\\"\\"a code indicating the content type of the section\\"\\"\\"
-  code: LibrariansReviewSectionCode!
-
-  \\"\\"\\"The heading of the section\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"A piece of text, maybe mentioning a work at the end.\\"\\"\\"
-  text: String!
-
-  \\"\\"\\"
-  The work the text is refering to. When work is null, the text does not refer to a work.
-  \\"\\"\\"
-  work: Work
-}
-
-interface Review {
-  author: String
-  date: String
-}
-
-type ExternalReview implements Review {
-  author: String
-  date: String
-  rating: String
-  urls: [AccessUrl!]!
-}
-
-type InfomediaReview implements Review {
-  author: String
-  date: String
-  origin: String
-  rating: String
-  id: String!
-}
-
-type LibrariansReview implements Review {
-  author: String
-  date: String
-  sections: [LibrariansReviewSection!]!
-
-  \\"\\"\\" This is a pid \\"\\"\\"
-  id: String!
-}
-
-type WorkReview {
-  \\"\\"\\"Author of the review\\"\\"\\"
-  author: String
-
-  \\"\\"\\"Date of the review in the format YYYY-MM-DD\\"\\"\\"
-  date: String
-
-  \\"\\"\\"
-  When this is not null, the review can be retrieved from infomedia using the infomediaId
-  \\"\\"\\"
-  infomediaId: String
-
-  \\"\\"\\"
-  When this is not null, this review is created by a librarian, 
-  and the sections of the review are available here
-  \\"\\"\\"
-  librariansReview: [LibrariansReviewSection!]
-
-  \\"\\"\\"The origin of review. E.g. 'Politiken'\\"\\"\\"
-  origin: String
-
-  \\"\\"\\"When this is not null, the review is located in a periodica\\"\\"\\"
-  periodica: PeriodicaReviewDetails
-
-  \\"\\"\\"The pid of the review\\"\\"\\"
-  pid: String!
-
-  \\"\\"\\"The authors rating of the work. E.g '5/6'\\"\\"\\"
-  rating: String
-
-  \\"\\"\\"This may contain URL's where the review can be read\\"\\"\\"
-  urls: [AccessUrl!]!
-}
-
-type PeriodicaReviewDetails {
-  \\"\\"\\"Specifies the volume of the periodica where the review is located\\"\\"\\"
-  volume: String
-
-  \\"\\"\\"Specifies which pages of the volume the review is located\\"\\"\\"
-  pages: String
-
-  \\"\\"\\"A reference to the host publication\\"\\"\\"
-  hostPublication: Work
 }
 
 enum ReviewElementType {
@@ -1867,7 +1779,7 @@ type Series {
   parallelTitles: [String!]!
 
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: \\"field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned\\")
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean
@@ -1955,6 +1867,27 @@ enum SuggestionType {
   COMPOSIT
 }
 
+enum ComplexSuggestionType {
+  title
+  creator
+  subject
+  default
+  hostpublication
+  fictionalcharacter
+  contributor
+}
+
+type ComplexSearchSuggestion {
+  \\"\\"\\"The type of suggestion\\"\\"\\"
+  type: String!
+
+  \\"\\"\\"The suggested term which can be searched for\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"A work related to the term\\"\\"\\"
+  work: Work
+}
+
 type Suggestion {
   \\"\\"\\"The type of suggestion: creator, subject or title\\"\\"\\"
   type: SuggestionType!
@@ -1964,6 +1897,10 @@ type Suggestion {
 
   \\"\\"\\"A work related to the term\\"\\"\\"
   work: Work
+}
+
+type ComplexSuggestResponse {
+  result: [ComplexSearchSuggestion!]!
 }
 
 type SuggestResponse {
@@ -2133,6 +2070,7 @@ enum CopyRequestStatus {
   ERROR_PID_NOT_RESERVABLE
   ERROR_MISSING_CLIENT_CONFIGURATION
   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  ERROR_MISSING_MUNICIPALITYAGENCYID
   UNKNOWN_USER
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
@@ -2470,6 +2408,12 @@ type SubmitOrder {
   orsId: String
 }
 
+type SubmitMultipleOrders {
+  failedAtCreation: [String!]!
+  successfullyCreated: [String!]!
+  ok: Boolean
+}
+
 enum OrderType {
   ESTIMATE
   HOLD
@@ -2496,6 +2440,7 @@ input SubmitOrderInput {
   orderType: OrderType
   pids: [String!]!
   pickUpBranch: String!
+  key: String
   exactEdition: Boolean
   expires: String
   userParameters: SubmitOrderUserParameters!
@@ -2507,6 +2452,28 @@ input SubmitOrderInput {
   title: String
   titleOfComponent: String
   volume: String
+}
+
+input Material {
+  pids: [String!]!
+  key: String!
+  publicationDate: String
+  publicationDateOfComponent: String
+  volume: String
+  author: String
+  authorOfComponent: String
+  titleOfComponent: String
+  title: String
+  exactEdition: Boolean
+  expires: String
+  orderType: OrderType
+}
+
+input SubmitMultipleOrdersInput {
+  materialsToOrder: [Material!]!
+  pickUpBranch: String!
+  userParameters: SubmitOrderUserParameters!
+  pagination: String
 }
 
 type DeleteOrderResponse {
@@ -2622,6 +2589,11 @@ enum FacetField {
   canAlwaysBeLoaned
   year
   dk5
+  age
+  lix
+  let
+  generalAudience
+  libraryRecommendation
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -2645,6 +2617,12 @@ input SearchFilters {
   sublocation: [String!]
   status: [HoldingsStatus!]
   canAlwaysBeLoaned: [String!]
+  age: [String!]
+  ageRange: [String!]
+  lixRange: [String!]
+  letRange: [String!]
+  generalAudience: [String!]
+  libraryRecommendation: [String!]
 }
 
 enum HoldingsStatus {
@@ -2819,7 +2797,8 @@ type User {
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
   agencies(language: LanguageCode): [BranchResult!]!
-  loggedInBranchId: String
+  loggedInBranchId: String @deprecated(reason: \\"Use 'User.loggedInAgencyId' instead\\")
+  loggedInAgencyId: String
   municipalityAgencyId: String
   address: String
   postalCode: String
@@ -3019,6 +2998,16 @@ input ComplexSearchFilters {
   issueId: [String!]
 }
 
+enum SortOrder {
+  asc
+  desc
+}
+
+input Sort {
+  index: String!
+  order: SortOrder!
+}
+
 \\"\\"\\"The search response\\"\\"\\"
 type ComplexSearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
@@ -3027,7 +3016,7 @@ type ComplexSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimit!, sort: [Sort!]): [Work!]!
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
@@ -3097,8 +3086,8 @@ type Query {
   \\"\\"\\"Get recommendations\\"\\"\\"
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
   infomedia(id: String!): InfomediaResponse!
-  refWorks(pid: String!): String!
-  ris(pid: String!): String!
+  refWorks(pids: [String!]!): String!
+  ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
 }
 
@@ -3298,7 +3287,7 @@ enum InfomediaError {
   BORROWERCHECK_NOT_ALLOWED
   INTERNAL_SERVER_ERROR
   BORROWER_NOT_IN_MUNICIPALITY
-  NO_MUNICIPALITY
+  NO_AGENCYID
 }
 
 type InfomediaResponse {
@@ -4169,7 +4158,7 @@ type Series {
   parallelTitles: [String!]!
 
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: \\"field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned\\")
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean
@@ -4435,6 +4424,7 @@ enum CopyRequestStatus {
   ERROR_PID_NOT_RESERVABLE
   ERROR_MISSING_CLIENT_CONFIGURATION
   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  ERROR_MISSING_MUNICIPALITYAGENCYID
   UNKNOWN_USER
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
@@ -4561,6 +4551,11 @@ enum FacetField {
   canAlwaysBeLoaned
   year
   dk5
+  age
+  lix
+  let
+  generalAudience
+  libraryRecommendation
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -4584,6 +4579,12 @@ input SearchFilters {
   sublocation: [String!]
   status: [HoldingsStatus!]
   canAlwaysBeLoaned: [String!]
+  age: [String!]
+  ageRange: [String!]
+  lixRange: [String!]
+  letRange: [String!]
+  generalAudience: [String!]
+  libraryRecommendation: [String!]
 }
 
 enum HoldingsStatus {
@@ -5562,9 +5563,6 @@ type Work {
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
-  \\"\\"\\"The new reviews\\"\\"\\"
-  workReviews: [WorkReview!]! @deprecated(reason: \\"Use 'Work.relations.hasReview' instead\\")
-
   \\"\\"\\"
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
   \\"\\"\\"
@@ -5616,80 +5614,6 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
-}
-
-enum LibrariansReviewSectionCode {
-  ALL
-  ABOUT
-  DESCRIPTION
-  EVALUATION
-  OTHER
-  LIBRARY
-  USE
-  OLDDESCRIPTION
-  COMPARE
-  CONCLUSION
-}
-
-type LibrariansReviewSection {
-  \\"\\"\\"a code indicating the content type of the section\\"\\"\\"
-  code: LibrariansReviewSectionCode!
-
-  \\"\\"\\"The heading of the section\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"A piece of text, maybe mentioning a work at the end.\\"\\"\\"
-  text: String!
-
-  \\"\\"\\"
-  The work the text is refering to. When work is null, the text does not refer to a work.
-  \\"\\"\\"
-  work: Work
-}
-
-type WorkReview {
-  \\"\\"\\"Author of the review\\"\\"\\"
-  author: String
-
-  \\"\\"\\"Date of the review in the format YYYY-MM-DD\\"\\"\\"
-  date: String
-
-  \\"\\"\\"
-  When this is not null, the review can be retrieved from infomedia using the infomediaId
-  \\"\\"\\"
-  infomediaId: String
-
-  \\"\\"\\"
-  When this is not null, this review is created by a librarian, 
-  and the sections of the review are available here
-  \\"\\"\\"
-  librariansReview: [LibrariansReviewSection!]
-
-  \\"\\"\\"The origin of review. E.g. 'Politiken'\\"\\"\\"
-  origin: String
-
-  \\"\\"\\"When this is not null, the review is located in a periodica\\"\\"\\"
-  periodica: PeriodicaReviewDetails
-
-  \\"\\"\\"The pid of the review\\"\\"\\"
-  pid: String!
-
-  \\"\\"\\"The authors rating of the work. E.g '5/6'\\"\\"\\"
-  rating: String
-
-  \\"\\"\\"This may contain URL's where the review can be read\\"\\"\\"
-  urls: [AccessUrl!]!
-}
-
-type PeriodicaReviewDetails {
-  \\"\\"\\"Specifies the volume of the periodica where the review is located\\"\\"\\"
-  volume: String
-
-  \\"\\"\\"Specifies which pages of the volume the review is located\\"\\"\\"
-  pages: String
-
-  \\"\\"\\"A reference to the host publication\\"\\"\\"
-  hostPublication: Work
 }
 
 enum ReviewElementType {
@@ -5777,7 +5701,7 @@ type Series {
   parallelTitles: [String!]!
 
   \\"\\"\\"The number in the series as text qoutation and a number\\"\\"\\"
-  numberInSeries: NumberInSeries
+  numberInSeries: NumberInSeries @deprecated(reason: \\"field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned\\")
 
   \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
   readThisFirst: Boolean

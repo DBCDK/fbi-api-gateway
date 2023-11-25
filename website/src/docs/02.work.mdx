@@ -1,15 +1,10 @@
 # Work
 
-<DeprecationBox deprecated="01/07-2023" expires="01/10-2023">
-  Please note that Field `Work.workReviews` is deprecated and will be removed.
-  Use `Work.relations.hasReview` instead. See [reviews](#Reviews) documentation
-  for details.
-</DeprecationBox>
-
-
 <DeprecationBox deprecated="01/11-2023" expires="01/2-2024">
-  Please note that Fields `Work.materialTypes.specific` and Work.materialTypes.general are deprecated and will be removed.
-  Use `Work.materialTypes.materialTypeGeneral.display` and `Work.materialTypes.materialTypeSpecific.display` instead.
+  Please note that Fields `Work.materialTypes.specific` and
+  Work.materialTypes.general are deprecated and will be removed. Use
+  `Work.materialTypes.materialTypeGeneral.display` and
+  `Work.materialTypes.materialTypeSpecific.display` instead.
 </DeprecationBox>
 
 A work is some creation like a book, article, movie etc. It may exist in many different variants -
@@ -179,7 +174,7 @@ Note that if the review is created by a librarian (materialevurdering), the actu
 review is available on the manifestation at the path _review.reviewByLibrarians_.
 
 <InlineGraphiQL
-  query={`query Example_WorkReviews ($id: String!) {
+  query={`query Example_Reviews ($id: String!) {
   work(id: $id) {
     workId
     titles {
@@ -272,6 +267,12 @@ does not require substitution.
 />
 
 ## Series
+
+<DeprecationBox deprecated="15/11-2023" expires="15/02-2024">
+  Please note that field `NumberInSeries.number` is removed and only the String
+  value of `NumberInSeries.display` is returned for field `numberInSeries` in
+  future
+</DeprecationBox>
 
 A work may be part of one or more series. The example below fetches the series title,
 some information about how the work itself fits inside the series and all members of the serie as works.

@@ -58,7 +58,7 @@ export default async function getUserBorrowerStatus(
   }
 
   // Authenticated or anonymous order
-  const isAuthenticated = !!context.smaug?.user?.id;
+  const isAuthenticated = !!context?.user?.userId;
 
   // add to summary log
   summary.isAuthenticated = isAuthenticated;
@@ -90,28 +90,25 @@ export default async function getUserBorrowerStatus(
   let _isAccount;
 
   if (isAuthenticated) {
-    // Check if the user is authenticated on the given pickUpBranch
-    const verifiedOnPickUpBranch = !!(
-      context.smaug?.user?.id && context.smaug?.user?.agency === agencyId
+    const user = context?.user;
+
+    // Check if the user is authenticated on the provided agencyId
+    const verifiedOnAgencyId = !!(
+      user?.userId && user?.loggedInAgencyId === agencyId
     );
 
     // add to summary log
-    summary.verifiedOnPickUpBranch = verifiedOnPickUpBranch;
+    summary.verifiedOnAgencyId = verifiedOnAgencyId;
 
     // If so, we check if the user is allowed to place an order here.
-    if (verifiedOnPickUpBranch) {
-      _userId = context.smaug?.user?.id;
+    if (verifiedOnAgencyId) {
+      _userId = user?.userId;
     }
     // If NOT, we fetch the authenticated users other accounts
     // User may have placed an order to a different account/agency, than they orignally signed-in at.
     else {
-      // Fetch specific account between the loggedIn user accounts
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
       // user account list
-      const accounts = userinfo.attributes?.agencies;
+      const accounts = user?.agencies;
 
       // fetch requested account from list
       // Local (type) account is preferred, because it will always exist

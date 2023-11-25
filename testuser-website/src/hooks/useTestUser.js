@@ -1,6 +1,7 @@
 import useAccessToken from "./useAccessToken";
 import useData from "./useData";
 import config from "@/config";
+import { useRouter } from "next/router";
 
 const DEFAULT_TEMPLATE = {
   accounts: [
@@ -19,9 +20,10 @@ const DEFAULT_TEMPLATE = {
 };
 
 export default function useTestUser() {
-  const { accessToken, seed, params } = useAccessToken();
+  const router = useRouter();
+  const { accessToken, seed } = useAccessToken();
   const testUserToken = accessToken;
-  const loginAgencyId = params?.get("agency") || "190101";
+  const loginAgencyId = router?.query?.agency || "190101";
 
   const res = useData(
     seed && {
@@ -142,6 +144,7 @@ export default function useTestUser() {
   const loginAccount = user?.accounts?.find(
     (account) => account.agency.agencyId === loginAgencyId
   );
+
   const loginAgencyName =
     loginAgencyId === "190101" ? "MitID" : loginAccount?.agency?.agencyName;
   return {
