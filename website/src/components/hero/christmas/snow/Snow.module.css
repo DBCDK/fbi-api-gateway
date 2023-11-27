@@ -8,3 +8,7 @@
 
   background-color: var(--primary-dark);
 }
+
+:global(body.dark) .snow {
+  background-color: unset;
+}

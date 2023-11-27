@@ -1,11 +1,33 @@
 .container {
   height: 300px;
   margin: 40px auto 50px auto;
-  width: 450px;
+  width: 250px;
 
   position: absolute;
-  right: 15%;
-  top: 40%;
+  right: 0%;
+  top: calc(100% - 250px);
+
+  transform: scale(0.85);
+  z-index: 2;
+}
+
+.container * {
+  box-sizing: content-box;
+}
+
+@media screen and (min-width: 576px) {
+  .container {
+    top: calc(100% - 200px);
+    right: 10%;
+    transform: scale(1.1);
+  }
+}
+
+@media screen and (min-width: 786px) {
+  .container {
+    right: 15%;
+    transform: scale(1.2);
+  }
 }
 
 .artboard {
@@ -490,7 +512,7 @@
 .presents:after {
   animation: shadow 0.4s ease-out infinite alternate-reverse;
   background-color: #e7eff7;
-  bottom: 0;
+  bottom: -3px;
   border-radius: 7px;
   content: "";
   display: block;
@@ -498,6 +520,10 @@
   left: -22px;
   position: absolute;
   width: 170px;
+}
+
+:global(body.dark) .presents:after {
+  background-color: var(--dark);
 }
 
 .present {

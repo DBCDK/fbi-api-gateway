@@ -1,0 +1,293 @@
+.canvas {
+  --skin: #fca;
+  --eyes: #630a;
+  --cheeks: #f001;
+  --beard: #eee;
+  --mustache: #fff;
+  --suit: #a00;
+  --belt: #222;
+  --belt-buckle: gold;
+
+  width: 80vmin;
+  height: 80vmin;
+  position: absolute;
+  top: 65%;
+  right: 0;
+
+  transform: scale(0.5);
+  pointer-events: none;
+
+  z-index: 2;
+}
+
+@media screen and (min-width: 576px) {
+  .canvas {
+    top: -15%;
+    right: -10%;
+  }
+}
+
+@media screen and (min-width: 786px) {
+  .canvas {
+    right: 0;
+    transform: scale(0.4);
+  }
+}
+
+.shadow {
+  width: 80%;
+  height: 20px;
+  background-color: lightgray;
+  position: absolute;
+  bottom: -15px;
+  transform: translateX(15%);
+  border-radius: 100%;
+  z-index: -1;
+}
+
+.head {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  border-radius: 50%;
+  width: 25%;
+  height: 25%;
+  transform: translate(-50%, 0);
+  background: var(--skin);
+}
+
+@keyframes blink {
+  0%,
+  6%,
+  100% {
+    height: 2%;
+  }
+  3% {
+    height: 0%;
+  }
+}
+
+.eyes {
+  position: absolute;
+  top: 24%;
+  left: 45%;
+  width: 2%;
+  height: 2%;
+  background: var(--eyes);
+  transform: translate(0, -50%);
+  border-radius: 50%;
+  box-shadow: 6.66vmin 0 var(--eyes);
+  animation: blink 5s infinite linear;
+}
+
+.cheeks {
+  position: absolute;
+  top: 25.5%;
+  left: 43%;
+  width: 5%;
+  height: 3%;
+  background: var(--cheeks);
+  border-radius: 50%;
+  box-shadow: 7.25vmin 0 var(--cheeks);
+}
+
+.beard {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: 30%;
+  height: 40%;
+  background: var(--beard);
+  transform: translate(-50%, 0);
+  border-radius: 100% / 120% 120% 80% 80%;
+}
+
+@keyframes moveMustache {
+  0%,
+  40%,
+  44%,
+  100% {
+    transform: translate(-100%, 0) rotate(25deg);
+  }
+  42% {
+    transform: translate(-100%, 0) rotate(30deg);
+  }
+}
+
+@keyframes moveMustache2 {
+  0%,
+  40%,
+  44%,
+  100% {
+    transform: rotate(-25deg);
+  }
+  42% {
+    transform: rotate(-30deg);
+  }
+}
+
+.mustache {
+  position: absolute;
+  top: 31%;
+  left: 51%;
+  width: 10%;
+  height: 10%;
+  background: var(--mustache);
+  border-radius: 100% 20% 100% 0;
+  transform-origin: top right;
+  transform: translate(-100%, 0) rotate(25deg);
+  animation: moveMustache 7s infinite linear;
+}
+
+.mustache + .mustache {
+  left: 49%;
+  border-radius: 20% 100% 0 100%;
+  transform-origin: top left;
+  transform: rotate(-25deg);
+  animation: moveMustache2 7s infinite linear;
+}
+
+.hat {
+  position: absolute;
+  width: 23%;
+  height: 20%;
+  background: var(--suit);
+  border-radius: 100% 20% 0 0;
+  top: -2%;
+  left: 50%;
+  transform: translate(-50%, 0) rotate(1deg);
+}
+
+.hat::before {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: -17%;
+  left: -5%;
+  width: 110%;
+  height: 40%;
+  border-radius: 100% / 50%;
+  box-shadow: inset 0 4vmin var(--mustache);
+  transform: rotate(-2deg);
+}
+
+.hat::after {
+  content: "";
+  display: block;
+  position: absolute;
+  right: -5vmin;
+  top: -15%;
+  width: 8vmin;
+  height: 8vmin;
+  border-radius: 50%;
+  background: var(--beard);
+}
+
+.body {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  background: var(--suit);
+  border-radius: 100% / 150% 150% 25% 25%;
+  transform: translate(-50%, 0);
+  background-image: radial-gradient(
+      circle at 50% -50%,
+      transparent 75%,
+      var(--belt) 0 83%,
+      transparent 0 92.5%,
+      white 93%
+    ),
+    linear-gradient(to right, transparent 42%, white 43% 57%, transparent 58%);
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% 100%,
+    51% 100%,
+    50% 96%,
+    49% 100%,
+    0% 100%
+  );
+}
+
+.buttons {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 2.5%;
+  height: 2.5%;
+  border-radius: 50%;
+  background: var(--belt);
+  color: var(--belt);
+  box-shadow: 0 5vmin, 0 10vmin 0 0.1vmin, 0 22vmin;
+  opacity: 0.75;
+}
+
+.belt {
+  position: absolute;
+  top: 73%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10%;
+  height: 7.5%;
+  border: 1vmin solid var(--belt-buckle);
+  border-radius: 1vmin;
+  background: var(--belt-buckle);
+  box-shadow: inset 1.5vmin 0 0 2.6vmin var(--belt);
+}
+
+.arms {
+  position: absolute;
+  top: 37%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 65%;
+  height: 40%;
+  background: #a00;
+  border-radius: 100% / 170% 170% 25% 25%;
+  background-image: linear-gradient(transparent 20%, #0003);
+}
+
+.hands {
+  position: absolute;
+  top: 70%;
+  left: 18%;
+  width: 13%;
+  height: 13%;
+  background: var(--belt);
+  box-shadow: 41vmin 0 var(--belt);
+  border-radius: 50%;
+}
+
+.leg {
+  position: absolute;
+  top: 75%;
+  left: 29%;
+  width: 19%;
+  height: 25%;
+  background: var(--suit);
+  transform: skew(2deg);
+  background-image: linear-gradient(#0002, transparent 70%, var(--belt) 0);
+}
+
+.leg + .leg {
+  left: 52%;
+}
+
+.leg::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: -6%;
+  width: 110%;
+  height: 20%;
+  background: black;
+  border-radius: 10vmin 10vmin 0 0;
+}
+
+.leg + .leg::after {
+  left: -4%;
+}
