@@ -2,7 +2,7 @@ import styles from "./Reindeer.module.css";
 
 export default function Reindeer() {
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${styles.reindeer}`}>
       <div className={styles.artboard}>
         <div className={styles.deer}>
           <div className={styles.rocking}>

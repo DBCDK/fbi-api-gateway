@@ -1,12 +1,37 @@
 .container {
+  display: none;
+}
+
+:global(body.dark) .container {
+  display: block;
+}
+
+/* .............. */
+
+.container {
   position: absolute;
-  right: 0;
-  top: calc(100% - 350px);
+  right: -15%;
+  top: calc(100% - 325px);
   width: 450px;
   height: 500px;
 
   z-index: 2;
-  transform: scale(0.7);
+  transform: scale(0.5);
+}
+
+@media screen and (min-width: 576px) {
+  .container {
+    right: -10%;
+    top: calc(100% - 275px);
+  }
+}
+
+@media screen and (min-width: 786px) {
+  .container {
+    right: 10%;
+    top: calc(100% - 300px);
+    transform: scale(0.7);
+  }
 }
 
 .snowman .body {

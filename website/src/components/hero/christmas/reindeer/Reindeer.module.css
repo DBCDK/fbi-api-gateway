@@ -1,4 +1,14 @@
 .container {
+  display: block;
+}
+
+:global(body.dark) .container {
+  display: none;
+}
+
+/* ################### */
+
+.container {
   height: 300px;
   margin: 40px auto 50px auto;
   width: 250px;

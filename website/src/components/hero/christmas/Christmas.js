@@ -11,7 +11,7 @@ export default function Christmas() {
       <Snow />
       <Reindeer classsName={styles.reindeer} />
       {/* <Santa classsName={styles.santa} /> */}
-      {/* <Snowman classsName={styles.snowman} /> */}
+      <Snowman classsName={styles.snowman} />
     </div>
   );
 }
