@@ -125,6 +125,13 @@ export default {
       ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.SERIES_PREFIX || "seriesservice-2",
     },
+    universe: {
+      url:
+        process.env.SERIES_URL ||
+        "http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/universe-members",
+      ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
+      prefix: process.env.SERIES_PREFIX || "seriesservice-2",
+    },
     redis: {
       host: process.env.REDIS_HOST || "127.0.0.1",
       port: process.env.REDIS_PORT || "6379",

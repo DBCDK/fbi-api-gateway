@@ -140,6 +140,11 @@ type Work {
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
   """
   universe: Universe
+  
+  """
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  """
+  universes: [Universe!]!
 
   """
   Subjects for this work

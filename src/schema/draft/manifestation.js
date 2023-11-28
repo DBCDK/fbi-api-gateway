@@ -658,6 +658,11 @@ type Manifestation {
   Universe for this manifestation
   """
   universe: Universe
+  
+  """
+  Universes for this manifestation
+  """
+  universes: [Universe!]!
 
   """
   Information about on which shelf in the library this manifestation can be found

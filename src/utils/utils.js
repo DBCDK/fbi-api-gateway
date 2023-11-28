@@ -83,6 +83,25 @@ export function resolveSeries(data, parent) {
   );
 }
 
+// Extend every serie in the series array with extra fields
+// These are resolved here because of the need of the correct workId
+// resolvers include ReadThisFirst, readThisWhenever og numberInSeries
+
+// we need to export this function to write a unit test
+export function resolveUniverses(data, parent) {
+  const workId = parent?.workId;
+
+  if (!workId) {
+    return [];
+  }
+
+  return (
+    data?.universes?.map((universe) => {
+      return universe;
+    }) || []
+  );
+}
+
 /**
  * Generates the work page description
  * @param {object} work The work
