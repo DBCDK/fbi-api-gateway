@@ -34,7 +34,7 @@ export default {
     complexsearch: {
       url:
         process.env.COMPLEX_SEARCH_URL ||
-        "http://cql-parser.complex-search-staging.svc.cloud.dbc.dk/api/v1",
+        "http://cql-parser.complex-search-prod.svc.cloud.dbc.dk/api/v1",
       ttl: process.env.COMPLEX_SEARCH_TIME_TO_LIVE_SECONDS || 60,
       prefix: process.env.COMPLEX_SEARCH_PREFIX || "complexsearch-1",
     },
