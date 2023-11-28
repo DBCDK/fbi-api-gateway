@@ -337,7 +337,43 @@ including the work itself.
 />
 </DeprecationBorder>
 
-## Universe
+## Universes
+
+Some works may be part of one or more universes, like the "Harry Potter Universe" in this example.
+Universes can contain series and works that are not in any series
+
+<InlineGraphiQL
+  query={`query Example_WorkUniverse ($workId: String!) {
+  work(id: $workId) {
+    universes {
+      title
+      description
+      series {
+        title
+      }
+      works {
+        titles {
+          full
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    workId: "work-of:870970-basis:27267912",
+  }}
+/>
+
+## <DeprecationTitle>Universe</DeprecationTitle>
+
+<DeprecationBorder>
+  <DeprecationBox deprecated="15/12-2023" expires="15/03-2024">
+    Please note that Field `Work.universe` is deprecated and will be removed. Use
+    `Work.universes` instead. See [universes](#Universes) documentation
+    for details.
+  </DeprecationBox>
+
+<br />
 
 Some works may be part of a universe, like the "Harry Potter Universe" in this example.
 
@@ -353,6 +389,7 @@ Some works may be part of a universe, like the "Harry Potter Universe" in this e
     workId: "work-of:870970-basis:27267912",
   }}
 />
+</DeprecationBorder>
 
 ## Translations
 
