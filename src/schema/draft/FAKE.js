@@ -407,6 +407,7 @@ export const FAKE_MANIFESTATION_1 = {
   recordCreationDate: "Dummy 19830414",
   series: [FAKE_POPULAR_SERIES, FAKE_GENERAL_SERIES],
   universe: { title: "Dummy some universe 1" },
+  universes: [{ title: "Dummy some universe 1" }],
   shelfmark: FAKE_SHELFMARK,
   source: ["Dummy some source"],
   subjects: FAKE_SUBJECTS,
@@ -455,6 +456,7 @@ export const FAKE_WORK = {
   materialTypes: [FAKE_MATERIALTYPE],
   series: [FAKE_POPULAR_SERIES, FAKE_GENERAL_SERIES],
   universe: { title: "Dummy Some Universe" },
+  universes: [{ title: "Dummy Some Universe" }],
   genreAndForm: ["Dummy some genre"],
   workTypes: ["LITERATURE"],
   workYear: {

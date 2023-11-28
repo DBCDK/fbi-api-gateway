@@ -127,10 +127,10 @@ export default {
     },
     universe: {
       url:
-        process.env.SERIES_URL ||
+        process.env.UNIVERSES_URL ||
         "http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/universe-members",
-      ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
-      prefix: process.env.SERIES_PREFIX || "seriesservice-2",
+      ttl: process.env.UNIVERSES_TIME_TO_LIVE_SECONDS || 60 * 60,
+      prefix: process.env.UNIVERSES_PREFIX || "seriesservice-universes-2",
     },
     redis: {
       host: process.env.REDIS_HOST || "127.0.0.1",

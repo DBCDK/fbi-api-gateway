@@ -657,7 +657,7 @@ type Manifestation {
   """
   Universe for this manifestation
   """
-  universe: Universe
+  universe: Universe @deprecated(reason: "Use 'universes' instead")
   
   """
   Universes for this manifestation

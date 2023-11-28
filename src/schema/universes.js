@@ -1,4 +1,4 @@
-import { resolveUniverses, resolveWork } from "../utils/utils";
+import { resolveWork } from "../utils/utils";
 
 export const typeDef = `
 type Universe {
@@ -37,7 +37,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return resolveUniverses(data, parent);
+      return data?.universes;
     },
     // Use the new universe from series-service v2
     async universe(parent, args, context, info) {
@@ -46,7 +46,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return resolveUniverses(data, parent)?.[0];
+      return data?.universes?.[0] || null;
     },
   },
   Universe: {
@@ -70,14 +70,14 @@ export const resolvers = {
     },
   },
   Manifestation: {
-    // Use the new universes from series-service v2
+    // Use the new universe from series-service v2
     async universes(parent, args, context, info) {
       const data = await context.datasources.getLoader("universes").load({
         workId: parent.workId,
         profile: context.profile,
       });
 
-      return resolveUniverses(data, parent);
+      return data?.universes;
     },
     // Use the new universe from series-service v2
     async universe(parent, args, context, info) {
@@ -86,7 +86,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return resolveUniverses(data, parent)?.[0] || null;
+      return data?.universes?.[0] || null;
     },
   },
 };
