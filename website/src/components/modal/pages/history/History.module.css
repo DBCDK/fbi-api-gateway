@@ -375,7 +375,7 @@
 .item .agencies .list {
   display: inline-block;
   margin: var(--pt1) var(--pt1) 0 0;
-  background-color: lightgray;
+  background-color: var(--divider);
   padding: var(--pt05);
 }
 
@@ -482,6 +482,11 @@
 :global(body.dark) .cross:hover {
   background-color: var(--text-dark);
 }
+
+:global(body.dark) .item .note input {
+  background-color: var(--dark);
+}
+
 :global(body.dark) .item.removed .content {
   background-color: var(--dark-light);
 }
@@ -508,4 +513,9 @@
     rgba(255, 255, 255, 0)
   );
   opacity: 0.5;
+}
+
+:global(body.dark) .item .agencies .list {
+  background-color: var(--dark-light);
+  color: var(--text-dark);
 }
