@@ -5,6 +5,7 @@ import diagnosticsChannel from "diagnostics_channel";
 import { log } from "dbc-node-logger";
 import { ProxyAgent } from "undici";
 import config from "../config";
+import { parseJSON } from "./json";
 
 // A proxy dispatcher, used for fetch requests
 // that must go through the proxy
@@ -201,8 +202,9 @@ export function createFetchWithConcurrencyLimit(concurrency) {
 
       // Return the body as either plain text or an object
       const text = await res.text();
+
       try {
-        return { status: res.status, body: JSON.parse(text), ok: res.ok };
+        return { status: res.status, body: await parseJSON(text), ok: res.ok };
       } catch (parseError) {
         return { status: res.status, body: text, ok: res.ok };
       }
