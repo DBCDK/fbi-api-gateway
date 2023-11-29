@@ -96,6 +96,7 @@ function getAllTypesFromQuery(document, schema) {
     }
     return type?.name?.value;
   }
+
   let currentType = [types.Query];
 
   const namedObjectVisitor = {
@@ -141,6 +142,13 @@ function getAllTypesFromQuery(document, schema) {
  */
 export default function isFastLaneQuery(document, schema) {
   try {
+    if (
+      document.definitions.find(
+        (definition) => definition.operation === "mutation"
+      )
+    ) {
+      return false;
+    }
     const requestedTypes = getAllTypesFromQuery(document, schema);
 
     return Object.keys(requestedTypes).every((type) => ALLOWED_TYPES[type]);
