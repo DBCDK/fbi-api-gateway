@@ -1,4 +1,3 @@
-import Router from "next/router";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { GraphiQLInterface } from "graphiql";
@@ -98,7 +97,6 @@ export function GraphiQL({
     if (isReady) {
       if (!tab.response && tab.query && !isFetching) {
         try {
-          console.log("ruuuuuuuuuuun");
           prettifyEditors();
           run();
         } catch (err) {}
