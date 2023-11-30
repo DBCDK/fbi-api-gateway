@@ -5,7 +5,7 @@
 
 import { isValidCpr } from "../utils/cpr";
 import { deleteFFUAccount, isFFUAgency } from "../utils/agency";
-import { filterAccountsByProps } from "../utils/accounts";
+import { getAccount, getAccounts } from "../utils/accounts";
 
 export const typeDef = `
 
