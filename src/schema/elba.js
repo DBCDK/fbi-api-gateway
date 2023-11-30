@@ -1,5 +1,5 @@
 import { resolveAccess } from "./draft/draft_utils_manifestations";
-import { getHomeAgencyAccount } from "../utils/utils";
+import { filterAgenciesByProps } from "../utils/accounts";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 
 export const typeDef = `
@@ -88,18 +88,16 @@ export const resolvers = {
       }
 
       // Basic user information (e.g. name, email)
-      let userData;
-      try {
-        userData = await context.datasources.getLoader("user").load({
-          userId: context?.user?.userId,
-          agencyId: context?.user?.loggedInAgencyId,
+      const account = filterAgenciesByProps(context?.user?.agencies, {
+        type: "CPR",
+      })?.[0];
+
+      const userData =
+        (await context.datasources.getLoader("user").load({
+          userId: account?.userId,
+          agencyId: account?.agencyId,
           accessToken: context.accessToken,
-        });
-      } catch (e) {
-        return {
-          status: "ERROR_UNAUTHENTICATED_USER",
-        };
-      }
+        })) || {};
 
       const user = { ...userData, ...context?.user };
 

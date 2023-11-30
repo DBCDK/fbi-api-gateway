@@ -67,7 +67,7 @@ export async function getAccounts(accessToken, context, props) {
  *
  * @returns {Array}
  */
-function filterAccountsByProps(accounts = [], props = {}) {
+export function filterAccountsByProps(accounts = [], props = {}) {
   if (props.agency) {
     accounts = accounts?.filter(({ agencyId }) => agencyId === props.agency);
   }
@@ -78,4 +78,29 @@ function filterAccountsByProps(accounts = [], props = {}) {
     accounts = accounts?.filter(({ userIdType }) => userIdType === props.type);
   }
   return accounts;
+}
+
+/**
+ *
+ * Function to select a specific agency from a userinfo agencies list
+ *
+ * @param {Array} agencies
+ * @param {object} props - Filter agencies by given props (optional)
+ * @param {string} props.id (optional)
+ * @param {string} props.agency (optional)
+ * @param {string} props.type - (optional)
+ *
+ * @returns {Array}
+ */
+export function filterAgenciesByProps(agencies = [], props = {}) {
+  if (props.agency) {
+    agencies = agencies?.filter(({ agencyId }) => agencyId === props.agency);
+  }
+  if (props.id) {
+    agencies = agencies?.filter(({ userId }) => userId === props.id);
+  }
+  if (props.type) {
+    agencies = agencies?.filter(({ userIdType }) => userIdType === props.type);
+  }
+  return agencies;
 }

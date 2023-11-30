@@ -48,6 +48,7 @@ export async function load({ agencyId, userId }, context) {
     agencyId,
     userId,
   });
+
   const res = await context?.fetch(url, {
     method: "POST",
     headers: {
