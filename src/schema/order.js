@@ -318,7 +318,6 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid }) => {
 export const resolvers = {
   Mutation: {
     async submitOrder(parent, args, context, info) {
-      console.log("\n\n\n IN submitOrder");
       if (!context?.smaug?.orderSystem) {
         throw "invalid smaug configuration [orderSystem]";
       }
