@@ -358,10 +358,13 @@ export const resolvers = {
       return parent.result;
     },
     async borrowerStatus(parent, args, context, info) {
+      const agencyId = parent.result?.[0]?.agencyId;
+
       const { status, statusCode } = await getUserBorrowerStatus(
-        { agencyId: parent.result[0].agencyId },
+        { agencyId },
         context
       );
+
       return {
         allowed: status,
         statusCode,

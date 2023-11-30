@@ -6,7 +6,6 @@
 import {
   fetchOrderStatus,
   filterDuplicateAgencies,
-  getHomeAgencyAccount,
   getUserBranchIds,
   resolveManifestation,
   isCPRNumber,
@@ -210,9 +209,12 @@ type UserMutations {
   }
   
 extend type Mutation {
-  users:UserMutations!
+  users: UserMutations!
 }
 
+extend type Query {
+  user: User
+}
 `;
 
 function isEmail(email) {
@@ -220,14 +222,14 @@ function isEmail(email) {
 }
 
 /**
- * Validates smaugUserId
+ * Validates uniqueId
  * @param {string} uniqueId
  */
-function validateUserId(smaugUserId) {
-  if (!smaugUserId) {
+function validateUserId(uniqueId) {
+  if (!uniqueId) {
     throw "Not authorized";
   }
-  if (isCPRNumber(smaugUserId)) {
+  if (isCPRNumber(uniqueId)) {
     throw "User not found in CULR";
   }
 }
@@ -236,28 +238,33 @@ function validateUserId(smaugUserId) {
  * Resolvers for the Profile type
  */
 export const resolvers = {
+  Query: {
+    async user(parent, args, context, info) {
+      return {};
+    },
+  },
+
   User: {
     async identityProviderUsed(parent, args, context, info) {
-      // fetch culr accounts from userinfo
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
-      return userinfo?.attributes?.idpUsed;
+      return context?.user?.idpUsed;
     },
     async isCPRValidated(parent, args, context, info) {
-      // fetch culr accounts from userinfo
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
+      const user = context?.user;
+
+      // Check if login provider is 'nemlogin'
+      if (user.idpUsed === "nemlogin") {
+        return true;
+      }
 
       // Check if user has a CPR validated account
-      const accounts = userinfo.attributes?.agencies;
+      const accounts = user?.agencies;
       return !!accounts?.find(
         (a) => a.userIdType === "CPR" && isValidCpr(a.userId)
       );
     },
     async rights(parent, args, context, info) {
+      const user = context?.user;
+
       // rights default to false
       let subscriptions = {
         infomedia: false,
@@ -269,11 +276,7 @@ export const resolvers = {
         subscriptions.infomedia = true;
       }
 
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-
-      const municipalityAgencyId = userinfo?.attributes?.municipalityAgencyId;
+      const municipalityAgencyId = user?.municipalityAgencyId;
 
       // check for digital article service
       const digitalAccessSubscriptions = await context.datasources
@@ -293,28 +296,26 @@ export const resolvers = {
       return subscriptions;
     },
     async name(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
+      const user = context?.user;
 
-      const homeAccount = getHomeAgencyAccount(userinfo);
       const res = await context.datasources.getLoader("user").load({
-        homeAccount: homeAccount,
-        accessToken: context.accessToken, // Required for testing
+        userId: user?.userId,
+        agencyId: user?.loggedInAgencyId,
+        accessToken: context.accessToken,
       });
       return res?.name;
     },
 
     async favoritePickUpBranch(parent, args, context, info) {
+      const user = context?.user;
+
       try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        validateUserId(smaugUserId);
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
 
         const res = await context.datasources
           .getLoader("userDataGetUser")
-          .load({
-            smaugUserId: smaugUserId,
-          });
+          .load({ uniqueId });
         return res?.favoritePickUpBranch || null;
       } catch (error) {
         return null;
@@ -322,15 +323,15 @@ export const resolvers = {
     },
 
     async createdAt(parent, args, context, info) {
+      const user = context?.user;
+
       try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        validateUserId(smaugUserId);
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
 
         const res = await context.datasources
           .getLoader("userDataGetUser")
-          .load({
-            smaugUserId: smaugUserId,
-          });
+          .load({ uniqueId });
         return res?.createdAt || null;
       } catch (error) {
         return null;
@@ -338,14 +339,16 @@ export const resolvers = {
     },
 
     async persistUserData(parent, args, context, info) {
+      const user = context?.user;
+
       try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        validateUserId(smaugUserId);
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
+
         const res = await context.datasources
           .getLoader("userDataGetUser")
-          .load({
-            smaugUserId: smaugUserId,
-          });
+          .load({ uniqueId });
+
         return res?.persistUserData;
       } catch (error) {
         return null;
@@ -353,19 +356,23 @@ export const resolvers = {
     },
 
     async bibliotekDkOrders(parent, args, context, info) {
-      const smaugUserId = context?.smaug?.user?.uniqueId;
-      const { limit, offset } = args;
+      const user = context?.user;
 
-      validateUserId(smaugUserId);
+      const { limit, offset } = args;
+      const uniqueId = user?.uniqueId;
+
+      validateUserId(uniqueId);
 
       const res = await context.datasources
         .getLoader("bibliotekDkOrders")
         .load({
-          smaugUserId,
+          uniqueId,
           limit,
           offset,
         });
+
       const orderIds = res?.result?.map((order) => order.orderId);
+
       if (orderIds.length > 0) {
         const result = await fetchOrderStatus({ orderIds: orderIds }, context);
         return { result, hitcount: res?.hitcount || 0 };
@@ -373,122 +380,105 @@ export const resolvers = {
       return { result: [], hitcount: 0 };
     },
     async address(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      const homeAccount = getHomeAgencyAccount(userinfo);
+      const user = context?.user;
+
       const res = await context.datasources.getLoader("user").load({
-        homeAccount: homeAccount,
-        accessToken: context.accessToken, // Required for testing
+        userId: user.userId,
+        agencyId: user.loggedInAgencyId,
+        accessToken: context.accessToken,
       });
 
       return res?.address;
     },
     async municipalityAgencyId(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      return userinfo?.attributes?.municipalityAgencyId;
+      const user = context?.user;
+
+      return user?.municipalityAgencyId;
     },
     async debt(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      const userInfoAccounts = filterDuplicateAgencies(
-        userinfo?.attributes?.agencies
-      );
+      const user = context?.user;
+
+      const userInfoAccounts = filterDuplicateAgencies(user?.agencies);
       return await context.datasources.getLoader("debt").load({
         userInfoAccounts: userInfoAccounts,
         accessToken: context.accessToken, // Required for testing
       });
     },
     async loans(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      const userInfoAccounts = filterDuplicateAgencies(
-        userinfo?.attributes?.agencies
-      );
+      const user = context?.user;
+
+      const userInfoAccounts = filterDuplicateAgencies(user?.agencies);
       return await context.datasources.getLoader("loans").load({
         userInfoAccounts: userInfoAccounts,
         accessToken: context.accessToken, // Required for testing
       });
     },
     async orders(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      const userInfoAccounts = filterDuplicateAgencies(
-        userinfo?.attributes?.agencies
-      );
+      const user = context?.user;
+
+      const userInfoAccounts = filterDuplicateAgencies(user?.agencies);
       return await context.datasources.getLoader("orders").load({
         userInfoAccounts: userInfoAccounts,
         accessToken: context.accessToken, // Required for testing
       });
     },
     async postalCode(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      const homeAccount = getHomeAgencyAccount(userinfo);
+      const user = context?.user;
+
       const res = await context.datasources.getLoader("user").load({
-        homeAccount: homeAccount,
-        accessToken: context.accessToken, // Required for testing
+        userId: user.userId,
+        agencyId: user.loggedInAgencyId,
+        accessToken: context.accessToken,
       });
 
       return res?.postalCode;
     },
     async mail(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      const homeAccount = getHomeAgencyAccount(userinfo);
+      const user = context?.user;
+
       const res = await context.datasources.getLoader("user").load({
-        homeAccount: homeAccount,
-        accessToken: context.accessToken, // Required for testing
+        userId: user.userId,
+        agencyId: user.loggedInAgencyId,
+        accessToken: context.accessToken,
       });
 
       return res?.mail;
     },
     async country(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      const homeAccount = getHomeAgencyAccount(userinfo);
+      const user = context?.user;
+
       const res = await context.datasources.getLoader("user").load({
-        homeAccount: homeAccount,
-        accessToken: context.accessToken, // Required for testing
+        userId: user.userId,
+        agencyId: user.loggedInAgencyId,
+        accessToken: context.accessToken,
       });
 
       return res?.country;
     },
     async culrMail(parent, args, context, info) {
-      const resUserInfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
-      const agencyWithEmail =
-        resUserInfo.attributes &&
-        resUserInfo.attributes.agencies &&
-        resUserInfo.attributes.agencies.find((agency) =>
-          isEmail(agency && agency.userId)
-        );
+      const user = context?.user;
 
-      return agencyWithEmail && agencyWithEmail.userId;
+      const agencyWithEmail = user?.agencies?.find((agency) =>
+        isEmail(agency?.userId)
+      );
+      return agencyWithEmail?.userId;
     },
     async loggedInBranchId(parent, args, context, info) {
-      return context.smaug.user.agency;
+      const user = context?.user;
+
+      return user.loggedInAgencyId;
     },
     async loggedInAgencyId(parent, args, context, info) {
-      return context.smaug.user.agency;
+      const user = context?.user;
+
+      return user.loggedInAgencyId;
     },
     async agencies(parent, args, context, info) {
-      const userinfo = await context.datasources.getLoader("userinfo").load({
-        accessToken: context.accessToken,
-      });
+      const user = context?.user;
 
-      const agencies = filterDuplicateAgencies(
-        userinfo?.attributes?.agencies
-      )?.map((account) => account.agencyId);
+      const agencies = filterDuplicateAgencies(user?.agencies)?.map(
+        (account) => account.agencyId
+      );
 
       const agencyInfos = await Promise.all(
         agencies.map(
@@ -516,11 +506,10 @@ export const resolvers = {
       const loginAgencyIdx = sortedAgencies.findIndex((agency) => {
         const matchingBranch =
           agency.result.findIndex(
-            (library) => library.branchId === context.smaug.user.agency
+            (library) => library.branchId === user?.loggedInAgencyId
           ) > -1;
         return (
-          agency.result[0].agencyId === context.smaug.user.agency ||
-          matchingBranch
+          agency.result[0].agencyId === user?.loggedInAgencyId || matchingBranch
         );
       });
 
@@ -532,19 +521,17 @@ export const resolvers = {
       return sortedAgencies;
     },
     async bookmarks(parent, args, context, info) {
-      try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
+      const user = context?.user;
 
-        validateUserId(smaugUserId);
+      try {
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
 
         const { orderBy } = args;
 
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
-          .load({
-            smaugUserId: smaugUserId,
-            orderBy,
-          });
+          .load({ uniqueId, orderBy });
 
         return { result: res?.result, hitcount: res?.result?.length || 0 };
       } catch (error) {
@@ -593,13 +580,15 @@ export const resolvers = {
   },
   UserMutations: {
     async addUserToUserDataService(parent, args, context, info) {
+      const user = context?.user;
+
       try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
+        const uniqueId = user?.uniqueId;
+        if (!uniqueId) {
           throw "Not authorized";
         }
         await context.datasources.getLoader("userDataCreateUser").load({
-          smaugUserId: smaugUserId,
+          uniqueId,
         });
         return { success: true };
       } catch (error) {
@@ -611,19 +600,16 @@ export const resolvers = {
       }
     },
     async deleteUserFromUserDataService(parent, args, context, info) {
+      const user = context?.user;
+
       try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
+        const uniqueId = user?.uniqueId;
+        if (!uniqueId) {
           throw "Not authorized";
         }
 
-        // fetch culr accounts from userinfo
-        const userinfo = await context.datasources.getLoader("userinfo").load({
-          accessToken: context.accessToken,
-        });
-
         // Check if user has a CPR validated account
-        const accounts = userinfo.attributes?.agencies;
+        const accounts = user?.agencies;
 
         //find all FFU libraries
         const ffuLibraries = accounts?.filter(
@@ -648,7 +634,7 @@ export const resolvers = {
         }
         //delete user data from userData service (bookmarks, orderhistory etc.)
         await context.datasources.getLoader("userDataDeleteUser").load({
-          smaugUserId: smaugUserId,
+          uniqueId,
         });
         return { success: true };
       } catch (error) {
@@ -656,11 +642,13 @@ export const resolvers = {
       }
     },
     async setFavoritePickUpBranch(parent, args, context, info) {
+      const user = context?.user;
+
       try {
         const { favoritePickUpBranch } = args;
-        const smaugUserId = context?.smaug?.user?.uniqueId;
+        const uniqueId = user?.uniqueId;
 
-        validateUserId(smaugUserId);
+        validateUserId(uniqueId);
 
         //validate that favoritePickUpBranch is a valid user branch id
         const userBranchIds = await getUserBranchIds(context);
@@ -669,63 +657,56 @@ export const resolvers = {
         }
         await context.datasources
           .getLoader("userDataFavoritePickupBranch")
-          .load(
-            {
-              smaugUserId: smaugUserId,
-              favoritePickUpBranch: favoritePickUpBranch,
-            },
-            context
-          );
+          .load({ uniqueId, favoritePickUpBranch }, context);
         return { success: true };
       } catch (error) {
         return { success: false, errorMessage: error?.message };
       }
     },
     async clearFavoritePickUpBranch(parent, args, context, info) {
+      const user = context?.user;
+
       try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        validateUserId(smaugUserId);
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
 
         await context.datasources
           .getLoader("userDataFavoritePickupBranch")
-          .load({
-            smaugUserId: smaugUserId,
-            favoritePickUpBranch: null,
-          });
+          .load({ uniqueId, favoritePickUpBranch: null });
         return { success: true };
       } catch (error) {
         return { success: false };
       }
     },
     async addOrderToUserData(parent, args, context, info) {
+      const user = context?.user;
+
       try {
         const { orderId } = args;
 
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        validateUserId(smaugUserId);
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
 
-        await context.datasources.getLoader("userDataAddOrder").load({
-          smaugUserId: smaugUserId,
-          orderId: orderId,
-        });
+        await context.datasources
+          .getLoader("userDataAddOrder")
+          .load({ uniqueId, orderId });
         return { success: true };
       } catch (error) {
         return { success: false, errorMessage: error?.message };
       }
     },
     async deleteOrderFromUserData(parent, args, context, info) {
+      const user = context?.user;
+
       try {
         const { orderId } = args;
 
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        validateUserId(smaugUserId);
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
 
         const res = await context.datasources
           .getLoader("userDataRemoveOrder")
-          .load({
-            smaugUserId: smaugUserId,
-            orderId: orderId,
-          });
+          .load({ uniqueId, orderId });
 
         return { success: !res?.error, errorMessage: res?.error };
       } catch (error) {
@@ -733,23 +714,22 @@ export const resolvers = {
       }
     },
     async setPersistUserDataValue(parent, args, context, info) {
+      const user = context?.user;
+
       try {
         const { persistUserData } = args;
+        const uniqueId = user?.uniqueId;
 
-        const smaugUserId = context?.smaug?.user?.uniqueId;
-        if (!smaugUserId) {
+        if (!uniqueId) {
           throw new Error("Not authorized");
         }
-        if (isCPRNumber(smaugUserId)) {
+        if (isCPRNumber(uniqueId)) {
           throw new Error("User not found in CULR");
         }
 
         const res = await context.datasources
           .getLoader("userDataDataConsent")
-          .load({
-            smaugUserId: smaugUserId,
-            persistUserData: persistUserData,
-          });
+          .load({ uniqueId, persistUserData });
 
         return { success: !res?.error, errorMessage: res?.error };
       } catch (error) {
@@ -757,22 +737,24 @@ export const resolvers = {
       }
     },
     async addBookmarks(parent, args, context, info) {
+      const user = context?.user;
+
       /**
        * Handles single or multiple additions to bookmarks.
        *
-       * @param {smaugUserId: string, bookmarks: [{materialType, string, materialId: string, title: string, workId?: string}]}
+       * @param {uniqueId: string, bookmarks: [{materialType, string, materialId: string, title: string, workId?: string}]}
        *
        * We espect multiple additions to ignore already set bookmarks (since it's used for syncronizing cookie bookmarks with the user database),
        * while we espect single additions to throw an error if this bookmark already exists
        */
 
       try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
+        const uniqueId = user?.uniqueId;
 
-        if (!smaugUserId) {
+        if (!uniqueId) {
           throw new Error("Not authorized");
         }
-        if (isCPRNumber(smaugUserId)) {
+        if (isCPRNumber(uniqueId)) {
           throw new Error("User not found in CULR");
         }
 
@@ -783,7 +765,7 @@ export const resolvers = {
         const res = await context.datasources
           .getLoader("userDataAddBookmarks")
           .load({
-            smaugUserId: smaugUserId,
+            uniqueId,
             bookmarks: args.bookmarks.map((bookmark) => {
               return {
                 workId: bookmark.workId,
@@ -804,22 +786,21 @@ export const resolvers = {
       }
     },
     async deleteBookmarks(parent, args, context, info) {
-      try {
-        const smaugUserId = context?.smaug?.user?.uniqueId;
+      const user = context?.user;
 
-        if (!smaugUserId) {
+      try {
+        const uniqueId = user?.uniqueId;
+
+        if (!uniqueId) {
           throw new Error("Not authorized");
         }
-        if (isCPRNumber(smaugUserId)) {
+        if (isCPRNumber(uniqueId)) {
           throw new Error("User not found in CULR");
         }
 
         const res = await context.datasources
           .getLoader("userDataDeleteBookmark")
-          .load({
-            smaugUserId: smaugUserId,
-            bookmarkIds: args.bookmarkIds,
-          });
+          .load({ uniqueId, bookmarkIds: args.bookmarkIds });
 
         return res;
       } catch (error) {

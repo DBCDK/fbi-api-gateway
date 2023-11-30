@@ -87,7 +87,7 @@ export function parseOrder(orderFromService) {
  */
 
 export async function load(
-  { userId, input, branch, accessToken, smaug },
+  { userId, input, branch, accessToken, smaug, authUserId },
   context
 ) {
   const orderSystem = smaug?.orderSystem;
@@ -109,7 +109,7 @@ export async function load(
     }
 
     // userID for log trace
-    const _userId = smaug.user.id || userId;
+    const _userId = authUserId || userId;
 
     // some logging
     auditTrace(

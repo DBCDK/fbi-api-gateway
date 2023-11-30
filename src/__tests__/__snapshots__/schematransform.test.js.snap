@@ -597,7 +597,6 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
-  user: User
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
@@ -650,13 +649,14 @@ type Query {
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   \\"\\"\\"
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
-  refWorks(pid: String!): String!
-  ris(pid: String!): String!
+  refWorks(pids: [String!]!): String!
+  ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
   inspiration(language: LanguageCode, limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
   test: Test
+  user: User
 }
 
 type Lamp {
@@ -1434,7 +1434,10 @@ type Manifestation {
   series: [Series!]!
 
   \\"\\"\\"Universe for this manifestation\\"\\"\\"
-  universe: Universe
+  universe: Universe @deprecated(reason: \\"Use 'universes' instead\\")
+
+  \\"\\"\\"Universes for this manifestation\\"\\"\\"
+  universes: [Universe!]!
 
   \\"\\"\\"
   Information about on which shelf in the library this manifestation can be found
@@ -1673,7 +1676,12 @@ type Work {
   \\"\\"\\"
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
   \\"\\"\\"
-  universe: Universe
+  universe: Universe @deprecated(reason: \\"Use 'universes' instead\\")
+
+  \\"\\"\\"
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universes: [Universe!]!
 
   \\"\\"\\"Subjects for this work\\"\\"\\"
   subjects: SubjectContainer!
@@ -1725,16 +1733,6 @@ type ReviewElement {
 type ManifestationReview {
   rating: String
   reviewByLibrarians: [ReviewElement]
-}
-
-type Universe {
-  \\"\\"\\"
-  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
-  \\"\\"\\"
-  title: String!
-
-  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
-  alternativeTitles: [String!]!
 }
 
 type NumberInSeries {
@@ -2070,6 +2068,7 @@ enum CopyRequestStatus {
   ERROR_PID_NOT_RESERVABLE
   ERROR_MISSING_CLIENT_CONFIGURATION
   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  ERROR_MISSING_MUNICIPALITYAGENCYID
   UNKNOWN_USER
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
@@ -2781,6 +2780,25 @@ type TestMutation {
   user(input: TestUserInput): String
 }
 
+type Universe {
+  \\"\\"\\"
+  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
+  \\"\\"\\"
+  title: String!
+
+  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
+  alternativeTitles: [String!]!
+
+  \\"\\"\\"Description of the universe\\"\\"\\"
+  description: String
+
+  \\"\\"\\"All series within the universe\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
+  works: [Work!]!
+}
+
 type User {
   name: String
   favoritePickUpBranch: String
@@ -3085,8 +3103,8 @@ type Query {
   \\"\\"\\"Get recommendations\\"\\"\\"
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
   infomedia(id: String!): InfomediaResponse!
-  refWorks(pid: String!): String!
-  ris(pid: String!): String!
+  refWorks(pids: [String!]!): String!
+  ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
 }
 
@@ -3816,7 +3834,10 @@ type Manifestation {
   series: [Series!]!
 
   \\"\\"\\"Universe for this manifestation\\"\\"\\"
-  universe: Universe
+  universe: Universe @deprecated(reason: \\"Use 'universes' instead\\")
+
+  \\"\\"\\"Universes for this manifestation\\"\\"\\"
+  universes: [Universe!]!
 
   \\"\\"\\"
   Information about on which shelf in the library this manifestation can be found
@@ -4051,7 +4072,12 @@ type Work {
   \\"\\"\\"
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
   \\"\\"\\"
-  universe: Universe
+  universe: Universe @deprecated(reason: \\"Use 'universes' instead\\")
+
+  \\"\\"\\"
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universes: [Universe!]!
 
   \\"\\"\\"Subjects for this work\\"\\"\\"
   subjects: SubjectContainer!
@@ -4103,16 +4129,6 @@ type ReviewElement {
 type ManifestationReview {
   rating: String
   reviewByLibrarians: [ReviewElement]
-}
-
-type Universe {
-  \\"\\"\\"
-  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
-  \\"\\"\\"
-  title: String!
-
-  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
-  alternativeTitles: [String!]!
 }
 
 type NumberInSeries {
@@ -4423,6 +4439,7 @@ enum CopyRequestStatus {
   ERROR_PID_NOT_RESERVABLE
   ERROR_MISSING_CLIENT_CONFIGURATION
   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  ERROR_MISSING_MUNICIPALITYAGENCYID
   UNKNOWN_USER
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
@@ -4643,6 +4660,25 @@ type DidYouMean {
 
   \\"\\"\\"A probability score between 0-1 indicating how relevant the query is\\"\\"\\"
   score: Float!
+}
+
+type Universe {
+  \\"\\"\\"
+  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
+  \\"\\"\\"
+  title: String!
+
+  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
+  alternativeTitles: [String!]!
+
+  \\"\\"\\"Description of the universe\\"\\"\\"
+  description: String
+
+  \\"\\"\\"All series within the universe\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
+  works: [Work!]!
 }
 "
 `;
@@ -5373,7 +5409,10 @@ type Manifestation {
   series: [Series!]!
 
   \\"\\"\\"Universe for this manifestation\\"\\"\\"
-  universe: Universe
+  universe: Universe @deprecated(reason: \\"Use 'universes' instead\\")
+
+  \\"\\"\\"Universes for this manifestation\\"\\"\\"
+  universes: [Universe!]!
 
   \\"\\"\\"
   Information about on which shelf in the library this manifestation can be found
@@ -5593,7 +5632,12 @@ type Work {
   \\"\\"\\"
   Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
   \\"\\"\\"
-  universe: Universe
+  universe: Universe @deprecated(reason: \\"Use 'universes' instead\\")
+
+  \\"\\"\\"
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universes: [Universe!]!
 
   \\"\\"\\"Subjects for this work\\"\\"\\"
   subjects: SubjectContainer!
@@ -5645,16 +5689,6 @@ type ReviewElement {
 type ManifestationReview {
   rating: String
   reviewByLibrarians: [ReviewElement]
-}
-
-type Universe {
-  \\"\\"\\"
-  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
-  \\"\\"\\"
-  title: String!
-
-  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
-  alternativeTitles: [String!]!
 }
 
 type NumberInSeries {
@@ -5929,6 +5963,25 @@ type TvSeries {
 type TvSeriesDetails {
   display: String
   numbers: [Int!]
+}
+
+type Universe {
+  \\"\\"\\"
+  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
+  \\"\\"\\"
+  title: String!
+
+  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
+  alternativeTitles: [String!]!
+
+  \\"\\"\\"Description of the universe\\"\\"\\"
+  description: String
+
+  \\"\\"\\"All series within the universe\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
+  works: [Work!]!
 }
 "
 `;

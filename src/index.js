@@ -28,6 +28,10 @@ import createDataLoaders from "./datasourceLoader";
 import { v4 as uuid } from "uuid";
 import isbot from "isbot";
 import { parseTestToken } from "./utils/testUserStore";
+import isFastLaneQuery, {
+  fastLaneMiddleware,
+  getFastLane,
+} from "./utils/fastLane";
 
 // this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
@@ -82,6 +86,8 @@ promExporterApp.listen(9599, () => {
     next();
   });
 
+  app.post("/:profile/graphql", fastLaneMiddleware);
+
   // Middleware that monitors performance of those GraphQL queries
   // which specify a monitor name.
   app.post("/:profile/graphql", async (req, res, next) => {
@@ -120,10 +126,11 @@ promExporterApp.listen(9599, () => {
         userAgent,
         userAgentIsBot: isbot(userAgent),
         ip: req?.smaug?.app?.ips?.[0],
-        isAuthenticatedToken: !!req.smaug?.user?.id,
-        hasUniqueId: !!req.smaug?.user?.uniqueId,
+        isAuthenticatedToken: !!req.user?.userId,
+        hasUniqueId: !!req.user?.uniqueId,
         accessTokenHash,
         isTestToken: req.isTestToken,
+        fastLane: req.fastLane,
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
@@ -174,6 +181,7 @@ promExporterApp.listen(9599, () => {
       req.parsedQuery = graphQLParams.query
         .replace(/\n/g, " ")
         .replace(/\s+/g, " ");
+      req.queryDocument = document;
 
       // Check if query is introspection query
       req.isIntrospectionQuery = isIntrospectionQuery(ast);
@@ -237,6 +245,31 @@ promExporterApp.listen(9599, () => {
   });
 
   /**
+   * Middleware for fetching user information (for authenticated tokens)
+   */
+  app.post("/:profile/graphql", async (req, res, next) => {
+    // Fetch login.bib.dk userinfo
+    try {
+      const userinfo =
+        req.accessToken &&
+        (await req.datasources.getLoader("userinfo").load({
+          accessToken: req.accessToken,
+        }));
+
+      req.user = userinfo?.attributes || null;
+    } catch (e) {
+      log.error("Error fetching from userinfo", { response: e });
+      res.status(500);
+      return res.send({
+        statusCode: 500,
+        message: "Internal server error",
+      });
+    }
+
+    next();
+  });
+
+  /**
    * Check if operation is introspection
    * @param {*} operation
    * @returns
@@ -259,6 +292,22 @@ promExporterApp.listen(9599, () => {
 
     // Set incomming query complexity
     req.queryComplexity = getQueryComplexity({ query, variables, schema });
+
+    // check if the query allows for fast lane
+    req.fastLane =
+      !req.isIntrospectionQuery && isFastLaneQuery(req.queryDocument, schema);
+
+    if (req.fastLane) {
+      req.fastLaneKey = JSON.stringify({
+        query,
+        variables,
+        profile: req.profile,
+      });
+      const fastLaneRes = await getFastLane(req.fastLaneKey);
+      if (fastLaneRes) {
+        return res.send(fastLaneRes);
+      }
+    }
 
     const handler = createHandler({
       schema,

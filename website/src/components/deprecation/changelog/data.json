@@ -1,5 +1,17 @@
 [
   {
+    "field": "Work.universe",
+    "reason": "Replaced by Work.universes",
+    "deprecated": "15/12-2023",
+    "expired": "15/03-2024"
+  },
+  {
+    "field": "Manifestation.universe",
+    "reason": "Replaced by Manifestation.universes",
+    "deprecated": "15/12-2023",
+    "expired": "15/03-2024"
+  },
+  {
     "field": "Work.reviews",
     "reason": "Replaced by Work.relations.hasReview",
     "deprecated": "01/03-2023",

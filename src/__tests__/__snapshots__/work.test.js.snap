@@ -134,9 +134,7 @@ Object {
           "Dummy Oversat titel",
         ],
       },
-      "universe": Object {
-        "title": "Dummy Some Universe",
-      },
+      "universe": null,
       "workId": "work-of:870970-basis:26521556",
       "workTypes": Array [
         "LITERATURE",
@@ -149,6 +147,9 @@ Object {
       },
     },
   },
+  "errors": Array [
+    [GraphQLError: Cannot read properties of undefined (reading 'load')],
+  ],
 }
 `;
 

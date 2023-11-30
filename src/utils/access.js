@@ -18,11 +18,13 @@ import { filterDuplicateAgencies } from "./utils";
  * @returns {null | string} AgencyId
  */
 async function infomedia(context) {
+  const user = context?.user;
+
   // get rights from idp
   const idpRights = await context.datasources.getLoader("idp").load("");
 
   // check if users loggedInAgency has infomedia access
-  const loggedInAgencyId = context?.smaug?.user?.agency;
+  const loggedInAgencyId = user?.loggedInAgencyId;
 
   if (loggedInAgencyId && idpRights[loggedInAgencyId]) {
     return loggedInAgencyId;
@@ -30,15 +32,8 @@ async function infomedia(context) {
 
   // Alternativly check all users accounts
 
-  // user info
-  const userinfo = await context.datasources.getLoader("userinfo").load({
-    accessToken: context.accessToken,
-  });
-
   // filtered accounts
-  const userInfoAccounts = filterDuplicateAgencies(
-    userinfo?.attributes?.agencies
-  );
+  const userInfoAccounts = filterDuplicateAgencies(user.agencies);
 
   const hasAccess = userInfoAccounts?.filter(
     ({ agencyId }) => idpRights[agencyId]

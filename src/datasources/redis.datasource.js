@@ -1,6 +1,7 @@
 import { log } from "dbc-node-logger";
 import Redis from "ioredis";
 import config from "../config";
+import { parseJSON, stringifyJSON } from "../utils/json";
 import monitor from "../utils/monitor";
 
 // Redis client
@@ -71,7 +72,7 @@ export const get = monitor(
       if (inMemory && localStore[key]) {
         parsed = localStore[key];
       } else {
-        parsed = JSON.parse(await redis.get(key));
+        parsed = await parseJSON(await redis.get(key));
         if (inMemory) {
           localStore[key] = parsed;
         }
@@ -97,7 +98,7 @@ export const set = monitor(
       if (inMemory) {
         localStore[key] = obj;
       }
-      await redis.set(key, JSON.stringify(obj), "EX", seconds);
+      await redis.set(key, await stringifyJSON(obj), "EX", seconds);
     } catch (e) {
       log.error(`Redis setex failed`, {
         key,

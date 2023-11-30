@@ -34,7 +34,7 @@ export default {
     complexsearch: {
       url:
         process.env.COMPLEX_SEARCH_URL ||
-        "http://cql-parser.complex-search-staging.svc.cloud.dbc.dk/api/v1",
+        "http://cql-parser.complex-search-prod.svc.cloud.dbc.dk/api/v1",
       ttl: process.env.COMPLEX_SEARCH_TIME_TO_LIVE_SECONDS || 60,
       prefix: process.env.COMPLEX_SEARCH_PREFIX || "complexsearch-1",
     },
@@ -125,6 +125,13 @@ export default {
       ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.SERIES_PREFIX || "seriesservice-2",
     },
+    universe: {
+      url:
+        process.env.UNIVERSES_URL ||
+        "http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/universe-members",
+      ttl: process.env.UNIVERSES_TIME_TO_LIVE_SECONDS || 60 * 60,
+      prefix: process.env.UNIVERSES_PREFIX || "seriesservice-universes-2",
+    },
     redis: {
       host: process.env.REDIS_HOST || "127.0.0.1",
       port: process.env.REDIS_PORT || "6379",
@@ -134,7 +141,7 @@ export default {
     simplesearch: {
       url:
         process.env.SIMPLESEARCH_URL ||
-        "http://simple-search-fbiapi-1-3.mi-prod.svc.cloud.dbc.dk/search",
+        "http://simple-search-fbiapi-1-4.mi-prod.svc.cloud.dbc.dk/search",
       prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-6",
       token: process.env.SIMPLESEARCH_TOKEN,
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
