@@ -87,7 +87,10 @@ export async function load({ userInfoAccounts }, context) {
  * Loans when using test token
  */
 export async function testLoad({ userInfoAccounts }, context) {
-  const agencyId = userInfoAccounts[0].agencyId;
+  const agencyId = userInfoAccounts[0]?.agencyId;
+  if (!agencyId) {
+    return [];
+  }
   return [
     {
       loanId: "120200590",

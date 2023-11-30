@@ -148,13 +148,14 @@ function setupDataloader(
   { name, load, options, batchLoader, testLoad },
   context
 ) {
-  const loadImpl = context?.testUser && testLoad ? testLoad : load;
+  const testModeActivated = context?.testUser && testLoad;
+  const loadImpl = testModeActivated ? testLoad : load;
 
   let batchLoaderWithContext = batchLoader
     ? (keys) => batchLoader(keys, context)
     : (keys) => Promise.all(keys.map((key) => loadImpl(key, context)));
 
-  if (options?.redis?.prefix && options?.redis?.ttl) {
+  if (!testModeActivated && options?.redis?.prefix && options?.redis?.ttl) {
     batchLoaderWithContext = withRedis(batchLoaderWithContext, {
       ...options.redis,
       ...context,
