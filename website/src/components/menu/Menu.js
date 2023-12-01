@@ -192,10 +192,8 @@ export default function Wrap(props) {
       setSections(headings);
     }, 10);
 
-    const observer = new MutationObserver(handleMutation);
-    observer.observe(container, {
-      childList: true,
-    });
+    const observer = new ResizeObserver(handleMutation);
+    observer.observe(container);
     handleMutation();
     return () => observer.disconnect();
   }, [container]);
