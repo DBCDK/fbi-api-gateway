@@ -94,8 +94,8 @@ export const resolvers = {
 
       const userData =
         (await context.datasources.getLoader("user").load({
-          userId: account?.userId,
-          agencyId: account?.agencyId,
+          userId: account?.userId || context?.user?.userId,
+          agencyId: account?.agencyId || context?.user?.loggedInAgencyId,
           accessToken: context.accessToken,
         })) || {};
 

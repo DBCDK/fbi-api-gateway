@@ -306,8 +306,8 @@ export const resolvers = {
       })?.[0];
 
       const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId,
-        agencyId: account?.agencyId,
+        userId: account?.userId || user?.userId,
+        agencyId: account?.agencyId || user?.loggedInAgencyId,
         accessToken: context.accessToken,
       });
 
@@ -396,8 +396,8 @@ export const resolvers = {
       })?.[0];
 
       const res = await context.datasources.getLoader("user").load({
-        userId: account.userId,
-        agencyId: account.agencyId,
+        userId: account?.userId || user?.userId,
+        agencyId: account?.agencyId || user?.loggedInAgencyId,
         accessToken: context.accessToken,
       });
 
@@ -444,8 +444,8 @@ export const resolvers = {
       })?.[0];
 
       const res = await context.datasources.getLoader("user").load({
-        userId: account.userId,
-        agencyId: account.agencyId,
+        userId: account?.userId || user?.userId,
+        agencyId: account?.agencyId || user?.loggedInAgencyId,
         accessToken: context.accessToken,
       });
 
@@ -460,8 +460,8 @@ export const resolvers = {
       })?.[0];
 
       const res = await context.datasources.getLoader("user").load({
-        userId: account.userId,
-        agencyId: account.agencyId,
+        userId: account?.userId || user?.userId,
+        agencyId: account?.agencyId || user?.loggedInAgencyId,
         accessToken: context.accessToken,
       });
 
@@ -476,8 +476,8 @@ export const resolvers = {
       })?.[0];
 
       const res = await context.datasources.getLoader("user").load({
-        userId: account.userId,
-        agencyId: account.agencyId,
+        userId: account.userId || user.userId,
+        agencyId: account.agencyId || user.loggedInAgencyId,
         accessToken: context.accessToken,
       });
 
