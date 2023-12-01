@@ -11,6 +11,8 @@ import {
   isCPRNumber,
 } from "../utils/utils";
 
+import { filterAgenciesByProps } from "../utils/accounts";
+
 import { hasInfomediaAccess } from "../utils/access";
 
 import { isValidCpr } from "../utils/cpr";
@@ -298,11 +300,17 @@ export const resolvers = {
     async name(parent, args, context, info) {
       const user = context?.user;
 
+      // select cpr account from user agencies
+      const account = filterAgenciesByProps(user.agencies, {
+        type: "CPR",
+      })?.[0];
+
       const res = await context.datasources.getLoader("user").load({
-        userId: user?.userId,
-        agencyId: user?.loggedInAgencyId,
+        userId: account?.userId || user?.userId,
+        agencyId: account?.agencyId || user?.loggedInAgencyId,
         accessToken: context.accessToken,
       });
+
       return res?.name;
     },
 
@@ -382,9 +390,14 @@ export const resolvers = {
     async address(parent, args, context, info) {
       const user = context?.user;
 
+      // select cpr account from user agencies
+      const account = filterAgenciesByProps(user.agencies, {
+        type: "CPR",
+      })?.[0];
+
       const res = await context.datasources.getLoader("user").load({
-        userId: user.userId,
-        agencyId: user.loggedInAgencyId,
+        userId: account?.userId || user?.userId,
+        agencyId: account?.agencyId || user?.loggedInAgencyId,
         accessToken: context.accessToken,
       });
 
@@ -425,9 +438,14 @@ export const resolvers = {
     async postalCode(parent, args, context, info) {
       const user = context?.user;
 
+      // select cpr account from user agencies
+      const account = filterAgenciesByProps(user.agencies, {
+        type: "CPR",
+      })?.[0];
+
       const res = await context.datasources.getLoader("user").load({
-        userId: user.userId,
-        agencyId: user.loggedInAgencyId,
+        userId: account?.userId || user?.userId,
+        agencyId: account?.agencyId || user?.loggedInAgencyId,
         accessToken: context.accessToken,
       });
 
@@ -436,9 +454,14 @@ export const resolvers = {
     async mail(parent, args, context, info) {
       const user = context?.user;
 
+      // select cpr account from user agencies
+      const account = filterAgenciesByProps(user.agencies, {
+        type: "CPR",
+      })?.[0];
+
       const res = await context.datasources.getLoader("user").load({
-        userId: user.userId,
-        agencyId: user.loggedInAgencyId,
+        userId: account?.userId || user?.userId,
+        agencyId: account?.agencyId || user?.loggedInAgencyId,
         accessToken: context.accessToken,
       });
 
@@ -447,9 +470,14 @@ export const resolvers = {
     async country(parent, args, context, info) {
       const user = context?.user;
 
+      // select cpr account from user agencies
+      const account = filterAgenciesByProps(user.agencies, {
+        type: "CPR",
+      })?.[0];
+
       const res = await context.datasources.getLoader("user").load({
-        userId: user.userId,
-        agencyId: user.loggedInAgencyId,
+        userId: account.userId || user.userId,
+        agencyId: account.agencyId || user.loggedInAgencyId,
         accessToken: context.accessToken,
       });
 

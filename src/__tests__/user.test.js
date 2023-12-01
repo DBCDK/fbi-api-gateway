@@ -12,6 +12,11 @@ const DEFAULT_USER = {
       userId: "some@mail.com",
       userIdType: "LOCAL",
     },
+    {
+      agencyId: "715100",
+      userId: "0102033690",
+      userIdType: "CPR",
+    },
   ],
 };
 

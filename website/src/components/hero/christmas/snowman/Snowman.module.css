@@ -37,8 +37,7 @@
 .snowman .body {
   width: 200px;
   height: 200px;
-  /* background: #ecf0f1; */
-  background: var(--text-dark);
+  background: var(--divider);
   box-shadow: -13px -8px 0px rgba(0, 0, 0, 0.1) inset;
   border-radius: 50%;
 
@@ -52,8 +51,7 @@
 .snowman .body:before {
   width: 100px;
   height: 100px;
-  /* background: #ecf0f1; */
-  background: var(--text-dark);
+  background: var(--divider);
   box-shadow: -5px 0px 0px rgba(0, 0, 0, 0.1) inset;
   border-radius: 50%;
   display: inline-block;
@@ -67,8 +65,7 @@
 .snowman .body:after {
   width: 160px;
   height: 160px;
-  /* background: #ecf0f1; */
-  background: var(--text-dark);
+  background: var(--divider);
   box-shadow: -7px -5px 0px rgba(0, 0, 0, 0.1) inset;
   border-radius: 50%;
   display: inline-block;
