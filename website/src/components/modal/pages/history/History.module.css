@@ -113,7 +113,8 @@
   margin-top: var(--pt3);
 }
 
-.item.expanded .display .note {
+.item.expanded .display .note,
+.item.missingConfig .display .note {
   display: none;
 }
 
