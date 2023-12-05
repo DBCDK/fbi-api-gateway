@@ -496,20 +496,17 @@ export const resolvers = {
           }
 
           const placeCopyeArgs = {
-            input: {
-              ...material?.periodicaForm,
-              userParameters: args?.input?.userParameters,
-              pickupBranch: branch.agencyId,
-              userMail: userMail,
-              agencyId: branch.agencyId,
-            },
+            ...material?.periodicaForm,
+            userParameters: args?.input?.userParameters,
+            pickupBranch: branch.agencyId,
+            userMail: userMail,
+            agencyId: branch.agencyId,
           };
-          const submitOrderRes = await placeCopyRequest(
-            parent,
-            placeCopyeArgs,
+          const submitOrderRes = await placeCopyRequest({
+            input: placeCopyeArgs,
+            dryRun: args.dryRun,
             context,
-            info
-          );
+          });
           if (!submitOrderRes || submitOrderRes.status !== "OK") {
             // Creation failed
             failedAtCreation.push(material.key);

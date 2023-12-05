@@ -69,13 +69,38 @@ export const resolvers = {
   },
   ElbaServices: {
     async placeCopyRequest(parent, args, context, info) {
-      return await placeCopyRequest(parent, args, context, info);
+      return await placeCopyRequest({
+        input: args?.input,
+        dryRun: args?.dryRun,
+        context: context,
+      });
     },
   },
 };
 
-export const placeCopyRequest = async (parent, args, context, info) => {
-  const { pid, userName, userMail } = args.input;
+/**
+ * Function that conducts checks and if checks are successful, sends an article order to elba
+ * @param {Object} input
+ * @param {String} input.pid
+ * @param {String} input.userName
+ * @param {String} input.userMail
+ * @param {String} input.publicationTitle
+ * @param {String} input.publicationDateOfComponent
+ * @param {String} input.publicationYearOfComponent
+ * @param {String} input.volumeOfComponent
+ * @param {String} input.authorOfComponent
+ * @param {String} input.titleOfComponent
+ * @param {String} input.pagesOfComponent
+ * @param {String} input.userInterestDate
+ * @param {String} input.pickUpAgencySubdivision
+ * @param {String} input.issueOfComponent
+ * @param {String} input.openURL
+ * @param {Boolean} dryRun
+ * @param {Object} context
+ * @returns
+ */
+export const placeCopyRequest = async ({ input, dryRun, context }) => {
+  const { pid, userName, userMail } = input;
 
   // token is not authenticated
   if (!context?.user?.userId) {
@@ -164,12 +189,12 @@ export const placeCopyRequest = async (parent, args, context, info) => {
   return await context.datasources
     .getLoader("statsbiblioteketSubmitArticleOrder")
     .load({
-      ...args.input,
+      ...input,
       userName: userName || user.name,
       userMail: userMail || user.mail,
       agencyId: user.municipalityAgencyId, //TODO - which agency should pay? BIBDK2021-1824
       pickUpBranch: user.agency, //TODO shouldnt we get pickup branch from UI? BIBDK2021-1824
-      dryRun: args.dryRun,
+      dryRun,
       originRequester,
     });
 };
