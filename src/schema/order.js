@@ -5,6 +5,7 @@
 
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
+import { resolveAccess } from "./draft/draft_utils_manifestations";
 
 import getUserBorrowerStatus, {
   getUserIds,
@@ -201,7 +202,30 @@ export const typeDef = `
     exactEdition: Boolean
     expires: String
     orderType: OrderType
+    periodicaForm: CopyRequestInput
   }
+
+  input CopyRequestInput {
+
+    """
+    The pid of an article or periodica
+    """
+    pid: String!
+
+    userName: String
+    userMail: String
+    publicationTitle: String
+    publicationDateOfComponent: String
+    publicationYearOfComponent: String
+    volumeOfComponent: String
+    authorOfComponent: String
+    titleOfComponent: String
+    pagesOfComponent: String
+    userInterestDate: String
+    pickUpAgencySubdivision: String
+    issueOfComponent: String
+    openURL: String
+}
 
   input SubmitMultipleOrdersInput{
     materialsToOrder: [Material!]!
@@ -412,6 +436,7 @@ export const resolvers = {
       }
 
       const user = context?.user;
+      const userMail = args.input?.userParameters?.userMail;
 
       // PickUpBranch agencyId
       const agencyId = branch?.agencyId;
@@ -438,8 +463,82 @@ export const resolvers = {
 
       const successfullyCreated = [];
       const failedAtCreation = [];
+
+      const periodicaOrders = args.input.materialsToOrder.filter(
+        (material) =>
+          material.periodicaForm &&
+          (material.periodicaForm.authorOfComponent ||
+            material.periodicaForm.titleOfComponent ||
+            material.periodicaForm.pagesOfComponent)
+      );
+
+      const otherOrders = args.input.materialsToOrder.filter(
+        (material) => !material.periodicaForm
+      );
+
+      // Place periodica orders
+
+      // Agency must be subscribed to elba
+      const subscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+      if (!subscriptions[branch.agencyId]) {
+        return {
+          status: "ERROR_AGENCY_NOT_SUBSCRIBED",
+        };
+      }
       await Promise.all(
-        args.input.materialsToOrder.map(async (material) => {
+        periodicaOrders.map(async (material) => {
+          if (args.dryRun) {
+            // return if dryrun
+            successfullyCreated.push(material.key);
+            return;
+          }
+
+          // Pid must be a manifestation with a valid issn (valid journal)
+          let issn;
+          try {
+            const onlineAccess = await resolveAccess(
+              material.periodicaForm.pid,
+              context
+            );
+            issn = onlineAccess.find((entry) => entry.issn);
+          } catch (e) {
+            return {
+              status: "ERROR_PID_NOT_RESERVABLE",
+            };
+          }
+          if (!issn) {
+            return {
+              status: "ERROR_PID_NOT_RESERVABLE",
+            };
+          }
+
+          // Then send order
+          const submitOrderRes = await context.datasources
+            .getLoader("statsbiblioteketSubmitArticleOrder")
+            .load({
+              ...material.periodicaForm,
+              userMail: userMail,
+              agencyId: branch.agencyId,
+              dryRun: args.dryRun,
+            });
+
+          if (!submitOrderRes || submitOrderRes.status !== "OK") {
+            // Creation failed
+            failedAtCreation.push(material.key);
+            return;
+          }
+          successfullyCreated.push(material.key);
+
+          //TODO  - we dont save single periodica orders to userData, therefor i dont save multi-periodica either
+          //await saveOrderToUserdata(user, submitOrderRes, context);
+        })
+      );
+
+      //Place other orders
+      await Promise.all(
+        otherOrders.map(async (material) => {
           if (args.dryRun) {
             // return if dryrun
             successfullyCreated.push(material.key);
