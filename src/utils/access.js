@@ -30,7 +30,9 @@ async function infomedia(context) {
     return loggedInAgencyId;
   }
 
-  // Alternativly check all users accounts
+  /*
+   * Alternativly check all users accounts
+   */
 
   // filtered accounts
   const userInfoAccounts = filterDuplicateAgencies(user.agencies);

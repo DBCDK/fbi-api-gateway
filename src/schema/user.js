@@ -280,6 +280,11 @@ export const resolvers = {
 
       const municipalityAgencyId = user?.municipalityAgencyId;
 
+      // Verify that the user has an account at the municiaplityAgencyId (created as loaner)
+      const account = filterAgenciesByProps(user.agencies, {
+        agency: municipalityAgencyId,
+      })?.[0];
+
       // check for digital article service
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
@@ -287,12 +292,14 @@ export const resolvers = {
 
       // check with municipality agency
       if (digitalAccessSubscriptions[municipalityAgencyId]) {
-        subscriptions.digitalArticleService = true;
+        // User is loaner at municipalityAgencyId
+        subscriptions.digitalArticleService = !!account;
       }
 
       // and now for DDA .. the only check we can do is if agency (municipality) starts with '7' (public library)
       if (municipalityAgencyId && municipalityAgencyId?.startsWith("7")) {
-        subscriptions.demandDrivenAcquisition = true;
+        // User is loaner at municipalityAgencyId
+        subscriptions.demandDrivenAcquisition = !!account;
       }
 
       return subscriptions;

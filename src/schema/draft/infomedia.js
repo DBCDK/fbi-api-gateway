@@ -47,15 +47,17 @@ type InfomediaArticle {
 
 async function fetchArticle(parent, context) {
   const articleId = parent?.id;
-  const userId = context?.user?.userId;
 
   // users access given agencyId
   const agencyId = await getInfomediaAgencyId(context);
 
+  if (!agencyId) {
+    return null;
+  }
+
   const article = await context.datasources.getLoader("infomedia").load({
     articleId,
-    userId,
-    agencyId,
+    agencyId: agencyId,
   });
 
   return article;

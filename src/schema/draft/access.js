@@ -1,8 +1,4 @@
-import {
-  getProxyUrl,
-  parseOnlineUrlToOrigin,
-  resolveAccess,
-} from "./draft_utils_manifestations";
+import { resolveAccess } from "./draft_utils_manifestations";
 
 export const typeDef = `
 enum AccessTypeCode {
