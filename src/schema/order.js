@@ -504,11 +504,13 @@ export const resolvers = {
             );
             issn = onlineAccess.find((entry) => entry.issn);
           } catch (e) {
+            failedAtCreation.push(material.key);
             return {
               status: "ERROR_PID_NOT_RESERVABLE",
             };
           }
           if (!issn) {
+            failedAtCreation.push(material.key);
             return {
               status: "ERROR_PID_NOT_RESERVABLE",
             };
