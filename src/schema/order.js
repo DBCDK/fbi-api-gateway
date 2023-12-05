@@ -5,7 +5,7 @@
 
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
-import { resolveAccess } from "./draft/draft_utils_manifestations";
+import { placeCopyRequest } from "./elba";
 
 import getUserBorrowerStatus, {
   getUserIds,
@@ -495,37 +495,18 @@ export const resolvers = {
             return;
           }
 
-          // Pid must be a manifestation with a valid issn (valid journal)
-          let issn;
-          try {
-            const onlineAccess = await resolveAccess(
-              material.periodicaForm.pid,
-              context
-            );
-            issn = onlineAccess.find((entry) => entry.issn);
-          } catch (e) {
-            failedAtCreation.push(material.key);
-            return {
-              status: "ERROR_PID_NOT_RESERVABLE",
-            };
-          }
-          if (!issn) {
-            failedAtCreation.push(material.key);
-            return {
-              status: "ERROR_PID_NOT_RESERVABLE",
-            };
-          }
-
-          // Then send order
-          const submitOrderRes = await context.datasources
-            .getLoader("statsbiblioteketSubmitArticleOrder")
-            .load({
-              ...material.periodicaForm,
-              userMail: userMail,
-              agencyId: branch.agencyId,
-              dryRun: args.dryRun,
-            });
-
+          const placeCopyeArgs = {
+            ...material?.periodicaForm,
+            userParameters: args?.input?.userParameters,
+            pickupBranch: branch.agencyId,
+            userMail: userMail,
+            agencyId: branch.agencyId,
+          };
+          const submitOrderRes = await placeCopyRequest({
+            input: placeCopyeArgs,
+            dryRun: args.dryRun,
+            context,
+          });
           if (!submitOrderRes || submitOrderRes.status !== "OK") {
             // Creation failed
             failedAtCreation.push(material.key);
