@@ -1,4 +1,4 @@
-import { getAccount } from "./culr";
+import { getAccount } from "./accounts";
 
 /**
  * Function to check if an agencyId is a FFU library

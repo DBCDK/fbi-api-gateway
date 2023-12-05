@@ -35,12 +35,15 @@ export async function load({ accessToken }, context) {
 export async function testLoad({ accessToken }, context) {
   const testUser = await getTestUser(context);
   const loginAgency = testUser?.loginAgency;
+
   return {
     attributes: {
       userId: loginAgency?.cpr || loginAgency?.localId,
       blocked: false,
       uniqueId: loginAgency?.uniqueId,
-      agencies: accountsToCulr(testUser.merged),
+      agencies: accountsToCulr(testUser.merged)?.filter(
+        (account) => account.agencyId !== "190101"
+      ),
       municipalityAgencyId: testUser.merged.find(
         (account) => account.isMunicipality
       )?.agency,

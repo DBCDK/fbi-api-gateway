@@ -308,11 +308,14 @@ export const typeDef = `
   }
   `;
 
-const saveOrderToUserdata = async (user, submitOrderRes, context) => {
+const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
   //if the request is coming from beta.bibliotek.dk, add the order id to userData service
   if (context?.profile?.agency == 190101) {
     const orderId = submitOrderRes?.orderId;
     const uniqueId = user?.uniqueId;
+    const workId = await context.datasources
+      .getLoader("pidToWorkId")
+      .load({ pid: pid, profile: context.profile });
     try {
       if (!uniqueId) {
         throw new Error("Not authorized");
@@ -320,9 +323,11 @@ const saveOrderToUserdata = async (user, submitOrderRes, context) => {
       if (!orderId) {
         throw new Error("Undefined orderId");
       }
-      await context.datasources
-        .getLoader("userDataAddOrder")
-        .load({ uniqueId, orderId });
+      await context.datasources.getLoader("userDataAddOrder").load({
+        uniqueId,
+        orderId,
+        workId,
+      });
     } catch (error) {
       log.error(
         `Failed to add order to userData service. Message: ${
@@ -402,7 +407,14 @@ export const resolvers = {
           authUserId,
         });
 
-      await saveOrderToUserdata(context, submitOrderRes);
+      //first pid in pids to order
+      const pidToOrder = args.input.pids[0];
+      await saveOrderToUserdata({
+        context,
+        submitOrderRes,
+        pid: pidToOrder,
+        user,
+      });
 
       return submitOrderRes;
     },
@@ -551,7 +563,13 @@ export const resolvers = {
           }
           successfullyCreated.push(material.key);
 
-          await saveOrderToUserdata(user, submitOrderRes, context);
+          const pidToOrder = material.pids[0];
+          await saveOrderToUserdata({
+            context,
+            submitOrderRes,
+            pid: pidToOrder,
+            user,
+          });
         })
       );
 

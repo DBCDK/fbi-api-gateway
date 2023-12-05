@@ -11,7 +11,7 @@ import Button from "@/components/base/button";
 import Label from "@/components/base/label";
 import History from "@/components/history";
 
-import Snow from "./snow";
+import Christmas from "./christmas";
 import Chicken from "./chicken";
 import Pride from "./pride";
 import Halloween from "./halloween";
@@ -37,7 +37,7 @@ export default function Hero({ className = "" }) {
     <section className={`${styles.hero} ${className}`} id="hero">
       <div className={styles.color} />
       <div className={styles.silhouette} />
-      {isChristmas && <Snow />}
+      {isChristmas && <Christmas />}
       {isEaster && <Chicken />}
       {isPride && <Pride />}
       {isHalloween && <Halloween />}

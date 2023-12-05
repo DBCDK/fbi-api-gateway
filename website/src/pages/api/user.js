@@ -119,9 +119,14 @@ export default async function handler(req, res) {
       user.isCPRValidated =
         userinfo_data.idpUsed === "nemlogin" || hasCPRValidatedAccount;
 
+      // userinfo account select (CPR prioritized)
+      const account = userinfo_data.agencies.find(
+        (a) => a.userIdType === "CPR"
+      );
+
       const userstatus_response = await getOpenUserStatus({
-        loggedInAgencyId: user?.loggedInAgencyId,
-        userId: user?.userId,
+        loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
+        userId: account?.userId || user?.userId,
       });
 
       if (userstatus_response.status === 200) {

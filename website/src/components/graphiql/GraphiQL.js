@@ -142,11 +142,13 @@ export default function Wrap() {
     token: selectedToken?.token,
   });
 
-  const [show, setShow] = useState(false);
+  const [initQueryParams, setInitQueryParams] = useState();
+
   useEffect(() => {
-    setShow(true);
+    setInitQueryParams(parameters);
   }, []);
-  if (!show) {
+
+  if (!initQueryParams) {
     return null;
   }
 
@@ -196,9 +198,9 @@ export default function Wrap() {
       fetcher={fetcher}
       schema={schema}
       schemaDescription={true}
-      query={parameters.query}
-      variables={parameters.variables}
-      operationName={parameters.operationName}
+      query={initQueryParams.query}
+      variables={initQueryParams.variables}
+      operationName={initQueryParams.operationName}
     >
       <GraphiQL
         toolbar={{

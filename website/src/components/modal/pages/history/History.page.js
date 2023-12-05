@@ -209,7 +209,7 @@ function Item({
 
               <ExpandButton onClick={() => setOpen(!open)} open={open} />
 
-              <Text className={styles.note}>{note}</Text>
+              {note && <Text className={styles.note}>{note}</Text>}
             </>
           )}
         </div>
