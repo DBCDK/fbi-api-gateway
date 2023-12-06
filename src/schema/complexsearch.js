@@ -105,6 +105,7 @@ function setPost(parent, context, args) {
     cql: parent.cql,
     profile: context.profile,
     filters: parent.filters,
+    searchprofile: parent?.searchprofile || null,
     ...(args && args),
   };
 }

@@ -6,19 +6,21 @@ const { url, ttl, prefix } = config.datasources.complexsearch;
  * Search via complex search
  */
 export async function load(
-  { cql, offset, limit, profile, filters, sort },
+  { cql, offset, limit, profile, filters, sort, searchprofile },
   context
 ) {
+  const searchProfile = {
+    agency: profile.agency,
+    profile: searchprofile || profile.name,
+  };
+
   // TODO service needs to support profile ...
   const res = await context?.fetch(`${url}/cqlquery`, {
     method: "POST",
     body: JSON.stringify({
       cqlQuery: cql,
       pagination: { offset, limit },
-      searchProfile: {
-        agency: profile.agency,
-        profile: profile.name,
-      },
+      searchProfile: searchProfile,
       filters: filters,
       ...(sort && { sort: sort }),
     }),
