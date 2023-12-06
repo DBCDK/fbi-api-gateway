@@ -3,7 +3,6 @@ import Redis from "ioredis";
 import config from "../config";
 import { parseJSON, stringifyJSON } from "../utils/json";
 import monitor from "../utils/monitor";
-import promiseLimit from "promise-limit";
 
 // Redis client
 let redis;
@@ -104,7 +103,7 @@ export const get = monitor(
 export const set = monitor(
   { name: "REQUEST_redis_set", help: "Redis set request" },
   async (key, seconds, val, inMemory, stats, datasourceName) => {
-    const timings = { redisTime: 0 };
+    const timings = { total: 0 };
     try {
       const obj = { _redis_stored: Date.now(), val };
       if (inMemory) {
@@ -113,7 +112,7 @@ export const set = monitor(
       const str = await stringifyJSON(obj, timings);
       const now = performance.now();
       await redis.set(key, str, "EX", seconds);
-      timings.redisTime += performance.now() - now;
+      timings.total += performance.now() - now;
     } catch (e) {
       log.error(`Redis setex failed`, {
         key,
