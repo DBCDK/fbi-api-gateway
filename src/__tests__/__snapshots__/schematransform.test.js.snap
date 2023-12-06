@@ -1790,6 +1790,12 @@ type Series {
   \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
   isPopular: Boolean
 
+  \\"\\"\\"WorkTypes for the series\\"\\"\\"
+  workTypes: [String!]!
+
+  \\"\\"\\"MainLanguages of the series\\"\\"\\"
+  mainLanguages: [String!]!
+
   \\"\\"\\"Members of this serie. \\"\\"\\"
   members: [SerieWork!]!
 }
@@ -4188,6 +4194,12 @@ type Series {
   \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
   isPopular: Boolean
 
+  \\"\\"\\"WorkTypes for the series\\"\\"\\"
+  workTypes: [String!]!
+
+  \\"\\"\\"MainLanguages of the series\\"\\"\\"
+  mainLanguages: [String!]!
+
   \\"\\"\\"Members of this serie. \\"\\"\\"
   members: [SerieWork!]!
 }
@@ -5747,6 +5759,12 @@ type Series {
 
   \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
   isPopular: Boolean
+
+  \\"\\"\\"WorkTypes for the series\\"\\"\\"
+  workTypes: [String!]!
+
+  \\"\\"\\"MainLanguages of the series\\"\\"\\"
+  mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
   members: [SerieWork!]!
