@@ -165,6 +165,9 @@ export const resolvers = {
       }
       return parent.readThisWhenever;
     },
+    workTypes(parent, args, context, info) {
+      return parent.workTypes.map((workType) => workType.toUpperCase());
+    },
     mainLanguages(parent, args, context, info) {
       if (parent.languages && Array.isArray(parent.languages)) {
         return parent.languages;
