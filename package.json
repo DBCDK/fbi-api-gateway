@@ -10,7 +10,7 @@
     "dev:testuser": "cd testuser-website && npm run dev",
     "start": "run-p start:website start:graphql start:testuser",
     "start:website": "cd website && npm run start",
-    "start:graphql": "node --prof -r esm-wallaby ./src/index.js",
+    "start:graphql": "node -r esm-wallaby ./src/index.js",
     "start:testuser": "cd testuser-website && npm run start",
     "test": "jest",
     "prettier": "prettier --write 'src/**/*.js'",

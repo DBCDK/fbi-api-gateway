@@ -5,6 +5,7 @@
 
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
+import { placeCopyRequest } from "./elba";
 
 import getUserBorrowerStatus, {
   getUserIds,
@@ -201,7 +202,30 @@ export const typeDef = `
     exactEdition: Boolean
     expires: String
     orderType: OrderType
+    periodicaForm: CopyRequestInput
   }
+
+  input CopyRequestInput {
+
+    """
+    The pid of an article or periodica
+    """
+    pid: String!
+
+    userName: String
+    userMail: String
+    publicationTitle: String
+    publicationDateOfComponent: String
+    publicationYearOfComponent: String
+    volumeOfComponent: String
+    authorOfComponent: String
+    titleOfComponent: String
+    pagesOfComponent: String
+    userInterestDate: String
+    pickUpAgencySubdivision: String
+    issueOfComponent: String
+    openURL: String
+}
 
   input SubmitMultipleOrdersInput{
     materialsToOrder: [Material!]!
@@ -412,6 +436,7 @@ export const resolvers = {
       }
 
       const user = context?.user;
+      const userMail = args.input?.userParameters?.userMail;
 
       // PickUpBranch agencyId
       const agencyId = branch?.agencyId;
@@ -438,8 +463,65 @@ export const resolvers = {
 
       const successfullyCreated = [];
       const failedAtCreation = [];
+
+      const periodicaOrders = args.input.materialsToOrder.filter(
+        (material) =>
+          material.periodicaForm &&
+          (material.periodicaForm.authorOfComponent ||
+            material.periodicaForm.titleOfComponent ||
+            material.periodicaForm.pagesOfComponent)
+      );
+
+      const otherOrders = args.input.materialsToOrder.filter(
+        (material) => !material.periodicaForm
+      );
+
+      // Place periodica orders
+
+      // Agency must be subscribed to elba
+      const subscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+      if (!subscriptions[branch.agencyId]) {
+        return {
+          status: "ERROR_AGENCY_NOT_SUBSCRIBED",
+        };
+      }
       await Promise.all(
-        args.input.materialsToOrder.map(async (material) => {
+        periodicaOrders.map(async (material) => {
+          if (args.dryRun) {
+            // return if dryrun
+            successfullyCreated.push(material.key);
+            return;
+          }
+
+          const placeCopyeArgs = {
+            ...material?.periodicaForm,
+            userParameters: args?.input?.userParameters,
+            pickupBranch: branch.agencyId,
+            userMail: userMail,
+            agencyId: branch.agencyId,
+          };
+          const submitOrderRes = await placeCopyRequest({
+            input: placeCopyeArgs,
+            dryRun: args.dryRun,
+            context,
+          });
+          if (!submitOrderRes || submitOrderRes.status !== "OK") {
+            // Creation failed
+            failedAtCreation.push(material.key);
+            return;
+          }
+          successfullyCreated.push(material.key);
+
+          //TODO  - we dont save single periodica orders to userData, therefor i dont save multi-periodica either
+          //await saveOrderToUserdata(user, submitOrderRes, context);
+        })
+      );
+
+      //Place other orders
+      await Promise.all(
+        otherOrders.map(async (material) => {
           if (args.dryRun) {
             // return if dryrun
             successfullyCreated.push(material.key);
