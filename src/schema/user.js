@@ -41,6 +41,7 @@ type User {
   agencies(language: LanguageCode): [BranchResult!]!
   loggedInBranchId: String @deprecated(reason: "Use 'User.loggedInAgencyId' instead")
   loggedInAgencyId: String
+  municipalityNumber: String
   municipalityAgencyId: String
   address: String
   postalCode: String
@@ -409,6 +410,11 @@ export const resolvers = {
       });
 
       return res?.address;
+    },
+    async municipalityNumber(parent, args, context, info) {
+      const user = context?.user;
+
+      return user?.municipality;
     },
     async municipalityAgencyId(parent, args, context, info) {
       const user = context?.user;
