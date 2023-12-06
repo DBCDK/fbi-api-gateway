@@ -114,10 +114,10 @@ promExporterApp.listen(9599, () => {
       // detailed logging for SLA
       log.info("TRACK", {
         clientId: req?.smaug?.app?.clientId,
-        uuid: req?.datasources?.trackingObject.uuid,
+        uuid: req?.datasources?.stats.uuid,
         parsedQuery: req.parsedQuery,
         queryVariables,
-        datasources: { ...req?.datasources?.trackingObject?.getMetrics() },
+        datasources: req.datasources.stats.summary(),
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
         queryComplexity: req.queryComplexity,

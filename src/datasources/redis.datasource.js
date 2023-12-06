@@ -3,6 +3,7 @@ import Redis from "ioredis";
 import config from "../config";
 import { parseJSON, stringifyJSON } from "../utils/json";
 import monitor from "../utils/monitor";
+import promiseLimit from "promise-limit";
 
 // Redis client
 let redis;
@@ -66,13 +67,21 @@ function connectRedis({ host, port, prefix }) {
  */
 export const get = monitor(
   { name: "REQUEST_redis_get", help: "Redis get request" },
-  async (key, inMemory) => {
+  async (key, inMemory, stats, datasourceName) => {
+    const timings = { total: 0, bytes: 0 };
     try {
       let parsed;
       if (inMemory && localStore[key]) {
         parsed = localStore[key];
       } else {
-        parsed = await parseJSON(await redis.get(key));
+        const now = performance.now();
+        const str = await redis.get(key);
+        const buf = str && Buffer.from(str);
+        timings.total = performance.now() - now;
+        timings.bytes = buf?.byteLength;
+
+        parsed = await parseJSON(str, timings);
+
         if (inMemory) {
           localStore[key] = parsed;
         }
@@ -83,6 +92,8 @@ export const get = monitor(
         key,
       });
       return null;
+    } finally {
+      stats?.addRedisGet(datasourceName, timings);
     }
   }
 );
@@ -92,19 +103,25 @@ export const get = monitor(
  */
 export const set = monitor(
   { name: "REQUEST_redis_set", help: "Redis set request" },
-  async (key, seconds, val, inMemory) => {
+  async (key, seconds, val, inMemory, stats, datasourceName) => {
+    const timings = { redisTime: 0 };
     try {
       const obj = { _redis_stored: Date.now(), val };
       if (inMemory) {
         localStore[key] = obj;
       }
-      await redis.set(key, await stringifyJSON(obj), "EX", seconds);
+      const str = await stringifyJSON(obj, timings);
+      const now = performance.now();
+      await redis.set(key, str, "EX", seconds);
+      timings.redisTime += performance.now() - now;
     } catch (e) {
       log.error(`Redis setex failed`, {
         key,
         val,
         seconds,
       });
+    } finally {
+      stats?.addRedisSet(datasourceName, timings);
     }
   }
 );
@@ -132,11 +149,14 @@ export const del = monitor(
  *
  * @param {string} keys The keys to fetch
  */
-async function mget(keys, inMemory) {
+async function mget(keys, inMemory, stats, datasourceName) {
   if (!isConnected) {
     return keys.map(() => null);
   }
-  return Promise.all(keys.map((key) => get(key, inMemory)));
+
+  return Promise.all(
+    keys.map((key) => get(key, inMemory, stats, datasourceName))
+  );
 }
 
 /**
@@ -148,12 +168,12 @@ async function mget(keys, inMemory) {
  * @param {number} seconds Time to live in seconds
  * @param {Object} val The value to store
  */
-async function setex(key, seconds, val, inMemory) {
+async function setex(key, seconds, val, inMemory, stats, datasourceName) {
   if (!isConnected) {
     return;
   }
 
-  await set(key, seconds, val, inMemory);
+  await set(key, seconds, val, inMemory, stats, datasourceName);
 }
 
 function createPrefixedKey(prefix, key) {
@@ -188,6 +208,7 @@ export function withRedis(
     inMemory = false,
     track,
     datasourceName,
+    stats,
   }
 ) {
   /**
@@ -206,13 +227,12 @@ export function withRedis(
     const prefixedKeys = keys.map((key) => createPrefixedKey(prefix, key));
 
     // Get values of all prefixed keys from Redis
-    let cachedValues;
-    const end = track?.begin("redis", keys.length);
-    try {
-      cachedValues = await mgetFunc(prefixedKeys, inMemory);
-    } finally {
-      end?.();
-    }
+    const cachedValues = await mgetFunc(
+      prefixedKeys,
+      inMemory,
+      stats,
+      datasourceName
+    );
 
     // If some values were not found in Redis,
     // they are added to missing keys array
@@ -227,7 +247,11 @@ export function withRedis(
       }
     });
 
-    track?.cacheMiss(datasourceName, missingKeys.length + staleKeys.length);
+    stats?.incrementRedisLookups(datasourceName, keys.length);
+    stats?.incrementRedisHits(
+      datasourceName,
+      keys.length - missingKeys.length - staleKeys.length
+    );
 
     // Fetch missing values using the provided batch function
     let values;
@@ -242,7 +266,9 @@ export function withRedis(
             createPrefixedKey(prefix, key),
             staleWhileRevalidate || ttl,
             values[idx],
-            inMemory
+            inMemory,
+            stats,
+            datasourceName
           );
         }
       });
@@ -261,7 +287,9 @@ export function withRedis(
               createPrefixedKey(prefix, key),
               staleWhileRevalidate || ttl,
               refreshedValues[idx],
-              inMemory
+              inMemory,
+              stats,
+              datasourceName
             );
           }
         });
