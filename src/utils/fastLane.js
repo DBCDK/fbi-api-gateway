@@ -167,8 +167,15 @@ export function setFastLane(key, obj) {
 /**
  * Get from Redis
  */
-export async function getFastLane(key) {
-  return (await get(key))?.val;
+export async function getFastLane(key, stats) {
+  const datasourceName = "fastLane";
+  stats.incrementCount(datasourceName, 1);
+  stats.incrementRedisLookups(datasourceName, 1);
+  const res = (await get(key, false, stats, datasourceName))?.val;
+  if (res) {
+    stats.incrementRedisHits(datasourceName, 1);
+  }
+  return res;
 }
 
 /**

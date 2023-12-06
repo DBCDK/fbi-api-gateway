@@ -303,7 +303,10 @@ promExporterApp.listen(9599, () => {
         variables,
         profile: req.profile,
       });
-      const fastLaneRes = await getFastLane(req.fastLaneKey);
+      const fastLaneRes = await getFastLane(
+        req.fastLaneKey,
+        req.datasources.stats
+      );
       if (fastLaneRes) {
         return res.send(fastLaneRes);
       }
