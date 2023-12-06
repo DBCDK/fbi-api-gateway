@@ -2817,6 +2817,7 @@ type User {
   agencies(language: LanguageCode): [BranchResult!]!
   loggedInBranchId: String @deprecated(reason: \\"Use 'User.loggedInAgencyId' instead\\")
   loggedInAgencyId: String
+  municipalityNumber: String
   municipalityAgencyId: String
   address: String
   postalCode: String

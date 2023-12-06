@@ -41,6 +41,7 @@ type User {
   agencies(language: LanguageCode): [BranchResult!]!
   loggedInBranchId: String @deprecated(reason: "Use 'User.loggedInAgencyId' instead")
   loggedInAgencyId: String
+  municipalityNumber: String
   municipalityAgencyId: String
   address: String
   postalCode: String
@@ -280,6 +281,11 @@ export const resolvers = {
 
       const municipalityAgencyId = user?.municipalityAgencyId;
 
+      // Verify that the user has an account at the municiaplityAgencyId (created as loaner)
+      const account = filterAgenciesByProps(user.agencies, {
+        agency: municipalityAgencyId,
+      })?.[0];
+
       // check for digital article service
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
@@ -287,11 +293,13 @@ export const resolvers = {
 
       // check with municipality agency
       if (digitalAccessSubscriptions[municipalityAgencyId]) {
-        subscriptions.digitalArticleService = true;
+        // User is loaner at municipalityAgencyId
+        subscriptions.digitalArticleService = !!account;
       }
 
       // and now for DDA .. the only check we can do is if agency (municipality) starts with '7' (public library)
       if (municipalityAgencyId && municipalityAgencyId?.startsWith("7")) {
+        // Actually we also want the account check here, but the proxy does not support this check.
         subscriptions.demandDrivenAcquisition = true;
       }
 
@@ -402,6 +410,11 @@ export const resolvers = {
       });
 
       return res?.address;
+    },
+    async municipalityNumber(parent, args, context, info) {
+      const user = context?.user;
+
+      return user?.municipality;
     },
     async municipalityAgencyId(parent, args, context, info) {
       const user = context?.user;

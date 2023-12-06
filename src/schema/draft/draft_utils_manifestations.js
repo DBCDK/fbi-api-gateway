@@ -463,15 +463,17 @@ function parseForMunicipalityNumber(agencyId) {
  * @returns {*}
  */
 export function getProxyUrl(url, user) {
+  const municipality =
+    user?.municipality ||
+    parseForMunicipalityNumber(user?.municipalityAgencyId);
+
   // check if we should proxy this url - for now it is ebookcentral and ebscohost
   const proxyMe =
     url.indexOf("ebookcentral") !== -1 || url.indexOf("ebscohost") !== -1;
   if (proxyMe) {
     // check if user is logged in
     if (user?.userId) {
-      const realUrl = `https://bib${parseForMunicipalityNumber(
-        user?.loggedInAgencyId
-      )}.bibbaser.dk/login?url=${url}`;
+      const realUrl = `https://bib${municipality}.bibbaser.dk/login?url=${url}`;
       return { proxyUrl: realUrl, loginRequired: proxyMe };
     }
   }

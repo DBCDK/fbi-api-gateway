@@ -244,6 +244,7 @@ export default {
       url:
         process.env.INFOMEDIA_URL ||
         "http://infomedia-master.frontend-prod.svc.cloud.dbc.dk/1.4/server.php",
+      id: process.env.INFOMEDIA_ID,
       ttl: process.env.INFOMEDIA_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.INFOMEDIA_PREFIX || "infomedia-1",
     },

@@ -34,8 +34,8 @@ test("InfomediaContent, single article", async () => {
     variables: { id: "e2a3ae5c" },
     context: {
       smaug: {},
-      user: { userId: "fisk" },
-      accessToken: "qwerty",
+      user: { userId: "fisk", loggedInAgencyId: "715100" },
+      accessToken: "DUMMY_TOKEN",
       datasources: createMockedDataLoaders(),
     },
   });

@@ -1,4 +1,5 @@
 import config from "../config";
+import { setMunicipalityAgencyId } from "../utils/municipalityAgencyId";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.userInfo;
@@ -18,10 +19,14 @@ export async function load({ accessToken }, context) {
       accessToken,
     });
 
+    // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
+    const municipalityAgencyId = setMunicipalityAgencyId(res.body?.attributes);
+
     return {
       attributes: {
         ...res.body.attributes,
         loggedInAgencyId: smaug?.user?.agency || null,
+        municipalityAgencyId,
       },
     };
   }
