@@ -464,7 +464,8 @@ function parseForMunicipalityNumber(agencyId) {
  */
 export function getProxyUrl(url, user) {
   const municipality =
-    user?.municipality || parseForMunicipalityNumber(user.municipalityAgencyId);
+    user?.municipality ||
+    parseForMunicipalityNumber(user?.municipalityAgencyId);
 
   // check if we should proxy this url - for now it is ebookcentral and ebscohost
   const proxyMe =
