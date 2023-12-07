@@ -425,6 +425,8 @@ export const resolvers = {
     async submitMultipleOrders(parent, args, context, info) {
       const successfullyCreated = [];
       const failedAtCreation = [];
+      const materialsToOrder = args.input.materialsToOrder;
+
       if (!context?.smaug?.orderSystem) {
         throw "invalid smaug configuration [orderSystem]";
       }
@@ -438,7 +440,7 @@ export const resolvers = {
       if (!branch) {
         return {
           successfullyCreated,
-          failedAtCreation,
+          failedAtCreation: getAllKeys(materialsToOrder),
           ok: false,
           status: "UNKNOWN_PICKUPAGENCY",
         };
@@ -462,7 +464,7 @@ export const resolvers = {
       if (!status) {
         return {
           successfullyCreated,
-          failedAtCreation,
+          failedAtCreation: getAllKeys(materialsToOrder),
           ok: false,
           status: statusCode,
         };
@@ -474,13 +476,13 @@ export const resolvers = {
         // Order is not possible if no userId could be found or was provided for the user
         return {
           successfullyCreated,
-          failedAtCreation,
+          failedAtCreation: getAllKeys(materialsToOrder),
           ok: false,
           status: "UNKNOWN_USER",
         };
       }
 
-      const periodicaOrders = args.input.materialsToOrder.filter(
+      const periodicaOrders = materialsToOrder.filter(
         (material) =>
           material.periodicaForm &&
           (material.periodicaForm.authorOfComponent ||
@@ -488,7 +490,7 @@ export const resolvers = {
             material.periodicaForm.pagesOfComponent)
       );
 
-      const otherOrders = args.input.materialsToOrder.filter(
+      const otherOrders = materialsToOrder.filter(
         (material) => !material.periodicaForm
       );
 
@@ -567,7 +569,7 @@ export const resolvers = {
         failedAtCreation,
         ok:
           failedAtCreation.length === 0 &&
-          successfullyCreated.length === args.input.materialsToOrder.length,
+          successfullyCreated.length === materialsToOrder.length,
         status: "OK",
       };
     },
@@ -600,4 +602,12 @@ export const resolvers = {
       );
     },
   },
+};
+
+const getAllKeys = (materialsToOrder) => {
+  const keys = [];
+  materialsToOrder.forEach((material) => {
+    keys.push(material.key);
+  });
+  return keys;
 };
