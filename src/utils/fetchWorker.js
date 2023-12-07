@@ -8,11 +8,12 @@
  * The worker thread is only responsible for data fetching - no JSON parsing.
  *
  * On the other hand, collecting timings via the main thread, has shown to
- * be unprecise, when the thread is under heavy load. The event loop is blocked
- * so much, that logging the actual timings are waiting.
+ * be unprecise, when the thread is under heavy load. The event loop may experience
+ * significant blockages under heavy load, leading to the collected timings being
+ * skewed.
  *
  * The overhead of running undici in a worker thread should be minimal,
- * du to the fact that the payload ArrayBuffer is transferred to the main
+ * due to the fact that the payload ArrayBuffer is transferred to the main
  * thread by reference.
  *
  */
