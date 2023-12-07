@@ -67,7 +67,7 @@ function connectRedis({ host, port, prefix }) {
 export const get = monitor(
   { name: "REQUEST_redis_get", help: "Redis get request" },
   async (key, inMemory, stats, datasourceName) => {
-    const timings = { total: 0, bytes: 0 };
+    const timings = { redisTime: 0, bytes: 0 };
     try {
       let parsed;
       if (inMemory && localStore[key]) {
@@ -76,7 +76,7 @@ export const get = monitor(
         const now = performance.now();
         const str = await redis.get(key);
         const buf = str && Buffer.from(str);
-        timings.total = performance.now() - now;
+        timings.redisTime = performance.now() - now;
         timings.bytes = buf?.byteLength;
 
         parsed = await parseJSON(str, timings);
@@ -103,7 +103,7 @@ export const get = monitor(
 export const set = monitor(
   { name: "REQUEST_redis_set", help: "Redis set request" },
   async (key, seconds, val, inMemory, stats, datasourceName) => {
-    const timings = { total: 0 };
+    const timings = { redisTime: 0 };
     try {
       const obj = { _redis_stored: Date.now(), val };
       if (inMemory) {
@@ -112,7 +112,7 @@ export const set = monitor(
       const str = await stringifyJSON(obj, timings);
       const now = performance.now();
       await redis.set(key, str, "EX", seconds);
-      timings.total += performance.now() - now;
+      timings.redisTime += performance.now() - now;
     } catch (e) {
       log.error(`Redis setex failed`, {
         key,
