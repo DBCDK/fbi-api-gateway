@@ -243,6 +243,10 @@ function validateUserId(uniqueId) {
 export const resolvers = {
   Query: {
     async user(parent, args, context, info) {
+      if (!context.user) {
+        return null;
+      }
+
       return {};
     },
   },
@@ -280,6 +284,8 @@ export const resolvers = {
       }
 
       const municipalityAgencyId = user?.municipalityAgencyId;
+
+      console.log("municipalityAgencyId", municipalityAgencyId);
 
       // Verify that the user has an account at the municiaplityAgencyId (created as loaner)
       const account = filterAgenciesByProps(user.agencies, {

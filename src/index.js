@@ -248,7 +248,14 @@ promExporterApp.listen(9599, () => {
    * Middleware for fetching user information (for authenticated tokens)
    */
   app.post("/:profile/graphql", async (req, res, next) => {
-    // Fetch login.bib.dk userinfo
+    // Provided token is authenticated
+    const isAuthenticated = req.smaug?.user?.id;
+
+    // skip userinfo if token is anonymous
+    if (!isAuthenticated) {
+      return next();
+    }
+
     try {
       const userinfo =
         req.accessToken &&
