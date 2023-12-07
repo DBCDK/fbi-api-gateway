@@ -39,7 +39,7 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters): ComplexSearchResponse!
+  complexSearch(cql: String!, searchprofile: String, filters: ComplexSearchFilters): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
 
   localSuggest(
@@ -208,7 +208,7 @@ export const resolvers = {
     async refWorks(parent, args, context, info) {
       const ref = await context.datasources
         .getLoader("refworks")
-        .load({pids: args.pids});
+        .load({ pids: args.pids });
       return ref;
     },
     async localizations(parent, args, context, info) {
