@@ -2410,6 +2410,7 @@ type SubmitMultipleOrders {
   failedAtCreation: [String!]!
   successfullyCreated: [String!]!
   ok: Boolean
+  status: String
 }
 
 enum OrderType {

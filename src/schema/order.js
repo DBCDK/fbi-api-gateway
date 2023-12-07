@@ -147,6 +147,7 @@ export const typeDef = `
     failedAtCreation: [String!]!,
     successfullyCreated: [String!]!,
     ok: Boolean
+    status: String
    }
 
    enum OrderType {
@@ -381,7 +382,10 @@ export const resolvers = {
       // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
       if (!userId && !authUserId && isEmpty(userIds)) {
         // Order is not possible if no userId could be found or was provided for the user
-        return { ok: false, status: "UNKNOWN_USER" };
+        return {
+          ok: false,
+          status: "UNKNOWN_USER",
+        };
       }
 
       // return if dryrun
@@ -419,6 +423,8 @@ export const resolvers = {
       return submitOrderRes;
     },
     async submitMultipleOrders(parent, args, context, info) {
+      const successfullyCreated = [];
+      const failedAtCreation = [];
       if (!context?.smaug?.orderSystem) {
         throw "invalid smaug configuration [orderSystem]";
       }
@@ -431,6 +437,9 @@ export const resolvers = {
 
       if (!branch) {
         return {
+          successfullyCreated,
+          failedAtCreation,
+          ok: false,
           status: "UNKNOWN_PICKUPAGENCY",
         };
       }
@@ -451,18 +460,25 @@ export const resolvers = {
       );
 
       if (!status) {
-        return { ok: status, status: statusCode };
+        return {
+          successfullyCreated,
+          failedAtCreation,
+          ok: false,
+          status: statusCode,
+        };
       }
 
       // We assume we will get the verified userId from the 'getUserBorrowerStatus' check.
       // If NOT (e.g. no borchk possible for agency), we fallback to an authenticated id and then an user provided id.
       if (!userId && !user?.userId && isEmpty(userIds)) {
         // Order is not possible if no userId could be found or was provided for the user
-        return { ok: false, status: "UNKNOWN_USER" };
+        return {
+          successfullyCreated,
+          failedAtCreation,
+          ok: false,
+          status: "UNKNOWN_USER",
+        };
       }
-
-      const successfullyCreated = [];
-      const failedAtCreation = [];
 
       const periodicaOrders = args.input.materialsToOrder.filter(
         (material) =>
@@ -477,16 +493,6 @@ export const resolvers = {
       );
 
       // Place periodica orders
-
-      // Agency must be subscribed to elba
-      const subscriptions = await context.datasources
-        .getLoader("statsbiblioteketSubscribers")
-        .load("");
-      if (!subscriptions[branch.agencyId]) {
-        return {
-          status: "ERROR_AGENCY_NOT_SUBSCRIBED",
-        };
-      }
       await Promise.all(
         periodicaOrders.map(async (material) => {
           if (args.dryRun) {
@@ -562,6 +568,7 @@ export const resolvers = {
         ok:
           failedAtCreation.length === 0 &&
           successfullyCreated.length === args.input.materialsToOrder.length,
+        status: "OK",
       };
     },
   },
