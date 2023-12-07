@@ -5,6 +5,7 @@ import { withRedis, clearRedis } from "./datasources/redis.datasource";
 import { createFetchWithConcurrencyLimit } from "./utils/fetchWithLimit";
 import { getFilesRecursive } from "./utils/utils";
 import config from "./config";
+import { createTracker } from "./utils/tracker";
 
 // Find all datasources in src/datasources
 export const datasources = getFilesRecursive(`${__dirname}/datasources`)
@@ -104,150 +105,13 @@ function setupDataloader(
   };
 }
 
-// Time taken for processing JSON for this instance of FBI-API
-let globalJsonProcessingMs = 0;
-let globalBytesIn = 0;
-/**
- * Collecting stats for datasources, divided into HTTP requests,
- * Redis requests, and JSON processing
- */
-function createStats(uuid) {
-  const startTime = performance.now();
-  const globalJsonProcessingMsBegin = globalJsonProcessingMs;
-  const globalBytsInBegin = globalBytesIn;
-  const stats = {};
-  const sum = {
-    count: 0,
-    redisHits: 0,
-    redisLookups: 0,
-    jsonParseSum: 0,
-    jsonStringifySum: 0,
-    waitingForServerResponseSum: 0,
-    contentDownloadSum: 0,
-    connectionStartSum: 0,
-    totalSum: 0,
-    bytesSum: 0,
-  };
-  function createEntry(key) {
-    if (!stats[key]) {
-      stats[key] = {
-        count: 0,
-        redisHits: 0,
-        jsonParseSum: 0,
-        jsonStringifySum: 0,
-        waitingForServerResponseSum: 0,
-        contentDownloadSum: 0,
-        connectionStartSum: 0,
-        totalSum: 0,
-        bytesSum: 0,
-        redisLookups: 0,
-        http: [],
-        redisSet: [],
-        redisGet: [],
-      };
-    }
-  }
-  function sumTimings(key, obj) {
-    [
-      "jsonParse",
-      "jsonStringify",
-      "waitingForServerResponse",
-      "contentDownload",
-      "connectionStart",
-      "total",
-      "bytes",
-    ].forEach((field) => {
-      if (!obj[field]) {
-        return;
-      }
-      stats[key][field + "Sum"] += obj[field];
-      sum[field + "Sum"] += obj[field];
-    });
-
-    globalJsonProcessingMs += (obj.jsonParse || 0) + (obj.jsonStringify || 0);
-    globalBytesIn += obj.bytes || 0;
-  }
-  function addHTTP(key, obj) {
-    createEntry(key);
-    sumTimings(key, obj);
-    stats[key].http.push(obj);
-  }
-  function addRedisSet(key, obj) {
-    createEntry(key);
-    sumTimings(key, obj);
-    stats[key].redisSet.push(obj);
-  }
-  function addRedisGet(key, obj) {
-    createEntry(key);
-    sumTimings(key, obj);
-    stats[key].redisGet.push(obj);
-  }
-  function incrementCount(key, count) {
-    createEntry(key);
-    sum.count += count;
-    stats[key].count += count;
-  }
-  function incrementRedisHits(key, count) {
-    createEntry(key);
-    sum.redisHits += count;
-    stats[key].redisHits += count;
-  }
-  function incrementRedisLookups(key, count) {
-    createEntry(key);
-    sum.redisLookups += count;
-    stats[key].redisLookups += count;
-  }
-  function summary() {
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    const datasources = {};
-    Object.entries(stats).forEach(([datasourceName, timings]) => {
-      datasources[datasourceName] = {
-        count: timings.count,
-        bytesIn: timings.bytesSum,
-        avgItemFetchMs: timings.totalSum / timings.count,
-        cacheMiss: timings.redisLookups - timings.redisHits,
-        cacheLookups: timings.redisLookups,
-        jsonProcessingMs: timings.jsonParseSum + timings.jsonStringifySum,
-      };
-    });
-
-    datasources.all = {
-      count: sum.count,
-      cacheMiss: sum.redisLookups - sum.redisHits,
-      cacheLookups: sum.redisLookups,
-      jsonParseMs: sum.jsonParseSum,
-      jsonStringifyMs: sum.jsonStringifySum,
-      jsonProcessingMs: sum.jsonParseSum + sum.jsonStringifySum,
-      avgItemFetchMs: sum.totalSum / sum.count,
-      bytesIn: sum.bytesSum,
-      globalJsonLoad:
-        (globalJsonProcessingMs - globalJsonProcessingMsBegin) / duration,
-      globalBytesInPerSecond:
-        ((globalBytesIn - globalBytsInBegin) / duration) * 1000,
-    };
-
-    return datasources;
-  }
-  return {
-    addHTTP,
-    addRedisSet,
-    addRedisGet,
-    incrementCount,
-    incrementRedisHits,
-    incrementRedisLookups,
-    summary,
-    uuid,
-  };
-}
-
 /**
  * Will instantiate dataloaders from datasources.
  * This should be done for every incoming GraphQL request
  */
 export default function createDataLoaders(uuid, testUser, accessToken) {
   const result = {};
-  const stats = createStats(uuid);
+  const stats = createTracker(uuid);
   result.stats = stats;
 
   const fetchWithConcurrencyLimit = createFetchWithConcurrencyLimit(
