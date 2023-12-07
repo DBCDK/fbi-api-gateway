@@ -425,7 +425,16 @@ export const resolvers = {
     async submitMultipleOrders(parent, args, context, info) {
       const successfullyCreated = [];
       const failedAtCreation = [];
-      const materialsToOrder = args.input.materialsToOrder;
+      const materialsToOrder = args?.input?.materialsToOrder;
+
+      if (!materialsToOrder || materialsToOrder.length === 0) {
+        return {
+          successfullyCreated,
+          failedAtCreation,
+          ok: false,
+          status: "NO_MATERIALS_TO_ORDER",
+        };
+      }
 
       if (!context?.smaug?.orderSystem) {
         throw "invalid smaug configuration [orderSystem]";
@@ -433,7 +442,7 @@ export const resolvers = {
 
       const branch = (
         await context.datasources.getLoader("library").load({
-          branchId: args.input.pickUpBranch,
+          branchId: args?.input?.pickUpBranch,
         })
       ).result?.[0];
 
@@ -606,7 +615,7 @@ export const resolvers = {
 
 const getAllKeys = (materialsToOrder) => {
   const keys = [];
-  materialsToOrder.forEach((material) => {
+  materialsToOrder?.forEach((material) => {
     keys.push(material.key);
   });
   return keys;
