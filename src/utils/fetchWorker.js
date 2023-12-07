@@ -19,7 +19,7 @@
  */
 
 import { Worker, isMainThread, parentPort } from "worker_threads";
-import { fetch as undiciFetch } from "undici";
+import { fetch as undiciFetch, ProxyAgent } from "undici";
 import diagnosticsChannel from "diagnostics_channel";
 import config from "../config";
 
