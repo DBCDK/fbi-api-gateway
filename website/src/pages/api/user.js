@@ -1,5 +1,7 @@
 import fetch from "isomorphic-unfetch";
-import config from "../../../../src/config.js";
+import config from "../../../../src/config";
+
+import { setMunicipalityAgencyId } from "../../../../src/utils/municipalityAgencyId";
 
 const {
   authenticationUser,
@@ -114,7 +116,10 @@ export default async function handler(req, res) {
       user.identityProviderUsed = userinfo_data.idpUsed;
       user.hasCulrUniqueId = !!userinfo_data.uniqueId;
       user.isAuthenticated = !!userinfo_data.userId;
-      user.municipalityAgencyId = userinfo_data.municipalityAgencyId;
+
+      // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
+      user.municipalityAgencyId = setMunicipalityAgencyId(userinfo_data);
+
       user.agencies = agencies.length > 0 ? agencies : [];
       user.isCPRValidated =
         userinfo_data.idpUsed === "nemlogin" || hasCPRValidatedAccount;

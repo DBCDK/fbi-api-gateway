@@ -20,9 +20,11 @@ export async function batchLoader(keys, context) {
   return keys.map((k) => res.body.records[k.id]);
 }
 
-export const options = {
-  redis: {
-    prefix,
-    ttl,
-  },
-};
+// Disable from redis, as it seems like big objects hurts Redis
+
+// export const options = {
+//   redis: {
+//     prefix,
+//     ttl,
+//   },
+// };

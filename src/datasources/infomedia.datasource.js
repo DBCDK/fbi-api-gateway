@@ -2,7 +2,7 @@ import request from "superagent";
 import config from "../config";
 import { getInfomediaDetails } from "../utils/utils";
 
-const { url, ttl, prefix } = config.datasources.infomedia;
+const { id, url, ttl, prefix } = config.datasources.infomedia;
 
 function createSoap({ articleId, userId, agencyId }) {
   return `
@@ -16,9 +16,9 @@ function createSoap({ articleId, userId, agencyId }) {
   <SOAP-ENV:Body>
   <uaim:getArticleRequest>
     <uaim:articleIdentifier>
-      <uaim:file>${articleId}</uaim:file>
+    <uaim:file>${articleId}</uaim:file>
     </uaim:articleIdentifier>
-    <uaim:userId>${userId}</uaim:userId>
+    <uaim:userId>${id || userId}</uaim:userId>
     <uaim:libraryCode>${agencyId.replace(/[^0-9]+/g, "")}</uaim:libraryCode>
     <uaim:outputType>json</uaim:outputType>
   </uaim:getArticleRequest>

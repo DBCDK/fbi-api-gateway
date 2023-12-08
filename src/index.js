@@ -114,10 +114,10 @@ promExporterApp.listen(9599, () => {
       // detailed logging for SLA
       log.info("TRACK", {
         clientId: req?.smaug?.app?.clientId,
-        uuid: req?.datasources?.trackingObject.uuid,
+        uuid: req?.datasources?.stats.uuid,
         parsedQuery: req.parsedQuery,
         queryVariables,
-        datasources: { ...req?.datasources?.trackingObject?.getMetrics() },
+        datasources: req.datasources.stats.summary(),
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
         queryComplexity: req.queryComplexity,
@@ -248,7 +248,14 @@ promExporterApp.listen(9599, () => {
    * Middleware for fetching user information (for authenticated tokens)
    */
   app.post("/:profile/graphql", async (req, res, next) => {
-    // Fetch login.bib.dk userinfo
+    // Provided token is authenticated
+    const isAuthenticated = req.smaug?.user?.id;
+
+    // skip userinfo if token is anonymous
+    if (!isAuthenticated) {
+      return next();
+    }
+
     try {
       const userinfo =
         req.accessToken &&
@@ -303,7 +310,10 @@ promExporterApp.listen(9599, () => {
         variables,
         profile: req.profile,
       });
-      const fastLaneRes = await getFastLane(req.fastLaneKey);
+      const fastLaneRes = await getFastLane(
+        req.fastLaneKey,
+        req.datasources.stats
+      );
       if (fastLaneRes) {
         return res.send(fastLaneRes);
       }

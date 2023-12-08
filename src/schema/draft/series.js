@@ -32,7 +32,7 @@ type SerieWork {
   """
   Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
   """
-  readThisWhenever: Boolean  
+  readThisWhenever: Boolean
 }
 
 type Series {
@@ -74,7 +74,17 @@ type Series {
   """
   Whether this is a popular series or general series
   """
-  isPopular: Boolean  
+  isPopular: Boolean
+  
+  """
+  WorkTypes for the series
+  """
+  workTypes: [String!]!
+  
+  """
+  MainLanguages of the series
+  """
+  mainLanguages: [String!]!
   
   """
   Members of this serie. 
@@ -154,6 +164,20 @@ export const resolvers = {
         return null;
       }
       return parent.readThisWhenever;
+    },
+    workTypes(parent, args, context, info) {
+      return parent.workTypes.map((workType) => workType.toUpperCase());
+    },
+    mainLanguages(parent, args, context, info) {
+      if (parent.languages && Array.isArray(parent.languages)) {
+        return parent.languages;
+      } else if (parent.language && Array.isArray(parent.language)) {
+        return parent.language;
+      } else if (parent.language && typeof parent.language === "string") {
+        return [parent.language];
+      } else {
+        return [];
+      }
     },
   },
   SerieWork: {

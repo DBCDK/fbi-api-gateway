@@ -33,6 +33,20 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
   height: var(--pt2);
 }
 
+/* sidebar */
+
+.graphiql-sidebar-section button.active {
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
+}
+
+/* History */
+
+.graphiql-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 /* scrollbar */
 
 .CodeMirror-scroll {

@@ -6,10 +6,12 @@
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 import { placeCopyRequest } from "./elba";
+import { filterAgenciesByProps } from "../utils/accounts";
 
 import getUserBorrowerStatus, {
   getUserIds,
 } from "../utils/getUserBorrowerStatus";
+import { has } from "lodash";
 
 const orderStatusmessageMap = {
   OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",
@@ -490,13 +492,18 @@ export const resolvers = {
         };
       }
 
+      // Verify that the user has an account at the municiaplityAgencyId (created as loaner)
+      const account = filterAgenciesByProps(user.agencies, {
+        agency: user.municipalityAgencyId,
+      })?.[0];
+
       // Fetch list of digitalAccess subscribers
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
         .load("");
 
       const hasDigitalArticleService = !!digitalAccessSubscriptions[
-        user.municipalityAgencyId
+        user.municipalityAgencyId && !!account
       ];
 
       const nonPeriodicaOrders = materialsToOrder.filter(
@@ -511,12 +518,8 @@ export const resolvers = {
             material.periodicaForm.pagesOfComponent)
       );
 
-      console.log(
-        "_________hasDigitalArticleService",
-        hasDigitalArticleService
-      );
+      // Place periodica orders
       if (hasDigitalArticleService) {
-        // Place periodica orders
         await Promise.all(
           periodicaOrders.map(async (material) => {
             if (args.dryRun) {
@@ -538,8 +541,6 @@ export const resolvers = {
               context,
             });
             if (!submitOrderRes || submitOrderRes.status !== "OK") {
-              console.log("_________submitPERIODICAOrderRes", submitOrderRes);
-
               // Creation failed
               failedAtCreation.push(material.key);
               return;
@@ -553,7 +554,7 @@ export const resolvers = {
       }
 
       //Place other orders
-      //if user doesnt have digital article service, we need to flatten periodica orders and send them via submitOrder
+      //if user doesnt have digital article service, we flatten periodica orders to send them via submitOrder
       const flattenedPhysicalPeriodicaOrders = periodicaOrders?.map((order) => {
         const { periodicaForm, ...restOfOrder } = order;
         return {
@@ -562,12 +563,10 @@ export const resolvers = {
         };
       });
 
-      //if user doesnt have digital article serfice, merge remaining orders
+      //if user doesnt have digital article service, merge remaining orders with flattened periodica orders
       const restOrders = hasDigitalArticleService
         ? nonPeriodicaOrders
         : [...nonPeriodicaOrders, ...flattenedPhysicalPeriodicaOrders];
-
-      console.log("restOrders", restOrders);
 
       //Place send nonPeriodicaOrders as they are
       // flatten input to spread periodicaFrom into the input, then send them via submitOrder
@@ -590,7 +589,6 @@ export const resolvers = {
             });
 
           if (!submitOrderRes || !submitOrderRes.ok) {
-            console.log("_________submitOrder ", submitOrderRes);
             // Creation failed
             failedAtCreation.push(material.key);
             return;

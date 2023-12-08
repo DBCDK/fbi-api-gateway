@@ -41,6 +41,7 @@ type User {
   agencies(language: LanguageCode): [BranchResult!]!
   loggedInBranchId: String @deprecated(reason: "Use 'User.loggedInAgencyId' instead")
   loggedInAgencyId: String
+  municipalityNumber: String
   municipalityAgencyId: String
   address: String
   postalCode: String
@@ -242,6 +243,10 @@ function validateUserId(uniqueId) {
 export const resolvers = {
   Query: {
     async user(parent, args, context, info) {
+      if (!context.user) {
+        return null;
+      }
+
       return {};
     },
   },
@@ -280,24 +285,25 @@ export const resolvers = {
 
       const municipalityAgencyId = user?.municipalityAgencyId;
 
+      // Verify that the user has an account at the municiaplityAgencyId (created as loaner)
+      const account = filterAgenciesByProps(user.agencies, {
+        agency: municipalityAgencyId,
+      })?.[0];
+
       // check for digital article service
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
         .load("");
 
       // check with municipality agency
-      console.log(
-        "_____CHECK INFOMEDIA ",
-        digitalAccessSubscriptions[municipalityAgencyId]
-      );
-
       if (digitalAccessSubscriptions[municipalityAgencyId]) {
-        console.log("THIS AGENCY HAS INFOMEDIA ", municipalityAgencyId);
-        subscriptions.digitalArticleService = true;
+        // User is loaner at municipalityAgencyId
+        subscriptions.digitalArticleService = !!account;
       }
 
       // and now for DDA .. the only check we can do is if agency (municipality) starts with '7' (public library)
       if (municipalityAgencyId && municipalityAgencyId?.startsWith("7")) {
+        // Actually we also want the account check here, but the proxy does not support this check.
         subscriptions.demandDrivenAcquisition = true;
       }
 
@@ -408,6 +414,11 @@ export const resolvers = {
       });
 
       return res?.address;
+    },
+    async municipalityNumber(parent, args, context, info) {
+      const user = context?.user;
+
+      return user?.municipality;
     },
     async municipalityAgencyId(parent, args, context, info) {
       const user = context?.user;

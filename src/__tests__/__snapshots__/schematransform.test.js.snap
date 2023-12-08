@@ -1790,6 +1790,12 @@ type Series {
   \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
   isPopular: Boolean
 
+  \\"\\"\\"WorkTypes for the series\\"\\"\\"
+  workTypes: [String!]!
+
+  \\"\\"\\"MainLanguages of the series\\"\\"\\"
+  mainLanguages: [String!]!
+
   \\"\\"\\"Members of this serie. \\"\\"\\"
   members: [SerieWork!]!
 }
@@ -2818,6 +2824,7 @@ type User {
   agencies(language: LanguageCode): [BranchResult!]!
   loggedInBranchId: String @deprecated(reason: \\"Use 'User.loggedInAgencyId' instead\\")
   loggedInAgencyId: String
+  municipalityNumber: String
   municipalityAgencyId: String
   address: String
   postalCode: String
@@ -4187,6 +4194,12 @@ type Series {
 
   \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
   isPopular: Boolean
+
+  \\"\\"\\"WorkTypes for the series\\"\\"\\"
+  workTypes: [String!]!
+
+  \\"\\"\\"MainLanguages of the series\\"\\"\\"
+  mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
   members: [SerieWork!]!
@@ -5747,6 +5760,12 @@ type Series {
 
   \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
   isPopular: Boolean
+
+  \\"\\"\\"WorkTypes for the series\\"\\"\\"
+  workTypes: [String!]!
+
+  \\"\\"\\"MainLanguages of the series\\"\\"\\"
+  mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
   members: [SerieWork!]!
