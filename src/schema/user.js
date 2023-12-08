@@ -285,8 +285,6 @@ export const resolvers = {
 
       const municipalityAgencyId = user?.municipalityAgencyId;
 
-      console.log("municipalityAgencyId", municipalityAgencyId);
-
       // Verify that the user has an account at the municiaplityAgencyId (created as loaner)
       const account = filterAgenciesByProps(user.agencies, {
         agency: municipalityAgencyId,
