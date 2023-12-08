@@ -496,9 +496,6 @@ export const resolvers = {
         agency: user.municipalityAgencyId,
       })?.[0];
 
-      console.log("__________account ", account);
-      console.log("user ", user);
-
       // Fetch list of digitalAccess subscribers
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
