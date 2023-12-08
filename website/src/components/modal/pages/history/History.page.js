@@ -192,13 +192,14 @@ function Item({
           ) : (
             <>
               <Text type={open ? "text6" : "text4"}>{displayName}</Text>
+
               <Text className={styles.authentication}>
-                <>
-                  {`This token is ${
-                    isAuthenticated ? "AUTHENTICATED 🧑" : "ANONYMOUS"
-                  }`}
-                  {isAuthenticated && !hasCulrAccount && "⚠️"}
-                </>
+                {`This token is ${
+                  isAuthenticated ? "AUTHENTICATED" : "ANONYMOUS"
+                }`}
+                {isAuthenticated && (
+                  <span> 🧑 {!hasCulrAccount && <i>⚠️</i>}</span>
+                )}
               </Text>
 
               {missingConfiguration && (

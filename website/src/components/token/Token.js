@@ -51,6 +51,7 @@ export default function Token({
   const hasValue = !!(state.value && state.value !== "");
   const isToken = state.value === selectedToken?.token;
   const isAuthenticated = user?.isAuthenticated;
+  const hasCulrAccount = user?.hasCulrUniqueId;
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 
@@ -109,7 +110,15 @@ export default function Token({
         {hasDisplay && (
           <div className={styles.display}>
             <Text type="text4" title={`${configuration?.displayName}`}>
-              {isAuthenticated && <i title="Authenticated token">🧑</i>}{" "}
+              {isAuthenticated && (
+                <span
+                  title={`Authenticated token ${
+                    !hasCulrAccount && "- user does not exist in CULR"
+                  }`}
+                >
+                  🧑 {!hasCulrAccount && <i>⚠️</i>}
+                </span>
+              )}{" "}
               {`${configuration?.displayName}`}
             </Text>
           </div>

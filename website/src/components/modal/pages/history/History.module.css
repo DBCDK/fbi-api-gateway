@@ -99,6 +99,19 @@
   transition: font-size 0.25s, color 0.25s linear 0s;
 }
 
+.authentication span {
+  position: relative;
+  font-size: 12px;
+}
+
+.authentication span i {
+  font-style: normal;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 8px;
+}
+
 .authentication,
 .display .culr,
 .display .note {

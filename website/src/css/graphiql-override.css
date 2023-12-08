@@ -67,6 +67,13 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
   margin-right: var(--pt2);
 }
 
+.CodeMirror-vscrollbar,
+.CodeMirror-hscrollbar,
+.CodeMirror-scrollbar-filler,
+.CodeMirror-gutter-filler {
+  pointer-events: auto !important;
+}
+
 /* width */
 .CodeMirror-hscrollbar::-webkit-scrollbar,
 .CodeMirror-vscrollbar::-webkit-scrollbar {
