@@ -249,10 +249,14 @@ promExporterApp.listen(9599, () => {
    */
   app.post("/:profile/graphql", async (req, res, next) => {
     // Provided token is authenticated
-    const isAuthenticated = req.smaug?.user?.id;
+    const user = req.smaug?.user;
+    const isAuthenticated = user?.id;
+
+    // isUnknownSmaugUser is currently a nemlogin user with no associated agencies
+    const isUnknownSmaugUser = !user?.agency && !user?.pin && !user?.uniqueId;
 
     // skip userinfo if token is anonymous
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !isUnknownSmaugUser) {
       return next();
     }
 
