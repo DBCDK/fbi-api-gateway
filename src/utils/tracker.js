@@ -13,6 +13,7 @@ function createTrackEntry() {
     connectionStartSum: 0,
     totalSum: 0,
     bytesSum: 0,
+    redisTimeSum: 0,
   };
 }
 
@@ -51,6 +52,7 @@ function summary(trackerObj) {
         cacheMiss: timings.redisLookups - timings.redisHits,
         cacheLookups: timings.redisLookups,
         jsonProcessingMs: timings.jsonParseSum + timings.jsonStringifySum,
+        avgCacheTimeMs: timings.redisTimeSum / timings.redisLookups,
       };
     }
   );
@@ -65,6 +67,8 @@ function summary(trackerObj) {
       trackerObj.overall.jsonParseSum + trackerObj.overall.jsonStringifySum,
     avgItemFetchMs: trackerObj.overall.totalSum / trackerObj.overall.count,
     bytesIn: trackerObj.overall.bytesSum,
+    avgCacheTimeMs:
+      trackerObj.overall.redisTimeSum / trackerObj.overall.redisLookups,
   };
 
   return datasources;

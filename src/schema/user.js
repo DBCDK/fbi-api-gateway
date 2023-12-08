@@ -243,6 +243,10 @@ function validateUserId(uniqueId) {
 export const resolvers = {
   Query: {
     async user(parent, args, context, info) {
+      if (!context.user) {
+        return null;
+      }
+
       return {};
     },
   },
