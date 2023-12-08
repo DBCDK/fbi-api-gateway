@@ -3,8 +3,8 @@ import { isFFUAgency } from "./agency";
 export function setMunicipalityAgencyId(attr) {
   const { uniqueId, agencies, municipality, municipalityAgencyId } = attr;
 
-  // If FFU Replace municipalityAgencyId with agencyId - NOT FOLk library connected
-  // solves that KB also gets digital article service (solved as in hejmdal)
+  // If FFU user - Replace municipalityAgencyId with agencyId - (OBS! NOT FOLk library connected)
+  // solves that KB also gets digital article service (as solved in hejmdal/adgangsplatformen)
   if (!uniqueId) {
     if (!municipalityAgencyId) {
       if (agencies.length === 1) {
@@ -17,7 +17,7 @@ export function setMunicipalityAgencyId(attr) {
     }
   }
 
-  // No municipality attribute, nothing to do here then.
+  // No municipality attribute, nothing more to do here then.
   if (!municipality) {
     return municipalityAgencyId;
   }
