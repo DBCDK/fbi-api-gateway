@@ -286,7 +286,13 @@ export const resolvers = {
         .load("");
 
       // check with municipality agency
+      console.log(
+        "_____CHECK INFOMEDIA ",
+        digitalAccessSubscriptions[municipalityAgencyId]
+      );
+
       if (digitalAccessSubscriptions[municipalityAgencyId]) {
+        console.log("THIS AGENCY HAS INFOMEDIA ", municipalityAgencyId);
         subscriptions.digitalArticleService = true;
       }
 
