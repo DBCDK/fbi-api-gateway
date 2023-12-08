@@ -1,6 +1,6 @@
 import config from "../config";
 import displayFormat from "./openformat.displayformat.json";
-import fetch from "isomorphic-unfetch";
+import { fetch } from "undici";
 
 const { url, ttl, prefix } = config.datasources.openformat;
 
@@ -26,7 +26,10 @@ export async function load(pid, context) {
   formData.append("xml", createRequest(pid));
   const res = await context?.fetch(url, {
     method: "POST",
-    body: formData,
+    body: formData.toString(),
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+    },
   });
   return res?.body?.formatResponse?.customDisplay?.[0]?.manifestation;
 }
