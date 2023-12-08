@@ -37,7 +37,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return data?.universes;
+      return data?.universes || [];
     },
     // Use the new universe from series-service v2
     async universe(parent, args, context, info) {
@@ -77,7 +77,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return data?.universes;
+      return data?.universes || [];
     },
     // Use the new universe from series-service v2
     async universe(parent, args, context, info) {
