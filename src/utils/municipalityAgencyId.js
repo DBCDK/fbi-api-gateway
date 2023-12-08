@@ -1,7 +1,23 @@
-export function setMunicipalityAgencyId(attr) {
-  const { municipality, municipalityAgencyId } = attr;
+import { isFFUAgency } from "./agency";
 
-  // No municipality attribute, nothing to do here then.
+export function setMunicipalityAgencyId(attr) {
+  const { uniqueId, agencies, municipality, municipalityAgencyId } = attr;
+
+  // If FFU user - Replace municipalityAgencyId with agencyId - (OBS! NOT FOLk library connected)
+  // solves that KB also gets digital article service (as solved in hejmdal/adgangsplatformen)
+  if (!uniqueId) {
+    if (!municipalityAgencyId) {
+      if (agencies.length === 1) {
+        const agency = agencies[0].agencyId;
+
+        if (isFFUAgency(agency)) {
+          return agency;
+        }
+      }
+    }
+  }
+
+  // No municipality attribute, nothing more to do here then.
   if (!municipality) {
     return municipalityAgencyId;
   }
@@ -18,6 +34,6 @@ export function setMunicipalityAgencyId(attr) {
     }
   }
 
-  // build from municipality (catches FFU libraries overriding municipalityAgencyId)
+  // build from municipality (catches FFU libraries overriding municipalityAgencyId - OBS! FOLK library connected)
   return `7${municipality}00`;
 }
