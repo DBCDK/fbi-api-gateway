@@ -496,14 +496,16 @@ export const resolvers = {
         agency: user.municipalityAgencyId,
       })?.[0];
 
+      console.log("__________account ", account);
+      console.log("user ", user);
+
       // Fetch list of digitalAccess subscribers
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
         .load("");
 
-      const hasDigitalArticleService = !!digitalAccessSubscriptions[
-        user.municipalityAgencyId && !!account
-      ];
+      const hasDigitalArticleService =
+        !!digitalAccessSubscriptions[user.municipalityAgencyId] && !!account;
 
       const nonPeriodicaOrders = materialsToOrder.filter(
         (material) => !material.periodicaForm
@@ -553,8 +555,12 @@ export const resolvers = {
       }
 
       //Place other orders
-      //if user doesnt have digital article service, we flatten periodica orders to send them via submitOrder
-      const flattenedPhysicalPeriodicaOrders = periodicaOrders?.map((order) => {
+
+      //flatten all orders with periodicaForm, can i either be digital article orders OR physical periodica orders
+      const flattenedOrders = (hasDigitalArticleService
+        ? nonPeriodicaOrders
+        : materialsToOrder
+      )?.map((order) => {
         const { periodicaForm, ...restOfOrder } = order;
         return {
           ...restOfOrder,
@@ -562,15 +568,10 @@ export const resolvers = {
         };
       });
 
-      //if user doesnt have digital article service, merge remaining orders with flattened periodica orders
-      const restOrders = hasDigitalArticleService
-        ? nonPeriodicaOrders
-        : [...nonPeriodicaOrders, ...flattenedPhysicalPeriodicaOrders];
-
       //Place send nonPeriodicaOrders as they are
       // flatten input to spread periodicaFrom into the input, then send them via submitOrder
       await Promise.all(
-        restOrders?.map(async (material) => {
+        flattenedOrders?.map(async (material) => {
           if (args.dryRun) {
             // return if dryrun
             successfullyCreated.push(material.key);
