@@ -11,7 +11,6 @@ import { filterAgenciesByProps } from "../utils/accounts";
 import getUserBorrowerStatus, {
   getUserIds,
 } from "../utils/getUserBorrowerStatus";
-import { has } from "lodash";
 
 const orderStatusmessageMap = {
   OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",
