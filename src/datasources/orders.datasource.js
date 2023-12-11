@@ -1,6 +1,4 @@
 import config from "../config";
-import { filterDuplicateAgencies } from "../utils/utils";
-
 const { url } = config.datasources.openuserstatus;
 const {
   authenticationUser,

@@ -6,6 +6,7 @@
 import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 import { placeCopyRequest } from "./elba";
+import { filterAgenciesByProps } from "../utils/accounts";
 
 import getUserBorrowerStatus, {
   getUserIds,
@@ -439,7 +440,6 @@ export const resolvers = {
       if (!context?.smaug?.orderSystem) {
         throw "invalid smaug configuration [orderSystem]";
       }
-
       const branch = (
         await context.datasources.getLoader("library").load({
           branchId: args?.input?.pickUpBranch,
@@ -491,6 +491,23 @@ export const resolvers = {
         };
       }
 
+      // Verify that the user has an account at the municiaplityAgencyId (created as loaner)
+      const account = filterAgenciesByProps(user.agencies, {
+        agency: user.municipalityAgencyId,
+      })?.[0];
+
+      // Fetch list of digitalAccess subscribers
+      const digitalAccessSubscriptions = await context.datasources
+        .getLoader("statsbiblioteketSubscribers")
+        .load("");
+
+      const hasDigitalArticleService =
+        !!digitalAccessSubscriptions[user.municipalityAgencyId] && !!account;
+
+      const nonPeriodicaOrders = materialsToOrder.filter(
+        (material) => !material.periodicaForm
+      );
+
       const periodicaOrders = materialsToOrder.filter(
         (material) =>
           material.periodicaForm &&
@@ -499,52 +516,64 @@ export const resolvers = {
             material.periodicaForm.pagesOfComponent)
       );
 
-      const otherOrders = materialsToOrder.filter(
-        (material) => !material.periodicaForm
-      );
-
       // Place periodica orders
-      await Promise.all(
-        periodicaOrders.map(async (material) => {
-          if (args.dryRun) {
-            // return if dryrun
+      if (hasDigitalArticleService) {
+        await Promise.all(
+          periodicaOrders.map(async (material) => {
+            if (args.dryRun) {
+              // return if dryrun
+              successfullyCreated.push(material.key);
+              return;
+            }
+
+            const placeCopyArgs = {
+              ...material?.periodicaForm,
+              userParameters: args?.input?.userParameters,
+              pickupBranch: branch.agencyId,
+              userMail: userMail,
+              agencyId: branch.agencyId,
+            };
+            const submitOrderRes = await placeCopyRequest({
+              input: placeCopyArgs,
+              dryRun: args.dryRun,
+              context,
+            });
+            if (!submitOrderRes || submitOrderRes.status !== "OK") {
+              // Creation failed
+              failedAtCreation.push(material.key);
+              return;
+            }
             successfullyCreated.push(material.key);
-            return;
-          }
 
-          const placeCopyeArgs = {
-            ...material?.periodicaForm,
-            userParameters: args?.input?.userParameters,
-            pickupBranch: branch.agencyId,
-            userMail: userMail,
-            agencyId: branch.agencyId,
-          };
-          const submitOrderRes = await placeCopyRequest({
-            input: placeCopyeArgs,
-            dryRun: args.dryRun,
-            context,
-          });
-          if (!submitOrderRes || submitOrderRes.status !== "OK") {
-            // Creation failed
-            failedAtCreation.push(material.key);
-            return;
-          }
-          successfullyCreated.push(material.key);
-
-          //TODO  - we dont save single periodica orders to userData, therefor i dont save multi-periodica either
-          //await saveOrderToUserdata(user, submitOrderRes, context);
-        })
-      );
+            //TODO  - we dont save single periodica orders to userData, therefor i dont save multi-periodica either
+            //await saveOrderToUserdata(user, submitOrderRes, context);
+          })
+        );
+      }
 
       //Place other orders
+
+      //flatten all orders with periodicaForm, can i either be digital article orders OR physical periodica orders
+      const flattenedOrders = (hasDigitalArticleService
+        ? nonPeriodicaOrders
+        : materialsToOrder
+      )?.map((order) => {
+        const { periodicaForm, ...restOfOrder } = order;
+        return {
+          ...restOfOrder,
+          ...periodicaForm,
+        };
+      });
+
+      //Place send nonPeriodicaOrders as they are
+      // flatten input to spread periodicaFrom into the input, then send them via submitOrder
       await Promise.all(
-        otherOrders.map(async (material) => {
+        flattenedOrders?.map(async (material) => {
           if (args.dryRun) {
             // return if dryrun
             successfullyCreated.push(material.key);
             return;
           }
-
           // Place order
           const submitOrderRes = await context.datasources
             .getLoader("submitOrder")

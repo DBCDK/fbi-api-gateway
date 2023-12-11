@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`submitMultipleOrders 1 succeeds 1 fails 1`] = `
+Object {
+  "data": Object {
+    "submitMultipleOrders": Object {
+      "failedAtCreation": Array [
+        "work-of:idontexistBog",
+      ],
+      "ok": false,
+      "status": "OK",
+      "successfullyCreated": Array [
+        "work-of:870970-basis:39074184Bog",
+      ],
+    },
+  },
+}
+`;
+
+exports[`submitMultipleOrders all orders fail: unknown pickupBranch 1`] = `
+Object {
+  "data": Object {
+    "submitMultipleOrders": Object {
+      "failedAtCreation": Array [
+        "work-of:870970-basis:39074184Bog",
+        "work-of:870970-basis:04978617Tidsskrift",
+      ],
+      "ok": false,
+      "status": "UNKNOWN_PICKUPAGENCY",
+      "successfullyCreated": Array [],
+    },
+  },
+}
+`;
+
+exports[`submitMultipleOrders succeeds: digital article becomes physical order, if user doesnt have account at homeagency 1`] = `
+Object {
+  "data": Object {
+    "submitMultipleOrders": Object {
+      "failedAtCreation": Array [],
+      "ok": true,
+      "status": "OK",
+      "successfullyCreated": Array [
+        "work-of:870970-basis:39074184Bog",
+        "work-of:870970-basis:04978617Tidsskrift",
+      ],
+    },
+  },
+}
+`;
+
+exports[`submitMultipleOrders succeeds: digital article becomes physical order, if users homeagency not subscriber of digital article service 1`] = `
+Object {
+  "data": Object {
+    "submitMultipleOrders": Object {
+      "failedAtCreation": Array [],
+      "ok": true,
+      "status": "OK",
+      "successfullyCreated": Array [
+        "work-of:870970-basis:39074184Bog",
+        "work-of:870970-basis:04978617Tidsskrift",
+      ],
+    },
+  },
+}
+`;
+
+exports[`submitMultipleOrders succeeds: user orders a book, a digital article and a physical article 1`] = `
+Object {
+  "data": Object {
+    "submitMultipleOrders": Object {
+      "failedAtCreation": Array [],
+      "ok": true,
+      "status": "OK",
+      "successfullyCreated": Array [
+        "work-of:870970-basis:39074184Bog",
+        "work-of:870970-basis:04978617Tidsskrift",
+        "work-of:870970-basis:04978617Tidsskrift",
+      ],
+    },
+  },
+}
+`;
+
+exports[`submitMultipleOrders succeeds: user orders multiple books  1`] = `
+Object {
+  "data": Object {
+    "submitMultipleOrders": Object {
+      "failedAtCreation": Array [],
+      "ok": true,
+      "status": "OK",
+      "successfullyCreated": Array [
+        "work-of:870970-basis:39074184Bog",
+        "work-of:870970-basis:62371455Bog",
+      ],
+    },
+  },
+}
+`;
+
+exports[`submitMultipleOrders succeeds: user orders multiple books and digital article 1`] = `
+Object {
+  "data": Object {
+    "submitMultipleOrders": Object {
+      "failedAtCreation": Array [],
+      "ok": true,
+      "status": "OK",
+      "successfullyCreated": Array [
+        "work-of:870970-basis:39074184Bog",
+        "work-of:870970-basis:62371455Bog",
+        "work-of:870970-basis:04978617Tidsskrift",
+      ],
+    },
+  },
+}
+`;
