@@ -28,7 +28,7 @@ const context = {
     userId: "some-id",
     loggedInAgencyId: "715100",
     municipalityAgencyId: "100200",
-  }, //hvis jeg ikke bruger userinfo, så kan jeg sætter user her
+  },
   smaug: {
     app: { id: "app-name", ips: ["1.1.1.1"] },
     orderSystem: "bibliotekdk_21",

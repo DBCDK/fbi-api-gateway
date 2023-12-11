@@ -526,7 +526,7 @@ export const resolvers = {
               return;
             }
 
-            const placeCopyeArgs = {
+            const placeCopyArgs = {
               ...material?.periodicaForm,
               userParameters: args?.input?.userParameters,
               pickupBranch: branch.agencyId,
@@ -534,7 +534,7 @@ export const resolvers = {
               agencyId: branch.agencyId,
             };
             const submitOrderRes = await placeCopyRequest({
-              input: placeCopyeArgs,
+              input: placeCopyArgs,
               dryRun: args.dryRun,
               context,
             });
