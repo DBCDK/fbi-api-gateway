@@ -41,6 +41,12 @@ export async function testLoad({ accessToken }, context) {
   const testUser = await getTestUser(context);
   const loginAgency = testUser?.loginAgency;
 
+  const map = { 911116: "1110" };
+
+  const municipalityAgencyId = testUser.merged.find(
+    (account) => account.isMunicipality
+  )?.agency;
+
   return {
     attributes: {
       userId: loginAgency?.cpr || loginAgency?.localId,
@@ -49,10 +55,11 @@ export async function testLoad({ accessToken }, context) {
       agencies: accountsToCulr(testUser.merged)?.filter(
         (account) => account.agencyId !== "190101"
       ),
-      municipalityAgencyId: testUser.merged.find(
-        (account) => account.isMunicipality
-      )?.agency,
-      loggedInAgencyId: loginAgency?.agencyId,
+      municipalityAgencyId,
+      municipality: municipalityAgencyId?.startsWith?.("7")
+        ? municipalityAgencyId?.substr?.(1, 3)
+        : map[municipalityAgencyId],
+      loggedInAgencyId: loginAgency?.agency,
     },
   };
 }
