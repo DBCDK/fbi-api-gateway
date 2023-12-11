@@ -32,6 +32,9 @@ import isFastLaneQuery, {
   fastLaneMiddleware,
   getFastLane,
 } from "./utils/fastLane";
+import { start as startResourceMonitor } from "./utils/resourceMonitor";
+
+startResourceMonitor();
 
 // this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
