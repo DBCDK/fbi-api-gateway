@@ -544,8 +544,8 @@ export const resolvers = {
         (agency) => agency?.result.length > 0
       );
 
-      // Filter non-active branches
-      const filteredNonActiveBranches = filteredAgencyInfoes.map((i) => {
+      // Filter deleted branches
+      const filteredDeletedBranches = filteredAgencyInfoes.map((i) => {
         return {
           ...i,
           result: i.result.filter((branch) => {
@@ -554,7 +554,7 @@ export const resolvers = {
         };
       });
 
-      const sortedAgencies = filteredNonActiveBranches.sort((a, b) =>
+      const sortedAgencies = filteredDeletedBranches.sort((a, b) =>
         a.result[0].agencyName.localeCompare(b.result[0].agencyName)
       );
 
