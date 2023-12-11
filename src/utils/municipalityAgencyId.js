@@ -7,10 +7,10 @@ export function setMunicipalityAgencyId(attr) {
   // solves that KB also gets digital article service (as solved in hejmdal/adgangsplatformen)
   if (!uniqueId) {
     if (!municipalityAgencyId) {
-      if (agencies.length === 1) {
-        const agency = agencies[0].agencyId;
+      if (agencies?.length === 1) {
+        const agency = agencies?.[0]?.agencyId;
 
-        if (isFFUAgency(agency)) {
+        if (agency && isFFUAgency(agency)) {
           return agency;
         }
       }
