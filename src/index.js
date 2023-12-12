@@ -330,6 +330,14 @@ promExporterApp.listen(9599, () => {
       schema,
       validationRules: [validateQueryComplexity({ query, variables })],
       context: req,
+      formatError: (graphQLError) => {
+        if (!req.graphQLErrors) {
+          req.graphQLErrors = [];
+        }
+        req.graphQLErrors.push(graphQLError.message);
+
+        return graphQLError;
+      },
     });
 
     return handler(req, res);
