@@ -9,7 +9,7 @@ export async function load(agencyId, context) {
     { allowedErrorStatusCodes: [404] }
   );
 
-  return res.body.userOrderParameters;
+  return res.body?.userOrderParameters;
 }
 
 export const options = {

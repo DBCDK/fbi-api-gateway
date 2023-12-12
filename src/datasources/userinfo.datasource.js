@@ -38,7 +38,12 @@ export async function load({ accessToken }, context) {
  *
  */
 export async function testLoad({ accessToken }, context) {
-  const testUser = await getTestUser(context);
+  // if provided accessToken differs from context.accesstoken (bearer token)
+  // Fetch user from provided accessToken
+  const optionalToken = context.accessToken !== accessToken && accessToken;
+
+  const testUser = await getTestUser(context, optionalToken);
+
   const loginAgency = testUser?.loginAgency;
 
   const map = { 911116: "1110" };
