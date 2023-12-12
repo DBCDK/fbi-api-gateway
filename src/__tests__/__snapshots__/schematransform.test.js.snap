@@ -1872,13 +1872,17 @@ enum SuggestionType {
 }
 
 enum ComplexSuggestionType {
-  title
-  creator
-  subject
-  default
   hostpublication
-  fictionalcharacter
+  contributorfunction
+  creator
+  default
+  creatorcontributorfunction
   contributor
+  creatorfunction
+  subject
+  fictionalcharacter
+  title
+  creatorcontributor
 }
 
 type ComplexSearchSuggestion {
