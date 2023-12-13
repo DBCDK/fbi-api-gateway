@@ -14,19 +14,43 @@ interface Subject {
 
   local: Boolean
 }
+
 type SubjectText implements Subject {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
+
 type TimePeriod implements Subject {
   type: SubjectType!
-  period: Range! 
+  period: Range!
   display: String!
   language: Language
   local: Boolean
 }
+
+type Mood implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type NarrativeTechnique implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type Setting implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
 enum SubjectType {
   TOPIC
   LOCATION
@@ -41,12 +65,21 @@ enum SubjectType {
   TITLE
   FILM_NATIONALITY
   LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+
   """
   added for manifestation.parts.creators/person - they get a type from small-rye
   """
   PERSON
   CORPORATION 
+
+  MOOD
+  PERSPECTIVE
+  STYLE
+  TEMPO
+  REALITY
+  ENVIRONMENT
 }
+
 type Range {
   begin: Int
   end: Int

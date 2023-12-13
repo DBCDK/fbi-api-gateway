@@ -358,6 +358,9 @@ export function parseJedSubjects({
   persons = [],
   subjects = [],
   timePeriods = [],
+  moods = [],
+  narrativeTechniques = [],
+  settings = [],
 } = {}) {
   return [
     ...subjects.map((subject) => ({
@@ -372,9 +375,30 @@ export function parseJedSubjects({
       ...corporation,
       __typename: "Corporation",
     })),
-    ...timePeriods.map((timePeriod) => ({
-      ...timePeriod,
-      __typename: "TimePeriod",
+    ...timePeriods.map((timePeriod) => {
+      // JED TIME_PERIOD backwards compatibility
+      const shouldHavePeriod = timePeriod?.begin && timePeriod?.end;
+      const begin = timePeriod.begin;
+      const end = timePeriod.end;
+      const period = { begin, end, display: `${begin}-${end}` };
+
+      return {
+        ...timePeriod,
+        period: shouldHavePeriod ? period : null,
+        __typename: "TimePeriod",
+      };
+    }),
+    ...moods.map((moods) => ({
+      ...moods,
+      __typename: "Mood",
+    })),
+    ...narrativeTechniques.map((narrativeTechniques) => ({
+      ...narrativeTechniques,
+      __typename: "NarrativeTechnique",
+    })),
+    ...settings.map((settings) => ({
+      ...settings,
+      __typename: "Setting",
     })),
   ];
 }
