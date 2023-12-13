@@ -548,7 +548,7 @@ export const resolvers = {
         return {
           ...i,
           result: i.result.filter((branch) => {
-            return branch.status !== "deleted";
+            return branch.status === "active";
           }),
         };
       });
