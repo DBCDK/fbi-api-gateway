@@ -1828,6 +1828,27 @@ type TimePeriod implements Subject {
   local: Boolean
 }
 
+type Mood implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type NarrativeTechnique implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type Setting implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
 enum SubjectType {
   TOPIC
   LOCATION
@@ -1848,6 +1869,12 @@ enum SubjectType {
   \\"\\"\\"
   PERSON
   CORPORATION
+  MOOD
+  PERSPECTIVE
+  STYLE
+  TEMPO
+  REALITY
+  ENVIRONMENT
 }
 
 type Range {
@@ -4237,6 +4264,27 @@ type TimePeriod implements Subject {
   local: Boolean
 }
 
+type Mood implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type NarrativeTechnique implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type Setting implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
 enum SubjectType {
   TOPIC
   LOCATION
@@ -4257,6 +4305,12 @@ enum SubjectType {
   \\"\\"\\"
   PERSON
   CORPORATION
+  MOOD
+  PERSPECTIVE
+  STYLE
+  TEMPO
+  REALITY
+  ENVIRONMENT
 }
 
 type Range {
@@ -5803,6 +5857,27 @@ type TimePeriod implements Subject {
   local: Boolean
 }
 
+type Mood implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type NarrativeTechnique implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type Setting implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
 enum SubjectType {
   TOPIC
   LOCATION
@@ -5823,6 +5898,12 @@ enum SubjectType {
   \\"\\"\\"
   PERSON
   CORPORATION
+  MOOD
+  PERSPECTIVE
+  STYLE
+  TEMPO
+  REALITY
+  ENVIRONMENT
 }
 
 type Range {
