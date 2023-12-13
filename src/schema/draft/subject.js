@@ -24,7 +24,7 @@ type SubjectText implements Subject {
 
 type TimePeriod implements Subject {
   type: SubjectType!
-  period: Range
+  period: Range!
   display: String!
   language: Language
   local: Boolean
@@ -83,7 +83,7 @@ enum SubjectType {
 type Range {
   begin: Int
   end: Int
-  display: String
+  display: String!
 }
 
 type SubjectContainer {

@@ -362,7 +362,7 @@ export function parseJedSubjects({
   narrativeTechniques = [],
   settings = [],
 } = {}) {
-  const fisk = [
+  return [
     ...subjects.map((subject) => ({
       ...subject,
       __typename: "SubjectText",
@@ -401,10 +401,6 @@ export function parseJedSubjects({
       __typename: "Setting",
     })),
   ];
-
-  console.log("fisk", fisk);
-
-  return fisk;
 }
 
 export async function getUserId({ agencyId, userinfo }) {
