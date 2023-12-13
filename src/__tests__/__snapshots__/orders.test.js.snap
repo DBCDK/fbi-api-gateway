@@ -81,7 +81,7 @@ Object {
 }
 `;
 
-exports[`submitMultipleOrders succeeds: user orders a book, a digital article and a physical article 1`] = `
+exports[`submitMultipleOrders succeeds: user orders a book, a digital article and a physical periodica 1`] = `
 Object {
   "data": Object {
     "submitMultipleOrders": Object {
