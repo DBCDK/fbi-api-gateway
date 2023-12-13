@@ -27,7 +27,7 @@ const context = {
   user: {
     userId: "some-id",
     loggedInAgencyId: "715100",
-    municipalityAgencyId: "100200",
+    municipalityAgencyId: "100200", //TODO test users dont have digital article service, so its always a physical order
   },
   smaug: {
     app: { id: "app-name", ips: ["1.1.1.1"] },
@@ -77,7 +77,7 @@ const digitalArticle = {
   },
 };
 
-const physicalArticle = {
+const physicalPeriodica = {
   pids: ["870970-basis:04978617"],
   key: "work-of:870970-basis:04978617Tidsskrift",
   periodicaForm: {
@@ -117,12 +117,12 @@ describe("submitMultipleOrders", () => {
     expect(result).toMatchSnapshot();
   });
 
-  test("succeeds: user orders a book, a digital article and a physical article", async () => {
+  test("succeeds: user orders a book, a digital article and a physical periodica", async () => {
     const result = await performTestQuery({
       query,
       variables: {
         input: {
-          materialsToOrder: [book, digitalArticle, physicalArticle],
+          materialsToOrder: [book, digitalArticle, physicalPeriodica],
           pickUpBranch: "715100",
           userParameters,
         },
@@ -183,6 +183,21 @@ describe("submitMultipleOrders", () => {
       variables: {
         input: {
           materialsToOrder: [book, invalidOrder],
+          pickUpBranch: "715100",
+          userParameters,
+        },
+      },
+      context,
+    });
+    expect(result).toMatchSnapshot();
+  });
+
+  test("2 succeed, we order physical periodica when no title, author or pagenumber is given", async () => {
+    const result = await performTestQuery({
+      query,
+      variables: {
+        input: {
+          materialsToOrder: [book, physicalPeriodica],
           pickUpBranch: "715100",
           userParameters,
         },

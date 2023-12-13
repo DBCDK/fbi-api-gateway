@@ -7,6 +7,7 @@ import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 import { placeCopyRequest } from "./elba";
 import { filterAgenciesByProps } from "../utils/accounts";
+import { isPeriodica } from "../utils/utils";
 
 import getUserBorrowerStatus, {
   getUserIds,
@@ -505,15 +506,11 @@ export const resolvers = {
         !!digitalAccessSubscriptions[user.municipalityAgencyId] && !!account;
 
       const nonPeriodicaOrders = materialsToOrder.filter(
-        (material) => !material.periodicaForm
+        (material) => !isPeriodica(material.periodicaForm)
       );
 
-      const periodicaOrders = materialsToOrder.filter(
-        (material) =>
-          material.periodicaForm &&
-          (material.periodicaForm.authorOfComponent ||
-            material.periodicaForm.titleOfComponent ||
-            material.periodicaForm.pagesOfComponent)
+      const periodicaOrders = materialsToOrder.filter((material) =>
+        isPeriodica(material.periodicaForm)
       );
 
       // Place periodica orders
