@@ -77,7 +77,16 @@ const digitalArticle = {
   },
 };
 
-const physicalArticle = {
+const phsyicalPeriodica = {
+  pids: ["870970-basis:04978617"],
+  key: "work-of:870970-basis:04978617Tidsskrift",
+  periodicaForm: {
+    publicationDateOfComponent: "2023",
+    pid: "870970-basis:04978617",
+  },
+};
+
+const physicalPeriodica = {
   pids: ["870970-basis:04978617"],
   key: "work-of:870970-basis:04978617Tidsskrift",
   periodicaForm: {
@@ -122,7 +131,7 @@ describe("submitMultipleOrders", () => {
       query,
       variables: {
         input: {
-          materialsToOrder: [book, digitalArticle, physicalArticle],
+          materialsToOrder: [book, digitalArticle, physicalPeriodica],
           pickUpBranch: "715100",
           userParameters,
         },
@@ -183,6 +192,21 @@ describe("submitMultipleOrders", () => {
       variables: {
         input: {
           materialsToOrder: [book, invalidOrder],
+          pickUpBranch: "715100",
+          userParameters,
+        },
+      },
+      context,
+    });
+    expect(result).toMatchSnapshot();
+  });
+
+  test("2 succeed, we order physical periodica when no title, author or pagenumber is given", async () => {
+    const result = await performTestQuery({
+      query,
+      variables: {
+        input: {
+          materialsToOrder: [book, physicalPeriodica],
           pickUpBranch: "715100",
           userParameters,
         },

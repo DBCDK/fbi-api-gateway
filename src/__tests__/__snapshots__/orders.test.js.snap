@@ -17,6 +17,22 @@ Object {
 }
 `;
 
+exports[`submitMultipleOrders 2 succeed, we order physical periodica when no title, author or pagenumber is given 1`] = `
+Object {
+  "data": Object {
+    "submitMultipleOrders": Object {
+      "failedAtCreation": Array [],
+      "ok": true,
+      "status": "OK",
+      "successfullyCreated": Array [
+        "work-of:870970-basis:39074184Bog",
+        "work-of:870970-basis:04978617Tidsskrift",
+      ],
+    },
+  },
+}
+`;
+
 exports[`submitMultipleOrders all orders fail: unknown pickupBranch 1`] = `
 Object {
   "data": Object {

@@ -721,3 +721,19 @@ export async function resolveLocalizationsWithHoldings({
 export function isCPRNumber(uniqueId) {
   return /^\d{10}$/.test(uniqueId);
 }
+
+/**
+ * Check if periodicaForm contains the necessary fields to be a periodica
+ * Otherwise we order entire edition/udgave as physical order instead of a single (digital) article
+ * @param {Object} periodicaForm
+ * @returns
+ */
+export function isPeriodica(periodicaForm) {
+  if (!periodicaForm) return false;
+  const {
+    authorOfComponent,
+    titleOfComponent,
+    pagesOfComponent,
+  } = periodicaForm;
+  return authorOfComponent || titleOfComponent || pagesOfComponent;
+}
