@@ -7,7 +7,13 @@ function parseResponse(response) {
 }
 
 export async function load({ pids }, context) {
-  const response = (await context?.fetch(`${url}?action=formatObject&pid=${pids.join(",")}&outputFormat=refWorks&outputType=json`)).body;
+  const response = (
+    await context?.fetch(
+      `${url}?action=formatObject&pid=${pids.join(
+        ","
+      )}&outputFormat=refWorks&outputType=json`
+    )
+  ).body;
   return parseResponse(response);
 }
 

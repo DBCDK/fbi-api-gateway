@@ -208,7 +208,7 @@ export const resolvers = {
     async refWorks(parent, args, context, info) {
       const ref = await context.datasources
         .getLoader("refworks")
-        .load({pids: args.pids});
+        .load({ pids: args.pids });
       return ref;
     },
     async localizations(parent, args, context, info) {
