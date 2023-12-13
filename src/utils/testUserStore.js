@@ -54,7 +54,12 @@ export async function storeTestUser(object, context) {
  * Get test user object from Redis, and create a proper structured
  * test user object.
  */
-export async function getTestUser(context) {
+export async function getTestUser(context, optionalToken) {
+  // If optiuonalToken is provided we create a new updated context
+  if (optionalToken) {
+    context = { ...context, ...parseTestToken(optionalToken) };
+  }
+
   let res = (await get(getKey(context)))?.val;
 
   // Get info for login agency

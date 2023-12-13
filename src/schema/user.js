@@ -303,8 +303,7 @@ export const resolvers = {
 
       // and now for DDA .. the only check we can do is if agency (municipality) starts with '7' (public library)
       if (municipalityAgencyId && municipalityAgencyId?.startsWith("7")) {
-        // Actually we also want the account check here, but the proxy does not support this check.
-        subscriptions.demandDrivenAcquisition = true;
+        subscriptions.demandDrivenAcquisition = !!account;
       }
 
       return subscriptions;

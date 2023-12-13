@@ -53,7 +53,7 @@ const ALLOWED_TYPES = {
   PublicationYear: true,
   HostPublication: true,
   AccessType: true,
-  Access: true,
+  Access: false, // Disabled: Uniontype which can hold a user-specific url (proxy)
   AccessUrlType: true,
   FictionNonfiction: true,
   FictionNonfictionCode: true,
