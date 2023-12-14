@@ -3,7 +3,12 @@ import config from "../config";
 const { url, ttl } = config.datasources.openformat;
 
 function parseResponse(response) {
-  return response?.formatResponse?.refWorks[0]?.$ || "ERROR";
+  return splitResponse(response?.formatResponse?.refWorks[0]?.$);
+}
+
+function splitResponse(ref) {
+  const parts = ref.split("RT Book");
+  return parts.join("\nRT Book");
 }
 
 export async function load({ pids }, context) {
