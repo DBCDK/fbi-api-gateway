@@ -570,7 +570,7 @@ export const resolvers = {
       //put element at loginAgencyIdx at the beginning of the array
       if (loginAgencyIdx > 0) {
         const loginAgency = sortedAgencies.splice(loginAgencyIdx, 1)[0];
-        filteredAgencyInfoes.unshift(loginAgency);
+        filteredNonActiveBranches.unshift(loginAgency);
       }
       return sortedAgencies;
     },
