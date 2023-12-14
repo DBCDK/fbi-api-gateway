@@ -131,8 +131,8 @@ export async function search(props, getFunc) {
     agencyid,
     language = "da",
     branchId,
-    digitalAccessSubscriptions,
-    infomediaSubscriptions,
+    digitalAccessSubscriptions = [],
+    infomediaSubscriptions = [],
     status = "ALLE",
     agencyTypes = ["ALLE"],
     bibdkExcludeBranches,
@@ -172,6 +172,7 @@ export async function search(props, getFunc) {
 
   const filterAndExclude = (branch) => {
     let include = true;
+
     if (bibdkExcludeBranches) {
       include =
         digitalAccessSubscriptions[branch.agencyId] ||

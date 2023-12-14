@@ -531,8 +531,8 @@ export const resolvers = {
               agencyid: agency,
               language: parent.language,
               limit: 30,
-              status: args.status || "AKTIVE",
-              bibdkExcludeBranches: args.bibdkExcludeBranches || true,
+              status: "AKTIVE",
+              bibdkExcludeBranches: false,
             })
         )
       );
