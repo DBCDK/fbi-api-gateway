@@ -531,8 +531,8 @@ export const resolvers = {
               agencyid: agency,
               language: parent.language,
               limit: 30,
-              status: args.status || "ALLE",
-              bibdkExcludeBranches: args.bibdkExcludeBranches || false,
+              status: args.status || "AKTIVE",
+              bibdkExcludeBranches: args.bibdkExcludeBranches || true,
             })
         )
       );
@@ -543,17 +543,7 @@ export const resolvers = {
         (agency) => agency?.result.length > 0
       );
 
-      // Filter deleted branches
-      const filteredNonActiveBranches = filteredAgencyInfoes.map((i) => {
-        return {
-          ...i,
-          result: i.result.filter((branch) => {
-            return branch.status === "active";
-          }),
-        };
-      });
-
-      const sortedAgencies = filteredNonActiveBranches?.sort((a, b) =>
+      const sortedAgencies = filteredAgencyInfoes?.sort((a, b) =>
         a?.result?.[0]?.agencyName?.localeCompare(b?.result?.[0]?.agencyName)
       );
 
@@ -570,7 +560,7 @@ export const resolvers = {
       //put element at loginAgencyIdx at the beginning of the array
       if (loginAgencyIdx > 0) {
         const loginAgency = sortedAgencies.splice(loginAgencyIdx, 1)[0];
-        filteredNonActiveBranches.unshift(loginAgency);
+        filteredAgencyInfoes.unshift(loginAgency);
       }
       return sortedAgencies;
     },
