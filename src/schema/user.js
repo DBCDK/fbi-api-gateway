@@ -553,8 +553,8 @@ export const resolvers = {
         };
       });
 
-      const sortedAgencies = filteredNonActiveBranches.sort((a, b) =>
-        a.result[0].agencyName.localeCompare(b.result[0].agencyName)
+      const sortedAgencies = filteredNonActiveBranches?.sort((a, b) =>
+        a?.result?.[0]?.agencyName?.localeCompare(b?.result?.[0]?.agencyName)
       );
 
       const loginAgencyIdx = sortedAgencies.findIndex((agency) => {
