@@ -10,10 +10,10 @@ function splitResponse(ref) {
   // The first tag in refwork will always be the RT tag which determines what RefWorks record type to use.
   // if asked for multiple records openformat doesn't add a linebreak before the RT tag which is needed
   // in the refwork tool to understand it. We insert a linebreak here.
-  const regexp = /RT .*/g;
+  const regexp = /^RT .*/gm;
   const matches = ref.match(regexp);
 
-  matches.forEach((match) => (ref = ref.replaceAll(match, "\n" + match)));
+  matches?.forEach((match) => (ref = ref.replaceAll(match, "\n" + match)));
 
   return ref;
 }
