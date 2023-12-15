@@ -12,9 +12,6 @@ function splitResponse(ref) {
   // if asked for multiple records openformat doesn't add a linebreak before the RT tag which is needed
   // in the refwork tool to understand it. We insert a linebreak here.
   const regexp = /^RT .*/gm;
-  //const regexp = /(^RT .*\b)(?![\s\S]*\b\1\b)/gm;
-  // const matches = ref.match(regexp);
-
   return ref.replace(regexp, function (match) {
     return "\n" + match;
   });
