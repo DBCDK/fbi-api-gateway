@@ -46,6 +46,8 @@ export async function testLoad({ accessToken }, context) {
 
   const loginAgency = testUser?.loginAgency;
 
+  const idpUsed = testUser?.loginAgency?.idpUsed;
+
   const map = { 911116: "1110" };
 
   const municipalityAgencyId = testUser.merged.find(
@@ -54,6 +56,7 @@ export async function testLoad({ accessToken }, context) {
 
   return {
     attributes: {
+      idpUsed,
       userId: loginAgency?.cpr || loginAgency?.localId,
       blocked: false,
       uniqueId: loginAgency?.uniqueId,

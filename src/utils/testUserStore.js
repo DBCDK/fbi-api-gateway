@@ -80,6 +80,9 @@ export async function getTestUser(context, optionalToken) {
   const cpr = branch?.agencyId ? null : "0101011234";
   const localId = "123456";
 
+  const idpUsed =
+    context?.testUser?.loginAgency === "nemlogin" ? "nemlogin" : "borchk";
+
   if (!res?.accounts?.find((account) => account.agency === agencyId)) {
     res.accounts.push({ agency: agencyId, cpr });
     await storeTestUser(res, context);
@@ -88,6 +91,7 @@ export async function getTestUser(context, optionalToken) {
   res.accounts = res.accounts?.map((account) => ({
     ...account,
     localId,
+    idpUsed,
     uniqueId: uuidFromString(account.cpr || account.agency || "", context),
   }));
   res.loginAgency = res?.accounts?.find(
