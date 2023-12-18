@@ -52,10 +52,9 @@ export async function batchLoader(keys, context) {
   return parseResponse(covers?.body);
 }
 
-// export const options = {
-//   redis: {
-//     prefix: prefix,
-//     ttl: ttl,
-//     staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
-//   },
-// };
+export const options = {
+  redis: {
+    prefix: prefix,
+    ttl: ttl,
+  },
+};
