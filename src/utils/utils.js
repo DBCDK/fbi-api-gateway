@@ -657,11 +657,37 @@ function handleLocalizationsWithKglBibliotek(
   ];
 }
 
+/**
+ * Javascript Date to YYYY-MM-DD
+ * @param {Date} dateObject
+ */
+export function dateObjectToDateOnlyString(dateObject) {
+  const year = dateObject.getFullYear().toString().padStart(4, "0");
+  const month = (dateObject.getMonth() + 1).toString().padStart(2, "0");
+  const date = dateObject.getDate().toString().padStart(2, "0");
+
+  return `${year}-${month}-${date}`;
+}
+
+export function dateIsToday(date) {
+  return new Date(date).toDateString() === new Date().toDateString();
+}
+
+function dateIsLater(date) {
+  return (
+    date &&
+    typeof date === "string" &&
+    !isNaN(Date.parse(date)) &&
+    !dateIsToday(date)
+  );
+}
+
 export async function resolveLocalizationsWithHoldings({
   args,
   context,
   offset,
   limit,
+  availabilityTypes = ["NOW"],
   language,
   status,
   bibdkExcludeBranches,
@@ -686,17 +712,53 @@ export async function resolveLocalizationsWithHoldings({
   const agencyIds = new Set(
     detailedHoldings
       .filter((singleDetailedHolding) => {
+        return dateIsToday(singleDetailedHolding.expectedDelivery);
+      })
+      .map((singleDetailedHolding) => singleDetailedHolding.branchId)
+  );
+
+  const agencyIdsWithExpectedDeliveryLater = new Set(
+    detailedHoldings
+      .filter((singleDetailedHolding) => {
+        return dateIsLater(singleDetailedHolding.expectedDelivery);
+      })
+      .map((singleDetailedHolding) => singleDetailedHolding.branchId)
+  );
+
+  const agencyIdsWithExpectedDeliveryUnknown = new Set(
+    detailedHoldings
+      .filter((singleDetailedHolding) => {
         return (
-          new Date(singleDetailedHolding.expectedDelivery).toDateString() ===
-          new Date().toDateString()
+          !dateIsToday(singleDetailedHolding.expectedDelivery) &&
+          !dateIsLater(singleDetailedHolding.expectedDelivery)
         );
       })
       .map((singleDetailedHolding) => singleDetailedHolding.branchId)
   );
 
-  const localizationsWithHoldings = localizations.agencies.filter((agency) =>
-    agencyIds.has(agency.agencyId)
+  const localizationsWithHoldingsExpectedDeliveryToday = localizations.agencies.filter(
+    (agency) => agencyIds.has(agency.agencyId)
   );
+
+  const localizationsWithHoldingsExpectedDeliveryLater = localizations.agencies.filter(
+    (agency) => agencyIdsWithExpectedDeliveryLater.has(agency.agencyId)
+  );
+
+  const localizationsWithHoldingsExpectedDeliveryUnknown = localizations.agencies.filter(
+    (agency) => agencyIdsWithExpectedDeliveryUnknown.has(agency.agencyId)
+  );
+
+  const localizationsWithHoldings = [
+    ...(availabilityTypes.includes("NOW")
+      ? localizationsWithHoldingsExpectedDeliveryToday
+      : []),
+    ...(availabilityTypes.includes("LATER")
+      ? localizationsWithHoldingsExpectedDeliveryLater
+      : []),
+    ...(availabilityTypes.includes("UNKNOWN")
+      ? localizationsWithHoldingsExpectedDeliveryUnknown
+      : []),
+  ];
 
   const localizationsWithHoldingsAndHandledKglBibliotek = handleLocalizationsWithKglBibliotek(
     localizationsWithHoldings
@@ -713,9 +775,17 @@ export async function resolveLocalizationsWithHoldings({
         status: status || "ALLE",
         bibdkExcludeBranches: bibdkExcludeBranches ?? false,
       });
+
+      const expectedDelivery = agencyIds.has(agencyId)
+        ? "NOW"
+        : agencyIdsWithExpectedDeliveryLater.has(agencyId)
+        ? "LATER"
+        : "UNKNOWN";
+
       return {
         agencyId: agencyId,
         agencyName: await res.result?.[0]?.agencyName,
+        expectedDelivery: expectedDelivery,
       };
     });
 
@@ -730,7 +800,19 @@ export async function resolveLocalizationsWithHoldings({
       (a, b) => a.agencyId === b.agencyId && assign(a, b)
     ),
     "agencyName"
-  );
+  )
+    ?.filter((agency) => availabilityTypes.includes(agency.expectedDelivery))
+    .sort((a, b) => {
+      const aAvail = a?.expectedDelivery;
+      const bAvail = b?.expectedDelivery;
+
+      return (
+        Number(bAvail === "NOW") - Number(aAvail === "NOW") ||
+        Number(bAvail === "LATER") - Number(aAvail === "LATER") ||
+        Number(bAvail === "UNKNOWN") - Number(aAvail === "UNKNOWN") ||
+        0
+      );
+    });
 
   return {
     count: intersectingAgencyIdsFromLibrary.length,

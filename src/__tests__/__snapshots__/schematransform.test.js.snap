@@ -648,7 +648,7 @@ type Query {
   \\"\\"\\"
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   \\"\\"\\"
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
@@ -2376,6 +2376,12 @@ type holdingsItem {
   localizationPid: String
   codes: String
   localIdentifier: String
+}
+
+enum AvailabilityEnum {
+  NOW
+  LATER
+  UNKNOWN
 }
 
 enum SubmitOrderStatus {
