@@ -205,6 +205,14 @@ export function getInfomediaDetails(article) {
   return details;
 }
 
+/**
+ * Get agency parameters from vip core - check if settings allows borrowercheck
+ * for given branch/agency.
+ * @param agencyId
+ *  can either be agency- or branchId depending ..
+ * @param context
+ * @returns {Promise<boolean>}
+ */
 export async function resolveBorrowerCheck(agencyId, context) {
   // returns true if login.bib.dk is supported
   if (!agencyId) {

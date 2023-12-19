@@ -104,7 +104,13 @@ export const resolvers = {
       return status === false;
     },
     async borrowerCheck(parent, args, context, info) {
-      return await resolveBorrowerCheck(parent.agencyId, context);
+      // pjo 19/12/23 bug BIBDK2021-2294 . i'm guessing that this is
+      // a place to prioritize branchId OVER agencyId
+      // there are others - @see periodicaorder.js, @see elba.js
+      return await resolveBorrowerCheck(
+        parent?.branchId || parent?.agencyId,
+        context
+      );
     },
     agencyName(parent, args, context, info) {
       return parent.agencyName || "";
