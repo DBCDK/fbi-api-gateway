@@ -322,11 +322,11 @@ export async function clearRedis(prefix, key) {
  *
  * @throws Will throw error if service is down
  */
-export function status() {
-  if (!isConnected) {
-    throw new Error("Redis is not connected");
-  }
-}
+// export function status() {
+//   if (!isConnected) {
+//     throw new Error("Redis is not connected");
+//   }
+// }
 
 // Connect if Redis is enabled
 if (
