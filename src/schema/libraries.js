@@ -104,13 +104,12 @@ export const resolvers = {
       return status === false;
     },
     async borrowerCheck(parent, args, context, info) {
-      // pjo 19/12/23 bug BIBDK2021-2294 . i'm guessing that this is
-      // a place to prioritize branchId OVER agencyId
-      // there are others - @see periodicaorder.js, @see elba.js
-      return await resolveBorrowerCheck(
-        parent?.branchId || parent?.agencyId,
-        context
-      );
+      // pjo 19/12/23 bug BIBDK2021-2294 . if libraries are not public (number starts with 7)
+      // we prioritize branchId OVER agencyId - this is for FFU and foreign libraries
+      const libraryId = parent?.agencyId?.startsWith("7")
+        ? parent?.agencyId
+        : parent?.branchId || parent?.agencyId;
+      return await resolveBorrowerCheck(libraryId, context);
     },
     agencyName(parent, args, context, info) {
       return parent.agencyName || "";
