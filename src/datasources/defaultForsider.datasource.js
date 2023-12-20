@@ -52,24 +52,6 @@ export async function batchLoader(keys, context) {
   return parseResponse(covers?.body);
 }
 
-/**
- * The status function
- *
- * @throws Will throw error if service is down
- */
-export async function status(loadFunc, fetcher) {
-  const keys = {
-    title: "fisk",
-    materialType: "LYDBOG",
-  };
-
-  return keys;
-
-  // console.log(fetcher, "FETCHER");
-  //
-  // await loadFunc(keys, fetcher);
-}
-
 export const options = {
   redis: {
     prefix: prefix,

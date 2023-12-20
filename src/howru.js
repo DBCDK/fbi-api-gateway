@@ -1,11 +1,8 @@
 import _ from "lodash";
 import config from "./config";
 import { datasources } from "./datasourceLoader";
-// import { status as redisStatus } from "./datasources/redis.datasource";
+import { status as redisStatus } from "./datasources/redis.datasource";
 import { getStats } from "./utils/fetchWithLimit";
-import createDataLoaders from "./datasourceLoader";
-import { v4 as uuid } from "uuid";
-import data from "bootstrap/js/src/dom/data";
 
 // Create upSince timestamp
 let upSince = new Date();
@@ -18,7 +15,7 @@ const services = [
       name: datasource.name,
       status: datasource.statusChecker,
     })),
-  // { name: "redis", status: redisStatus },
+  { name: "redis", status: redisStatus },
 ];
 
 // Fields in the config that must not
@@ -37,20 +34,13 @@ const omitKeys = [
  *
  */
 async function howru(req, res) {
-  console.log(services, "SERVICE");
-
-  const dataloaders = createDataLoaders(uuid(), req.testUser, req.accessToken);
   // Call status function of every service
   const results = await Promise.all(
     services.map(async (service) => {
-      console.log(service, "SERVICE");
-
-      const loader = dataloaders.getLoader(service?.name);
-      console.log(loader, "LOADER");
       let ok = false;
       let message;
       try {
-        await loader.load(service.status());
+        await service.status();
         ok = true;
       } catch (e) {
         message = (e.response && e.response.text) || e.message;
@@ -79,9 +69,6 @@ async function howru(req, res) {
     ...service,
     ok: service.errors === service.prevErrors,
   }));
-
-  console.log(httpStats, "STATS");
-
   httpStats.forEach((service) => {
     if (!service.ok) {
       ok = false;
