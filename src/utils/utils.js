@@ -215,6 +215,8 @@ export function getInfomediaDetails(article) {
  */
 export async function resolveBorrowerCheck(agencyId, context) {
   // returns true if login.bib.dk is supported
+  // @TODO remove the OR part - [!agencyId?.startsWith("7")] is a quickfix while we wait
+  // for go for culr integration with non public libraries
   if (!agencyId || !agencyId?.startsWith("7")) {
     return false;
   }
