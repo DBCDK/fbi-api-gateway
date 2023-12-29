@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url } = config.datasources.jed;
+const { url, prefix, ttl } = config.datasources.jed;
 
 /**
  * Fetches a work id, based on a pid
@@ -14,3 +14,10 @@ export async function load({ pid, profile }, context) {
 
   return res.body?.workId;
 }
+
+export const options = {
+  redis: {
+    prefix: `rel-${prefix}`,
+    ttl,
+  },
+};
