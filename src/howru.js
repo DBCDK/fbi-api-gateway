@@ -65,10 +65,13 @@ async function howru(req, res) {
   });
 
   // loop through http stats and check if all is ok
-  const httpStats = getStats().map((service) => ({
-    ...service,
-    ok: service.errors === service.prevErrors,
-  }));
+  const httpStats = getStats()
+    .filter((service) => service.name !== "pidToWorkId")
+    .map((service) => ({
+      ...service,
+      ok: service.errors === service.prevErrors,
+    }));
+
   httpStats.forEach((service) => {
     if (!service.ok) {
       ok = false;
