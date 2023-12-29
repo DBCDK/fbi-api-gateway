@@ -17,7 +17,7 @@ export async function load({ pid, profile }, context) {
 
 export const options = {
   redis: {
-    prefix: `rel-${prefix}`,
+    prefix: `pidtowork-${prefix}`,
     ttl,
   },
 };
