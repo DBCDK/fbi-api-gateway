@@ -27,6 +27,10 @@ function createHTTPStats() {
 
   return {
     insertStats(name, res) {
+      if (name === "pidToWorkId") {
+        return;
+      }
+
       const { ok, status } = res;
 
       createStatsEntry(name, status);
