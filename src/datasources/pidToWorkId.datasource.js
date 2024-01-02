@@ -9,6 +9,14 @@ const { url, prefix, ttl } = config.datasources.jed;
  * is created at some point.
  */
 export async function load({ pid, profile }, context) {
+  if (!pid) {
+    throw new Error("Could not get manifestation. Pid is required.");
+  }
+
+  if (!profile || !profile.agency || !profile.name) {
+    throw new Error("Could not get manifestation. Profile is required");
+  }
+
   const res = await context.fetch(
     `${url}/api/v1/fbi-api/manifestation?id=${pid}&profile=${profile.agency}-${profile.name}&includeRelations=false`
   );
