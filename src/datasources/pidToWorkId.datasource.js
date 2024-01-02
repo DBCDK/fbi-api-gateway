@@ -1,4 +1,5 @@
 import config from "../config";
+import { log } from "dbc-node-logger";
 
 const { url, prefix, ttl } = config.datasources.jed;
 
@@ -11,6 +12,13 @@ export async function load({ pid, profile }, context) {
   const res = await context.fetch(
     `${url}/api/v1/fbi-api/manifestation?id=${pid}&profile=${profile.agency}-${profile.name}&includeRelations=false`
   );
+  // log if not ok - @TODO a more generic way? - may for all datasources
+  if (res?.status !== 200) {
+    log.error(`pidToWorkId returns wrong statuscode:${res?.status}`, {
+      pid: pid,
+      profile: profile,
+    });
+  }
 
   return res.body?.workId;
 }
