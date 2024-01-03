@@ -191,7 +191,7 @@ export function fastLaneMiddleware(req, res, next) {
   };
 
   res.end = function (chunk, encoding) {
-    if (req.fastLane) {
+    if (req.fastLane && !req.graphQLErrors) {
       if (chunk) chunks.push(Buffer.from(chunk, encoding));
 
       var body = Buffer.concat(chunks).toString("utf8");
