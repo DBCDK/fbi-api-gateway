@@ -181,7 +181,8 @@ promExporterApp.listen(9599, () => {
       const graphQLParams = req.body;
       const document = parse(graphQLParams.query);
       const ast = getOperationAST(document);
-      req.operationName = ast.kind === "OperationDefinition" && ast.name.value;
+      req.operationName =
+        ast?.kind === "OperationDefinition" && ast?.name?.value;
 
       req.queryVariables = graphQLParams.variables;
       req.parsedQuery = graphQLParams.query
