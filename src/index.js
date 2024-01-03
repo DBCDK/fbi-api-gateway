@@ -134,6 +134,7 @@ promExporterApp.listen(9599, () => {
         accessTokenHash,
         isTestToken: req.isTestToken,
         fastLane: req.fastLane,
+        operationName: req.operationName,
       });
       // monitorName is added to context/req in the monitor resolver
       if (req.monitorName) {
@@ -180,6 +181,8 @@ promExporterApp.listen(9599, () => {
       const graphQLParams = req.body;
       const document = parse(graphQLParams.query);
       const ast = getOperationAST(document);
+      req.operationName = ast.kind === "OperationDefinition" && ast.name.value;
+
       req.queryVariables = graphQLParams.variables;
       req.parsedQuery = graphQLParams.query
         .replace(/\n/g, " ")
