@@ -11,10 +11,7 @@ const ALLOWED_TYPES = {
   Boolean: true,
   String: true,
   DateTime: true,
-  BookMarkResponse: true,
   Int: true,
-  BookMark: true,
-  UserSubscriptions: true,
   BranchResult: true,
   Branch: true,
   AgencyType: true,
@@ -194,7 +191,7 @@ export function fastLaneMiddleware(req, res, next) {
   };
 
   res.end = function (chunk, encoding) {
-    if (req.fastLane) {
+    if (req.fastLane && !req.graphQLErrors) {
       if (chunk) chunks.push(Buffer.from(chunk, encoding));
 
       var body = Buffer.concat(chunks).toString("utf8");
