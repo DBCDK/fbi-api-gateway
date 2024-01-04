@@ -1797,7 +1797,7 @@ type Series {
   mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
-  members(limit: PaginationLimit, offset: Int): [SerieWork!]!
+  members(limit: Int, offset: Int): [SerieWork!]!
 }
 
 interface Subject {
@@ -2832,10 +2832,10 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series(limit: PaginationLimit, offset: Int): [Series!]!
+  series(limit: Int, offset: Int): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works(limit: PaginationLimit, offset: Int): [Work!]!
+  works(limit: Int, offset: Int): [Work!]!
 }
 
 type User {
@@ -4242,7 +4242,7 @@ type Series {
   mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
-  members(limit: PaginationLimit, offset: Int): [SerieWork!]!
+  members(limit: Int, offset: Int): [SerieWork!]!
 }
 
 interface Subject {
@@ -4757,10 +4757,10 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series(limit: PaginationLimit, offset: Int): [Series!]!
+  series(limit: Int, offset: Int): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works(limit: PaginationLimit, offset: Int): [Work!]!
+  works(limit: Int, offset: Int): [Work!]!
 }
 "
 `;
@@ -5835,7 +5835,7 @@ type Series {
   mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
-  members(limit: PaginationLimit, offset: Int): [SerieWork!]!
+  members(limit: Int, offset: Int): [SerieWork!]!
 }
 
 interface Subject {
@@ -6080,9 +6080,6 @@ type TvSeriesDetails {
   numbers: [Int!]
 }
 
-\\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
-scalar PaginationLimit
-
 type Universe {
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -6096,10 +6093,10 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series(limit: PaginationLimit, offset: Int): [Series!]!
+  series(limit: Int, offset: Int): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works(limit: PaginationLimit, offset: Int): [Work!]!
+  works(limit: Int, offset: Int): [Work!]!
 }
 "
 `;
