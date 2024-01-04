@@ -126,6 +126,8 @@ function Item({
 
   const agencies = user?.agencies;
 
+  const hasOmittedCulrData = user.omittedCulrData;
+
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = hasValidationError ? styles.expired : "";
   const missingConfigClass = missingConfiguration ? styles.missingConfig : "";
@@ -313,12 +315,10 @@ function Item({
               )}
 
               <div className={styles.details}>
-                {user?.isCPRValidated && (
-                  <div className={styles.isCPRValidated}>
-                    <Text type="text4">IsCPRValidated</Text>
-                    <Text type="text1">{user?.isCPRValidated.toString()}</Text>
-                  </div>
-                )}
+                <div className={styles.isCPRValidated}>
+                  <Text type="text4">IsCPRValidated</Text>
+                  <Text type="text1">{user?.isCPRValidated.toString()}</Text>
+                </div>
 
                 <div className={styles.culr}>
                   <Text type="text4">HasCulrUniqueId</Text>
@@ -366,6 +366,48 @@ function Item({
                     <Text type="text1">{user?.identityProviderUsed}</Text>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {hasOmittedCulrData && <hr className={styles.divider} />}
+
+          {hasOmittedCulrData && (
+            <div className={styles.user}>
+              <div className={styles.heading}>
+                <Text type="text1">Omitted Culr data</Text>
+              </div>
+
+              <div className={styles.details}>
+                <div className={styles.hasOmittedCulrUniqueId}>
+                  <Text type="text4">UniqueId</Text>
+                  <Text type="text1">
+                    {hasOmittedCulrData?.hasOmittedCulrUniqueId.toString()}
+                  </Text>
+                </div>
+
+                <div className={styles.culr}>
+                  <Text type="text4">Accounts</Text>
+                  <Text type="text1">
+                    {hasOmittedCulrData?.hasOmittedCulrAccounts.toString()}
+                  </Text>
+                </div>
+              </div>
+
+              <div className={styles.details}>
+                <div className={styles.isCPRValidated}>
+                  <Text type="text4">Municipality</Text>
+                  <Text type="text1">
+                    {hasOmittedCulrData?.hasOmittedCulrMunicipality.toString()}
+                  </Text>
+                </div>
+
+                <div className={styles.culr}>
+                  <Text type="text4">MunicipalityAgencyId</Text>
+                  <Text type="text1">
+                    {hasOmittedCulrData?.hasOmittedCulrMunicipalityAgencyId.toString()}
+                  </Text>
+                </div>
               </div>
             </div>
           )}

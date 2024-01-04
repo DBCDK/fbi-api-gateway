@@ -539,7 +539,7 @@ export const resolvers = {
     async agencies(parent, args, context, info) {
       const user = context?.user;
 
-      let agencies = filterDuplicateAgencies(user?.agencies)?.map(
+      const agencies = filterDuplicateAgencies(user?.agencies)?.map(
         (account) => account.agencyId
       );
 

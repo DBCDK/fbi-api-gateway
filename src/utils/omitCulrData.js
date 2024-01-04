@@ -16,6 +16,8 @@ export default function omitCulrData(attributes) {
     agency: loggedInAgencyId,
   });
 
+  console.log("nnnnnnnnnn", filteredAgencies, loggedInAgencyId, agencies);
+
   return {
     ...attributes,
     uniqueId: null,
