@@ -2869,6 +2869,8 @@ type User {
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
   identityProviderUsed: String!
+  hasCulrUniqueId: Boolean!
+  omittedCulrData: OmittedCulrDataResponse
 }
 
 type UserSubscriptions {
@@ -2977,6 +2979,13 @@ input BookMarkInput {
 
 type BookMarkDeleteResponse {
   IdsDeletedCount: Int!
+}
+
+type OmittedCulrDataResponse {
+  hasOmittedCulrUniqueId: Boolean!
+  hasOmittedCulrMunicipality: Boolean!
+  hasOmittedCulrMunicipalityAgencyId: Boolean!
+  hasOmittedCulrAccounts: Boolean!
 }
 
 type UserMutations {

@@ -1,5 +1,7 @@
 import config from "../config";
+import { isFFUAgency } from "../utils/agency";
 import { setMunicipalityAgencyId } from "../utils/municipalityAgencyId";
+import omitCulrData from "../utils/omitCulrData";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.userInfo;
@@ -19,13 +21,25 @@ export async function load({ accessToken }, context) {
       accessToken,
     });
 
-    // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
-    const municipalityAgencyId = setMunicipalityAgencyId(res.body?.attributes);
+    // user attributes enriched with loggedInAgencyId (from smaug)
+    let attributes = {
+      ...res.body?.attributes,
+      loggedInAgencyId: smaug?.user?.agency || null,
+    };
 
+    // This check prevents FFU users from accessing CULR data.
+    // FFU Borchk authentication, is not safe enough to expose CULR data.
+    if (isFFUAgency(smaug?.user?.agency)) {
+      attributes = omitCulrData(attributes);
+    }
+
+    // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
+    const municipalityAgencyId = setMunicipalityAgencyId(attributes);
+
+    // user data object
     return {
       attributes: {
-        ...res.body.attributes,
-        loggedInAgencyId: smaug?.user?.agency || null,
+        ...attributes,
         municipalityAgencyId,
       },
     };
@@ -41,35 +55,37 @@ export async function testLoad({ accessToken }, context) {
   // if provided accessToken differs from context.accesstoken (bearer token)
   // Fetch user from provided accessToken
   const optionalToken = context.accessToken !== accessToken && accessToken;
-
   const testUser = await getTestUser(context, optionalToken);
-
   const loginAgency = testUser?.loginAgency;
-
   const idpUsed = testUser?.loginAgency?.idpUsed;
-
   const map = { 911116: "1110" };
 
   const municipalityAgencyId = testUser.merged.find(
     (account) => account.isMunicipality
   )?.agency;
 
-  return {
-    attributes: {
-      idpUsed,
-      userId: loginAgency?.cpr || loginAgency?.localId,
-      blocked: false,
-      uniqueId: loginAgency?.uniqueId,
-      agencies: accountsToCulr(testUser.merged)?.filter(
-        (account) => account.agencyId !== "190101"
-      ),
-      municipalityAgencyId,
-      municipality: municipalityAgencyId?.startsWith?.("7")
-        ? municipalityAgencyId?.substr?.(1, 3)
-        : map[municipalityAgencyId],
-      loggedInAgencyId: loginAgency?.agency,
-    },
+  let attributes = {
+    idpUsed,
+    userId: loginAgency?.cpr || loginAgency?.localId,
+    blocked: false,
+    uniqueId: loginAgency?.uniqueId,
+    agencies: accountsToCulr(testUser.merged)?.filter(
+      (account) => account.agencyId !== "190101"
+    ),
+    municipalityAgencyId,
+    municipality: municipalityAgencyId?.startsWith?.("7")
+      ? municipalityAgencyId?.substr?.(1, 3)
+      : map[municipalityAgencyId],
+    loggedInAgencyId: loginAgency?.agency,
   };
+
+  // This check prevents FFU users from accessing CULR data.
+  // FFU Borchk authentication, is not safe enough to expose CULR data.
+  if (!isFFUAgency(loginAgency?.agency)) {
+    attributes = omitCulrData(attributes);
+  }
+
+  return { attributes };
 }
 
 export const options = {

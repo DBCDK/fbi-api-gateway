@@ -427,7 +427,7 @@ export const resolvers = {
         agencyId: user.loggedInAgencyId,
       });
 
-      if (!response.guid) {
+      if (!response?.guid) {
         return null;
       }
 
