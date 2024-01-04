@@ -27,12 +27,6 @@ function createHTTPStats() {
 
   return {
     insertStats(name, res) {
-      // @TODO - pjo 29/12/23 - disabled howru for pidToWorkId service - enable again
-      // when we find out what went wrong
-      if (name === "pidToWorkId") {
-        return;
-      }
-
       const { ok, status } = res;
 
       createStatsEntry(name, status);
