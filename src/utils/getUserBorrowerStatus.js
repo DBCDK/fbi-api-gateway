@@ -10,6 +10,7 @@ import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
 import { resolveBorrowerCheck } from "./utils";
+import { isFFUAgency } from "./agency";
 
 // all possible id field types
 const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
@@ -46,7 +47,7 @@ const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
  *  
  */
 export default async function getUserBorrowerStatus(
-  { agencyId, userIds = null },
+  { agencyId, userIds = null, userPincode = null },
   context
 ) {
   // Summary log
@@ -130,7 +131,7 @@ export default async function getUserBorrowerStatus(
 
     // Check authenticated user
     const result = await checkUserBorrowerStatus(
-      { agencyId, userId: _userId, isAccount: _isAccount },
+      { agencyId, userId: _userId, userPincode, isAccount: _isAccount },
       context
     );
 
@@ -251,17 +252,25 @@ export default async function getUserBorrowerStatus(
  * Function to perform the actual borchk status check
  */
 async function checkUserBorrowerStatus(
-  { agencyId, userId = null, isAccount = false },
+  { agencyId, userId = null, userPincode, isAccount = false },
   context
 ) {
   // status summary
   const summary = { status: true };
 
+  console.log("bbbbbbbbbbbbbbbbbbbb", isFFUAgency(agencyId), userPincode);
+
+  if (isFFUAgency(agencyId) && !userPincode) {
+    summary.statusCode = "ERROR_MISSING_PINCODE";
+    summary.status = false;
+  }
+
   // Get Borchk status
   const { status, blocked } = await context.datasources
     .getLoader("borchk")
     .load({
-      userId: userId,
+      userId,
+      userPincode,
       libraryCode: agencyId,
     });
 
