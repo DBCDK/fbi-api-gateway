@@ -126,7 +126,7 @@ function Item({
 
   const agencies = user?.agencies;
 
-  const hasOmittedCulrData = user.omittedCulrData;
+  const hasOmittedCulrData = user?.omittedCulrData;
 
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = hasValidationError ? styles.expired : "";
