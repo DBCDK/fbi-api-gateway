@@ -2,6 +2,8 @@ import fetch from "isomorphic-unfetch";
 import config from "../../../../src/config";
 
 import { setMunicipalityAgencyId } from "../../../../src/utils/municipalityAgencyId";
+import omitCulrData from "../../../../src/utils/omitCulrData";
+import { isFFUAgency } from "../../../../src/utils/agency";
 
 const {
   authenticationUser,
@@ -93,6 +95,8 @@ export default async function handler(req, res) {
   if (smaug_response.status === 200) {
     const smaug_data = await smaug_response.json();
 
+    const isFFULogin = isFFUAgency(smaug_data?.user?.agency);
+
     // add to result
     user.loggedInAgencyId = smaug_data?.user?.agency || null;
 
@@ -114,7 +118,8 @@ export default async function handler(req, res) {
 
       user.userId = userinfo_data.userId;
       user.identityProviderUsed = userinfo_data.idpUsed;
-      user.hasCulrUniqueId = !!userinfo_data.uniqueId;
+      user.hasCulrUniqueId = !!userinfo_data.uniqueId && !isFFULogin;
+      user.hasHiddenCulrUniqueId = !!userinfo_data.uniqueId;
       user.isAuthenticated = !!userinfo_data.userId;
 
       // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
@@ -140,6 +145,11 @@ export default async function handler(req, res) {
         user.name = userstatus_data.name;
         user.mail = userstatus_data.mail;
       }
+    }
+
+    if (isFFULogin) {
+      const data = omitCulrData(omitCulrData(user));
+      res.status(200).send({ user: data });
     }
 
     return res.status(200).send({ user });

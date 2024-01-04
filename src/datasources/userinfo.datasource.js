@@ -1,5 +1,7 @@
 import config from "../config";
+import { isFFUAgency } from "../utils/agency";
 import { setMunicipalityAgencyId } from "../utils/municipalityAgencyId";
+import omitCulrData from "../utils/omitCulrData";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.userInfo;
@@ -19,16 +21,30 @@ export async function load({ accessToken }, context) {
       accessToken,
     });
 
-    // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
-    const municipalityAgencyId = setMunicipalityAgencyId(res.body?.attributes);
+    // user attributes enriched with loggedInAgencyId (from smaug)
+    let attributes = {
+      ...res.body?.attributes,
+      loggedInAgencyId: smaug?.user?.agency || null,
+    };
 
-    return {
+    // This check prevents FFU users from accessing CULR data.
+    // FFU Borchk authentication, is not safe enough to expose CULR data.
+    if (isFFUAgency(smaug?.user?.agency)) {
+      attributes = omitCulrData(attributes);
+    }
+
+    // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
+    const municipalityAgencyId = setMunicipalityAgencyId(attributes);
+
+    // user data object
+    const data = {
       attributes: {
-        ...res.body.attributes,
-        loggedInAgencyId: smaug?.user?.agency || null,
+        ...attributes,
         municipalityAgencyId,
       },
     };
+
+    return data;
   }
 
   return res.body;
@@ -72,10 +88,10 @@ export async function testLoad({ accessToken }, context) {
   };
 }
 
-export const options = {
-  redis: {
-    prefix,
-    staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
-    ttl,
-  },
-};
+// export const options = {
+//   redis: {
+//     prefix,
+//     staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
+//     ttl,
+//   },
+// };
