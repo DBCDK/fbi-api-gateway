@@ -37,14 +37,12 @@ export async function load({ accessToken }, context) {
     const municipalityAgencyId = setMunicipalityAgencyId(attributes);
 
     // user data object
-    const data = {
+    return {
       attributes: {
         ...attributes,
         municipalityAgencyId,
       },
     };
-
-    return data;
   }
 
   return res.body;
@@ -57,41 +55,43 @@ export async function testLoad({ accessToken }, context) {
   // if provided accessToken differs from context.accesstoken (bearer token)
   // Fetch user from provided accessToken
   const optionalToken = context.accessToken !== accessToken && accessToken;
-
   const testUser = await getTestUser(context, optionalToken);
-
   const loginAgency = testUser?.loginAgency;
-
   const idpUsed = testUser?.loginAgency?.idpUsed;
-
   const map = { 911116: "1110" };
 
   const municipalityAgencyId = testUser.merged.find(
     (account) => account.isMunicipality
   )?.agency;
 
-  return {
-    attributes: {
-      idpUsed,
-      userId: loginAgency?.cpr || loginAgency?.localId,
-      blocked: false,
-      uniqueId: loginAgency?.uniqueId,
-      agencies: accountsToCulr(testUser.merged)?.filter(
-        (account) => account.agencyId !== "190101"
-      ),
-      municipalityAgencyId,
-      municipality: municipalityAgencyId?.startsWith?.("7")
-        ? municipalityAgencyId?.substr?.(1, 3)
-        : map[municipalityAgencyId],
-      loggedInAgencyId: loginAgency?.agency,
-    },
+  let attributes = {
+    idpUsed,
+    userId: loginAgency?.cpr || loginAgency?.localId,
+    blocked: false,
+    uniqueId: loginAgency?.uniqueId,
+    agencies: accountsToCulr(testUser.merged)?.filter(
+      (account) => account.agencyId !== "190101"
+    ),
+    municipalityAgencyId,
+    municipality: municipalityAgencyId?.startsWith?.("7")
+      ? municipalityAgencyId?.substr?.(1, 3)
+      : map[municipalityAgencyId],
+    loggedInAgencyId: loginAgency?.agency,
   };
+
+  // This check prevents FFU users from accessing CULR data.
+  // FFU Borchk authentication, is not safe enough to expose CULR data.
+  if (!isFFUAgency(loginAgency?.agency)) {
+    attributes = omitCulrData(attributes);
+  }
+
+  return { attributes };
 }
 
-// export const options = {
-//   redis: {
-//     prefix,
-//     staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
-//     ttl,
-//   },
-// };
+export const options = {
+  redis: {
+    prefix,
+    staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
+    ttl,
+  },
+};
