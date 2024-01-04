@@ -20,12 +20,12 @@ type Universe {
   """
   All series within the universe
   """
-  series: [Series!]!
+  series(limit: PaginationLimit, offset: Int): [Series!]!
   
   """
   All works within the universe but not in any series
   """
-  works: [Work!]! 
+  works(limit: PaginationLimit, offset: Int): [Work!]! 
 }`;
 
 export const resolvers = {
@@ -57,15 +57,27 @@ export const resolvers = {
       return parent.universeDescription;
     },
     series(parent, args, context, info) {
-      return parent.content.filter((singleContent) =>
+      const seriesFromService = parent.content.filter((singleContent) =>
         singleContent.hasOwnProperty("seriesTitle")
       );
+
+      const limit = Boolean(args.limit)
+        ? args.limit
+        : seriesFromService?.length;
+      const offset = Boolean(args.offset) ? args.offset : 0;
+
+      return seriesFromService.slice(offset, offset + limit);
     },
     works(parent, args, context, info) {
-      return parent.content
-        .filter((singleContent) =>
-          singleContent.hasOwnProperty("persistentWorkId")
-        )
+      const worksFromService = parent.content.filter((singleContent) =>
+        singleContent.hasOwnProperty("persistentWorkId")
+      );
+
+      const limit = Boolean(args.limit) ? args.limit : worksFromService?.length;
+      const offset = Boolean(args.offset) ? args.offset : 0;
+
+      return worksFromService
+        .slice(offset, offset + limit)
         .map((work) => resolveWork({ id: work.persistentWorkId }, context));
     },
   },
