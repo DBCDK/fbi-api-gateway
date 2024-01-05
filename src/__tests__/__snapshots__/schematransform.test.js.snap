@@ -2106,6 +2106,7 @@ enum CopyRequestStatus {
   ERROR_MISSING_CLIENT_CONFIGURATION
   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
   ERROR_MISSING_MUNICIPALITYAGENCYID
+  ERROR_MISSING_PINCODE
   UNKNOWN_USER
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
@@ -2144,6 +2145,7 @@ input CopyRequestInput {
   pickUpAgencySubdivision: String
   issueOfComponent: String
   openURL: String
+  pincode: String
 }
 
 type HelpRow {
@@ -2431,6 +2433,9 @@ enum SubmitOrderStatus {
 
   \\"\\"\\"Unknown error occured, status is unknown\\"\\"\\"
   UNKNOWN_ERROR
+
+  \\"\\"\\"Pincode was not found in arguments\\"\\"\\"
+  ERROR_MISSING_PINCODE
 }
 
 type SubmitOrder {
@@ -2470,6 +2475,7 @@ input SubmitOrderUserParameters {
   userAddress: String
   userMail: String
   userTelephone: String
+  pincode: String
 }
 
 input SubmitOrderInput {
@@ -4522,6 +4528,7 @@ enum CopyRequestStatus {
   ERROR_MISSING_CLIENT_CONFIGURATION
   ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
   ERROR_MISSING_MUNICIPALITYAGENCYID
+  ERROR_MISSING_PINCODE
   UNKNOWN_USER
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
@@ -4560,6 +4567,7 @@ input CopyRequestInput {
   pickUpAgencySubdivision: String
   issueOfComponent: String
   openURL: String
+  pincode: String
 }
 
 enum LanguageCode {
