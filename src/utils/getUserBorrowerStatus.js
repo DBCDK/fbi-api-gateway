@@ -258,8 +258,6 @@ async function checkUserBorrowerStatus(
   // status summary
   const summary = { status: true };
 
-  console.log("bbbbbbbbbbbbbbbbbbbb", isFFUAgency(agencyId), userPincode);
-
   if (isFFUAgency(agencyId) && !userPincode) {
     summary.statusCode = "ERROR_MISSING_PINCODE";
     summary.status = false;

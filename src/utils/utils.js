@@ -215,13 +215,11 @@ export function getInfomediaDetails(article) {
  */
 export async function resolveBorrowerCheck(agencyId, context) {
   // returns true if login.bib.dk is supported
-  // @TODO remove the OR part - [!agencyId?.startsWith("7")] is a quickfix while we wait
-  // for go for culr integration with non public libraries
   if (!agencyId) {
     return false;
   }
   const res = await context.datasources
-    .getLoader("vipcore_UserOrderParameters")
+    ?.getLoader("vipcore_UserOrderParameters")
     .load(agencyId);
 
   if (res?.agencyParameters?.borrowerCheckParameters) {

@@ -194,8 +194,6 @@ export const placeCopyRequest = async ({ input, dryRun, context }) => {
     }
   }
 
-  console.log("!!!!!!!!!!!!!!!!!!!");
-
   // Verify that the user is allowed to place an order
   // checking the municipality exist is redundant - but we still want the blocked check.
   const { status, statusCode } = await getUserBorrowerStatus(
