@@ -89,7 +89,7 @@ type Series {
   """
   Members of this serie. 
   """
-  members(limit: PaginationLimit, offset: Int): [SerieWork!]! 
+  members(limit: Int, offset: Int): [SerieWork!]! 
 }
 `;
 

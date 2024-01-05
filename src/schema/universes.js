@@ -20,12 +20,12 @@ type Universe {
   """
   All series within the universe
   """
-  series(limit: PaginationLimit, offset: Int): [Series!]!
+  series(limit: Int, offset: Int): [Series!]!
   
   """
   All works within the universe but not in any series
   """
-  works(limit: PaginationLimit, offset: Int): [Work!]! 
+  works(limit: Int, offset: Int): [Work!]! 
 }`;
 
 export const resolvers = {
