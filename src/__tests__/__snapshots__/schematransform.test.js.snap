@@ -2431,6 +2431,9 @@ enum SubmitOrderStatus {
 
   \\"\\"\\"Unknown error occured, status is unknown\\"\\"\\"
   UNKNOWN_ERROR
+
+  \\"\\"\\"Pincode was not found in arguments\\"\\"\\"
+  ERROR_MISSING_PINCODE
 }
 
 type SubmitOrder {
@@ -2470,6 +2473,7 @@ input SubmitOrderUserParameters {
   userAddress: String
   userMail: String
   userTelephone: String
+  pincode: String
 }
 
 input SubmitOrderInput {
