@@ -2,6 +2,8 @@ import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
 import { assign, get, intersectionWith, sortBy, uniq } from "lodash";
 import { log } from "dbc-node-logger";
+
+import config from "../config";
 import { isFFUAgency } from "./agency";
 
 export async function performTestQuery({
@@ -214,10 +216,19 @@ export function getInfomediaDetails(article) {
  * @returns {Promise<boolean>}
  */
 export async function resolveBorrowerCheck(agencyId, context) {
+  const { ffuIsBlocked } = config.datasources.borchk;
+
   // returns true if login.bib.dk is supported
+
   if (!agencyId) {
     return false;
   }
+
+  // Disable Borchk for FFU libraries
+  if (ffuIsBlocked && isFFUAgency(agencyId)) {
+    return false;
+  }
+
   const res = await context.datasources
     ?.getLoader("vipcore_UserOrderParameters")
     .load(agencyId);
