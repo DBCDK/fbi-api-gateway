@@ -15,8 +15,6 @@ export const typeDef = `
    ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
    ERROR_MISSING_MUNICIPALITYAGENCYID
 
-   ERROR_MISSING_PINCODE
-
    UNKNOWN_USER
    BORCHK_USER_BLOCKED_BY_AGENCY
    BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
@@ -57,7 +55,6 @@ input CopyRequestInput {
     pickUpAgencySubdivision: String
     issueOfComponent: String
     openURL: String
-    pincode: String
 }
 
  extend type Mutation {
@@ -99,13 +96,12 @@ export const resolvers = {
  * @param {String} input.pickUpAgencySubdivision
  * @param {String} input.issueOfComponent
  * @param {String} input.openURL
- * @param {String} input.pincode
  * @param {Boolean} dryRun
  * @param {Object} context
  * @returns
  */
 export const placeCopyRequest = async ({ input, dryRun, context }) => {
-  const { pid, userName, userMail, pincode } = input;
+  const { pid, userName, userMail } = input;
 
   // token is not authenticated
   if (!context?.user?.userId) {
@@ -179,25 +175,10 @@ export const placeCopyRequest = async ({ input, dryRun, context }) => {
     };
   }
 
-  // If authentification has been done through an FFU agency - a pincode is needed for further validation
-  // before an order can be placed at that specific agency.
-  let userPincode = null;
-
-  if (isFFUAgency(user.municipalityAgencyId)) {
-    const isTrustedAuthentication = !isFFUAgency(user?.loggedInAgencyId);
-    userPincode = !isTrustedAuthentication && pincode;
-
-    if (!isTrustedAuthentication && !userPincode) {
-      return {
-        status: "ERROR_MISSING_PINCODE",
-      };
-    }
-  }
-
   // Verify that the user is allowed to place an order
   // checking the municipality exist is redundant - but we still want the blocked check.
   const { status, statusCode } = await getUserBorrowerStatus(
-    { agencyId: user.municipalityAgencyId, userPincode },
+    { agencyId: user.municipalityAgencyId },
     context
   );
 

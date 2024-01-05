@@ -10,7 +10,6 @@ import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 
 import { resolveBorrowerCheck } from "./utils";
-import { isFFUAgency } from "./agency";
 
 // all possible id field types
 const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
@@ -257,11 +256,6 @@ async function checkUserBorrowerStatus(
 ) {
   // status summary
   const summary = { status: true };
-
-  if (isFFUAgency(agencyId) && !userPincode) {
-    summary.statusCode = "ERROR_MISSING_PINCODE";
-    summary.status = false;
-  }
 
   // Get Borchk status
   const { status, blocked } = await context.datasources
