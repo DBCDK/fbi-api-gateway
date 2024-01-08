@@ -431,10 +431,10 @@ enum CreateAccountStatus {
 }
 
 enum DeleteAccountStatus {
-  \\"\\"\\"Account was successfully created\\"\\"\\"
+  \\"\\"\\"Account was successfully deleted\\"\\"\\"
   OK
 
-  \\"\\"\\"Account was not created - Some unknown error occured\\"\\"\\"
+  \\"\\"\\"Account was not deleted - Some unknown error occured\\"\\"\\"
   ERROR
 
   \\"\\"\\"A provided token does not have a valid CPR\\"\\"\\"
@@ -1797,7 +1797,7 @@ type Series {
   mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
-  members: [SerieWork!]!
+  members(limit: Int, offset: Int): [SerieWork!]!
 }
 
 interface Subject {
@@ -2431,6 +2431,9 @@ enum SubmitOrderStatus {
 
   \\"\\"\\"Unknown error occured, status is unknown\\"\\"\\"
   UNKNOWN_ERROR
+
+  \\"\\"\\"Pincode was not found in arguments\\"\\"\\"
+  ERROR_MISSING_PINCODE
 }
 
 type SubmitOrder {
@@ -2470,6 +2473,7 @@ input SubmitOrderUserParameters {
   userAddress: String
   userMail: String
   userTelephone: String
+  pincode: String
 }
 
 input SubmitOrderInput {
@@ -2832,10 +2836,10 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series: [Series!]!
+  series(limit: Int, offset: Int): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works: [Work!]!
+  works(limit: Int, offset: Int): [Work!]!
 }
 
 type User {
@@ -2869,6 +2873,8 @@ type User {
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
   identityProviderUsed: String!
+  hasCulrUniqueId: Boolean!
+  omittedCulrData: OmittedCulrDataResponse
 }
 
 type UserSubscriptions {
@@ -2977,6 +2983,13 @@ input BookMarkInput {
 
 type BookMarkDeleteResponse {
   IdsDeletedCount: Int!
+}
+
+type OmittedCulrDataResponse {
+  hasOmittedCulrUniqueId: Boolean!
+  hasOmittedCulrMunicipality: Boolean!
+  hasOmittedCulrMunicipalityAgencyId: Boolean!
+  hasOmittedCulrAccounts: Boolean!
 }
 
 type UserMutations {
@@ -4233,7 +4246,7 @@ type Series {
   mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
-  members: [SerieWork!]!
+  members(limit: Int, offset: Int): [SerieWork!]!
 }
 
 interface Subject {
@@ -4748,10 +4761,10 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series: [Series!]!
+  series(limit: Int, offset: Int): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works: [Work!]!
+  works(limit: Int, offset: Int): [Work!]!
 }
 "
 `;
@@ -5826,7 +5839,7 @@ type Series {
   mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
-  members: [SerieWork!]!
+  members(limit: Int, offset: Int): [SerieWork!]!
 }
 
 interface Subject {
@@ -6084,10 +6097,10 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series: [Series!]!
+  series(limit: Int, offset: Int): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works: [Work!]!
+  works(limit: Int, offset: Int): [Work!]!
 }
 "
 `;

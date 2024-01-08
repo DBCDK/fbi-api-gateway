@@ -89,7 +89,7 @@ type Series {
   """
   Members of this serie. 
   """
-  members:[SerieWork!]! 
+  members(limit: Int, offset: Int): [SerieWork!]! 
 }
 `;
 
@@ -129,7 +129,10 @@ export const resolvers = {
   // We need to resolve for backward compatibility
   Series: {
     members(parent, args, context, info) {
-      return parent.works;
+      const limit = Boolean(args.limit) ? args.limit : parent.works.length;
+      const offset = Boolean(args.offset) ? args.offset : 0;
+
+      return parent.works.slice(offset, offset + limit);
     },
     title(parent, args, context, info) {
       return parent.seriesTitle;

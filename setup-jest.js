@@ -6,3 +6,9 @@ jest.mock("./src/utils/fetchWorker", () => ({
   default: "mockedDefaultExport",
   namedExport: jest.fn(),
 }));
+
+jest.mock("fast-jwt", () => ({
+  __esModule: true, // this property makes it work
+  default: "mockedDefaultExport",
+  createSigner: jest.fn(),
+}));

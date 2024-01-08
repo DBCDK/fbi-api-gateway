@@ -8,6 +8,7 @@ import { log } from "dbc-node-logger";
 import { placeCopyRequest } from "./elba";
 import { filterAgenciesByProps } from "../utils/accounts";
 import { isPeriodica } from "../utils/utils";
+import { isFFUAgency } from "../utils/agency";
 
 import getUserBorrowerStatus, {
   getUserIds,
@@ -33,6 +34,7 @@ const orderStatusmessageMap = {
   NO_SERVICEREQUESTER: "ServiceRequester is obligatory",
   AUTHENTICATION_ERROR: "Authentication error",
   UNKNOWN_ERROR: "Some unknown error occured",
+  ERROR_MISSING_PINCODE: "No pincode was provided for FFU agency",
 };
 
 /**
@@ -131,6 +133,11 @@ export const typeDef = `
     Unknown error occured, status is unknown
     """
     UNKNOWN_ERROR
+
+    """
+    Pincode was not found in arguments
+    """
+    ERROR_MISSING_PINCODE
   }
 
    type SubmitOrder {
@@ -172,6 +179,7 @@ export const typeDef = `
       userAddress: String,
       userMail: String,
       userTelephone: String
+      pincode: String
    }
 
    input SubmitOrderInput{
@@ -360,23 +368,41 @@ export const resolvers = {
         };
       }
 
+      const user = context?.user;
+
+      const userParameters = args?.input?.userParameters;
+
       // PickUpBranch agencyId
       const agencyId = branch?.agencyId;
 
       // userIds from userParameters
-      const userIds = getUserIds(args?.input?.userParameters);
+      const userIds = getUserIds(userParameters);
+
+      // If authentification has been done through an FFU agency - a pincode is needed for further validation
+      // before an order can be placed at that specific agency.
+      let userPincode = null;
+
+      if (isFFUAgency(agencyId)) {
+        const isTrustedAuthentication = !isFFUAgency(user?.loggedInAgencyId);
+        userPincode = !isTrustedAuthentication && userParameters?.pincode;
+
+        if (!isTrustedAuthentication && !userPincode) {
+          return {
+            message: "",
+            status: "ERROR_MISSING_PINCODE",
+          };
+        }
+      }
 
       // Verify that the user is allowed to place an order
       const { status, statusCode, userId } = await getUserBorrowerStatus(
-        { agencyId, userIds },
+        { agencyId, userIds, userPincode },
         context
       );
 
       if (!status) {
         return { ok: status, status: statusCode };
       }
-
-      const user = context?.user;
 
       const authUserId = user?.userId;
 
@@ -457,17 +483,35 @@ export const resolvers = {
       }
 
       const user = context?.user;
-      const userMail = args.input?.userParameters?.userMail;
+
+      const userParameters = args?.input?.userParameters;
+
+      const userMail = userParameters?.userMail;
 
       // PickUpBranch agencyId
       const agencyId = branch?.agencyId;
 
       // userIds from userParameters
-      const userIds = getUserIds(args?.input?.userParameters);
+      const userIds = getUserIds(userParameters);
+
+      // If authentification has been done through an FFU agency - a pincode is needed for further validation
+      // before an order can be placed at that specific agency.
+      let userPincode = null;
+
+      if (isFFUAgency(agencyId)) {
+        const isTrustedAuthentication = !isFFUAgency(user?.loggedInAgencyId);
+        userPincode = !isTrustedAuthentication && userParameters?.pincode;
+
+        if (!isTrustedAuthentication && !userPincode) {
+          return {
+            status: "ERROR_MISSING_PINCODE",
+          };
+        }
+      }
 
       // Verify that the user is allowed to place an order
       const { status, statusCode, userId } = await getUserBorrowerStatus(
-        { agencyId, userIds },
+        { agencyId, userIds, userPincode },
         context
       );
 
