@@ -117,7 +117,6 @@ export const resolvers = {
       return parent.agencyName || "";
     },
     agencyId(parent, args, context, info) {
-      console.log("........................................");
       return parent.agencyId || "";
     },
     branchId(parent, args, context, info) {

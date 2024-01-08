@@ -5,11 +5,7 @@
 
 import { isValidCpr } from "../utils/cpr";
 import { isFFUAgency } from "../utils/agency";
-import {
-  getAccount,
-  getAccounts,
-  filterAgenciesByProps,
-} from "../utils/accounts";
+import { getAccount, getAccounts } from "../utils/accounts";
 
 export const typeDef = `
 
