@@ -44,6 +44,7 @@ export default {
         "http://default-forsider.febib-staging.svc.cloud.dbc.dk/",
       ttl: process.env.DEFAULTFORSIDER_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.DEFAULTFORSIDER_PREFIX || "defaultforsider-2",
+      secret: process.env.DEFAULTFORSIDER_KEY || "somesecret",
     },
     relatedsubjects: {
       url:

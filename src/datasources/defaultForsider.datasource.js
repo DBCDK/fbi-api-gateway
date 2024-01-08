@@ -13,48 +13,27 @@
  * }
  */
 
-import request from "superagent";
 import config from "../config";
-import { log } from "dbc-node-logger";
 
-const { url, ttl, prefix } = config.datasources.defaultforsider;
+const { createSigner } = require("fast-jwt");
 
-function parseResponse(covers) {
+const { url, secret } = config.datasources.defaultforsider;
+
+const signSync = createSigner({ key: secret });
+
+function parseResponse(key) {
   try {
-    return covers?.response.map((cover) => {
-      return {
-        detail: `${url}${cover?.detail || null}`,
-        thumbnail: `${config.datasources.defaultforsider.url}${
-          cover?.thumbNail || null
-        }`,
-        origin: "default",
-      };
-    });
+    const signedJwt = signSync(key);
+    return {
+      detail: `${url}large/${signedJwt}`,
+      thumbnail: `${url}thumbnail/${signedJwt}`,
+      origin: "default",
+    };
   } catch (e) {
-    log.error(e.message);
     return {};
   }
 }
 
 export async function batchLoader(keys, context) {
-  const url = config.datasources.defaultforsider.url + "defaultcover/";
-
-  const covers = await context.fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(keys),
-  });
-
-  if (!covers.ok) {
-    return keys.map(() => ({}));
-  }
-
-  return parseResponse(covers?.body);
+  return keys.map((key) => parseResponse(key));
 }
-
-export const options = {
-  redis: {
-    prefix: prefix,
-    ttl: ttl,
-  },
-};
