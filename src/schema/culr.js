@@ -472,16 +472,11 @@ export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
       };
     }
 
-    let account;
-    try {
-      // Get token user accounts
-      account = await getAccount(accessToken, context, {
-        agency: agencyId,
-        type: "LOCAL",
-      });
-    } catch (e) {
-      console.log("eeeeeeeee", e);
-    }
+    // Get token user accounts
+    const account = await getAccount(accessToken, context, {
+      agency: agencyId,
+      type: "LOCAL",
+    });
 
     if (!account) {
       return {
