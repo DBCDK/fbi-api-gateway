@@ -7,6 +7,7 @@ import { log } from "dbc-node-logger";
 
 import config from "../config";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
+import { omitCulrData } from "../utils/omitCulrData";
 import { isFFUAgency } from "../utils/agency";
 
 const {
@@ -85,12 +86,6 @@ export function parseResponse(xml) {
  * Gets the CULR account information
  */
 export async function load({ agencyId, userId }, context) {
-  // This check prevents FFU users from accessing CULR data.
-  // FFU Borchk authentication, is not safe enough to expose CULR data.
-  if (isFFUAgency(agencyId)) {
-    return null;
-  }
-
   const soap = constructSoap({ agencyId, userId });
   const res = await context?.fetch(url, {
     method: "POST",
@@ -101,7 +96,17 @@ export async function load({ agencyId, userId }, context) {
   });
 
   return new Promise((resolve) =>
-    parseString(res.body, (err, result) => resolve(parseResponse(result)))
+    parseString(res.body, (err, result) => {
+      let data = parseResponse(result);
+
+      // This check prevents FFU borchk authenticated users for accessing CULR data.
+      // only the loggedIn FFU library is returned, if it exist.
+      if (isFFUAgency(agencyId)) {
+        data = omitCulrData(data, { agencyId, userId });
+      }
+
+      return resolve(data);
+    })
   );
 }
 
@@ -109,12 +114,6 @@ export async function load({ agencyId, userId }, context) {
  * Gets the CULR account information
  */
 export async function testLoad({ agencyId, userId }, context) {
-  // This check prevents FFU users from accessing CULR data.
-  // FFU Borchk authentication, is not safe enough to expose CULR data.
-  if (isFFUAgency(agencyId)) {
-    return null;
-  }
-
   const testUser = await getTestUser(context);
   const localAccount = testUser.accounts.find(
     (account) => agencyId === account.agency && account.localId === userId
@@ -127,7 +126,7 @@ export async function testLoad({ agencyId, userId }, context) {
     (account) => localAccount.uniqueId === account.uniqueId
   );
 
-  return {
+  const data = {
     guid: localAccount.uniqueId,
     municipalityNo: merged
       .find((account) => account.isMunicipality)
@@ -137,4 +136,12 @@ export async function testLoad({ agencyId, userId }, context) {
       userIdValue: agency.userId,
     })),
   };
+
+  // This check prevents FFU borchk authenticated users for accessing CULR data.
+  // only the loggedIn FFU library is returned, if it exist.
+  if (isFFUAgency(agencyId)) {
+    return omitCulrData(data, { agencyId, userId });
+  }
+
+  return data;
 }

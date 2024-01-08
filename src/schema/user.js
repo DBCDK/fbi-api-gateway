@@ -17,7 +17,8 @@ import { hasInfomediaAccess } from "../utils/access";
 
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
-import { deleteFFUAccount, isFFUAgency } from "../utils/agency";
+import { deleteFFUAccount } from "./culr";
+import { isFFUAgency } from "../utils/agency";
 
 /**
  * The Profile type definition

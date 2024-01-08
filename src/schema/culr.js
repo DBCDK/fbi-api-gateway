@@ -4,8 +4,12 @@
  */
 
 import { isValidCpr } from "../utils/cpr";
-import { deleteFFUAccount, isFFUAgency } from "../utils/agency";
-import { getAccount, getAccounts } from "../utils/accounts";
+import { isFFUAgency } from "../utils/agency";
+import {
+  getAccount,
+  getAccounts,
+  filterAgenciesByProps,
+} from "../utils/accounts";
 
 export const typeDef = `
 
@@ -81,12 +85,12 @@ enum CreateAccountStatus {
 
 enum DeleteAccountStatus {
   """
-  Account was successfully created
+  Account was successfully deleted
   """
   OK
 
   """
-  Account was not created - Some unknown error occured
+  Account was not deleted - Some unknown error occured
   """
   ERROR
 
@@ -244,6 +248,8 @@ export const resolvers = {
       const ffuToken = args.input?.tokens?.ffu;
       const folkToken = args.input?.tokens?.folk;
 
+      const dryRun = args.dryRun;
+
       // settings
       const ENABLE_CPR_CHECK = true;
       const ENABLE_CPR_MATCH_CHECK = true;
@@ -260,7 +266,7 @@ export const resolvers = {
 
       const user = {};
 
-      // Get user from provided ffuToken (only smaug config contains the loggedInAgencyId)
+      // Get user from provided ffuToken
       user.ffu = (
         await context.datasources.getLoader("userinfo").load({
           accessToken: ffuToken,
@@ -336,18 +342,25 @@ export const resolvers = {
       // If account not already exist - Create user account for agency
 
       // Check for dryRun
-      if (args.dryRun) {
+      if (dryRun) {
         return {
           status: "OK",
         };
       }
+
+      // Ensure account is not connected to any other user, by removing it
+      // Swap bearer accessToken for FFU accessToken
+      const copyContext = { ...context, accessToken: ffuToken };
+
+      // Remove existing account
+      await deleteFFUAccount({ agencyId, dryRun, context: copyContext });
 
       // Create the account
       const response = await context.datasources
         .getLoader("culrCreateAccount")
         .load({ agencyId, cpr, localId });
 
-      // Response errors - localid is already in use for this user
+      // Response errors - localid is already in use on this agency
       if (response.code === "TRANSACTION_ERROR") {
         return {
           status: "ERROR_LOCALID_NOT_UNIQUE",
@@ -434,4 +447,91 @@ export const resolvers = {
       return response;
     },
   },
+};
+
+/**
+ *
+ * will delete a users relation to a FFU library. Deletes the library account in Culr.
+ * @returns
+ */
+export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
+  const accessToken = context.accessToken;
+
+  try {
+    // settings
+    const ENABLE_FFU_CHECK = true;
+
+    // token is not authenticated - anonymous token used
+    // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
+    if (!context?.user?.userId) {
+      return {
+        status: "ERROR_UNAUTHENTICATED_TOKEN",
+      };
+    }
+
+    // validate Agency
+    if (ENABLE_FFU_CHECK && !isFFUAgency(agencyId)) {
+      return {
+        status: "ERROR_INVALID_AGENCY",
+      };
+    }
+
+    let account;
+    try {
+      // Get token user accounts
+      account = await getAccount(accessToken, context, {
+        agency: agencyId,
+        type: "LOCAL",
+      });
+    } catch (e) {
+      console.log("eeeeeeeee", e);
+    }
+
+    if (!account) {
+      return {
+        status: "ERROR_ACCOUNT_DOES_NOT_EXIST",
+      };
+    }
+
+    // Check for dryRun
+    if (dryRun) {
+      return {
+        status: "OK",
+      };
+    }
+
+    // Get agencies informations from login.bib.dk /userinfo endpoint
+    const response = await context.datasources
+      .getLoader("culrDeleteAccount")
+      .load({ agencyId, localId: account.userIdValue });
+
+    // Response errors - account does not exist
+    if (response.code === "ACCOUNT_DOES_NOT_EXIST") {
+      return {
+        status: "ERROR_ACCOUNT_DOES_NOT_EXIST",
+      };
+    }
+
+    // AgencyID
+    if (response.code === "ILLEGAL_ARGUMENT") {
+      return {
+        status: "ERROR_AGENCYID_NOT_PERMITTED",
+      };
+    }
+
+    if (response.code === "OK200") {
+      // clear user redis cache for userinfo
+      await context.datasources
+        .getLoader("userinfo")
+        .clearRedis({ accessToken });
+
+      return {
+        status: "OK",
+      };
+    }
+
+    return { status: "ERROR" };
+  } catch (error) {
+    return { status: "ERROR" };
+  }
 };

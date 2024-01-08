@@ -1,7 +1,6 @@
 import { resolveAccess } from "./draft/draft_utils_manifestations";
 import { filterAgenciesByProps } from "../utils/accounts";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
-import { isFFUAgency } from "../utils/agency";
 
 export const typeDef = `
 
