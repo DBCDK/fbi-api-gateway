@@ -15,7 +15,7 @@
 
 import config from "../config";
 
-const { createSigner } = require("fast-jwt");
+import { createSigner } from "fast-jwt";
 
 const { url, secret } = config.datasources.defaultforsider;
 
