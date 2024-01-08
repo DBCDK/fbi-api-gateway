@@ -431,10 +431,10 @@ enum CreateAccountStatus {
 }
 
 enum DeleteAccountStatus {
-  \\"\\"\\"Account was successfully created\\"\\"\\"
+  \\"\\"\\"Account was successfully deleted\\"\\"\\"
   OK
 
-  \\"\\"\\"Account was not created - Some unknown error occured\\"\\"\\"
+  \\"\\"\\"Account was not deleted - Some unknown error occured\\"\\"\\"
   ERROR
 
   \\"\\"\\"A provided token does not have a valid CPR\\"\\"\\"

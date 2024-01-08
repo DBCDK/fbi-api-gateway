@@ -2,7 +2,7 @@ import fetch from "isomorphic-unfetch";
 import config from "../../../../src/config";
 
 import { setMunicipalityAgencyId } from "../../../../src/utils/municipalityAgencyId";
-import omitCulrData from "../../../../src/utils/omitCulrData";
+import { omitUserinfoCulrData } from "../../../../src/utils/omitCulrData";
 import { isFFUAgency } from "../../../../src/utils/agency";
 
 const {
@@ -113,7 +113,7 @@ export default async function handler(req, res) {
       // This check prevents FFU users from accessing CULR data.
       // FFU Borchk authentication, is not safe enough to expose CULR data.
       if (isFFULogin) {
-        attributes = omitCulrData(attributes);
+        attributes = omitUserinfoCulrData(attributes);
       }
 
       user.omittedCulrData = attributes.omittedCulrData;

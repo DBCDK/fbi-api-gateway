@@ -1,7 +1,7 @@
 import config from "../config";
 import { isFFUAgency } from "../utils/agency";
 import { setMunicipalityAgencyId } from "../utils/municipalityAgencyId";
-import omitCulrData from "../utils/omitCulrData";
+import { omitUserinfoCulrData } from "../utils/omitCulrData";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.userInfo;
@@ -30,7 +30,7 @@ export async function load({ accessToken }, context) {
     // This check prevents FFU users from accessing CULR data.
     // FFU Borchk authentication, is not safe enough to expose CULR data.
     if (isFFUAgency(smaug?.user?.agency)) {
-      attributes = omitCulrData(attributes);
+      attributes = omitUserinfoCulrData(attributes);
     }
 
     // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
@@ -82,7 +82,7 @@ export async function testLoad({ accessToken }, context) {
   // This check prevents FFU users from accessing CULR data.
   // FFU Borchk authentication, is not safe enough to expose CULR data.
   if (!isFFUAgency(loginAgency?.agency)) {
-    attributes = omitCulrData(attributes);
+    attributes = omitUserinfoCulrData(attributes);
   }
 
   return { attributes };

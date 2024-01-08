@@ -54,7 +54,7 @@ export async function getAccounts(accessToken, context, props) {
     agencyId: user.loggedInAgencyId,
   });
 
-  return filterAccountsByProps(response.accounts, props);
+  return filterAccountsByProps(response?.accounts, props);
 }
 
 /**
