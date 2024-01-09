@@ -61,9 +61,7 @@ export const resolvers = {
         singleContent.hasOwnProperty("seriesTitle")
       );
 
-      const limit = Boolean(args.limit)
-        ? args.limit
-        : seriesFromService?.length;
+      const limit = Boolean(args.limit) ? args.limit : 20;
       const offset = Boolean(args.offset) ? args.offset : 0;
 
       return seriesFromService.slice(offset, offset + limit);
@@ -73,7 +71,7 @@ export const resolvers = {
         singleContent.hasOwnProperty("persistentWorkId")
       );
 
-      const limit = Boolean(args.limit) ? args.limit : worksFromService?.length;
+      const limit = Boolean(args.limit) ? args.limit : 50;
       const offset = Boolean(args.offset) ? args.offset : 0;
 
       return worksFromService
