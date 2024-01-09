@@ -129,7 +129,7 @@ export const resolvers = {
   // We need to resolve for backward compatibility
   Series: {
     members(parent, args, context, info) {
-      const limit = Boolean(args.limit) ? args.limit : parent.works.length;
+      const limit = Boolean(args.limit) ? args.limit : 50;
       const offset = Boolean(args.offset) ? args.offset : 0;
 
       return parent.works.slice(offset, offset + limit);
