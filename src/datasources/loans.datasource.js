@@ -1,5 +1,4 @@
 import config from "../config";
-import { filterDuplicateAgencies } from "../utils/utils";
 
 const { url } = config.datasources.openuserstatus;
 const {
@@ -39,18 +38,21 @@ const constructSoap = ({ agencyId, userId }) => {
  * Reduce body data to match data model
  */
 const reduceBody = (body, agencyId) =>
-  body?.getUserStatusResponse?.userStatus?.loanedItems?.loan?.map((item) => ({
-    loanId: item.loanId?.$,
-    edition: item.edition?.$,
-    dueDate: item.dateDue?.$,
-    titleId: item.bibliographicRecordId?.$,
-    title: item.title?.$,
-    materialType: item.mediumType?.$,
-    pages: item.pagination?.$,
-    publisher: item.publisher?.$,
-    language: item.language?.$,
-    agencyId: agencyId, // Add agency used to fetch the order
-  }));
+  body?.getUserStatusResponse?.userStatus?.loanedItems?.loan?.map((item) => {
+    return {
+      loanId: item.loanId?.$,
+      edition: item.edition?.$,
+      dueDate: item.dateDue?.$,
+      titleId: item.bibliographicRecordId?.$,
+      title: item.title?.$,
+      materialType: item.mediumType?.$,
+      pages: item.pagination?.$,
+      publisher: item.publisher?.$,
+      language: item.language?.$,
+      creator: item.author?.$,
+      agencyId: agencyId, // Add agency used to fetch the order
+    };
+  });
 
 /**
  * Call SOAP service for one user account
