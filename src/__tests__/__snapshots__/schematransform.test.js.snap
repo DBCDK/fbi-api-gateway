@@ -2468,12 +2468,12 @@ input SubmitOrderUserParameters {
   barcode: String
   cardno: String
   customId: String
+  pincode: String
   userDateOfBirth: String
   userName: String
   userAddress: String
   userMail: String
   userTelephone: String
-  pincode: String
 }
 
 input SubmitOrderInput {
@@ -2737,6 +2737,7 @@ type SessionUserParameters {
   barcode: String
   cardno: String
   customId: String
+  pincode: String
   userDateOfBirth: String
   userName: String
   userAddress: String
@@ -2750,6 +2751,7 @@ input SessionUserParametersInput {
   barcode: String
   cardno: String
   customId: String
+  pincode: String
   userDateOfBirth: String
   userName: String
   userAddress: String
