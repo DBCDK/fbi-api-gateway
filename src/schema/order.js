@@ -324,7 +324,7 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
   if (context?.profile?.agency == 190101) {
     const orderId = submitOrderRes?.orderId;
     const uniqueId = user?.uniqueId;
-    console.log("in saveOrderToUserdata. pid is", pid);
+
     try {
       if (!uniqueId) {
         throw new Error("Not authorized");
