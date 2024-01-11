@@ -2,7 +2,6 @@
  * @file Creator type definition and resolvers
  *
  */
-import { get } from "lodash";
 
 export const typeDef = `
 type SEO {
