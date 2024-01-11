@@ -324,9 +324,7 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
   if (context?.profile?.agency == 190101) {
     const orderId = submitOrderRes?.orderId;
     const uniqueId = user?.uniqueId;
-    const workId = await context.datasources
-      .getLoader("pidToWorkId")
-      .load({ pid: pid, profile: context.profile });
+
     try {
       if (!uniqueId) {
         throw new Error("Not authorized");
@@ -334,10 +332,13 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
       if (!orderId) {
         throw new Error("Undefined orderId");
       }
+      if (!pid) {
+        throw new Error("Undefined pid");
+      }
       await context.datasources.getLoader("userDataAddOrder").load({
         uniqueId,
         orderId,
-        workId,
+        pid,
       });
     } catch (error) {
       log.error(
