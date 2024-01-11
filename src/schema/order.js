@@ -324,9 +324,7 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
   if (context?.profile?.agency == 190101) {
     const orderId = submitOrderRes?.orderId;
     const uniqueId = user?.uniqueId;
-    const workId = await context.datasources
-      .getLoader("pidToWorkId")
-      .load({ pid: pid, profile: context.profile });
+    console.log("in saveOrderToUserdata. pid is", pid);
     try {
       if (!uniqueId) {
         throw new Error("Not authorized");
@@ -334,10 +332,13 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
       if (!orderId) {
         throw new Error("Undefined orderId");
       }
+      if (!pid) {
+        throw new Error("Undefined pid");
+      }
       await context.datasources.getLoader("userDataAddOrder").load({
         uniqueId,
         orderId,
-        workId,
+        pid,
       });
     } catch (error) {
       log.error(
@@ -441,6 +442,7 @@ export const resolvers = {
 
       //first pid in pids to order
       const pidToOrder = args.input.pids[0];
+      console.log("pidToOrder", pidToOrder);
       await saveOrderToUserdata({
         context,
         submitOrderRes,

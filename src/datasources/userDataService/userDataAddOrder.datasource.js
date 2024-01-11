@@ -4,7 +4,7 @@ const { url, ttl, prefix } = config.datasources.userdata;
 /**
  * Add order in userdata service
  */
-export async function load({ uniqueId, orderId, workId }, context) {
+export async function load({ uniqueId, orderId, pid }, context) {
   const endpoint = url + "order/add";
   const res = await context.fetch(endpoint, {
     headers: {
@@ -14,7 +14,7 @@ export async function load({ uniqueId, orderId, workId }, context) {
     body: JSON.stringify({
       smaugUserId: uniqueId,
       orderId: orderId,
-      workId,
+      pid,
     }),
   });
 
