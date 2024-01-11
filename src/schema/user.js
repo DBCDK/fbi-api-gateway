@@ -84,6 +84,8 @@ type Loan {
   dueDate:	DateTime!
   loanId:	String!
   agencyId: String!
+  creator: String
+  title: String
   edition: String
   pages: String
   publisher: String
