@@ -442,7 +442,6 @@ export const resolvers = {
 
       //first pid in pids to order
       const pidToOrder = args.input.pids[0];
-      console.log("pidToOrder", pidToOrder);
       await saveOrderToUserdata({
         context,
         submitOrderRes,
