@@ -168,7 +168,15 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return data?.universes || [];
+      return (
+        data?.universes?.map((universe, index) => ({
+          ...universe,
+          // TODO, this key is replaced by key from service as soon as it is available
+          key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
+            "base64url"
+          ),
+        })) || []
+      );
     },
     // Use the new universe from series-service v2
     async universe(parent, args, context, info) {
@@ -191,7 +199,11 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return data?.universes?.[index];
+      if (!data?.universes?.[index]) {
+        return null;
+      }
+
+      return { ...data?.universes?.[index], key: args.key };
     },
   },
 };
