@@ -7,6 +7,10 @@ const { url: jedUrl } = config.datasources.jed;
 const WORKTYPES_QUERY = `query($id: String! ) {
   work(id: $id) {
     workTypes
+    mainLanguages {
+      display
+      isoCode
+    }
   }
 }
 `;
@@ -49,9 +53,12 @@ export async function load({ workId, trackingId = null, profile }, context) {
                   }),
                   allowedErrorStatusCodes: [404, 500],
                 });
+                if (!jedRes?.body?.data?.work) {
+                  return null;
+                }
                 return {
                   ...entry,
-                  workTypes: jedRes?.body?.data?.work?.workTypes,
+                  ...jedRes?.body?.data?.work,
                 };
               })
             )

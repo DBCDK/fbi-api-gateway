@@ -656,6 +656,7 @@ type Query {
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
   test: Test
+  universe(key: String!): Universe
   user: User
 }
 
@@ -2828,6 +2829,9 @@ type TestMutation {
 union UniverseContent = Work | Series
 
 type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String!
+
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
@@ -4768,6 +4772,9 @@ type DidYouMean {
 union UniverseContent = Work | Series
 
 type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String!
+
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
@@ -6117,6 +6124,9 @@ type TvSeriesDetails {
 union UniverseContent = Work | Series
 
 type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String!
+
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"

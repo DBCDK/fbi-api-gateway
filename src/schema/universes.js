@@ -5,6 +5,11 @@ union UniverseContent = Work | Series
 
 type Universe {
   """
+  A key that identifies a universe.
+  """
+  key: String!
+
+  """
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   """
   title: String!
@@ -45,7 +50,19 @@ type UniverseContentResult {
   entries: [UniverseContent!]!
 }
 
+extend type Query {
+  universe(key: String!): Universe
+}
+
 `;
+
+// These are hardcoded for now
+const allowedLanguages = new Set([
+  "dansk",
+  "engelsk",
+  "ukendt sprog",
+  "flere sprog",
+]);
 
 /**
  * Filters and slices content list
@@ -55,12 +72,26 @@ function parseUniverseList(args, content, context) {
   const offset = Boolean(args.offset) ? args.offset : 0;
   const workType = args.workType;
 
-  const filtered = content?.filter((work) => {
-    if (workType) {
-      return workType === work.workTypes?.[0]?.toUpperCase();
-    }
-    return true;
-  });
+  let filtered = content
+    ?.filter((entry) => {
+      if (workType) {
+        return workType === entry.workTypes?.[0]?.toUpperCase();
+      }
+
+      return true;
+    })
+    .filter((entry) => {
+      // Check language is allowed
+      const languages = entry.language
+        ? [entry.language]
+        : entry.mainLanguages?.map(({ display }) => display);
+
+      if (!languages?.length) {
+        // Unknown language, keep it
+        return true;
+      }
+      return languages?.some((language) => allowedLanguages.has(language));
+    });
 
   return {
     hitcount: filtered.length,
@@ -84,7 +115,15 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return data?.universes || [];
+      return (
+        data?.universes?.map((universe, index) => ({
+          ...universe,
+          // TODO, this key is replaced by key from service as soon as it is available
+          key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
+            "base64url"
+          ),
+        })) || []
+      );
     },
     // Use the new universe from series-service v2
     async universe(parent, args, context, info) {
@@ -139,6 +178,20 @@ export const resolvers = {
       });
 
       return data?.universes?.[0] || null;
+    },
+  },
+  Query: {
+    async universe(parent, args, context, info) {
+      // TODO, skip key parsing as soon as we can look up key directly from service
+      const key = Buffer.from(args.key, "base64url").toString("utf8");
+      const [workId, index] = key.split("|");
+
+      const data = await context.datasources.getLoader("universes").load({
+        workId: workId,
+        profile: context.profile,
+      });
+
+      return data?.universes?.[index];
     },
   },
 };
