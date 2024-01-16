@@ -8,7 +8,7 @@ import { log } from "dbc-node-logger";
 import { placeCopyRequest } from "./elba";
 import { filterAgenciesByProps } from "../utils/accounts";
 import { isPeriodica, resolveBorrowerCheck } from "../utils/utils";
-import { isFFUAgency } from "../utils/agency";
+import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
 
 import getUserBorrowerStatus, {
   getUserIds,
@@ -386,10 +386,10 @@ export const resolvers = {
       const hasBorchk = await resolveBorrowerCheck(branch.branchId, context);
 
       if ((await isFFUAgency(agencyId, context)) && hasBorchk) {
-        const isTrustedAuthentication = !(await isFFUAgency(
+        const isTrustedAuthentication = await hasCulrDataSync(
           user?.loggedInAgencyId,
           context
-        ));
+        );
         userPincode = !isTrustedAuthentication && userParameters?.pincode;
 
         if (!isTrustedAuthentication && !userPincode) {
@@ -507,10 +507,10 @@ export const resolvers = {
       const hasBorchk = await resolveBorrowerCheck(branch.branchId, context);
 
       if ((await isFFUAgency(agencyId, context)) && hasBorchk) {
-        const isTrustedAuthentication = !(await isFFUAgency(
+        const isTrustedAuthentication = await hasCulrDataSync(
           user?.loggedInAgencyId,
           context
-        ));
+        );
         userPincode = !isTrustedAuthentication && userParameters?.pincode;
 
         if (!isTrustedAuthentication && !userPincode) {

@@ -2285,6 +2285,7 @@ type UserParameter {
 type Branch {
   \\"\\"\\"Whether this branch's agency supports borrowerCheck\\"\\"\\"
   borrowerCheck: Boolean!
+  culrDataSync: Boolean!
   agencyName: String
   agencyId: String!
   branchId: String!
