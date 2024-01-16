@@ -96,12 +96,12 @@ export async function load({ agencyId, userId }, context) {
   });
 
   return new Promise((resolve) =>
-    parseString(res.body, (err, result) => {
+    parseString(res.body, async (err, result) => {
       let data = parseResponse(result);
 
       // This check prevents FFU borchk authenticated users for accessing CULR data.
       // only the loggedIn FFU library is returned, if it exist.
-      if (isFFUAgency(agencyId)) {
+      if (await isFFUAgency(agencyId, context)) {
         data = omitCulrData(data, { agencyId, userId });
       }
 
@@ -139,7 +139,7 @@ export async function testLoad({ agencyId, userId }, context) {
 
   // This check prevents FFU borchk authenticated users for accessing CULR data.
   // only the loggedIn FFU library is returned, if it exist.
-  if (isFFUAgency(agencyId)) {
+  if (await isFFUAgency(agencyId, context)) {
     return omitCulrData(data, { agencyId, userId });
   }
 

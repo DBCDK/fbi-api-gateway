@@ -76,7 +76,7 @@ const data = {
     attributes: {
       ...DEFAULT_FFU,
       userId: "C000000002",
-      loggedInAgencyId: "800002",
+      loggedInAgencyId: "800010",
     },
   },
   AUTHENTICATED_TOKEN_USER2: {

@@ -12,7 +12,7 @@ export async function load({ agencyId, cpr, localId }, context) {
   };
 
   // illegal argument
-  if (agencyId === "800000" && localId === "C000000002") {
+  if (agencyId === "800027" && localId === "C000000002") {
     response = {
       status: 200,
       body: `<?xml version='1.0' encoding='UTF-8'?>
@@ -33,7 +33,7 @@ export async function load({ agencyId, cpr, localId }, context) {
   }
 
   // success
-  if (agencyId === "800002" && localId === "C000000002") {
+  if (agencyId === "800010" && localId === "C000000002") {
     response = {
       status: 200,
       body: `<?xml version='1.0' encoding='UTF-8'?>

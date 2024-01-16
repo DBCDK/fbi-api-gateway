@@ -271,7 +271,8 @@ export const resolvers = {
       return !!context?.user?.uniqueId;
     },
     async omittedCulrData(parent, args, context, info) {
-      if (!isFFUAgency(context?.user?.loggedInAgencyId)) {
+      const loggedInAgencyId = context?.user?.loggedInAgencyId;
+      if (!(await isFFUAgency(loggedInAgencyId, context))) {
         return null;
       }
 
