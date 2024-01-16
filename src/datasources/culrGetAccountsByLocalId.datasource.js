@@ -95,8 +95,6 @@ export async function load({ agencyId, userId }, context) {
     body: soap,
   });
 
-  console.log("load => context", await isFFUAgency(agencyId, context));
-
   return new Promise((resolve) =>
     parseString(res.body, async (err, result) => {
       let data = parseResponse(result);
