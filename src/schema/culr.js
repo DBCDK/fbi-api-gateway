@@ -278,12 +278,6 @@ export const resolvers = {
       // Validate FFU Agency from FFU user credentials
       const loggedInAgencyId = user.ffu?.loggedInAgencyId;
 
-      console.error(
-        "######## loggedInAgencyId",
-        loggedInAgencyId,
-        await hasCulrDataSync(loggedInAgencyId, context)
-      );
-
       if (
         ENABLE_FFU_CHECK &&
         (await hasCulrDataSync(loggedInAgencyId, context))
