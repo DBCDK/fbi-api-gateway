@@ -66,7 +66,7 @@ export async function load({ userId }, context) {
                         <userIdValue>${userId}</userIdValue>
                       </Account>
                       <Account>
-                        <provider>800002</provider>
+                        <provider>800010</provider>
                         <userIdType>LOCAL</userIdType>
                         <userIdValue>C000000002</userIdValue>
                       </Account>

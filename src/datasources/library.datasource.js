@@ -123,7 +123,7 @@ async function doRequest() {
  * @param getFunc
  * @returns {Promise<{result: (*&{language: string})[], hitcount: number}>}
  */
-export async function search(props, getFunc = doRequest) {
+export async function search(props, getFunc) {
   const {
     q,
     limit = 10,
@@ -185,7 +185,8 @@ export async function search(props, getFunc = doRequest) {
     }
 
     if (include && useAgencyTypesFilter) {
-      include = agencyTypes.includes(branch.agencyType);
+      // .toUpperCase() added for mocked test libraries support
+      include = agencyTypes.includes(branch?.agencyType?.toUpperCase());
     }
 
     return include;

@@ -26,7 +26,7 @@ export async function load({ agencyId, userId }, context) {
   };
 
   // Success - 1 account
-  if (agencyId === "800002" && userId === "C000000002") {
+  if (agencyId === "800010" && userId === "C000000002") {
     response = {
       status: 200,
       body: `<?xml version='1.0' encoding='UTF-8'?>
@@ -52,7 +52,7 @@ export async function load({ agencyId, userId }, context) {
   }
 
   // Success - 2 accounts
-  if (agencyId === "800001" && userId === "C000000003") {
+  if (agencyId === "800032" && userId === "C000000003") {
     response = {
       status: 200,
       body: `<?xml version='1.0' encoding='UTF-8'?>
@@ -66,7 +66,7 @@ export async function load({ agencyId, userId }, context) {
                         <userIdValue>${userId}</userIdValue>
                       </Account>
                       <Account>
-                        <provider>800002</provider>
+                        <provider>800010</provider>
                         <userIdType>LOCAL</userIdType>
                         <userIdValue>C000000004</userIdValue>
                       </Account>
