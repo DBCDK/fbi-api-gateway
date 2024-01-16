@@ -6,6 +6,7 @@ import { orderBy } from "lodash";
 import { resolveBorrowerCheck } from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
+import { isFFUAgency } from "../utils/agency";
 export const typeDef = `
   enum LibraryStatus {
     SLETTET
@@ -107,7 +108,9 @@ export const resolvers = {
       // pjo 19/12/23 bug BIBDK2021-2294 . If libraries are not public (number starts with 7)
       // we prioritize branchId OVER agencyId - since FFU and foreign libraries decides on branch-level, if they use borrowerCheck or not
 
-      const libraryId = parent?.agencyId?.startsWith("7")
+      const isFFU = await isFFUAgency(parent?.agencyId);
+
+      const libraryId = isFFU
         ? parent?.agencyId
         : parent?.branchId || parent?.agencyId;
 
