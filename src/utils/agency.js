@@ -1,5 +1,3 @@
-import { search as library } from "../datasources/library.datasource";
-
 /**
  * Function to check if an agencyId is a FFU library
  *
@@ -13,11 +11,25 @@ export function _isFFUAgency(agencyId) {
   return agencyId.length === LENGTH && list.includes(agencyId.charAt(0));
 }
 
-export async function isFFUAgency(props) {
+/**
+ * Function to check if an agencyId is a FFU library
+ *
+ * @param {string} agencyId
+ * @returns boolean
+ */
+
+export async function isFFUAgency(branchId, context) {
+  if (!context) {
+    // If no context given/available, fallback to old/static check.
+    return _isFFUAgency(branchId);
+  }
+
+  const loader = context?.getLoader || context?.datasources?.getLoader;
+
   return !!(
-    await library({
-      ...props,
-      agencyType: ["FORSKNINGSBIBLIOTEK"],
+    await loader("library").load({
+      branchId,
+      agencyTypes: ["FORSKNINGSBIBLIOTEK"],
     })
   ).result?.[0];
 }

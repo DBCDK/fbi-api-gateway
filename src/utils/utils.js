@@ -225,7 +225,7 @@ export async function resolveBorrowerCheck(agencyId, context) {
   }
 
   // Disable Borchk for FFU libraries
-  if (ffuIsBlocked && isFFUAgency(agencyId)) {
+  if (ffuIsBlocked && (await isFFUAgency(agencyId, context))) {
     return false;
   }
 

@@ -276,7 +276,11 @@ export const resolvers = {
       }
 
       // Validate FFU Agency from FFU user credentials
-      if (ENABLE_FFU_CHECK && !isFFUAgency(user.ffu?.loggedInAgencyId)) {
+      const loggedInAgencyId = user.ffu?.loggedInAgencyId;
+
+      console.error("........ loggedInAgencyId ....", loggedInAgencyId);
+
+      if (ENABLE_FFU_CHECK && !(await isFFUAgency(loggedInAgencyId, context))) {
         return {
           status: "ERROR_INVALID_AGENCY",
         };
@@ -466,7 +470,7 @@ export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
     }
 
     // validate Agency
-    if (ENABLE_FFU_CHECK && !isFFUAgency(agencyId)) {
+    if (ENABLE_FFU_CHECK && !(await isFFUAgency(agencyId, context))) {
       return {
         status: "ERROR_INVALID_AGENCY",
       };

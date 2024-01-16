@@ -385,10 +385,11 @@ export const resolvers = {
 
       const hasBorchk = await resolveBorrowerCheck(branch.branchId, context);
 
-      if (isFFUAgency({ agencyId }) && hasBorchk) {
-        const isTrustedAuthentication = !isFFUAgency({
-          agencyId: user?.loggedInAgencyId,
-        });
+      if ((await isFFUAgency(agencyId, context)) && hasBorchk) {
+        const isTrustedAuthentication = !(await isFFUAgency(
+          user?.loggedInAgencyId,
+          context
+        ));
         userPincode = !isTrustedAuthentication && userParameters?.pincode;
 
         if (!isTrustedAuthentication && !userPincode) {
@@ -503,8 +504,13 @@ export const resolvers = {
       // before an order can be placed at that specific agency.
       let userPincode = null;
 
-      if (isFFUAgency(agencyId) && branch.borrowerCheck) {
-        const isTrustedAuthentication = !isFFUAgency(user?.loggedInAgencyId);
+      const hasBorchk = await resolveBorrowerCheck(branch.branchId, context);
+
+      if ((await isFFUAgency(agencyId, context)) && hasBorchk) {
+        const isTrustedAuthentication = !(await isFFUAgency(
+          user?.loggedInAgencyId,
+          context
+        ));
         userPincode = !isTrustedAuthentication && userParameters?.pincode;
 
         if (!isTrustedAuthentication && !userPincode) {

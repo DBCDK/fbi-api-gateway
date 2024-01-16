@@ -3,7 +3,7 @@ import config from "../../../../src/config";
 
 import { setMunicipalityAgencyId } from "../../../../src/utils/municipalityAgencyId";
 import { omitUserinfoCulrData } from "../../../../src/utils/omitCulrData";
-import { isFFUAgency } from "../../../../src/utils/agency";
+import { _isFFUAgency } from "../../../../src/utils/agency";
 
 const {
   authenticationUser,
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
   if (smaug_response.status === 200) {
     const smaug_data = await smaug_response.json();
 
-    const isFFULogin = isFFUAgency(smaug_data?.user?.agency);
+    const isFFULogin = _isFFUAgency(smaug_data?.user?.agency);
 
     // add to result
     user.loggedInAgencyId = smaug_data?.user?.agency || null;
@@ -135,7 +135,7 @@ export default async function handler(req, res) {
       user.isAuthenticated = !!attributes.userId;
 
       // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
-      user.municipalityAgencyId = setMunicipalityAgencyId(attributes);
+      user.municipalityAgencyId = await setMunicipalityAgencyId(attributes);
 
       user.agencies = agencies.length > 0 ? agencies : [];
       user.isCPRValidated =

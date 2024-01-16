@@ -1,6 +1,6 @@
 import { isFFUAgency } from "./agency";
 
-export function setMunicipalityAgencyId(attr) {
+export async function setMunicipalityAgencyId(attr, context) {
   const { uniqueId, agencies, municipality, municipalityAgencyId } = attr;
 
   // If FFU user - Replace municipalityAgencyId with agencyId - (OBS! NOT FOLk library connected)
@@ -10,7 +10,7 @@ export function setMunicipalityAgencyId(attr) {
       if (agencies?.length === 1) {
         const agency = agencies?.[0]?.agencyId;
 
-        if (agency && isFFUAgency(agency)) {
+        if (agency && (await isFFUAgency(agency, context))) {
           return agency;
         }
       }
