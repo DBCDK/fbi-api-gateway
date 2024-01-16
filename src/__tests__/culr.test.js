@@ -141,7 +141,7 @@ describe("Culr", () => {
     });
   });
 
-  it.only("CreateAccount | Should give status ERROR_INVALID_AGENCY", async () => {
+  it("CreateAccount | Should give status ERROR_INVALID_AGENCY", async () => {
     const result = await performTestQuery({
       query: createAccount,
       variables: {
