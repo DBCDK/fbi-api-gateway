@@ -278,8 +278,6 @@ export const resolvers = {
       // Validate FFU Agency from FFU user credentials
       const loggedInAgencyId = user.ffu?.loggedInAgencyId;
 
-      console.error("........ loggedInAgencyId ....", loggedInAgencyId);
-
       if (ENABLE_FFU_CHECK && !(await isFFUAgency(loggedInAgencyId, context))) {
         return {
           status: "ERROR_INVALID_AGENCY",
