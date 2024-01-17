@@ -6,7 +6,8 @@ import { orderBy } from "lodash";
 import { resolveBorrowerCheck } from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
-import { isFFUAgency } from "../utils/agency";
+import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
+
 export const typeDef = `
   enum LibraryStatus {
     SLETTET
@@ -41,6 +42,7 @@ export const typeDef = `
   type Branch{
     """Whether this branch's agency supports borrowerCheck"""
     borrowerCheck: Boolean!
+    culrDataSync: Boolean!
     agencyName: String
     agencyId: String!
     branchId: String!
@@ -115,6 +117,9 @@ export const resolvers = {
         : parent?.branchId || parent?.agencyId;
 
       return await resolveBorrowerCheck(libraryId, context);
+    },
+    async culrDataSync(parent, args, context, info) {
+      return await hasCulrDataSync(parent.agencyId, context);
     },
     agencyName(parent, args, context, info) {
       return parent.agencyName || "";

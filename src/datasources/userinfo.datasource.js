@@ -1,5 +1,5 @@
 import config from "../config";
-import { isFFUAgency } from "../utils/agency";
+import { hasCulrDataSync } from "../utils/agency";
 import { setMunicipalityAgencyId } from "../utils/municipalityAgencyId";
 import { omitUserinfoCulrData } from "../utils/omitCulrData";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
@@ -29,7 +29,7 @@ export async function load({ accessToken }, context) {
 
     // This check prevents FFU users from accessing CULR data.
     // FFU Borchk authentication, is not safe enough to expose CULR data.
-    if (await isFFUAgency(smaug?.user?.agency, context)) {
+    if (!(await hasCulrDataSync(smaug?.user?.agency, context))) {
       attributes = omitUserinfoCulrData(attributes);
     }
 
@@ -84,7 +84,7 @@ export async function testLoad({ accessToken }, context) {
 
   // This check prevents FFU users from accessing CULR data.
   // FFU Borchk authentication, is not safe enough to expose CULR data.
-  if (!(await isFFUAgency(loginAgency?.agency, context))) {
+  if (!(await hasCulrDataSync(loginAgency?.agency, context))) {
     attributes = omitUserinfoCulrData(attributes);
   }
 

@@ -8,7 +8,7 @@ import { log } from "dbc-node-logger";
 import config from "../config";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 import { omitCulrData } from "../utils/omitCulrData";
-import { isFFUAgency } from "../utils/agency";
+import { hasCulrDataSync } from "../utils/agency";
 
 const {
   url,
@@ -101,7 +101,7 @@ export async function load({ agencyId, userId }, context) {
 
       // This check prevents FFU borchk authenticated users for accessing CULR data.
       // only the loggedIn FFU library is returned, if it exist.
-      if (await isFFUAgency(agencyId, context)) {
+      if (!(await hasCulrDataSync(agencyId, context))) {
         data = omitCulrData(data, { agencyId, userId });
       }
 
@@ -139,7 +139,7 @@ export async function testLoad({ agencyId, userId }, context) {
 
   // This check prevents FFU borchk authenticated users for accessing CULR data.
   // only the loggedIn FFU library is returned, if it exist.
-  if (await isFFUAgency(agencyId, context)) {
+  if (!(await hasCulrDataSync(agencyId, context))) {
     return omitCulrData(data, { agencyId, userId });
   }
 
