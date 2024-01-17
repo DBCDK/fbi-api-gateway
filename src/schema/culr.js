@@ -4,7 +4,7 @@
  */
 
 import { isValidCpr } from "../utils/cpr";
-import { isFFUAgency } from "../utils/agency";
+import { hasCulrDataSync } from "../utils/agency";
 import { getAccount, getAccounts } from "../utils/accounts";
 
 export const typeDef = `
@@ -276,7 +276,12 @@ export const resolvers = {
       }
 
       // Validate FFU Agency from FFU user credentials
-      if (ENABLE_FFU_CHECK && !isFFUAgency(user.ffu?.loggedInAgencyId)) {
+      const loggedInAgencyId = user.ffu?.loggedInAgencyId;
+
+      if (
+        ENABLE_FFU_CHECK &&
+        (await hasCulrDataSync(loggedInAgencyId, context))
+      ) {
         return {
           status: "ERROR_INVALID_AGENCY",
         };
@@ -466,7 +471,7 @@ export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
     }
 
     // validate Agency
-    if (ENABLE_FFU_CHECK && !isFFUAgency(agencyId)) {
+    if (ENABLE_FFU_CHECK && (await hasCulrDataSync(agencyId, context))) {
       return {
         status: "ERROR_INVALID_AGENCY",
       };

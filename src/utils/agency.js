@@ -1,14 +1,90 @@
-import { getAccount } from "./accounts";
+/**
+ * Function to check if an agencyId is a FFU library
+ *
+ * @param {string} branchId
+ *
+ * @returns {boolean}
+ */
+
+export function _isFFUAgency(branchId) {
+  const LENGTH = 6;
+  const list = ["4", "6", "8", "9"];
+  return branchId.length === LENGTH && list.includes(branchId.charAt(0));
+}
 
 /**
  * Function to check if an agencyId is a FFU library
  *
- * @param {string} agencyId
- * @returns boolean
+ * @param {string} branchId
+ * @param {object} context
+ *
+ * @returns {boolean}
  */
 
-export function isFFUAgency(agencyId) {
-  const LENGTH = 6;
-  const list = ["4", "6", "8", "9"];
-  return agencyId.length === LENGTH && list.includes(agencyId.charAt(0));
+export async function isFFUAgency(branchId, context) {
+  if (!context) {
+    // If no context given/available, fallback to old/static check.
+    return _isFFUAgency(branchId);
+  }
+
+  const loader = context?.getLoader || context?.datasources?.getLoader;
+
+  const result = (await loader("library").load({ branchId })).result?.[0];
+
+  // toUpperCase needed for mocked agencies (jest testing)
+  return !!(result?.agencyType?.toUpperCase() === "FORSKNINGSBIBLIOTEK");
+}
+
+/**
+ *
+ * @param {string} branchId
+ * @param {object} context
+ *
+ * @returns {boolean}
+ */
+
+export async function isFolkAgency(branchId, context) {
+  if (!context) {
+    // If no context given/available, fallback to old/static check.
+    return branchId.startsWith("7");
+  }
+
+  const loader = context?.getLoader || context?.datasources?.getLoader;
+
+  const result = (await loader("library").load({ branchId })).result?.[0];
+
+  // toUpperCase needed for mocked agencies (jest testing)
+  return !!(result?.agencyType?.toUpperCase() === "FOLKEBIBLIOTEK");
+}
+
+/**
+ * Function to check if an agency sync data with culr
+ *
+ * @param {string} branchId
+ * @returns {boolean}
+ */
+export async function hasCulrDataSync(branchId, context) {
+  /**
+   * Odense Katedralskole, 872960,
+   * Roskilde Gymnasium, 872600
+   * Sorø Akademis Skole, 861640
+   * Slagelse Gymnasium, biblioteket 872320
+   * Greve Gymnasium, Biblioteket 874260
+   * Stenhus Gymnasium, 875140
+   */
+
+  const whitelist = [
+    "872960",
+    "872600",
+    "861640",
+    "872320",
+    "874260",
+    "875140",
+  ];
+
+  if (whitelist.includes(branchId)) {
+    return true;
+  }
+
+  return !!(await isFolkAgency(branchId, context));
 }

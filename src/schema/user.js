@@ -18,7 +18,7 @@ import { hasInfomediaAccess } from "../utils/access";
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
 import { deleteFFUAccount } from "./culr";
-import { isFFUAgency } from "../utils/agency";
+import { hasCulrDataSync } from "../utils/agency";
 
 /**
  * The Profile type definition
@@ -84,6 +84,8 @@ type Loan {
   dueDate:	DateTime!
   loanId:	String!
   agencyId: String!
+  creator: String
+  title: String
   edition: String
   pages: String
   publisher: String
@@ -269,7 +271,8 @@ export const resolvers = {
       return !!context?.user?.uniqueId;
     },
     async omittedCulrData(parent, args, context, info) {
-      if (!isFFUAgency(context?.user?.loggedInAgencyId)) {
+      const loggedInAgencyId = context?.user?.loggedInAgencyId;
+      if (await hasCulrDataSync(loggedInAgencyId, context)) {
         return null;
       }
 

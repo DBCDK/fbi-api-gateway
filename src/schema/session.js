@@ -12,6 +12,7 @@ const userParameters = `
   barcode: String,
   cardno: String,
   customId: String,
+  pincode: String,
   userDateOfBirth: String,
   userName: String,
   userAddress: String,

@@ -7,8 +7,8 @@ import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 import { placeCopyRequest } from "./elba";
 import { filterAgenciesByProps } from "../utils/accounts";
-import { isPeriodica } from "../utils/utils";
-import { isFFUAgency } from "../utils/agency";
+import { isPeriodica, resolveBorrowerCheck } from "../utils/utils";
+import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
 
 import getUserBorrowerStatus, {
   getUserIds,
@@ -174,12 +174,12 @@ export const typeDef = `
       barcode: String,
       cardno: String,
       customId: String,
+      pincode: String,
       userDateOfBirth: String,
       userName: String,
       userAddress: String,
       userMail: String,
       userTelephone: String
-      pincode: String
    }
 
    input SubmitOrderInput{
@@ -324,9 +324,7 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
   if (context?.profile?.agency == 190101) {
     const orderId = submitOrderRes?.orderId;
     const uniqueId = user?.uniqueId;
-    const workId = await context.datasources
-      .getLoader("pidToWorkId")
-      .load({ pid: pid, profile: context.profile });
+
     try {
       if (!uniqueId) {
         throw new Error("Not authorized");
@@ -334,10 +332,13 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
       if (!orderId) {
         throw new Error("Undefined orderId");
       }
+      if (!pid) {
+        throw new Error("Undefined pid");
+      }
       await context.datasources.getLoader("userDataAddOrder").load({
         uniqueId,
         orderId,
-        workId,
+        pid,
       });
     } catch (error) {
       log.error(
@@ -382,8 +383,13 @@ export const resolvers = {
       // before an order can be placed at that specific agency.
       let userPincode = null;
 
-      if (isFFUAgency(agencyId)) {
-        const isTrustedAuthentication = !isFFUAgency(user?.loggedInAgencyId);
+      const hasBorchk = await resolveBorrowerCheck(branch.branchId, context);
+
+      if ((await isFFUAgency(agencyId, context)) && hasBorchk) {
+        const isTrustedAuthentication = await hasCulrDataSync(
+          user?.loggedInAgencyId,
+          context
+        );
         userPincode = !isTrustedAuthentication && userParameters?.pincode;
 
         if (!isTrustedAuthentication && !userPincode) {
@@ -498,8 +504,13 @@ export const resolvers = {
       // before an order can be placed at that specific agency.
       let userPincode = null;
 
-      if (isFFUAgency(agencyId)) {
-        const isTrustedAuthentication = !isFFUAgency(user?.loggedInAgencyId);
+      const hasBorchk = await resolveBorrowerCheck(branch.branchId, context);
+
+      if ((await isFFUAgency(agencyId, context)) && hasBorchk) {
+        const isTrustedAuthentication = await hasCulrDataSync(
+          user?.loggedInAgencyId,
+          context
+        );
         userPincode = !isTrustedAuthentication && userParameters?.pincode;
 
         if (!isTrustedAuthentication && !userPincode) {

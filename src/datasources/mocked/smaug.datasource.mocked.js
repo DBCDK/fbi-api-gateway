@@ -8,7 +8,7 @@ const config = {
 
 export async function load({ accessToken }) {
   if (accessToken === "FFU_AUTHENTICATED_TOKEN") {
-    return { ...config, user: { id: "C000000002", agency: "800002" } };
+    return { ...config, user: { id: "C000000002", agency: "800010" } };
   }
   if (accessToken === "FOLK_UNAUTHENTICATED_TOKEN") {
     return { ...config, user: null };

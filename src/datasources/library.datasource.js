@@ -185,7 +185,8 @@ export async function search(props, getFunc) {
     }
 
     if (include && useAgencyTypesFilter) {
-      include = agencyTypes.includes(branch.agencyType);
+      // .toUpperCase() added for mocked test libraries support
+      include = agencyTypes.includes(branch?.agencyType?.toUpperCase());
     }
 
     return include;

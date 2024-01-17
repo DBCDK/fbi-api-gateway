@@ -656,6 +656,7 @@ type Query {
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
   test: Test
+  universe(key: String!): Universe
   user: User
 }
 
@@ -2284,6 +2285,7 @@ type UserParameter {
 type Branch {
   \\"\\"\\"Whether this branch's agency supports borrowerCheck\\"\\"\\"
   borrowerCheck: Boolean!
+  culrDataSync: Boolean!
   agencyName: String
   agencyId: String!
   branchId: String!
@@ -2468,12 +2470,12 @@ input SubmitOrderUserParameters {
   barcode: String
   cardno: String
   customId: String
+  pincode: String
   userDateOfBirth: String
   userName: String
   userAddress: String
   userMail: String
   userTelephone: String
-  pincode: String
 }
 
 input SubmitOrderInput {
@@ -2737,6 +2739,7 @@ type SessionUserParameters {
   barcode: String
   cardno: String
   customId: String
+  pincode: String
   userDateOfBirth: String
   userName: String
   userAddress: String
@@ -2750,6 +2753,7 @@ input SessionUserParametersInput {
   barcode: String
   cardno: String
   customId: String
+  pincode: String
   userDateOfBirth: String
   userName: String
   userAddress: String
@@ -2823,7 +2827,12 @@ type TestMutation {
   user(input: TestUserInput): String
 }
 
+union UniverseContent = Work | Series
+
 type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String!
+
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
@@ -2836,10 +2845,21 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series(limit: Int, offset: Int): [Series!]!
+  series(limit: Int, offset: Int, workType: WorkType): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works(limit: Int, offset: Int): [Work!]!
+  works(limit: Int, offset: Int, workType: WorkType): [Work!]!
+
+  \\"\\"\\"work types that are in this universe\\"\\"\\"
+  workTypes: [WorkType!]!
+
+  \\"\\"\\"both series and works in a list\\"\\"\\"
+  content(limit: Int, offset: Int, workType: WorkType): UniverseContentResult!
+}
+
+type UniverseContentResult {
+  hitcount: Int!
+  entries: [UniverseContent!]!
 }
 
 type User {
@@ -2899,6 +2919,8 @@ type Loan {
   dueDate: DateTime!
   loanId: String!
   agencyId: String!
+  creator: String
+  title: String
   edition: String
   pages: String
   publisher: String
@@ -4748,7 +4770,12 @@ type DidYouMean {
   score: Float!
 }
 
+union UniverseContent = Work | Series
+
 type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String!
+
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
@@ -4761,10 +4788,21 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series(limit: Int, offset: Int): [Series!]!
+  series(limit: Int, offset: Int, workType: WorkType): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works(limit: Int, offset: Int): [Work!]!
+  works(limit: Int, offset: Int, workType: WorkType): [Work!]!
+
+  \\"\\"\\"work types that are in this universe\\"\\"\\"
+  workTypes: [WorkType!]!
+
+  \\"\\"\\"both series and works in a list\\"\\"\\"
+  content(limit: Int, offset: Int, workType: WorkType): UniverseContentResult!
+}
+
+type UniverseContentResult {
+  hitcount: Int!
+  entries: [UniverseContent!]!
 }
 "
 `;
@@ -6084,7 +6122,12 @@ type TvSeriesDetails {
   numbers: [Int!]
 }
 
+union UniverseContent = Work | Series
+
 type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String!
+
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
@@ -6097,10 +6140,21 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series(limit: Int, offset: Int): [Series!]!
+  series(limit: Int, offset: Int, workType: WorkType): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works(limit: Int, offset: Int): [Work!]!
+  works(limit: Int, offset: Int, workType: WorkType): [Work!]!
+
+  \\"\\"\\"work types that are in this universe\\"\\"\\"
+  workTypes: [WorkType!]!
+
+  \\"\\"\\"both series and works in a list\\"\\"\\"
+  content(limit: Int, offset: Int, workType: WorkType): UniverseContentResult!
+}
+
+type UniverseContentResult {
+  hitcount: Int!
+  entries: [UniverseContent!]!
 }
 "
 `;
