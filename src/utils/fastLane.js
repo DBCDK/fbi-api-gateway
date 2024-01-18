@@ -30,7 +30,7 @@ const ALLOWED_TYPES = {
   EntityQueryResult: true,
   Entity: true,
   FieldNodeLangcode: true,
-  FieldNodeNotificationFieldNotificationText: true,
+  FieldNodeNotificationFieldNotificationText: false, // notifications should be visible immediately
   Inspiration: true,
   Categories: true,
   Category: true,
