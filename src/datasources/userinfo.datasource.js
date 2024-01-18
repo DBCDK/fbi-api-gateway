@@ -63,6 +63,11 @@ export async function testLoad({ accessToken }, context) {
   const idpUsed = testUser?.loginAgency?.idpUsed;
   const map = { 911116: "1110" };
 
+  const loggedInAgencyHasCulrDataSync = await hasCulrDataSync(
+    loginAgency?.agency,
+    context
+  );
+
   const municipalityAgencyId = testUser.merged.find(
     (account) => account.isMunicipality
   )?.agency;
@@ -71,7 +76,7 @@ export async function testLoad({ accessToken }, context) {
     idpUsed,
     userId: loginAgency?.cpr || loginAgency?.localId,
     blocked: false,
-    uniqueId: loginAgency?.uniqueId,
+    uniqueId: loggedInAgencyHasCulrDataSync ? loginAgency?.uniqueId : null,
     agencies: accountsToCulr(testUser.merged)?.filter(
       (account) => account.agencyId !== "190101"
     ),
@@ -84,7 +89,7 @@ export async function testLoad({ accessToken }, context) {
 
   // This check prevents FFU users from accessing CULR data.
   // FFU Borchk authentication, is not safe enough to expose CULR data.
-  if (!(await hasCulrDataSync(loginAgency?.agency, context))) {
+  if (!loggedInAgencyHasCulrDataSync) {
     attributes = omitUserinfoCulrData(attributes);
   }
 
