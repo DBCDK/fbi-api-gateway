@@ -112,7 +112,7 @@ export const resolvers = {
 
       const isFFU = await isFFUAgency(parent?.agencyId);
 
-      const libraryId = isFFU
+      const libraryId = !isFFU
         ? parent?.agencyId
         : parent?.branchId || parent?.agencyId;
 
