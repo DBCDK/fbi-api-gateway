@@ -74,12 +74,16 @@ export async function hasCulrDataSync(branchId, context) {
    */
 
   const whitelist = [
+    // Gymnasier
     "872960",
     "872600",
     "861640",
     "872320",
     "874260",
     "875140",
+
+    // Login with mitId, when no library accounts
+    "190101",
   ];
 
   if (whitelist.includes(branchId)) {
