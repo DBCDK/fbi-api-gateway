@@ -94,7 +94,7 @@ export async function load({ agencyId, localId }, context) {
       agencyId,
       code: parsed.code,
       message: parsed.message,
-      http: {
+      httpResponse: {
         status: res.status,
         body: res.body,
       },
