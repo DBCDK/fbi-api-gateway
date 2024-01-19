@@ -101,7 +101,7 @@ export function createFetchWithConcurrencyLimit(concurrency, stats) {
 
       let text;
       try {
-        text = Buffer.from(res.buffer);
+        text = Buffer.from(res.buffer)?.toString();
         return {
           status: res.status,
           body: await parseJSON(text, res.timings),
