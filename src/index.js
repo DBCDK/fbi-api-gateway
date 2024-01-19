@@ -326,6 +326,7 @@ promExporterApp.listen(9599, () => {
         req.datasources.stats
       );
       if (fastLaneRes) {
+        req.fastLaneRes = true;
         return res.send(fastLaneRes);
       }
     }
