@@ -105,9 +105,16 @@ export default async function handler(req, res) {
     if (userinfo_response.status === 200) {
       const userinfo_data = (await userinfo_response.json()).attributes;
 
+      const idpUsed = userinfo_data?.idpUsed;
+
+      const loggedInAgencyId =
+        idpUsed === "nemlogin" && !smaug?.user?.agency
+          ? "190101"
+          : smaug?.user?.agency || null;
+
       let attributes = {
         ...userinfo_data,
-        loggedInAgencyId: smaug_data?.user?.agency,
+        loggedInAgencyId,
       };
 
       // This check prevents FFU users from accessing CULR data.
