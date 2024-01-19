@@ -21,15 +21,22 @@ export async function load({ accessToken }, context) {
       accessToken,
     });
 
+    const idpUsed = res.body?.attributes?.idpUsed;
+
+    const loggedInAgencyId =
+      idpUsed === "nemlogin" && !smaug?.user?.agency
+        ? "190101"
+        : smaug?.user?.agency || null;
+
     // user attributes enriched with loggedInAgencyId (from smaug)
     let attributes = {
       ...res.body?.attributes,
-      loggedInAgencyId: smaug?.user?.agency || null,
+      loggedInAgencyId,
     };
 
     // This check prevents FFU users from accessing CULR data.
     // FFU Borchk authentication, is not safe enough to expose CULR data.
-    if (!(await hasCulrDataSync(smaug?.user?.agency, context))) {
+    if (!(await hasCulrDataSync(loggedInAgencyId, context))) {
       attributes = omitUserinfoCulrData(attributes);
     }
 
