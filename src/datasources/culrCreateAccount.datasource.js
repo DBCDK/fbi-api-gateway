@@ -89,9 +89,23 @@ export async function load({ agencyId, cpr, localId }, context) {
     body: soap,
   });
 
-  return new Promise((resolve) =>
+  const parsed = await new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
   );
+
+  log.info("Culr create response", {
+    culrCreateResponse: {
+      agencyId,
+      code: parsed.code,
+      message: parsed.message,
+      http: {
+        status: res.status,
+        body: res.body,
+      },
+    },
+  });
+
+  return parsed;
 }
 
 export async function testLoad({ agencyId, cpr, localId }, context) {
