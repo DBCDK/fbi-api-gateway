@@ -2,6 +2,8 @@ import fetch from "isomorphic-unfetch";
 import config from "../../../../src/config";
 
 import { setMunicipalityAgencyId } from "../../../../src/utils/municipalityAgencyId";
+import { omitUserinfoCulrData } from "../../../../src/utils/omitCulrData";
+import { _isFFUAgency } from "../../../../src/utils/agency";
 
 const {
   authenticationUser,
@@ -93,6 +95,8 @@ export default async function handler(req, res) {
   if (smaug_response.status === 200) {
     const smaug_data = await smaug_response.json();
 
+    const isFFULogin = _isFFUAgency(smaug_data?.user?.agency);
+
     // add to result
     user.loggedInAgencyId = smaug_data?.user?.agency || null;
 
@@ -101,33 +105,51 @@ export default async function handler(req, res) {
     if (userinfo_response.status === 200) {
       const userinfo_data = (await userinfo_response.json()).attributes;
 
-      const hasCPRValidatedAccount = !!userinfo_data.agencies.find(
+      const idpUsed = userinfo_data?.idpUsed;
+
+      user.loggedInAgencyId =
+        idpUsed === "nemlogin" && !smaug_data?.user?.agency
+          ? "190101"
+          : smaug_data?.user?.agency || null;
+
+      let attributes = {
+        ...userinfo_data,
+        loggedInAgencyId: user.loggedInAgencyId,
+      };
+
+      // This check prevents FFU users from accessing CULR data.
+      // FFU Borchk authentication, is not safe enough to expose CULR data.
+      if (isFFULogin) {
+        attributes = omitUserinfoCulrData(attributes);
+      }
+
+      user.omittedCulrData = attributes.omittedCulrData;
+
+      const hasCPRValidatedAccount = !!attributes.agencies.find(
         (a) => a.userIdType === "CPR"
       );
 
       // unique agencyId list
       const agencies = [];
-      userinfo_data.agencies.forEach(
+      attributes.agencies.forEach(
         ({ agencyId }) =>
           !agencies.includes(agencyId) && agencies.push(agencyId)
       );
 
-      user.userId = userinfo_data.userId;
-      user.identityProviderUsed = userinfo_data.idpUsed;
-      user.hasCulrUniqueId = !!userinfo_data.uniqueId;
-      user.isAuthenticated = !!userinfo_data.userId;
+      user.userId = attributes.userId;
+      user.identityProviderUsed = attributes.idpUsed;
+      user.hasCulrUniqueId = !!attributes.uniqueId && !isFFULogin;
+      user.isAuthenticated = !!attributes.userId;
 
       // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
-      user.municipalityAgencyId = setMunicipalityAgencyId(userinfo_data);
+      user.municipalityAgencyId = await setMunicipalityAgencyId(attributes);
 
       user.agencies = agencies.length > 0 ? agencies : [];
       user.isCPRValidated =
-        userinfo_data.idpUsed === "nemlogin" || hasCPRValidatedAccount;
+        attributes.idpUsed === "nemlogin" || hasCPRValidatedAccount;
 
       // userinfo account select (CPR prioritized)
-      const account = userinfo_data.agencies.find(
-        (a) => a.userIdType === "CPR"
-      );
+      const account = attributes.agencies.find((a) => a.userIdType === "CPR");
 
       const userstatus_response = await getOpenUserStatus({
         loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,

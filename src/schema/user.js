@@ -17,7 +17,8 @@ import { hasInfomediaAccess } from "../utils/access";
 
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
-import { deleteFFUAccount } from "../utils/agency";
+import { deleteFFUAccount } from "./culr";
+import { hasCulrDataSync } from "../utils/agency";
 
 /**
  * The Profile type definition
@@ -55,6 +56,8 @@ type User {
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
   identityProviderUsed: String!
+  hasCulrUniqueId: Boolean!
+  omittedCulrData: OmittedCulrDataResponse
 }
 
 type UserSubscriptions {
@@ -81,6 +84,8 @@ type Loan {
   dueDate:	DateTime!
   loanId:	String!
   agencyId: String!
+  creator: String
+  title: String
   edition: String
   pages: String
   publisher: String
@@ -166,6 +171,13 @@ type BookMarkDeleteResponse {
   IdsDeletedCount: Int!
 }
 
+type OmittedCulrDataResponse {
+  hasOmittedCulrUniqueId: Boolean!
+  hasOmittedCulrMunicipality: Boolean!
+  hasOmittedCulrMunicipalityAgencyId: Boolean!
+  hasOmittedCulrAccounts: Boolean!
+}
+
 type UserMutations {
   """
   Add user to userdata service
@@ -209,7 +221,7 @@ type UserMutations {
   Delete a bookmark
   """
   deleteBookmarks(bookmarkIds: [Int!]!): BookMarkDeleteResponse
-  }
+}
   
 extend type Mutation {
   users: UserMutations!
@@ -254,6 +266,17 @@ export const resolvers = {
   User: {
     async identityProviderUsed(parent, args, context, info) {
       return context?.user?.idpUsed;
+    },
+    async hasCulrUniqueId(parent, args, context, info) {
+      return !!context?.user?.uniqueId;
+    },
+    async omittedCulrData(parent, args, context, info) {
+      const loggedInAgencyId = context?.user?.loggedInAgencyId;
+      if (await hasCulrDataSync(loggedInAgencyId, context)) {
+        return null;
+      }
+
+      return context?.user?.omittedCulrData;
     },
     async isCPRValidated(parent, args, context, info) {
       const user = context?.user;

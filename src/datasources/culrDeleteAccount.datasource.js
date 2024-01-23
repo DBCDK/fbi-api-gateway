@@ -85,9 +85,23 @@ export async function load({ agencyId, localId }, context) {
     body: soap,
   });
 
-  return new Promise((resolve) =>
+  const parsed = await new Promise((resolve) =>
     parseString(res.body, (err, result) => resolve(parseResponse(result)))
   );
+
+  log.info("Culr delete response", {
+    culrDeleteResponse: {
+      agencyId,
+      code: parsed.code,
+      message: parsed.message,
+      httpResponse: {
+        status: res.status,
+        body: res.body,
+      },
+    },
+  });
+
+  return parsed;
 }
 
 export async function testLoad({ agencyId, localId }, context) {

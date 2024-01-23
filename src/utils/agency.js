@@ -1,96 +1,94 @@
-import { getAccount } from "./accounts";
+/**
+ * Function to check if an agencyId is a FFU library
+ *
+ * @param {string} branchId
+ *
+ * @returns {boolean}
+ */
+
+export function _isFFUAgency(branchId) {
+  const LENGTH = 6;
+  const list = ["4", "6", "8", "9"];
+  return branchId.length === LENGTH && list.includes(branchId.charAt(0));
+}
 
 /**
  * Function to check if an agencyId is a FFU library
  *
- * @param {string} agencyId
- * @returns boolean
+ * @param {string} branchId
+ * @param {object} context
+ *
+ * @returns {boolean}
  */
 
-export function isFFUAgency(agencyId) {
-  const LENGTH = 6;
-  const list = ["4", "6", "8", "9"];
-  return agencyId.length === LENGTH && list.includes(agencyId.charAt(0));
+export async function isFFUAgency(branchId, context) {
+  if (!context) {
+    // If no context given/available, fallback to old/static check.
+    return _isFFUAgency(branchId);
+  }
+
+  const loader = context?.getLoader || context?.datasources?.getLoader;
+
+  const result = (await loader("library").load({ branchId })).result?.[0];
+
+  // toUpperCase needed for mocked agencies (jest testing)
+  return !!(result?.agencyType?.toUpperCase() === "FORSKNINGSBIBLIOTEK");
 }
 
 /**
  *
- * will delete a users relation to a FFU library. Deletes the library account in Culr.
- * @returns
+ * @param {string} branchId
+ * @param {object} context
+ *
+ * @returns {boolean}
  */
-export const deleteFFUAccount = async ({ agencyId, dryRun, context }) => {
-  const accessToken = context.accessToken;
 
-  try {
-    // settings
-    const ENABLE_FFU_CHECK = true;
-
-    // token is not authenticated - anonymous token used
-    // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
-    if (!context?.user?.userId) {
-      return {
-        status: "ERROR_UNAUTHENTICATED_TOKEN",
-      };
-    }
-
-    // validate Agency
-    if (ENABLE_FFU_CHECK && !isFFUAgency(agencyId)) {
-      return {
-        status: "ERROR_INVALID_AGENCY",
-      };
-    }
-
-    // Get token user accounts
-    const account = await getAccount(accessToken, context, {
-      agency: agencyId,
-      type: "LOCAL",
-    });
-
-    if (!account) {
-      return {
-        status: "ERROR_ACCOUNT_DOES_NOT_EXIST",
-      };
-    }
-
-    // Check for dryRun
-    if (dryRun) {
-      return {
-        status: "OK",
-      };
-    }
-
-    // Get agencies informations from login.bib.dk /userinfo endpoint
-    const response = await context.datasources
-      .getLoader("culrDeleteAccount")
-      .load({ agencyId, localId: account.userIdValue });
-
-    // Response errors - account does not exist
-    if (response.code === "ACCOUNT_DOES_NOT_EXIST") {
-      return {
-        status: "ERROR_ACCOUNT_DOES_NOT_EXIST",
-      };
-    }
-
-    // AgencyID
-    if (response.code === "ILLEGAL_ARGUMENT") {
-      return {
-        status: "ERROR_AGENCYID_NOT_PERMITTED",
-      };
-    }
-
-    if (response.code === "OK200") {
-      // clear user redis cache for userinfo
-      await context.datasources
-        .getLoader("userinfo")
-        .clearRedis({ accessToken });
-
-      return {
-        status: "OK",
-      };
-    }
-
-    return { status: "ERROR" };
-  } catch (error) {
-    return { status: "ERROR" };
+export async function isFolkAgency(branchId, context) {
+  if (!context) {
+    // If no context given/available, fallback to old/static check.
+    return branchId.startsWith("7");
   }
-};
+
+  const loader = context?.getLoader || context?.datasources?.getLoader;
+
+  const result = (await loader("library").load({ branchId })).result?.[0];
+
+  // toUpperCase needed for mocked agencies (jest testing)
+  return !!(result?.agencyType?.toUpperCase() === "FOLKEBIBLIOTEK");
+}
+
+/**
+ * Function to check if an agency sync data with culr
+ *
+ * @param {string} branchId
+ * @returns {boolean}
+ */
+export async function hasCulrDataSync(branchId, context) {
+  /**
+   * Odense Katedralskole, 872960,
+   * Roskilde Gymnasium, 872600
+   * Sorø Akademis Skole, 861640
+   * Slagelse Gymnasium, biblioteket 872320
+   * Greve Gymnasium, Biblioteket 874260
+   * Stenhus Gymnasium, 875140
+   */
+
+  const whitelist = [
+    // Gymnasier
+    "872960",
+    "872600",
+    "861640",
+    "872320",
+    "874260",
+    "875140",
+
+    // Login with mitId, when no library accounts
+    "190101",
+  ];
+
+  if (whitelist.includes(branchId)) {
+    return true;
+  }
+
+  return !!(await isFolkAgency(branchId, context));
+}

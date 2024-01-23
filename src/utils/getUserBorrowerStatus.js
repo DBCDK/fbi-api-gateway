@@ -46,7 +46,7 @@ const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
  *  
  */
 export default async function getUserBorrowerStatus(
-  { agencyId, userIds = null },
+  { agencyId, userIds = null, userPincode = null },
   context
 ) {
   // Summary log
@@ -130,7 +130,7 @@ export default async function getUserBorrowerStatus(
 
     // Check authenticated user
     const result = await checkUserBorrowerStatus(
-      { agencyId, userId: _userId, isAccount: _isAccount },
+      { agencyId, userId: _userId, userPincode, isAccount: _isAccount },
       context
     );
 
@@ -251,7 +251,7 @@ export default async function getUserBorrowerStatus(
  * Function to perform the actual borchk status check
  */
 async function checkUserBorrowerStatus(
-  { agencyId, userId = null, isAccount = false },
+  { agencyId, userId = null, userPincode, isAccount = false },
   context
 ) {
   // status summary
@@ -261,7 +261,8 @@ async function checkUserBorrowerStatus(
   const { status, blocked } = await context.datasources
     .getLoader("borchk")
     .load({
-      userId: userId,
+      userId,
+      userPincode,
       libraryCode: agencyId,
     });
 

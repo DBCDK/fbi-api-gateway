@@ -2,6 +2,8 @@ import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
 import { assign, get, intersectionWith, sortBy, uniq } from "lodash";
 import { log } from "dbc-node-logger";
+
+import config from "../config";
 import { isFFUAgency } from "./agency";
 
 export async function performTestQuery({
@@ -205,13 +207,30 @@ export function getInfomediaDetails(article) {
   return details;
 }
 
+/**
+ * Get agency parameters from vip core - check if settings allows borrowercheck
+ * for given branch/agency.
+ * @param agencyId
+ *  can either be agency- or branchId depending ..
+ * @param context
+ * @returns {Promise<boolean>}
+ */
 export async function resolveBorrowerCheck(agencyId, context) {
+  const { ffuIsBlocked } = config.datasources.borchk;
+
   // returns true if login.bib.dk is supported
+
   if (!agencyId) {
     return false;
   }
+
+  // Disable Borchk for FFU libraries
+  if (ffuIsBlocked && (await isFFUAgency(agencyId, context))) {
+    return false;
+  }
+
   const res = await context.datasources
-    .getLoader("vipcore_UserOrderParameters")
+    ?.getLoader("vipcore_UserOrderParameters")
     .load(agencyId);
 
   if (res?.agencyParameters?.borrowerCheckParameters) {

@@ -1,8 +1,4 @@
-import {
-  parseJedSubjects,
-  resolveManifestation,
-  resolveWork,
-} from "../../utils/utils";
+import { parseJedSubjects, resolveWork } from "../../utils/utils";
 import { log } from "dbc-node-logger";
 
 const IDENTIFIER_TYPES = new Set([

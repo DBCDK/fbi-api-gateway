@@ -6,6 +6,8 @@ import { orderBy } from "lodash";
 import { resolveBorrowerCheck } from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
+import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
+
 export const typeDef = `
   enum LibraryStatus {
     SLETTET
@@ -40,6 +42,7 @@ export const typeDef = `
   type Branch{
     """Whether this branch's agency supports borrowerCheck"""
     borrowerCheck: Boolean!
+    culrDataSync: Boolean!
     agencyName: String
     agencyId: String!
     branchId: String!
@@ -104,7 +107,19 @@ export const resolvers = {
       return status === false;
     },
     async borrowerCheck(parent, args, context, info) {
-      return await resolveBorrowerCheck(parent.agencyId, context);
+      // pjo 19/12/23 bug BIBDK2021-2294 . If libraries are not public (number starts with 7)
+      // we prioritize branchId OVER agencyId - since FFU and foreign libraries decides on branch-level, if they use borrowerCheck or not
+
+      const isFFU = await isFFUAgency(parent?.agencyId);
+
+      const libraryId = !isFFU
+        ? parent?.agencyId
+        : parent?.branchId || parent?.agencyId;
+
+      return await resolveBorrowerCheck(libraryId, context);
+    },
+    async culrDataSync(parent, args, context, info) {
+      return await hasCulrDataSync(parent.agencyId, context);
     },
     agencyName(parent, args, context, info) {
       return parent.agencyName || "";

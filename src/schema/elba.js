@@ -132,8 +132,8 @@ export const placeCopyRequest = async ({ input, dryRun, context }) => {
 
   const user = { ...userData, ...context?.user };
 
-  // Ensure a pair of email and name can be set
-  if (!((userName || user.name) && (userMail || user.mail))) {
+  // Ensure an email can be set
+  if (!(userMail || user.mail)) {
     return {
       status: "ERROR_UNAUTHENTICATED_USER",
     };

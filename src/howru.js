@@ -69,6 +69,7 @@ async function howru(req, res) {
     ...service,
     ok: service.errors === service.prevErrors,
   }));
+
   httpStats.forEach((service) => {
     if (!service.ok) {
       ok = false;

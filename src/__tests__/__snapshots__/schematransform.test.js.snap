@@ -431,10 +431,10 @@ enum CreateAccountStatus {
 }
 
 enum DeleteAccountStatus {
-  \\"\\"\\"Account was successfully created\\"\\"\\"
+  \\"\\"\\"Account was successfully deleted\\"\\"\\"
   OK
 
-  \\"\\"\\"Account was not created - Some unknown error occured\\"\\"\\"
+  \\"\\"\\"Account was not deleted - Some unknown error occured\\"\\"\\"
   ERROR
 
   \\"\\"\\"A provided token does not have a valid CPR\\"\\"\\"
@@ -656,6 +656,7 @@ type Query {
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
   test: Test
+  universe(key: String!): Universe
   user: User
 }
 
@@ -1797,7 +1798,7 @@ type Series {
   mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
-  members: [SerieWork!]!
+  members(limit: Int, offset: Int): [SerieWork!]!
 }
 
 interface Subject {
@@ -2284,6 +2285,7 @@ type UserParameter {
 type Branch {
   \\"\\"\\"Whether this branch's agency supports borrowerCheck\\"\\"\\"
   borrowerCheck: Boolean!
+  culrDataSync: Boolean!
   agencyName: String
   agencyId: String!
   branchId: String!
@@ -2437,6 +2439,9 @@ enum SubmitOrderStatus {
 
   \\"\\"\\"Unknown error occured, status is unknown\\"\\"\\"
   UNKNOWN_ERROR
+
+  \\"\\"\\"Pincode was not found in arguments\\"\\"\\"
+  ERROR_MISSING_PINCODE
 }
 
 type SubmitOrder {
@@ -2471,6 +2476,7 @@ input SubmitOrderUserParameters {
   barcode: String
   cardno: String
   customId: String
+  pincode: String
   userDateOfBirth: String
   userName: String
   userAddress: String
@@ -2739,6 +2745,7 @@ type SessionUserParameters {
   barcode: String
   cardno: String
   customId: String
+  pincode: String
   userDateOfBirth: String
   userName: String
   userAddress: String
@@ -2752,6 +2759,7 @@ input SessionUserParametersInput {
   barcode: String
   cardno: String
   customId: String
+  pincode: String
   userDateOfBirth: String
   userName: String
   userAddress: String
@@ -2825,7 +2833,12 @@ type TestMutation {
   user(input: TestUserInput): String
 }
 
+union UniverseContent = Work | Series
+
 type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String!
+
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
@@ -2838,10 +2851,21 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series: [Series!]!
+  series(limit: Int, offset: Int, workType: WorkType): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works: [Work!]!
+  works(limit: Int, offset: Int, workType: WorkType): [Work!]!
+
+  \\"\\"\\"work types that are in this universe\\"\\"\\"
+  workTypes: [WorkType!]!
+
+  \\"\\"\\"both series and works in a list\\"\\"\\"
+  content(limit: Int, offset: Int, workType: WorkType): UniverseContentResult!
+}
+
+type UniverseContentResult {
+  hitcount: Int!
+  entries: [UniverseContent!]!
 }
 
 type User {
@@ -2875,6 +2899,8 @@ type User {
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
   identityProviderUsed: String!
+  hasCulrUniqueId: Boolean!
+  omittedCulrData: OmittedCulrDataResponse
 }
 
 type UserSubscriptions {
@@ -2899,6 +2925,8 @@ type Loan {
   dueDate: DateTime!
   loanId: String!
   agencyId: String!
+  creator: String
+  title: String
   edition: String
   pages: String
   publisher: String
@@ -2983,6 +3011,13 @@ input BookMarkInput {
 
 type BookMarkDeleteResponse {
   IdsDeletedCount: Int!
+}
+
+type OmittedCulrDataResponse {
+  hasOmittedCulrUniqueId: Boolean!
+  hasOmittedCulrMunicipality: Boolean!
+  hasOmittedCulrMunicipalityAgencyId: Boolean!
+  hasOmittedCulrAccounts: Boolean!
 }
 
 type UserMutations {
@@ -4239,7 +4274,7 @@ type Series {
   mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
-  members: [SerieWork!]!
+  members(limit: Int, offset: Int): [SerieWork!]!
 }
 
 interface Subject {
@@ -4741,7 +4776,12 @@ type DidYouMean {
   score: Float!
 }
 
+union UniverseContent = Work | Series
+
 type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String!
+
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
@@ -4754,10 +4794,21 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series: [Series!]!
+  series(limit: Int, offset: Int, workType: WorkType): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works: [Work!]!
+  works(limit: Int, offset: Int, workType: WorkType): [Work!]!
+
+  \\"\\"\\"work types that are in this universe\\"\\"\\"
+  workTypes: [WorkType!]!
+
+  \\"\\"\\"both series and works in a list\\"\\"\\"
+  content(limit: Int, offset: Int, workType: WorkType): UniverseContentResult!
+}
+
+type UniverseContentResult {
+  hitcount: Int!
+  entries: [UniverseContent!]!
 }
 "
 `;
@@ -5832,7 +5883,7 @@ type Series {
   mainLanguages: [String!]!
 
   \\"\\"\\"Members of this serie. \\"\\"\\"
-  members: [SerieWork!]!
+  members(limit: Int, offset: Int): [SerieWork!]!
 }
 
 interface Subject {
@@ -6077,7 +6128,12 @@ type TvSeriesDetails {
   numbers: [Int!]
 }
 
+union UniverseContent = Work | Series
+
 type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String!
+
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
@@ -6090,10 +6146,21 @@ type Universe {
   description: String
 
   \\"\\"\\"All series within the universe\\"\\"\\"
-  series: [Series!]!
+  series(limit: Int, offset: Int, workType: WorkType): [Series!]!
 
   \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works: [Work!]!
+  works(limit: Int, offset: Int, workType: WorkType): [Work!]!
+
+  \\"\\"\\"work types that are in this universe\\"\\"\\"
+  workTypes: [WorkType!]!
+
+  \\"\\"\\"both series and works in a list\\"\\"\\"
+  content(limit: Int, offset: Int, workType: WorkType): UniverseContentResult!
+}
+
+type UniverseContentResult {
+  hitcount: Int!
+  entries: [UniverseContent!]!
 }
 "
 `;

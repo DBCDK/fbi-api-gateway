@@ -13,6 +13,7 @@ export async function load({ uniqueId }, context) {
     },
     method: "POST",
     body: JSON.stringify({ smaugUserId: uniqueId }),
+    allowedErrorStatusCodes: [404],
   });
 
   return user.body;

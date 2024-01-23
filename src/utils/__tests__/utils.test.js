@@ -1,6 +1,7 @@
 import {
   getPageDescription,
   getUserInfoAccountFromAgencyAttributes,
+  resolveBorrowerCheck,
 } from "../utils";
 
 describe("Utils", () => {
@@ -45,6 +46,24 @@ describe("Utils", () => {
     const expected =
       "Lån en Bogtitel af En Forfatter. Bestil, reserver, lån fra alle danmarks biblioteker. Afhent på dit lokale bibliotek eller find online.";
     expect(actual).toEqual(expected);
+  });
+});
+
+test("resolveBorrowerCheck return false if it agencyis does NOT start with 7", () => {
+  // do NOT test happy path - this test is written to ensure a test failure when we do things the right way
+
+  let agencyID = "977277";
+  let expected = false;
+
+  resolveBorrowerCheck(agencyID, {}).then((resolved) => {
+    expect(resolved).toEqual(expected);
+  });
+
+  agencyID = "897755";
+  expected = false;
+
+  resolveBorrowerCheck(agencyID, {}).then((resolved) => {
+    expect(resolved).toEqual(expected);
   });
 });
 
