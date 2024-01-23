@@ -14,7 +14,13 @@ type holdingsItem {
   localizationPid: String
   codes: String
   localIdentifier: String
-}`;
+}
+enum AvailabilityEnum {
+  NOW
+  LATER
+  UNKNOWN
+}
+`;
 
 export const resolvers = {
   Localizations: {
