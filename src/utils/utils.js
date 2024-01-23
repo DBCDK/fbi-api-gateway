@@ -795,6 +795,8 @@ export async function resolveLocalizationsWithHoldings({
         bibdkExcludeBranches: bibdkExcludeBranches ?? false,
       });
 
+      agencyId === "830560" && console.log("res: ", res);
+
       const expectedDelivery = agencyIds.has(agencyId)
         ? "NOW"
         : agencyIdsWithExpectedDeliveryLater.has(agencyId)
@@ -802,13 +804,16 @@ export async function resolveLocalizationsWithHoldings({
         : "UNKNOWN";
 
       return {
+        hitcount: res.hitcount,
         agencyId: agencyId,
         agencyName: await res.result?.[0]?.agencyName,
         expectedDelivery: expectedDelivery,
       };
     });
 
-  const libraryDatasource = await Promise.all(libraryDatasourcePromise);
+  const libraryDatasource = (
+    await Promise.all(libraryDatasourcePromise)
+  ).filter((singleLibrary) => singleLibrary.hitcount > 0);
 
   // IntersectionWith merges the arrays on agencyIds (merge by assign) without duplicate objects
   //   sortBy sorts the rest by agencyName
