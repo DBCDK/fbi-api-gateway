@@ -63,6 +63,21 @@ export const typeDef = `
     branchWebsiteUrl: String
     branchCatalogueUrl: String
     lookupUrl: String
+    
+    """
+    branchType is type of library branch. 
+    """
+    branchType: String!
+    
+    """
+    Checks if the library temporarilyClosed
+    """
+    temporarilyClosed: Boolean!
+
+    """
+    If the library is temporarilyClosed, a message might be shown here
+    """
+    temporarilyClosedReason: String
 
      """
     When user is not logged in, this is null
