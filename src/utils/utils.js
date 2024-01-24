@@ -795,8 +795,6 @@ export async function resolveLocalizationsWithHoldings({
         bibdkExcludeBranches: bibdkExcludeBranches ?? false,
       });
 
-      agencyId === "830560" && console.log("res: ", res);
-
       const expectedDelivery = agencyIds.has(agencyId)
         ? "NOW"
         : agencyIdsWithExpectedDeliveryLater.has(agencyId)
