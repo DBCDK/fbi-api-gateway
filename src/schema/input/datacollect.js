@@ -49,12 +49,21 @@ export const typeDef = `
     suggest_query_results: [DataCollectSuggestionInput!]!
     session_id: String!
   }
+
+  input DataCollectSearchFeedbackInput {
+    thumbs: String!
+    query: String!
+    reason: String!
+  }
+
+
   input DataCollectInput {
     recommender_click: DataCollectRecommenderClickInput
     search: DataCollectSearchInput
     search_work: DataCollectSearchWorkInput
     suggest_presented: DataCollectSuggestPresentedInput
     suggest_click: DataCollectSuggestClickInput
+    search_feedback: DataCollectSearchFeedbackInput
     example: DataCollectExampleInput
   }
 `;
