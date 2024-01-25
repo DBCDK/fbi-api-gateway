@@ -2916,6 +2916,9 @@ type User {
   name: String
   favoritePickUpBranch: String
 
+  \\"\\"\\"Last used pickup branch. Updated each time the user makes an order.\\"\\"\\"
+  lastUsedPickUpBranch: String
+
   \\"\\"\\"
   Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
   \\"\\"\\"

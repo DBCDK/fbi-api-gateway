@@ -28,6 +28,11 @@ type User {
   name: String
   favoritePickUpBranch: String
   """
+  Last used pickup branch. Updated each time the user makes an order.
+  """  
+  lastUsedPickUpBranch: String
+
+  """
   Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
   """  
   createdAt: DateTime
@@ -367,6 +372,21 @@ export const resolvers = {
         return null;
       }
     },
+    async lastUsedPickUpBranch(parent, args, context, info) {
+      const user = context?.user;
+
+      try {
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
+
+        const res = await context.datasources
+          .getLoader("userDataGetUser")
+          .load({ uniqueId });
+        return res?.lastUsedPickUpBranch || null;
+      } catch (error) {
+        return null;
+      }
+    },
 
     async createdAt(parent, args, context, info) {
       const user = context?.user;
@@ -419,7 +439,7 @@ export const resolvers = {
 
       const orderIds = res?.result?.map((order) => order.orderId);
 
-      if (orderIds.length > 0) {
+      if (orderIds?.length > 0) {
         const result = await fetchOrderStatus({ orderIds: orderIds }, context);
         return { result, hitcount: res?.hitcount || 0 };
       }
