@@ -656,6 +656,20 @@ function handleLocalizationsWithKglBibliotek(
     (agency) => kglBibBranchIds.has(agency.agencyId)
   );
 
+  const aggregatedAvailability = localizationsWithHoldingsNotKglBibliotek.sort(
+    (a, b) => {
+      const aAvail = a.availability;
+      const bAvail = b.availability;
+
+      return (
+        Number(bAvail === "NOW") - Number(aAvail === "NOW") ||
+        Number(bAvail === "LATER") - Number(aAvail === "LATER") ||
+        Number(bAvail === "UNKNOWN") - Number(aAvail === "UNKNOWN") ||
+        0
+      );
+    }
+  )?.[0].availability;
+
   const aggregateKglBibliotek =
     localizationsWithHoldingsIsKglBibliotek.length > 0
       ? [
@@ -666,6 +680,7 @@ function handleLocalizationsWithKglBibliotek(
                 (localization) => localization.holdingItems
               )
             ),
+            availability: aggregatedAvailability,
           },
         ]
       : [];
@@ -676,11 +691,49 @@ function handleLocalizationsWithKglBibliotek(
   ];
 }
 
+/**
+ * Javascript Date to YYYY-MM-DD
+ * @param {Date} dateObject
+ */
+export function dateObjectToDateOnlyString(dateObject) {
+  const year = dateObject.getFullYear().toString().padStart(4, "0");
+  const month = (dateObject.getMonth() + 1).toString().padStart(2, "0");
+  const date = dateObject.getDate().toString().padStart(2, "0");
+
+  return `${year}-${month}-${date}`;
+}
+
+export function dateIsToday(date) {
+  return new Date(date).toDateString() === new Date().toDateString();
+}
+
+function dateIsLater(date) {
+  return (
+    date &&
+    typeof date === "string" &&
+    !isNaN(Date.parse(date)) &&
+    !dateIsToday(date)
+  );
+}
+
+function getAvailability(date) {
+  if (dateIsToday(date)) {
+    return "NOW";
+  }
+  if (dateIsLater(date)) {
+    return "LATER";
+  }
+  if (!dateIsToday(date) && !dateIsLater(date)) {
+    return "UNKNOWN";
+  }
+}
+
 export async function resolveLocalizationsWithHoldings({
   args,
   context,
   offset,
   limit,
+  availabilityTypes = ["NOW"],
   language,
   status,
   bibdkExcludeBranches,
@@ -702,29 +755,29 @@ export async function resolveLocalizationsWithHoldings({
 
   const detailedHoldings = await Promise.all(detailedHoldingsCalls);
 
-  const agencyIds = new Set(
-    detailedHoldings
-      .filter((singleDetailedHolding) => {
-        return (
-          new Date(singleDetailedHolding.expectedDelivery).toDateString() ===
-          new Date().toDateString()
-        );
-      })
-      .map((singleDetailedHolding) => singleDetailedHolding.branchId)
-  );
+  const allLocalzationsWithExpectedDelivery = localizations?.agencies.map(
+    (loc) => {
+      const expectedDelivery = detailedHoldings.find(
+        (detail) => detail.branchId === loc.agencyId
+      )?.expectedDelivery;
 
-  const localizationsWithHoldings = localizations.agencies.filter((agency) =>
-    agencyIds.has(agency.agencyId)
+      return {
+        ...loc,
+        expectedDelivery: expectedDelivery,
+        availability: getAvailability(expectedDelivery),
+      };
+    }
   );
 
   const localizationsWithHoldingsAndHandledKglBibliotek = handleLocalizationsWithKglBibliotek(
-    localizationsWithHoldings
+    allLocalzationsWithExpectedDelivery
   );
 
   // AgencyNames for sorting by agencyName, via library datasource from vipCore
-  const libraryDatasourcePromise = localizationsWithHoldingsAndHandledKglBibliotek
-    ?.map((library) => library?.agencyId)
-    ?.map(async (agencyId) => {
+  const libraryDatasourcePromise = localizationsWithHoldingsAndHandledKglBibliotek?.map(
+    async (library) => {
+      const agencyId = library.agencyId;
+
       const res = await context.datasources.getLoader("library").load({
         agencyid: agencyId,
         limit: 1,
@@ -732,13 +785,22 @@ export async function resolveLocalizationsWithHoldings({
         status: status || "ALLE",
         bibdkExcludeBranches: bibdkExcludeBranches ?? false,
       });
+
+      const availability = library.availability;
+
       return {
+        hitcount: res.hitcount,
         agencyId: agencyId,
         agencyName: await res.result?.[0]?.agencyName,
+        expectedDelivery: availability,
+        availability: availability,
       };
-    });
+    }
+  );
 
-  const libraryDatasource = await Promise.all(libraryDatasourcePromise);
+  const libraryDatasource = (
+    await Promise.all(libraryDatasourcePromise)
+  ).filter((singleLibrary) => singleLibrary.hitcount > 0);
 
   // IntersectionWith merges the arrays on agencyIds (merge by assign) without duplicate objects
   //   sortBy sorts the rest by agencyName
@@ -749,7 +811,19 @@ export async function resolveLocalizationsWithHoldings({
       (a, b) => a.agencyId === b.agencyId && assign(a, b)
     ),
     "agencyName"
-  );
+  )
+    ?.filter((agency) => availabilityTypes.includes(agency.expectedDelivery))
+    .sort((a, b) => {
+      const aAvail = a?.expectedDelivery;
+      const bAvail = b?.expectedDelivery;
+
+      return (
+        Number(bAvail === "NOW") - Number(aAvail === "NOW") ||
+        Number(bAvail === "LATER") - Number(aAvail === "LATER") ||
+        Number(bAvail === "UNKNOWN") - Number(aAvail === "UNKNOWN") ||
+        0
+      );
+    });
 
   return {
     count: intersectingAgencyIdsFromLibrary.length,

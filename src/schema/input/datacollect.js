@@ -24,6 +24,7 @@ export const typeDef = `
     example: String!
     session_id: String!
   }
+  
   input DataCollectRecommenderClickInput {
     recommender_based_on: String!
     recommender_click_hit: Int!
@@ -49,12 +50,26 @@ export const typeDef = `
     suggest_query_results: [DataCollectSuggestionInput!]!
     session_id: String!
   }
+
+  enum FeedbackThumb {
+    up
+    down
+  }
+
+  input DataCollectSearchFeedbackInput {
+    thumbs: FeedbackThumb!
+    query: String!
+    reason: String!
+  }
+
+
   input DataCollectInput {
     recommender_click: DataCollectRecommenderClickInput
     search: DataCollectSearchInput
     search_work: DataCollectSearchWorkInput
     suggest_presented: DataCollectSuggestPresentedInput
     suggest_click: DataCollectSuggestClickInput
+    search_feedback: DataCollectSearchFeedbackInput
     example: DataCollectExampleInput
   }
 `;

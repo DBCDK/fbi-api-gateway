@@ -361,16 +361,16 @@ type ComplexSearchResponse {
   errorMessage: String
 
   \\"\\"\\"the query being executed\\"\\"\\"
-  solrQuery: String
+  solrQuery: String @deprecated
 
   \\"\\"\\"filter applied to the query\\"\\"\\"
-  solrFilter: String
+  solrFilter: String @deprecated
 
   \\"\\"\\"Time to tokenize query\\"\\"\\"
-  tokenizerDurationInMs: Int
+  tokenizerDurationInMs: Int @deprecated
 
   \\"\\"\\"Time for execution on solr\\"\\"\\"
-  solrExecutionDurationInMs: Int
+  solrExecutionDurationInMs: Int @deprecated
 }
 
 type Cover {
@@ -648,7 +648,7 @@ type Query {
   \\"\\"\\"
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   \\"\\"\\"
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
@@ -2212,12 +2212,24 @@ input DataCollectSuggestPresentedInput {
   session_id: String!
 }
 
+enum FeedbackThumb {
+  up
+  down
+}
+
+input DataCollectSearchFeedbackInput {
+  thumbs: FeedbackThumb!
+  query: String!
+  reason: String!
+}
+
 input DataCollectInput {
   recommender_click: DataCollectRecommenderClickInput
   search: DataCollectSearchInput
   search_work: DataCollectSearchWorkInput
   suggest_presented: DataCollectSuggestPresentedInput
   suggest_click: DataCollectSuggestClickInput
+  search_feedback: DataCollectSearchFeedbackInput
   example: DataCollectExampleInput
 }
 
@@ -2307,6 +2319,15 @@ type Branch {
   branchCatalogueUrl: String
   lookupUrl: String
 
+  \\"\\"\\"branchType is type of library branch. \\"\\"\\"
+  branchType: String!
+
+  \\"\\"\\"Checks if the library temporarilyClosed\\"\\"\\"
+  temporarilyClosed: Boolean!
+
+  \\"\\"\\"If the library is temporarilyClosed, a message might be shown here\\"\\"\\"
+  temporarilyClosedReason: String
+
   \\"\\"\\"
   When user is not logged in, this is null
   Otherwise true or false
@@ -2378,6 +2399,12 @@ type holdingsItem {
   localizationPid: String
   codes: String
   localIdentifier: String
+}
+
+enum AvailabilityEnum {
+  NOW
+  LATER
+  UNKNOWN
 }
 
 enum SubmitOrderStatus {
@@ -3114,16 +3141,16 @@ type ComplexSearchResponse {
   errorMessage: String
 
   \\"\\"\\"the query being executed\\"\\"\\"
-  solrQuery: String
+  solrQuery: String @deprecated
 
   \\"\\"\\"filter applied to the query\\"\\"\\"
-  solrFilter: String
+  solrFilter: String @deprecated
 
   \\"\\"\\"Time to tokenize query\\"\\"\\"
-  tokenizerDurationInMs: Int
+  tokenizerDurationInMs: Int @deprecated
 
   \\"\\"\\"Time for execution on solr\\"\\"\\"
-  solrExecutionDurationInMs: Int
+  solrExecutionDurationInMs: Int @deprecated
 }
 
 type Cover {
