@@ -6,12 +6,7 @@ const { url, ttl, prefix } = config.datasources.userdata;
  */
 export async function load({ uniqueId, lastUsedPickUpBranch }, context) {
   const endpoint = url + "user/lastUsedPickUpBranch";
-  console.log(
-    "\n\n\n\nin last used userdataLastusedPickupBranch",
-    lastUsedPickUpBranch,
-    "",
-    uniqueId
-  );
+
   const res = await context?.fetch(endpoint, {
     headers: {
       "Content-Type": "application/json",

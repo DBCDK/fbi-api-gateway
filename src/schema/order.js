@@ -472,7 +472,7 @@ export const resolvers = {
         user,
       });
       //store branch as last used pickup branch
-      saveLastUsedBranch({
+   await   saveLastUsedBranch({
         uniqueId: user?.uniqueId,
         pickUpBranch: args?.input?.pickUpBranch,
       });
