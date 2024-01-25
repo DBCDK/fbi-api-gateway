@@ -24,6 +24,7 @@ export const typeDef = `
     example: String!
     session_id: String!
   }
+  
   input DataCollectRecommenderClickInput {
     recommender_based_on: String!
     recommender_click_hit: Int!
@@ -50,8 +51,13 @@ export const typeDef = `
     session_id: String!
   }
 
+  enum FeedbackThumb {
+    up
+    down
+  }
+
   input DataCollectSearchFeedbackInput {
-    thumbs: String!
+    thumbs: FeedbackThumb!
     query: String!
     reason: String!
   }
