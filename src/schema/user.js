@@ -344,8 +344,6 @@ export const resolvers = {
         agencyId: account?.agencyId,
       });
 
-      console.error("nnnnnnnnnname", account, res);
-
       if (!res?.name) {
         // If no data was found backfill from users other accounts
         res = await getUserFromAllUserStatusData({}, context);
