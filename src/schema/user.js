@@ -18,7 +18,7 @@ import { hasInfomediaAccess } from "../utils/access";
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
 import { deleteFFUAccount } from "./culr";
-import { hasCulrDataSync } from "../utils/agency";
+import { getUserFromAllUserStatusData, hasCulrDataSync } from "../utils/agency";
 
 /**
  * The Profile type definition
@@ -339,44 +339,19 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
 
-      if (res?.name) {
-        return res?.name;
+      console.error("nnnnnnnnnname", account, res);
+
+      if (!res?.name) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
       }
 
-      // If no data was found backfill from users other accounts
-
-      const all = await Promise.allSettled(
-        user?.agencies.map(async ({ agencyId, userId, userIdType }) => ({
-          agencyId,
-          userIdType,
-          ...(await context.datasources.getLoader("user").load({
-            userId,
-            agencyId,
-          })),
-        }))
-      );
-
-      const users = [...all.map((u) => u?.value)];
-
-      users.forEach((obj) =>
-        Object.keys(obj).forEach(
-          (key) => obj[key] === undefined && delete obj[key]
-        )
-      );
-
-      // Split data into CPR/LOCAL
-      const cpr = users.filter((u) => u.userIdType === "CPR");
-      const locals = users.filter((u) => u.userIdType === "LOCAL");
-
-      // Prioritize CPR over LOCAL data
-      const result = Object.assign({}, ...locals, ...cpr);
-
-      return result.name;
+      return res?.name;
     },
 
     async favoritePickUpBranch(parent, args, context, info) {
@@ -460,10 +435,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.address) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.address;
     },
@@ -512,10 +492,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.postalCode) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.postalCode;
     },
@@ -527,10 +512,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.mail) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.mail;
     },
@@ -542,10 +532,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account.userId || user.userId,
-        agencyId: account.agencyId || user.loggedInAgencyId,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account.userId,
+        agencyId: account.agencyId,
       });
+
+      if (!res?.country) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.country;
     },

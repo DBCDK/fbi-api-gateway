@@ -53,7 +53,7 @@ Object {
   "data": Object {
     "elba": Object {
       "placeCopyRequest": Object {
-        "status": "ERROR_UNAUTHENTICATED_USER",
+        "status": "ERROR_MISSING_MUNICIPALITYAGENCYID",
       },
     },
   },

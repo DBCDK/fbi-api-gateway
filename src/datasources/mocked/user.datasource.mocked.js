@@ -9,21 +9,38 @@ const DEFAULT = {
   country: "DK",
 };
 
-const data = {
-  DUMMY_TOKEN: {
-    ...DEFAULT,
-  },
-  DUMMY_TOKEN_BLOCKED: {
-    ...DEFAULT,
-  },
-  DUMMY_TOKEN_UNSUBSCRIPED_MUNICIPALITY: {
-    ...DEFAULT,
-  },
-  DUMMY_TOKEN_NO_MAIL: {
-    ...DEFAULT,
-    mail: undefined,
-  },
-};
-export function load({ accessToken }) {
-  return data[accessToken];
+export function load({ userId, agencyId }) {
+  if (userId === "some-id-without-mail" && agencyId === "715100") {
+    return { ...DEFAULT, mail: undefined };
+  }
+
+  // User insufficient data from OpenUserStatus Service
+  if (userId === "some-insufficient-userstatus-id-1") {
+    return {
+      ...DEFAULT,
+      mail: undefined,
+      address: undefined,
+      postalCode: undefined,
+      country: undefined,
+    };
+  }
+  if (userId === "some-insufficient-userstatus-id-2") {
+    return {
+      ...DEFAULT,
+      name: "should NOT be visible",
+      mail: undefined,
+    };
+  }
+  if (userId === "some-insufficient-userstatus-id-3") {
+    return {
+      ...DEFAULT,
+      name: "should NOT be visible",
+      address: "should NOT be visible",
+      postalCode: "should NOT be visible",
+      country: "should NOT be visible",
+    };
+  }
+  //
+
+  return DEFAULT;
 }

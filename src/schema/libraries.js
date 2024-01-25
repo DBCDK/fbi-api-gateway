@@ -93,7 +93,7 @@ export const typeDef = `
     agencyUrl: String
   }
 
-  """
+    """
     Indicates if user is blocked for a given agency or 
     if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
     """

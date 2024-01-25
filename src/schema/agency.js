@@ -26,7 +26,6 @@ type AgencyUser{
     country: String,
     blocked: Boolean!
 }
-
 `;
 
 export const resolvers = {

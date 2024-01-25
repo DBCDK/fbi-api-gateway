@@ -275,6 +275,29 @@ type AdminData {
   requestButton: Boolean
 }
 
+type Agency {
+  id: String!
+  name: String
+  type: AgencyType!
+  numberOfBranches: Int!
+  url: String!
+  user: AgencyUser
+  branches: [Branch!]!
+  hitcount: Int!
+  borrowerStatus: BorrowerStatus
+  result: [Branch!]!
+  agencyUrl: String
+}
+
+type AgencyUser {
+  name: String
+  mail: String
+  address: String
+  postalCode: String
+  country: String
+  blocked: Boolean!
+}
+
 type Category {
   title: String!
   result(limit: Int): [CategoryResult!]!
@@ -2891,7 +2914,7 @@ type User {
 
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
-  agencies(language: LanguageCode): [BranchResult!]!
+  agencies(language: LanguageCode): [Agency!]!
   loggedInBranchId: String @deprecated(reason: \\"Use 'User.loggedInAgencyId' instead\\")
   loggedInAgencyId: String
   municipalityNumber: String
