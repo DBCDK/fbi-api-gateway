@@ -84,6 +84,7 @@ const translatedAgencyType = (enumType) => {
     Other: "ANDRE",
   };
 
+  // return translated enum or enum if already translated
   return obj[enumType] || enumType?.toUpperCase();
 };
 
@@ -244,13 +245,12 @@ export async function search(props, getFunc) {
 
   return {
     hitcount: merged.length,
-    result: merged
-      .slice(offset, limit + offset)
-      .map((branch) => ({
-        ...branch,
-        agencyType: translatedAgencyType(branch?.agencyType),
-        language,
-      })),
+    result: merged.slice(offset, limit + offset).map((branch) => ({
+      ...branch,
+      // translate agencyType from mocked library data
+      agencyType: translatedAgencyType(branch?.agencyType),
+      language,
+    })),
   };
 }
 
