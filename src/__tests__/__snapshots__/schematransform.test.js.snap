@@ -2212,12 +2212,24 @@ input DataCollectSuggestPresentedInput {
   session_id: String!
 }
 
+enum FeedbackThumb {
+  up
+  down
+}
+
+input DataCollectSearchFeedbackInput {
+  thumbs: FeedbackThumb!
+  query: String!
+  reason: String!
+}
+
 input DataCollectInput {
   recommender_click: DataCollectRecommenderClickInput
   search: DataCollectSearchInput
   search_work: DataCollectSearchWorkInput
   suggest_presented: DataCollectSuggestPresentedInput
   suggest_click: DataCollectSuggestClickInput
+  search_feedback: DataCollectSearchFeedbackInput
   example: DataCollectExampleInput
 }
 
