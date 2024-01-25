@@ -656,6 +656,20 @@ function handleLocalizationsWithKglBibliotek(
     (agency) => kglBibBranchIds.has(agency.agencyId)
   );
 
+  const aggregatedAvailability = localizationsWithHoldingsNotKglBibliotek.sort(
+    (a, b) => {
+      const aAvail = a.availability;
+      const bAvail = b.availability;
+
+      return (
+        Number(bAvail === "NOW") - Number(aAvail === "NOW") ||
+        Number(bAvail === "LATER") - Number(aAvail === "LATER") ||
+        Number(bAvail === "UNKNOWN") - Number(aAvail === "UNKNOWN") ||
+        0
+      );
+    }
+  )?.[0].availability;
+
   const aggregateKglBibliotek =
     localizationsWithHoldingsIsKglBibliotek.length > 0
       ? [
@@ -666,6 +680,7 @@ function handleLocalizationsWithKglBibliotek(
                 (localization) => localization.holdingItems
               )
             ),
+            availability: aggregatedAvailability,
           },
         ]
       : [];
@@ -701,6 +716,18 @@ function dateIsLater(date) {
   );
 }
 
+function getAvailability(date) {
+  if (dateIsToday(date)) {
+    return "NOW";
+  }
+  if (dateIsLater(date)) {
+    return "LATER";
+  }
+  if (!dateIsToday(date) && !dateIsLater(date)) {
+    return "UNKNOWN";
+  }
+}
+
 export async function resolveLocalizationsWithHoldings({
   args,
   context,
@@ -728,65 +755,29 @@ export async function resolveLocalizationsWithHoldings({
 
   const detailedHoldings = await Promise.all(detailedHoldingsCalls);
 
-  const agencyIds = new Set(
-    detailedHoldings
-      .filter((singleDetailedHolding) => {
-        return dateIsToday(singleDetailedHolding.expectedDelivery);
-      })
-      .map((singleDetailedHolding) => singleDetailedHolding.branchId)
-  );
+  const allLocalzationsWithExpectedDelivery = localizations?.agencies.map(
+    (loc) => {
+      const expectedDelivery = detailedHoldings.find(
+        (detail) => detail.branchId === loc.agencyId
+      )?.expectedDelivery;
 
-  const agencyIdsWithExpectedDeliveryLater = new Set(
-    detailedHoldings
-      .filter((singleDetailedHolding) => {
-        return dateIsLater(singleDetailedHolding.expectedDelivery);
-      })
-      .map((singleDetailedHolding) => singleDetailedHolding.branchId)
+      return {
+        ...loc,
+        expectedDelivery: expectedDelivery,
+        availability: getAvailability(expectedDelivery),
+      };
+    }
   );
-
-  const agencyIdsWithExpectedDeliveryUnknown = new Set(
-    detailedHoldings
-      .filter((singleDetailedHolding) => {
-        return (
-          !dateIsToday(singleDetailedHolding.expectedDelivery) &&
-          !dateIsLater(singleDetailedHolding.expectedDelivery)
-        );
-      })
-      .map((singleDetailedHolding) => singleDetailedHolding.branchId)
-  );
-
-  const localizationsWithHoldingsExpectedDeliveryToday = localizations.agencies.filter(
-    (agency) => agencyIds.has(agency.agencyId)
-  );
-
-  const localizationsWithHoldingsExpectedDeliveryLater = localizations.agencies.filter(
-    (agency) => agencyIdsWithExpectedDeliveryLater.has(agency.agencyId)
-  );
-
-  const localizationsWithHoldingsExpectedDeliveryUnknown = localizations.agencies.filter(
-    (agency) => agencyIdsWithExpectedDeliveryUnknown.has(agency.agencyId)
-  );
-
-  const localizationsWithHoldings = [
-    ...(availabilityTypes.includes("NOW")
-      ? localizationsWithHoldingsExpectedDeliveryToday
-      : []),
-    ...(availabilityTypes.includes("LATER")
-      ? localizationsWithHoldingsExpectedDeliveryLater
-      : []),
-    ...(availabilityTypes.includes("UNKNOWN")
-      ? localizationsWithHoldingsExpectedDeliveryUnknown
-      : []),
-  ];
 
   const localizationsWithHoldingsAndHandledKglBibliotek = handleLocalizationsWithKglBibliotek(
-    localizationsWithHoldings
+    allLocalzationsWithExpectedDelivery
   );
 
   // AgencyNames for sorting by agencyName, via library datasource from vipCore
-  const libraryDatasourcePromise = localizationsWithHoldingsAndHandledKglBibliotek
-    ?.map((library) => library?.agencyId)
-    ?.map(async (agencyId) => {
+  const libraryDatasourcePromise = localizationsWithHoldingsAndHandledKglBibliotek?.map(
+    async (library) => {
+      const agencyId = library.agencyId;
+
       const res = await context.datasources.getLoader("library").load({
         agencyid: agencyId,
         limit: 1,
@@ -795,19 +786,17 @@ export async function resolveLocalizationsWithHoldings({
         bibdkExcludeBranches: bibdkExcludeBranches ?? false,
       });
 
-      const expectedDelivery = agencyIds.has(agencyId)
-        ? "NOW"
-        : agencyIdsWithExpectedDeliveryLater.has(agencyId)
-        ? "LATER"
-        : "UNKNOWN";
+      const availability = library.availability;
 
       return {
         hitcount: res.hitcount,
         agencyId: agencyId,
         agencyName: await res.result?.[0]?.agencyName,
-        expectedDelivery: expectedDelivery,
+        expectedDelivery: availability,
+        availability: availability,
       };
-    });
+    }
+  );
 
   const libraryDatasource = (
     await Promise.all(libraryDatasourcePromise)
