@@ -386,7 +386,7 @@ export const resolvers = {
           status: "UNKNOWN_PICKUPAGENCY",
         };
       }
-      //save last used order
+
       const user = context?.user;
 
       const userParameters = args?.input?.userParameters;
@@ -677,7 +677,7 @@ export const resolvers = {
           });
         })
       );
-
+      //store branch as last used pickup branch
       await saveLastUsedBranch({
         uniqueId: user?.uniqueId,
         pickUpBranch: args?.input?.pickUpBranch,
