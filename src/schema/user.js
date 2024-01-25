@@ -18,7 +18,7 @@ import { hasInfomediaAccess } from "../utils/access";
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
 import { deleteFFUAccount } from "./culr";
-import { hasCulrDataSync } from "../utils/agency";
+import { getUserFromAllUserStatusData, hasCulrDataSync } from "../utils/agency";
 
 /**
  * The Profile type definition
@@ -39,7 +39,7 @@ type User {
   Orders made through bibliotek.dk
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
-  agencies(language: LanguageCode): [BranchResult!]!
+  agencies(language: LanguageCode): [Agency!]!
   loggedInBranchId: String @deprecated(reason: "Use 'User.loggedInAgencyId' instead")
   loggedInAgencyId: String
   municipalityNumber: String
@@ -334,16 +334,20 @@ export const resolvers = {
     async name(parent, args, context, info) {
       const user = context?.user;
 
-      // select cpr account from user agencies
+      // Select first CPR account from user agencies
       const account = filterAgenciesByProps(user.agencies, {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.name) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.name;
     },
@@ -429,11 +433,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.address) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.address;
     },
@@ -482,11 +490,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.postalCode) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.postalCode;
     },
@@ -498,11 +510,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.mail) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.mail;
     },
@@ -514,11 +530,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account.userId || user.userId,
-        agencyId: account.agencyId || user.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account.userId,
+        agencyId: account.agencyId,
       });
+
+      if (!res?.country) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.country;
     },

@@ -92,3 +92,32 @@ export async function hasCulrDataSync(branchId, context) {
 
   return !!(await isFolkAgency(branchId, context));
 }
+
+export async function getUserFromAllUserStatusData(props, context) {
+  const agencies = props?.agencies || context?.user?.agencies;
+
+  const all = await Promise.allSettled(
+    agencies.map(async ({ agencyId, userId, userIdType }) => ({
+      agencyId,
+      userIdType,
+      ...(await context.datasources.getLoader("user").load({
+        userId,
+        agencyId,
+      })),
+    }))
+  );
+
+  const users = [...all.map((u) => u?.value)];
+
+  // remove undefined fields
+  users.forEach((obj) =>
+    Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key])
+  );
+
+  // Split data into CPR/LOCAL
+  const cpr = users.filter((u) => u.userIdType === "CPR");
+  const locals = users.filter((u) => u.userIdType === "LOCAL");
+
+  // Prioritize CPR over LOCAL data
+  return Object.assign({}, ...locals, ...cpr);
+}

@@ -46,6 +46,46 @@ test("user - get basic data", async () => {
   expect(result).toMatchSnapshot();
 });
 
+test("user - Backfill missing user data (from users other UserStatus accounts)", async () => {
+  const result = await performTestQuery({
+    query: `
+            query {
+              user {
+                name
+                mail
+                address
+                postalCode
+                country
+              }
+            }
+        `,
+    variables: {},
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "DUMMY_TOKEN",
+      user: {
+        ...DEFAULT_USER,
+        userId: "some-insufficient-userstatus-id-1",
+        agencies: [
+          DEFAULT_USER.agencies[1],
+          {
+            agencyId: "800010",
+            userId: "some-insufficient-userstatus-id-3",
+            userIdType: "LOCAL",
+          },
+          {
+            agencyId: "790900",
+            userId: "some-insufficient-userstatus-id-2",
+            userIdType: "CPR",
+          },
+        ],
+      },
+      smaug: {},
+    },
+  });
+  expect(result).toMatchSnapshot();
+});
+
 test("user - get agency danish", async () => {
   const result = await performTestQuery({
     query: `
@@ -195,6 +235,45 @@ test("user - get loans", async () => {
                     }
                     recordCreationDate
                   }
+                }
+              }
+            }
+        `,
+    variables: {},
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "DUMMY_TOKEN",
+      user: { ...DEFAULT_USER },
+      smaug: {},
+    },
+  });
+  expect(result).toMatchSnapshot();
+});
+
+test("user - Get agency specific user details", async () => {
+  const result = await performTestQuery({
+    query: `
+            query  {
+              user {
+                name
+                mail
+                address
+                postalCode
+                country
+                agencies {
+                  id
+                  name
+                  type
+                  url
+                  user {
+                    name
+                    mail
+                    address
+                    postalCode
+                    country
+                    blocked
+                  }
+                  numberOfBranches
                 }
               }
             }

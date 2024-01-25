@@ -71,7 +71,7 @@ test("PeriodicaArticleOrder, no municiapalityAgencyId, should give error", async
       user: {
         userId: "some-id",
         loggedInAgencyId: "715100",
-        municipalityAgencyId: "715100",
+        municipalityAgencyId: null,
       },
       smaug: {
         digitalArticleService: { originRequester: "bibdk" },
@@ -119,7 +119,7 @@ test("PeriodicaArticleOrder, missing mail on user and input, should give error",
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN_NO_MAIL",
       user: {
-        userId: "some-id",
+        userId: "some-id-without-mail",
         loggedInAgencyId: "715100",
         municipalityAgencyId: "715100",
       },

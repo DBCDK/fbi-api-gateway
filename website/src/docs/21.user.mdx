@@ -2,7 +2,90 @@
 
 This is bibdk specific stuff! :blush: you need to have an access token for a logged in user.
 
-## fetch user loans
+## Basic user info
+
+The user field holds many subfields, some of the most basic fields are shown in this example.
+
+<InlineGraphiQL
+  query={`query Example_UserBasic {
+      user {
+      name
+      mail
+      address
+      postalCode
+      country
+      municipalityAgencyId
+      municipalityNumber
+      agencies {
+        id
+        name
+        type
+      }
+      }
+    }`}
+/>
+
+## Detailed user info
+
+Some of the less common, yet highly valuable fields can be accessed, as shown in this example.
+
+The `omittedCulrData` field is utilized to indicate whether certain CULR data has been omitted.
+Data may be excluded if the user's login method is not sufficiently secure, raising concerns about the user's identity not aligning with our expectations.
+
+<InlineGraphiQL
+  query={`query Example_UserDetailed {
+      user {
+        name
+        mail
+        isCPRValidated
+        hasCulrUniqueId
+        rights {
+          infomedia
+          digitalArticleService
+          demandDrivenAcquisition
+        }
+        loggedInAgencyId
+        identityProviderUsed
+        omittedCulrData {
+          hasOmittedCulrUniqueId
+          hasOmittedCulrMunicipality
+          hasOmittedCulrMunicipalityAgencyId
+          hasOmittedCulrAccounts
+        }
+      }
+    }`}
+/>
+
+A user may have agency-specific details, which can be retrieved at the agency level.
+
+<InlineGraphiQL
+  query={`query Example_AgencySpecificUserData {
+      user {
+        name
+        mail
+        agencies {
+          id
+          name
+          type
+          user {
+            name
+            mail
+            address
+            postalCode
+            country
+            blocked
+          }
+          numberOfBranches
+          branches {
+            name
+            branchId
+          }
+        }
+      }
+    }`}
+/>
+
+## User loans
 
 with info for loaned manifestations
 
