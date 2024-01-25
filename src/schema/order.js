@@ -349,6 +349,24 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
     }
   }
 };
+/**
+ *
+ * Save pickup branch in userdata as last used pickup branch. Used when user is not signed in with a specific branch.(e.g. with MitID)
+ */
+async function saveLastUsedBranch({ uniqueId, pickUpBranch, context }) {
+  try {
+    await context.datasources.getLoader("userdataLastUsedPickupBranch").load({
+      uniqueId: uniqueId,
+      lastUsedPickUpBranch: pickUpBranch,
+    });
+  } catch (error) {
+    log.error(
+      `Failed to update last used branch. Message: ${
+        error.message || JSON.stringify(error)
+      }`
+    );
+  }
+}
 
 export const resolvers = {
   Mutation: {
@@ -452,6 +470,12 @@ export const resolvers = {
         submitOrderRes,
         pid: pidToOrder,
         user,
+      });
+      //store branch as last used pickup branch
+      await saveLastUsedBranch({
+        uniqueId: user?.uniqueId,
+        pickUpBranch: args?.input?.pickUpBranch,
+        context,
       });
 
       return submitOrderRes;
@@ -653,6 +677,12 @@ export const resolvers = {
           });
         })
       );
+      //store branch as last used pickup branch
+      await saveLastUsedBranch({
+        uniqueId: user?.uniqueId,
+        pickUpBranch: args?.input?.pickUpBranch,
+        context,
+      });
 
       return {
         successfullyCreated,
