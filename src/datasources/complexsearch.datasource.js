@@ -28,7 +28,7 @@ export async function load(
 
   return {
     errorMessage: json?.errorMessage,
-    works: json?.workdIds || [],
+    works: json?.workIds || [],
     hitcount: json?.numFound || 0,
     solrQuery: json?.solrQuery || "",
     tokenizerDurationInMs: json?.tokenizerDurationInMs || 0,
