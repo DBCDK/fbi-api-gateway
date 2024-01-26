@@ -127,7 +127,6 @@ export const placeCopyRequest = async ({ input, dryRun, context }) => {
     (await context.datasources.getLoader("user").load({
       userId: account?.userId || context?.user?.userId,
       agencyId: account?.agencyId || context?.user?.loggedInAgencyId,
-      accessToken: context.accessToken,
     })) || {};
 
   const user = { ...userData, ...context?.user };

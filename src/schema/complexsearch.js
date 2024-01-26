@@ -75,19 +75,19 @@ type ComplexSearchResponse {
   """
   the query being executed
   """  
-  solrQuery: String
+  solrQuery: String @deprecated
   """
   filter applied to the query
   """
-  solrFilter: String
+  solrFilter: String @deprecated
   """
   Time to tokenize query
   """
-  tokenizerDurationInMs: Int
+  tokenizerDurationInMs: Int @deprecated
   """
   Time for execution on solr
   """
-  solrExecutionDurationInMs: Int
+  solrExecutionDurationInMs: Int @deprecated
 }
 `;
 

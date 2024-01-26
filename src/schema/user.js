@@ -18,7 +18,7 @@ import { hasInfomediaAccess } from "../utils/access";
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
 import { deleteFFUAccount } from "./culr";
-import { hasCulrDataSync } from "../utils/agency";
+import { getUserFromAllUserStatusData, hasCulrDataSync } from "../utils/agency";
 
 /**
  * The Profile type definition
@@ -27,6 +27,11 @@ export const typeDef = `
 type User {
   name: String
   favoritePickUpBranch: String
+  """
+  Last used pickup branch. Updated each time the user makes an order.
+  """  
+  lastUsedPickUpBranch: String
+
   """
   Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
   """  
@@ -39,7 +44,7 @@ type User {
   Orders made through bibliotek.dk
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
-  agencies(language: LanguageCode): [BranchResult!]!
+  agencies(language: LanguageCode): [Agency!]!
   loggedInBranchId: String @deprecated(reason: "Use 'User.loggedInAgencyId' instead")
   loggedInAgencyId: String
   municipalityNumber: String
@@ -334,16 +339,20 @@ export const resolvers = {
     async name(parent, args, context, info) {
       const user = context?.user;
 
-      // select cpr account from user agencies
+      // Select first CPR account from user agencies
       const account = filterAgenciesByProps(user.agencies, {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.name) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.name;
     },
@@ -359,6 +368,21 @@ export const resolvers = {
           .getLoader("userDataGetUser")
           .load({ uniqueId });
         return res?.favoritePickUpBranch || null;
+      } catch (error) {
+        return null;
+      }
+    },
+    async lastUsedPickUpBranch(parent, args, context, info) {
+      const user = context?.user;
+
+      try {
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
+
+        const res = await context.datasources
+          .getLoader("userDataGetUser")
+          .load({ uniqueId });
+        return res?.lastUsedPickUpBranch || null;
       } catch (error) {
         return null;
       }
@@ -415,7 +439,7 @@ export const resolvers = {
 
       const orderIds = res?.result?.map((order) => order.orderId);
 
-      if (orderIds.length > 0) {
+      if (orderIds?.length > 0) {
         const result = await fetchOrderStatus({ orderIds: orderIds }, context);
         return { result, hitcount: res?.hitcount || 0 };
       }
@@ -429,11 +453,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.address) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.address;
     },
@@ -482,11 +510,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.postalCode) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.postalCode;
     },
@@ -498,11 +530,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account?.userId || user?.userId,
-        agencyId: account?.agencyId || user?.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
+
+      if (!res?.mail) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.mail;
     },
@@ -514,11 +550,15 @@ export const resolvers = {
         type: "CPR",
       })?.[0];
 
-      const res = await context.datasources.getLoader("user").load({
-        userId: account.userId || user.userId,
-        agencyId: account.agencyId || user.loggedInAgencyId,
-        accessToken: context.accessToken,
+      let res = await context.datasources.getLoader("user").load({
+        userId: account.userId,
+        agencyId: account.agencyId,
       });
+
+      if (!res?.country) {
+        // If no data was found backfill from users other accounts
+        res = await getUserFromAllUserStatusData({}, context);
+      }
 
       return res?.country;
     },

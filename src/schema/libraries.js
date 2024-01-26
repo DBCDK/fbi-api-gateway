@@ -63,6 +63,21 @@ export const typeDef = `
     branchWebsiteUrl: String
     branchCatalogueUrl: String
     lookupUrl: String
+    
+    """
+    branchType is type of library branch. 
+    """
+    branchType: String!
+    
+    """
+    Checks if the library temporarilyClosed
+    """
+    temporarilyClosed: Boolean!
+
+    """
+    If the library is temporarilyClosed, a message might be shown here
+    """
+    temporarilyClosedReason: String
 
      """
     When user is not logged in, this is null
@@ -78,7 +93,7 @@ export const typeDef = `
     agencyUrl: String
   }
 
-  """
+    """
     Indicates if user is blocked for a given agency or 
     if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
     """

@@ -275,6 +275,29 @@ type AdminData {
   requestButton: Boolean
 }
 
+type Agency {
+  id: String!
+  name: String
+  type: AgencyType!
+  numberOfBranches: Int!
+  url: String!
+  user: AgencyUser
+  branches: [Branch!]!
+  hitcount: Int!
+  borrowerStatus: BorrowerStatus
+  result: [Branch!]!
+  agencyUrl: String
+}
+
+type AgencyUser {
+  name: String
+  mail: String
+  address: String
+  postalCode: String
+  country: String
+  blocked: Boolean!
+}
+
 type Category {
   title: String!
   result(limit: Int): [CategoryResult!]!
@@ -361,16 +384,16 @@ type ComplexSearchResponse {
   errorMessage: String
 
   \\"\\"\\"the query being executed\\"\\"\\"
-  solrQuery: String
+  solrQuery: String @deprecated
 
   \\"\\"\\"filter applied to the query\\"\\"\\"
-  solrFilter: String
+  solrFilter: String @deprecated
 
   \\"\\"\\"Time to tokenize query\\"\\"\\"
-  tokenizerDurationInMs: Int
+  tokenizerDurationInMs: Int @deprecated
 
   \\"\\"\\"Time for execution on solr\\"\\"\\"
-  solrExecutionDurationInMs: Int
+  solrExecutionDurationInMs: Int @deprecated
 }
 
 type Cover {
@@ -648,7 +671,7 @@ type Query {
   \\"\\"\\"
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   \\"\\"\\"
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches: Boolean): Localizations
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
@@ -2212,12 +2235,24 @@ input DataCollectSuggestPresentedInput {
   session_id: String!
 }
 
+enum FeedbackThumb {
+  up
+  down
+}
+
+input DataCollectSearchFeedbackInput {
+  thumbs: FeedbackThumb!
+  query: String!
+  reason: String!
+}
+
 input DataCollectInput {
   recommender_click: DataCollectRecommenderClickInput
   search: DataCollectSearchInput
   search_work: DataCollectSearchWorkInput
   suggest_presented: DataCollectSuggestPresentedInput
   suggest_click: DataCollectSuggestClickInput
+  search_feedback: DataCollectSearchFeedbackInput
   example: DataCollectExampleInput
 }
 
@@ -2307,6 +2342,15 @@ type Branch {
   branchCatalogueUrl: String
   lookupUrl: String
 
+  \\"\\"\\"branchType is type of library branch. \\"\\"\\"
+  branchType: String!
+
+  \\"\\"\\"Checks if the library temporarilyClosed\\"\\"\\"
+  temporarilyClosed: Boolean!
+
+  \\"\\"\\"If the library is temporarilyClosed, a message might be shown here\\"\\"\\"
+  temporarilyClosedReason: String
+
   \\"\\"\\"
   When user is not logged in, this is null
   Otherwise true or false
@@ -2378,6 +2422,12 @@ type holdingsItem {
   localizationPid: String
   codes: String
   localIdentifier: String
+}
+
+enum AvailabilityEnum {
+  NOW
+  LATER
+  UNKNOWN
 }
 
 enum SubmitOrderStatus {
@@ -2866,6 +2916,9 @@ type User {
   name: String
   favoritePickUpBranch: String
 
+  \\"\\"\\"Last used pickup branch. Updated each time the user makes an order.\\"\\"\\"
+  lastUsedPickUpBranch: String
+
   \\"\\"\\"
   Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
   \\"\\"\\"
@@ -2876,7 +2929,7 @@ type User {
 
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
-  agencies(language: LanguageCode): [BranchResult!]!
+  agencies(language: LanguageCode): [Agency!]!
   loggedInBranchId: String @deprecated(reason: \\"Use 'User.loggedInAgencyId' instead\\")
   loggedInAgencyId: String
   municipalityNumber: String
@@ -3114,16 +3167,16 @@ type ComplexSearchResponse {
   errorMessage: String
 
   \\"\\"\\"the query being executed\\"\\"\\"
-  solrQuery: String
+  solrQuery: String @deprecated
 
   \\"\\"\\"filter applied to the query\\"\\"\\"
-  solrFilter: String
+  solrFilter: String @deprecated
 
   \\"\\"\\"Time to tokenize query\\"\\"\\"
-  tokenizerDurationInMs: Int
+  tokenizerDurationInMs: Int @deprecated
 
   \\"\\"\\"Time for execution on solr\\"\\"\\"
-  solrExecutionDurationInMs: Int
+  solrExecutionDurationInMs: Int @deprecated
 }
 
 type Cover {

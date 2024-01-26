@@ -1,5 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`user - Backfill missing user data (from users other UserStatus accounts) 1`] = `
+Object {
+  "data": Object {
+    "user": Object {
+      "address": "Borgmesterskoven 45",
+      "country": "DK",
+      "mail": "test@dbc.dk",
+      "name": "Freja Damgaard",
+      "postalCode": "8660",
+    },
+  },
+}
+`;
+
+exports[`user - Get agency specific user details 1`] = `
+Object {
+  "data": Object {
+    "user": Object {
+      "address": "Borgmesterskoven 45",
+      "agencies": Array [
+        Object {
+          "id": "715100",
+          "name": "Ballerup Bibliotekerne",
+          "numberOfBranches": 3,
+          "type": "FOLKEBIBLIOTEK",
+          "url": "https://bib.ballerup.dk",
+          "user": Object {
+            "address": "Borgmesterskoven 45",
+            "blocked": false,
+            "country": "DK",
+            "mail": "test@dbc.dk",
+            "name": "Freja Damgaard",
+            "postalCode": "8660",
+          },
+        },
+      ],
+      "country": "DK",
+      "mail": "test@dbc.dk",
+      "name": "Freja Damgaard",
+      "postalCode": "8660",
+    },
+  },
+}
+`;
+
 exports[`user - get agency danish 1`] = `
 Object {
   "data": Object {
