@@ -30,7 +30,7 @@ type User {
   """
   Last used pickup branch. Updated each time the user makes an order.
   """  
-  lastUsedPickUpBranch: String
+  lastUsedPickUpBranch: Branch
 
   """
   Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
@@ -382,8 +382,26 @@ export const resolvers = {
         const res = await context.datasources
           .getLoader("userDataGetUser")
           .load({ uniqueId });
-        return res?.lastUsedPickUpBranch || null;
+
+        const lastUsedbranchId = res?.lastUsedPickUpBranch || null;
+
+        if (lastUsedbranchId) {
+          const branchesResult = await context.datasources
+            .getLoader("library")
+            .load({
+              branchId: "710100",
+              status: "ALLE",
+              bibdkExcludeBranches: false,
+            });
+
+          return branchesResult?.result[0] || null;
+        } else {
+          return null;
+        }
       } catch (error) {
+        log.error(
+          `Failed to fetch lastUsedPickUpBranch from userData service. Message: ${error.message}`
+        );
         return null;
       }
     },
