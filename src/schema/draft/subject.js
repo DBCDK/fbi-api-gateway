@@ -65,6 +65,7 @@ enum SubjectType {
   TITLE
   FILM_NATIONALITY
   LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+  FICTIONAL_LOCATION
 
   """
   added for manifestation.parts.creators/person - they get a type from small-rye
