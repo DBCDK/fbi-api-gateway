@@ -1492,11 +1492,19 @@ type Manifestation {
   \\"\\"\\"The year this manifestation was originally published or produced\\"\\"\\"
   workYear: PublicationYear
 
+  \\"\\"\\"id of the manifestaion unit\\"\\"\\"
+  unit: Unit
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+}
+
+type Unit {
+  id: String!
+  manifestations: [Manifestation!]!
 }
 
 type ManifestationTitles {
@@ -1887,6 +1895,7 @@ enum SubjectType {
   TITLE
   FILM_NATIONALITY
   LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+  FICTIONAL_LOCATION
 
   \\"\\"\\"
   added for manifestation.parts.creators/person - they get a type from small-rye
@@ -3996,11 +4005,19 @@ type Manifestation {
   \\"\\"\\"The year this manifestation was originally published or produced\\"\\"\\"
   workYear: PublicationYear
 
+  \\"\\"\\"id of the manifestaion unit\\"\\"\\"
+  unit: Unit
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+}
+
+type Unit {
+  id: String!
+  manifestations: [Manifestation!]!
 }
 
 type ManifestationTitles {
@@ -4387,6 +4404,7 @@ enum SubjectType {
   TITLE
   FILM_NATIONALITY
   LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+  FICTIONAL_LOCATION
 
   \\"\\"\\"
   added for manifestation.parts.creators/person - they get a type from small-rye
@@ -5620,11 +5638,19 @@ type Manifestation {
   \\"\\"\\"The year this manifestation was originally published or produced\\"\\"\\"
   workYear: PublicationYear
 
+  \\"\\"\\"id of the manifestaion unit\\"\\"\\"
+  unit: Unit
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+}
+
+type Unit {
+  id: String!
+  manifestations: [Manifestation!]!
 }
 
 type ManifestationTitles {
@@ -5996,6 +6022,7 @@ enum SubjectType {
   TITLE
   FILM_NATIONALITY
   LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+  FICTIONAL_LOCATION
 
   \\"\\"\\"
   added for manifestation.parts.creators/person - they get a type from small-rye

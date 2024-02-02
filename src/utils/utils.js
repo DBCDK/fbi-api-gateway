@@ -626,6 +626,7 @@ const kglBibBranchIdSet = new Set([
   "800031",
   "800032",
   "800033",
+  "800034",
   "800035",
   "800036",
   "800037",
@@ -658,8 +659,8 @@ function handleLocalizationsWithKglBibliotek(
 
   const aggregatedAvailability = localizationsWithHoldingsNotKglBibliotek.sort(
     (a, b) => {
-      const aAvail = a.availability;
-      const bAvail = b.availability;
+      const aAvail = a?.availability;
+      const bAvail = b?.availability;
 
       return (
         Number(bAvail === "NOW") - Number(aAvail === "NOW") ||
@@ -668,7 +669,7 @@ function handleLocalizationsWithKglBibliotek(
         0
       );
     }
-  )?.[0].availability;
+  )?.[0]?.availability;
 
   const aggregateKglBibliotek =
     localizationsWithHoldingsIsKglBibliotek.length > 0
@@ -786,7 +787,7 @@ export async function resolveLocalizationsWithHoldings({
         bibdkExcludeBranches: bibdkExcludeBranches ?? false,
       });
 
-      const availability = library.availability;
+      const availability = library?.availability;
 
       return {
         hitcount: res.hitcount,
