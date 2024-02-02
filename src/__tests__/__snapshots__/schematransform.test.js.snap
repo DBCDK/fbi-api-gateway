@@ -1492,11 +1492,19 @@ type Manifestation {
   \\"\\"\\"The year this manifestation was originally published or produced\\"\\"\\"
   workYear: PublicationYear
 
+  \\"\\"\\"id of the manifestaion unit\\"\\"\\"
+  unit: Unit
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+}
+
+type Unit {
+  id: String!
+  manifestations: [Manifestation!]!
 }
 
 type ManifestationTitles {
@@ -3997,11 +4005,19 @@ type Manifestation {
   \\"\\"\\"The year this manifestation was originally published or produced\\"\\"\\"
   workYear: PublicationYear
 
+  \\"\\"\\"id of the manifestaion unit\\"\\"\\"
+  unit: Unit
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+}
+
+type Unit {
+  id: String!
+  manifestations: [Manifestation!]!
 }
 
 type ManifestationTitles {
@@ -5622,11 +5638,19 @@ type Manifestation {
   \\"\\"\\"The year this manifestation was originally published or produced\\"\\"\\"
   workYear: PublicationYear
 
+  \\"\\"\\"id of the manifestaion unit\\"\\"\\"
+  unit: Unit
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+}
+
+type Unit {
+  id: String!
+  manifestations: [Manifestation!]!
 }
 
 type ManifestationTitles {

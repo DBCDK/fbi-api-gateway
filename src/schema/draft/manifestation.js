@@ -694,7 +694,18 @@ type Manifestation {
   The year this manifestation was originally published or produced
   """
   workYear: PublicationYear
+
+  """
+  id of the manifestaion unit
+  """
+  unit : Unit
 }
+
+type Unit {
+  id: String!
+  manifestations: [Manifestation!]! @complexity(value: 3)
+}
+
 type ManifestationTitles {
   """
   The main title(s) of the work
@@ -804,6 +815,25 @@ export const resolvers = {
           __typename: "Corporation",
         })),
       ];
+    },
+  },
+  Unit: {
+    async id(parent, args, context, info) {
+      return parent.unitId;
+    },
+    async manifestations(parent, args, context, info) {
+      if (!parent.workId) {
+        return [];
+      }
+
+      // manifestation unitId
+      const unitId = parent.unitId;
+
+      // Parent Work including all manifestations
+      const work = await resolveWork({ id: parent?.workId }, context);
+      const all = work?.manifestations.all;
+
+      return all.map((m) => m.unitId === unitId && m).filter((p) => p);
     },
   },
   Manifestation: {
@@ -947,9 +977,7 @@ export const resolvers = {
       };
     },
     async ownerWork(parent, args, context, info) {
-      const manifestation = { ...parent };
-
-      if (manifestation.workId) {
+      if (parent.workId) {
         // ownerWork is not included in the JED rest endpoint (workId is used instead)
         return await resolveWork({ id: parent?.workId }, context);
       }
@@ -960,6 +988,10 @@ export const resolvers = {
       });
 
       return null;
+    },
+
+    async unit(parent, args, context, info) {
+      return parent;
     },
   },
 };
