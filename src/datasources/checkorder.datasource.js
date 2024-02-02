@@ -17,6 +17,8 @@ export async function load({ pids, pickupBranch, accessToken }, context) {
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(post),
+    // REMOVE THIS AGAIN!!!!!!! driftissue fra 02/02-2024 - vores howru fjeler periodisk pga 503 fra checkorderpolicy  - undersøg hvorfor efter weekendden
+    allowedErrorStatusCodes: [503],
   });
 
   return policy?.body || null;
