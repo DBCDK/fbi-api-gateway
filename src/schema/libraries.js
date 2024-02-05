@@ -257,6 +257,7 @@ export const resolvers = {
       return await context.datasources.getLoader("checkorder").load({
         pickupBranch: parent.branchId,
         pids: !isEmpty(pids) ? pids : [],
+        accessToken: context.accessToken,
       });
     },
     pickupAllowed(parent, args, context, info) {
