@@ -12,7 +12,9 @@ export async function load({ uniqueId }, context) {
     },
     method: "POST",
     body: JSON.stringify({ smaugUserId: uniqueId }),
+    allowedErrorStatusCodes: [409],
   });
+
   if (res?.status !== 200) {
     throw new Error(res?.body?.error || "Failed to create user");
   }

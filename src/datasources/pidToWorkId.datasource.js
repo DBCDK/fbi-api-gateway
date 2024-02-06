@@ -24,6 +24,17 @@ export async function load({ pid, profile }, context) {
   return res.body?.workId;
 }
 
+// @TODO 29/12/23  .. disable/overwrite howru for this datasource for now - we know the service is failing now and then
+// DOUBLE @TODO find out why - problems started 29/12/23 9.47 and continued .. pidToWork foiled, but we could not find out
+// why
+//
+export function status() {
+  return true;
+  /*if (!isConnected) {
+    throw new Error("Redis is not connected");
+  }*/
+}
+
 export const options = {
   redis: {
     prefix: `pidtowork-${prefix}`,

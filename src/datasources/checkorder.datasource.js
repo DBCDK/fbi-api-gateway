@@ -1,5 +1,5 @@
 import config from "../config";
-import isArray from "lodash/isArray";
+import { log } from "dbc-node-logger";
 
 const { serviceRequester, url, ttl, prefix } = config.datasources.openorder;
 
@@ -17,7 +17,20 @@ export async function load({ pids, pickupBranch, accessToken }, context) {
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(post),
+    // REMOVE THIS AGAIN!!!!!!! driftissue fra 02/02-2024 - vores howru fjeler periodisk pga 503 fra checkorderpolicy  - undersøg hvorfor efter weekendden
+    allowedErrorStatusCodes: [503],
   });
+
+  if (policy?.status !== 200) {
+    // This may be removed again. Used for debugging when checkorder fails
+    // We stringify all in message, to avoid using precious kibana fields
+    log.error(
+      `checkorder error: ${JSON.stringify({
+        req: { accessToken: accessToken, body: JSON.stringify(post) },
+        res: { status: policy?.status, body: policy?.body },
+      })}`
+    );
+  }
 
   return policy?.body || null;
 }
