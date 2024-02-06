@@ -1,3 +1,4 @@
+import { log } from "dbc-node-logger";
 import _ from "lodash";
 import config from "./config";
 import { datasources } from "./datasourceLoader";
@@ -77,13 +78,28 @@ async function howru(req, res) {
     }
   });
 
-  res.send({
+  // Log the datasource names that cause howru to fail
+  [...results, ...httpStats]
+    .filter((service) => !service.ok)
+    .forEach((service) => {
+      log.info("howru service error", {
+        datasourceName: service.service,
+      });
+    });
+
+  const body = {
     ok,
     upSince,
     services: results,
     httpStats,
     config: omitDeep(config, omitKeys),
+  };
+
+  log.info("howru status", {
+    howruStatus: { ok, upSince, body: JSON.stringify(body) },
   });
+
+  res.send(body);
 }
 
 export default howru;

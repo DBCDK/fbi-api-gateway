@@ -116,6 +116,8 @@ export function createFetchWithConcurrencyLimit(concurrency, stats) {
           diagnostics: {
             ...res.timings,
             status: `${res.status}`,
+            allowedStatus:
+              res.ok || allowedErrorStatusCodes.includes(res.status),
           },
         });
         // Add to track object for incoming graphql request
