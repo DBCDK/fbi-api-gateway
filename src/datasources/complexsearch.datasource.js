@@ -3,11 +3,6 @@ import { log } from "dbc-node-logger";
 
 const { url, ttl, prefix } = config.datasources.complexsearch;
 
-function createTrackingId() {
-  const now = new Date();
-  return "fbi-api-" + now.toISOString();
-}
-
 /**
  * Search via complex search
  */
