@@ -23,7 +23,7 @@ export async function load(
       profile: profile.name,
     },
     filters: filters,
-    trackingId: createTrackingId(),
+    trackingId: context?.trackingId,
     ...(sort && { sort: sort }),
   };
   // TODO service needs to support profile ...
@@ -35,8 +35,16 @@ export async function load(
   const json = res.body;
 
   if (!res.ok) {
-    log.error("Complex search error", { body, error });
+    log.error(
+      `Complex search error: ${
+        json?.errorMessage
+      }. Request body: ${JSON.stringify(body)}`,
+      {
+        trackingId: body.trackingId,
+      }
+    );
   }
+
   return {
     errorMessage: json?.errorMessage,
     works: json?.workIds || [],
