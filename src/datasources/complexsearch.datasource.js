@@ -2,6 +2,11 @@ import config from "../config";
 
 const { url, ttl, prefix } = config.datasources.complexsearch;
 
+function createTrackingId() {
+  const now = new Date();
+  return "fbi-api-" + now.toISOString();
+}
+
 /**
  * Search via complex search
  */
@@ -9,23 +14,28 @@ export async function load(
   { cql, offset, limit, profile, filters, sort },
   context
 ) {
+  const body = {
+    cqlQuery: cql,
+    pagination: { offset, limit },
+    searchProfile: {
+      agency: profile.agency,
+      profile: profile.name,
+    },
+    filters: filters,
+    trackingId: createTrackingId(),
+    ...(sort && { sort: sort }),
+  };
   // TODO service needs to support profile ...
-  const res = await context?.fetch(`${url}/cqlquery`, {
+  const res = await context?.fetch(`${"url"}/cqlquery`, {
     method: "POST",
-    body: JSON.stringify({
-      cqlQuery: cql,
-      pagination: { offset, limit },
-      searchProfile: {
-        agency: profile.agency,
-        profile: profile.name,
-      },
-      filters: filters,
-      ...(sort && { sort: sort }),
-    }),
+    body: JSON.stringify(body),
     allowedErrorStatusCodes: [400],
   });
   const json = res.body;
 
+  if (!res.ok) {
+    log.error("Complex search error", { body, error });
+  }
   return {
     errorMessage: json?.errorMessage,
     works: json?.workIds || [],
