@@ -1,4 +1,5 @@
 import config from "../config";
+import { log } from "dbc-node-logger";
 
 const { url, ttl, prefix } = config.datasources.complexsearch;
 
