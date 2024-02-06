@@ -27,7 +27,7 @@ export async function load(
     ...(sort && { sort: sort }),
   };
   // TODO service needs to support profile ...
-  const res = await context?.fetch(`${"url"}/cqlquery`, {
+  const res = await context?.fetch(`${url}/cqlquery`, {
     method: "POST",
     body: JSON.stringify(body),
     allowedErrorStatusCodes: [400],
