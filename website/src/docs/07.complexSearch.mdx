@@ -18,6 +18,10 @@ Works from complexSearch supports:
 - offset
 - limit
 
+<DeprecationBox deprecated="6/2-2024" expires="6/5-2024">
+  Please note that Enum sort values order.asc and order.desc are deprecated and will be removed.
+  Use order.ASC and order.DESC instead
+</DeprecationBox>
 
 <InlineGraphiQL
   query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!, $sort: [Sort!]) {
@@ -39,7 +43,7 @@ Works from complexSearch supports:
   variables={{
     cql: "term.title=snemand*",
     filters: { branchId: ["775122"], status: ["OnShelf"] },
-    sort: [{ index: "sort.latestpublicationdate", order: "asc"}],
+    sort: [{ index: "sort.latestpublicationdate", order: "ASC"}],
     offset: 0,
     limit: 5,
   }}
