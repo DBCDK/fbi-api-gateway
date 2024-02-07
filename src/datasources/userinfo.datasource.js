@@ -102,6 +102,12 @@ export async function testLoad({ accessToken }, context) {
     loggedInAgencyId: loginAgency?.agency,
   };
 
+  // For FFU libraries the /userinfo and smaug fields can now hold both an agencyIds and branchIds
+  // Therefore all used fields which contains branchIds will be replaced with an agencyId
+  if (isFFUAgency(loginAgency?.agency, context)) {
+    attributes = await replaceBranchIdWithAgencyId(attributes, context);
+  }
+
   // This check prevents FFU users from accessing CULR data.
   // FFU Borchk authentication, is not safe enough to expose CULR data.
   if (!loggedInAgencyHasCulrDataSync) {
