@@ -4,9 +4,8 @@ import config from "../../../../src/config";
 import { setMunicipalityAgencyId } from "../../../../src/utils/municipalityAgencyId";
 import { omitUserinfoCulrData } from "../../../../src/utils/omitCulrData";
 import { _isFFUAgency } from "../../../../src/utils/agency";
-import replaceBranchIdWithAgencyId from "../../../../src/utils/replaceBranchIdWithAgencyId";
-
 import { search } from "../../../../src/datasources/library.datasource";
+import replaceBranchIdWithAgencyId from "../../../../src/utils/replaceBranchIdWithAgencyId";
 
 const {
   authenticationUser,
