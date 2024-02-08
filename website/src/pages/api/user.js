@@ -4,6 +4,8 @@ import config from "../../../../src/config";
 import { setMunicipalityAgencyId } from "../../../../src/utils/municipalityAgencyId";
 import { omitUserinfoCulrData } from "../../../../src/utils/omitCulrData";
 import { _isFFUAgency } from "../../../../src/utils/agency";
+import { search } from "../../../../src/datasources/library.datasource";
+import replaceBranchIdWithAgencyId from "../../../../src/utils/replaceBranchIdWithAgencyId";
 
 const {
   authenticationUser,
@@ -115,7 +117,22 @@ export default async function handler(req, res) {
       let attributes = {
         ...userinfo_data,
         loggedInAgencyId: user.loggedInAgencyId,
+        loggedInBranchId: null,
       };
+
+      // For FFU libraries the /userinfo and smaug fields can now hold both an agencyIds and branchIds
+      // Therefore all used fields which contains branchIds will be replaced with an agencyId
+      if (isFFULogin) {
+        attributes = await replaceBranchIdWithAgencyId(attributes, {
+          getLoader: () => ({
+            load: async (attr) => await search(attr),
+          }),
+        });
+
+        // update branch- and loggedInAgencyId
+        user.loggedInAgencyId = attributes?.loggedInAgencyId;
+        user.loggedInBranchId = attributes?.loggedInBranchId;
+      }
 
       // This check prevents FFU users from accessing CULR data.
       // FFU Borchk authentication, is not safe enough to expose CULR data.
