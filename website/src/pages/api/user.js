@@ -117,12 +117,13 @@ export default async function handler(req, res) {
       let attributes = {
         ...userinfo_data,
         loggedInAgencyId: user.loggedInAgencyId,
-        loggedInBranchId: null,
+        // loggedInBranchId: null,
       };
 
+      // *** DISABLED FOR NOW ***
       // For FFU libraries the /userinfo and smaug fields can now hold both an agencyIds and branchIds
       // Therefore all used fields which contains branchIds will be replaced with an agencyId
-      if (isFFULogin) {
+      if (false && isFFULogin) {
         attributes = await replaceBranchIdWithAgencyId(attributes, {
           getLoader: () => ({
             load: async (attr) => await search(attr),
