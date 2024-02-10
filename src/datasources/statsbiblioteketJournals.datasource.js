@@ -1,6 +1,11 @@
 import config from "../config";
 
+const { enabled } = config.datasources.statsbiblioteket;
+
 export async function load(_key, context) {
+  if (!enabled) {
+    return {};
+  }
   const res = await context?.fetch(
     `${config.datasources.statsbiblioteket.url}/copydanws/journals`,
     { headers: { Accept: "application/json" }, enableProxy: true }

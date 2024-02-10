@@ -226,6 +226,7 @@ export default {
         "http://webservice.statsbiblioteket.dk",
       user: process.env.STATSBIBLIOTEKET_USER,
       password: process.env.STATSBIBLIOTEKET_PASSWORD,
+      enabled: process.env.STATSBIBLIOTEKET_ENABLED || false,
     },
     recommendations: {
       url:
