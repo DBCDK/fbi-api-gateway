@@ -1,0 +1,148 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`userinfo DataSynced library authenticated user, enriched with smaug loggedInAgencyId 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "872960",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "borchk",
+    "loggedInAgencyId": "872960",
+    "municipality": null,
+    "municipalityAgencyId": "872960",
+    "uniqueId": null,
+    "userId": "some-userId",
+  },
+}
+`;
+
+exports[`userinfo FFU authenticated user connected to FOLK library 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "800010",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "borchk",
+    "loggedInAgencyId": "800010",
+    "municipality": null,
+    "municipalityAgencyId": "800010",
+    "omittedCulrData": Object {
+      "hasOmittedCulrAccounts": true,
+      "hasOmittedCulrMunicipality": true,
+      "hasOmittedCulrMunicipalityAgencyId": true,
+      "hasOmittedCulrUniqueId": true,
+    },
+    "uniqueId": null,
+    "userId": "some-userId",
+  },
+}
+`;
+
+exports[`userinfo FFU authenticated user, enriched with smaug loggedInAgencyId 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "800010",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "borchk",
+    "loggedInAgencyId": "710100",
+    "municipality": null,
+    "municipalityAgencyId": "800010",
+    "uniqueId": null,
+    "userId": "some-userId",
+  },
+}
+`;
+
+exports[`userinfo FOLK authenticated user connected to FFU library 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "800010",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+      Object {
+        "agencyId": "710100",
+        "userId": "some-globalId",
+        "userIdType": "CPR",
+      },
+      Object {
+        "agencyId": "710100",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "borchk",
+    "loggedInAgencyId": "710100",
+    "municipality": "101",
+    "municipalityAgencyId": "710100",
+    "uniqueId": "some-uniqueId",
+    "userId": "some-userId",
+  },
+}
+`;
+
+exports[`userinfo FOLK authenticated user, enriched with smaug loggedInAgencyId 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "710100",
+        "userId": "some-globalId",
+        "userIdType": "CPR",
+      },
+      Object {
+        "agencyId": "710100",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "borchk",
+    "loggedInAgencyId": "710100",
+    "municipality": "101",
+    "municipalityAgencyId": "710100",
+    "uniqueId": "some-uniqueId",
+    "userId": "some-userId",
+  },
+}
+`;
+
+exports[`userinfo Nemlogin authenticated user with NO agencies 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "190101",
+        "userId": "some-globalId",
+        "userIdType": "CPR",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "nemlogin",
+    "loggedInAgencyId": "190101",
+    "municipality": null,
+    "municipalityAgencyId": null,
+    "uniqueId": "some-uniqueId",
+    "userId": "some-userId",
+  },
+}
+`;
