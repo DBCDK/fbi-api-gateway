@@ -145,7 +145,7 @@ export default async function getUserBorrowerStatus(
       return {
         status: result.status,
         statusCode: result.statusCode,
-        userId: result.userId,
+        userId: _userId,
       };
     }
 
@@ -161,7 +161,7 @@ export default async function getUserBorrowerStatus(
       return {
         status: result.status,
         statusCode: result.statusCode,
-        userId: result.userId,
+        userId: _userId,
       };
     }
   }
