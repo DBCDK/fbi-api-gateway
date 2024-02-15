@@ -35,6 +35,10 @@ const orderStatusmessageMap = {
   AUTHENTICATION_ERROR: "Authentication error",
   UNKNOWN_ERROR: "Some unknown error occured",
   ERROR_MISSING_PINCODE: "No pincode was provided for FFU agency",
+  BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY:
+    "User is connected to an account which no longer exist",
+  BORCHK_USER_BLOCKED_BY_AGENCY: "User is blocked by agency",
+  BORCHK_USER_NOT_VERIFIED: "User association could not be verified",
 };
 
 /**
@@ -375,9 +379,11 @@ export const resolvers = {
         throw "invalid smaug configuration [orderSystem]";
       }
 
+      const pickupBranch = args.input.pickUpBranch;
+
       const branch = (
         await context.datasources.getLoader("library").load({
-          branchId: args.input.pickUpBranch,
+          branchId: pickupBranch,
         })
       ).result?.[0];
 
@@ -405,7 +411,7 @@ export const resolvers = {
 
       if ((await isFFUAgency(agencyId, context)) && hasBorchk) {
         const isTrustedAuthentication = await hasCulrDataSync(
-          user?.loggedInAgencyId,
+          pickupBranch,
           context
         );
         userPincode = !isTrustedAuthentication && userParameters?.pincode;
