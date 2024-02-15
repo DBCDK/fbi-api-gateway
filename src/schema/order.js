@@ -503,9 +503,12 @@ export const resolvers = {
       if (!context?.smaug?.orderSystem) {
         throw "invalid smaug configuration [orderSystem]";
       }
+
+      const pickupBranch = args?.input?.pickUpBranch;
+
       const branch = (
         await context.datasources.getLoader("library").load({
-          branchId: args?.input?.pickUpBranch,
+          branchId: pickupBranch,
         })
       ).result?.[0];
 
@@ -538,7 +541,7 @@ export const resolvers = {
 
       if ((await isFFUAgency(agencyId, context)) && hasBorchk) {
         const isTrustedAuthentication = await hasCulrDataSync(
-          user?.loggedInAgencyId,
+          pickupBranch,
           context
         );
         userPincode = !isTrustedAuthentication && userParameters?.pincode;

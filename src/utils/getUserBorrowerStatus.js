@@ -49,7 +49,7 @@ export default async function getUserBorrowerStatus(props, context) {
   const result = await userBorrowerStatus(props, context);
 
   // uncomment to debug
-  console.debug("BorrowerStatus", result);
+  // console.debug("BorrowerStatus", result);
 
   const status = result?.status;
   const message = status ? "allowed" : "NOT allowed";
