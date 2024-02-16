@@ -31,7 +31,7 @@ const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
  * 
  * @param {string} props.userId context
  * @param {string} props.agencyId context
- * @param {string} props.context context
+ * @param {string} props.userPincode context
  * @param {obj} context context
  * 
  * @returns {obj} containing status, userId and statusCode
@@ -45,7 +45,34 @@ const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
  * BORCHK_USER_NOT_VERIFIED
  *  
  */
-export default async function getUserBorrowerStatus(
+export default async function getUserBorrowerStatus(props, context) {
+  const result = await userBorrowerStatus(props, context);
+
+  // uncomment to debug
+  // console.debug("BorrowerStatus", result);
+
+  const status = result?.status;
+  const message = status ? "allowed" : "NOT allowed";
+
+  log.info(
+    `BorrowerStatus: User ${message} to placed an order. ${JSON.stringify(
+      result
+    )}`
+  );
+
+  return result;
+}
+
+/**
+ * Handle anonymous token users - where credentials is given as query arguments
+ *
+ * @param {string} props.agencyId
+ * @param {object} props.userIds
+ * @param {string} props.userPincode
+ * @param {object} context
+ * @returns {object}
+ */
+async function userBorrowerStatus(
   { agencyId, userIds = null, userPincode = null },
   context
 ) {
@@ -83,91 +110,121 @@ export default async function getUserBorrowerStatus(
 
   // AgencyId has Borrowercheck, continue the order verification
 
+  if (isAuthenticated) {
+    const authResult = await authUserBorrowerStatus(
+      { agencyId, userPincode },
+      context
+    );
+
+    if (authResult?.statusCode) {
+      return {
+        ...authResult,
+        summary: { ...summary, ...authResult?.summary },
+      };
+    }
+  }
+
+  // If user is NOT Authenticated! We check the provided userIds
+  const anonResult = await anonUserBorrowerStatus(
+    { agencyId, userIds },
+    context
+  );
+
+  if (anonResult?.statusCode) {
+    return {
+      ...anonResult,
+      summary,
+    };
+  }
+
+  // No result was found
+  return {
+    status: false,
+    statusCode: "UNKNOWN_USER",
+    summary,
+  };
+}
+
+/**
+ * Handle authenticated token users - where credentials is fetched from token user
+ *
+ * @param {string} props.agencyId
+ * @param {object} props.userIds
+ * @param {object} context
+ * @returns {object}
+ */
+async function authUserBorrowerStatus({ agencyId, userPincode }, context) {
+  // summary object
+  const summary = {};
+
   // userId may changes (let)
   let _userId;
 
   // UserId fetched from other account than loggedIn account
   let _isAccount;
 
-  if (isAuthenticated) {
-    const user = context?.user;
+  const user = context?.user;
 
-    // Check if the user is authenticated on the provided agencyId
-    const verifiedOnAgencyId = !!(
-      user?.userId && user?.loggedInAgencyId === agencyId
+  // Check if the user is authenticated on the provided agencyId
+  const verifiedOnAgencyId = !!(
+    user?.userId && user?.loggedInAgencyId === agencyId
+  );
+
+  // add to summary log
+  summary.verifiedOnAgencyId = verifiedOnAgencyId;
+
+  // If so, we check if the user is allowed to place an order here.
+  if (verifiedOnAgencyId) {
+    _userId = user?.userId;
+  }
+  // If NOT, we fetch the authenticated users other accounts
+  // User may have placed an order to a different account/agency, than they orignally signed-in at.
+  else {
+    // user account list
+    const accounts = user?.agencies;
+
+    // fetch requested account from list
+    // Local (type) account is preferred, because it will always exist
+    const account = accounts?.find(
+      (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
     );
 
-    // add to summary log
-    summary.verifiedOnAgencyId = verifiedOnAgencyId;
+    // Update internal userId
+    // If an userinfo account was found, we use the userId credential from the matching local account
+    // If NOT we use the provided userId (used for sessional orders) - fallbacks to login.bib.dk id if none provided
+    if (account) {
+      _userId = account?.userId;
+      _isAccount = true;
 
-    // If so, we check if the user is allowed to place an order here.
-    if (verifiedOnAgencyId) {
-      _userId = user?.userId;
-    }
-    // If NOT, we fetch the authenticated users other accounts
-    // User may have placed an order to a different account/agency, than they orignally signed-in at.
-    else {
-      // user account list
-      const accounts = user?.agencies;
-
-      // fetch requested account from list
-      // Local (type) account is preferred, because it will always exist
-      const account = accounts?.find(
-        (a) => a.agencyId === agencyId && a.userIdType === "LOCAL"
-      );
-
-      // Update internal userId
-      // If an userinfo account was found, we use the userId credential from the matching local account
-      // If NOT we use the provided userId (used for sessional orders) - fallbacks to login.bib.dk id if none provided
-      if (account) {
-        _userId = account?.userId;
-        _isAccount = true;
-
-        // add to summary log
-        summary.fromOtherUserAccount = true;
-      }
-    }
-
-    // Check authenticated user
-    const result = await checkUserBorrowerStatus(
-      { agencyId, userId: _userId, userPincode, isAccount: _isAccount },
-      context
-    );
-
-    // Return if status blocked - No further checks needed
-    if (result.borchk?.blocked) {
-      log.warn(
-        `checkUserBorrowerStatus: User is NOT allowed to place an order. ${JSON.stringify(
-          { ...result, ...summary }
-        )}`
-      );
-
-      return {
-        status: result.status,
-        statusCode: result.statusCode,
-        userId: result.userId,
-      };
-    }
-
-    // Return if status true - No further checks needed
-    if (result.status) {
-      log.info(
-        `checkUserBorrowerStatus: User allowed to placed an order. ${JSON.stringify(
-          { ...result, ...summary }
-        )}`
-      );
-
-      // enrich response with the hasBorrowerCheck param
-      return {
-        status: result.status,
-        statusCode: result.statusCode,
-        userId: result.userId,
-      };
+      // add to summary log
+      summary.fromOtherUserAccount = true;
     }
   }
 
-  // If user is NOT Authenticated! We check the provided userIds
+  // Check authenticated user
+  const result = await checkUserBorrowerStatus(
+    { agencyId, userId: _userId, userPincode, isAccount: _isAccount },
+    context
+  );
 
+  // enrich response with the access given userId
+  return {
+    status: result.status,
+    statusCode: result.statusCode,
+    userId: _userId,
+    summary,
+  };
+}
+
+/**
+ * Handle anonymous token users - where credentials is given as query arguments
+ *
+ * @param {string} props.agencyId
+ * @param {object} props.userIds
+ * @param {object} context
+ * @returns {object}
+ */
+async function anonUserBorrowerStatus({ agencyId, userIds }, context) {
   // if no userIds was provided, no check can be performed
   if (!userIds) {
     return {
@@ -191,14 +248,8 @@ export default async function getUserBorrowerStatus(
 
   // user is blocked by agency
   if (hasBlocked) {
-    log.warn(
-      `checkUserBorrowerStatus: User is NOT allowed to place an order. ${JSON.stringify(
-        { ...hasBlocked, ...summary }
-      )}`
-    );
-
     return {
-      status: hasBlocked.status,
+      status: false,
       statusCode: hasBlocked.statusCode,
       userId: hasBlocked.userId,
     };
@@ -215,30 +266,12 @@ export default async function getUserBorrowerStatus(
 
   // Return match
   if (match) {
-    log.info(
-      `checkUserBorrowerStatus: User allowed to placed an order. ${JSON.stringify(
-        { ...match, ...summary }
-      )}`
-    );
-
     return {
       status: match.status,
       statusCode: match.statusCode,
       userId: match.userId,
     };
   }
-
-  // User is not allowed to place an order - no account found for provided credentials
-  log.warn(
-    `checkUserBorrowerStatus: User is NOT allowed to placed an order. ${JSON.stringify(
-      {
-        status: false,
-        statusCode: "UNKNOWN_USER",
-        statusMap,
-        ...summary,
-      }
-    )}`
-  );
 
   return {
     status: false,

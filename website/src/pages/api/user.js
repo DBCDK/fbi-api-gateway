@@ -157,7 +157,7 @@ export default async function handler(req, res) {
       user.userId = attributes.userId;
       user.identityProviderUsed = attributes.idpUsed;
       user.hasCulrUniqueId = !!attributes.uniqueId && !isFFULogin;
-      user.isAuthenticated = !!attributes.userId;
+      user.isAuthenticated = !!attributes.userId && attributes.userId !== "@";
 
       // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
       user.municipalityAgencyId = await setMunicipalityAgencyId(attributes);
