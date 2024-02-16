@@ -116,10 +116,6 @@ button.graphiql-tab-add {
 
 /* hide settings in graphiql editor */
 .graphiql-sidebar-section:last-child button:last-child {
-  /* display: none; */
-}
-
-div[id="radix-:r15:"] .graphiql-dialog-section:nth-child(2) {
   display: none;
 }
 
