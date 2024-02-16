@@ -330,6 +330,8 @@
     U+FEFF, U+FFFD;
 }
 
+.graphiql-dialog,
+.graphiql-dialog-overlay,
 .graphiql-container,
 .CodeMirror-info,
 .CodeMirror-lint-tooltip,
