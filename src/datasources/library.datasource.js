@@ -124,7 +124,7 @@ async function doRequest() {
  * @param getFunc
  * @returns {Promise<{result: (*&{language: string})[], hitcount: number}>}
  */
-export async function search(props, getFunc) {
+export async function search(props, getFunc = doRequest) {
   const {
     q,
     limit = 10,

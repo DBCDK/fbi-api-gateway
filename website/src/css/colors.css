@@ -102,9 +102,13 @@ body.dark {
   --text-dark: #bdbdbd;
   --text-light: #616161;
 
-  --primary-light: #f48fb1;
+  /* --primary-light: #f48fb1;
   --primary: #f06292;
-  --primary-dark: #ec407a;
+  --primary-dark: #ec407a; */
+
+  --primary-light: #616161;
+  --primary: #616161;
+  --primary-dark: #616161;
 
   /* secondary */
   --secondary-light: #81d4fa;

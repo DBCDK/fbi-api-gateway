@@ -47,15 +47,26 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
   align-items: center;
 }
 
+.graphiql-tabs {
+  padding: 0;
+}
+
+.graphiql-tabs button.graphiql-tab-add {
+  height: 100%;
+  display: inline-block !important;
+  align-self: center;
+}
+
+button.graphiql-tab-add {
+  padding: var(--pt1);
+}
+
 /* scrollbar */
 
 .CodeMirror-scroll {
+  overflow: auto !important;
   margin-right: 0;
-}
-
-.graphiql-container * {
-  /* firefox */
-  scrollbar-color: var(--primary-dark) transparent;
+  padding-bottom: 0;
 }
 
 /* width */
@@ -106,4 +117,97 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
 /* hide settings in graphiql editor */
 .graphiql-sidebar-section:last-child button:last-child {
   display: none;
+}
+
+/* editors */
+
+.graphiql-editor-tools {
+  width: 100%;
+}
+
+/* dialog */
+
+.graphiql-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: hsla(var(--color-neutral), var(--alpha-background-heavy));
+  /**
+   * CodeMirror has a `z-index` set for the container of the scrollbar of the
+   * editor, so we have to add one here to make sure that the dialog is shown
+   * above the editor scrollbar (if they are visible).
+   */
+  z-index: 10;
+}
+
+.graphiql-dialog {
+  background-color: white;
+  border: var(--popover-border);
+  border-radius: var(--border-radius-12);
+  box-shadow: var(--popover-box-shadow);
+  margin: 0;
+  max-height: 80vh;
+  max-width: 80vw;
+  overflow: auto;
+  padding: var(--pt2);
+  width: unset;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  position: fixed;
+  z-index: 10;
+}
+
+.graphiql-dialog-close > svg > path {
+  display: block;
+  height: var(--px-12);
+  padding: var(--px-12);
+  width: var(--px-12);
+}
+
+/* The header of the settings dialog */
+.graphiql-dialog .graphiql-dialog-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--px-24);
+}
+/* The title of the settings dialog */
+.graphiql-dialog .graphiql-dialog-title {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+}
+/* A section inside the settings dialog */
+.graphiql-dialog .graphiql-dialog-section {
+  align-items: center;
+  border-top: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
+  display: flex;
+  justify-content: space-between;
+  padding: var(--px-24);
+}
+.graphiql-dialog .graphiql-dialog-section > :not(:first-child) {
+  margin-left: var(--px-24);
+}
+/* The section title in the settings dialog */
+.graphiql-dialog .graphiql-dialog-section-title {
+  font-size: var(--font-size-h4);
+  font-weight: var(--font-weight-medium);
+}
+/* The section caption in the settings dialog */
+.graphiql-dialog .graphiql-dialog-section-caption {
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
+}
+.graphiql-dialog .graphiql-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.graphiql-dialog .graphiql-table :is(th, td) {
+  border: 1px solid hsla(var(--color-neutral), var(--alpha-background-heavy));
+  padding: var(--px-8) var(--px-12);
+}
+/* A single key the short-key dialog */
+.graphiql-dialog .graphiql-key {
+  background-color: hsla(var(--color-neutral), var(--alpha-background-medium));
+  border-radius: var(--border-radius-4);
+  padding: var(--px-4);
 }

@@ -44,8 +44,10 @@ input ComplexSearchFilters {
 }
 
 enum SortOrder {
-  asc
-  desc
+  ASC
+  DESC 
+  asc @deprecated
+  desc @deprecated
 }
 
 input Sort {

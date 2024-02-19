@@ -4,6 +4,8 @@ import config from "../../../../src/config";
 import { setMunicipalityAgencyId } from "../../../../src/utils/municipalityAgencyId";
 import { omitUserinfoCulrData } from "../../../../src/utils/omitCulrData";
 import { _isFFUAgency } from "../../../../src/utils/agency";
+import { search } from "../../../../src/datasources/library.datasource";
+import replaceBranchIdWithAgencyId from "../../../../src/utils/replaceBranchIdWithAgencyId";
 
 const {
   authenticationUser,
@@ -115,7 +117,23 @@ export default async function handler(req, res) {
       let attributes = {
         ...userinfo_data,
         loggedInAgencyId: user.loggedInAgencyId,
+        // loggedInBranchId: null,
       };
+
+      // *** DISABLED FOR NOW ***
+      // For FFU libraries the /userinfo and smaug fields can now hold both an agencyIds and branchIds
+      // Therefore all used fields which contains branchIds will be replaced with an agencyId
+      if (false && isFFULogin) {
+        attributes = await replaceBranchIdWithAgencyId(attributes, {
+          getLoader: () => ({
+            load: async (attr) => await search(attr),
+          }),
+        });
+
+        // update branch- and loggedInAgencyId
+        user.loggedInAgencyId = attributes?.loggedInAgencyId;
+        user.loggedInBranchId = attributes?.loggedInBranchId;
+      }
 
       // This check prevents FFU users from accessing CULR data.
       // FFU Borchk authentication, is not safe enough to expose CULR data.
@@ -139,7 +157,7 @@ export default async function handler(req, res) {
       user.userId = attributes.userId;
       user.identityProviderUsed = attributes.idpUsed;
       user.hasCulrUniqueId = !!attributes.uniqueId && !isFFULogin;
-      user.isAuthenticated = !!attributes.userId;
+      user.isAuthenticated = !!attributes.userId && attributes.userId !== "@";
 
       // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
       user.municipalityAgencyId = await setMunicipalityAgencyId(attributes);

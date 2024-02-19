@@ -1,7 +1,8 @@
 import config from "../config";
-import { hasCulrDataSync } from "../utils/agency";
+import { hasCulrDataSync, isFFUAgency } from "../utils/agency";
 import { setMunicipalityAgencyId } from "../utils/municipalityAgencyId";
 import { omitUserinfoCulrData } from "../utils/omitCulrData";
+import replaceBranchIdWithAgencyId from "../utils/replaceBranchIdWithAgencyId";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.userInfo;
@@ -32,11 +33,19 @@ export async function load({ accessToken }, context) {
     let attributes = {
       ...res.body?.attributes,
       loggedInAgencyId,
+      // loggedInBranchId: null,
     };
+
+    // *** DISABLED FOR NOW ***
+    // For FFU libraries the /userinfo and smaug fields can now hold both an agencyIds and branchIds
+    // Therefore all used fields which contains branchIds will be replaced with an agencyId
+    if (false && isFFUAgency(loggedInAgencyId, context)) {
+      attributes = await replaceBranchIdWithAgencyId(attributes, context);
+    }
 
     // This check prevents FFU users from accessing CULR data.
     // FFU Borchk authentication, is not safe enough to expose CULR data.
-    if (!(await hasCulrDataSync(loggedInAgencyId, context))) {
+    if (!(await hasCulrDataSync(attributes?.loggedInAgencyId, context))) {
       attributes = omitUserinfoCulrData(attributes);
     }
 
@@ -93,6 +102,13 @@ export async function testLoad({ accessToken }, context) {
       : map[municipalityAgencyId],
     loggedInAgencyId: loginAgency?.agency,
   };
+
+  // *** DISABLED FOR NOW ***
+  // For FFU libraries the /userinfo and smaug fields can now hold both an agencyIds and branchIds
+  // Therefore all used fields which contains branchIds will be replaced with an agencyId
+  if (false && isFFUAgency(loginAgency?.agency, context)) {
+    attributes = await replaceBranchIdWithAgencyId(attributes, context);
+  }
 
   // This check prevents FFU users from accessing CULR data.
   // FFU Borchk authentication, is not safe enough to expose CULR data.

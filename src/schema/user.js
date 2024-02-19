@@ -551,8 +551,8 @@ export const resolvers = {
       })?.[0];
 
       let res = await context.datasources.getLoader("user").load({
-        userId: account.userId,
-        agencyId: account.agencyId,
+        userId: account?.userId,
+        agencyId: account?.agencyId,
       });
 
       if (!res?.country) {

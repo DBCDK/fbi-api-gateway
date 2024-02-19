@@ -113,7 +113,7 @@ export default function Token({
               {isAuthenticated && (
                 <span
                   title={`Authenticated token ${
-                    !hasCulrAccount && "- user does not exist in CULR"
+                    !hasCulrAccount ? "- user does not exist in CULR" : ""
                   }`}
                 >
                   🧑 {!hasCulrAccount && <i>⚠️</i>}
