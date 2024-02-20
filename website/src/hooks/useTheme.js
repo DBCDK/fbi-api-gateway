@@ -63,7 +63,7 @@ export function dateConverter(timestamp) {
  * Checks if there is an active holiday going on
  */
 function getHoliday() {
-  const now = new Date("03-25-2024").getTime();
+  const now = new Date().getTime();
 
   let holiday;
   Object.entries(holidays).forEach(([k, v]) => {
