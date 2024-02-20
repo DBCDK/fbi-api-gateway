@@ -4,6 +4,6 @@ export default function handler(req, res) {
 
   res.status(200).json({
     access_token: decoded,
-    expires_at: Date.now() / 1000 + 60 * 60 * 24 * 30,
+    expires_at: Math.round(Date.now() / 1000 + 60 * 60 * 24 * 30),
   });
 }
