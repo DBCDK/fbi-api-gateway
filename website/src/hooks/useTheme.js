@@ -107,7 +107,8 @@ export default function useTheme() {
   const hasDynamic = getHoliday();
   const hasStatic = getConfig()?.publicRuntimeConfig?.theme || "default";
 
-  const theme = hasDynamic || hasStatic;
+  // Prioritize the static - but on default - prioritize the dynamic
+  const theme = (hasStatic === "default" && hasDynamic) || hasStatic;
 
   const icon = icons[theme];
 
