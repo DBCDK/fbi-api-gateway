@@ -1,16 +1,10 @@
 import { useEffect } from "react";
-import useMode from "@/hooks/useMode";
 import getConfig from "next/config";
 
-const icons = {
-  default: "🥳",
-  christmas: "🎅",
-  easter: "🐤",
-  pride: "🏳️‍🌈",
-  halloween: "🎃",
-};
-
-function getEaster(year) {
+/**
+ * calculates easter day for a given year
+ */
+function getEasterDay(year) {
   var f = Math.floor,
     // Golden Number - 1
     G = year % 19,
@@ -26,71 +20,96 @@ function getEaster(year) {
     month = 3 + f((L + 40) / 44),
     day = L + 28 - 31 * f(month / 4);
 
-  // cerofill
+  // zerofill
   day = day < 10 ? "0" + day : day;
   month = month < 10 ? "0" + month : month;
 
   return `${year}-${month}-${day}`;
 }
 
-function isItEaster(year) {
-  const date = getEaster(year);
+/**
+ * converts easter from day to period
+ */
+function getEasterPeriod(year, sub = 0, add = 0) {
+  const date = getEasterDay(year);
   const UTC = new Date(`${date}T00:00:00Z`);
 
-  console.log("### UTC", UTC);
-
+  // ms pr day
   const ms = 86400000;
 
-  // UTC - 14;
+  const start = new Date(UTC.getTime() - ms * sub);
+  const end = new Date(UTC.getTime() + ms * add);
 
-  const start = new Date(UTC.getTime() - ms * 14);
-  const end = new Date(UTC.getTime() + ms);
-
-  console.log("%%%", year, dateConverter(start), " - ", dateConverter(end));
-
-  return date;
+  return { start: dateConverter(start), end: dateConverter(end) };
 }
 
+/**
+ * converts timestamps to date
+ */
 export function dateConverter(timestamp) {
   var a = new Date(timestamp);
   var month = a.getMonth() + 1;
   var day = a.getDate();
+  var year = a.getFullYear();
 
-  // cerofill
+  // zerofill
   day = day < 10 ? "0" + day : day;
   month = month < 10 ? "0" + month : month;
 
-  var time = day + "/" + month;
-  return time;
+  return month + "-" + day + "-" + year;
 }
 
-console.log(
-  "easter...",
-  dateConverter(isItEaster(2020)),
-  dateConverter(isItEaster(2021)),
-  dateConverter(isItEaster(2022)),
-  dateConverter(isItEaster(2023)),
-  dateConverter(isItEaster(2024)),
-  dateConverter(isItEaster(2025)),
-  dateConverter(isItEaster(2026)),
-  dateConverter(isItEaster(2027)),
-  dateConverter(isItEaster(2028)),
-  dateConverter(isItEaster(2029)),
-  dateConverter(isItEaster(2030))
-);
+/**
+ * Checks if there is an active holiday going on
+ */
+function getHoliday() {
+  const now = new Date().getTime();
+
+  let holiday;
+  Object.entries(holidays).forEach(([k, v]) => {
+    const start = new Date(v.start).getTime();
+    const end = new Date(v.end).getTime();
+
+    if (!holiday) {
+      if (now <= end && now >= start) {
+        holiday = k;
+      }
+    }
+  });
+  return holiday;
+}
+
+const year = new Date().getFullYear();
+// We define the easter period by 14 days before and 1 day after easterday
+const easter = getEasterPeriod(year, 14, 1);
+
+const icons = {
+  default: "🥳",
+  christmas: "🎅",
+  easter: "🐤",
+  pride: "🏳️‍🌈",
+  halloween: "🎃",
+};
+
+const holidays = {
+  // dynamic holidays
+  easter: { start: easter.start, end: easter.end },
+  // static holidays
+  halloween: { start: `10-01-${year}`, end: `10-31-${year}` },
+  christmas: { start: `12-01-${year}`, end: `12-26-${year}` },
+};
 
 /**
  *
  * @param {*} value
  */
 export default function useTheme() {
-  // const { mode, setMode } = useMode();
-  const theme = getConfig()?.publicRuntimeConfig?.theme || "default";
-  const icon = icons[theme];
+  const hasDynamic = getHoliday();
+  const hasStatic = getConfig()?.publicRuntimeConfig?.theme || "default";
 
-  // if (theme === "halloween" && mode === "theme") {
-  //   setMode("theme");
-  // }
+  const theme = hasDynamic || hasStatic;
+
+  const icon = icons[theme];
 
   useEffect(() => {
     document.body.classList?.add(theme);
