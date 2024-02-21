@@ -55,7 +55,10 @@ export function isEqual(token1, token2) {
 }
 
 export function generateCurl({ url, token, query, variables }) {
-  const curl_vars = variables?.replace?.(/\s+/g, " ");
-  const curl_query = query?.replace(/\s+/g, " ");
+  const curl_vars = variables?.replace?.(/\s+/g, " ") || "{}";
+  const curl_query = query?.replace(/\s+/g, " ") || "";
+
+  console.log({ curl_vars, curl_query });
+
   return `curl -H "Authorization: bearer ${token}" -H "Content-Type: application/json" -X POST -d '{"query": "${curl_query}", "variables": ${curl_vars}}' ${url}`;
 }
