@@ -5,11 +5,13 @@ The following examples shows how to get information from branches
 ## orderPolicy
 
 It is possible get orderPolicy for each pid on each branch on each pid of interest. The returned values include the following fields:
+
 - _**lookUpUrls**_ (list of urls looked at) (_**lookUpUrl**_ represents the first material),
 - _**orderPossible**_ (if either of the pids are possible to order at the branch),
 - _**orderPossibleReason**_ (the aggregated reason for the order being possible or not),
 
 The _**orderPossibleReason**_ responses are the following (below the pickupAgency is the branch):
+
 - _**OWNED_ACCEPTED**_ - Item available at pickupAgency, order accepted
 - _**NOT_OWNED_ILL_LOC**_ - Item not available at pickupAgency, item localised for ILL
 - _**OWNED_WRONG_MEDIUMTYPE**_ - Item available at pickupAgency, order of mediumType not accepted
@@ -18,9 +20,9 @@ The _**orderPossibleReason**_ responses are the following (below the pickupAgenc
 - _**OWNED_OWN_CATALOGUE**_ - Item available at pickupAgency, item may be ordered through the library's catalogue
 
 <InlineGraphiQL
-  query={`query branches($pids: [String!]!) {
+  query={`query example_branches($q: String!, $pids: [String!]!) {
   branches(
-    q: "køge biblioteker"
+    q: $q
     limit: 10
     offset: 0
     bibdkExcludeBranches: true
@@ -31,7 +33,7 @@ The _**orderPossibleReason**_ responses are the following (below the pickupAgenc
       agencyId
       branchId
       name
-      orderPolicy(pid: "870970-basis:4709183", pids: $pids) {
+      orderPolicy(pids: $pids) {
         lookUpUrl
         lookUpUrls
         orderPossible
@@ -41,14 +43,15 @@ The _**orderPossibleReason**_ responses are the following (below the pickupAgenc
   }
 }`}
   variables={{
-  "pids": [
-    "870970-basis:54871953",
-    "870970-basis:29317070",
-    "870970-basis:23540703",
-    "870970-basis:26178487",
-    "870970-basis:25197909",
-    "870970-basis:23358875",
-    "870970-basis:23154382"
-  ]
-}}
+    q: "køge biblioteker",
+    pids: [
+      "870970-basis:54871953",
+      "870970-basis:29317070",
+      "870970-basis:23540703",
+      "870970-basis:26178487",
+      "870970-basis:25197909",
+      "870970-basis:23358875",
+      "870970-basis:23154382",
+    ],
+  }}
 />
