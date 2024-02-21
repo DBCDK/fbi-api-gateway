@@ -81,3 +81,22 @@ export function getQueryComplexity(params) {
     console.error("Could not calculate complexity", e.message);
   }
 }
+
+/**
+ *
+ * @param {int} complexity
+ * @returns {string}
+ */
+export function getQueryComplexityClass(complexity) {
+  if (complexity < 500) {
+    return "simple";
+  }
+  if (complexity < 1000) {
+    return "complex";
+  }
+  if (complexity < 100000) {
+    return "critical";
+  }
+
+  return "rejected";
+}

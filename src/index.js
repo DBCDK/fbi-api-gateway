@@ -22,6 +22,7 @@ import { metrics, observeDuration } from "./utils/monitor";
 import {
   validateQueryComplexity,
   getQueryComplexity,
+  getQueryComplexityClass,
 } from "./utils/complexity";
 import createDataLoaders from "./datasourceLoader";
 
@@ -110,6 +111,9 @@ promExporterApp.listen(9599, () => {
         );
       }
 
+      // Get query complexity class (simple|complex|critical|rejected)
+      const complexityClass = getQueryComplexityClass(req.queryComplexity);
+
       const userAgent = req.get("User-Agent");
 
       const accessTokenHash = createHash(req.accessToken);
@@ -124,6 +128,7 @@ promExporterApp.listen(9599, () => {
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
         queryComplexity: req.queryComplexity,
+        queryComplexityClass: complexityClass,
         isIntrospectionQuery: req.isIntrospectionQuery,
         graphQLErrors: req.graphQLErrors && JSON.stringify(req.graphQLErrors),
         userAgent,
@@ -310,6 +315,15 @@ promExporterApp.listen(9599, () => {
 
     // Set incomming query complexity
     req.queryComplexity = getQueryComplexity({ query, variables, schema });
+
+    // Get query complexity category (simple|complex|critical|rejected)
+    const complexityClass = getQueryComplexityClass(req.queryComplexity);
+
+    // Set SLA headers
+    res.set({
+      "dbcdk-clientId": req?.smaug?.app?.clientId,
+      "dbcdk-complexityClass": complexityClass,
+    });
 
     // check if the query allows for fast lane
     req.fastLane =
