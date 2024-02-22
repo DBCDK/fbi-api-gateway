@@ -43,6 +43,8 @@ input ComplexSearchFilters {
   issueId: [String!]
 }
 
+
+
 enum SortOrder {
   ASC
   DESC 
@@ -56,6 +58,42 @@ input Sort {
 }
 
 """
+The supported facet fields
+"""
+enum ComplexSearchFacets {  
+  specificmaterialtype,
+  subject,
+  creators,
+  mainlanguage,
+  genreAndForm,
+  childrenOrAdults,
+}
+
+"""
+The facets to ask for
+"""
+type complexSearchFacets {
+  facetLimit: Int!
+  facets: [ComplexSearchFacets!]!
+}
+
+"""
+A Facet value in response
+"""
+type ComplexSearchFacetValue{
+  key: String!
+  score: Int!
+}
+
+"""
+The complete facet in response
+"""
+type ComplexSearchFacetResponse{
+  name: String!
+  values: [ComplexSearchFacetValue!]!
+}
+
+"""
 The search response
 """
 type ComplexSearchResponse {
@@ -63,6 +101,11 @@ type ComplexSearchResponse {
   Total number of works found. May be used for pagination.
   """
   hitcount: Int!
+  
+  """
+  Facets for this response
+  """
+  facets: ComplexSearchFacetResponse!
 
   """
   The works matching the given search query. Use offset and limit for pagination.
@@ -101,6 +144,8 @@ type ComplexSearchResponse {
  * @returns {{offset: (*|number), profile, limit: (*|number), filters: ([{category: string, subCategories: string[]},{category: string, subCategories: string[]}]|[{category: string, subCategories: string[]}]|[{category: string, subCategories: [string]}]|[{category: string, subCategories: []}]|[{category: string}]|[]|*), cql}}
  */
 function setPost(parent, context, args) {
+  console.log(args, "ARGS");
+
   return {
     offset: args?.offset || 0,
     limit: args?.limit || 10,

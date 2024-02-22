@@ -21,6 +21,9 @@ export async function load(
     trackingId: context?.trackingId,
     ...(sort && { sort: sort }),
   };
+
+  console.log(body);
+
   // TODO service needs to support profile ...
   const res = await context?.fetch(`${url}/cqlquery`, {
     method: "POST",
