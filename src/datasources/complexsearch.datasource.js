@@ -3,11 +3,15 @@ import { log } from "dbc-node-logger";
 
 const { url, ttl, prefix } = config.datasources.complexsearch;
 
+function prefixFacets(facets) {
+  return facets.map((fac) => `phrase.${fac}`);
+}
+
 /**
  * Search via complex search
  */
 export async function load(
-  { cql, offset, limit, profile, filters, sort },
+  { cql, offset, limit, profile, filters, sort, facets, facetLimit },
   context
 ) {
   const body = {
@@ -18,11 +22,11 @@ export async function load(
       profile: profile.name,
     },
     filters: filters,
+    facets: prefixFacets(facets || []),
+    facetLimit: facetLimit,
     trackingId: context?.trackingId,
     ...(sort && { sort: sort }),
   };
-
-  console.log(body);
 
   // TODO service needs to support profile ...
   const res = await context?.fetch(`${url}/cqlquery`, {
@@ -47,6 +51,7 @@ export async function load(
     errorMessage: json?.errorMessage,
     works: json?.workIds || [],
     hitcount: json?.numFound || 0,
+    facets: json?.facets || [],
     solrQuery: json?.solrQuery || "",
     tokenizerDurationInMs: json?.tokenizerDurationInMs || 0,
     solrExecutionDurationInMs: json?.solrExecutionDurationInMs || 0,
@@ -54,9 +59,9 @@ export async function load(
   };
 }
 
-export const options = {
+/*export const options = {
   redis: {
     prefix,
     ttl,
   },
-};
+};*/
