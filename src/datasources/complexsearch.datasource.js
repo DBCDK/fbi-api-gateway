@@ -3,6 +3,15 @@ import { log } from "dbc-node-logger";
 
 const { url, ttl, prefix } = config.datasources.complexsearch;
 
+/**
+ * Prefix facets - the enum holds name af the index - here we prefix
+ * with the type of index (phrase).
+ *
+ * @TODO .. is this a good idea ?
+ *
+ * @param facets
+ * @returns {*}
+ */
 function prefixFacets(facets) {
   return facets.map((fac) => `phrase.${fac}`);
 }
