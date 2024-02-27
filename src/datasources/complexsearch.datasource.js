@@ -4,10 +4,23 @@ import { log } from "dbc-node-logger";
 const { url, ttl, prefix } = config.datasources.complexsearch;
 
 /**
+ * Prefix facets - the enum holds name af the index - here we prefix
+ * with the type of index (phrase).
+ *
+ * @TODO .. is this a good idea ?
+ *
+ * @param facets
+ * @returns {*}
+ */
+function prefixFacets(facets) {
+  return facets.map((fac) => `phrase.${fac.toLowerCase()}`);
+}
+
+/**
  * Search via complex search
  */
 export async function load(
-  { cql, offset, limit, profile, filters, sort },
+  { cql, offset, limit, profile, filters, sort, facets, facetLimit },
   context
 ) {
   const body = {
@@ -18,9 +31,12 @@ export async function load(
       profile: profile.name,
     },
     filters: filters,
+    facets: prefixFacets(facets || []),
+    facetLimit: facetLimit,
     trackingId: context?.trackingId,
     ...(sort && { sort: sort }),
   };
+
   // TODO service needs to support profile ...
   const res = await context?.fetch(`${url}/cqlquery`, {
     method: "POST",
@@ -44,6 +60,7 @@ export async function load(
     errorMessage: json?.errorMessage,
     works: json?.workIds || [],
     hitcount: json?.numFound || 0,
+    facets: json?.facets || [],
     solrQuery: json?.solrQuery || "",
     tokenizerDurationInMs: json?.tokenizerDurationInMs || 0,
     solrExecutionDurationInMs: json?.solrExecutionDurationInMs || 0,

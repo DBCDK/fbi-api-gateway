@@ -34,6 +34,7 @@ const ALLOWED_TYPES = {
   Inspiration: true,
   Categories: true,
   Category: true,
+  ComplexSearchResponse: true,
   SuggestResponse: true,
   Suggestion: true,
   SuggestionType: true,
