@@ -13,7 +13,7 @@ const { url, ttl, prefix } = config.datasources.complexsearch;
  * @returns {*}
  */
 function prefixFacets(facets) {
-  return facets.map((fac) => `phrase.${fac}`);
+  return facets.map((fac) => `phrase.${fac.toLowerCase()}`);
 }
 
 /**
