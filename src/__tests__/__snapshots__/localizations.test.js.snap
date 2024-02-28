@@ -6,7 +6,7 @@ Object {
     "localizations": Object {
       "agencies": Array [
         Object {
-          "agencyId": "700400",
+          "agencyId": "785100",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -15,7 +15,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "710100",
+          "agencyId": "775100",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -24,7 +24,16 @@ Object {
           ],
         },
         Object {
-          "agencyId": "714700",
+          "agencyId": "716500",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "720100",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -42,7 +51,141 @@ Object {
           ],
         },
         Object {
+          "agencyId": "781300",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "714700",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "754000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "781000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "911116",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "700400",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "800010",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "99122450879205763__1",
+              "localizationPid": "800010-katalog:99122450879205763__1",
+            },
+            Object {
+              "localIdentifier": "99122160750405763__1",
+              "localizationPid": "800010-katalog:99122160750405763__1",
+            },
+            Object {
+              "localIdentifier": "99122450879205763__1",
+              "localizationPid": "800010-katalog:99122450879205763__1",
+            },
+          ],
+        },
+        Object {
           "agencyId": "715500",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "724000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "732000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "852470",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "93142861",
+              "localizationPid": "852470-katalog:93142861",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "721000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "760700",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "725000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "719000",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -69,6 +212,60 @@ Object {
           ],
         },
         Object {
+          "agencyId": "725300",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "727000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "751000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "726000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "776600",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "721700",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
           "agencyId": "716300",
           "holdingItems": Array [
             Object {
@@ -78,7 +275,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "716500",
+          "agencyId": "766100",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -105,124 +302,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "717300",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "718300",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "719000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "720100",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "721000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "721700",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "723000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "724000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "725000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "725300",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "726000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "727000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "730600",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "732000",
+          "agencyId": "775600",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -240,7 +320,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "732900",
+          "agencyId": "762100",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -249,7 +329,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "733000",
+          "agencyId": "718300",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -258,7 +338,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "734000",
+          "agencyId": "710100",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -267,7 +347,16 @@ Object {
           ],
         },
         Object {
-          "agencyId": "739000",
+          "agencyId": "717300",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "784600",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -285,6 +374,15 @@ Object {
           ],
         },
         Object {
+          "agencyId": "876040",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
           "agencyId": "745000",
           "holdingItems": Array [
             Object {
@@ -294,52 +392,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "751000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "754000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "760700",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "762100",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "763000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "766100",
+          "agencyId": "730600",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -349,6 +402,33 @@ Object {
         },
         Object {
           "agencyId": "773000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "784000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "732900",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "723000",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -375,7 +455,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "775100",
+          "agencyId": "733000",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -384,7 +464,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "775600",
+          "agencyId": "734000",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -393,7 +473,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "776600",
+          "agencyId": "763000",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
@@ -411,87 +491,7 @@ Object {
           ],
         },
         Object {
-          "agencyId": "781000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "781300",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "784000",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "784600",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "785100",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "800010",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "99122450879205763__1",
-              "localizationPid": "800010-katalog:99122450879205763__1",
-            },
-            Object {
-              "localIdentifier": "99122160750405763__1",
-              "localizationPid": "800010-katalog:99122160750405763__1",
-            },
-            Object {
-              "localIdentifier": "99122450879205763__1",
-              "localizationPid": "800010-katalog:99122450879205763__1",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "852470",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "93142861",
-              "localizationPid": "852470-katalog:93142861",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "876040",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "911116",
+          "agencyId": "739000",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",

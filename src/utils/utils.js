@@ -630,6 +630,7 @@ export async function resolveLocalizations(args, context) {
     if (branch?.agencyId) {
       if (!realAgenciesMap[branch?.agencyId]) {
         realAgenciesMap[branch?.agencyId] = {
+          agencyName: branch?.agencyName,
           agencyId: branch?.agencyId,
           holdingItems: [],
         };
@@ -642,8 +643,7 @@ export async function resolveLocalizations(args, context) {
       }
     }
   }
-  const agencies = Object.values(realAgenciesMap);
-
+  const agencies = sortBy(Object.values(realAgenciesMap), "agencyName");
   return { count: agencies?.length, agencies };
 }
 
