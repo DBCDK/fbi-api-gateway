@@ -43,6 +43,8 @@ input ComplexSearchFilters {
   issueId: [String!]
 }
 
+
+
 enum SortOrder {
   ASC
   DESC 
@@ -56,6 +58,62 @@ input Sort {
 }
 
 """
+The supported facet fields
+"""
+enum ComplexSearchFacets {  
+  AGES,
+  CATALOGUECODE,
+  CONTRIBUTOR,
+  CONTRIBUTORFUNCTION,
+  CREATOR,
+  CREATORCONTRIBUTOR,
+  CREATORCONTRIBUTORFUNCTION,
+  CREATORFUNCTION,
+  FICTIONALCHARACTER,
+  FILMNATIONALITY,
+  GAMEPLATFORM,
+  GENERALAUDIENCE,
+  GENERALMATERIALTYPE,
+  GENREANDFORM,
+  ISSUE,
+  LANGUAGE,
+  LIBRARYRECOMMENDATION,
+  MAINLANGUAGE,
+  MUSICALENSEMBLEORCAST,
+  PLAYERS,
+  PRIMARYTARGET,
+  SPECIFICMATERIALTYPE,
+  SPOKENLANGUAGE,
+  SUBTITLELANGUAGE,
+  TYPEOFSCORE,
+  SUBJECT,
+}
+
+"""
+The facets to ask for
+"""
+input complexSearchFacets {
+  facetLimit: Int!
+  facets: [ComplexSearchFacets!]!
+}
+
+"""
+A Facet value in response
+"""
+type ComplexSearchFacetValue{
+  key: String!
+  score: Int!
+}
+
+"""
+The complete facet in response
+"""
+type ComplexSearchFacetResponse{
+  name: String
+  values: [ComplexSearchFacetValue!]
+}
+
+"""
 The search response
 """
 type ComplexSearchResponse {
@@ -63,6 +121,11 @@ type ComplexSearchResponse {
   Total number of works found. May be used for pagination.
   """
   hitcount: Int!
+  
+  """
+  Facets for this response
+  """
+  facets: [ComplexSearchFacetResponse!]
 
   """
   The works matching the given search query. Use offset and limit for pagination.
@@ -107,6 +170,8 @@ function setPost(parent, context, args) {
     cql: parent.cql,
     profile: context.profile,
     filters: parent.filters,
+    facets: parent?.facets?.facets,
+    facetLimit: parent?.facets?.facetLimit,
     ...(args && args),
   };
 }
@@ -116,14 +181,22 @@ export const resolvers = {
     async hitcount(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context));
+        .load(setPost(parent, context, args));
       return res?.hitcount || 0;
     },
     async errorMessage(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context));
+        .load(setPost(parent, context, args));
       return res?.errorMessage;
+    },
+
+    async facets(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("complexsearch")
+        .load(setPost(parent, context, args));
+
+      return res?.facets;
     },
     async solrFilter(parent, args, context) {
       const res = await context.datasources
