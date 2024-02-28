@@ -606,9 +606,45 @@ export async function resolveLocalizations(args, context) {
   );
 
   // get localizations from openholdingstatus
-  return await context.datasources.getLoader("localizations").load({
-    pids: pids,
-  });
+  const localizationsRes = await context.datasources
+    .getLoader("localizations")
+    .load({
+      pids: pids,
+    });
+
+  const realAgenciesMap = {};
+  for (let i = 0; i < localizationsRes?.agencies?.length || 0; i++) {
+    const branchId = localizationsRes?.agencies?.[i]?.agencyId;
+    const holdingItems = localizationsRes?.agencies?.[i]?.holdingItems || [];
+
+    // Sometimes, we don't get a branchId, not the real agencyId
+    // We look the real agencyId up here
+    const branch = (
+      await context.datasources.getLoader("library").load({
+        branchId,
+      })
+    ).result[0];
+
+    // Based on the real agencyId, we potentially
+    // merge some branches together (det kongelige)
+    if (branch?.agencyId) {
+      if (!realAgenciesMap[branch?.agencyId]) {
+        realAgenciesMap[branch?.agencyId] = {
+          agencyId: branch?.agencyId,
+          holdingItems: [],
+        };
+      }
+      if (holdingItems) {
+        realAgenciesMap[branch?.agencyId].holdingItems = [
+          ...realAgenciesMap[branch?.agencyId].holdingItems,
+          ...holdingItems,
+        ];
+      }
+    }
+  }
+  const agencies = Object.values(realAgenciesMap);
+
+  return { count: agencies?.length, agencies };
 }
 
 const kglBibBranchIdSet = new Set([
