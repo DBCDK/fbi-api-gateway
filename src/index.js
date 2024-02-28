@@ -34,6 +34,7 @@ import isFastLaneQuery, {
   getFastLane,
 } from "./utils/fastLane";
 import { start as startResourceMonitor } from "./utils/resourceMonitor";
+import hasExternalRequest from "./utils/externalRequest";
 
 startResourceMonitor();
 
@@ -317,12 +318,16 @@ promExporterApp.listen(9599, () => {
     req.queryComplexity = getQueryComplexity({ query, variables, schema });
 
     // Get query complexity category (simple|complex|critical|rejected)
-    const complexityClass = getQueryComplexityClass(req.queryComplexity);
+    req.queryComplexityClass = getQueryComplexityClass(req.queryComplexity);
+
+    req.hasExternalRequest = hasExternalRequest(req?.datasources);
 
     // Set SLA headers
     res.set({
       "dbcdk-clientId": req?.smaug?.app?.clientId,
-      "dbcdk-complexityClass": complexityClass,
+      "dbcdk-complexityClass": req.queryComplexityClass,
+      "dbcdk-traceId": req?.datasources?.stats.uuid,
+      "dbcdk-hasExternalRequest": req?.hasExternalRequest,
     });
 
     // check if the query allows for fast lane

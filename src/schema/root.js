@@ -33,6 +33,7 @@ directive @complexity(
 ) on FIELD_DEFINITION
 
 type Query {
+  debug: Debug
   manifestation(pid: String, faust: String): Manifestation @complexity(value: 3)
   manifestations(faust: [String!], pid: [String!]): [Manifestation]! @complexity(value: 3, multipliers: ["pid", "faust"])
   monitor(name: String!): String!
