@@ -3253,25 +3253,10 @@ input complexSearchFacets {
   facets: [ComplexSearchFacets!]!
 }
 
-\\"\\"\\"A Facet value in response\\"\\"\\"
-type ComplexSearchFacetValue {
-  key: String!
-  score: Int!
-}
-
-\\"\\"\\"The complete facet in response\\"\\"\\"
-type ComplexSearchFacetResponse {
-  name: String
-  values: [ComplexSearchFacetValue!]
-}
-
 \\"\\"\\"The search response\\"\\"\\"
 type ComplexSearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
   hitcount: Int!
-
-  \\"\\"\\"Facets for this response\\"\\"\\"
-  facets: [ComplexSearchFacetResponse!]
 
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
