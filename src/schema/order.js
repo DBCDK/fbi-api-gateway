@@ -7,12 +7,13 @@ import isEmpty from "lodash/isEmpty";
 import { log } from "dbc-node-logger";
 import { placeCopyRequest } from "./elba";
 import { filterAgenciesByProps } from "../utils/accounts";
-import { isPeriodica, resolveBorrowerCheck } from "../utils/utils";
+import { resolveBorrowerCheck } from "../utils/utils";
 import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
 
 import getUserBorrowerStatus, {
   getUserIds,
 } from "../utils/getUserBorrowerStatus";
+import { resolveAccess } from "./draft/draft_utils_manifestations";
 
 const orderStatusmessageMap = {
   OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",
@@ -593,12 +594,37 @@ export const resolvers = {
       const hasDigitalArticleService =
         !!digitalAccessSubscriptions[user.municipalityAgencyId] && !!account;
 
-      const nonPeriodicaOrders = materialsToOrder.filter(
-        (material) => !isPeriodica(material.periodicaForm)
+      // We need to check which orders can be ordered through ELBA
+      const materialsToOrderWithISSN = await Promise.all(
+        materialsToOrder?.map(async (material) => {
+          // If issn is found for the material, it means that the
+          // journal is available through ELBA service
+          const issn = (
+            await resolveAccess(material?.pids?.[0], context)
+          )?.find((entry) => entry?.issn)?.issn;
+
+          // Only if article is specified, ELBA can be used
+          const articleIsSpecified =
+            !material?.periodicaForm ||
+            !!(
+              material?.periodicaForm?.authorOfComponent ||
+              material?.periodicaForm?.titleOfComponent ||
+              material?.periodicaForm?.pagesOfComponent
+            );
+
+          return {
+            ...material,
+            allowDigitalArticle: issn && articleIsSpecified,
+          };
+        })
       );
 
-      const periodicaOrders = materialsToOrder.filter((material) =>
-        isPeriodica(material.periodicaForm)
+      const nonPeriodicaOrders = materialsToOrderWithISSN.filter(
+        (material) => !material?.allowDigitalArticle
+      );
+
+      const periodicaOrders = materialsToOrderWithISSN.filter(
+        (material) => material?.allowDigitalArticle
       );
 
       // Place periodica orders
@@ -613,10 +639,11 @@ export const resolvers = {
 
             const placeCopyArgs = {
               ...material?.periodicaForm,
+              pid: material?.pids?.[0],
               userParameters: args?.input?.userParameters,
-              pickupBranch: branch.agencyId,
+              pickupBranch: user.municipalityAgencyId || branch.agencyId,
               userMail: userMail,
-              agencyId: branch.agencyId,
+              agencyId: user.municipalityAgencyId || branch.agencyId,
             };
             const submitOrderRes = await placeCopyRequest({
               input: placeCopyArgs,
