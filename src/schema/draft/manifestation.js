@@ -449,6 +449,22 @@ type Classification {
   """
   system: String!
 }
+
+type Players{
+  """
+  Number of players interval begin.
+  """
+  begin: Int
+  """
+  Number of players interval end.
+  """
+  end: Int
+  """
+  Display name for the number of players.
+  """
+  display: String
+}
+
 type Audience {
   """
   Appropriate audience for this manifestation
@@ -489,6 +505,11 @@ type Audience {
   Lix number of this manifestion, defines the reability level, Lix stands for læsbarhedsindex
   """
   lix: String
+
+  """
+  Number of players in the game.
+  """
+  players: Players
 }
 
 type Manifestations {
