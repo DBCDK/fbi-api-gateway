@@ -641,7 +641,6 @@ export const resolvers = {
               ...material?.periodicaForm,
               pid: material?.pids?.[0],
               userParameters: args?.input?.userParameters,
-              pickupBranch: user.municipalityAgencyId || branch.agencyId,
               userMail: userMail,
               agencyId: user.municipalityAgencyId || branch.agencyId,
             };
