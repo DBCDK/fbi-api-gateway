@@ -72,3 +72,7 @@ export async function testLoad({ agencyId, userId }, context) {
     country: "DK",
   };
 }
+
+export const options = {
+  external: true,
+};

@@ -119,3 +119,7 @@ export async function testLoad({ userInfoAccounts }, context) {
     },
   ];
 }
+
+export const options = {
+  external: true,
+};

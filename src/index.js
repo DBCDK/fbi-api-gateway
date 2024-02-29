@@ -320,14 +320,14 @@ promExporterApp.listen(9599, () => {
     // Get query complexity category (simple|complex|critical|rejected)
     req.queryComplexityClass = getQueryComplexityClass(req.queryComplexity);
 
-    req.hasExternalRequest = hasExternalRequest(req?.datasources);
+    req.withExternalRequest = hasExternalRequest(req?.datasources);
 
     // Set SLA headers
     res.set({
       "dbcdk-clientId": req?.smaug?.app?.clientId,
       "dbcdk-complexityClass": req.queryComplexityClass,
       "dbcdk-traceId": req?.datasources?.stats.uuid,
-      "dbcdk-hasExternalRequest": req?.hasExternalRequest,
+      "dbcdk-withExternalRequest": req?.withExternalRequest,
     });
 
     // check if the query allows for fast lane

@@ -62,28 +62,23 @@ Press `CTRL+SPACE` to autocomplete inside GraphiQL.
 Another tool that we included is _Voyager_, which gives a bird's-eye view of the
 GraphQL schema. See how different types are connected and zoom in for more details.
 
-## Query complexity
+## Complexity
 
 When making an API request for data, a complexity value will be computed by considering the query fields.
 Certain fields have a higher cost associated with querying them compared to others.
 
-Queries with a complexity value _below 500_ will be classified as simple queries, while those _above 500_ will be considered complex queries.
+Queries with a complexity value _below 500_ will be classified as <span style={{color: "var(--success-dark)"}}>**simple**</span> queries, while
+those _above 500_ will be considered <span style={{color: "var(--warning-dark)"}}>**complex**</span>.
 
-If the complexity value of the query surpasses _1000_, the query will be **rejected**.
+Queries surpassing the _2500_ threshold will be categorized as <span style={{color: "var(--error)"}}>**critical**</span>, indicating a potential decrease in performance.
+Such queries will be treated as slow requests, prompting measures to optimize and enhance system responsiveness.
+
+If the complexity value of the query surpasses _25.000_, the query will be **rejected**.
 
 A visualization of the measured query complexity can be found in the bottom right corner of the graphiql query editor.
 This visualization live updates as the query changes, giving the developer an idea of the query costs.
 
->         <Progress.Circle
->          value={650}
->          limit={1000}
->          speed={250}
->          states={{
->            0: { color: "var(--success-dark)" },
->            50: { color: "var(--warning-dark)" },
->            100: { color: "var(--error)" },
->          }}
->        />
+>         <Complexity.Demo />
 
 The complexity value can be reduced by minimizing the amount of data requested. One approach is to set a lower limit, which can be achieved by implementing pagination/offset functionality.
 
