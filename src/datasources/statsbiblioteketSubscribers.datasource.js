@@ -20,6 +20,7 @@ export async function load(_key, context) {
 }
 
 export const options = {
+  external: true,
   redis: {
     prefix: "statsbiblioteketSubs2",
     ttl: 60 * 60,

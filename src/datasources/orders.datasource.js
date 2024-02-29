@@ -86,3 +86,7 @@ export async function load({ userInfoAccounts }, context) {
   // Flatten the array
   return collectedOrders.flat().filter((order) => !!order);
 }
+
+export const options = {
+  external: true,
+};

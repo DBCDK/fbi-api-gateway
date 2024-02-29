@@ -77,6 +77,7 @@ export async function load({ pids }, context) {
 }
 
 export const options = {
+  external: true,
   redis: {
     prefix,
     ttl: 60 * 15, // cache for 15 minutes

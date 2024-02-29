@@ -93,3 +93,7 @@ export async function testLoad({ userInfoAccounts }, context) {
       agencyId: account.agency,
     }));
 }
+
+export const options = {
+  external: true,
+};

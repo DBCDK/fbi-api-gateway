@@ -60,7 +60,6 @@ export function validateQueryComplexity(params) {
     return queryComplexity(buildQueryComplexity(params));
   } catch (e) {
     // Log error in case complexity cannot be calculated (invalid query, misconfiguration, etc.)
-    console.error("Could not calculate complexity", e.message);
   }
 }
 
@@ -78,7 +77,6 @@ export function getQueryComplexity(params) {
     return getComplexity(buildQueryComplexity(params));
   } catch (e) {
     // Log error in case complexity cannot be calculated (invalid query, misconfiguration, etc.)
-    console.error("Could not calculate complexity", e.message);
   }
 }
 

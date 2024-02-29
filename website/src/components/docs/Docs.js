@@ -17,7 +17,7 @@ import {
 } from "@/components/deprecation";
 
 import Progress from "@/components/base/progress";
-import { ComplexityTable } from "@/components/complexity";
+import Complexity from "@/components/complexity";
 import Header from "@/components/header";
 import Menu from "@/components/menu";
 
@@ -30,7 +30,7 @@ const customComponents = {
   DeprecationTitle,
   Changelog,
   Progress,
-  ComplexityTable,
+  Complexity,
   DescribeEnum,
 };
 

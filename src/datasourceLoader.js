@@ -100,6 +100,8 @@ function setupDataloader(
     loader.clearRedis = (key) => clearRedis(options?.redis?.prefix, key);
   }
 
+  loader.options = options || {};
+
   return {
     loader,
   };

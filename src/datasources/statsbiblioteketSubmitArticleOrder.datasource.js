@@ -118,3 +118,7 @@ export async function load(params, context) {
     status: "ERROR_PID_NOT_RESERVABLE",
   };
 }
+
+export const options = {
+  external: true,
+};

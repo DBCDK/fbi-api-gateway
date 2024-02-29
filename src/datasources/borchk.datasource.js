@@ -121,6 +121,7 @@ export async function testLoad({ libraryCode, userId, userPincode }, context) {
 }
 
 export const options = {
+  external: true,
   redis: {
     prefix: prefix,
     ttl: ttl,
