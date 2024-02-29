@@ -36,7 +36,7 @@ export function ComplexityButton({ value, limit, className }) {
           speed={1}
           states={{
             0: { color: "var(--success-dark)" },
-            50: { color: "var(--warning-dark)" },
+            20: { color: "var(--warning-dark)" },
             100: { color: "var(--error)" },
           }}
         />

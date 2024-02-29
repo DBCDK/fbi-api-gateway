@@ -92,7 +92,7 @@ export default function Circle({
   const errorClass = !!ERR ? styles.err : "";
 
   // Progress degress
-  const deg = (timer / 1000) * 360;
+  const deg = (timer / limit) * 360;
 
   // Custom class
   const color = getStateColor({ timer, limit, states });

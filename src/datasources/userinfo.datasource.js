@@ -120,6 +120,7 @@ export async function testLoad({ accessToken }, context) {
 }
 
 export const options = {
+  external: true,
   redis: {
     prefix,
     staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days

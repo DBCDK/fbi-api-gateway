@@ -1,3 +1,5 @@
 import Table from "./table";
+import Chart from "./chart";
+import Demo from "./demo";
 
-export { Table as ComplexityTable };
+export default { Table, Chart, Demo };

@@ -57,6 +57,7 @@ export async function load({ articleId, userId, agencyId }) {
 }
 
 export const options = {
+  external: true,
   redis: {
     prefix,
     ttl,
