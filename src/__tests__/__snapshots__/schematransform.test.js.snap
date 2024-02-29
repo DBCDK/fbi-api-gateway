@@ -619,6 +619,7 @@ type Mutation {
 
 type Query {
   culr: CulrQuery!
+  debug: Debug
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
@@ -683,6 +684,15 @@ type Query {
   test: Test
   universe(key: String!): Universe
   user: User
+}
+
+type Complexity {
+  value: String!
+  class: String!
+}
+
+type Debug {
+  complexity: Complexity!
 }
 
 type Lamp {
