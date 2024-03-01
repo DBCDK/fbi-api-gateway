@@ -71,6 +71,7 @@ export async function hasCulrDataSync(branchId, context) {
    * Slagelse Gymnasium, biblioteket 872320
    * Greve Gymnasium, Biblioteket 874260
    * Stenhus Gymnasium, 875140
+   * Sct. Knuds Gymnasium, 871890
    */
 
   const whitelist = [
@@ -81,6 +82,7 @@ export async function hasCulrDataSync(branchId, context) {
     "872320",
     "874260",
     "875140",
+    "871890",
 
     // Login with mitId, when no library accounts
     "190101",

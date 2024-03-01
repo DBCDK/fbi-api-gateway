@@ -15,12 +15,29 @@
   margin-top: auto;
 }
 
-.graphiql .complexity .button {
-  cursor: default;
-}
-
 .graphiql .complexity .button p {
   font-style: unset;
+}
+
+.complexityOverlay {
+  background-color: var(--divider);
+}
+
+.complexityOverlay p span {
+  text-transform: capitalize;
+  font-family: var(--font-mono-semibold);
+}
+
+.complexityOverlay .color-simple {
+  color: var(--success-dark);
+}
+
+.complexityOverlay .color-complex {
+  color: var(--warning-dark);
+}
+
+.complexityOverlay .color-critical {
+  color: var(--error);
 }
 
 /*  */

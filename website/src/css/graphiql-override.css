@@ -140,7 +140,7 @@ button.graphiql-tab-add {
 }
 
 .graphiql-dialog {
-  background-color: white;
+  background-color: var(--white);
   border: var(--popover-border);
   border-radius: var(--border-radius-12);
   box-shadow: var(--popover-box-shadow);

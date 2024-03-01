@@ -26,10 +26,19 @@ import Header from "@/components/header";
 
 import styles from "./GraphiQL.module.css";
 
-export function ComplexityButton({ value, limit, className }) {
+export function ComplexityButton({ value, type, limit, className }) {
+  const complexityRef = useRef();
+  const [show, setShow] = useState(false);
+
+  const typeColorClass = type ? styles[`color-${type}`] : "";
+
   return (
-    <span className={`${styles.complexity} ${className}`}>
-      <ToolbarButton className={styles.button} label="Query complexity">
+    <span ref={complexityRef} className={`${styles.complexity} ${className}`}>
+      <ToolbarButton
+        className={styles.button}
+        label="Query complexity"
+        onClick={() => setShow(true)}
+      >
         <Progress.Circle
           value={value}
           limit={limit}
@@ -41,6 +50,21 @@ export function ComplexityButton({ value, limit, className }) {
           }}
         />
       </ToolbarButton>
+      <Overlay
+        show={show}
+        container={complexityRef}
+        placement={"right"}
+        rootClose={true}
+        onHide={() => setShow(false)}
+        className={styles.complexityOverlay}
+      >
+        <div>
+          <Text type="text1">
+            {`Complexity: ${value} `}
+            <span className={typeColorClass}>{type}</span>
+          </Text>
+        </div>
+      </Overlay>
     </span>
   );
 }
@@ -131,7 +155,7 @@ export default function Wrap() {
 
   const parameters = { ...router.query };
 
-  const { complexity, limit } = useComplexity({
+  const { complexity, complexityClass, limit } = useComplexity({
     token: selectedToken?.token,
     ...parameters,
   });
@@ -211,6 +235,7 @@ export default function Wrap() {
             />,
             <ComplexityButton
               value={complexity}
+              type={complexityClass}
               limit={limit}
               key="complexity-btn"
             />,

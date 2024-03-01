@@ -411,7 +411,10 @@ promExporterApp.listen(9599, () => {
       schema,
     });
 
-    res.send({ complexity: queryComplexity });
+    // Get query complexity class (simple|complex|critical|rejected)
+    const complexityClass = getQueryComplexityClass(queryComplexity);
+
+    res.send({ complexity: queryComplexity, complexityClass });
   });
 
   // Proxy to test user login website
