@@ -69,6 +69,7 @@ export default function useComplexity({ token, query, variables }) {
   return (
     {
       complexity: data?.complexity,
+      complexityClass: data?.complexityClass,
       limit: 2500,
       isLoading: !data && !error && isValid,
     } || {}
