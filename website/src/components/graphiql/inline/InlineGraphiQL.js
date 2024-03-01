@@ -241,7 +241,7 @@ export default function Wrap(props) {
   const [query, setQuery] = useState(initialQuery);
   const [variables, setVariables] = useState(initialVariabels);
 
-  const { complexity, limit } = useComplexity({
+  const { complexity, complexityClass, limit } = useComplexity({
     token: selectedToken?.token,
     variables,
     query,
@@ -287,6 +287,7 @@ export default function Wrap(props) {
             <ComplexityButton
               className={styles.complexity}
               value={complexity}
+              type={complexityClass}
               limit={limit}
               key="complexity-btn"
             />,
