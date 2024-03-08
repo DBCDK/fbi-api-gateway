@@ -56,6 +56,7 @@ export const typeDef = `
     city: String
     pickupAllowed: Boolean!
     highlights: [Highlight!]!
+    debug: MinisearchDebug
     infomediaAccess: Boolean!
     digitalCopyAccess: Boolean!
     userStatusUrl: String
@@ -105,6 +106,17 @@ export const typeDef = `
   type Highlight{
     key: String!
     value: String!
+  }
+
+  type MinisearchDebug {
+    score: String
+    terms: [String!]
+    match: [Match!]
+  }
+
+  type Match {
+    term: String
+    fields: [String!]
   }
   `;
 
@@ -157,7 +169,17 @@ export const resolvers = {
         }))
         .filter((highlight) => highlight.value.includes("<mark>"));
     },
+    debug(parent, args, context, info) {
+      if (!parent.score) {
+        return null;
+      }
 
+      return {
+        score: parent.score,
+        terms: parent.terms,
+        match: parent.match,
+      };
+    },
     userStatusUrl(parent, args, context, info) {
       return parent.userStatusUrl || parent.branchWebsiteUrl || "";
     },
@@ -407,6 +429,20 @@ export const resolvers = {
         parent?.result[0]?.branchWebsiteUrl ||
         ""
       );
+    },
+  },
+  MinisearchDebug: {
+    score(parent, args, context, info) {
+      return parent.score;
+    },
+    terms(parent, args, context, info) {
+      return parent.terms;
+    },
+    match(parent, args, context, info) {
+      return Object.entries(parent.match).map(([k, v]) => ({
+        term: k,
+        fields: v,
+      }));
     },
   },
   Highlight: {
