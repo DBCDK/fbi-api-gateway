@@ -42,6 +42,11 @@ type Series {
   title: String!
   
   """
+  Identifier for the series
+  """
+  seriesId: String
+
+  """
   Description of the series
   """
   description: String
@@ -117,12 +122,13 @@ export const resolvers = {
 
     // Use the new serie service v2
     async series(parent, args, context, info) {
+      console.log("\n\n\ninside WORK.series", parent.workId, "\n\n");
       const data = await context.datasources.getLoader("series").load({
         workId: parent.workId,
         profile: context.profile,
       });
-
-      return resolveSeries(data, parent);
+      console.log("series.data", data);
+      return await resolveSeries(data, parent, context);
     },
   },
 
@@ -195,7 +201,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return resolveSeries(data, parent);
+      return await resolveSeries(data, parent, context);
     },
   },
 };

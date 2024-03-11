@@ -42,6 +42,8 @@ type Query {
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
+  series(seriesId: String!): Series
+  universeById(universeId: String!): Universe
 
   localSuggest(
     """
@@ -184,6 +186,16 @@ export const resolvers = {
   Query: {
     async orderStatus(parent, args, context, info) {
       return fetchOrderStatus(args, context);
+    },
+    async series(parent, args, context, info) {
+      return await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: args.seriesId, profile: context.profile });
+    },
+    async universe(parent, args, context, info) {
+      return await context.datasources
+        .getLoader("universeById")
+        .load({ universeId: args.universeId, profile: context.profile });
     },
     async inspiration(parent, args, context, info) {
       return {};

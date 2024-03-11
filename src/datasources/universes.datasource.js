@@ -19,6 +19,7 @@ export async function load({ workId, trackingId = null, profile }, context) {
   // trackingId can be added to the params by adding /${trackingId} to the end
   const params = `${agency}/${name}/${workId}`;
   // series-service returns 404 if workId is not a part of a serie
+  console.log(`URK!!! \n\n\n${url}/${params}\n\n\n\n`);
   const res = (
     await context?.fetch(`${url}/${params}`, { allowedErrorStatusCodes: [404] })
   ).body;

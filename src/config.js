@@ -127,6 +127,13 @@ export default {
       ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.SERIES_PREFIX || "seriesservice-2",
     },
+    seriesService: {
+      url:
+        process.env.SERIES_SERVICE_URL ||
+        "http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/",
+      ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
+      prefix: process.env.SERIES_PREFIX || "seriesservice-2",
+    },
     universe: {
       url:
         process.env.UNIVERSES_URL ||

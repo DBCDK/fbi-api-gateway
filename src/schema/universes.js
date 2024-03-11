@@ -51,7 +51,7 @@ type UniverseContentResult {
 }
 
 extend type Query {
-  universe(key: String!): Universe
+  universe(key: String @deprecated, universeId: String): Universe
 }
 
 `;
@@ -114,7 +114,15 @@ export const resolvers = {
         workId: parent.workId,
         profile: context.profile,
       });
+      console.log("data?.universes", data?.universes);
 
+      const workIdentifiers = await context.datasources
+        .getLoader("seriesIdentify")
+        .load({
+          workId: parent.workId,
+          profile: context.profile,
+        });
+      console.log("workIdentifiers", workIdentifiers);
       return (
         data?.universes?.map((universe, index) => ({
           ...universe,
@@ -190,20 +198,35 @@ export const resolvers = {
   },
   Query: {
     async universe(parent, args, context, info) {
-      // TODO, skip key parsing as soon as we can look up key directly from service
-      const key = Buffer.from(args.key, "base64url").toString("utf8");
-      const [workId, index] = key.split("|");
-
-      const data = await context.datasources.getLoader("universes").load({
-        workId: workId,
-        profile: context.profile,
-      });
-
-      if (!data?.universes?.[index]) {
-        return null;
+      if (args.universeId) {
+        console.log("\n\n\nuniverseById", args.universeId);
+        const universe = await context.datasources
+          .getLoader("universeById")
+          .load({
+            universeId: args.universeId,
+            profile: context.profile,
+          });
+        return universe;
       }
 
-      return { ...data?.universes?.[index], key: args.key };
+      //remove this after deprecation
+      if (args.key) {
+        // TODO, skip key parsing as soon as we can look up key directly from service
+        const key = Buffer.from(args.key, "base64url").toString("utf8");
+        const [workId, index] = key.split("|");
+
+        const data = await context.datasources.getLoader("universes").load({
+          workId: workId,
+          profile: context.profile,
+        });
+
+        if (!data?.universes?.[index]) {
+          return null;
+        }
+
+        return { ...data?.universes?.[index], key: args.key };
+      }
+      return null;
     },
   },
 };

@@ -57,28 +57,39 @@ export function matchYear(str) {
 // resolvers include ReadThisFirst, readThisWhenever og numberInSeries
 
 // we need to export this function to write a unit test
-export function resolveSeries(data, parent) {
+export async function resolveSeries(data, parent, context) {
   const workId = parent?.workId;
-
+  console.log("\n\n\n\n\n\n\n resolveSeries", JSON.stringify(data), "\n\n");
   if (!workId) {
     return [];
   }
 
   return (
-    data?.series?.map((serie) => {
+    data?.series?.map(async (serie, index) => {
+      console.log("\n\n\n\n\nINN SERIES MAPPP\n\n\n\n\n");
       const match = serie.works?.find(
         ({ persistentWorkId }) => persistentWorkId === workId
       );
+      //add series id= ?
+      //find series id
+      const workIdentifiers = await context.datasources
+        .getLoader("seriesIdentify")
+        .load({
+          workId: workId,
+          profile: context.profile,
+        });
+      console.log("\n\n\nworkIdentifiers", workIdentifiers, "\n\n\n");
 
       // Select from specific member and add to series level
       const readThisFirst = match?.readThisFirst || null;
       const readThisWhenever = match?.readThisWhenever || null;
       const numberInSeries = match?.numberInSeries || null;
-
+      const seriesId = workIdentifiers?.series[index]?.id;
       return {
         numberInSeries,
         readThisFirst,
         readThisWhenever,
+        seriesId,
         ...serie,
       };
     }) || []
