@@ -521,7 +521,6 @@ export const resolvers = {
           status: "UNKNOWN_PICKUPAGENCY",
         };
       }
-
       const user = context?.user;
 
       const userParameters = args?.input?.userParameters;
@@ -582,8 +581,8 @@ export const resolvers = {
       }
 
       // Verify that the user has an account at the municiaplityAgencyId (created as loaner)
-      const account = filterAgenciesByProps(user.agencies, {
-        agency: user.municipalityAgencyId,
+      const account = filterAgenciesByProps(user?.agencies, {
+        agency: user?.municipalityAgencyId,
       })?.[0];
 
       // Fetch list of digitalAccess subscribers
@@ -592,7 +591,7 @@ export const resolvers = {
         .load("");
 
       const hasDigitalArticleService =
-        !!digitalAccessSubscriptions[user.municipalityAgencyId] && !!account;
+        !!digitalAccessSubscriptions[user?.municipalityAgencyId] && !!account;
 
       // We need to check which orders can be ordered through ELBA
       const materialsToOrderWithISSN = await Promise.all(
@@ -642,7 +641,7 @@ export const resolvers = {
               pid: material?.pids?.[0],
               userParameters: args?.input?.userParameters,
               userMail: userMail,
-              agencyId: user.municipalityAgencyId || branch.agencyId,
+              agencyId: user?.municipalityAgencyId || branch.agencyId,
             };
             const submitOrderRes = await placeCopyRequest({
               input: placeCopyArgs,
