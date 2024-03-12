@@ -206,7 +206,7 @@ export default {
     idp: {
       url:
         process.env.IDP_URL ||
-        "http://idpservice.iscrum-prod.svc.cloud.dbc.dk/api/v1",
+        "http://idpservice.fbiscrum-prod.svc.cloud.dbc.dk/api/v1",
       prefix: process.env.IDP_PREFIX || "IDP-2",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 10,
     },
