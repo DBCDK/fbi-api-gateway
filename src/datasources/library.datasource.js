@@ -37,6 +37,8 @@ const options = {
     term
       .toLowerCase()
       .replace("næver", "næstved")
+      .replace("kgl.", "kongelige")
+      .replace("kgl", "kongelige")
       .replace(/æ/g, "ae")
       .replace(/ø/g, "oe")
       .replace(/å/g, "aa")
@@ -45,7 +47,16 @@ const options = {
 
 // Default search options
 const searchOptions = {
-  boost: { agencyName: 10000 },
+  boost: {
+    // names
+    name: 75,
+    city: 100,
+    agencyNames: 50, // only field set before, to a value of 1000
+    // numbers
+    postalCode: 100,
+    branchId: 50,
+    agencyId: 25,
+  },
   combineWith: "AND",
   prefix: true,
 };
@@ -140,7 +151,7 @@ export async function search(props, getFunc = doRequest) {
   } = props;
 
   if (!branches || age() > timeToLiveMS) {
-    //if (true) {
+    // if (true) {
     try {
       // Handle race condition
       // Avoid fetching branches at multiple requests at a time
@@ -237,12 +248,12 @@ export async function search(props, getFunc = doRequest) {
     ? orderBy(merged, ["score", "branchId"], ["desc", "asc"])
     : orderBy(merged, ["name"], ["asc"]);
 
+  // Disabled this sort for now - see if login result gets better
   // sort by pickupAllowed AFTER sorting by score/branchId or name
-  merged = [
-    ...merged.filter((branch) => branch.pickupAllowed),
-    ...merged.filter((branch) => !branch.pickupAllowed),
-  ];
-
+  // merged = [
+  //   ...merged.filter((branch) => branch.pickupAllowed),
+  //   ...merged.filter((branch) => !branch.pickupAllowed),
+  // ];
   return {
     hitcount: merged.length,
     result: merged.slice(offset, limit + offset).map((branch) => ({

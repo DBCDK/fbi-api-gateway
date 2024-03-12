@@ -2420,6 +2420,7 @@ type Branch {
   city: String
   pickupAllowed: Boolean!
   highlights: [Highlight!]!
+  debug: MinisearchDebug
   infomediaAccess: Boolean!
   digitalCopyAccess: Boolean!
   userStatusUrl: String
@@ -2463,6 +2464,17 @@ type BorrowerStatus {
 type Highlight {
   key: String!
   value: String!
+}
+
+type MinisearchDebug {
+  score: String
+  terms: [String!]
+  match: [Match!]
+}
+
+type Match {
+  term: String
+  fields: [String!]
 }
 
 enum LinkCheckStatus {
