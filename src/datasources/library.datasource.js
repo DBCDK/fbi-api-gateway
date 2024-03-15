@@ -47,16 +47,17 @@ const options = {
 
 // Default search options
 const searchOptions = {
-  boost: {
-    // names
-    name: 75,
-    city: 100,
-    agencyNames: 50, // only field set before, to a value of 1000
-    // numbers
-    postalCode: 100,
-    branchId: 50,
-    agencyId: 25,
-  },
+  //TODO: fine tune later?
+  // boost: {
+  //   // names
+  //   name: 75,
+  //   city: 100,
+  //   agencyNames: 50, // only field set before, to a value of 1000
+  //   // numbers
+  //   postalCode: 100,
+  //   branchId: 50,
+  //   agencyId: 25,
+  // },
   combineWith: "AND",
   prefix: true,
 };
