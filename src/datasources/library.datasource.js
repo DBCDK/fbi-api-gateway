@@ -47,6 +47,7 @@ const options = {
 
 // Default search options
 const searchOptions = {
+  boost: { agencyName: 10000 },
   //TODO: fine tune later?
   // boost: {
   //   // names
