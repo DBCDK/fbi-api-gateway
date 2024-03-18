@@ -93,7 +93,7 @@ const icons = {
 
 const holidays = {
   // dynamic holidays
-  easter: { start: easter.start, end: easter.end },
+//  easter: { start: easter.start, end: easter.end },
   // static holidays
   halloween: { start: `10-01-${year}`, end: `10-31-${year}` },
   christmas: { start: `12-01-${year}`, end: `12-26-${year}` },
