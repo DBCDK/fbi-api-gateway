@@ -464,6 +464,13 @@ type Players{
   """
   display: String
 }
+type PEGI {
+  """Minimum age to play the game. PEGI rating"""
+  minimumAge: Int
+
+  """Display string for PEGI minimum age"""
+  display: String
+}
 
 type Audience {
   """
@@ -510,6 +517,11 @@ type Audience {
   Number of players in the game.
   """
   players: Players
+
+  """
+  PEGI age rating for games 
+  """
+  PEGI: PEGI
 }
 
 type Manifestations {
@@ -720,6 +732,7 @@ type Manifestation {
   id of the manifestaion unit
   """
   unit : Unit
+  
 }
 
 type Unit {
@@ -788,6 +801,7 @@ type ManifestationTitles {
 export const resolvers = {
   Audience: {
     ages(parent) {
+      console.log("parent", parent);
       return parent?.ages
         ? !Array.isArray(parent?.ages)
           ? [parent.ages]
