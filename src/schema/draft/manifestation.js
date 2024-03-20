@@ -464,11 +464,20 @@ type Players{
   """
   display: String
 }
+
 type PEGI {
   """Minimum age to play the game. PEGI rating"""
   minimumAge: Int
 
   """Display string for PEGI minimum age"""
+  display: String
+}
+
+type MediaCouncilRecommendation {
+  """Minimum age"""
+  minimumAge: Int
+
+  """Display string for minimum age"""
   display: String
 }
 
@@ -522,6 +531,12 @@ type Audience {
   PEGI age rating for games 
   """
   PEGI: PEGI
+
+  """
+  Media council age recommendation
+  """
+  mediaCouncilRecommendation: MediaCouncilRecommendation
+
 }
 
 type Manifestations {
