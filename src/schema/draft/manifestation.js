@@ -816,7 +816,6 @@ type ManifestationTitles {
 export const resolvers = {
   Audience: {
     ages(parent) {
-      console.log("parent", parent);
       return parent?.ages
         ? !Array.isArray(parent?.ages)
           ? [parent.ages]
