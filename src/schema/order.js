@@ -193,6 +193,9 @@ export const typeDef = `
     pickUpBranch: String!,
     key: String,
     exactEdition: Boolean
+    """
+    expires is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
+    """
     expires: String
     userParameters: SubmitOrderUserParameters!
     author: String

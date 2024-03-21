@@ -37,7 +37,7 @@ export function buildParameters({ userId, input, orderSystem }) {
   const params = {
     copy: false,
     exactEdition: input.exactEdition || false,
-    needBeforeDate: createNeedBeforeDate(),
+    needBeforeDate: input.expires || createNeedBeforeDate(),
     orderSystem: orderSystem?.toUpperCase(),
     pickUpAgencyId: input.pickUpBranch,
     author: input.author,
