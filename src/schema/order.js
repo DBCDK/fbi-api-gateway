@@ -193,7 +193,7 @@ export const typeDef = `
     pickUpBranch: String!,
     key: String,
     exactEdition: Boolean
-    expires: String
+    expires: DateTime
     userParameters: SubmitOrderUserParameters!
     author: String
     authorOfComponent: String
