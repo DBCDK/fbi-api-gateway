@@ -21,6 +21,10 @@ function parseResponse(details, agencyId) {
   const responders = details.responderDetailed || [];
   for (const [key, value] of Object.entries(responders)) {
     localholdings.push({
+      branchId: value.responderId
+        ?.toUpperCase()
+        ?.replace("DK", "")
+        .replace("-", ""),
       localHoldingsId: value.holdingsItem?.[0]?.localItemId || "",
       willLend: value.holdingsItem?.[0]?.policy || "",
       expectedDelivery: value.holdingsItem?.[0]?.expectedDelivery || "",
