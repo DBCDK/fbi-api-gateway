@@ -354,7 +354,12 @@ export const resolvers = {
             (identifier) =>
               identifier.localIdentifier === status.localHoldingsId
           )?.localisationPid,
+          expectedDelivery: status.expectedDelivery,
         }));
+
+      const expectedDelivery = mergedAgencyHoldings?.find(
+        (holding) => holding?.expectedDelivery
+      )?.expectedDelivery;
 
       /** START HOLDING ITEMS **/
       let holdingsitems;
@@ -400,6 +405,7 @@ export const resolvers = {
       // replace detailHoldings.holdingstatus with the merged holdings
       return {
         ...detailedHoldings,
+        expectedDelivery,
         holdingstatus: branchHolding,
         agencyHoldings: mergedAgencyHoldings,
       };
