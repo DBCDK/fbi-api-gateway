@@ -3,7 +3,7 @@
  *
  */
 import { orderBy } from "lodash";
-import { resolveBorrowerCheck } from "../utils/utils";
+import { resolveBorrowerCheck, resolveLocalizations } from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
 import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
@@ -311,48 +311,50 @@ export const resolvers = {
      * @return {Promise<{count: string}|*>}
      */
     async holdingStatus(parent, args, context, info) {
-      // get localizations from openholdingstatus
-      const localizations = await context.datasources
-        .getLoader("localizations")
-        .load({
+      // Find localizations
+      const localizations = await resolveLocalizations(
+        {
           pids: args.pids,
-        });
+        },
+        context
+      );
 
-      // find local holdings for this agency - we use Array.find - there is only one
-      // most branches has holdings on agency level
-      const agencyHoldings =
-        localizations.agencies &&
-        localizations.agencies.find((lok) => lok.agencyId === parent.agencyId);
-      // some libraries has their own 'agency' - like universities - so here we search
-      // on branchId
-      const uniHoldings =
-        localizations.agencies &&
-        localizations.agencies.find((lok) => lok.agencyId === parent.branchId);
-      // combine agencyHoldings and uniHoldings
-      const localHoldings = { ...uniHoldings, ...agencyHoldings };
-      const localids =
-        localHoldings &&
-        localHoldings.holdingItems &&
-        localHoldings.holdingItems.map((item) => ({
-          localIdentifier: item.localIdentifier,
-          localisationPid: item.localizationPid,
-          agency: item.agencyId,
-        }));
-      if (!localids) {
-        // there are no localizations - no library has the material - eg. digital
-        // ressource - make an answer for detailedHoldings to handle.
+      // Check if this agency has localization
+      const agencyHoldings = localizations.agencies?.find(
+        (agency) => agency?.agencyId === parent.agencyId
+      );
+
+      // If agency does not have localizations, we return immediately
+      if (!agencyHoldings) {
         return { holdingstatus: [], holdingsitems: null };
       }
 
-      // check - localids are ok ! :)
+      // Find the local identifiers (we need those, for making lookups in local library system)
+      const localIdentifiers = agencyHoldings?.holdingItems?.map((item) => ({
+        localIdentifier: item.localIdentifier,
+        localisationPid: item.localizationPid,
+        agency: item.agencyId,
+      }));
 
-      // get detailed holdings from openholdingsstatus.
+      // get detailed holdings for current agency from openholdingsstatus.
       const detailedHoldings = await context.datasources
         .getLoader("detailedholdings")
         .load({
-          localIds: localids,
+          localIds: localIdentifiers,
           agencyId: parent.agencyId,
         });
+
+      // Filter result to match current branchId
+      const mergedAgencyHoldings = detailedHoldings?.holdingstatus
+        ?.filter((status) => status.branchId === parent.branchId)
+        .map((status) => ({
+          localIdentifier: status.localHoldingsId,
+          agency: status.branchId,
+          localisationPid: localIdentifiers.find(
+            (identifier) =>
+              identifier.localIdentifier === status.localHoldingsId
+          )?.localisationPid,
+        }));
 
       /** START HOLDING ITEMS **/
       let holdingsitems;
@@ -399,7 +401,7 @@ export const resolvers = {
       return {
         ...detailedHoldings,
         holdingstatus: branchHolding,
-        agencyHoldings: localids,
+        agencyHoldings: mergedAgencyHoldings,
       };
     },
   },
