@@ -48,3 +48,22 @@ Works from complexSearch supports:
     limit: 5,
   }}
 />
+
+# Complex Search suggester
+
+Get a list of suggestion by providing a query and the type of suggestion wanted.
+
+<InlineGraphiQL
+	query={`query Example_ComplexSuggester($q: String!, $type: ComplexSuggestionType!) {
+  complexSuggest(q: $q, type: $type) {
+    result {
+      type
+      term
+    }
+  }
+}`}
+	variables={{
+		q: "fisker",
+		type: "creator"
+	}}
+/>
