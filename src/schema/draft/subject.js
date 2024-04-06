@@ -74,6 +74,8 @@ enum SubjectType {
   CORPORATION 
 
   MOOD
+  MOOD_CHILDREN
+
   PERSPECTIVE
   STYLE
   TEMPO
