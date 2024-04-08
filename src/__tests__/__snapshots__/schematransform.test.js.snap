@@ -1384,7 +1384,7 @@ type PEGI {
   display: String
 }
 
-type MediaCouncilRecommendation {
+type MediaCouncilAgeRestriction {
   \\"\\"\\"Minimum age\\"\\"\\"
   minimumAge: Int
 
@@ -1432,7 +1432,7 @@ type Audience {
   PEGI: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
-  mediaCouncilRecommendation: MediaCouncilRecommendation
+  mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
 }
 
 type Manifestations {
@@ -3983,7 +3983,7 @@ type PEGI {
   display: String
 }
 
-type MediaCouncilRecommendation {
+type MediaCouncilAgeRestriction {
   \\"\\"\\"Minimum age\\"\\"\\"
   minimumAge: Int
 
@@ -4031,7 +4031,7 @@ type Audience {
   PEGI: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
-  mediaCouncilRecommendation: MediaCouncilRecommendation
+  mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
 }
 
 type Manifestations {
@@ -5655,7 +5655,7 @@ type PEGI {
   display: String
 }
 
-type MediaCouncilRecommendation {
+type MediaCouncilAgeRestriction {
   \\"\\"\\"Minimum age\\"\\"\\"
   minimumAge: Int
 
@@ -5703,7 +5703,7 @@ type Audience {
   PEGI: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
-  mediaCouncilRecommendation: MediaCouncilRecommendation
+  mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
 }
 
 type Manifestations {
