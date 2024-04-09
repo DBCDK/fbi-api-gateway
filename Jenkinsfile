@@ -6,7 +6,7 @@ def imageLabel=BUILD_NUMBER
 
 pipeline {
     agent {
-        label 'devel11'
+        label 'devel10'
     }
     triggers{
         // @TODO parameters on githubPush .. eg. branch
