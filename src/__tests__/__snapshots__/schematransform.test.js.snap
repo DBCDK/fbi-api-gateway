@@ -746,6 +746,101 @@ type Debug {
   complexity: Complexity!
 }
 
+enum HoldingsStatus {
+  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
+  OnShelf
+
+  \\"\\"\\"Holding is on loan\\"\\"\\"
+  OnLoan
+
+  \\"\\"\\"The material is on the shelf at this branch\\"\\"\\"
+  ON_SHELF
+
+  \\"\\"\\"
+  The material is on the shelf at this branch, but is not for loan (available for in-house use only)
+  \\"\\"\\"
+  ON_SHELF_NOT_FOR_LOAN
+
+  \\"\\"\\"The material is not on the shelf at this branch\\"\\"\\"
+  NOT_ON_SHELF
+
+  \\"\\"\\"The material is not owned by the agency\\"\\"\\"
+  NOT_OWNED
+
+  \\"\\"\\"The material is not found\\"\\"\\"
+  UNKNOWN_MATERIAL
+
+  \\"\\"\\"
+  No status is given by the branch, hence we don't know if the material
+  is on the shelf
+  \\"\\"\\"
+  UNKNOWN_STATUS
+}
+
+type HoldingsItem {
+  department: String
+  location: String
+  subLocation: String
+}
+
+type HoldingsResponse {
+  status: HoldingsStatus!
+
+  \\"\\"\\"
+  Expected return date for the material at agency level
+  
+  Is only set if no branches in agency have the material ON_SHELF
+  \\"\\"\\"
+  expectedAgencyReturnDate: String
+
+  \\"\\"\\"Items on the shelf at the branch (actual copies)\\"\\"\\"
+  items: [HoldingsItem!]
+}
+
+type Branch {
+  holdings(pids: [String]): HoldingsResponse
+
+  \\"\\"\\"Whether this branch's agency supports borrowerCheck\\"\\"\\"
+  borrowerCheck: Boolean!
+  culrDataSync: Boolean!
+  agencyName: String
+  agencyId: String!
+  branchId: String!
+  agencyType: AgencyType!
+  name: String!
+  openingHours: String
+  postalAddress: String
+  postalCode: String
+  userParameters: [UserParameter!]!
+  orderPolicy(pid: String, pids: [String!]!): CheckOrderPolicy
+  city: String
+  pickupAllowed: Boolean!
+  highlights: [Highlight!]!
+  debug: MinisearchDebug
+  infomediaAccess: Boolean!
+  digitalCopyAccess: Boolean!
+  userStatusUrl: String
+  holdingStatus(pids: [String]): DetailedHoldings
+  branchWebsiteUrl: String
+  branchCatalogueUrl: String
+  lookupUrl: String
+
+  \\"\\"\\"branchType is type of library branch. \\"\\"\\"
+  branchType: String!
+
+  \\"\\"\\"Checks if the library temporarilyClosed\\"\\"\\"
+  temporarilyClosed: Boolean!
+
+  \\"\\"\\"If the library is temporarilyClosed, a message might be shown here\\"\\"\\"
+  temporarilyClosedReason: String
+
+  \\"\\"\\"
+  When user is not logged in, this is null
+  Otherwise true or false
+  \\"\\"\\"
+  userIsBlocked: Boolean @deprecated(reason: \\"Use 'BranchResult.borrowerStatus' instead\\")
+}
+
 type Lamp {
   color: String
   message: String
@@ -2425,48 +2520,6 @@ type UserParameter {
   description: String
 }
 
-type Branch {
-  \\"\\"\\"Whether this branch's agency supports borrowerCheck\\"\\"\\"
-  borrowerCheck: Boolean!
-  culrDataSync: Boolean!
-  agencyName: String
-  agencyId: String!
-  branchId: String!
-  agencyType: AgencyType!
-  name: String!
-  openingHours: String
-  postalAddress: String
-  postalCode: String
-  userParameters: [UserParameter!]!
-  orderPolicy(pid: String, pids: [String!]!): CheckOrderPolicy
-  city: String
-  pickupAllowed: Boolean!
-  highlights: [Highlight!]!
-  debug: MinisearchDebug
-  infomediaAccess: Boolean!
-  digitalCopyAccess: Boolean!
-  userStatusUrl: String
-  holdingStatus(pids: [String]): DetailedHoldings
-  branchWebsiteUrl: String
-  branchCatalogueUrl: String
-  lookupUrl: String
-
-  \\"\\"\\"branchType is type of library branch. \\"\\"\\"
-  branchType: String!
-
-  \\"\\"\\"Checks if the library temporarilyClosed\\"\\"\\"
-  temporarilyClosed: Boolean!
-
-  \\"\\"\\"If the library is temporarilyClosed, a message might be shown here\\"\\"\\"
-  temporarilyClosedReason: String
-
-  \\"\\"\\"
-  When user is not logged in, this is null
-  Otherwise true or false
-  \\"\\"\\"
-  userIsBlocked: Boolean @deprecated(reason: \\"Use 'BranchResult.borrowerStatus' instead\\")
-}
-
 type BranchResult {
   hitcount: Int!
   borrowerStatus: BorrowerStatus
@@ -2840,14 +2893,6 @@ input SearchFilters {
   letRange: [String!]
   generalAudience: [String!]
   libraryRecommendation: [String!]
-}
-
-enum HoldingsStatus {
-  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
-  OnShelf
-
-  \\"\\"\\"Holding is on loan\\"\\"\\"
-  OnLoan
 }
 
 \\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
@@ -3396,6 +3441,37 @@ type Query {
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
+}
+
+enum HoldingsStatus {
+  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
+  OnShelf
+
+  \\"\\"\\"Holding is on loan\\"\\"\\"
+  OnLoan
+
+  \\"\\"\\"The material is on the shelf at this branch\\"\\"\\"
+  ON_SHELF
+
+  \\"\\"\\"
+  The material is on the shelf at this branch, but is not for loan (available for in-house use only)
+  \\"\\"\\"
+  ON_SHELF_NOT_FOR_LOAN
+
+  \\"\\"\\"The material is not on the shelf at this branch\\"\\"\\"
+  NOT_ON_SHELF
+
+  \\"\\"\\"The material is not owned by the agency\\"\\"\\"
+  NOT_OWNED
+
+  \\"\\"\\"The material is not found\\"\\"\\"
+  UNKNOWN_MATERIAL
+
+  \\"\\"\\"
+  No status is given by the branch, hence we don't know if the material
+  is on the shelf
+  \\"\\"\\"
+  UNKNOWN_STATUS
 }
 
 enum AccessTypeCode {
@@ -4968,14 +5044,6 @@ input SearchFilters {
   letRange: [String!]
   generalAudience: [String!]
   libraryRecommendation: [String!]
-}
-
-enum HoldingsStatus {
-  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
-  OnShelf
-
-  \\"\\"\\"Holding is on loan\\"\\"\\"
-  OnLoan
 }
 
 \\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
