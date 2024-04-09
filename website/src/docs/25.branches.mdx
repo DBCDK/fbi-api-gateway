@@ -55,3 +55,30 @@ The _**orderPossibleReason**_ responses are the following (below the pickupAgenc
     ],
   }}
 />
+
+## Holdings
+
+Get holdings information for some pids at some branch
+
+<InlineGraphiQL
+  query={`query example_holdings($branchId: String!, $pids: [String!]!) {
+  branches(branchId: $branchId, limit: 1) {
+    result {
+      name
+      holdings(pids: $pids) {
+        status
+        expectedAgencyReturnDate
+        items {
+          department
+          location
+          subLocation
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    branchId: "751000",
+    pids: ["870970-basis:47092183"],
+  }}
+/>

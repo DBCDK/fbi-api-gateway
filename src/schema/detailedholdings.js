@@ -1,7 +1,74 @@
+import {
+  resolveLocalizations,
+  resolveManifestation,
+  resolveWork,
+} from "../utils/utils";
+
 /**
  * Localizations + HoldingsItem type definitions
  */
 export const typeDef = `
+enum HoldingsResponseStatus {
+  """
+  The material is on the shelf at this branch
+  """
+  ON_SHELF
+
+  """
+  The material is on the shelf at this branch, but is not for loan (available for in-house use only)
+  """
+  ON_SHELF_NOT_FOR_LOAN
+
+  """
+  The material is not on the shelf at this branch
+  """
+  NOT_ON_SHELF
+
+  """
+  The material is not owned by the agency
+  """
+  NOT_OWNED
+
+  """
+  The material is not found
+  """
+  UNKNOWN_MATERIAL
+
+  """
+  No status is given by the branch, hence we don't know if the material
+  is on the shelf
+  """
+  UNKNOWN_STATUS
+}
+
+type HoldingsItem {
+  department: String
+  location: String
+  subLocation: String
+}
+
+
+type HoldingsResponse {
+
+  status: HoldingsResponseStatus!
+
+  """
+  Expected return date for the material at agency level
+
+  Is only set if no branches in agency have the material ON_SHELF
+  """
+  expectedAgencyReturnDate: String
+
+  """
+  Items on the shelf at the branch (actual copies)
+  """
+  items: [HoldingsItem!]
+}
+
+extend type Branch {
+  holdings(pids:[String]): HoldingsResponse @complexity(value: 5, multipliers: ["pids"])
+}
+
 type Lamp{
   color:String
   message: String
@@ -35,8 +102,179 @@ type Status{
   status: String
   subLocation: String
 }`;
+function getIsoDate() {
+  return new Date().toISOString().slice(0, 10);
+}
 
+/**
+ * Given a list of pids, this will return all pids in corresponding units,
+ * in a flattened list
+ */
+async function resolveUnits(pids, context) {
+  let unitPids = {};
+  await Promise.all(
+    pids.map(async (pid) => {
+      const work = await resolveWork({ pid }, context);
+      const manifestation = work?.manifestations?.all?.find(
+        (manifestation) => manifestation.pid === pid
+      );
+      const unitId = manifestation?.unitId;
+      const unit = work?.manifestations?.all?.filter(
+        (manifestation) => manifestation.unitId === unitId
+      );
+      unit?.forEach((manifestation) => {
+        unitPids[manifestation.pid] = true;
+      });
+    })
+  );
+  return Object.keys(unitPids);
+}
+
+/**
+ * Find local identifers given agency and pids
+ */
+async function resolveLocalIdentifiers(pids, agencyId, context) {
+  // Find localizations for the pids
+  const localizations = await resolveLocalizations(
+    {
+      pids,
+    },
+    context
+  );
+
+  // Check if this agency has localization
+  const agencyHoldings = localizations.agencies?.find(
+    (agency) => agency?.agencyId === agencyId
+  );
+
+  // Find the local identifiers (we need those, for making lookups in local library system)
+  return agencyHoldings?.holdingItems?.map((item) => ({
+    localIdentifier: item.localIdentifier,
+  }));
+}
 export const resolvers = {
+  Branch: {
+    async holdings(parent, args, context, info) {
+      // Expand pids, we include pids from units
+      const uniquePids = await resolveUnits(args.pids, context);
+
+      // If no pids are found, we return
+      if (!uniquePids?.length) {
+        return { status: "UNKNOWN_MATERIAL" };
+      }
+
+      // Now, we check with vip-core if this branch supports detailedHoldings and holdingsItems
+      const detailedHoldingsAddress = await await context.datasources
+        .getLoader("detailedHoldingsSupported")
+        .load({
+          branchId: parent?.branchId,
+        });
+
+      const supportDetailedHoldings = !!detailedHoldingsAddress;
+
+      // When branch does not support holdings we return status UNKNOWN_STATUS
+      if (!supportDetailedHoldings) {
+        return { status: "UNKNOWN_STATUS" };
+      }
+
+      // We then convert pids to local identifers for the entire agency
+      const localIdentifiers = await resolveLocalIdentifiers(
+        uniquePids,
+        parent.agencyId,
+        context
+      );
+
+      // When no local identifers are found, the agency does not own the material
+      if (!localIdentifiers) {
+        return { status: "NOT_OWNED" };
+      }
+
+      // Date of today, for instance 2024-04-14
+      const today = getIsoDate();
+
+      // Fetch holdings items for entire agency
+      let holdingsItemsForAgency = (
+        await context.datasources.getLoader("holdingsitemsForAgency").load({
+          agencyId: parent.agencyId,
+          pids: uniquePids,
+        })
+      )
+        ?.filter(
+          (item) => item.status === "OnShelf" || item.status === "NotForLoan"
+        )
+        ?.map((item) => ({
+          ...item,
+          expectedDelivery: item.status === "OnShelf" ? today : null,
+        }));
+
+      const holdingsItemsForBranch = holdingsItemsForAgency?.filter(
+        (item) => item?.branchId === parent.branchId
+      );
+
+      // Fetch detailed holdings (this will make a call to a local agency system)
+      const detailedHoldings = (
+        await context.datasources.getLoader("detailedholdings").load({
+          localIds: localIdentifiers,
+          agencyId: parent.agencyId,
+        })
+      )?.holdingstatus;
+
+      // Prefer holdings from holdings items
+      const holdings =
+        holdingsItemsForAgency?.length > 0
+          ? holdingsItemsForAgency
+          : detailedHoldings;
+
+      // Holdings that are on shelf at any branch in agency
+      const onShelfInAgency = holdings?.filter(
+        (holding) => holding?.expectedDelivery === today
+      );
+
+      // Holdings that are on shelf but not for loan at any branch in agency
+      const onShelfNotForLoanInAgency = holdings?.filter(
+        (holding) => !holding?.expectedDelivery
+      );
+
+      // Holdings that are on loan, sorted by the earliest expected delivery first
+      const expectedReturnDateInAgency = detailedHoldings
+        ?.filter((holding) => holding?.expectedDelivery > today)
+        ?.sort((a, b) => b.host.localeCompare(a.host));
+
+      // Check if material is on shelf at current branch
+      if (
+        onShelfInAgency?.find(
+          (holding) => holding?.branchId === parent.branchId
+        )
+      ) {
+        return { status: "ON_SHELF", items: holdingsItemsForBranch };
+      }
+
+      // Check if material is on shelf but not for loan at current branch
+      if (
+        onShelfNotForLoanInAgency?.find(
+          (holding) => holding?.branchId === parent.branchId
+        )
+      ) {
+        return {
+          status: "ON_SHELF_NOT_FOR_LOAN",
+          items: holdingsItemsForBranch,
+        };
+      }
+
+      // We set expectedAgencyReturnDate only if no branch in agency has the material on the shelf
+      const expectedAgencyReturnDate =
+        !onShelfInAgency?.length && !onShelfNotForLoanInAgency?.length
+          ? expectedReturnDateInAgency?.[0]?.expectedDelivery
+          : null;
+
+      return {
+        status: "NOT_ON_SHELF",
+        expectedAgencyReturnDate,
+        items: holdingsItemsForBranch,
+      };
+    },
+  },
+
   DetailedHoldings: {
     holdingItems(parent, args, context, info) {
       return parent.holdingstatus;
