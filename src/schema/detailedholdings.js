@@ -8,7 +8,7 @@ import {
  * Localizations + HoldingsItem type definitions
  */
 export const typeDef = `
-enum HoldingsStatus {
+enum HoldingsResponseStatus {
   """
   The material is on the shelf at this branch
   """
@@ -50,7 +50,7 @@ type HoldingsItem {
 
 type HoldingsResponse {
 
-  status: HoldingsStatus!
+  status: HoldingsResponseStatus!
 
   """
   Expected return date for the material at agency level

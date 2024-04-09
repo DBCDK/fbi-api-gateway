@@ -746,13 +746,7 @@ type Debug {
   complexity: Complexity!
 }
 
-enum HoldingsStatus {
-  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
-  OnShelf
-
-  \\"\\"\\"Holding is on loan\\"\\"\\"
-  OnLoan
-
+enum HoldingsResponseStatus {
   \\"\\"\\"The material is on the shelf at this branch\\"\\"\\"
   ON_SHELF
 
@@ -784,7 +778,7 @@ type HoldingsItem {
 }
 
 type HoldingsResponse {
-  status: HoldingsStatus!
+  status: HoldingsResponseStatus!
 
   \\"\\"\\"
   Expected return date for the material at agency level
@@ -2895,6 +2889,14 @@ input SearchFilters {
   libraryRecommendation: [String!]
 }
 
+enum HoldingsStatus {
+  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
+  OnShelf
+
+  \\"\\"\\"Holding is on loan\\"\\"\\"
+  OnLoan
+}
+
 \\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
 type FacetValue {
   \\"\\"\\"Use the key when applying filters\\"\\"\\"
@@ -3441,37 +3443,6 @@ type Query {
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
-}
-
-enum HoldingsStatus {
-  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
-  OnShelf
-
-  \\"\\"\\"Holding is on loan\\"\\"\\"
-  OnLoan
-
-  \\"\\"\\"The material is on the shelf at this branch\\"\\"\\"
-  ON_SHELF
-
-  \\"\\"\\"
-  The material is on the shelf at this branch, but is not for loan (available for in-house use only)
-  \\"\\"\\"
-  ON_SHELF_NOT_FOR_LOAN
-
-  \\"\\"\\"The material is not on the shelf at this branch\\"\\"\\"
-  NOT_ON_SHELF
-
-  \\"\\"\\"The material is not owned by the agency\\"\\"\\"
-  NOT_OWNED
-
-  \\"\\"\\"The material is not found\\"\\"\\"
-  UNKNOWN_MATERIAL
-
-  \\"\\"\\"
-  No status is given by the branch, hence we don't know if the material
-  is on the shelf
-  \\"\\"\\"
-  UNKNOWN_STATUS
 }
 
 enum AccessTypeCode {
@@ -5044,6 +5015,14 @@ input SearchFilters {
   letRange: [String!]
   generalAudience: [String!]
   libraryRecommendation: [String!]
+}
+
+enum HoldingsStatus {
+  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
+  OnShelf
+
+  \\"\\"\\"Holding is on loan\\"\\"\\"
+  OnLoan
 }
 
 \\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
