@@ -465,6 +465,22 @@ type Players{
   display: String
 }
 
+type PEGI {
+  """Minimum age to play the game. PEGI rating"""
+  minimumAge: Int
+
+  """Display string for PEGI minimum age"""
+  display: String
+}
+
+type MediaCouncilAgeRestriction {
+  """Minimum age"""
+  minimumAge: Int
+
+  """Display string for minimum age"""
+  display: String
+}
+
 type Audience {
   """
   Appropriate audience for this manifestation
@@ -510,6 +526,17 @@ type Audience {
   Number of players in the game.
   """
   players: Players
+
+  """
+  PEGI age rating for games 
+  """
+  PEGI: PEGI
+
+  """
+  Media council age recommendation
+  """
+  mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
+
 }
 
 type Manifestations {
@@ -720,6 +747,7 @@ type Manifestation {
   id of the manifestaion unit
   """
   unit : Unit
+  
 }
 
 type Unit {
