@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url, ttl } = config.datasources.vipcore;
+const { url } = config.datasources.vipcore;
 
 export async function load({ branchId }, context) {
   const res = await context?.fetch(`${url}/service`, {
@@ -14,9 +14,9 @@ export async function load({ branchId }, context) {
   return res?.body?.serverInformation?.address;
 }
 
-// export const options = {
-//   redis: {
-//     prefix: "detailedHoldingsSupprted-1",
-//     ttl: 60 * 15, // cache for 15 minutes
-//   },
-// };
+export const options = {
+  redis: {
+    prefix: "detailedHoldingsSupported-1",
+    ttl: 60 * 15, // cache for 15 minutes
+  },
+};
