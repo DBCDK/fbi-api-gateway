@@ -161,11 +161,20 @@ async function resolveLocalIdentifiers(pids, agencyId, context) {
   const agencyHoldings = localizations.agencies?.find(
     (agency) => agency?.agencyId === agencyId
   );
+  const resMap = {};
+  const agenciesMap = {};
 
   // Find the local identifiers (we need those, for making lookups in local library system)
-  return agencyHoldings?.holdingItems?.map((item) => ({
-    localIdentifier: item.localIdentifier,
-  }));
+  agencyHoldings?.holdingItems?.forEach((item) => {
+    agenciesMap[item.agencyId] = true;
+    resMap[item.localIdentifier] = {
+      localIdentifier: item.localIdentifier,
+    };
+  });
+  return {
+    localIdentifiers: Object.values(resMap),
+    agencies: Object.keys(agenciesMap),
+  };
 }
 export const resolvers = {
   Branch: {
@@ -194,7 +203,7 @@ export const resolvers = {
       }
 
       // We then convert pids to local identifers for the entire agency
-      const localIdentifiers = await resolveLocalIdentifiers(
+      const { localIdentifiers, agencies } = await resolveLocalIdentifiers(
         uniquePids,
         parent.agencyId,
         context
@@ -227,11 +236,14 @@ export const resolvers = {
         (item) => item?.branchId === parent.branchId
       );
 
+      const agencyIdForDetailedHoldings = agencies.includes(parent.branchId)
+        ? parent.branchId
+        : agencies[0];
       // Fetch detailed holdings (this will make a call to a local agency system)
       const detailedHoldings = (
         await context.datasources.getLoader("detailedholdings").load({
           localIds: localIdentifiers,
-          agencyId: branchIsIndependent ? parent.branchId : parent.agencyId,
+          agencyId: agencyIdForDetailedHoldings,
         })
       )?.holdingstatus;
 
