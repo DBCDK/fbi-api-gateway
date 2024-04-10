@@ -246,6 +246,7 @@ export const resolvers = {
           ? parent.branchId
           : localIdentifiers?.[0]?.agencyId;
 
+      const allLocalIdentifiers = Object.values(uniqueLocalIdentifiers);
       const localIds =
         agencyLocalizations?.length > 0
           ? agencyLocalizations
@@ -254,10 +255,14 @@ export const resolvers = {
       // Fetch detailed holdings (this will make a call to a local agency system)
       const detailedHoldings = (
         await context.datasources.getLoader("detailedholdings").load({
-          localIds,
+          localIds: allLocalIdentifiers,
           agencyId: agencyIdForDetailedHoldings,
         })
       )?.holdingstatus;
+
+      const detailedHoldingsForBranch = detailedHoldings?.filter(
+        (holding) => holding
+      );
 
       // Prefer holdings from holdings items
       const holdings =
@@ -288,7 +293,11 @@ export const resolvers = {
       // Check if material is on shelf at current branch
       if (
         onShelfInAgency?.find(
-          (holding) => holding?.branchId === parent.branchId
+          (holding) =>
+            holding?.branchId === parent.branchId &&
+            localIds?.find(
+              (id) => id.localIdentifier === holding?.localHoldingsId
+            )
         )
       ) {
         return { status: "ON_SHELF", items: holdingsItemsForBranch };
@@ -297,7 +306,11 @@ export const resolvers = {
       // Check if material is on shelf but not for loan at current branch
       if (
         onShelfNotForLoanInAgency?.find(
-          (holding) => holding?.branchId === parent.branchId
+          (holding) =>
+            holding?.branchId === parent.branchId &&
+            localIds?.find(
+              (id) => id.localIdentifier === holding?.localHoldingsId
+            )
         )
       ) {
         return {
