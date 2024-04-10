@@ -161,20 +161,16 @@ async function resolveLocalIdentifiers(pids, agencyId, context) {
   const agencyHoldings = localizations.agencies?.find(
     (agency) => agency?.agencyId === agencyId
   );
-  const resMap = {};
-  const agenciesMap = {};
-
+  const unique = {};
   // Find the local identifiers (we need those, for making lookups in local library system)
   agencyHoldings?.holdingItems?.forEach((item) => {
-    agenciesMap[item.agencyId] = true;
-    resMap[item.localIdentifier] = {
+    unique[`${item.agencyId}-${item.localIdentifier}`] = {
       localIdentifier: item.localIdentifier,
+      agencyId: item.agencyId,
     };
   });
-  return {
-    localIdentifiers: Object.values(resMap),
-    agencies: Object.keys(agenciesMap),
-  };
+
+  return Object.values(unique);
 }
 export const resolvers = {
   Branch: {
@@ -203,10 +199,15 @@ export const resolvers = {
       }
 
       // We then convert pids to local identifers for the entire agency
-      const { localIdentifiers, agencies } = await resolveLocalIdentifiers(
+      const localIdentifiers = await resolveLocalIdentifiers(
         uniquePids,
         parent.agencyId,
         context
+      );
+      const uniqueLocalIdentifiers = {};
+      localIdentifiers?.forEach(
+        (identifier) =>
+          (uniqueLocalIdentifiers[identifier.localIdentifier] = identifier)
       );
 
       // When no local identifers are found, the agency does not own the material
@@ -236,13 +237,24 @@ export const resolvers = {
         (item) => item?.branchId === parent.branchId
       );
 
-      const agencyIdForDetailedHoldings = agencies.includes(parent.branchId)
-        ? parent.branchId
-        : agencies[0];
+      const agencyLocalizations = localIdentifiers?.filter(
+        (holding) => parent.branchId === holding.agencyId
+      );
+
+      const agencyIdForDetailedHoldings =
+        agencyLocalizations?.length > 0
+          ? parent.branchId
+          : localIdentifiers?.[0]?.agencyId;
+
+      const localIds =
+        agencyLocalizations?.length > 0
+          ? agencyLocalizations
+          : Object.values(uniqueLocalIdentifiers);
+
       // Fetch detailed holdings (this will make a call to a local agency system)
       const detailedHoldings = (
         await context.datasources.getLoader("detailedholdings").load({
-          localIds: localIdentifiers,
+          localIds,
           agencyId: agencyIdForDetailedHoldings,
         })
       )?.holdingstatus;
