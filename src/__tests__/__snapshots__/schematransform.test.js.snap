@@ -787,6 +787,13 @@ type HoldingsResponse {
   \\"\\"\\"
   expectedAgencyReturnDate: String
 
+  \\"\\"\\"
+  Expected return date for the material at branch level
+  
+  Is only set if the branch is behaving like an independent agency (KB's branches)
+  \\"\\"\\"
+  expectedBranchReturnDate: String
+
   \\"\\"\\"Items on the shelf at the branch (actual copies)\\"\\"\\"
   items: [HoldingsItem!]
 }
