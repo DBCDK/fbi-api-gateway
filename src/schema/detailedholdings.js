@@ -161,6 +161,7 @@ async function resolveLocalIdentifiers(pids, agencyId, context) {
   const agencyHoldings = localizations.agencies?.find(
     (agency) => agency?.agencyId === agencyId
   );
+
   const unique = {};
   // Find the local identifiers (we need those, for making lookups in local library system)
   agencyHoldings?.holdingItems?.forEach((item) => {
@@ -169,7 +170,6 @@ async function resolveLocalIdentifiers(pids, agencyId, context) {
       agencyId: item.agencyId,
     };
   });
-
   return Object.values(unique);
 }
 export const resolvers = {
@@ -211,7 +211,7 @@ export const resolvers = {
       );
 
       // When no local identifers are found, the agency does not own the material
-      if (!localIdentifiers) {
+      if (!localIdentifiers?.length) {
         return { status: "NOT_OWNED" };
       }
 
@@ -260,10 +260,6 @@ export const resolvers = {
         })
       )?.holdingstatus;
 
-      const detailedHoldingsForBranch = detailedHoldings?.filter(
-        (holding) => holding
-      );
-
       // Prefer holdings from holdings items
       const holdings =
         holdingsItemsForAgency?.length > 0
@@ -284,35 +280,37 @@ export const resolvers = {
       const expectedReturnDateInAgency = detailedHoldings?.filter(
         (holding) => holding?.expectedDelivery > today
       );
-      expectedReturnDateInAgency?.sort((a, b) => b.host.localeCompare(a.host));
+
+      expectedReturnDateInAgency?.sort((a, b) =>
+        a.expectedDelivery.localeCompare(b.expectedDelivery)
+      );
 
       const expectedReturnDateInBranch = expectedReturnDateInAgency?.filter(
         (holding) => holding?.branchId === parent.branchId
       );
 
+      function checkHolding(holding) {
+        if (holding?.branchId !== parent.branchId) {
+          return false;
+        }
+        if (
+          !holdingsItemsForAgency?.length &&
+          !localIds?.find(
+            (id) => id.localIdentifier === holding?.localHoldingsId
+          )
+        ) {
+          return false;
+        }
+        return true;
+      }
+
       // Check if material is on shelf at current branch
-      if (
-        onShelfInAgency?.find(
-          (holding) =>
-            holding?.branchId === parent.branchId &&
-            localIds?.find(
-              (id) => id.localIdentifier === holding?.localHoldingsId
-            )
-        )
-      ) {
+      if (onShelfInAgency?.find(checkHolding)) {
         return { status: "ON_SHELF", items: holdingsItemsForBranch };
       }
 
       // Check if material is on shelf but not for loan at current branch
-      if (
-        onShelfNotForLoanInAgency?.find(
-          (holding) =>
-            holding?.branchId === parent.branchId &&
-            localIds?.find(
-              (id) => id.localIdentifier === holding?.localHoldingsId
-            )
-        )
-      ) {
+      if (onShelfNotForLoanInAgency?.find(checkHolding)) {
         return {
           status: "ON_SHELF_NOT_FOR_LOAN",
           items: holdingsItemsForBranch,
@@ -326,9 +324,9 @@ export const resolvers = {
           : null;
 
       // We set expectedBranchReturnDate only if this is a special independent branch (KB's)
-      const expectedBranchReturnDate =
-        branchIsIndependent &&
-        expectedReturnDateInBranch?.[0]?.expectedDelivery;
+      const expectedBranchReturnDate = branchIsIndependent
+        ? expectedReturnDateInBranch?.[0]?.expectedDelivery
+        : null;
 
       // For independent branches, the material may be NOT_ON_SHELF or NOT_OWNED
       // But for normal branches, the state can only be NOT_ON_SHELF at this point
