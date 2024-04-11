@@ -679,6 +679,8 @@ type Query {
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService!
+  moodSearch(q: String!, offset: Int, limit: Int): MoodSearchResponse!
+  moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
@@ -2050,6 +2052,15 @@ type ComplexSuggestResponse {
 
 type SuggestResponse {
   result: [Suggestion!]!
+
+  \\"\\"\\"Suggestion\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"The type of suggestion title/creator/tag\\"\\"\\"
+  type: MoodSuggest!
+
+  \\"\\"\\"A work associated with the suggestion\\"\\"\\"
+  work: Work
 }
 
 type localSuggestResponse {
@@ -2526,6 +2537,24 @@ enum AvailabilityEnum {
   NOW
   LATER
   UNKNOWN
+}
+
+enum MoodSuggest {
+  title
+  creator
+  tag
+}
+
+type MoodSuggestResponse {
+  \\"\\"\\"Response is an array of moodSuggestResponse\\"\\"\\"
+  response: [SuggestResponse!]!
+}
+
+type MoodSearchResponse {
+  \\"\\"\\"
+  The works matching the given search query. Use offset and limit for pagination.
+  \\"\\"\\"
+  works(offset: Int!, limit: PaginationLimit!): [Work!]!
 }
 
 enum SubmitOrderStatus {
@@ -4598,6 +4627,15 @@ type Suggestion {
 
 type SuggestResponse {
   result: [Suggestion!]!
+
+  \\"\\"\\"Suggestion\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"The type of suggestion title/creator/tag\\"\\"\\"
+  type: MoodSuggest!
+
+  \\"\\"\\"A work associated with the suggestion\\"\\"\\"
+  work: Work
 }
 
 type localSuggestResponse {
@@ -4825,6 +4863,12 @@ type LinkCheckResponse {
 
 type LinkCheckService {
   checks(urls: [String!]): [LinkCheckResponse!]!
+}
+
+enum MoodSuggest {
+  title
+  creator
+  tag
 }
 
 input PeriodicaArticleOrder {
