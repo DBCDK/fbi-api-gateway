@@ -1,17 +1,15 @@
 /**
-@file moodmatch.js
-	Datasource for appeal data - that is words describing a mood for a work - eg. scary, funny etc. Service
-	returns workIds
+@file moodmatchsuggest.datasource.js
+	Datasource for suggestions appeal data - that is words describing a mood for a work - eg. scary, funny etc. Service
+	returns terms suggested .. and a work if there is one
 
 the query can contain:
 
 q: Query parameter
-field: The field to search in. Options are title, creator, moodtags and all. Default is all
-offset: search result to start from, useful for pagination
 limit: number of search result to return
 agency: the agency id of the requesting library
 profile: the vip profile used by the requesting library
-debug: if true debug information is present in response. Otherwise, only persistent work ids are returned.
+
  **/
 
 import config from "../../config";

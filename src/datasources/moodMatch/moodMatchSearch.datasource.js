@@ -1,5 +1,5 @@
 /**
-@file moodmatch.js
+@file moodmatchsearch.datasource.js
 	Datasource for appeal data - that is words describing a mood for a work - eg. scary, funny etc. Service
 	returns workIds
 

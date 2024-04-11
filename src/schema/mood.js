@@ -1,3 +1,7 @@
+/**
+ * @file mood.js
+ * type definitions for appeal data
+ */
 import { resolveManifestation, resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 
