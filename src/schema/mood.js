@@ -1,21 +1,14 @@
 import { resolveManifestation, resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 
-export const typeDef = `
-  enum MoodFieldType {
-      TITLE
-      CREATOR
-      MOODTAGS
-      ALL
+export const typeDef = ` 
+   enum MoodSuggest {
+      title
+      creator
+      tag
    }
    
-   enum MoodSuggestType {
-      TITLE
-      CREATOR
-      TAG
-   }
-   
-   type MoodSuggestResponseType {
+   type SuggestResponse {
     """
     Suggestion
     """
@@ -23,33 +16,25 @@ export const typeDef = `
     """
     The type of suggestion title/creator/tag
     """
-    type: MoodSuggestType!
+    type: MoodSuggest!
     """
     A work associated with the suggestion
     """
     work: Work
-    """
-    Score of suggestion
-    """
-    weight: Int!
-    """
-    The type of solr suggestion infix/blended_infix/fuzzy 
-    """
-    suggest_type: String! 
    }
+   
+   type MoodSuggestResponse {
+    """
+    Response is an array of moodSuggestResponse
+    """
+    response: [SuggestResponse!]!
+  }
    
    type MoodSearchResponse {
     """
     The works matching the given search query. Use offset and limit for pagination.
     """
     works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
-  }
-  
-  type MoodSuggestResponse {
-    """
-    Response is an array of MoodSuggestResponseType
-    """
-    response: [MoodSuggestResponseType!]!
   }
   `;
 
@@ -74,7 +59,7 @@ export const resolvers = {
       return expanded;
     },
   },
-  MoodSuggestResponseType: {
+  SuggestResponse: {
     work(parent, args, context, info) {
       return resolveWork({ id: parent.work }, context);
     },
