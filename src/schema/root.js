@@ -42,6 +42,7 @@ type Query {
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
+  moodSearch(q:String!, field: MoodFieldType, offset: Int, limit: Int, debug: Boolean): MoodSearchResponse!
 
   localSuggest(
     """
@@ -194,6 +195,16 @@ export const resolvers = {
         .load({ q: args.q, limit: args.limit });
       return related.response;
     },
+    async moodSearch(parent, args, context, info) {
+      const response = await context.datasources
+        .getLoader("moodMatchSearch")
+        .load({
+          ...args,
+          ...{ agency: context.profile.agency, profile: context.profile.name },
+        });
+      return response;
+    },
+
     async ris(parent, args, context, info) {
       const ris = await context.datasources.getLoader("ris").load({
         pids: args.pids,
