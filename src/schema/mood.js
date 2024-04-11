@@ -12,7 +12,7 @@ export const typeDef = `
       tag
    }
    
-   type SuggestResponse {
+   type moodSuggestResponse {
     """
     Suggestion
     """
@@ -31,7 +31,7 @@ export const typeDef = `
     """
     Response is an array of moodSuggestResponse
     """
-    response: [SuggestResponse!]!
+    response: [moodSuggestResponse!]!
   }
    
    type MoodSearchResponse {
@@ -63,7 +63,7 @@ export const resolvers = {
       return expanded;
     },
   },
-  SuggestResponse: {
+  moodSuggestResponse: {
     work(parent, args, context, info) {
       return resolveWork({ id: parent.work }, context);
     },

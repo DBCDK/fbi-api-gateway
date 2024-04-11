@@ -1,0 +1,47 @@
+# Appeal data
+
+Appeal data describes the mood of a work. You can search, get suggestions and reccomendations based on moods.
+
+## Search with mood data
+
+The following example do a search based on appeal data.
+
+<InlineGraphiQL
+  query={`query Example_moodmatch($q: String!, $limit: PaginationLimit!, $offset: Int!) {
+  moodSearch(q: $q) {
+    works(offset: $offset, limit: $limit) {
+      workId
+      titles {
+        main
+      }
+    }
+  }
+}`}
+  variables={{
+		"q": "uhyggelig",
+		"limit": 10,
+		"offset": 0
+	}}
+/>
+
+## Suggestions with mood data
+
+This example get suggestions based on appeal data.
+
+<InlineGraphiQL
+	query={`query Example_moodSuggest($q: String!) {
+  moodSuggest(q: $q) {
+    response {
+      term
+      work {
+        workId
+      }
+      type
+    }
+  }
+}`}
+	variables={{
+		"q": "spændende"
+	}}
+/>
+
