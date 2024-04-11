@@ -31,14 +31,17 @@ function setQuery(params) {
   };
 }
 
-export async function load(
-  { q, field, offset, limit, agency, profile, debug = false },
-  context
-) {
-  const query = setQuery(
-    { q, field, offset, limit, agency, profile, debug },
-    context
-  );
+export async function load({
+  q,
+  field,
+  offset,
+  limit,
+  agency,
+  profile,
+  debug = false,
+  context,
+}) {
+  const query = setQuery({ q, field, offset, limit, agency, profile, debug });
 
   const res = await context.fetch(`${url}search?${new URLSearchParams(query)}`);
   const body = res.body;
