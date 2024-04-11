@@ -2052,15 +2052,6 @@ type ComplexSuggestResponse {
 
 type SuggestResponse {
   result: [Suggestion!]!
-
-  \\"\\"\\"Suggestion\\"\\"\\"
-  term: String!
-
-  \\"\\"\\"The type of suggestion title/creator/tag\\"\\"\\"
-  type: MoodSuggest!
-
-  \\"\\"\\"A work associated with the suggestion\\"\\"\\"
-  work: Work
 }
 
 type localSuggestResponse {
@@ -2545,9 +2536,20 @@ enum MoodSuggest {
   tag
 }
 
+type moodSuggestResponse {
+  \\"\\"\\"Suggestion\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"The type of suggestion title/creator/tag\\"\\"\\"
+  type: MoodSuggest!
+
+  \\"\\"\\"A work associated with the suggestion\\"\\"\\"
+  work: Work
+}
+
 type MoodSuggestResponse {
   \\"\\"\\"Response is an array of moodSuggestResponse\\"\\"\\"
-  response: [SuggestResponse!]!
+  response: [moodSuggestResponse!]!
 }
 
 type MoodSearchResponse {
@@ -4627,15 +4629,6 @@ type Suggestion {
 
 type SuggestResponse {
   result: [Suggestion!]!
-
-  \\"\\"\\"Suggestion\\"\\"\\"
-  term: String!
-
-  \\"\\"\\"The type of suggestion title/creator/tag\\"\\"\\"
-  type: MoodSuggest!
-
-  \\"\\"\\"A work associated with the suggestion\\"\\"\\"
-  work: Work
 }
 
 type localSuggestResponse {
@@ -4863,12 +4856,6 @@ type LinkCheckResponse {
 
 type LinkCheckService {
   checks(urls: [String!]): [LinkCheckResponse!]!
-}
-
-enum MoodSuggest {
-  title
-  creator
-  tag
 }
 
 input PeriodicaArticleOrder {
