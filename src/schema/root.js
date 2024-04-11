@@ -197,7 +197,6 @@ export const resolvers = {
       return related.response;
     },
     async moodSearch(parent, args, context, info) {
-      console.log(args, "ARGS");
       return {
         ...args,
         ...{ agency: context.profile.agency, profile: context.profile.name },
