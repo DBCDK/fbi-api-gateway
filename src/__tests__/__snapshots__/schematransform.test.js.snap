@@ -682,6 +682,7 @@ type Query {
   moodSearch(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
   moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
   moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], has_cover: Boolean): [MoodTagRecommendResponse]!
+  moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, max_author_recommendations: Int, threshold: Float, has_cover: Boolean): [MoodTagRecommendResponse]!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
