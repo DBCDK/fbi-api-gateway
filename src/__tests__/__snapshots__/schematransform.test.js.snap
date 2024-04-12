@@ -679,8 +679,9 @@ type Query {
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService!
-  moodSearch(q: String!, offset: Int, limit: Int): MoodSearchResponse!
+  moodSearch(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
   moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
+  moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], has_cover: Boolean): [MoodTagRecommendResponse]!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
@@ -2607,12 +2608,14 @@ enum AvailabilityEnum {
   UNKNOWN
 }
 
+\\"\\"\\"Type of moodSuggest response\\"\\"\\"
 enum MoodSuggest {
   title
   creator
   tag
 }
 
+\\"\\"\\"Response type for moodSuggest\\"\\"\\"
 type moodSuggestResponse {
   \\"\\"\\"Suggestion\\"\\"\\"
   term: String!
@@ -2624,11 +2627,27 @@ type moodSuggestResponse {
   work: Work
 }
 
+\\"\\"\\"Response type for moodTagRecommend\\"\\"\\"
+type MoodTagRecommendResponse {
+  work: Work!
+  similarity: Float
+}
+
+\\"\\"\\"The response type for moodSuggest\\"\\"\\"
 type MoodSuggestResponse {
   \\"\\"\\"Response is an array of moodSuggestResponse\\"\\"\\"
   response: [moodSuggestResponse!]!
 }
 
+\\"\\"\\"Supported fields for moodsearch request\\"\\"\\"
+enum MoodSearchFieldValues {
+  ALL
+  TITLE
+  CREATOR
+  MOODTAGS
+}
+
+\\"\\"\\"The response from moodsearch\\"\\"\\"
 type MoodSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
