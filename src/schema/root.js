@@ -42,8 +42,9 @@ type Query {
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
-  moodSearch(q:String!, offset: Int, limit: Int): MoodSearchResponse!
+  moodSearch(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
   moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
+  moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], has_cover:Boolean): [MoodTagRecommendResponse]!
 
   localSuggest(
     """
@@ -205,6 +206,15 @@ export const resolvers = {
     async moodSuggest(parent, args, context, info) {
       const response = await context.datasources
         .getLoader("moodMatchSuggest")
+        .load({
+          ...args,
+          ...{ agency: context.profile.agency, profile: context.profile.name },
+        });
+      return response;
+    },
+    async moodTagRecommend(parent, args, context, info) {
+      const response = await context.datasources
+        .getLoader("moodTagRecommend")
         .load({
           ...args,
           ...{ agency: context.profile.agency, profile: context.profile.name },

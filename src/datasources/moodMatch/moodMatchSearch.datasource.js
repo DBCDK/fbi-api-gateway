@@ -19,8 +19,8 @@ import { all } from "express/lib/application";
 
 const { url, prefix, ttl, token } = config.datasources.moodmatch;
 
-function setQuery(params) {
-  const { q, field, offset, limit, agency, profile, debug } = params;
+function setQuery(args) {
+  const { q, field, offset, limit, agency, profile, debug } = args;
   return {
     q: q,
     ...(field && { field: field.toLowerCase() }),
@@ -32,11 +32,8 @@ function setQuery(params) {
   };
 }
 
-export async function load(
-  { q, field, offset = 0, limit, agency, profile, debug = false },
-  context
-) {
-  const query = setQuery({ q, field, offset, limit, agency, profile, debug });
+export async function load(args, context) {
+  const query = setQuery(args);
 
   const res = await context.fetch(`${url}search?${new URLSearchParams(query)}`);
   const body = res.body;

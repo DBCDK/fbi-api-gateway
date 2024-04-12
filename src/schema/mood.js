@@ -6,12 +6,18 @@ import { resolveManifestation, resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 
 export const typeDef = ` 
+  """
+  Type of moodSuggest response
+  """
    enum MoodSuggest {
       title
       creator
       tag
    }
    
+   """
+   Response type for moodSuggest
+   """
    type moodSuggestResponse {
     """
     Suggestion
@@ -27,13 +33,37 @@ export const typeDef = `
     work: Work
    }
    
+   """
+   Response type for moodTagRecommend
+   """
+   type MoodTagRecommendResponse {
+    work: Work!
+    similarity: Float
+   }
+   
+   """
+   The response type for moodSuggest
+   """
    type MoodSuggestResponse {
     """
     Response is an array of moodSuggestResponse
     """
     response: [moodSuggestResponse!]!
   }
+  
+  """
+  Supported fields for moodsearch request
+  """
+   enum MoodSearchFieldValues {
+    ALL
+    TITLE
+    CREATOR
+    MOODTAGS
+   }
    
+   """
+   The response from moodsearch
+   """
    type MoodSearchResponse {
     """
     The works matching the given search query. Use offset and limit for pagination.
@@ -66,6 +96,11 @@ export const resolvers = {
   moodSuggestResponse: {
     work(parent, args, context, info) {
       return resolveWork({ id: parent.work }, context);
+    },
+  },
+  MoodTagRecommendResponse: {
+    work(parent, args, context, info) {
+      return resolveWork({ id: parent.workid }, context);
     },
   },
 };

@@ -1,0 +1,78 @@
+# Mood Data
+
+For a smaller collection of mainly Danish Literature we have added mood data to describes the works.
+This includes tags to describe the feeling you get from reading the book, or the pace of the narrative or the perspective from which the story is told.
+You can search, get suggestions and recommendations based on this mood data collection.
+
+## Search with mood data
+
+The following example do a search based on mood data.
+
+<InlineGraphiQL
+  query={`query Example_moodmatch($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
+  moodSearch(q: $q, field: $field) {
+    works(offset: $offset, limit: $limit) {
+      workId
+      titles {
+        main
+      }
+    }
+  }
+}`}
+  variables={{
+		"q": "uhyggelig",
+		"limit": 10,
+		"offset": 0,
+		"field": "TITLE"
+	}}
+/>
+
+## Suggestions with mood data
+
+This example get suggestions based on mood data.
+
+<InlineGraphiQL
+	query={`query Example_moodSuggest($q: String!) {
+  moodSuggest(q: $q) {
+    response {
+      term
+      work {
+        workId
+      }
+      type
+    }
+  }
+}`}
+	variables={{
+		"q": "spændende"
+	}}
+/>
+
+## Recommendations mood data
+
+Recommender tags based on mood data. Input are mood data (tags).
+
+<InlineGraphiQL
+	query={`query Example_moodTagsRecommend($tags: [String!]!, $minus: [String!], $plus: [String!]) {
+  moodTagRecommend(tags: $tags, minus: $minus, plus: $plus) {
+    work {
+      workId
+    }
+    similarity
+  }
+}`}
+	variables={{
+		"tags": [
+			"spændende",
+			"uhyggelig",
+			"sjov"
+		],
+		"minus": [
+			"spændende"
+		],
+		"plus": [
+			"komisk"
+		]
+	}}
+/>
+

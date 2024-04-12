@@ -186,6 +186,14 @@ export default {
       token: process.env.MOODMATCH_TOKEN,
       ttl: process.env.MOODMATCH_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
     },
+    moodrecommend: {
+      url:
+        process.env.MOODRECOMMEND_URL ||
+        "http://mood-match-recommender-1-0.mi-prod.svc.cloud.dbc.dk/",
+      prefix: process.env.MOODRECOMMEND_PREFIX || "moodrecommend-1",
+      token: process.env.MOODRECOMMEND_TOKEN,
+      ttl: process.env.MOODRECOMMEND_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+    },
     facets: {
       url:
         process.env.FACETS_URL ||
