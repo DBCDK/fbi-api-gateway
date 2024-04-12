@@ -48,7 +48,7 @@ This example get suggestions based on mood data.
 	}}
 />
 
-## Recommendations mood data
+## Tags Recommendations mood data
 
 Recommender tags based on mood data. Input are mood data (tags).
 
@@ -73,6 +73,36 @@ Recommender tags based on mood data. Input are mood data (tags).
 		"plus": [
 			"komisk"
 		]
+	}}
+/>
+
+## Work Recommendations mood data
+
+Recommended works based on mood data. Input are liked works (workIds).
+
+<InlineGraphiQL
+	query={`query Example_MoodWorkRecommend($likes: [String!]!, $threshold: Float, $max_author_recommendations: Int) {
+  moodWorkRecommend(
+    likes: $likes
+    threshold: $threshold
+    max_author_recommendations: $max_author_recommendations
+  ) {
+    work {
+      creators {
+        display
+      }
+      workId
+    }
+    similarity
+  }
+}`}
+	variables={{
+		"likes": [
+			"work-of:870970-basis:38499386",
+			"work-of:870970-basis:01362305"
+		],
+		"threshold": 0.1,
+		"max_author_recommendations": 2
 	}}
 />
 
