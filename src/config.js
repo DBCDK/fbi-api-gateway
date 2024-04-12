@@ -178,6 +178,14 @@ export default {
       token: process.env.SUGGESTER_TOKEN,
       ttl: process.env.SUGGESTER_TIME_TO_LIVE_SECONDS || 10,
     },
+    moodmatch: {
+      url:
+        process.env.MOODMATCH_URL ||
+        "http://mood-match-search-1-0.mi-prod.svc.cloud.dbc.dk/",
+      prefix: process.env.MOODMATCH_PREFIX || "moodmatch-1",
+      token: process.env.MOODMATCH_TOKEN,
+      ttl: process.env.MOODMATCH_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+    },
     facets: {
       url:
         process.env.FACETS_URL ||
