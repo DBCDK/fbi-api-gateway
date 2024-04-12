@@ -45,6 +45,7 @@ type Query {
   moodSearch(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
   moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
   moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], has_cover:Boolean): [MoodTagRecommendResponse]!
+  moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, max_author_recommendations: Int, threshold: Float, has_cover: Boolean):[MoodTagRecommendResponse]!
 
   localSuggest(
     """
@@ -221,6 +222,16 @@ export const resolvers = {
         });
       return response;
     },
+    async moodWorkRecommend(parent, args, context, info) {
+      const response = await context.datasources
+        .getLoader("moodWorkRecommend")
+        .load({
+          ...args,
+          ...{ agency: context.profile.agency, profile: context.profile.name },
+        });
+      return response;
+    },
+
     async ris(parent, args, context, info) {
       const ris = await context.datasources.getLoader("ris").load({
         pids: args.pids,
