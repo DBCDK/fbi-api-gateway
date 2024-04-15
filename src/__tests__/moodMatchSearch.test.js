@@ -5,6 +5,7 @@ test("moodMatchSearch", async () => {
   const result = await performTestQuery({
     query: `
         query ($q: String!, $limit: PaginationLimit!, $offset: Int!) {
+        mood{
         moodSearch(q: $q) {
           works(offset: $offset, limit: $limit) {
             workId
@@ -13,6 +14,7 @@ test("moodMatchSearch", async () => {
             }
           }
         }
+      }
       }
         `,
     variables: {

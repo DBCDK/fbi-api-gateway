@@ -145,7 +145,7 @@ export default {
       host: process.env.REDIS_HOST || "127.0.0.1",
       port: process.env.REDIS_PORT || "6379",
       prefix: process.env.REDIS_PREFIX || "bibdk-api-4",
-      enabled: process.env.REDIS_ENABLED || true,
+      enabled: process.env.REDIS_ENABLED || false,
     },
     simplesearch: {
       url:
@@ -178,6 +178,14 @@ export default {
       token: process.env.SUGGESTER_TOKEN,
       ttl: process.env.SUGGESTER_TIME_TO_LIVE_SECONDS || 10,
     },
+    moodmatchkids: {
+      url:
+        process.env.MOODMATCH_KIDS_URL ||
+        "http://mood-match-kids-search-1-0.mi-prod.svc.cloud.dbc.dk/",
+      prefix: process.env.MOODMATCH_KIDS_PREFIX || "moodmatchkids-1",
+      token: process.env.MOODMATCH_KIDS_TOKEN,
+      ttl: process.env.MOODMATCH_KIDS_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+    },
     moodmatch: {
       url:
         process.env.MOODMATCH_URL ||
@@ -185,6 +193,22 @@ export default {
       prefix: process.env.MOODMATCH_PREFIX || "moodmatch-1",
       token: process.env.MOODMATCH_TOKEN,
       ttl: process.env.MOODMATCH_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+    },
+    moodrecommend: {
+      url:
+        process.env.MOODRECOMMEND_URL ||
+        "http://mood-match-recommender-1-0.mi-prod.svc.cloud.dbc.dk/",
+      prefix: process.env.MOODRECOMMEND_PREFIX || "moodrecommend-1",
+      token: process.env.MOODRECOMMEND_TOKEN,
+      ttl: process.env.MOODRECOMMEND_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+    },
+    moodkidsrecommend: {
+      url:
+        process.env.MOODKIDSRECOMMEND_URL ||
+        "http://mood-match-kids-recommender-1-0.mi-prod.svc.cloud.dbc.dk/",
+      prefix: process.env.MOODKIDSRECOMMEND_PREFIX || "moodkidsrecommend-1",
+      token: process.env.MOODKIDSRECOMMEND_TOKEN,
+      ttl: process.env.MOODKIDSRECOMMEND_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
     },
     facets: {
       url:

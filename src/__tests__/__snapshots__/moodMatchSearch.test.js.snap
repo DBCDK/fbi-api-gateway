@@ -3,49 +3,51 @@
 exports[`moodMatchSearch 1`] = `
 Object {
   "data": Object {
-    "moodSearch": Object {
-      "works": Array [
-        Object {
-          "titles": Object {
-            "main": Array [
-              "Dummy Some Title",
-            ],
+    "mood": Object {
+      "moodSearch": Object {
+        "works": Array [
+          Object {
+            "titles": Object {
+              "main": Array [
+                "Dummy Some Title",
+              ],
+            },
+            "workId": "work-of:870970-basis:51863437",
           },
-          "workId": "work-of:870970-basis:51863437",
-        },
-        Object {
-          "titles": Object {
-            "main": Array [
-              "Dummy Some Title",
-            ],
+          Object {
+            "titles": Object {
+              "main": Array [
+                "Dummy Some Title",
+              ],
+            },
+            "workId": "work-of:870970-basis:05681332",
           },
-          "workId": "work-of:870970-basis:05681332",
-        },
-        Object {
-          "titles": Object {
-            "main": Array [
-              "Dummy Some Title",
-            ],
+          Object {
+            "titles": Object {
+              "main": Array [
+                "Dummy Some Title",
+              ],
+            },
+            "workId": "work-of:870970-basis:06753035",
           },
-          "workId": "work-of:870970-basis:06753035",
-        },
-        Object {
-          "titles": Object {
-            "main": Array [
-              "Dummy Some Title",
-            ],
+          Object {
+            "titles": Object {
+              "main": Array [
+                "Dummy Some Title",
+              ],
+            },
+            "workId": "work-of:870970-basis:47929814",
           },
-          "workId": "work-of:870970-basis:47929814",
-        },
-        Object {
-          "titles": Object {
-            "main": Array [
-              "Dummy Some Title",
-            ],
+          Object {
+            "titles": Object {
+              "main": Array [
+                "Dummy Some Title",
+              ],
+            },
+            "workId": "work-of:870970-basis:21400009",
           },
-          "workId": "work-of:870970-basis:21400009",
-        },
-      ],
+        ],
+      },
     },
   },
 }
