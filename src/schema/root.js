@@ -43,6 +43,7 @@ type Query {
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
   moodSearch(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
+  moodSearchKids(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
   moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
   moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], has_cover:Boolean): [MoodTagRecommendResponse]!
   moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, max_author_recommendations: Int, threshold: Float, has_cover: Boolean):[MoodTagRecommendResponse]!
@@ -197,6 +198,12 @@ export const resolvers = {
         .getLoader("relatedSubjects")
         .load({ q: args.q, limit: args.limit });
       return related.response;
+    },
+    async moodSearchKids(parent, args, context, info) {
+      return {
+        ...args,
+        ...{ agency: context.profile.agency, profile: context.profile.name },
+      };
     },
     async moodSearch(parent, args, context, info) {
       return {

@@ -178,6 +178,14 @@ export default {
       token: process.env.SUGGESTER_TOKEN,
       ttl: process.env.SUGGESTER_TIME_TO_LIVE_SECONDS || 10,
     },
+    moodmatchkids: {
+      url:
+        process.env.MOODMATCH_KIDS_URL ||
+        "http://mood-match-kids-search-1-0.mi-prod.svc.cloud.dbc.dk/",
+      prefix: process.env.MOODMATCH_KIDS_PREFIX || "moodmatchkids-1",
+      token: process.env.MOODMATCH_KIDS_TOKEN,
+      ttl: process.env.MOODMATCH_KIDS_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+    },
     moodmatch: {
       url:
         process.env.MOODMATCH_URL ||

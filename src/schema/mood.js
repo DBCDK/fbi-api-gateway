@@ -70,7 +70,29 @@ export const typeDef = `
     """
     works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   }
+  """
+  The reponse from moodsearchkids
+  """  
+  type MoodSearchKidsResponse {
+    works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+  }
+  
   `;
+
+async function getSearchExpanded(res, context) {
+  return await Promise.all(
+    res.response.map(async ({ workid }) => {
+      const work = await resolveWork({ id: workid }, context);
+      if (!work) {
+        // log for debugging - see BIBDK2021-1256
+        log.error("WORKID NOT FOUND in jed-presentation service", {
+          workId: workid,
+        });
+      }
+      return work;
+    })
+  );
+}
 
 export const resolvers = {
   MoodSearchResponse: {
@@ -78,19 +100,17 @@ export const resolvers = {
       const res = await context.datasources
         .getLoader("moodMatchSearch")
         .load({ ...parent, ...args });
-      const expanded = await Promise.all(
-        res.response.map(async ({ workid }) => {
-          const work = await resolveWork({ id: workid }, context);
-          if (!work) {
-            // log for debugging - see BIBDK2021-1256
-            log.error("WORKID NOT FOUND in jed-presentation service", {
-              workId: workid,
-            });
-          }
-          return work;
-        })
-      );
-      return expanded;
+
+      return getSearchExpanded(res, context);
+    },
+  },
+  MoodSearchKidsResponse: {
+    async works(parent, args, context, info) {
+      const res = await context.datasources
+        .getLoader("moodMatchSearch")
+        .load({ ...parent, ...args });
+
+      return getSearchExpanded(res, context);
     },
   },
   moodSuggestResponse: {

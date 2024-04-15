@@ -106,3 +106,26 @@ Recommended works based on mood data. Input are liked works (workIds).
 	}}
 />
 
+## Work search kids
+
+Search works for kids based on mood data.
+
+<InlineGraphiQL
+	query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
+  moodSearchKids(q: $q, field: $field) {
+    works(offset: $offset, limit: $limit) {
+      workId
+      titles {
+        main
+      }
+    }
+  }
+}`}
+	variables={{
+		"q": "uhyggelig",
+		"limit": 10,
+		"offset": 0,
+		"field": "TITLE"
+	}}
+/>
+
