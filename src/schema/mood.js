@@ -59,6 +59,26 @@ export const typeDef = `
     TITLE
     CREATOR
     MOODTAGS
+    ALLTAGS
+   }
+   
+   enum KidsRecommendList {
+    FICTION 
+    NONFICTION
+    NOT_SPECIFIED
+   }
+   
+   input KidRecommenderTags{
+    tag: String
+    weight: Int
+   }
+   
+   input MoodKidsRecommendFilters {
+    difficulty: [Int!]
+    illustrations_level: [Int!]
+    length: [Int!]
+    realistic_vs_fictional: [Int!]
+    list_type: KidsRecommendList
    }
 
    """
@@ -76,13 +96,21 @@ export const typeDef = `
   type MoodSearchKidsResponse {
     works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   }
+  
+  """
+  The reponse from moodrecommenkids
+  """
+  type MoodRecommendKidsResponse {
+    works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+  }
 
   type moodQueries {
     moodSearch(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
-    moodSearchKids(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
+    moodSearchKids(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
     moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
     moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], has_cover:Boolean): [MoodTagRecommendResponse]!
     moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, max_author_recommendations: Int, threshold: Float, has_cover: Boolean):[MoodTagRecommendResponse]!
+    moodRecommendKids(tags: [KidRecommenderTags!], work: String, filters: MoodKidsRecommendFilters, dislikes:[String!], offset: Int, limit: Int):MoodRecommendKidsResponse!
   }
 
   extend type Query {
@@ -129,6 +157,12 @@ export const resolvers = {
         });
       return response;
     },
+    async moodRecommendKids(parent, args, context, info) {
+      return {
+        ...args,
+        ...{ agency: context.profile.agency, profile: context.profile.name },
+      };
+    },
     async moodTagRecommend(parent, args, context, info) {
       const response = await context.datasources
         .getLoader("moodTagRecommend")
@@ -167,9 +201,17 @@ export const resolvers = {
   MoodSearchKidsResponse: {
     async works(parent, args, context, info) {
       const res = await context.datasources
-        .getLoader("moodMatchSearch")
+        .getLoader("moodSearchKids")
         .load({ ...parent, ...args });
 
+      return getSearchExpanded(res, context);
+    },
+  },
+  MoodRecommendKidsResponse: {
+    async works(parent, args, context, info) {
+      const res = await context.datasources
+        .getLoader("moodRecommendKids")
+        .load({ ...parent, ...args });
       return getSearchExpanded(res, context);
     },
   },

@@ -10,13 +10,15 @@ The following example do a search based on mood data.
 
 <InlineGraphiQL
   query={`query Example_moodmatch($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
-  moodSearch(q: $q, field: $field) {
+  mood {
+  	moodSearch(q: $q, field: $field) {
     works(offset: $offset, limit: $limit) {
       workId
       titles {
         main
       }
     }
+  }
   }
 }`}
   variables={{
@@ -33,6 +35,7 @@ This example get suggestions based on mood data.
 
 <InlineGraphiQL
 	query={`query Example_moodSuggest($q: String!) {
+	mood {
   moodSuggest(q: $q) {
     response {
       term
@@ -41,7 +44,7 @@ This example get suggestions based on mood data.
       }
       type
     }
-  }
+  }}
 }`}
 	variables={{
 		"q": "spændende"
@@ -54,12 +57,13 @@ Recommender tags based on mood data. Input are mood data (tags).
 
 <InlineGraphiQL
 	query={`query Example_moodTagsRecommend($tags: [String!]!, $minus: [String!], $plus: [String!]) {
+	mood {
   moodTagRecommend(tags: $tags, minus: $minus, plus: $plus) {
     work {
       workId
     }
     similarity
-  }
+  }}
 }`}
 	variables={{
 		"tags": [
@@ -82,6 +86,7 @@ Recommended works based on mood data. Input are liked works (workIds).
 
 <InlineGraphiQL
 	query={`query Example_MoodWorkRecommend($likes: [String!]!, $threshold: Float, $max_author_recommendations: Int) {
+	mood {
   moodWorkRecommend(
     likes: $likes
     threshold: $threshold
@@ -94,7 +99,7 @@ Recommended works based on mood data. Input are liked works (workIds).
       workId
     }
     similarity
-  }
+  }}
 }`}
 	variables={{
 		"likes": [
@@ -112,6 +117,7 @@ Search works for kids based on mood data.
 
 <InlineGraphiQL
 	query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
+	mood {
   moodSearchKids(q: $q, field: $field) {
     works(offset: $offset, limit: $limit) {
       workId
@@ -119,13 +125,44 @@ Search works for kids based on mood data.
         main
       }
     }
-  }
+  }}
 }`}
 	variables={{
 		"q": "uhyggelig",
 		"limit": 10,
 		"offset": 0,
 		"field": "TITLE"
+	}}
+/>
+
+## Work recommendations for children
+
+Recommended works for children based on mood data.
+
+<InlineGraphiQL
+	query={`query Example_moodTagsRecommend($tags: [KidRecommenderTags!], $offset: Int!, $limit: PaginationLimit!) {
+  mood {
+    moodRecommendKids(tags: $tags) {
+      works(offset: $offset, limit: $limit) {
+        workId
+      }
+    }
+  }
+}`}
+	variables={{
+		"tags": [
+			{
+				"tag": "skæve karakterer",
+				"weight": 3
+			},
+			{
+				"tag": "fantasy",
+				"weight": 4
+			}
+		],
+
+		"offset": 0,
+		"limit": "10"
 	}}
 />
 
