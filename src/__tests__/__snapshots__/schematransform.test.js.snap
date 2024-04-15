@@ -671,6 +671,7 @@ type Mutation {
 type Query {
   culr: CulrQuery!
   debug: Debug
+  mood: moodQueries!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
@@ -679,10 +680,6 @@ type Query {
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService!
-  moodSearch(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
-  moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
-  moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], has_cover: Boolean): [MoodTagRecommendResponse]!
-  moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, max_author_recommendations: Int, threshold: Float, has_cover: Boolean): [MoodTagRecommendResponse]!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
@@ -2646,6 +2643,26 @@ enum MoodSearchFieldValues {
   TITLE
   CREATOR
   MOODTAGS
+  ALLTAGS
+}
+
+enum KidsRecommendList {
+  FICTION
+  NONFICTION
+  NOT_SPECIFIED
+}
+
+input KidRecommenderTags {
+  tag: String
+  weight: Int
+}
+
+input MoodKidsRecommendFilters {
+  difficulty: [Int!]
+  illustrations_level: [Int!]
+  length: [Int!]
+  realistic_vs_fictional: [Int!]
+  list_type: KidsRecommendList
 }
 
 \\"\\"\\"The response from moodsearch\\"\\"\\"
@@ -2654,6 +2671,25 @@ type MoodSearchResponse {
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
   works(offset: Int!, limit: PaginationLimit!): [Work!]!
+}
+
+\\"\\"\\"The reponse from moodsearchkids\\"\\"\\"
+type MoodSearchKidsResponse {
+  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+}
+
+\\"\\"\\"The reponse from moodrecommenkids\\"\\"\\"
+type MoodRecommendKidsResponse {
+  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+}
+
+type moodQueries {
+  moodSearch(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
+  moodSearchKids(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
+  moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
+  moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], has_cover: Boolean): [MoodTagRecommendResponse]!
+  moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, max_author_recommendations: Int, threshold: Float, has_cover: Boolean): [MoodTagRecommendResponse]!
+  moodRecommendKids(tags: [KidRecommenderTags!], work: String, filters: MoodKidsRecommendFilters, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
 }
 
 enum SubmitOrderStatus {
