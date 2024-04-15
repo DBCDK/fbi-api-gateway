@@ -5,7 +5,7 @@
 import { resolveManifestation, resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 
-export const typeDef = ` 
+export const typeDef = `
   """
   Type of moodSuggest response
   """
@@ -14,7 +14,7 @@ export const typeDef = `
       creator
       tag
    }
-   
+
    """
    Response type for moodSuggest
    """
@@ -32,7 +32,7 @@ export const typeDef = `
     """
     work: Work
    }
-   
+
    """
    Response type for moodTagRecommend
    """
@@ -40,7 +40,7 @@ export const typeDef = `
     work: Work!
     similarity: Float
    }
-   
+
    """
    The response type for moodSuggest
    """
@@ -50,7 +50,7 @@ export const typeDef = `
     """
     response: [moodSuggestResponse!]!
   }
-  
+
   """
   Supported fields for moodsearch request
   """
@@ -60,7 +60,7 @@ export const typeDef = `
     CREATOR
     MOODTAGS
    }
-   
+
    """
    The response from moodsearch
    """
@@ -72,11 +72,23 @@ export const typeDef = `
   }
   """
   The reponse from moodsearchkids
-  """  
+  """
   type MoodSearchKidsResponse {
     works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   }
-  
+
+  type moodQueries {
+    moodSearch(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
+    moodSearchKids(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
+    moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
+    moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], has_cover:Boolean): [MoodTagRecommendResponse]!
+    moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, max_author_recommendations: Int, threshold: Float, has_cover: Boolean):[MoodTagRecommendResponse]!
+  }
+
+  extend type Query {
+    mood: moodQueries!
+  }
+
   `;
 
 async function getSearchExpanded(res, context) {
@@ -95,6 +107,54 @@ async function getSearchExpanded(res, context) {
 }
 
 export const resolvers = {
+  Query: {
+    async mood(parent, args, context, info) {
+      return {};
+    },
+  },
+
+  moodQueries: {
+    async moodSearch(parent, args, context, info) {
+      return {
+        ...args,
+        ...{ agency: context.profile.agency, profile: context.profile.name },
+      };
+    },
+    async moodSuggest(parent, args, context, info) {
+      const response = await context.datasources
+        .getLoader("moodMatchSuggest")
+        .load({
+          ...args,
+          ...{ agency: context.profile.agency, profile: context.profile.name },
+        });
+      return response;
+    },
+    async moodTagRecommend(parent, args, context, info) {
+      const response = await context.datasources
+        .getLoader("moodTagRecommend")
+        .load({
+          ...args,
+          ...{ agency: context.profile.agency, profile: context.profile.name },
+        });
+      return response;
+    },
+    async moodWorkRecommend(parent, args, context, info) {
+      const response = await context.datasources
+        .getLoader("moodWorkRecommend")
+        .load({
+          ...args,
+          ...{ agency: context.profile.agency, profile: context.profile.name },
+        });
+      return response;
+    },
+    async moodSearchKids(parent, args, context, info) {
+      return {
+        ...args,
+        ...{ agency: context.profile.agency, profile: context.profile.name },
+      };
+    },
+  },
+
   MoodSearchResponse: {
     async works(parent, args, context, info) {
       const res = await context.datasources
