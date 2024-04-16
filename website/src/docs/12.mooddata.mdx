@@ -111,58 +111,5 @@ Recommended works based on mood data. Input are liked works (workIds).
 	}}
 />
 
-## Work search kids
 
-Search works for kids based on mood data.
-
-<InlineGraphiQL
-	query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
-	mood {
-  moodSearchKids(q: $q, field: $field) {
-    works(offset: $offset, limit: $limit) {
-      workId
-      titles {
-        main
-      }
-    }
-  }}
-}`}
-	variables={{
-		"q": "uhyggelig",
-		"limit": 10,
-		"offset": 0,
-		"field": "TITLE"
-	}}
-/>
-
-## Work recommendations for children
-
-Recommended works for children based on mood data.
-
-<InlineGraphiQL
-	query={`query Example_moodTagsRecommend($tags: [KidRecommenderTags!], $offset: Int!, $limit: PaginationLimit!) {
-  mood {
-    moodRecommendKids(tags: $tags) {
-      works(offset: $offset, limit: $limit) {
-        workId
-      }
-    }
-  }
-}`}
-	variables={{
-		"tags": [
-			{
-				"tag": "skæve karakterer",
-				"weight": 3
-			},
-			{
-				"tag": "fantasy",
-				"weight": 4
-			}
-		],
-
-		"offset": 0,
-		"limit": "10"
-	}}
-/>
 
