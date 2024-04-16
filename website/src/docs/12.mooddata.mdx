@@ -6,7 +6,10 @@ You can search, get suggestions and recommendations based on this mood data coll
 
 ## Search with mood data
 
-The following example do a search based on mood data.
+A mood search request takes a query string as input and returns a list of works. 
+In this simple example we search for the mood 'uhyggelig' and ask for work titles to be returned. 
+In this example we search in the field 'ALL'. 
+This is useful when one does not know if the query matches a title, a creator or a mood.
 
 <InlineGraphiQL
   query={`query Example_moodmatch($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
@@ -25,13 +28,25 @@ The following example do a search based on mood data.
 		"q": "uhyggelig",
 		"limit": 10,
 		"offset": 0,
-		"field": "TITLE"
+		"field": "ALL"
 	}}
 />
 
 ## Suggestions with mood data
 
-This example get suggestions based on mood data.
+A list of suggestions based on mood data can be returned by providing a query in the following way.
+
+The value of the _term_ field
+can be used to make a [mood search request](#Search-with-mood-data).
+
+The _type_ field indicates whether
+the suggestion is a title, a creator, a (mood) tag.
+This can be used to explicitly search for a [title, creator or mood tags](#Search-with-mood-data).
+
+The value of the _work_ field is a work that will be a top hit in the search result based
+on the corresponding _term_.
+
+The following example gets suggestions for the string 'spændende'.
 
 <InlineGraphiQL
 	query={`query Example_moodSuggest($q: String!) {
@@ -53,7 +68,7 @@ This example get suggestions based on mood data.
 
 ## Tags Recommendations mood data
 
-Recommender tags based on mood data. Input are mood data (tags).
+Get work recommendations from the mood data collection based on mood data. Input are mood data (tags).
 
 <InlineGraphiQL
 	query={`query Example_moodTagsRecommend($tags: [String!]!, $minus: [String!], $plus: [String!]) {
@@ -82,7 +97,7 @@ Recommender tags based on mood data. Input are mood data (tags).
 
 ## Work Recommendations mood data
 
-Recommended works based on mood data. Input are liked works (workIds).
+Get work recommendations from the mood data collection based on other works from the same collection. Input are liked works (workIds).
 
 <InlineGraphiQL
 	query={`query Example_MoodWorkRecommend($likes: [String!]!, $threshold: Float, $max_author_recommendations: Int) {
