@@ -142,7 +142,11 @@ async function resolveUnits(pids, context) {
       });
     })
   );
-  return Object.keys(unitPids);
+
+  // Sort it so we get cache hits
+  const sorted = Object.keys(unitPids);
+  sorted.sort();
+  return sorted;
 }
 
 /**
