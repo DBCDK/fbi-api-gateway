@@ -6,9 +6,6 @@ import { createFetchWithConcurrencyLimit } from "./utils/fetchWithLimit";
 import { getFilesRecursive } from "./utils/utils";
 import config from "./config";
 import { createTracker } from "./utils/tracker";
-import { hasher } from "node-object-hash";
-
-const hashSortCoerce = hasher({ sort: true, coerce: true });
 
 // Find all datasources in src/datasources
 export const datasources = getFilesRecursive(`${__dirname}/datasources`)
@@ -95,8 +92,7 @@ function setupDataloader(
   const loader = new DataLoader(batchLoaderWithTiming, {
     // If key is an object, we stringify
     // to make it useful as a cache key
-    cacheKeyFn: (key) =>
-      typeof key === "object" ? hashSortCoerce.hash(key) : key,
+    cacheKeyFn: (key) => (typeof key === "object" ? JSON.stringify(key) : key),
     maxBatchSize: 10,
   });
 

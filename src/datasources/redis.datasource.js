@@ -3,8 +3,6 @@ import Redis from "ioredis";
 import config from "../config";
 import { parseJSON, stringifyJSON } from "../utils/json";
 import monitor from "../utils/monitor";
-import { hasher } from "node-object-hash";
-const hashSortCoerce = hasher({ sort: true, coerce: true });
 
 // Redis client
 let redis;
@@ -179,7 +177,7 @@ async function setex(key, seconds, val, inMemory, stats, datasourceName) {
 
 function createPrefixedKey(prefix, key) {
   if (typeof key === "object") {
-    return `${prefix}_${hashSortCoerce.hash(key)}`;
+    return `${prefix}_${JSON.stringify(key)}`;
   }
   return `${prefix}_${key}`;
 }
