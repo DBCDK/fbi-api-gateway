@@ -73,6 +73,11 @@ export async function load(args, context) {
     method: "POST",
     body: JSON.stringify(query),
   });
+
+  if (response.status !== 200) {
+    return { response: [] };
+  }
+
   return response.body;
 }
 
