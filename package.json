@@ -45,6 +45,7 @@
     "lodash": "^4.17.19",
     "minisearch": "^3.0.2",
     "node-cache": "^5.1.0",
+    "node-object-hash": "^3.0.0",
     "prom-client": "^12.0.0",
     "promise-limit": "^2.7.0",
     "react-bootstrap": "^2.5.0",
