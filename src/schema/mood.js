@@ -120,8 +120,12 @@ export const typeDef = `
   `;
 
 async function getSearchExpanded(res, context) {
+  if (!res?.response) {
+    return [];
+  }
+
   return await Promise.all(
-    res.response.map(async ({ workid }) => {
+    res?.response?.map(async ({ workid }) => {
       const work = await resolveWork({ id: workid }, context);
       if (!work) {
         // log for debugging - see BIBDK2021-1256
@@ -212,6 +216,7 @@ export const resolvers = {
       const res = await context.datasources
         .getLoader("moodRecommendKids")
         .load({ ...parent, ...args });
+
       return getSearchExpanded(res, context);
     },
   },
