@@ -1,0 +1,61 @@
+# Mood Data for Children
+
+For a smaller collection of both fiction and nonfiction works for children we have added mood data to describe the works.
+This data includes tags to describe the feeling you get from reading the book, information about how long/short the book is, how many illustrations the books has etc.
+You can get recommendations based on mood data from this collection of works for children and search them as well.
+
+## Work search children
+
+Search works for children based on mood data.
+
+<InlineGraphiQL
+	query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
+	mood {
+  moodSearchKids(q: $q, field: $field) {
+    works(offset: $offset, limit: $limit) {
+      workId
+      titles {
+        main
+      }
+    }
+  }}
+}`}
+	variables={{
+		"q": "sjov",
+		"limit": 10,
+		"offset": 0,
+		"field": "TITLE"
+	}}
+/>
+
+## Work recommendations for children
+
+Recommended works for children based on mood data.
+
+<InlineGraphiQL
+	query={`query Example_moodTagsRecommend($tags: [KidRecommenderTags!], $offset: Int!, $limit: PaginationLimit!) {
+  mood {
+    moodRecommendKids(tags: $tags) {
+      works(offset: $offset, limit: $limit) {
+        workId
+      }
+    }
+  }
+}`}
+	variables={{
+		"tags": [
+			{
+				"tag": "skæve karakterer",
+				"weight": 3
+			},
+			{
+				"tag": "fantasy",
+				"weight": 4
+			}
+		],
+
+		"offset": 0,
+		"limit": "10"
+	}}
+/>
+
