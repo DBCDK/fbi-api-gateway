@@ -380,6 +380,7 @@ export function parseJedSubjects({
   moods = [],
   narrativeTechniques = [],
   settings = [],
+  childrenTopics = [],
 } = {}) {
   return [
     ...subjects.map((subject) => ({
@@ -407,10 +408,18 @@ export function parseJedSubjects({
         __typename: "TimePeriod",
       };
     }),
-    ...moods.map((moods) => ({
-      ...moods,
-      __typename: "Mood",
-    })),
+    ...moods
+      .filter((mood) => mood.type === "MOOD")
+      .map((mood) => ({
+        ...mood,
+        __typename: "Mood",
+      })),
+    ...moods
+      .filter((mood) => mood.type === "MOOD_CHILDREN")
+      .map((mood) => ({
+        ...mood,
+        __typename: "SubjectWithRating",
+      })),
     ...narrativeTechniques.map((narrativeTechniques) => ({
       ...narrativeTechniques,
       __typename: "NarrativeTechnique",
@@ -418,6 +427,10 @@ export function parseJedSubjects({
     ...settings.map((settings) => ({
       ...settings,
       __typename: "Setting",
+    })),
+    ...childrenTopics.map((childrenTopic) => ({
+      ...childrenTopic,
+      __typename: "SubjectWithRating",
     })),
   ];
 }

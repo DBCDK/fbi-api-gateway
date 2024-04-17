@@ -8,11 +8,14 @@ You can get recommendations based on mood data from this collection of works for
 
 Search works for children based on mood data.
 A mood search request takes a query string as input and returns a list of works.
-In this simple example we search for the mood 'sjov' and ask for work titles to be returned. 
+In this simple example we search for the mood 'sjov' and ask for work titles to be returned.
 In this example we search in the field 'ALL'. This is useful when one does not know if the query matches a title, a creator or a mood.
 
+In the search response, you'll notice that some subjects are accompanied by a rating.
+Additionally, manifestations are enriched with multiple aspects of audience level.
+
 <InlineGraphiQL
-	query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
+  query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
 	mood {
   moodSearchKids(q: $q, field: $field) {
     works(offset: $offset, limit: $limit) {
@@ -20,15 +23,36 @@ In this example we search in the field 'ALL'. This is useful when one does not k
       titles {
         main
       }
+	  subjects {
+		dbcVerified {
+		  type
+		  display
+		  ... on SubjectWithRating {
+		    rating
+		  }
+		}
+	  }
+	  manifestations {
+		mostRelevant{
+		  audience {
+		    levelForChildren8to12 {
+		  	  difficulty
+		  	  illustrationsLevel
+			  length
+			  realisticVsFictional
+			}
+		  }
+		}
+	  }
     }
   }}
 }`}
-	variables={{
-		"q": "sjov",
-		"limit": 10,
-		"offset": 0,
-		"field": "ALL"
-	}}
+  variables={{
+    q: "sjov",
+    limit: 10,
+    offset: 0,
+    field: "ALL",
+  }}
 />
 
 ## Work recommendations for children
@@ -57,8 +81,8 @@ Recommended works for children based on mood data. Input are mood data (tags).
 			}
 		],
 
-		"offset": 0,
-		"limit": "10"
-	}}
-/>
+    	"offset": 0,
+    	"limit": "10"
+    }}
 
+/>
