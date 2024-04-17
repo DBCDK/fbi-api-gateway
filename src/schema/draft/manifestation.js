@@ -498,6 +498,11 @@ type Audience {
   libraryRecommendation: String
 
   """
+  Level of difficulty, illustrations, length, and realism in children's literature
+  """
+  levelForChildren8to12: LevelForAudience
+
+  """
   Is this material for children or adults
   """
   childrenOrAdults: [ChildOrAdult!]!
@@ -536,6 +541,29 @@ type Audience {
   Media council age recommendation
   """
   mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
+
+}
+
+type LevelForAudience {
+  """
+  Level expressed as integer on a scale from 1 to 5
+  """
+  difficulty: Int
+
+  """
+  Level expressed as integer on a scale from 1 to 5
+  """
+  illustrationsLevel: Int
+
+  """
+  Level expressed as integer on a scale from 1 to 5
+  """
+  length: Int
+
+  """
+  Level expressed as integer on a scale from 1 to 5
+  """
+  realisticVsFictional: Int
 
 }
 

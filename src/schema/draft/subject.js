@@ -51,6 +51,18 @@ type Setting implements Subject {
   local: Boolean
 }
 
+type SubjectWithRating implements Subject {
+  type: SubjectType!
+  display: String!
+  language: Language
+  local: Boolean
+
+  """
+  Expressed as integer on a scale from 1 to 5
+  """
+  rating: Int
+}
+
 enum SubjectType {
   TOPIC
   LOCATION
@@ -75,6 +87,11 @@ enum SubjectType {
 
   MOOD
   MOOD_CHILDREN
+
+  """
+  Subject describing selected topics for children, and a rating.
+  """
+  TOPIC_CHILDREN
 
   PERSPECTIVE
   STYLE
