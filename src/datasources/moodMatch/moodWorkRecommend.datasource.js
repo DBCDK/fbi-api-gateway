@@ -24,24 +24,24 @@ function setQuery(args) {
     dislikes,
     limit,
     offset,
-    max_author_recommendations,
+    maxAuthorRecommendations,
     threshold,
     agency,
     profile,
-    has_cover,
+    hasCover,
   } = args;
   return {
     likes: likes,
     ...(dislikes && { dislikes: dislikes }),
     limit: limit || 10,
     offset: offset || 0,
-    ...(max_author_recommendations && {
-      max_author_recommendations: max_author_recommendations,
+    ...(maxAuthorRecommendations && {
+      max_author_recommendations: maxAuthorRecommendations,
     }),
     ...(threshold && { threshold: parseFloat(threshold) }),
     agency: parseInt(agency),
     profile: profile,
-    has_cover: has_cover || false,
+    has_cover: hasCover || false,
   };
 }
 

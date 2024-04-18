@@ -100,12 +100,12 @@ Get work recommendations from the mood data collection based on mood data. Input
 Get work recommendations from the mood data collection based on other works from the same collection. Input are liked works (workIds).
 
 <InlineGraphiQL
-	query={`query Example_MoodWorkRecommend($likes: [String!]!, $max_author_recommendations: Int, $dislikes: [String!]) {
+	query={`query Example_MoodWorkRecommend($likes: [String!]!, $maxAuthorRecommendations: Int, $dislikes: [String!]) {
   mood {
     moodWorkRecommend(
       dislikes: $dislikes
       likes: $likes
-      max_author_recommendations: $max_author_recommendations
+      maxAuthorRecommendations: $maxAuthorRecommendations
     ) {
       work {
         creators {
@@ -123,8 +123,9 @@ Get work recommendations from the mood data collection based on other works from
 			"work-of:870970-basis:01362305"
 		],
 		"dislikes": [
-			"work-of:870970-basis:38499386"],
-		"max_author_recommendations": 2
+			"work-of:870970-basis:38499386"
+		],
+		"maxAuthorRecommendations": 2
 	}}
 />
 
