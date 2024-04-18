@@ -37,6 +37,33 @@ function parseTags(tags) {
   return ret;
 }
 
+/**
+ * Map filter .. camelCase to snake_case
+ * @param filters
+ * @returns {{}}
+ */
+function parseFilters(filters) {
+  const mappedFilters = {
+    ...(filters.illustrationsLevel && {
+      illustrations_level: filters.illustrationsLevel,
+    }),
+    ...(filters.realisticVsFctional && {
+      realistic_vs_fictional: filters.realisticVsFctional,
+    }),
+    ...(filters.fictionNonfiction && {
+      lit_type: filters.fictionNonfiction.toLowerCase(),
+    }),
+    ...(filters.difficulty && {
+      difficulty: filters.difficulty,
+    }),
+    ...(filters.length && {
+      length: filters.length,
+    }),
+  };
+
+  return mappedFilters;
+}
+
 function setQuery(args) {
   const {
     tags,
@@ -53,7 +80,7 @@ function setQuery(args) {
     limit: limit || 10,
     offset: offset || 0,
     work: work,
-    ...(filters && { filters: filters }),
+    ...(filters && { filters: parseFilters(filters) }),
     ...(dislikes && { dislikes: dislikes }),
     agency: agency,
     profile: profile,
