@@ -62,12 +62,6 @@ export const typeDef = `
     ALLTAGS
    }
    
-   enum KidsRecommendList {
-    FICTION 
-    NONFICTION
-    NOT_SPECIFIED
-   }
-   
    input KidRecommenderTags{
     tag: String
     weight: Int
@@ -75,10 +69,10 @@ export const typeDef = `
    
    input MoodKidsRecommendFilters {
     difficulty: [Int!]
-    illustrations_level: [Int!]
+    illustrationsLevel: [Int!]
     length: [Int!]
-    realistic_vs_fictional: [Int!]
-    list_type: KidsRecommendList
+    realisticVsFctional: [Int!]
+    fictionNonfiction: FictionNonfictionCode
    }
 
    """
@@ -108,8 +102,8 @@ export const typeDef = `
     moodSearch(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
     moodSearchKids(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
     moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
-    moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], has_cover:Boolean): [MoodTagRecommendResponse]!
-    moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, max_author_recommendations: Int, threshold: Float, has_cover: Boolean):[MoodTagRecommendResponse]!
+    moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], hasCover:Boolean): [MoodTagRecommendResponse]!
+    moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean):[MoodTagRecommendResponse]!
     moodRecommendKids(tags: [KidRecommenderTags!], work: String, filters: MoodKidsRecommendFilters, dislikes:[String!], offset: Int, limit: Int):MoodRecommendKidsResponse!
   }
 

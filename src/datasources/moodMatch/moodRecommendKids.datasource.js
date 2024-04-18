@@ -33,8 +33,35 @@ const { url, prefix, ttl, token } = config.datasources.moodkidsrecommend;
  */
 function parseTags(tags) {
   const ret = {};
-  tags.map((tag) => (ret[tag.tag] = tag.weight));
+  tags?.map((tag) => (ret[tag.tag] = tag.weight));
   return ret;
+}
+
+/**
+ * Map filter .. camelCase to snake_case
+ * @param filters
+ * @returns {{}}
+ */
+function parseFilters(filters) {
+  const mappedFilters = {
+    ...(filters?.illustrationsLevel && {
+      illustrations_level: filters.illustrationsLevel,
+    }),
+    ...(filters?.realisticVsFctional && {
+      realistic_vs_fictional: filters.realisticVsFctional,
+    }),
+    ...(filters?.fictionNonfiction && {
+      lit_type: filters.fictionNonfiction.toLowerCase(),
+    }),
+    ...(filters?.difficulty && {
+      difficulty: filters.difficulty,
+    }),
+    ...(filters?.length && {
+      length: filters.length,
+    }),
+  };
+
+  return mappedFilters;
 }
 
 function setQuery(args) {
@@ -48,12 +75,13 @@ function setQuery(args) {
     agency,
     profile,
   } = args;
+
   return {
     tags: parseTags(tags),
     limit: limit || 10,
     offset: offset || 0,
     work: work,
-    ...(filters && { filters: filters }),
+    ...(filters && { filters: parseFilters(filters) }),
     ...(dislikes && { dislikes: dislikes }),
     agency: agency,
     profile: profile,

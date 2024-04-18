@@ -19,7 +19,7 @@ import config from "../../config";
 const { url, prefix, ttl, token } = config.datasources.moodrecommend;
 
 function setQuery(args) {
-  const { tags, limit, plus, minus, agency, profile, has_cover } = args;
+  const { tags, limit, plus, minus, agency, profile, hasCover } = args;
   return {
     tags: tags,
     limit: limit || 10,
@@ -27,7 +27,7 @@ function setQuery(args) {
     ...(minus && { minus: minus }),
     agency: parseInt(agency),
     profile: profile,
-    has_cover: has_cover || false,
+    has_cover: hasCover || false,
   };
 }
 
@@ -44,7 +44,6 @@ export async function load(args, context) {
     method: "POST",
     body: JSON.stringify(query),
   });
-
   const body = response.body;
   return body.response;
 }
