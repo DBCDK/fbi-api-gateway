@@ -33,7 +33,7 @@ const { url, prefix, ttl, token } = config.datasources.moodkidsrecommend;
  */
 function parseTags(tags) {
   const ret = {};
-  tags.map((tag) => (ret[tag.tag] = tag.weight));
+  tags?.map((tag) => (ret[tag.tag] = tag.weight));
   return ret;
 }
 
@@ -44,19 +44,19 @@ function parseTags(tags) {
  */
 function parseFilters(filters) {
   const mappedFilters = {
-    ...(filters.illustrationsLevel && {
+    ...(filters?.illustrationsLevel && {
       illustrations_level: filters.illustrationsLevel,
     }),
-    ...(filters.realisticVsFctional && {
+    ...(filters?.realisticVsFctional && {
       realistic_vs_fictional: filters.realisticVsFctional,
     }),
-    ...(filters.fictionNonfiction && {
+    ...(filters?.fictionNonfiction && {
       lit_type: filters.fictionNonfiction.toLowerCase(),
     }),
-    ...(filters.difficulty && {
+    ...(filters?.difficulty && {
       difficulty: filters.difficulty,
     }),
-    ...(filters.length && {
+    ...(filters?.length && {
       length: filters.length,
     }),
   };
@@ -75,6 +75,7 @@ function setQuery(args) {
     agency,
     profile,
   } = args;
+
   return {
     tags: parseTags(tags),
     limit: limit || 10,
