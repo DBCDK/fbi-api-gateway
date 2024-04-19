@@ -49,7 +49,7 @@ function parseResponse(details, agencyId) {
 function construcQuery(localIds, agencyId) {
   const localids = localIds.map((loc) => ({
     bibliographicRecordId: loc.localIdentifier,
-    responderId: agencyId,
+    responderId: loc.agencyId || agencyId,
   }));
 
   return {

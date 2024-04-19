@@ -1,8 +1,4 @@
-import {
-  resolveLocalizations,
-  resolveManifestation,
-  resolveWork,
-} from "../utils/utils";
+import { resolveLocalizations, resolveWork } from "../utils/utils";
 
 /**
  * Localizations + HoldingsItem type definitions
@@ -189,7 +185,7 @@ export const resolvers = {
       }
 
       // Now, we check with vip-core if this branch supports detailedHoldings and holdingsItems
-      const detailedHoldingsAddress = await await context.datasources
+      const detailedHoldingsAddress = await context.datasources
         .getLoader("detailedHoldingsSupported")
         .load({
           branchId: parent?.branchId,
@@ -197,21 +193,11 @@ export const resolvers = {
 
       const supportDetailedHoldings = !!detailedHoldingsAddress;
 
-      // When branch does not support holdings we return status UNKNOWN_STATUS
-      if (!supportDetailedHoldings) {
-        return { status: "UNKNOWN_STATUS" };
-      }
-
       // We then convert pids to local identifers for the entire agency
       const localIdentifiers = await resolveLocalIdentifiers(
         uniquePids,
         parent.agencyId,
         context
-      );
-      const uniqueLocalIdentifiers = {};
-      localIdentifiers?.forEach(
-        (identifier) =>
-          (uniqueLocalIdentifiers[identifier.localIdentifier] = identifier)
       );
 
       // When no local identifers are found, the agency does not own the material
@@ -241,26 +227,10 @@ export const resolvers = {
         (item) => item?.branchId === parent.branchId
       );
 
-      const agencyLocalizations = localIdentifiers?.filter(
-        (holding) => parent.branchId === holding.agencyId
-      );
-
-      const agencyIdForDetailedHoldings =
-        agencyLocalizations?.length > 0
-          ? parent.branchId
-          : localIdentifiers?.[0]?.agencyId;
-
-      const allLocalIdentifiers = Object.values(uniqueLocalIdentifiers);
-      const localIds =
-        agencyLocalizations?.length > 0
-          ? agencyLocalizations
-          : Object.values(uniqueLocalIdentifiers);
-
       // Fetch detailed holdings (this will make a call to a local agency system)
       const detailedHoldings = (
         await context.datasources.getLoader("detailedholdings").load({
-          localIds: allLocalIdentifiers,
-          agencyId: agencyIdForDetailedHoldings,
+          localIds: localIdentifiers,
         })
       )?.holdingstatus;
 
@@ -293,28 +263,21 @@ export const resolvers = {
         (holding) => holding?.branchId === parent.branchId
       );
 
-      function checkHolding(holding) {
-        if (holding?.branchId !== parent.branchId) {
-          return false;
-        }
-        if (
-          !holdingsItemsForAgency?.length &&
-          !localIds?.find(
-            (id) => id.localIdentifier === holding?.localHoldingsId
-          )
-        ) {
-          return false;
-        }
-        return true;
-      }
-
       // Check if material is on shelf at current branch
-      if (onShelfInAgency?.find(checkHolding)) {
+      if (
+        onShelfInAgency?.find(
+          (holding) => holding?.branchId === parent.branchId
+        )
+      ) {
         return { status: "ON_SHELF", items: holdingsItemsForBranch };
       }
 
       // Check if material is on shelf but not for loan at current branch
-      if (onShelfNotForLoanInAgency?.find(checkHolding)) {
+      if (
+        onShelfNotForLoanInAgency?.find(
+          (holding) => holding?.branchId === parent.branchId
+        )
+      ) {
         return {
           status: "ON_SHELF_NOT_FOR_LOAN",
           items: holdingsItemsForBranch,
@@ -334,10 +297,15 @@ export const resolvers = {
 
       // For independent branches, the material may be NOT_ON_SHELF or NOT_OWNED
       // But for normal branches, the state can only be NOT_ON_SHELF at this point
-      const status =
-        expectedBranchReturnDate || !branchIsIndependent
-          ? "NOT_ON_SHELF"
-          : "NOT_OWNED";
+      let status;
+      if (!supportDetailedHoldings) {
+        // When branch does not support holdings we return status UNKNOWN_STATUS
+        status = "UNKNOWN_STATUS";
+      } else if (expectedBranchReturnDate || !branchIsIndependent) {
+        status = "NOT_ON_SHELF";
+      } else {
+        status = "NOT_OWNED";
+      }
 
       return {
         status,
