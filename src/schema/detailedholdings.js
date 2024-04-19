@@ -228,17 +228,20 @@ export const resolvers = {
       );
 
       // Fetch detailed holdings (this will make a call to a local agency system)
-      const detailedHoldings = (
-        await context.datasources.getLoader("detailedholdings").load({
-          localIds: localIdentifiers,
-        })
-      )?.holdingstatus;
+      // Only fetch if we do not have holdings items on shelf (performance optimization)
+      const detailedHoldings =
+        !holdingsItemsForBranch?.length &&
+        (
+          await context.datasources.getLoader("detailedholdings").load({
+            localIds: localIdentifiers,
+          })
+        )?.holdingstatus;
 
       // Prefer holdings from holdings items
       let holdings =
         holdingsItemsForAgency?.length > 0
           ? holdingsItemsForAgency
-          : detailedHoldings;
+          : detailedHoldings || [];
 
       // Check that holdings belong to branch that is active
       holdings = (
@@ -268,7 +271,7 @@ export const resolvers = {
       );
 
       // Holdings that are on loan, sorted by the earliest expected delivery first
-      const expectedReturnDateInAgency = detailedHoldings?.filter(
+      const expectedReturnDateInAgency = detailedHoldings?.filter?.(
         (holding) => holding?.expectedDelivery > today
       );
 
