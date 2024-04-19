@@ -80,6 +80,9 @@ const ALLOWED_TYPES = {
   holdingAgency: true,
   holdingsItem: true,
   Shelfmark: true,
+  HoldingsResponse: true,
+  HoldingsResponseStatus: true,
+  HoldingsItem: true,
 };
 
 /**
@@ -148,6 +151,11 @@ export default function isFastLaneQuery(document, schema) {
       return false;
     }
     const requestedTypes = getAllTypesFromQuery(document, schema);
+
+    // For debugging purpose, which types from query are not allowed
+    // console.log(
+    //   Object.keys(requestedTypes).filter((type) => !ALLOWED_TYPES[type])
+    // );
 
     return Object.keys(requestedTypes).every((type) => ALLOWED_TYPES[type]);
   } catch (e) {
