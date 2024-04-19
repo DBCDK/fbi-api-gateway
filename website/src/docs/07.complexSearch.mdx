@@ -23,6 +23,8 @@ Works from complexSearch supports:
   Use order.ASC and order.DESC instead
 </DeprecationBox>
 
+## Search with complex search
+
 <InlineGraphiQL
   query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!, $sort: [Sort!]) {
   complexSearch(cql: $cql, filters: $filters) {
@@ -49,7 +51,7 @@ Works from complexSearch supports:
   }}
 />
 
-# Complex Search suggester
+## Complex Search suggester
 
 Get a list of suggestion by providing a query and the type of suggestion wanted.
 
@@ -67,3 +69,48 @@ Get a list of suggestion by providing a query and the type of suggestion wanted.
 		type: "creator"
 	}}
 />
+
+## Complex Search facets
+
+Get a list of facets for given search query.
+
+<InlineGraphiQL
+	query={`query Example_ComplexSearch($cql: String!, $filters: ComplexSearchFilters!, $facets: complexSearchFacets) {
+  complexSearch(cql: $cql, filters: $filters, facets: $facets) {
+    hitcount
+    errorMessage
+    facets {
+      name
+      values {
+        key
+        score
+      }
+    }
+  }
+}`}
+	variables={{
+		"cql": "term.title=snemand*",
+		"filters": {
+			"branchId": [
+				"775122"
+			],
+			"status": [
+				"OnShelf"
+			]
+		},
+		"facets": {
+			"facetLimit": 5,
+			"facets": [
+				"LET",
+				"LIX",
+				"PUBLICATIONYEAR",
+				"ACCESSTYPE",
+				"MOOD",
+				"NARRATIVETECHNIQUE",
+				"PEGI",
+				"SETTING"
+			]
+		}
+	}}
+/>
+
