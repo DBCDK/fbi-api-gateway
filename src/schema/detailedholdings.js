@@ -1,8 +1,4 @@
-import {
-  resolveLocalizations,
-  resolveManifestation,
-  resolveWork,
-} from "../utils/utils";
+import { resolveLocalizations, resolveWork } from "../utils/utils";
 
 /**
  * Localizations + HoldingsItem type definitions
