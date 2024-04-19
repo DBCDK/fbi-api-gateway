@@ -235,10 +235,27 @@ export const resolvers = {
       )?.holdingstatus;
 
       // Prefer holdings from holdings items
-      const holdings =
+      let holdings =
         holdingsItemsForAgency?.length > 0
           ? holdingsItemsForAgency
           : detailedHoldings;
+
+      // Check that holdings belong to branch that is active
+      holdings = (
+        await Promise.all(
+          holdings.map(async (holding) => {
+            const res = await context.datasources.getLoader("library").load({
+              branchId: holding.branchId,
+              limit: 1,
+              status: "AKTIVE",
+              bibdkExcludeBranches: false,
+            });
+            if (res?.result?.length > 0) {
+              return holding;
+            }
+          })
+        )
+      )?.filter((holding) => !!holding);
 
       // Holdings that are on shelf at any branch in agency
       const onShelfInAgency = holdings?.filter(
