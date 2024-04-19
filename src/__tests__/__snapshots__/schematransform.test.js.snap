@@ -3583,6 +3583,13 @@ type Query {
     \\"\\"\\"Id of branch to filter by\\"\\"\\"
     branchId: String
   ): localSuggestResponse!
+  complexSuggest(
+    \\"\\"\\"The query to get suggestions for\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"the type of index to get suggestions from\\"\\"\\"
+    type: ComplexSuggestionType!
+  ): ComplexSuggestResponse!
   suggest(
     workType: WorkType
 
@@ -4868,6 +4875,31 @@ enum SuggestionType {
   COMPOSIT
 }
 
+enum ComplexSuggestionType {
+  hostpublication
+  contributorfunction
+  creator
+  default
+  creatorcontributorfunction
+  contributor
+  creatorfunction
+  subject
+  fictionalcharacter
+  title
+  creatorcontributor
+}
+
+type ComplexSearchSuggestion {
+  \\"\\"\\"The type of suggestion\\"\\"\\"
+  type: String!
+
+  \\"\\"\\"The suggested term which can be searched for\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"A work related to the term\\"\\"\\"
+  work: Work
+}
+
 type Suggestion {
   \\"\\"\\"The type of suggestion: creator, subject or title\\"\\"\\"
   type: SuggestionType!
@@ -4877,6 +4909,10 @@ type Suggestion {
 
   \\"\\"\\"A work related to the term\\"\\"\\"
   work: Work
+}
+
+type ComplexSuggestResponse {
+  result: [ComplexSearchSuggestion!]!
 }
 
 type SuggestResponse {
