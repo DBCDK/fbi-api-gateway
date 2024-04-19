@@ -10,6 +10,7 @@
       "search",
       "suggest",
       "complexSearch",
+      "complexSuggest",
       "localSuggest",
       "recommend",
       "infomedia",
