@@ -24,7 +24,6 @@ function prefixFacets(facets) {
     }
   });
 
-  console.log(mappedfacets, "MAPPED");
   return mappedfacets;
 }
 
