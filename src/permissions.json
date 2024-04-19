@@ -19,8 +19,9 @@
       "elba",
       "library",
       "relatedSubjects",
-      "linkCheck"
+      "linkCheck",
+      "mood"
     ],
-    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO", "ComplexSearchFacetResponse"]
+    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO"]
   }
 }
