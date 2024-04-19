@@ -3505,10 +3505,25 @@ input complexSearchFacets {
   facets: [ComplexSearchFacets!]!
 }
 
+\\"\\"\\"A Facet value in response\\"\\"\\"
+type ComplexSearchFacetValue {
+  key: String!
+  score: Int!
+}
+
+\\"\\"\\"The complete facet in response\\"\\"\\"
+type ComplexSearchFacetResponse {
+  name: String
+  values: [ComplexSearchFacetValue!]
+}
+
 \\"\\"\\"The search response\\"\\"\\"
 type ComplexSearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
   hitcount: Int!
+
+  \\"\\"\\"Facets for this response\\"\\"\\"
+  facets: [ComplexSearchFacetResponse!]
 
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
@@ -3547,6 +3562,7 @@ type Mutation {
 }
 
 type Query {
+  mood: moodQueries!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
@@ -5092,6 +5108,86 @@ type LinkCheckResponse {
 
 type LinkCheckService {
   checks(urls: [String!]): [LinkCheckResponse!]!
+}
+
+\\"\\"\\"Type of moodSuggest response\\"\\"\\"
+enum MoodSuggest {
+  title
+  creator
+  tag
+}
+
+\\"\\"\\"Response type for moodSuggest\\"\\"\\"
+type moodSuggestResponse {
+  \\"\\"\\"Suggestion\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"The type of suggestion title/creator/tag\\"\\"\\"
+  type: MoodSuggest!
+
+  \\"\\"\\"A work associated with the suggestion\\"\\"\\"
+  work: Work
+}
+
+\\"\\"\\"Response type for moodTagRecommend\\"\\"\\"
+type MoodTagRecommendResponse {
+  work: Work!
+  similarity: Float
+}
+
+\\"\\"\\"The response type for moodSuggest\\"\\"\\"
+type MoodSuggestResponse {
+  \\"\\"\\"Response is an array of moodSuggestResponse\\"\\"\\"
+  response: [moodSuggestResponse!]!
+}
+
+\\"\\"\\"Supported fields for moodsearch request\\"\\"\\"
+enum MoodSearchFieldValues {
+  ALL
+  TITLE
+  CREATOR
+  MOODTAGS
+  ALLTAGS
+}
+
+input KidRecommenderTags {
+  tag: String
+  weight: Int
+}
+
+input MoodKidsRecommendFilters {
+  difficulty: [Int!]
+  illustrationsLevel: [Int!]
+  length: [Int!]
+  realisticVsFctional: [Int!]
+  fictionNonfiction: FictionNonfictionCode
+}
+
+\\"\\"\\"The response from moodsearch\\"\\"\\"
+type MoodSearchResponse {
+  \\"\\"\\"
+  The works matching the given search query. Use offset and limit for pagination.
+  \\"\\"\\"
+  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+}
+
+\\"\\"\\"The reponse from moodsearchkids\\"\\"\\"
+type MoodSearchKidsResponse {
+  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+}
+
+\\"\\"\\"The reponse from moodrecommenkids\\"\\"\\"
+type MoodRecommendKidsResponse {
+  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+}
+
+type moodQueries {
+  moodSearch(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
+  moodSearchKids(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
+  moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
+  moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
+  moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
+  moodRecommendKids(tags: [KidRecommenderTags!], work: String, filters: MoodKidsRecommendFilters, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
 }
 
 input PeriodicaArticleOrder {
