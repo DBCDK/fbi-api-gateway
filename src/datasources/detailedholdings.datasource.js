@@ -49,7 +49,7 @@ function parseResponse(details, agencyId) {
 function construcQuery(localIds, agencyId) {
   const localids = localIds.map((loc) => ({
     bibliographicRecordId: loc.localIdentifier,
-    responderId: agencyId,
+    responderId: loc.agencyId || agencyId,
   }));
 
   return {
@@ -60,6 +60,7 @@ function construcQuery(localIds, agencyId) {
 // TODO - holdingsitems
 export async function load({ localIds, agencyId }, context) {
   const query = construcQuery(localIds, agencyId);
+  console.log(query);
 
   try {
     const response = await context.fetch(url + "detailed-holdings", {

@@ -329,6 +329,7 @@ export async function resolveWork(args, context) {
 
   const w = await context.datasources.getLoader("jedRecord").load({
     id,
+    includeRelations: args.includeRelations,
     profile: context.profile,
   });
 
@@ -605,18 +606,14 @@ export const fetchOrderStatus = async (args, context) => {
 };
 
 export async function resolveLocalizations(args, context) {
-  // Remove openformat when the time is right
-  const allmanifestations = await Promise.all(
-    args.pids.map((pid) => {
-      return context.datasources.getLoader("openformat").load(pid);
-    })
-  );
+  const isPartOfManifestation = (
+    await resolveWork({ pid: args.pids?.[0], includeRelations: true }, context)
+  )?.relations?.isPartOfManifestation;
 
-  const pids = allmanifestations.map(
-    (manifestation) =>
-      manifestation?.details?.hostPublicationPid?.$ ||
-      manifestation.admindata.pid.$
-  );
+  // We use periodica isPartOfManifestation pids if they are available.
+  // I.e. instead of using article pids, we use publication host pids
+  const pids =
+    isPartOfManifestation?.length > 0 ? isPartOfManifestation : args.pids;
 
   // get localizations from openholdingstatus
   const localizationsRes = await context.datasources
