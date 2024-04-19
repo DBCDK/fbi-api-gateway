@@ -131,27 +131,7 @@ async function doRequest() {
   }));
 }
 
-/**
- * Search on given query.
- * @param props
- * @param getFunc
- * @returns {Promise<{result: (*&{language: string})[], hitcount: number}>}
- */
-export async function search(props, getFunc = doRequest) {
-  const {
-    q,
-    limit = 10,
-    offset = 0,
-    agencyid,
-    language = "da",
-    branchId,
-    digitalAccessSubscriptions = [],
-    infomediaSubscriptions = [],
-    status = "ALLE",
-    agencyTypes = ["ALLE"],
-    bibdkExcludeBranches,
-  } = props;
-
+async function fetchIfOld(getFunc) {
   if (!branches || age() > timeToLiveMS) {
     // if (true) {
     try {
@@ -176,6 +156,29 @@ export async function search(props, getFunc = doRequest) {
       fetchingPromise = null;
     }
   }
+}
+/**
+ * Search on given query.
+ * @param props
+ * @param getFunc
+ * @returns {Promise<{result: (*&{language: string})[], hitcount: number}>}
+ */
+export async function search(props, getFunc = doRequest) {
+  const {
+    q,
+    limit = 10,
+    offset = 0,
+    agencyid,
+    language = "da",
+    branchId,
+    digitalAccessSubscriptions = [],
+    infomediaSubscriptions = [],
+    status = "ALLE",
+    agencyTypes = ["ALLE"],
+    bibdkExcludeBranches,
+  } = props;
+
+  await fetchIfOld(getFunc);
 
   // filter on requested status
   const useAgencyTypesFilter = !agencyTypes.includes("ALLE");
@@ -225,11 +228,19 @@ export async function search(props, getFunc = doRequest) {
         fuzzy: 0.4,
       });
     }
-  }
-
-  // no query given - result is all branches - filter if requested
-  else if (shouldFilter) {
-    result = result.filter(filterAndExclude);
+  } else if (branchId) {
+    result = [branchesMap[branchId]].filter((branch) => !!branch);
+    if (shouldFilter) {
+      result = result.filter(filterAndExclude);
+    }
+    // return { hitcount: result.length, result };
+  } else if (agencyid) {
+    const stripped = agencyid.replace(/\D/g, "");
+    result = result.filter((branch) => branch.agencyId === stripped);
+    if (shouldFilter) {
+      result = result.filter(filterAndExclude);
+    }
+    // return { hitcount: result.length, result };
   }
 
   // merged to return all fields.
@@ -237,14 +248,6 @@ export async function search(props, getFunc = doRequest) {
     ...branch,
     ...branchesMap[branch.id],
   }));
-
-  if (agencyid) {
-    const stripped = agencyid.replace(/\D/g, "");
-    merged = merged.filter((branch) => branch.agencyId === stripped);
-  }
-  if (branchId) {
-    merged = merged.filter((branch) => branch.branchId === branchId);
-  }
 
   merged = q
     ? orderBy(merged, ["score", "branchId"], ["desc", "asc"])
@@ -275,8 +278,10 @@ export async function load(props, { getLoader }) {
   ).load("");
   const infomediaSubscriptions = await getLoader("idp").load("");
 
-  return search(
+  const res = await search(
     { ...props, digitalAccessSubscriptions, infomediaSubscriptions },
     doRequest
   );
+
+  return res;
 }
