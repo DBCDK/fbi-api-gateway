@@ -13,7 +13,19 @@ const { url, ttl, prefix } = config.datasources.complexsearch;
  * @returns {*}
  */
 function prefixFacets(facets) {
-  return facets.map((fac) => `phrase.${fac.toLowerCase()}`);
+  // update - some facets should NOT be prefixed with 'phrase'
+  const NO_PREFIX_PLEASE = ["LIX", "LET", "PUBLICATIONYEAR"];
+
+  const mappedfacets = facets.map((fac) => {
+    if (NO_PREFIX_PLEASE.includes(fac)) {
+      return fac.toLowerCase();
+    } else {
+      return `phrase.${fac.toLowerCase()}`;
+    }
+  });
+
+  console.log(mappedfacets, "MAPPED");
+  return mappedfacets;
 }
 
 /**
