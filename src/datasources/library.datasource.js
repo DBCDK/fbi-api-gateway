@@ -228,19 +228,19 @@ export async function search(props, getFunc = doRequest) {
         fuzzy: 0.4,
       });
     }
-  } else if (branchId) {
+  }
+  if (branchId) {
     result = [branchesMap[branchId]].filter((branch) => !!branch);
     if (shouldFilter) {
       result = result.filter(filterAndExclude);
     }
-    // return { hitcount: result.length, result };
-  } else if (agencyid) {
+  }
+  if (agencyid) {
     const stripped = agencyid.replace(/\D/g, "");
     result = result.filter((branch) => branch.agencyId === stripped);
     if (shouldFilter) {
       result = result.filter(filterAndExclude);
     }
-    // return { hitcount: result.length, result };
   }
 
   // merged to return all fields.
