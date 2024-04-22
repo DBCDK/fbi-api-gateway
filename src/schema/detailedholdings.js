@@ -1,3 +1,4 @@
+import uniq from "lodash/uniq";
 import { resolveLocalizations, resolveWork } from "../utils/utils";
 
 /**
@@ -66,6 +67,11 @@ type HoldingsResponse {
   Items on the shelf at the branch (actual copies)
   """
   items: [HoldingsItem!]
+
+  """
+  Url to local site, where holding details may be found
+  """
+  lookupUrl: String
 }
 
 extend type Branch {
@@ -203,6 +209,28 @@ async function filterHoldings(holdings, context) {
     )
   )?.filter((holding) => !!holding);
 }
+
+function getLookupUrl(branch, pids, localIdentifiers) {
+  if (branch?.lookupUrl?.includes("search/ting")) {
+    return `${branch?.branchWebsiteUrl}/search/ting/${encodeURIComponent(
+      pids?.join(" OR ")
+    )}`;
+  }
+  const identifiers =
+    localIdentifiers &&
+    encodeURIComponent(
+      uniq(localIdentifiers?.map((id) => id?.localIdentifier))?.join(" OR ")
+    );
+
+  // cosnt localIdentifiersJoined =
+  if (branch?.lookupUrl?.includes("_IDNR_")) {
+    return branch.lookupUrl.replace("_IDNR_", identifiers);
+  }
+  if (branch?.lookupUrl) {
+    return branch.lookupUrl + identifiers;
+  }
+}
+
 export const resolvers = {
   Branch: {
     async holdings(parent, args, context, info) {
@@ -235,6 +263,8 @@ export const resolvers = {
       if (!localIdentifiers?.length) {
         return { status: "NOT_OWNED" };
       }
+
+      const lookupUrl = getLookupUrl(parent, uniquePids, localIdentifiers);
 
       // Date of today, for instance 2024-04-14
       const today = getIsoDate();
@@ -327,7 +357,7 @@ export const resolvers = {
           (holding) => holding?.branchId === parent.branchId
         )
       ) {
-        return { status: "ON_SHELF", items: holdingsItemsForBranch };
+        return { status: "ON_SHELF", items: holdingsItemsForBranch, lookupUrl };
       }
 
       // Check if material is on shelf but not for loan at current branch
@@ -339,6 +369,7 @@ export const resolvers = {
         return {
           status: "ON_SHELF_NOT_FOR_LOAN",
           items: holdingsItemsForBranch,
+          lookupUrl,
         };
       }
 
@@ -370,6 +401,7 @@ export const resolvers = {
         expectedAgencyReturnDate,
         expectedBranchReturnDate,
         items: holdingsItemsForBranch,
+        lookupUrl,
       };
     },
   },

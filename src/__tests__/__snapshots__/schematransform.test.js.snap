@@ -808,6 +808,9 @@ type HoldingsResponse {
 
   \\"\\"\\"Items on the shelf at the branch (actual copies)\\"\\"\\"
   items: [HoldingsItem!]
+
+  \\"\\"\\"Url to local site, where holding details may be found\\"\\"\\"
+  lookupUrl: String
 }
 
 type Branch {
