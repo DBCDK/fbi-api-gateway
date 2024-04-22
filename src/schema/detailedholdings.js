@@ -172,6 +172,37 @@ async function resolveLocalIdentifiers(pids, agencyId, context) {
   });
   return Object.values(unique);
 }
+
+/**
+ * We filter away some holdings, if
+ * - branch is deleted
+ * - branch is a service-punkt
+ */
+async function filterHoldings(holdings, context) {
+  if (!holdings.length) {
+    return holdings;
+  }
+  return (
+    await Promise.all(
+      holdings.map(async (holding) => {
+        const res = await context.datasources.getLoader("library").load({
+          branchId: holding.branchId,
+          limit: 1,
+          status: "AKTIVE",
+          bibdkExcludeBranches: false,
+        });
+        if (!res?.result?.length) {
+          return null;
+        }
+        if (holding?.branchType === "servicepunkt") {
+          return null;
+        }
+
+        return holding;
+      })
+    )
+  )?.filter((holding) => !!holding);
+}
 export const resolvers = {
   Branch: {
     async holdings(parent, args, context, info) {
@@ -223,19 +254,26 @@ export const resolvers = {
           expectedDelivery: item.status === "OnShelf" ? today : null,
         }));
 
+      holdingsItemsForAgency = await filterHoldings(
+        holdingsItemsForAgency,
+        context
+      );
+
       const holdingsItemsForBranch = holdingsItemsForAgency?.filter(
         (item) => item?.branchId === parent.branchId
       );
 
       // Fetch detailed holdings (this will make a call to a local agency system)
       // Only fetch if we do not have holdings items on shelf (performance optimization)
-      const detailedHoldings =
+      let detailedHoldings =
         !holdingsItemsForBranch?.length &&
         (
           await context.datasources.getLoader("detailedholdings").load({
             localIds: localIdentifiers,
           })
         )?.holdingstatus;
+
+      detailedHoldings = await filterHoldings(detailedHoldings, context);
 
       // Prefer holdings from holdings items
       let holdings =
