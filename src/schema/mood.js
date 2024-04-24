@@ -71,7 +71,7 @@ export const typeDef = `
     difficulty: [Int!]
     illustrationsLevel: [Int!]
     length: [Int!]
-    realisticVsFctional: [Int!]
+    realisticVsFictional: [Int!]
     fictionNonfiction: FictionNonfictionCode
    }
 
