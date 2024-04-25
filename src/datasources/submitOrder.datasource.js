@@ -8,7 +8,7 @@ const { serviceRequester, url } = config.datasources.openorder;
  * Creates date three months in the future. Used if a date is not provided
  */
 function createNeedBeforeDate() {
-  let offsetInDays = 90;
+  let offsetInDays = 180;
   let offsetInMilliseconds = offsetInDays * 24 * 60 * 60 * 1000;
   let date = new Date(Date.now() + offsetInMilliseconds);
   let dateStr = `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(
