@@ -174,6 +174,7 @@ async function resolveLocalIdentifiers(pids, agencyId, context) {
     unique[`${item.agencyId}-${item.localIdentifier}`] = {
       localIdentifier: item.localIdentifier,
       agencyId: item.agencyId,
+      localizationPid: item.localizationPid,
     };
   });
   return Object.values(unique);
@@ -210,8 +211,9 @@ async function filterHoldings(holdings, context) {
   )?.filter((holding) => !!holding);
 }
 
-function getLookupUrl(branch, pids, localIdentifiers) {
+function getLookupUrl(branch, localIdentifiers) {
   if (branch?.lookupUrl?.includes("search/ting")) {
+    const pids = localIdentifiers?.map((id) => id.localizationPid);
     return `${branch?.branchWebsiteUrl}/search/ting/${encodeURIComponent(
       pids?.join(" OR ")
     )}`;
@@ -264,7 +266,7 @@ export const resolvers = {
         return { status: "NOT_OWNED" };
       }
 
-      const lookupUrl = getLookupUrl(parent, uniquePids, localIdentifiers);
+      const lookupUrl = getLookupUrl(parent, localIdentifiers);
 
       // Date of today, for instance 2024-04-14
       const today = getIsoDate();
@@ -273,7 +275,9 @@ export const resolvers = {
       let holdingsItemsForAgency = (
         await context.datasources.getLoader("holdingsitemsForAgency").load({
           agencyId: parent.agencyId,
-          pids: uniquePids,
+          pids: localIdentifiers?.map(
+            (localIdentifier) => localIdentifier.localizationPid
+          ),
         })
       )
         ?.filter(
