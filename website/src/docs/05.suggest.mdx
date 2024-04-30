@@ -12,11 +12,12 @@ This can be used to explicitly search for a [title, creator or subject](#Search-
 The value of the _work_ field is a work that will be a top hit in the search result based
 on the corresponding _term_.
 
-The following example gets suggestions for all agencies.
+The following example gets suggestions for all agencies. Note that you can specify suggestion types,
+in this example subjects and creators are returned.
 
 <InlineGraphiQL
-  query={`query Example_Suggestions ($q: String!) {
-  suggest(q: $q) {
+  query={`query Example_Suggestions ($q: String!, $suggestTypes: [SuggestionType!]) {
+  suggest(q: $q, suggestTypes: $suggestTypes) {
     result {
       type
       term
@@ -30,6 +31,7 @@ The following example gets suggestions for all agencies.
 }`}
   variables={{
     q: "harry",
+    suggestTypes: ["SUBJECT", "CREATOR"],
   }}
 />
 

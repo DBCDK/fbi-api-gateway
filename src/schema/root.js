@@ -80,10 +80,17 @@ type Query {
     The query to get suggestions from
     """
     q: String!
+
     """    
     suggest type to include in result
     """
     suggestType: SuggestionType
+
+    """    
+    suggest types to include in result
+    """
+    suggestTypes: [SuggestionType!]
+
     """
     Number of items to return
     """

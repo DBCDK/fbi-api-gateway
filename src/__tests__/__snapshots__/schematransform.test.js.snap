@@ -720,6 +720,9 @@ type Query {
     \\"\\"\\"suggest type to include in result\\"\\"\\"
     suggestType: SuggestionType
 
+    \\"\\"\\"suggest types to include in result\\"\\"\\"
+    suggestTypes: [SuggestionType!]
+
     \\"\\"\\"Number of items to return\\"\\"\\"
     limit: Int
   ): SuggestResponse!
@@ -3601,6 +3604,9 @@ type Query {
 
     \\"\\"\\"suggest type to include in result\\"\\"\\"
     suggestType: SuggestionType
+
+    \\"\\"\\"suggest types to include in result\\"\\"\\"
+    suggestTypes: [SuggestionType!]
 
     \\"\\"\\"Number of items to return\\"\\"\\"
     limit: Int
