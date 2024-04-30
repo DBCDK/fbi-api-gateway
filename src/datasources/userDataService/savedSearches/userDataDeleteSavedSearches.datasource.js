@@ -2,7 +2,7 @@ import config from "../../../config";
 const { url } = config.datasources.userdata;
 
 /**
- * Delete muiltiple advanced searches
+ * Delete multiple advanced searches
  *
  * savedSearchIds list of ids to delete
  */

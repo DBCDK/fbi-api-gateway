@@ -45,7 +45,7 @@ type User {
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
   """
-  Saved complex searches 
+  Saved searches from complex search
   """
   savedSearches(offset: Int limit: PaginationLimit): SavedSearchResponse!
   
@@ -981,22 +981,6 @@ export const resolvers = {
         return 0;
       }
     },
-    async deleteSavedSearches(parent, args, context, info) {
-      const user = context?.user;
-
-      try {
-        const { savedSearchIds } = args;
-        const uniqueId = user?.uniqueId;
-        validateUserId(uniqueId);
-
-        const res = await context.datasources
-          .getLoader("userDataDeleteSavedSearches")
-          .load({ uniqueId, savedSearchIds });
-        return { message: res.message, idsDeletedCount: res?.count || 0 };
-      } catch (error) {
-        return { message: "Error. Could not delete saved searches" };
-      }
-    },
 
     async addSavedSearch(parent, args, context, info) {
       const user = context?.user;
@@ -1008,7 +992,7 @@ export const resolvers = {
         const res = await context.datasources
           .getLoader("userDataAddSavedSearch")
           .load({ uniqueId, searchObject });
-        return res; //{ message: res.message, idsDeletedCount: res?.count || 0 };
+        return res;
       } catch (error) {
         return { message: "Error. Could not delete saved searches" };
       }
@@ -1025,7 +1009,23 @@ export const resolvers = {
           .getLoader("userDataUpdateSavedSearch")
           .load({ uniqueId, savedSearchId, searchObject });
         console.log("\n\n\n\n\nres", res);
-        return res; //{ message: res.message, idsDeletedCount: res?.count || 0 };
+        return res;
+      } catch (error) {
+        return { message: "Error. Could not delete saved searches" };
+      }
+    },
+    async deleteSavedSearches(parent, args, context, info) {
+      const user = context?.user;
+
+      try {
+        const { savedSearchIds } = args;
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
+
+        const res = await context.datasources
+          .getLoader("userDataDeleteSavedSearches")
+          .load({ uniqueId, savedSearchIds });
+        return { message: res.message, idsDeletedCount: res?.count || 0 };
       } catch (error) {
         return { message: "Error. Could not delete saved searches" };
       }
