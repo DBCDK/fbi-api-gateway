@@ -1005,11 +1005,9 @@ export const resolvers = {
         const { searchObject } = args;
         const uniqueId = user?.uniqueId;
         validateUserId(uniqueId);
-
         const res = await context.datasources
           .getLoader("userDataAddSavedSearch")
           .load({ uniqueId, searchObject });
-        console.log("res", res);
         return res; //{ message: res.message, idsDeletedCount: res?.count || 0 };
       } catch (error) {
         return { message: "Error. Could not delete saved searches" };
