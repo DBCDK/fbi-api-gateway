@@ -3238,6 +3238,9 @@ type User {
 
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
   bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
+
+  \\"\\"\\"Saved searches from complex search\\"\\"\\"
+  savedSearches(offset: Int, limit: PaginationLimit): SavedSearchResponse!
   agencies(language: LanguageCode): [Agency!]!
   loggedInBranchId: String @deprecated(reason: \\"Use 'User.loggedInAgencyId' instead\\")
   loggedInAgencyId: String
@@ -3257,6 +3260,22 @@ type User {
   identityProviderUsed: String!
   hasCulrUniqueId: Boolean!
   omittedCulrData: OmittedCulrDataResponse
+}
+
+type SavedSearchResponse {
+  result: [SavedSearch!]
+  hitcount: Int!
+}
+
+type SavedSearch {
+  \\"\\"\\"SearchObject including fieldSearch, facetts, quickfilter etc. \\"\\"\\"
+  searchObject: String!
+
+  \\"\\"\\"Unique id for the search. Use this id to delete a search.\\"\\"\\"
+  id: Int!
+
+  \\"\\"\\"Creation timestamps\\"\\"\\"
+  createdAt: DateTime!
 }
 
 type UserSubscriptions {
@@ -3369,6 +3388,15 @@ type BookMarkDeleteResponse {
   IdsDeletedCount: Int!
 }
 
+type SavedSearchDeleteResponse {
+  idsDeletedCount: Int!
+  message: String
+}
+
+type SavedSearchUpdateResponse {
+  message: String
+}
+
 type OmittedCulrDataResponse {
   hasOmittedCulrUniqueId: Boolean!
   hasOmittedCulrMunicipality: Boolean!
@@ -3409,6 +3437,15 @@ type UserMutations {
 
   \\"\\"\\"Delete a bookmark\\"\\"\\"
   deleteBookmarks(bookmarkIds: [Int!]!): BookMarkDeleteResponse
+
+  \\"\\"\\"Add a saved search\\"\\"\\"
+  addSavedSearch(searchObject: String!): SavedSearch
+
+  \\"\\"\\"Update one savedSearch\\"\\"\\"
+  updateSavedSearch(savedSearchId: Int!, searchObject: String!): SavedSearchUpdateResponse
+
+  \\"\\"\\"Delete one or more saved searches\\"\\"\\"
+  deleteSavedSearches(savedSearchIds: [Int!]!): SavedSearchDeleteResponse
 }
 "
 `;
