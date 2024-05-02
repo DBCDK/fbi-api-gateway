@@ -17,7 +17,7 @@ type Universe {
   """
   A alternative title to the main 'title' of the universe
   """
-  alternativeTitles: [String!]!
+  alternativeTitles: [String!]
   
   """
   Description of the universe
