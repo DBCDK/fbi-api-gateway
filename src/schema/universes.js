@@ -137,7 +137,7 @@ export const resolvers = {
   },
   Universe: {
     title(parent, args, context, info) {
-      return parent.universeTitle;
+      return parent.universeTitle || "fisk";
     },
     description(parent, args, context, info) {
       return parent.universeDescription;
