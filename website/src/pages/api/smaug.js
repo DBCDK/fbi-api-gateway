@@ -37,7 +37,6 @@ async function getProfiles(agency) {
  * Extract specific data from whitelist
  */
 const selectConfigurations = (data) => {
-  // const permissions = data.gateway ? data.gateway : _permissions.default;
   const permissions = parseClientPermissions({ smaug: data });
 
   return {
