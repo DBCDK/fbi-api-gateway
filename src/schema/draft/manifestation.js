@@ -151,6 +151,7 @@ enum NoteType {
   TYPE_OF_SCORE
   FREQUENCY
   EDITION
+  TECHNICAL_REQUIREMENTS
 }
 enum ChildOrAdultCode {
   FOR_CHILDREN
