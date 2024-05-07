@@ -10,7 +10,7 @@ export async function performTestQuery({
   query,
   variables,
   context,
-  clientPermissions = { admin: true },
+  clientPermissions = { gateway: { admin: true } },
 }) {
   return graphql(
     await getExecutableSchema({
