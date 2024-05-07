@@ -14,8 +14,9 @@ export async function batchLoader(keys, context) {
       profile: `${keys?.[0]?.profile.agency}-${keys?.[0]?.profile.name}`,
       ids: keys.map((entry) => entry.id),
     }),
+    allowedErrorStatusCodes: [404],
   });
-  return keys.map((k) => res.body.records[k.id]);
+  return keys.map((k) => res?.body?.records?.[k.id]);
 }
 
 export const options = {
