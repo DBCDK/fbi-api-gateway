@@ -718,14 +718,12 @@ export const resolvers = {
           limit,
           offset,
         });
-      console.log("res", res);
 
       return { result: res?.result || [], hitcount: res?.hitcount || 0 };
     },
     async savedSearchByCql(parent, args, context, info) {
       const user = context?.user;
       const cql = args.cql;
-      console.log("\n\n\ncql", cql);
 
       const uniqueId = user?.uniqueId;
       validateUserId(uniqueId);
@@ -1034,7 +1032,6 @@ export const resolvers = {
         const res = await context.datasources
           .getLoader("userDataUpdateSavedSearch")
           .load({ uniqueId, savedSearchId, searchObject });
-        console.log("\n\n\n\n\nres", res);
         return res;
       } catch (error) {
         return { message: "Error. Could not delete saved searches" };
