@@ -308,7 +308,7 @@ promExporterApp.listen(9599, () => {
   // Query complexity middleware
   app.post("/:profile/graphql", async (req, res) => {
     const schema = await getExecutableSchema({
-      clientPermissions: req?.smaug?.gateway,
+      clientPermissions: { gateway: { ...req?.smaug?.gateway } },
       hasAccessToken: !!req.accessToken,
     });
 
@@ -400,7 +400,7 @@ promExporterApp.listen(9599, () => {
     }
 
     const schema = await getExecutableSchema({
-      clientPermissions,
+      clientPermissions: { gateway: { ...clientPermissions } },
       hasAccessToken: !!(clientPermissions && token),
     });
 
