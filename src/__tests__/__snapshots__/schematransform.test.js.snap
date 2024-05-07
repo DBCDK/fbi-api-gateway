@@ -3242,6 +3242,9 @@ type User {
 
   \\"\\"\\"Saved searches from complex search\\"\\"\\"
   savedSearches(offset: Int, limit: PaginationLimit): SavedSearchResponse!
+
+  \\"\\"\\"Get one saved search by cql. Returns searchobject including id.\\"\\"\\"
+  savedSearchByCql(cql: String!): SavedSearch
   agencies(language: LanguageCode): [Agency!]!
   loggedInBranchId: String @deprecated(reason: \\"Use 'User.loggedInAgencyId' instead\\")
   loggedInAgencyId: String
@@ -3270,13 +3273,16 @@ type SavedSearchResponse {
 
 type SavedSearch {
   \\"\\"\\"SearchObject including fieldSearch, facetts, quickfilter etc. \\"\\"\\"
-  searchObject: String!
+  searchObject: String
 
   \\"\\"\\"Unique id for the search. Use this id to delete a search.\\"\\"\\"
-  id: Int!
+  id: Int
 
   \\"\\"\\"Creation timestamps\\"\\"\\"
-  createdAt: DateTime!
+  createdAt: DateTime
+
+  \\"\\"\\"cql including fieldSearch, facetts, quickfilter etc. \\"\\"\\"
+  cql: String
 }
 
 type UserSubscriptions {
