@@ -48,6 +48,11 @@ type User {
   Saved searches from complex search
   """
   savedSearches(offset: Int limit: PaginationLimit): SavedSearchResponse!
+  """
+  Get one saved search by cql. Returns searchobject including id.
+  """
+  savedSearchByCql(cql: String!): SavedSearch
+
   
   agencies(language: LanguageCode): [Agency!]!
   loggedInBranchId: String @deprecated(reason: "Use 'User.loggedInAgencyId' instead")
@@ -80,15 +85,19 @@ type SavedSearch {
   """
   SearchObject including fieldSearch, facetts, quickfilter etc. 
   """
-  searchObject: String!
+  searchObject: String
   """
   Unique id for the search. Use this id to delete a search.
   """
-  id: Int!
+  id: Int
   """
   Creation timestamps
   """
-  createdAt: DateTime!
+  createdAt: DateTime
+  """
+  cql including fieldSearch, facetts, quickfilter etc. 
+  """
+  cql: String
 
 }
 
@@ -709,8 +718,25 @@ export const resolvers = {
           limit,
           offset,
         });
+      console.log("res", res);
 
       return { result: res?.result || [], hitcount: res?.hitcount || 0 };
+    },
+    async savedSearchByCql(parent, args, context, info) {
+      const user = context?.user;
+      const cql = args.cql;
+      console.log("\n\n\ncql", cql);
+
+      const uniqueId = user?.uniqueId;
+      validateUserId(uniqueId);
+
+      const res = await context.datasources
+        .getLoader("userDataGetSavedSearchByCql")
+        .load({
+          uniqueId,
+          cql,
+        });
+      return res;
     },
   },
   Loan: {
