@@ -377,7 +377,7 @@ export const resolvers = {
         data["search-request"].filters = filters;
       }
 
-      data.userId =
+      data["user-id"] =
         context.user?.uniqueId ||
         (context.user?.userId ? createHash(context.user?.userId) : null);
 
