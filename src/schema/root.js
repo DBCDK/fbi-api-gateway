@@ -16,6 +16,7 @@ import {
 
 import translations from "../utils/translations.json";
 import isEmpty from "lodash/isEmpty";
+import createHash from "../utils/hash";
 
 /**
  * The root type definitions
@@ -375,6 +376,10 @@ export const resolvers = {
         );
         data["search-request"].filters = filters;
       }
+
+      data["user-id"] =
+        context.user?.uniqueId ||
+        (context.user?.userId ? createHash(context.user?.userId) : null);
 
       // We log the object, setting 'type: "data"' on the root level
       // of the log entry. In this way the data will be collected
