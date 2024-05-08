@@ -350,7 +350,7 @@ export const resolvers = {
     },
   },
   Mutation: {
-    data_collect(parent, args, context, info) {
+    async data_collect(parent, args, context, info) {
       // Check that exactly one input type is given
       const inputObjects = Object.values(args.input);
       if (inputObjects.length !== 1) {
@@ -375,6 +375,8 @@ export const resolvers = {
         );
         data["search-request"].filters = filters;
       }
+
+      data.userId = context.user?.uniqueId || context.user?.userId;
 
       // We log the object, setting 'type: "data"' on the root level
       // of the log entry. In this way the data will be collected
