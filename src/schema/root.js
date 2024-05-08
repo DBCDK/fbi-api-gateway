@@ -351,7 +351,7 @@ export const resolvers = {
     },
   },
   Mutation: {
-    async data_collect(parent, args, context, info) {
+    data_collect(parent, args, context, info) {
       // Check that exactly one input type is given
       const inputObjects = Object.values(args.input);
       if (inputObjects.length !== 1) {
