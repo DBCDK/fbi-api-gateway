@@ -50,7 +50,10 @@ describe("API test cases", () => {
           },
         },
       },
-      context: { smaug: { app: { ips: ["some-ip"] } } },
+      context: {
+        smaug: { app: { ips: ["some-ip"] } },
+        tracking: { consent: true, uniqueVisitorId: "some-session-id" },
+      },
     });
     expect(result).toEqual({
       data: {
@@ -66,6 +69,8 @@ describe("API test cases", () => {
         "search-query-work": "some-work-id",
         "search-request": { q: { all: "harry" } },
         "session-id": "some-session-id",
+        "user-id": null,
+        "tracking-consent": true,
       }),
     });
   });

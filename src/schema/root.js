@@ -352,6 +352,7 @@ export const resolvers = {
   },
   Mutation: {
     data_collect(parent, args, context, info) {
+      const { consent, uniqueVisitorId } = context?.tracking || {};
       // Check that exactly one input type is given
       const inputObjects = Object.values(args.input);
       if (inputObjects.length !== 1) {
@@ -376,15 +377,15 @@ export const resolvers = {
         );
         data["search-request"].filters = filters;
       }
-      data["session-id"] = context.tracking.uniqueVisitorId;
+      data["session-id"] = uniqueVisitorId;
       data["user-id"] =
         context.user?.uniqueId ||
         (context.user?.userId ? createHash(context.user?.userId) : null);
-      data["tracking-consent"] = context.tracking.consent;
+      data["tracking-consent"] = consent;
 
       // Override some properties, if user has not given consent to tracking
-      if (!context.tracking.consent) {
-        data = { ...data, ip: "", "session-id": "", "user-id": "" };
+      if (!consent) {
+        data = { ...data, ip: null, "session-id": null, "user-id": null };
       }
 
       // We log the object, setting 'type: "data"' on the root level
