@@ -155,6 +155,12 @@ promExporterApp.listen(9599, () => {
    */
   app.post("/:profile/graphql", async (req, res, next) => {
     // Get bearer token from authorization header
+
+    req.tracking = {
+      consent: req.headers["x-tracking-consent"] === "true",
+      uniqueVisitorId: req.headers["x-unique-visitor-id"],
+    };
+
     req.rawAccessToken = req.headers.authorization?.replace(/bearer /i, "");
     req.isTestToken = req.rawAccessToken?.startsWith("test");
     if (req.isTestToken) {

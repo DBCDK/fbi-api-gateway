@@ -359,7 +359,7 @@ export const resolvers = {
       }
 
       // Convert keys, replace _ to -
-      const data = { ip: context.smaug.app.ips[0] };
+      let data = { ip: context.smaug.app.ips[0] };
       Object.entries(inputObjects[0]).forEach(([key, val]) => {
         data[key.replace(/_/g, "-")] = val;
       });
@@ -376,10 +376,16 @@ export const resolvers = {
         );
         data["search-request"].filters = filters;
       }
-
+      data["session-id"] = context.tracking.uniqueVisitorId;
       data["user-id"] =
         context.user?.uniqueId ||
         (context.user?.userId ? createHash(context.user?.userId) : null);
+      data["tracking-consent"] = context.tracking.consent;
+
+      // Override some properties, if user has not given consent to tracking
+      if (!context.tracking.consent) {
+        data = { ...data, ip: "", "session-id": "", "user-id": "" };
+      }
 
       // We log the object, setting 'type: "data"' on the root level
       // of the log entry. In this way the data will be collected
