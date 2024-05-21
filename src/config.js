@@ -66,7 +66,7 @@ export default {
     openformat: {
       url:
         process.env.OPENFORMAT_URL ||
-        "http://open-format-broker.cisterne.svc.cloud.dbc.dk/api/",
+        "http://open-format-broker.cisterne.svc.cloud.dbc.dk/api/v2/format",
       ttl: process.env.OPENFORMAT_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.OPENFORMAT_PREFIX || "openformat-1",
     },
