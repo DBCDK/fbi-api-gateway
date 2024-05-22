@@ -352,6 +352,7 @@ export const resolvers = {
   },
   Mutation: {
     data_collect(parent, args, context, info) {
+      const { consent, uniqueVisitorId } = context?.tracking || {};
       // Check that exactly one input type is given
       const inputObjects = Object.values(args.input);
       if (inputObjects.length !== 1) {
@@ -359,7 +360,7 @@ export const resolvers = {
       }
 
       // Convert keys, replace _ to -
-      const data = { ip: context.smaug.app.ips[0] };
+      let data = { ip: context.smaug.app.ips[0] };
       Object.entries(inputObjects[0]).forEach(([key, val]) => {
         data[key.replace(/_/g, "-")] = val;
       });
@@ -376,10 +377,16 @@ export const resolvers = {
         );
         data["search-request"].filters = filters;
       }
-
+      data["session-id"] = uniqueVisitorId;
       data["user-id"] =
         context.user?.uniqueId ||
         (context.user?.userId ? createHash(context.user?.userId) : null);
+      data["tracking-consent"] = consent;
+
+      // Override some properties, if user has not given consent to tracking
+      if (!consent) {
+        data = { ...data, ip: null, "session-id": null, "user-id": null };
+      }
 
       // We log the object, setting 'type: "data"' on the root level
       // of the log entry. In this way the data will be collected
