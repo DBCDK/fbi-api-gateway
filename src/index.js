@@ -186,7 +186,12 @@ promExporterApp.listen(9599, () => {
    * Middleware for initializing dataloaders
    */
   app.post("/:profile/graphql", async (req, res, next) => {
-    req.datasources = createDataLoaders(uuid(), req.testUser, req.accessToken);
+    req.datasources = createDataLoaders(
+      uuid(),
+      req.testUser,
+      req.accessToken,
+      req.tracking
+    );
     next();
   });
 
