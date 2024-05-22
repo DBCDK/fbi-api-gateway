@@ -1,0 +1,133 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Permissions Empty gateway object in smaug configuration gives default permissions 1`] = `
+Object {
+  "allowRootFields": Array [
+    "draft",
+    "manifestation",
+    "manifestations",
+    "search",
+    "work",
+    "works",
+    "search",
+    "suggest",
+    "complexSearch",
+    "complexSuggest",
+    "localSuggest",
+    "recommend",
+    "infomedia",
+    "refWorks",
+    "ris",
+    "submitPeriodicaArticleOrder",
+    "elba",
+    "library",
+    "relatedSubjects",
+    "linkCheck",
+    "mood",
+  ],
+  "denyTypes": Array [
+    "CheckOrderPolicy",
+    "Availability",
+    "SEO",
+  ],
+}
+`;
+
+exports[`Permissions Explicitly setting allowRootFields in gateway object in smaug configuration gives those permissions 1`] = `
+Object {
+  "allowRootFields": Array [
+    "manifestation",
+  ],
+}
+`;
+
+exports[`Permissions Role from gateway object in smaug configuration gives the roles' permissions 1`] = `
+Object {
+  "allowRootFields": Array [
+    "draft",
+    "manifestation",
+    "manifestations",
+    "search",
+    "work",
+    "works",
+    "search",
+  ],
+  "denyTypes": Array [
+    "CheckOrderPolicy",
+    "Availability",
+    "SEO",
+  ],
+}
+`;
+
+exports[`Permissions Unknown role from gateway object in smaug configuration gives default permissions 1`] = `
+Object {
+  "allowRootFields": Array [
+    "draft",
+    "manifestation",
+    "manifestations",
+    "search",
+    "work",
+    "works",
+    "search",
+    "suggest",
+    "complexSearch",
+    "complexSuggest",
+    "localSuggest",
+    "recommend",
+    "infomedia",
+    "refWorks",
+    "ris",
+    "submitPeriodicaArticleOrder",
+    "elba",
+    "library",
+    "relatedSubjects",
+    "linkCheck",
+    "mood",
+  ],
+  "denyTypes": Array [
+    "CheckOrderPolicy",
+    "Availability",
+    "SEO",
+  ],
+}
+`;
+
+exports[`Permissions admin set to true in smaug configuration 1`] = `
+Object {
+  "admin": true,
+}
+`;
+
+exports[`Permissions no gateway object in smaug configuration gives default permissions 1`] = `
+Object {
+  "allowRootFields": Array [
+    "draft",
+    "manifestation",
+    "manifestations",
+    "search",
+    "work",
+    "works",
+    "search",
+    "suggest",
+    "complexSearch",
+    "complexSuggest",
+    "localSuggest",
+    "recommend",
+    "infomedia",
+    "refWorks",
+    "ris",
+    "submitPeriodicaArticleOrder",
+    "elba",
+    "library",
+    "relatedSubjects",
+    "linkCheck",
+    "mood",
+  ],
+  "denyTypes": Array [
+    "CheckOrderPolicy",
+    "Availability",
+    "SEO",
+  ],
+}
+`;
