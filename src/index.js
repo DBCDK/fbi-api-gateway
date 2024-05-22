@@ -35,6 +35,7 @@ import isFastLaneQuery, {
 } from "./utils/fastLane";
 import { start as startResourceMonitor } from "./utils/resourceMonitor";
 import hasExternalRequest from "./utils/externalRequest";
+import { dataCollectMiddleware } from "./utils/dataCollect";
 
 startResourceMonitor();
 
@@ -175,6 +176,11 @@ promExporterApp.listen(9599, () => {
 
     next();
   });
+
+  /**
+   * Middleware for collecting data
+   */
+  app.post("/:profile/graphql", dataCollectMiddleware);
 
   /**
    * Middleware for initializing dataloaders
