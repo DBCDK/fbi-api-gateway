@@ -1,4 +1,5 @@
 import { log } from "dbc-node-logger";
+import createHash from "./hash";
 
 /**
  * Middleware that attaches a collect function to the request context.
