@@ -358,7 +358,7 @@ export const resolvers = {
         throw new Error("Exactly 1 input must be specified");
       }
 
-      context.tracking.collect(inputObjects[0]);
+      context?.tracking?.collect(inputObjects[0]);
 
       return "OK";
     },
