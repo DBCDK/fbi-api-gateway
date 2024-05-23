@@ -108,6 +108,15 @@ export async function load(params, context) {
       params,
       accessToken: context.accessToken,
     });
+
+    // Logging for analytics
+    context?.tracking?.collect({
+      action: "DIGITAL_ARTICLE_ORDER",
+      pid: params?.pid,
+      originRequester: params?.originRequester,
+      agencyId: params?.agencyId,
+    });
+
     return { status: "OK" };
   }
 
@@ -117,6 +126,10 @@ export async function load(params, context) {
   return {
     status: "ERROR_PID_NOT_RESERVABLE",
   };
+}
+
+export function testLoad() {
+  return { status: "OK" };
 }
 
 export const options = {

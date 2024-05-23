@@ -111,7 +111,12 @@ function setupDataloader(
  * Will instantiate dataloaders from datasources.
  * This should be done for every incoming GraphQL request
  */
-export default function createDataLoaders(uuid, testUser, accessToken) {
+export default function createDataLoaders(
+  uuid,
+  testUser,
+  accessToken,
+  tracking
+) {
   const result = {};
   const stats = createTracker(uuid);
   result.stats = stats;
@@ -131,6 +136,7 @@ export default function createDataLoaders(uuid, testUser, accessToken) {
         testUser,
         accessToken,
         stats,
+        tracking,
       })?.loader;
     }
     return result[name];

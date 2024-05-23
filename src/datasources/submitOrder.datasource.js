@@ -125,6 +125,14 @@ export async function load(
       }
     );
 
+    // Logging for analytics
+    context?.tracking?.collect({
+      action: "ORDER",
+      pids: input?.pids,
+      pickUpBranch: input?.pickUpBranch,
+      orderSystem,
+    });
+
     return parseOrder(order);
   } catch (e) {
     log.error("SUBMIT ORDER: Error placing order", { parameters });
