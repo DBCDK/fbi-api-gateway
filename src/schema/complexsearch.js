@@ -98,7 +98,6 @@ enum ComplexSearchFacets {
   LIX,
   LET,
   PUBLICATIONYEAR,
-  
 }
 
 """
@@ -124,6 +123,22 @@ type ComplexSearchFacetResponse{
   name: String
   values: [ComplexSearchFacetValue!]
 }
+
+"""
+Facets only response
+"""
+type ComplexFacetsResponse {
+  """
+  Facets for this response
+  """
+  facets: [ComplexSearchFacetResponse!]
+  
+  """
+  Error message, for instance if CQL is invalid
+  """
+  errorMessage: String 
+}
+
 
 """
 The search response
@@ -189,6 +204,15 @@ function setPost(parent, context, args) {
 }
 
 export const resolvers = {
+  ComplexFacetsResponse: {
+    async facets(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("complexFacets")
+        .load(setPost(parent, context, args));
+
+      return res?.facets;
+    },
+  },
   ComplexSearchResponse: {
     async hitcount(parent, args, context) {
       const res = await context.datasources
