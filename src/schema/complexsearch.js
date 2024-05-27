@@ -209,8 +209,13 @@ export const resolvers = {
       const res = await context.datasources
         .getLoader("complexFacets")
         .load(setPost(parent, context, args));
-
       return res?.facets;
+    },
+    async errorMessage(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("complexFacets")
+        .load(setPost(parent, context, args));
+      return res?.errorMessage;
     },
   },
   ComplexSearchResponse: {
