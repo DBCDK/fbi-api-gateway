@@ -40,9 +40,9 @@ export async function load({ pids }, context) {
   return parseResponse(response, context?.trackingId);
 }
 
-// export const options = {
-//   redis: {
-//     prefix: "refworks-1",
-//     ttl,
-//   },
-// };
+export const options = {
+  redis: {
+    prefix: "refworks-1",
+    ttl,
+  },
+};
