@@ -78,6 +78,7 @@ export async function load(
 export const options = {
   redis: {
     prefix,
-    ttl: 24 * 60 * 60,
+    ttl: 12 * 60 * 60,
+    staleWhileRevalidate: 24 * 60 * 60,
   },
 };
