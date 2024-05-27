@@ -2,7 +2,7 @@ import config from "../config";
 
 const { url, ttl } = config.datasources.openformat;
 
-async function postObject(pids) {
+async function postObject(pids, uuid) {
   const repositoryIds = pids.map((pid) => ({
     repositoryId: pid,
   }));
@@ -20,15 +20,8 @@ async function postObject(pids) {
 }
 
 export function parseResponse(response) {
-  console.log(JSON.stringify(response, null, 4), "REEEEEEEEEEEEEEEEEESPONSE");
-
   const refWorksArray = response?.body?.objects?.map(
     (obj) => obj?.refWorks?.[0]?.formatted
-  );
-
-  console.log(
-    JSON.stringify(refWorksArray, null, 4),
-    "ARRRRRRRRRRRRAUYYYYYYYYYY"
   );
 
   return refWorksArray.join("\n");
@@ -44,13 +37,12 @@ export async function load({ pids }, context) {
     body: JSON.stringify(params),
   });
 
-  return parseResponse(response);
+  return parseResponse(response, context?.trackingId);
 }
 
 // export const options = {
 //   redis: {
 //     prefix: "refworks-1",
 //     ttl,
-//     staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
 //   },
 // };

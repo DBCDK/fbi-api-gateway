@@ -207,7 +207,7 @@ function translateType(type) {
   }
 }
 
-async function postObject(pids) {
+async function postObject(pids, uuid) {
   const repositoryIds = pids.map((pid) => ({
     repositoryId: pid,
   }));
@@ -220,12 +220,13 @@ async function postObject(pids) {
       },
     ],
     objects: repositoryIds,
-    trackingId: "some-uuid",
+    trackingId: uuid || "",
   };
 }
 
 export async function load({ pids }, context) {
-  const params = await postObject(pids);
+  const params = await postObject(pids, context?.trackingId);
+
   const response = await context.fetch(url, {
     method: "POST",
     headers: {
@@ -241,6 +242,5 @@ export const options = {
   redis: {
     prefix: "ris-1",
     ttl,
-    staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
   },
 };
