@@ -68,6 +68,7 @@ const checkPost = (post) => {
 };
 
 export function parseOrder(orderFromService) {
+  console.log("\n\n\n\n\norderFromService", orderFromService);
   try {
     return {
       ok: orderFromService?.ok || false,

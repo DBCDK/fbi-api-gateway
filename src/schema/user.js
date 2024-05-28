@@ -9,6 +9,7 @@ import {
   getUserBranchIds,
   resolveManifestation,
   isCPRNumber,
+  resolveWork,
 } from "../utils/utils";
 
 import { filterAgenciesByProps } from "../utils/accounts";
@@ -118,8 +119,78 @@ hitcount: Int!
 Orders made through bibliotek.dk
 """
 type BibliotekDkOrders {
-result: [OrderStatusResponse!]
+result: [BibliotekDkOrder!]
 hitcount: Int!
+}
+type BibliotekDkOrder  {
+
+  """
+  Unique id for the order
+  """
+  orderId: String!
+
+  """
+  Whether the order is open or closed
+  """
+  closed: Boolean @deprecated
+
+  """
+  Indicates if the order has been automated
+  """
+  autoForwardResult: String @deprecated
+  
+  """
+  Confirms a reservation has been made 
+  """
+  placeOnHold: String @deprecated
+      
+  """
+  The branch where the user should collect the material
+  """
+  pickupAgencyId: String @deprecated
+  
+  """
+  pid associated with the order
+  """
+  pid: String
+  
+  """
+  Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
+  """
+  pidOfPrimaryObject: String @deprecated(reason: "Use workId instead")
+
+  """
+  Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
+  """
+  workId: String 
+
+  """
+  Author of the material
+  """
+  author: String  @deprecated(reason: "Use workId instead")
+  
+  """
+  Title of the material
+  """
+  title: String  @deprecated(reason: "Use workId instead")
+  
+  """
+  Date and time when the order was created
+  """
+  creationDate: String
+  """
+  Error message if ors-maintenance request fails
+  """
+  errorMessage: String
+
+  titles: WorkTitles!
+
+  """
+  Creators
+  """
+  creators: [Creator!]!
+
+
 }
 type Loan {
   dueDate:	DateTime!
@@ -494,10 +565,49 @@ export const resolvers = {
         });
 
       const orderIds = res?.result?.map((order) => order.orderId);
+      const pids = res?.result?.map((order) => order.pid);
+
+      console.log("\n\n\nres.result", res.result);
+
+      console.log("\n\n !!pids", pids);
 
       if (orderIds?.length > 0) {
-        const result = await fetchOrderStatus({ orderIds: orderIds }, context);
-        return { result, hitcount: res?.hitcount || 0 };
+        //TODO: we dont need that call after deprecation
+        //const result = await fetchOrderStatus({ orderIds: orderIds }, context);
+
+        const workresult = await Promise.all(
+          res?.result.map(async (order) => {
+            //todo remove when after deprecation. Use only resolveWork
+            const orsResponse = await fetchOrderStatus(
+              { orderIds: [order.orderId] },
+              context
+            );
+            console.log("\n\n\n\norsResponse", orsResponse);
+            const orsResult = orsResponse[0];
+            const work = await resolveWork({ pid: order.pid }, context);
+            console.log("\n\n\nwork.TITLE: ", work.titles.main[0]);
+            const creators = [
+              ...work?.creators?.persons?.map((person) => ({
+                ...person,
+                __typename: "Person",
+              })),
+              ...work?.creators?.corporations?.map((person) => ({
+                ...person,
+                __typename: "Corporation",
+              })),
+            ];
+            return {
+              ...work,
+              ...orsResult,
+              orderId: orsResult?.orderId,
+              title: work.titles.main[0],
+              creators: creators,
+            };
+          })
+        );
+
+        console.log("\n\n\nworkresult", workresult);
+        return { result: workresult, hitcount: res?.hitcount || 0 };
       }
       return { result: [], hitcount: 0 };
     },
