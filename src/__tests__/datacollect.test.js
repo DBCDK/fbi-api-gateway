@@ -1,5 +1,6 @@
 import { graphql } from "graphql";
 import { getExecutableSchema } from "../schemaLoader";
+import { dataCollectMiddleware } from "../utils/dataCollect";
 
 let internalSchema;
 
@@ -34,6 +35,18 @@ describe("API test cases", () => {
   });
 
   test("Mutation succes: data collect with search_work", async () => {
+    const context = {
+      smaug: { app: { ips: ["some-ip"] } },
+      headers: {
+        "x-tracking-consent": "true",
+        "x-unique-visitor-id": "some-session-id",
+      },
+    };
+
+    dataCollectMiddleware(context, null, () => {});
+
+    // throw context;
+    // console.log(context);
     const result = await performTestQuery({
       query: `
           mutation ($input: DataCollectInput!) {
@@ -50,7 +63,7 @@ describe("API test cases", () => {
           },
         },
       },
-      context: { smaug: { app: { ips: ["some-ip"] } } },
+      context,
     });
     expect(result).toEqual({
       data: {
@@ -62,10 +75,13 @@ describe("API test cases", () => {
       type: "data",
       message: JSON.stringify({
         ip: "some-ip",
+        profile: {},
         "search-query-hit": 7,
         "search-query-work": "some-work-id",
         "search-request": { q: { all: "harry" } },
         "session-id": "some-session-id",
+        "user-id": null,
+        "tracking-consent": true,
       }),
     });
   });

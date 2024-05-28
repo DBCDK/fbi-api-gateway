@@ -17,7 +17,7 @@ type Universe {
   """
   A alternative title to the main 'title' of the universe
   """
-  alternativeTitles: [String!]!
+  alternativeTitles: [String!]
   
   """
   Description of the universe
@@ -137,7 +137,7 @@ export const resolvers = {
   },
   Universe: {
     title(parent, args, context, info) {
-      return parent.universeTitle;
+      return parent.universeTitle || "fisk";
     },
     description(parent, args, context, info) {
       return parent.universeDescription;

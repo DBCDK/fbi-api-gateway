@@ -19,6 +19,7 @@ import { getFilesRecursive } from "./utils/utils";
 import { wrapResolvers } from "./utils/wrapResolvers";
 import permissions from "./permissions.json";
 import merge from "lodash/merge";
+import { parseClientPermissions } from "../commonUtils";
 
 // Stores the transformed schemas
 const schemaCache = {};
@@ -87,10 +88,14 @@ function schemaLoader() {
  */
 export async function getExecutableSchema({
   loadExternal = true,
-  clientPermissions = permissions.default,
+  clientPermissions,
   hasAccessToken,
 }) {
-  const key = JSON.stringify({ hasAccessToken, clientPermissions });
+  const parsedPermissions = parseClientPermissions({
+    smaug: clientPermissions,
+  });
+
+  const key = JSON.stringify({ hasAccessToken, parsedPermissions });
 
   if (!schemaCache[key]) {
     // Fetch external Drupal schema (bibdk)
@@ -109,11 +114,11 @@ export async function getExecutableSchema({
     // If no valid accessToken is given (no smaug client), we allow to introspect
     // the entire schema (useful for test purposes). But no data is accessible.
     const filteredSchema =
-      clientPermissions?.admin || !hasAccessToken
+      parsedPermissions?.admin || !hasAccessToken
         ? mergedSchema
         : wrapSchema({
             schema: mergedSchema,
-            transforms: [new PermissionsTransform(clientPermissions)],
+            transforms: [new PermissionsTransform(parsedPermissions)],
           });
 
     // Wrap all resolvers with error logger

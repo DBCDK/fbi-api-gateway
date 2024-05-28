@@ -123,7 +123,7 @@ test("limited access to root fields", async () => {
       accessToken: "DUMMY_TOKEN",
       smaug: {},
     },
-    clientPermissions: { allowRootFields: ["help"] },
+    clientPermissions: { gateway: { allowRootFields: ["help"] } },
   });
 
   expect(printSchema(buildClientSchema(result.data))).toMatchSnapshot();
@@ -139,8 +139,10 @@ test("remove all fields by type", async () => {
       smaug: {},
     },
     clientPermissions: {
-      allowRootFields: ["manifestation"],
-      denyTypes: ["Cover"],
+      gateway: {
+        allowRootFields: ["manifestation"],
+        denyTypes: ["Cover"],
+      },
     },
   });
 
@@ -156,7 +158,7 @@ test("default schema transform", async () => {
       accessToken: "DUMMY_TOKEN",
       smaug: {},
     },
-    clientPermissions: permissions.default,
+    clientPermissions: {},
   });
 
   expect(printSchema(buildClientSchema(result.data))).toMatchSnapshot();

@@ -44,6 +44,16 @@ type User {
   Orders made through bibliotek.dk
   """
   bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
+  """
+  Saved searches from complex search
+  """
+  savedSearches(offset: Int limit: PaginationLimit): SavedSearchResponse!
+  """
+  Get one saved search by cql. Returns searchobject including id.
+  """
+  savedSearchByCql(cql: String!): SavedSearch
+
+  
   agencies(language: LanguageCode): [Agency!]!
   loggedInBranchId: String @deprecated(reason: "Use 'User.loggedInAgencyId' instead")
   loggedInAgencyId: String
@@ -63,6 +73,32 @@ type User {
   identityProviderUsed: String!
   hasCulrUniqueId: Boolean!
   omittedCulrData: OmittedCulrDataResponse
+
+}
+
+type SavedSearchResponse {
+  result: [SavedSearch!]
+  hitcount: Int!
+  }
+
+type SavedSearch {
+  """
+  SearchObject including fieldSearch, facetts, quickfilter etc. 
+  """
+  searchObject: String
+  """
+  Unique id for the search. Use this id to delete a search.
+  """
+  id: Int
+  """
+  Creation timestamps
+  """
+  createdAt: DateTime
+  """
+  cql including fieldSearch, facetts, quickfilter etc. 
+  """
+  cql: String
+
 }
 
 type UserSubscriptions {
@@ -176,6 +212,14 @@ type BookMarkDeleteResponse {
   IdsDeletedCount: Int!
 }
 
+type SavedSearchDeleteResponse {
+  idsDeletedCount: Int!
+  message: String
+}
+type SavedSearchUpdateResponse {
+  message: String
+}
+
 type OmittedCulrDataResponse {
   hasOmittedCulrUniqueId: Boolean!
   hasOmittedCulrMunicipality: Boolean!
@@ -226,6 +270,18 @@ type UserMutations {
   Delete a bookmark
   """
   deleteBookmarks(bookmarkIds: [Int!]!): BookMarkDeleteResponse
+  """
+  Add a saved search
+  """
+  addSavedSearch(searchObject: String!): SavedSearch
+  """
+  Update one savedSearch
+  """
+  updateSavedSearch(savedSearchId: Int!,searchObject: String!): SavedSearchUpdateResponse
+  """
+  Delete one or more saved searches
+  """
+  deleteSavedSearches(savedSearchIds: [Int!]!): SavedSearchDeleteResponse
 }
   
 extend type Mutation {
@@ -648,6 +704,38 @@ export const resolvers = {
         return [];
       }
     },
+    async savedSearches(parent, args, context, info) {
+      const user = context?.user;
+
+      const { limit, offset } = args;
+      const uniqueId = user?.uniqueId;
+      validateUserId(uniqueId);
+
+      const res = await context.datasources
+        .getLoader("userDataGetSavedSearches")
+        .load({
+          uniqueId,
+          limit,
+          offset,
+        });
+
+      return { result: res?.result || [], hitcount: res?.hitcount || 0 };
+    },
+    async savedSearchByCql(parent, args, context, info) {
+      const user = context?.user;
+      const cql = args.cql;
+
+      const uniqueId = user?.uniqueId;
+      validateUserId(uniqueId);
+
+      const res = await context.datasources
+        .getLoader("userDataGetSavedSearchByCql")
+        .load({
+          uniqueId,
+          cql,
+        });
+      return res;
+    },
   },
   Loan: {
     manifestation(parent, args, context, info) {
@@ -915,6 +1003,54 @@ export const resolvers = {
           `Failed to delete bookmark in userData service. Message: ${error.message}`
         );
         return 0;
+      }
+    },
+
+    async addSavedSearch(parent, args, context, info) {
+      const user = context?.user;
+
+      try {
+        const { searchObject } = args;
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
+        const res = await context.datasources
+          .getLoader("userDataAddSavedSearch")
+          .load({ uniqueId, searchObject });
+        return res;
+      } catch (error) {
+        return { message: "Error. Could not delete saved searches" };
+      }
+    },
+    async updateSavedSearch(parent, args, context, info) {
+      const user = context?.user;
+
+      try {
+        const { searchObject, savedSearchId } = args;
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
+
+        const res = await context.datasources
+          .getLoader("userDataUpdateSavedSearch")
+          .load({ uniqueId, savedSearchId, searchObject });
+        return res;
+      } catch (error) {
+        return { message: "Error. Could not delete saved searches" };
+      }
+    },
+    async deleteSavedSearches(parent, args, context, info) {
+      const user = context?.user;
+
+      try {
+        const { savedSearchIds } = args;
+        const uniqueId = user?.uniqueId;
+        validateUserId(uniqueId);
+
+        const res = await context.datasources
+          .getLoader("userDataDeleteSavedSearches")
+          .load({ uniqueId, savedSearchIds });
+        return { message: res.message, idsDeletedCount: res?.count || 0 };
+      } catch (error) {
+        return { message: "Error. Could not delete saved searches" };
       }
     },
   },

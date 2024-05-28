@@ -16,6 +16,7 @@ import {
 
 import translations from "../utils/translations.json";
 import isEmpty from "lodash/isEmpty";
+import createHash from "../utils/hash";
 
 /**
  * The root type definitions
@@ -80,10 +81,17 @@ type Query {
     The query to get suggestions from
     """
     q: String!
+
     """    
     suggest type to include in result
     """
     suggestType: SuggestionType
+
+    """    
+    suggest types to include in result
+    """
+    suggestTypes: [SuggestionType!]
+
     """
     Number of items to return
     """
@@ -350,29 +358,7 @@ export const resolvers = {
         throw new Error("Exactly 1 input must be specified");
       }
 
-      // Convert keys, replace _ to -
-      const data = { ip: context.smaug.app.ips[0] };
-      Object.entries(inputObjects[0]).forEach(([key, val]) => {
-        data[key.replace(/_/g, "-")] = val;
-      });
-
-      // Remove keys where value is empty array
-      if (data?.["search-request"]?.filters) {
-        const filters = {};
-        Object.entries(data["search-request"].filters).forEach(
-          ([key, value]) => {
-            if (value?.length > 0) {
-              filters[key] = value;
-            }
-          }
-        );
-        data["search-request"].filters = filters;
-      }
-
-      // We log the object, setting 'type: "data"' on the root level
-      // of the log entry. In this way the data will be collected
-      // by the AI data collector
-      log.info(JSON.stringify(data), { type: "data" });
+      context?.tracking?.collect(inputObjects[0]);
 
       return "OK";
     },

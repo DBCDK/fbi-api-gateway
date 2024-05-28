@@ -214,9 +214,7 @@ async function filterHoldings(holdings, context) {
 function getLookupUrl(branch, localIdentifiers) {
   if (branch?.lookupUrl?.includes("search/ting")) {
     const pids = localIdentifiers?.map((id) => id.localizationPid);
-    return `${branch?.branchWebsiteUrl}/search/ting/${encodeURIComponent(
-      pids?.join(" OR ")
-    )}`;
+    return `${branch?.lookupUrl}${encodeURIComponent(pids?.join(" OR "))}`;
   }
   const identifiers =
     localIdentifiers &&

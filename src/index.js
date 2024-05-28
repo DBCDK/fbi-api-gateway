@@ -35,6 +35,7 @@ import isFastLaneQuery, {
 } from "./utils/fastLane";
 import { start as startResourceMonitor } from "./utils/resourceMonitor";
 import hasExternalRequest from "./utils/externalRequest";
+import { dataCollectMiddleware } from "./utils/dataCollect";
 
 startResourceMonitor();
 
@@ -155,6 +156,12 @@ promExporterApp.listen(9599, () => {
    */
   app.post("/:profile/graphql", async (req, res, next) => {
     // Get bearer token from authorization header
+
+    req.tracking = {
+      consent: req.headers["x-tracking-consent"] === "true",
+      uniqueVisitorId: req.headers["x-unique-visitor-id"],
+    };
+
     req.rawAccessToken = req.headers.authorization?.replace(/bearer /i, "");
     req.isTestToken = req.rawAccessToken?.startsWith("test");
     if (req.isTestToken) {
@@ -171,10 +178,20 @@ promExporterApp.listen(9599, () => {
   });
 
   /**
+   * Middleware for collecting data
+   */
+  app.post("/:profile/graphql", dataCollectMiddleware);
+
+  /**
    * Middleware for initializing dataloaders
    */
   app.post("/:profile/graphql", async (req, res, next) => {
-    req.datasources = createDataLoaders(uuid(), req.testUser, req.accessToken);
+    req.datasources = createDataLoaders(
+      uuid(),
+      req.testUser,
+      req.accessToken,
+      req.tracking
+    );
     next();
   });
 
@@ -308,7 +325,7 @@ promExporterApp.listen(9599, () => {
   // Query complexity middleware
   app.post("/:profile/graphql", async (req, res) => {
     const schema = await getExecutableSchema({
-      clientPermissions: req?.smaug?.gateway,
+      clientPermissions: { gateway: { ...req?.smaug?.gateway } },
       hasAccessToken: !!req.accessToken,
     });
 
@@ -400,7 +417,7 @@ promExporterApp.listen(9599, () => {
     }
 
     const schema = await getExecutableSchema({
-      clientPermissions,
+      clientPermissions: { gateway: { ...clientPermissions } },
       hasAccessToken: !!(clientPermissions && token),
     });
 

@@ -1,6 +1,7 @@
 import fetch from "isomorphic-unfetch";
 import _permissions from "../../../../src/permissions.json";
 import config from "../../../../src/config.js";
+import { parseClientPermissions } from "../../../../commonUtils";
 
 /**
  * remote smaug api call
@@ -36,7 +37,7 @@ async function getProfiles(agency) {
  * Extract specific data from whitelist
  */
 const selectConfigurations = (data) => {
-  const permissions = data.gateway ? data.gateway : _permissions.default;
+  const permissions = parseClientPermissions({ smaug: data });
 
   return {
     displayName: data.displayName,

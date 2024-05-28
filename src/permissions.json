@@ -1,4 +1,16 @@
 {
+  "ddbcms": {
+    "allowRootFields": [
+      "draft",
+      "manifestation",
+      "manifestations",
+      "search",
+      "work",
+      "works",
+      "search"
+    ],
+    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO"]
+  },
   "default": {
     "allowRootFields": [
       "draft",
