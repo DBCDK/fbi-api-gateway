@@ -1153,6 +1153,22 @@ type Shelfmark {
   shelfmark: String!
 }
 
+type UnitDescription {
+  summary: String!
+  numberAndType: String
+  extent: String
+  additionalDescription: String
+  size: String
+  technicalInformation: String
+}
+
+type PhysicalUnitDescription {
+  summaryFull: String!
+  materialUnits: [UnitDescription!]
+  numberOfPages: Int
+  accompanyingMaterial: String
+}
+
 type PhysicalDescription {
   \\"\\"\\"
   A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
@@ -1677,7 +1693,12 @@ type Manifestation {
   \\"\\"\\"
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescriptions: [PhysicalDescription!]!
+  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: \\"Use 'physicalDescription' instead\\")
+
+  \\"\\"\\"
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  physicalDescription: PhysicalUnitDescription!
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -3908,6 +3929,22 @@ type Shelfmark {
   shelfmark: String!
 }
 
+type UnitDescription {
+  summary: String!
+  numberAndType: String
+  extent: String
+  additionalDescription: String
+  size: String
+  technicalInformation: String
+}
+
+type PhysicalUnitDescription {
+  summaryFull: String!
+  materialUnits: [UnitDescription!]
+  numberOfPages: Int
+  accompanyingMaterial: String
+}
+
 type PhysicalDescription {
   \\"\\"\\"
   A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
@@ -4432,7 +4469,12 @@ type Manifestation {
   \\"\\"\\"
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescriptions: [PhysicalDescription!]!
+  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: \\"Use 'physicalDescription' instead\\")
+
+  \\"\\"\\"
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  physicalDescription: PhysicalUnitDescription!
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -5723,6 +5765,22 @@ type Shelfmark {
   shelfmark: String!
 }
 
+type UnitDescription {
+  summary: String!
+  numberAndType: String
+  extent: String
+  additionalDescription: String
+  size: String
+  technicalInformation: String
+}
+
+type PhysicalUnitDescription {
+  summaryFull: String!
+  materialUnits: [UnitDescription!]
+  numberOfPages: Int
+  accompanyingMaterial: String
+}
+
 type PhysicalDescription {
   \\"\\"\\"
   A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
@@ -6244,7 +6302,12 @@ type Manifestation {
   \\"\\"\\"
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescriptions: [PhysicalDescription!]!
+  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: \\"Use 'physicalDescription' instead\\")
+
+  \\"\\"\\"
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  physicalDescription: PhysicalUnitDescription!
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
