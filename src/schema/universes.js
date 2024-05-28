@@ -56,14 +56,6 @@ extend type Query {
 
 `;
 
-// These are hardcoded for now
-const allowedLanguages = new Set([
-  "dansk",
-  "engelsk",
-  "ukendt sprog",
-  "flere sprog",
-]);
-
 /**
  * Filters and slices content list
  */
@@ -72,26 +64,13 @@ function parseUniverseList(args, content, context) {
   const offset = Boolean(args.offset) ? args.offset : 0;
   const workType = args.workType;
 
-  let filtered = content
-    ?.filter((entry) => {
-      if (workType) {
-        return workType === entry.workTypes?.[0]?.toUpperCase();
-      }
+  let filtered = content?.filter((entry) => {
+    if (workType) {
+      return workType === entry.workTypes?.[0]?.toUpperCase();
+    }
 
-      return true;
-    })
-    .filter((entry) => {
-      // Check language is allowed
-      const languages = entry.language
-        ? [entry.language]
-        : entry.mainLanguages?.map(({ display }) => display);
-
-      if (!languages?.length) {
-        // Unknown language, keep it
-        return true;
-      }
-      return languages?.some((language) => allowedLanguages.has(language));
-    });
+    return true;
+  });
 
   return {
     hitcount: filtered.length,
