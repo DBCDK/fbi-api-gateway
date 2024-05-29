@@ -19,7 +19,7 @@ export async function load({ uniqueId, cql }, context) {
 
 export const options = {
   redis: {
-    ttl,
+    ttl: 0,
     prefix,
   },
 };
