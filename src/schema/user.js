@@ -152,7 +152,7 @@ type BibliotekDkOrder  {
   """
   pid associated with the order
   """
-  pid: String
+  pid: String @deprecated
   
   """
   Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
@@ -182,7 +182,7 @@ type BibliotekDkOrder  {
   """
   Error message if ors-maintenance request fails
   """
-  errorMessage: String
+  errorMessage: String @deprecated
 
 
 
