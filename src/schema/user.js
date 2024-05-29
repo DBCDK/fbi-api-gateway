@@ -590,8 +590,6 @@ export const resolvers = {
             return {
               ...work,
               ...orsResult,
-              orderId: orsResult?.orderId,
-              title: work.titles.main[0],
               creators: creators,
             };
           })
