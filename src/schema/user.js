@@ -587,7 +587,6 @@ export const resolvers = {
             return {
               work,
               ...orsResult,
-              creators: creators,
             };
           })
         );
