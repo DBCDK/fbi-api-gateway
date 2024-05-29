@@ -157,17 +157,13 @@ type BibliotekDkOrder  {
   """
   Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
   """
-  pidOfPrimaryObject: String @deprecated(reason: "Use workId instead")
-
-  """
-  Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
-  """
-  workId: String 
+  pidOfPrimaryObject: String @deprecated(reason: "Use workId from work instead")
 
   """
   Work data for the given order
   """
   work: Work
+
   """
   Author of the material
   """
@@ -182,6 +178,7 @@ type BibliotekDkOrder  {
   Date and time when the order was created
   """
   creationDate: String
+
   """
   Error message if ors-maintenance request fails
   """
