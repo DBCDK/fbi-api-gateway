@@ -165,14 +165,18 @@ type BibliotekDkOrder  {
   workId: String 
 
   """
+  Work data for the given order
+  """
+  work: Work
+  """
   Author of the material
   """
-  author: String  @deprecated(reason: "Use Creators instead")
+  author: String  @deprecated(reason: "Use creators from work instead")
   
   """
   Title of the material
   """
-  title: String  @deprecated(reason: "Use titles instead")
+  title: String  @deprecated(reason: "Use titles from work instead")
   
   """
   Date and time when the order was created
@@ -183,12 +187,7 @@ type BibliotekDkOrder  {
   """
   errorMessage: String
 
-  titles: WorkTitles!
 
-  """
-  Creators
-  """
-  creators: [Creator!]!
 
 
 }
@@ -576,19 +575,20 @@ export const resolvers = {
               context
             );
             const orsResult = orsResponse[0];
-            const work = await resolveWork({ pid: order.pid }, context);
+            const workData = await resolveWork({ pid: order.pid }, context);
             const creators = [
-              ...work?.creators?.persons?.map((person) => ({
+              ...workData?.creators?.persons?.map((person) => ({
                 ...person,
                 __typename: "Person",
               })),
-              ...work?.creators?.corporations?.map((person) => ({
+              ...workData?.creators?.corporations?.map((person) => ({
                 ...person,
                 __typename: "Corporation",
               })),
             ];
+            const work = { ...workData, creators };
             return {
-              ...work,
+              work,
               ...orsResult,
               creators: creators,
             };
