@@ -9,6 +9,7 @@ import {
   getUserBranchIds,
   resolveManifestation,
   isCPRNumber,
+  resolveWork,
 } from "../utils/utils";
 
 import { filterAgenciesByProps } from "../utils/accounts";
@@ -118,8 +119,74 @@ hitcount: Int!
 Orders made through bibliotek.dk
 """
 type BibliotekDkOrders {
-result: [OrderStatusResponse!]
+result: [BibliotekDkOrder!]
 hitcount: Int!
+}
+type BibliotekDkOrder  {
+
+  """
+  Unique id for the order
+  """
+  orderId: String!
+
+  """
+  Whether the order is open or closed
+  """
+  closed: Boolean @deprecated
+
+  """
+  Indicates if the order has been automated
+  """
+  autoForwardResult: String @deprecated
+  
+  """
+  Confirms a reservation has been made 
+  """
+  placeOnHold: String @deprecated
+      
+  """
+  The branch where the user should collect the material
+  """
+  pickupAgencyId: String @deprecated
+  
+  """
+  pid associated with the order
+  """
+  pid: String @deprecated
+  
+  """
+  Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
+  """
+  pidOfPrimaryObject: String @deprecated(reason: "Use workId from work instead")
+
+  """
+  Work data for the given order
+  """
+  work: Work
+
+  """
+  Author of the material
+  """
+  author: String  @deprecated(reason: "Use creators from work instead")
+  
+  """
+  Title of the material
+  """
+  title: String  @deprecated(reason: "Use titles from work instead")
+  
+  """
+  Date and time when the order was created
+  """
+  creationDate: String
+
+  """
+  Error message if ors-maintenance request fails
+  """
+  errorMessage: String @deprecated
+
+
+
+
 }
 type Loan {
   dueDate:	DateTime!
@@ -494,10 +561,37 @@ export const resolvers = {
         });
 
       const orderIds = res?.result?.map((order) => order.orderId);
+      const pids = res?.result?.map((order) => order.pid);
 
       if (orderIds?.length > 0) {
-        const result = await fetchOrderStatus({ orderIds: orderIds }, context);
-        return { result, hitcount: res?.hitcount || 0 };
+        const workresult = await Promise.all(
+          res?.result.map(async (order) => {
+            //TODO: remove fetchOrderStatus call once frontend is updated to use titles and creators instead of titile and author.
+            const orsResponse = await fetchOrderStatus(
+              { orderIds: [order.orderId] },
+              context
+            );
+            const orsResult = orsResponse[0];
+            const workData = await resolveWork({ pid: order.pid }, context);
+            const creators = [
+              ...workData?.creators?.persons?.map((person) => ({
+                ...person,
+                __typename: "Person",
+              })),
+              ...workData?.creators?.corporations?.map((person) => ({
+                ...person,
+                __typename: "Corporation",
+              })),
+            ];
+            const work = { ...workData, creators };
+            return {
+              work,
+              ...orsResult,
+            };
+          })
+        );
+
+        return { result: workresult, hitcount: res?.hitcount || 0 };
       }
       return { result: [], hitcount: 0 };
     },

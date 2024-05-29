@@ -3299,8 +3299,48 @@ type BookMarkResponse {
 
 \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
 type BibliotekDkOrders {
-  result: [OrderStatusResponse!]
+  result: [BibliotekDkOrder!]
   hitcount: Int!
+}
+
+type BibliotekDkOrder {
+  \\"\\"\\"Unique id for the order\\"\\"\\"
+  orderId: String!
+
+  \\"\\"\\"Whether the order is open or closed\\"\\"\\"
+  closed: Boolean @deprecated
+
+  \\"\\"\\"Indicates if the order has been automated\\"\\"\\"
+  autoForwardResult: String @deprecated
+
+  \\"\\"\\"Confirms a reservation has been made \\"\\"\\"
+  placeOnHold: String @deprecated
+
+  \\"\\"\\"The branch where the user should collect the material\\"\\"\\"
+  pickupAgencyId: String @deprecated
+
+  \\"\\"\\"pid associated with the order\\"\\"\\"
+  pid: String @deprecated
+
+  \\"\\"\\"
+  Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
+  \\"\\"\\"
+  pidOfPrimaryObject: String @deprecated(reason: \\"Use workId from work instead\\")
+
+  \\"\\"\\"Work data for the given order\\"\\"\\"
+  work: Work
+
+  \\"\\"\\"Author of the material\\"\\"\\"
+  author: String @deprecated(reason: \\"Use creators from work instead\\")
+
+  \\"\\"\\"Title of the material\\"\\"\\"
+  title: String @deprecated(reason: \\"Use titles from work instead\\")
+
+  \\"\\"\\"Date and time when the order was created\\"\\"\\"
+  creationDate: String
+
+  \\"\\"\\"Error message if ors-maintenance request fails\\"\\"\\"
+  errorMessage: String @deprecated
 }
 
 type Loan {
