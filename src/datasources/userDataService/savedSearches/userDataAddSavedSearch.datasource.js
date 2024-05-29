@@ -17,6 +17,11 @@ export async function load({ uniqueId, searchObject }, context) {
       body: JSON.stringify({ smaugUserId: uniqueId, searchObject }),
     });
 
+    console.log('\n\n\n\nENDPOINT: ',endpoint)
+    console.log('\n\n\n\n')
+    console.log('\n\n\n\n body: ',JSON.stringify({ smaugUserId: uniqueId, searchObject }))
+    console.log('\n\n\n\n')
+
     return res.body;
   } catch (e) {
     console.error(e, "ERROR");

@@ -167,12 +167,12 @@ type BibliotekDkOrder  {
   """
   Author of the material
   """
-  author: String  @deprecated(reason: "Use workId instead")
+  author: String  @deprecated(reason: "Use Creators instead")
   
   """
   Title of the material
   """
-  title: String  @deprecated(reason: "Use workId instead")
+  title: String  @deprecated(reason: "Use titles instead")
   
   """
   Date and time when the order was created
@@ -567,25 +567,16 @@ export const resolvers = {
       const orderIds = res?.result?.map((order) => order.orderId);
       const pids = res?.result?.map((order) => order.pid);
 
-      console.log("\n\n\nres.result", res.result);
-
-      console.log("\n\n !!pids", pids);
-
       if (orderIds?.length > 0) {
-        //TODO: we dont need that call after deprecation
-        //const result = await fetchOrderStatus({ orderIds: orderIds }, context);
-
         const workresult = await Promise.all(
           res?.result.map(async (order) => {
-            //todo remove when after deprecation. Use only resolveWork
+            //TODO: remove fetchOrderStatus call once frontend is updated to use titles and creators instead of titile and author.
             const orsResponse = await fetchOrderStatus(
               { orderIds: [order.orderId] },
               context
             );
-            console.log("\n\n\n\norsResponse", orsResponse);
             const orsResult = orsResponse[0];
             const work = await resolveWork({ pid: order.pid }, context);
-            console.log("\n\n\nwork.TITLE: ", work.titles.main[0]);
             const creators = [
               ...work?.creators?.persons?.map((person) => ({
                 ...person,
@@ -606,7 +597,6 @@ export const resolvers = {
           })
         );
 
-        console.log("\n\n\nworkresult", workresult);
         return { result: workresult, hitcount: res?.hitcount || 0 };
       }
       return { result: [], hitcount: 0 };
