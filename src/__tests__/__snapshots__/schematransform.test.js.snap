@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`complete access to whole schema 1`] = `
-"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+"directive @fallback on ENUM_VALUE
+
+\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 \\"\\"\\"
@@ -321,6 +323,7 @@ enum OrderPossibleReason {
   NOT_OWNED_NO_ILL_LOC
   OWNED_OWN_CATALOGUE
   NOT_OWNED_ACCEPTED_BY_CONSORTIA
+  INTERNAL_ERROR
 }
 
 type CheckOrderPolicy {
@@ -2390,6 +2393,7 @@ enum CopyRequestStatus {
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
   BORCHK_USER_NOT_VERIFIED
+  INTERNAL_ERROR
 }
 
 type CopyRequestResponse {
@@ -3498,7 +3502,9 @@ type UserMutations {
 `;
 
 exports[`default schema transform 1`] = `
-"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+"directive @fallback on ENUM_VALUE
+
+\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 \\"\\"\\"
@@ -5181,6 +5187,7 @@ enum CopyRequestStatus {
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
   BORCHK_USER_NOT_VERIFIED
+  INTERNAL_ERROR
 }
 
 type CopyRequestResponse {
@@ -5517,7 +5524,9 @@ type UniverseContentResult {
 `;
 
 exports[`limited access to root fields 1`] = `
-"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+"directive @fallback on ENUM_VALUE
+
+\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 type Query {
@@ -5544,7 +5553,9 @@ enum LanguageCode {
 `;
 
 exports[`remove all fields by type 1`] = `
-"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+"directive @fallback on ENUM_VALUE
+
+\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 type Query {

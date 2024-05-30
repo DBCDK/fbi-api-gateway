@@ -35,7 +35,7 @@ enum HoldingsResponseStatus {
   No status is given by the branch, hence we don't know if the material
   is on the shelf
   """
-  UNKNOWN_STATUS
+  UNKNOWN_STATUS  @fallback
 }
 
 type HoldingsItem {

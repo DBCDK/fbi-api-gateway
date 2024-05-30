@@ -18,7 +18,7 @@ type holdingsItem {
 enum AvailabilityEnum {
   NOW
   LATER
-  UNKNOWN
+  UNKNOWN  @fallback
 }
 `;
 
