@@ -6,6 +6,7 @@
 
 import { defaultFieldResolver, isNonNullType, isEnumType } from "graphql";
 import { getDirective, MapperKind, mapSchema } from "@graphql-tools/utils";
+import { log } from "dbc-node-logger";
 
 /**
  * Function to create the enum fallback directive
@@ -94,7 +95,7 @@ export default function enumFallbackDirective() {
               }
 
               // Log an error if the resolver returned an unsupported enum value
-              console.log("Unsupported enum", orgRes, enumTypeName);
+              log.error(`UNSUPPORTED ENUM: ${enumTypeName}.${orgRes}`);
 
               // Return the default enum value to prevent the query from breaking
               return defaultEnumValue;
