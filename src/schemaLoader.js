@@ -20,6 +20,12 @@ import { wrapResolvers } from "./utils/wrapResolvers";
 import permissions from "./permissions.json";
 import merge from "lodash/merge";
 import { parseClientPermissions } from "../commonUtils";
+import enumFallbackDirective from "./utils/enumFallbackDirective";
+
+const {
+  enumFallbackDirectiveTypeDefs,
+  enumFallbackDirectiveTransformer,
+} = enumFallbackDirective();
 
 // Stores the transformed schemas
 const schemaCache = {};
@@ -28,7 +34,9 @@ const schemaCache = {};
 let externalSchema;
 
 // The internal schema
-let internalSchema = makeExecutableSchema(schemaLoader());
+let internalSchema = enumFallbackDirectiveTransformer(
+  makeExecutableSchema(schemaLoader())
+);
 
 /**
  * PermissionTransform  is used to remove parts of the schema
@@ -58,7 +66,7 @@ class PermissionsTransform {
  * and look for type definitions and resolvers.
  */
 function schemaLoader() {
-  let allTypeDefs = [...scalarTypeDefs];
+  let allTypeDefs = [enumFallbackDirectiveTypeDefs, ...scalarTypeDefs];
   let allResolvers = { ...scalarResolvers };
 
   // Load files in schema folder

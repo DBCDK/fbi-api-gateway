@@ -142,7 +142,7 @@ enum NoteType {
   DESCRIPTION_OF_MATERIAL
   DISSERTATION
   MUSICAL_ENSEMBLE_OR_CAST
-  NOT_SPECIFIED
+  NOT_SPECIFIED @fallback
   OCCASION_FOR_PUBLICATION
   ORIGINAL_TITLE
   ORIGINAL_VERSION
@@ -155,14 +155,14 @@ enum NoteType {
 }
 enum ChildOrAdultCode {
   FOR_CHILDREN
-  FOR_ADULTS
+  FOR_ADULTS @fallback
 }
 type ChildOrAdult {
   display: String!
   code: ChildOrAdultCode!
 }
 enum SchoolUseCode {
-  FOR_SCHOOL_USE
+  FOR_SCHOOL_USE @fallback
   FOR_TEACHER
 }
 type SchoolUse {
@@ -189,7 +189,7 @@ enum ManifestationPartType {
   MUSIC_TRACKS
   SHEET_MUSIC_CONTENT
   PARTS_OF_BOOK
-  NOT_SPECIFIED
+  NOT_SPECIFIED @fallback
 }
 type ManifestationPart {
   """
@@ -289,7 +289,7 @@ enum IdentifierType {
   MUSIC
   MOVIE
   PUBLIZON
-  NOT_SPECIFIED
+  NOT_SPECIFIED @fallback
   ORDER_NUMBER
   BARCODE
 }
@@ -419,7 +419,7 @@ type Edition {
   publicationYear: PublicationYear
 }
 enum EntryType {
-  ADDITIONAL_ENTRY
+  ADDITIONAL_ENTRY @fallback
   MAIN_ENTRY
   NATIONAL_BIBLIOGRAPHY_ENTRY
   NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY
