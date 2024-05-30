@@ -306,7 +306,7 @@ export default {
       url:
         process.env.USERDATA_URL ||
         "http://bibliotekdk-next-userdata-stg.febib-staging.svc.cloud.dbc.dk/",
-      ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 1,
+      ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 0,
       prefix: "userdata",
     },
     orderStatus: {

@@ -11,7 +11,7 @@ enum GeneralMaterialTypeCode {
   IMAGE_MATERIALS
   MUSIC
   NEWSPAPER_JOURNALS
-  OTHER
+  OTHER @fallback
   PODCASTS
   SHEET_MUSIC
   TV_SERIES

@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`complete access to whole schema 1`] = `
-"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+"directive @fallback on ENUM_VALUE
+
+\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 \\"\\"\\"
@@ -321,6 +323,7 @@ enum OrderPossibleReason {
   NOT_OWNED_NO_ILL_LOC
   OWNED_OWN_CATALOGUE
   NOT_OWNED_ACCEPTED_BY_CONSORTIA
+  INTERNAL_ERROR
 }
 
 type CheckOrderPolicy {
@@ -2390,6 +2393,7 @@ enum CopyRequestStatus {
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
   BORCHK_USER_NOT_VERIFIED
+  INTERNAL_ERROR
 }
 
 type CopyRequestResponse {
@@ -3299,8 +3303,48 @@ type BookMarkResponse {
 
 \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
 type BibliotekDkOrders {
-  result: [OrderStatusResponse!]
+  result: [BibliotekDkOrder!]
   hitcount: Int!
+}
+
+type BibliotekDkOrder {
+  \\"\\"\\"Unique id for the order\\"\\"\\"
+  orderId: String!
+
+  \\"\\"\\"Whether the order is open or closed\\"\\"\\"
+  closed: Boolean @deprecated
+
+  \\"\\"\\"Indicates if the order has been automated\\"\\"\\"
+  autoForwardResult: String @deprecated
+
+  \\"\\"\\"Confirms a reservation has been made \\"\\"\\"
+  placeOnHold: String @deprecated
+
+  \\"\\"\\"The branch where the user should collect the material\\"\\"\\"
+  pickupAgencyId: String @deprecated
+
+  \\"\\"\\"pid associated with the order\\"\\"\\"
+  pid: String @deprecated
+
+  \\"\\"\\"
+  Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
+  \\"\\"\\"
+  pidOfPrimaryObject: String @deprecated(reason: \\"Use workId from work instead\\")
+
+  \\"\\"\\"Work data for the given order\\"\\"\\"
+  work: Work
+
+  \\"\\"\\"Author of the material\\"\\"\\"
+  author: String @deprecated(reason: \\"Use creators from work instead\\")
+
+  \\"\\"\\"Title of the material\\"\\"\\"
+  title: String @deprecated(reason: \\"Use titles from work instead\\")
+
+  \\"\\"\\"Date and time when the order was created\\"\\"\\"
+  creationDate: String
+
+  \\"\\"\\"Error message if ors-maintenance request fails\\"\\"\\"
+  errorMessage: String @deprecated
 }
 
 type Loan {
@@ -3458,7 +3502,9 @@ type UserMutations {
 `;
 
 exports[`default schema transform 1`] = `
-"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+"directive @fallback on ENUM_VALUE
+
+\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 \\"\\"\\"
@@ -5141,6 +5187,7 @@ enum CopyRequestStatus {
   BORCHK_USER_BLOCKED_BY_AGENCY
   BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
   BORCHK_USER_NOT_VERIFIED
+  INTERNAL_ERROR
 }
 
 type CopyRequestResponse {
@@ -5477,7 +5524,9 @@ type UniverseContentResult {
 `;
 
 exports[`limited access to root fields 1`] = `
-"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+"directive @fallback on ENUM_VALUE
+
+\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 type Query {
@@ -5504,7 +5553,9 @@ enum LanguageCode {
 `;
 
 exports[`remove all fields by type 1`] = `
-"\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
+"directive @fallback on ENUM_VALUE
+
+\\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 type Query {

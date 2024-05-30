@@ -12,12 +12,13 @@ NOT_OWNED_ACCEPTED_BY_CONSORTIA -> ???
 export const typeDef = `
    enum OrderPossibleReason {
      OWNED_ACCEPTED
-     NOT_OWNED_ILL_LOC
+     NOT_OWNED_ILL_LOC 
      OWNED_WRONG_MEDIUM_TYPE
      NOT_OWNED_WRONG_ILL_MEDIUM_TYPE
      NOT_OWNED_NO_ILL_LOC
      OWNED_OWN_CATALOGUE
      NOT_OWNED_ACCEPTED_BY_CONSORTIA
+     INTERNAL_ERROR @fallback
    }
    type CheckOrderPolicy {
     lookUpUrls: [String!]!

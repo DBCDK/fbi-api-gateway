@@ -64,7 +64,7 @@ type SubjectWithRating implements Subject {
 }
 
 enum SubjectType {
-  TOPIC
+  TOPIC @fallback
   LOCATION
   FICTIONAL_CHARACTER
   LAESEKOMPASSET

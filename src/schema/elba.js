@@ -18,6 +18,7 @@ export const typeDef = `
    BORCHK_USER_BLOCKED_BY_AGENCY
    BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
    BORCHK_USER_NOT_VERIFIED
+   INTERNAL_ERROR  @fallback
  }
 
  type CopyRequestResponse {

@@ -3,6 +3,13 @@ import config from "../config";
 const { url, ttl, prefix } = config.datasources.universe;
 
 const { url: jedUrl } = config.datasources.jed;
+// These are hardcoded for now
+const allowedLanguages = new Set([
+  "dansk",
+  "engelsk",
+  "ukendt sprog",
+  "flere sprog",
+]);
 
 const WORKTYPES_QUERY = `query($id: String! ) {
   work(id: $id) {
@@ -62,7 +69,22 @@ export async function load({ workId, trackingId = null, profile }, context) {
                 };
               })
             )
-          ).filter((entry) => !!entry);
+          )
+            .filter((entry) => !!entry)
+            .filter((entry) => {
+              // Check language is allowed
+              const languages = entry.language
+                ? [entry.language]
+                : entry.mainLanguages?.map(({ display }) => display);
+
+              if (!languages?.length) {
+                // Unknown language, keep it
+                return true;
+              }
+              return languages?.some((language) =>
+                allowedLanguages.has(language)
+              );
+            });
 
           const allTypes = {};
 
