@@ -43,7 +43,7 @@ type Query {
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
- 
+  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexFacetResponse!
 
   localSuggest(
     """
@@ -310,6 +310,9 @@ export const resolvers = {
       return args;
     },
     async complexSearch(parent, args, context, info) {
+      return args;
+    },
+    async complexFacets(parent, args, context, info) {
       return args;
     },
     async linkCheck(parent, args, context, info) {
