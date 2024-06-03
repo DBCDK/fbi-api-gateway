@@ -38,6 +38,13 @@ export default {
       ttl: process.env.COMPLEX_SEARCH_TIME_TO_LIVE_SECONDS || 60,
       prefix: process.env.COMPLEX_SEARCH_PREFIX || "complexsearch-1",
     },
+    complexFacets: {
+      url:
+        process.env.COMPLEX_FACETS_URL ||
+        "http://cql-parser.complex-search-prod.svc.cloud.dbc.dk/api/v1/variants",
+      ttl: process.env.COMPLEX_FACETS_TIME_TO_LIVE_SECONDS || 60 * 60,
+      prefix: process.env.COMPLEX_FACETS_PREFIX || "complexsearch-1",
+    },
     defaultforsider: {
       url:
         process.env.DEFAULTFORSIDER_URL ||
