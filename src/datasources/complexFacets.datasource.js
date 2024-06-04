@@ -1,5 +1,6 @@
 /**
  * @file complexFacets.datasource.js
+ * Internal use only !
  * For getting facets only - endpoint with NO upper for facetLimit
  *
  * mostly a copy of complexSearch.datasource.js - with less arguments and slimmer output
