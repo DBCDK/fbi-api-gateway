@@ -434,6 +434,10 @@ type ComplexSearchFacetResponse {
   values: [ComplexSearchFacetValue!]
 }
 
+type ComplexFacetResponse {
+  facets: [ComplexSearchFacetResponse!]
+}
+
 \\"\\"\\"The search response\\"\\"\\"
 type ComplexSearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
@@ -694,6 +698,11 @@ type Query {
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService!
+
+  \\"\\"\\"
+  ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
+  \\"\\"\\"
+  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexFacetResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
