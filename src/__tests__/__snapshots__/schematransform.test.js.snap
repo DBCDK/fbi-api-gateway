@@ -434,6 +434,10 @@ type ComplexSearchFacetResponse {
   values: [ComplexSearchFacetValue!]
 }
 
+type ComplexFacetResponse {
+  facets: [ComplexSearchFacetResponse!]
+}
+
 \\"\\"\\"The search response\\"\\"\\"
 type ComplexSearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
@@ -694,6 +698,11 @@ type Query {
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
   linkCheck: LinkCheckService!
+
+  \\"\\"\\"
+  ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
+  \\"\\"\\"
+  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexFacetResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
@@ -1154,6 +1163,22 @@ type Shelfmark {
   The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
   \\"\\"\\"
   shelfmark: String!
+}
+
+type UnitDescription {
+  summary: String!
+  numberAndType: String
+  extent: String
+  additionalDescription: String
+  size: String
+  technicalInformation: String
+}
+
+type PhysicalUnitDescription {
+  summaryFull: String!
+  materialUnits: [UnitDescription!]
+  numberOfPages: Int
+  accompanyingMaterial: String
 }
 
 type PhysicalDescription {
@@ -1680,7 +1705,12 @@ type Manifestation {
   \\"\\"\\"
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescriptions: [PhysicalDescription!]!
+  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: \\"Use 'physicalDescription' instead\\")
+
+  \\"\\"\\"
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  physicalDescription: PhysicalUnitDescription!
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -3954,6 +3984,22 @@ type Shelfmark {
   shelfmark: String!
 }
 
+type UnitDescription {
+  summary: String!
+  numberAndType: String
+  extent: String
+  additionalDescription: String
+  size: String
+  technicalInformation: String
+}
+
+type PhysicalUnitDescription {
+  summaryFull: String!
+  materialUnits: [UnitDescription!]
+  numberOfPages: Int
+  accompanyingMaterial: String
+}
+
 type PhysicalDescription {
   \\"\\"\\"
   A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
@@ -4478,7 +4524,12 @@ type Manifestation {
   \\"\\"\\"
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescriptions: [PhysicalDescription!]!
+  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: \\"Use 'physicalDescription' instead\\")
+
+  \\"\\"\\"
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  physicalDescription: PhysicalUnitDescription!
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -5774,6 +5825,22 @@ type Shelfmark {
   shelfmark: String!
 }
 
+type UnitDescription {
+  summary: String!
+  numberAndType: String
+  extent: String
+  additionalDescription: String
+  size: String
+  technicalInformation: String
+}
+
+type PhysicalUnitDescription {
+  summaryFull: String!
+  materialUnits: [UnitDescription!]
+  numberOfPages: Int
+  accompanyingMaterial: String
+}
+
 type PhysicalDescription {
   \\"\\"\\"
   A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
@@ -6295,7 +6362,12 @@ type Manifestation {
   \\"\\"\\"
   Physical description of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescriptions: [PhysicalDescription!]!
+  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: \\"Use 'physicalDescription' instead\\")
+
+  \\"\\"\\"
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  physicalDescription: PhysicalUnitDescription!
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!

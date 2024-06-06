@@ -125,6 +125,10 @@ type ComplexSearchFacetResponse{
   values: [ComplexSearchFacetValue!]
 }
 
+type ComplexFacetResponse {
+  facets: [ComplexSearchFacetResponse!]
+}
+
 """
 The search response
 """
@@ -189,6 +193,14 @@ function setPost(parent, context, args) {
 }
 
 export const resolvers = {
+  ComplexFacetResponse: {
+    async facets(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("complexFacets")
+        .load(setPost(parent, context, args));
+      return res?.facets;
+    },
+  },
   ComplexSearchResponse: {
     async hitcount(parent, args, context) {
       const res = await context.datasources

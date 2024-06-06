@@ -7,9 +7,24 @@
       "search",
       "work",
       "works",
-      "search"
+      "search",
+      "suggest",
+      "complexSearch",
+      "complexSuggest",
+      "localSuggest",
+      "recommend",
+      "infomedia",
+      "refWorks",
+      "ris",
+      "submitPeriodicaArticleOrder",
+      "elba",
+      "library",
+      "relatedSubjects",
+      "linkCheck",
+      "mood",
+      "submitOrder"
     ],
-    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO"]
+    "denyTypes": ["CheckOrderPolicy", "Availability", "SEO", "WorkReview"]
   },
   "default": {
     "allowRootFields": [
