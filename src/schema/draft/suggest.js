@@ -20,6 +20,8 @@ enum ComplexSuggestionType {
   fictionalcharacter
   title
   creatorcontributor
+  series
+  publisher
 }
 
 type ComplexSearchSuggestion {
