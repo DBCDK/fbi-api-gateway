@@ -76,8 +76,29 @@ const timeToLiveMS = 1000 * 60 * 30;
  * @returns {Promise<*>}
  */
 async function get() {
+  // This contains mobileLibraryLocations (agencySubdivision) for bogbusser
+  const vipCoreUrl = `${config.datasources.vipcore.url}/findlibrary/all`;
+
+  // This contain information with a different structure (but no agencySubdivision)
   const url = config.datasources.libarysearch.url;
-  return (await request.get(url)).body.allLibraries;
+
+  // Fetch in parallel
+  const res = await Promise.all([
+    (await request.get(url)).body.allLibraries,
+    (await request.get(vipCoreUrl)).body.pickupAgency,
+  ]);
+
+  // Make a map for fast branchId->branch lookups
+  const branchMap = {};
+  res[1]?.forEach((branch) => (branchMap[branch.branchId] = branch));
+
+  // Merge mobileLibraryLocations into result
+  const branches = res[0]?.map((branch) => ({
+    ...branch,
+    mobileLibraryLocations: branchMap[branch.branchId]?.agencySubdivision,
+  }));
+
+  return branches;
 }
 
 /**
