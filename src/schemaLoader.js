@@ -112,11 +112,12 @@ export async function getExecutableSchema({
     }
 
     // Merge external and internal schemas
-    const mergedSchema = loadExternal
-      ? mergeSchemas({
-          schemas: [externalSchema, internalSchema],
-        })
-      : internalSchema;
+    const mergedSchema =
+      loadExternal && externalSchema
+        ? mergeSchemas({
+            schemas: [externalSchema, internalSchema],
+          })
+        : internalSchema;
 
     // Filter schema according to permissions of Smaug client
     // If no valid accessToken is given (no smaug client), we allow to introspect
