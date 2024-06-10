@@ -80,7 +80,7 @@ async function get() {
   const vipCoreUrl = `${config.datasources.vipcore.url}/findlibrary/all`;
 
   // This contain information with a different structure (but no agencySubdivision)
-  const url = config.datasources.libarysearch.url;
+  const url = `${config.datasources.vipcore.url}/alllibraries`;
 
   // Fetch in parallel
   const res = await Promise.all([
