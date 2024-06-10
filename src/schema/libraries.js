@@ -80,11 +80,16 @@ export const typeDef = `
     """
     temporarilyClosedReason: String
 
-     """
+    """
     When user is not logged in, this is null
     Otherwise true or false
     """
     userIsBlocked: Boolean @deprecated(reason: "Use 'BranchResult.borrowerStatus' instead")
+
+    """
+    If the branch type is 'bogbus', this field may contain a list of locations that the bus visits
+    """
+    mobileLibraryLocations: [String!]
   }
   
   type BranchResult{
