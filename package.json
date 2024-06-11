@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "run-p dev:website dev:graphql dev:testuser",
     "dev:website": "cd website && npm run dev",
-    "dev:graphql": ". ./env.env && nodemon --ignore 'website/*' -r esm-wallaby ./src/index.js",
+    "dev:graphql": ". ./env.env && nodemon --ignore 'website/*' --ignore '**/drupalSchema.json' -r esm-wallaby ./src/index.js",
     "dev:testuser": "cd testuser-website && npm run dev",
     "start": "run-p start:website start:graphql start:testuser",
     "start:website": "cd website && npm run start",
