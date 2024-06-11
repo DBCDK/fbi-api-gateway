@@ -8,7 +8,11 @@ export async function load(_key, context) {
   }
   const res = await context?.fetch(
     `${config.datasources.statsbiblioteket.url}/copydanws/journals`,
-    { headers: { Accept: "application/json" }, enableProxy: true }
+    {
+      headers: { Accept: "application/json" },
+      enableProxy: true,
+      timeoutMs: 20000,
+    }
   );
 
   const body = res.body;

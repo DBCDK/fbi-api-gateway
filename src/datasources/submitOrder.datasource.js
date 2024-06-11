@@ -102,6 +102,7 @@ export async function load(
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(parameters),
+      timeoutMs: 60000,
     });
 
     if (!checkPost(parameters)) {
