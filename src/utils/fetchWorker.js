@@ -19,7 +19,7 @@
  */
 
 import { Worker, isMainThread, parentPort } from "worker_threads";
-import { fetch as undiciFetch, ProxyAgent } from "undici";
+import { fetch as undiciFetch, ProxyAgent, Agent } from "undici";
 import diagnosticsChannel from "diagnostics_channel";
 import config from "../config";
 
@@ -142,11 +142,39 @@ if (!isMainThread) {
     });
   });
 
-  // A proxy dispatcher, used for fetch requests
-  // that must go through the proxy
-  const proxyDispatcher = config.dmzproxy.url
-    ? new ProxyAgent(config.dmzproxy.url)
-    : null;
+  // A map for storing dispatchers
+  const dispatcherCache = {};
+
+  /**
+   * Returns a dispatcher instance based on the provided timeout and proxy settings.
+   *
+   * @param {number} timeoutMs - The timeout for the dispatcher (in milliseconds).
+   * @param {boolean} enableProxy - Whether to enable proxy for the dispatcher.
+   * @returns {Agent|ProxyAgent} - The dispatcher instance.
+   */
+  function getDispatcher(
+    timeoutMs = config.fetchDefaultTimeoutMs,
+    enableProxy = false
+  ) {
+    const key = `${timeoutMs}_${!!enableProxy}`;
+    let dispatcher = dispatcherCache[key];
+    if (!dispatcher) {
+      if (enableProxy && config.dmzproxy.url) {
+        dispatcher = new ProxyAgent({
+          uri: config.dmzproxy.url,
+          bodyTimeout: timeoutMs,
+          headersTimeout: timeoutMs,
+        });
+      } else {
+        dispatcher = new Agent({
+          bodyTimeout: timeoutMs,
+          headersTimeout: timeoutMs,
+        });
+      }
+      dispatcherCache[key] = dispatcher;
+    }
+    return dispatcher;
+  }
 
   // Listening for messages from the main thread
   parentPort.on("message", async ({ url, options, identifier }) => {
@@ -160,10 +188,8 @@ if (!isMainThread) {
       const enableProxy = options.enableProxy;
       delete options.enableProxy;
 
-      // Set proxy if required
-      if (enableProxy && proxyDispatcher) {
-        options.dispatcher = proxyDispatcher;
-      }
+      // Set dispatcher
+      options.dispatcher = getDispatcher(options.timeoutMs, enableProxy);
 
       const res = await undiciFetch(url, options);
 

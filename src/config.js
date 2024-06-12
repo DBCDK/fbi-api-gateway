@@ -13,6 +13,7 @@ export default {
   },
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
+  fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 10000,
   datasources: {
     ocn2pid: {
       url:
@@ -237,17 +238,6 @@ export default {
         "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api",
       prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
-    },
-
-    libarysearch: {
-      excludeBranches:
-        process.env.LIBRARY_SEARCH_EXCLUDE_BRANCHES === "true" ||
-        process.env.LIBRARY_SEARCH_EXCLUDE_BRANCHES == "1",
-      url:
-        process.env.LIBRARY_SEARCH_URL ||
-        "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk:8080/1.0/api/alllibraries",
-      prefix: process.env.LIBRARY_SEARCH_PREFIX || "librarysearch-1",
-      ttl: process.env.LIBRARY_SEARCH_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
     },
     idp: {
       url:

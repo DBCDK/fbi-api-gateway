@@ -5,7 +5,7 @@ const { url, ttl, prefix } = config.datasources.complexsearch;
 
 /**
  * Prefix facets - the enum holds name af the index - here we prefix
- * with the type of index (phrase).
+ * with the type of index (facet).
  *
  * @TODO .. is this a good idea ?
  *
@@ -13,17 +13,7 @@ const { url, ttl, prefix } = config.datasources.complexsearch;
  * @returns {*}
  */
 function prefixFacets(facets) {
-  // update - some facets should NOT be prefixed with 'phrase'
-  const NO_PREFIX_PLEASE = ["LIX", "LET", "PUBLICATIONYEAR"];
-
-  const mappedfacets = facets.map((fac) => {
-    if (NO_PREFIX_PLEASE.includes(fac)) {
-      return fac.toLowerCase();
-    } else {
-      return `phrase.${fac.toLowerCase()}`;
-    }
-  });
-
+  const mappedfacets = facets.map((fac) => `facet.${fac.toLowerCase()}`);
   return mappedfacets;
 }
 

@@ -100,6 +100,7 @@ export async function load(params, context) {
     },
     body: requestString,
     enableProxy: true,
+    timeoutMs: 60000,
   });
 
   /** pjo 12/1/23 - service now returns 204 - No content **/
