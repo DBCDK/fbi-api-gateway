@@ -21,7 +21,7 @@ const { url, ttl, prefix } = config.datasources.complexFacets;
  * @returns {*}
  */
 function prefixFacets(facets) {
-  const mappedfacets = facets.map((fac) => `phrase.${fac.toLowerCase()}`);
+  const mappedfacets = facets.map((fac) => `facet.${fac.toLowerCase()}`);
 
   return mappedfacets;
 }
