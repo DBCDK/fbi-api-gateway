@@ -13,7 +13,7 @@ export default {
   },
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
-  fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 10000,
+  fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 20000,
   datasources: {
     ocn2pid: {
       url:

@@ -50,6 +50,7 @@ export async function load(
     method: "POST",
     body: JSON.stringify(body),
     allowedErrorStatusCodes: [400],
+    timeoutMs: 60000,
   });
   const json = res.body;
 

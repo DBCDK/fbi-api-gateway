@@ -36,7 +36,11 @@ export async function load({ q, filters = {}, profile, limit = 10 }, context) {
   };
 
   const res = (
-    await context.fetch(url, { method: "POST", body: JSON.stringify(query) })
+    await context.fetch(url, {
+      method: "POST",
+      body: JSON.stringify(query),
+      timeoutMs: 60000,
+    })
   ).body;
 
   return res;
