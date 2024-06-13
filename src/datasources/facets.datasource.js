@@ -42,6 +42,7 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
   const result = await context.fetch(url, {
     method: "POST",
     body: JSON.stringify(query),
+    timeoutMs: 60000,
   });
 
   const res = result.body;
