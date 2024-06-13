@@ -737,17 +737,28 @@ export const resolvers = {
         (account) => account.agencyId
       );
 
-      const agencyInfos = await Promise.all(
-        agencies.map(
-          async (agency) =>
-            await context.datasources.getLoader("library").load({
-              agencyid: agency,
-              language: parent.language,
-              limit: 30,
-              status: "AKTIVE",
-              bibdkExcludeBranches: false,
-            })
-        )
+      let agencyInfos = await Promise.all(
+        agencies.map(async (agencyid) => {
+          const options = {
+            language: parent.language,
+            limit: 30,
+            status: "AKTIVE",
+            bibdkExcludeBranches: false,
+          };
+          let agency = await context.datasources.getLoader("library").load({
+            agencyid,
+            ...options,
+          });
+          if (!agency?.result?.length) {
+            // For some FFU's the agencyId is actually a branchId
+            // Hence we try to fetch the agency by branchId
+            agency = await context.datasources.getLoader("library").load({
+              branchId: agencyid,
+              ...options,
+            });
+          }
+          return agency;
+        })
       );
 
       // Remove agencies that dont exist in VIP
