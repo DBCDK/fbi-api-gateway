@@ -505,11 +505,22 @@ export async function resolveAccess(manifestation, context) {
 
   const res = [];
 
+  // use linkchecker to check status of a single accessUrl
+  const linkStatus = async (url) => {
+    const linkcheck = await context.datasources
+      .getLoader("linkcheck")
+      .load({ urls: [url] });
+    const link = linkcheck.find((check) => check.url === url);
+
+    return link?.status || "OK";
+  };
+
   parent?.access?.accessUrls?.forEach((entry) => {
     const { proxyUrl, loginRequired } = getProxyUrl(
       entry.url || "",
       context?.user
     );
+
     res.push({
       __typename: "AccessUrl",
       origin: parseOnlineUrlToOrigin(entry.url),
@@ -517,6 +528,7 @@ export async function resolveAccess(manifestation, context) {
       loginRequired,
       note: entry.note,
       type: entry.type,
+      status: linkStatus(proxyUrl) || "OK",
     });
   });
 
@@ -533,6 +545,7 @@ export async function resolveAccess(manifestation, context) {
           origin: parseOnlineUrlToOrigin(archive.url),
           loginRequired: false,
           type: "RESOURCE",
+          status: linkStatus(archive.url) || "OK",
         });
       }
     });
