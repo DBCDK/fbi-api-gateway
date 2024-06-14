@@ -756,6 +756,11 @@ export const resolvers = {
               branchId: agencyid,
               ...options,
             });
+
+            if (agency?.result?.[0]) {
+              // This branch should be considered as independent agency
+              agency.result = [{ ...agency.result[0], agencyId: agencyid }];
+            }
           }
           return agency;
         })
