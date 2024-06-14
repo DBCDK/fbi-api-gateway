@@ -936,6 +936,13 @@ enum AccessUrlType {
   THUMBNAIL
 }
 
+enum LinkStatus {
+  BROKEN
+  GONE
+  INVALID
+  OK
+}
+
 type AccessType {
   display: String!
   code: AccessTypeCode!
@@ -976,6 +983,9 @@ type AccessUrl {
 
   \\"\\"\\"The type of content that can be found at this URL\\"\\"\\"
   type: AccessUrlType
+
+  \\"\\"\\"Status from linkcheck\\"\\"\\"
+  status: LinkStatus!
 }
 
 type InterLibraryLoan {
@@ -1267,6 +1277,7 @@ enum NoteType {
   FREQUENCY
   EDITION
   TECHNICAL_REQUIREMENTS
+  ESTIMATED_PLAYING_TIME_FOR_GAMES
 }
 
 enum ChildOrAdultCode {
@@ -3763,6 +3774,13 @@ enum AccessUrlType {
   THUMBNAIL
 }
 
+enum LinkStatus {
+  BROKEN
+  GONE
+  INVALID
+  OK
+}
+
 type AccessType {
   display: String!
   code: AccessTypeCode!
@@ -3803,6 +3821,9 @@ type AccessUrl {
 
   \\"\\"\\"The type of content that can be found at this URL\\"\\"\\"
   type: AccessUrlType
+
+  \\"\\"\\"Status from linkcheck\\"\\"\\"
+  status: LinkStatus!
 }
 
 type InterLibraryLoan {
@@ -4088,6 +4109,7 @@ enum NoteType {
   FREQUENCY
   EDITION
   TECHNICAL_REQUIREMENTS
+  ESTIMATED_PLAYING_TIME_FOR_GAMES
 }
 
 enum ChildOrAdultCode {
@@ -5638,6 +5660,13 @@ enum AccessUrlType {
   THUMBNAIL
 }
 
+enum LinkStatus {
+  BROKEN
+  GONE
+  INVALID
+  OK
+}
+
 type AccessType {
   display: String!
   code: AccessTypeCode!
@@ -5678,6 +5707,9 @@ type AccessUrl {
 
   \\"\\"\\"The type of content that can be found at this URL\\"\\"\\"
   type: AccessUrlType
+
+  \\"\\"\\"Status from linkcheck\\"\\"\\"
+  status: LinkStatus!
 }
 
 type InterLibraryLoan {
@@ -5931,6 +5963,7 @@ enum NoteType {
   FREQUENCY
   EDITION
   TECHNICAL_REQUIREMENTS
+  ESTIMATED_PLAYING_TIME_FOR_GAMES
 }
 
 enum ChildOrAdultCode {

@@ -15,6 +15,14 @@ enum AccessUrlType {
   TABLE_OF_CONTENTS
   THUMBNAIL
 }
+
+enum LinkStatus {
+  BROKEN
+  GONE
+  INVALID
+  OK
+}
+
 type AccessType {
   display: String!
   code: AccessTypeCode!
@@ -65,6 +73,11 @@ type AccessUrl {
   The type of content that can be found at this URL
   """
   type: AccessUrlType
+  
+  """
+  Status from linkcheck
+  """
+  status: LinkStatus!
 }
 type InterLibraryLoan {
   """
