@@ -1,8 +1,7 @@
 import config from "../config";
-import { hasCulrDataSync, isFFUAgency } from "../utils/agency";
+import { hasCulrDataSync, getAgencyIdByBranchId } from "../utils/agency";
 import { setMunicipalityAgencyId } from "../utils/municipalityAgencyId";
 import { omitUserinfoCulrData } from "../utils/omitCulrData";
-import replaceBranchIdWithAgencyId from "../utils/replaceBranchIdWithAgencyId";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
 const { url, ttl, prefix } = config.datasources.userInfo;
@@ -24,29 +23,37 @@ export async function load({ accessToken }, context) {
 
     const idpUsed = res.body?.attributes?.idpUsed;
 
-    const loggedInAgencyId =
+    // Set loggedInBranchId (Former loggedInAgencyId)
+    const loggedInBranchId =
       idpUsed === "nemlogin" && !smaug?.user?.agency
         ? "190101"
         : smaug?.user?.agency || null;
 
-    // user attributes enriched with loggedInAgencyId (from smaug)
+    // user attributes enriched with loggedInBranchId (from smaug)
     let attributes = {
       ...res.body?.attributes,
-      loggedInAgencyId,
-      // loggedInBranchId: null,
+      loggedInBranchId,
+      loggedInAgencyId: null,
     };
 
-    // *** DISABLED FOR NOW ***
-    // For FFU libraries the /userinfo and smaug fields can now hold both an agencyIds and branchIds
-    // Therefore all used fields which contains branchIds will be replaced with an agencyId
-    if (false && isFFUAgency(loggedInAgencyId, context)) {
-      attributes = await replaceBranchIdWithAgencyId(attributes, context);
-    }
+    // The Smaug "agency" field can now hold both agencyIds and branchIds. Therefore, we ensure that loggedInAgencyId always contains an agencyId.
+    // The loggedInBranchId will always contain a branchId, which can also be an agencyId (e.g., main libraries).
+    attributes.loggedInAgencyId = await getAgencyIdByBranchId(
+      loggedInBranchId,
+      context
+    );
 
     // This check prevents FFU users from accessing CULR data.
     // FFU Borchk authentication, is not safe enough to expose CULR data.
-    if (!(await hasCulrDataSync(attributes?.loggedInAgencyId, context))) {
-      attributes = omitUserinfoCulrData(attributes);
+    const loggedInId = loggedInBranchId || attributes?.loggedInAgencyId;
+
+    //  Only relevant if user exist in CULR
+    if (attributes.uniqueId) {
+      // User exist in CULR
+      if (!(await hasCulrDataSync(loggedInId, context))) {
+        // User is signediIn with a library which does NOT sync data with CULR - CULR Data is omitted
+        attributes = omitUserinfoCulrData(attributes);
+      }
     }
 
     // Fixes that folk bib users with associated FFU Accounts overrides users municipalityAgencyId with FFU agencyId
@@ -100,20 +107,24 @@ export async function testLoad({ accessToken }, context) {
     municipality: municipalityAgencyId?.startsWith?.("7")
       ? municipalityAgencyId?.substr?.(1, 3)
       : map[municipalityAgencyId],
-    loggedInAgencyId: loginAgency?.agency,
+    loggedInAgencyId: null,
+    loggedInBranchId: loginAgency?.agency,
   };
 
-  // *** DISABLED FOR NOW ***
-  // For FFU libraries the /userinfo and smaug fields can now hold both an agencyIds and branchIds
-  // Therefore all used fields which contains branchIds will be replaced with an agencyId
-  if (false && isFFUAgency(loginAgency?.agency, context)) {
-    attributes = await replaceBranchIdWithAgencyId(attributes, context);
-  }
+  // The Smaug "agency" field can now hold both agencyIds and branchIds. Therefore, we ensure that loggedInAgencyId always contains an agencyId.
+  // The loggedInBranchId will always contain a branchId, which can also be an agencyId (e.g., main libraries).
+  attributes.loggedInAgencyId = await getAgencyIdByBranchId(
+    attributes.loggedInBranchId,
+    context
+  );
 
-  // This check prevents FFU users from accessing CULR data.
-  // FFU Borchk authentication, is not safe enough to expose CULR data.
-  if (!loggedInAgencyHasCulrDataSync) {
-    attributes = omitUserinfoCulrData(attributes);
+  //  Only relevant if user exist in CULR
+  if (attributes.uniqueId) {
+    // User exist in CULR
+    if (!loggedInAgencyHasCulrDataSync) {
+      // User is signediIn with a library which does NOT sync data with CULR - CULR Data is omitted
+      attributes = omitUserinfoCulrData(attributes);
+    }
   }
 
   return { attributes };

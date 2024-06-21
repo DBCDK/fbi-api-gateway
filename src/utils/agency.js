@@ -123,3 +123,22 @@ export async function getUserFromAllUserStatusData(props, context) {
   // Prioritize CPR over LOCAL data
   return Object.assign({}, ...locals, ...cpr);
 }
+
+/**
+ *
+ * Function to find agencyId from branchId
+ *
+ * @param {string} branchId
+ * @param {object} context
+ * @returns {string} agencyId
+ */
+
+export async function getAgencyIdByBranchId(branchId, context) {
+  const loader = context?.getLoader || context?.datasources?.getLoader;
+
+  // get AgencyId from used branchId
+  const result = (await loader("library").load({ branchId })).result?.[0];
+
+  // return agencyId
+  return result?.agencyId;
+}

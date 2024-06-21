@@ -13,6 +13,7 @@ export function omitUserinfoCulrData(attributes) {
   const loggedInAgencyId = attributes?.loggedInAgencyId;
   const agencies = attributes?.agencies;
 
+  // only agencyIds' is used in CULR therefore we match on loggedInAgencyId and not branchID
   const filteredAgencies = filterAgenciesByProps(agencies, {
     agency: loggedInAgencyId,
   });
@@ -24,6 +25,7 @@ export function omitUserinfoCulrData(attributes) {
     municipality: null,
 
     // default behavior for FFU libraries in /userinfo
+    // Agency is used as municipality, some libraries use this for digital article access (e.g. KB)
     municipalityAgencyId: loggedInAgencyId,
 
     // omitted culr data flags
