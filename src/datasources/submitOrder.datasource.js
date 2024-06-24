@@ -40,6 +40,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     needBeforeDate: input.expires || createNeedBeforeDate(),
     orderSystem: orderSystem?.toUpperCase(),
     pickUpAgencyId: input.pickUpBranch,
+    pickUpAgencySubdivision: input.pickUpBranchSubdivision,
     author: input.author,
     authorOfComponent: input.authorOfComponent,
     pagination: input.pagesOfComponent,
