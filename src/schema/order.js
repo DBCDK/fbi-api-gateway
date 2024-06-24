@@ -249,6 +249,7 @@ export const typeDef = `
   input SubmitMultipleOrdersInput{
     materialsToOrder: [Material!]!
     pickUpBranch: String!
+    pickUpBranchSubdivision: String
     userParameters: SubmitOrderUserParameters!
     pagination: String
   } 
