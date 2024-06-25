@@ -13,6 +13,11 @@ const SMAUG = (accessToken) => {
         agency: "710100",
       },
     },
+    AUTHENTICATED_BRANCH_TOKEN: {
+      user: {
+        agency: "737001", // <-- branch
+      },
+    },
     NEMLOGIN_AUTHENTICATED_TOKEN: {
       user: {
         agency: "",
@@ -28,6 +33,12 @@ const SMAUG = (accessToken) => {
         agency: "872960",
       },
     },
+    // Nordjyske Gymnasiebiblioteker (Selvstændigt opfattende bibliotek på branchId fremfor agencyId)
+    FFU_BRANCH_INDEPENDENT_TOKEN: {
+      user: {
+        agency: "872100",
+      },
+    },
   }[accessToken];
 };
 
@@ -35,16 +46,22 @@ const SMAUG = (accessToken) => {
 const LIBRARY = (branchId) => {
   return {
     710100: {
-      result: [{ agencyType: "FOLKEBIBLIOTEK" }],
+      result: [{ agencyType: "FOLKEBIBLIOTEK", agencyId: "710100" }],
+    },
+    737001: {
+      result: [{ agencyType: "FOLKEBIBLIOTEK", agencyId: "737000" }],
     },
     800010: {
-      result: [{ agencyType: "FORSKNINGSBIBLIOTEK" }],
+      result: [{ agencyType: "FORSKNINGSBIBLIOTEK", agencyId: "800010" }],
     },
     872960: {
-      result: [{ agencyType: "FORSKNINGSBIBLIOTEK" }],
+      result: [{ agencyType: "FORSKNINGSBIBLIOTEK", agencyId: "872960" }],
     },
     190101: {
-      result: [{ agencyType: "ANDRE" }],
+      result: [{ agencyType: "ANDRE", agencyId: "190101" }],
+    },
+    872100: {
+      result: [{ agencyType: "FORSKNINGSBIBLIOTEK", agencyId: "876040" }],
     },
   }[branchId];
 };
@@ -87,9 +104,10 @@ const DEFAULT_USERINFO = {
 
 describe("userinfo", () => {
   /**
-   * Normal folk library user, only agency/loggedInAgencyId from smaug should be added here
+   * Normal folk library user, only agency/loggedInAgencyId AND agency/loggedInBranchId from smaug should be added here
+   * Agency was used for login. LoggedInAgencyId and loggedInBranchId should NOT differ.
    */
-  test("FOLK authenticated user, enriched with smaug loggedInAgencyId", async () => {
+  test("FOLK authenticated user, enriched with smaug agency", async () => {
     const context = {
       ...datasources,
       fetch: () => ({
@@ -107,10 +125,35 @@ describe("userinfo", () => {
   });
 
   /**
-   * Normal FFU library user, only agency/loggedInAgencyId from smaug should be added here
-   * OBS! municipalityAgencyId is set to 800010 - this solves the problem for digital article service for KB
+   * Normal folk library user, only agency/loggedInAgencyId AND agency/loggedInBranchId from smaug should be added here
+   * Branch was used for login. LoggedInAgencyId and loggedInBranchId SHOULD differ.
    */
-  test("FFU authenticated user, enriched with smaug loggedInAgencyId", async () => {
+  test("FOLK (branch) authenticated user, enriched with smaug agency", async () => {
+    const context = {
+      ...datasources,
+      fetch: () => ({
+        body: {
+          attributes: {
+            ...DEFAULT_USERINFO.attributes,
+          },
+        },
+      }),
+    };
+
+    const result = await load(
+      { accessToken: "AUTHENTICATED_BRANCH_TOKEN" },
+      context
+    );
+
+    expect(result).toMatchSnapshot();
+  });
+
+  /**
+   * Normal FFU library user, only agency/loggedInAgencyId AND agency/loggedInBranchId from smaug should be added here
+   * OBS! municipalityAgencyId is set to 800010 - this solves the problem for digital article service for KB
+   * FFU Users with no uniqueId should NOT recieve the omittedCulrData object.
+   */
+  test("FFU authenticated user, enriched with smaug agency", async () => {
     const context = {
       ...datasources,
       fetch: () => ({
@@ -139,8 +182,9 @@ describe("userinfo", () => {
 
   /**
    * Libraries which sync data to culr - should be treated equally with folk libraries
+   * FFU Users with no uniqueId should NOT recieve the omittedCulrData object.
    */
-  test("DataSynced library authenticated user, enriched with smaug loggedInAgencyId", async () => {
+  test("DataSynced library authenticated user, enriched with smaug agency", async () => {
     const context = {
       ...datasources,
       fetch: () => ({
@@ -259,6 +303,74 @@ describe("userinfo", () => {
 
     const result = await load(
       { accessToken: "FFU_AUTHENTICATED_TOKEN" },
+      context
+    );
+
+    expect(result).toMatchSnapshot();
+  });
+
+  /**
+   * FFU authenticated user for "Nordjyske Gymnasiebiblioteker", agency/loggedInAgencyId AND agency/loggedInBranchId from smaug should be added here.
+   * loggedInAgencyId AND loggedInBranchId should NOT differ (branch was selected for login).
+   * Users with no uniqueId should not recieve the omittedCulrData object.
+   * Should NOT get the culrOmittedData prop
+   */
+  test("FFU authenticated user for independent library enriched with agency/loggedInBranchId", async () => {
+    const context = {
+      ...datasources,
+      fetch: () => ({
+        body: {
+          attributes: {
+            ...DEFAULT_USERINFO.attributes,
+            uniqueId: null,
+            municipalityAgencyId: null,
+            municipality: null,
+            agencies: [
+              {
+                agencyId: "872100",
+                userId: "some-localId",
+                userIdType: "LOCAL",
+              },
+            ],
+          },
+        },
+      }),
+    };
+
+    const result = await load(
+      { accessToken: "FFU_BRANCH_INDEPENDENT_TOKEN" },
+      context
+    );
+
+    expect(result).toMatchSnapshot();
+  });
+
+  /**
+   * FFU authenticated user for "Nordjyske Gymnasiebiblioteker", agency/loggedInAgencyId AND agency/loggedInBranchId from smaug should be added here.
+   * loggedInAgencyId AND loggedInBranchId should NOT differ (branch was selected for login).
+   * Should get the culrOmittedData prop
+   */
+  test("FFU authenticated user for independent library should find hidden account", async () => {
+    const context = {
+      ...datasources,
+      fetch: () => ({
+        body: {
+          attributes: {
+            ...DEFAULT_USERINFO.attributes,
+            agencies: [
+              {
+                agencyId: "872100",
+                userId: "some-localId",
+                userIdType: "LOCAL",
+              },
+            ],
+          },
+        },
+      }),
+    };
+
+    const result = await load(
+      { accessToken: "FFU_BRANCH_INDEPENDENT_TOKEN" },
       context
     );
 

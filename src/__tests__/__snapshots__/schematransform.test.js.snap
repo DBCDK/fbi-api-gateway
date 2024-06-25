@@ -856,6 +856,9 @@ type Branch {
   branchCatalogueUrl: String
   lookupUrl: String
 
+  \\"\\"\\"Branch act as independent agency\\"\\"\\"
+  isIndependent: Boolean!
+
   \\"\\"\\"branchType is type of library branch. \\"\\"\\"
   branchType: String!
 
@@ -3298,7 +3301,7 @@ type User {
   \\"\\"\\"Get one saved search by cql. Returns searchobject including id.\\"\\"\\"
   savedSearchByCql(cql: String!): SavedSearch
   agencies(language: LanguageCode): [Agency!]!
-  loggedInBranchId: String @deprecated(reason: \\"Use 'User.loggedInAgencyId' instead\\")
+  loggedInBranchId: String
   loggedInAgencyId: String
   municipalityNumber: String
   municipalityAgencyId: String

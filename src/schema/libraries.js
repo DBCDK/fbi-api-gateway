@@ -6,7 +6,11 @@ import { orderBy } from "lodash";
 import { resolveBorrowerCheck, resolveLocalizations } from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
-import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
+import {
+  isFFUAgency,
+  hasCulrDataSync,
+  branchIsIndependent,
+} from "../utils/agency";
 
 export const typeDef = `
   enum LibraryStatus {
@@ -64,6 +68,11 @@ export const typeDef = `
     branchWebsiteUrl: String
     branchCatalogueUrl: String
     lookupUrl: String
+
+    """
+    Branch act as independent agency
+    """
+    isIndependent: Boolean!
     
     """
     branchType is type of library branch. 
@@ -137,6 +146,9 @@ export const resolvers = {
       );
 
       return status === false;
+    },
+    isIndependent(parent, args, context, info) {
+      return branchIsIndependent(parent.branchId);
     },
     async borrowerCheck(parent, args, context, info) {
       // pjo 19/12/23 bug BIBDK2021-2294 . If libraries are not public (number starts with 7)
