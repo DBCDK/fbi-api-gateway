@@ -135,16 +135,10 @@ export const resolvers = {
       const works = parent.works.slice(offset, offset + limit);
 
       // filter out persistentWorkIds that can NOT be resolved - we need to await a resolve to know :)
-      const asyncFilter = async (worksArray) => {
-        const results = await Promise.all(
-          worksArray.map((work) =>
-            resolveWork({ id: work.persistentWorkId }, context)
-          )
-        );
-        return worksArray.filter((_v, index) => results[index] !== null);
-      };
-
-      return await asyncFilter(works);
+      const results = await Promise.all(
+        works.map((work) => resolveWork({ id: work.persistentWorkId }, context))
+      );
+      return works.filter((_v, index) => results[index] !== null);
     },
     title(parent, args, context, info) {
       return parent.seriesTitle;
