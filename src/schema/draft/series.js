@@ -128,11 +128,17 @@ export const resolvers = {
 
   // We need to resolve for backward compatibility
   Series: {
-    members(parent, args, context, info) {
+    async members(parent, args, context, info) {
       const limit = Boolean(args.limit) ? args.limit : 50;
       const offset = Boolean(args.offset) ? args.offset : 0;
 
-      return parent.works.slice(offset, offset + limit);
+      const works = parent.works.slice(offset, offset + limit);
+
+      // filter out persistentWorkIds that can NOT be resolved - we need to await a resolve to know :)
+      const results = await Promise.all(
+        works.map((work) => resolveWork({ id: work.persistentWorkId }, context))
+      );
+      return works.filter((_v, index) => results[index] !== null);
     },
     title(parent, args, context, info) {
       return parent.seriesTitle;

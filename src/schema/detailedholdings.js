@@ -270,21 +270,22 @@ export const resolvers = {
       const today = getIsoDate();
 
       // Fetch holdings items for entire agency
-      let holdingsItemsForAgency = (
-        await context.datasources.getLoader("holdingsitemsForAgency").load({
+      let holdingsItemsForAgency = await context.datasources
+        .getLoader("holdingsitemsForAgency")
+        .load({
           agencyId: parent.agencyId,
           pids: localIdentifiers?.map(
             (localIdentifier) => localIdentifier.localizationPid
           ),
-        })
-      )
-        ?.filter(
-          (item) => item.status === "OnShelf" || item.status === "NotForLoan"
-        )
-        ?.map((item) => ({
-          ...item,
-          expectedDelivery: item.status === "OnShelf" ? today : null,
-        }));
+        });
+
+      holdingsItemsForAgency = holdingsItemsForAgency?.map((item) => ({
+        ...item,
+        expectedDelivery: item.status === "OnShelf" ? today : null,
+        notOnSHelf: !(
+          item.status === "OnShelf" || item.status === "NotForLoan"
+        ),
+      }));
 
       holdingsItemsForAgency = await filterHoldings(
         holdingsItemsForAgency,
@@ -337,7 +338,7 @@ export const resolvers = {
 
       // Holdings that are on shelf but not for loan at any branch in agency
       const onShelfNotForLoanInAgency = holdings?.filter(
-        (holding) => !holding?.expectedDelivery
+        (holding) => !holding?.expectedDelivery && !holding?.notOnSHelf
       );
 
       // Holdings that are on loan, sorted by the earliest expected delivery first
