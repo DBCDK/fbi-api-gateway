@@ -102,6 +102,21 @@ export async function hasCulrDataSync(branchId, context) {
  * @returns {boolean}
  */
 export function branchIsIndependent(branchId) {
+  // OBS se bort fra dette udkommenteret kode, ny dynamisk løsning kommer her.
+
+  // const loader = context?.getLoader || context?.datasources?.getLoader;
+
+  // // get AgencyId from used branchId
+  // const result = (await loader("library").load({ branchId })).result?.[0];
+
+  // // return agencyId
+  // const agencyId = result?.agencyId;
+
+  // // get AgencyId from used branchId
+  // const list = await loader("vipcore_BorrowerCheckList").load("");
+
+  // console.log(".......... list", agencyId, list);
+
   const whitelist = [
     // Agencies
     "876040", // Nordjyske Gymnasiebiblioteker agency

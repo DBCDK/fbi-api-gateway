@@ -38,6 +38,7 @@ export async function load({ accessToken }, context) {
 
     // The Smaug "agency" field can now hold both agencyIds and branchIds. Therefore, we ensure that loggedInAgencyId always contains an agencyId.
     // The loggedInBranchId will always contain a branchId, which can also be an agencyId (e.g., main libraries).
+    // If branch act as independent, branchId will be set in both loggedInAgencyId and loggedInBranchId
     attributes.loggedInAgencyId = await getAgencyIdByBranchId(
       loggedInBranchId,
       context
@@ -113,6 +114,7 @@ export async function testLoad({ accessToken }, context) {
 
   // The Smaug "agency" field can now hold both agencyIds and branchIds. Therefore, we ensure that loggedInAgencyId always contains an agencyId.
   // The loggedInBranchId will always contain a branchId, which can also be an agencyId (e.g., main libraries).
+  // If branch act as independent, branchId will be set in both loggedInAgencyId and loggedInBranchId
   attributes.loggedInAgencyId = await getAgencyIdByBranchId(
     attributes.loggedInBranchId,
     context
