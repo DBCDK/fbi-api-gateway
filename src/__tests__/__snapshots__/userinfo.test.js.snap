@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`userinfo DataSynced library authenticated user, enriched with smaug loggedInAgencyId 1`] = `
+exports[`userinfo DataSynced library authenticated user, enriched with smaug agency 1`] = `
 Object {
   "attributes": Object {
     "agencies": Array [
@@ -13,6 +13,7 @@ Object {
     "blocked": false,
     "idpUsed": "borchk",
     "loggedInAgencyId": "872960",
+    "loggedInBranchId": "872960",
     "municipality": null,
     "municipalityAgencyId": "872960",
     "uniqueId": null,
@@ -34,6 +35,7 @@ Object {
     "blocked": false,
     "idpUsed": "borchk",
     "loggedInAgencyId": "800010",
+    "loggedInBranchId": "800010",
     "municipality": null,
     "municipalityAgencyId": "800010",
     "omittedCulrData": Object {
@@ -48,7 +50,57 @@ Object {
 }
 `;
 
-exports[`userinfo FFU authenticated user, enriched with smaug loggedInAgencyId 1`] = `
+exports[`userinfo FFU authenticated user for independent library enriched with agency/loggedInBranchId 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "872100",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "borchk",
+    "loggedInAgencyId": "872100",
+    "loggedInBranchId": "872100",
+    "municipality": null,
+    "municipalityAgencyId": "872100",
+    "uniqueId": null,
+    "userId": "some-userId",
+  },
+}
+`;
+
+exports[`userinfo FFU authenticated user for independent library should find hidden account 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "872100",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "borchk",
+    "loggedInAgencyId": "872100",
+    "loggedInBranchId": "872100",
+    "municipality": null,
+    "municipalityAgencyId": "872100",
+    "omittedCulrData": Object {
+      "hasOmittedCulrAccounts": false,
+      "hasOmittedCulrMunicipality": true,
+      "hasOmittedCulrMunicipalityAgencyId": true,
+      "hasOmittedCulrUniqueId": true,
+    },
+    "uniqueId": null,
+    "userId": "some-userId",
+  },
+}
+`;
+
+exports[`userinfo FFU authenticated user, enriched with smaug agency 1`] = `
 Object {
   "attributes": Object {
     "agencies": Array [
@@ -61,9 +113,37 @@ Object {
     "blocked": false,
     "idpUsed": "borchk",
     "loggedInAgencyId": "710100",
+    "loggedInBranchId": "710100",
     "municipality": null,
     "municipalityAgencyId": "800010",
     "uniqueId": null,
+    "userId": "some-userId",
+  },
+}
+`;
+
+exports[`userinfo FOLK (branch) authenticated user, enriched with smaug agency 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "710100",
+        "userId": "some-globalId",
+        "userIdType": "CPR",
+      },
+      Object {
+        "agencyId": "710100",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "borchk",
+    "loggedInAgencyId": "737000",
+    "loggedInBranchId": "737001",
+    "municipality": "101",
+    "municipalityAgencyId": "710100",
+    "uniqueId": "some-uniqueId",
     "userId": "some-userId",
   },
 }
@@ -92,6 +172,7 @@ Object {
     "blocked": false,
     "idpUsed": "borchk",
     "loggedInAgencyId": "710100",
+    "loggedInBranchId": "710100",
     "municipality": "101",
     "municipalityAgencyId": "710100",
     "uniqueId": "some-uniqueId",
@@ -100,7 +181,7 @@ Object {
 }
 `;
 
-exports[`userinfo FOLK authenticated user, enriched with smaug loggedInAgencyId 1`] = `
+exports[`userinfo FOLK authenticated user, enriched with smaug agency 1`] = `
 Object {
   "attributes": Object {
     "agencies": Array [
@@ -118,6 +199,7 @@ Object {
     "blocked": false,
     "idpUsed": "borchk",
     "loggedInAgencyId": "710100",
+    "loggedInBranchId": "710100",
     "municipality": "101",
     "municipalityAgencyId": "710100",
     "uniqueId": "some-uniqueId",
@@ -139,6 +221,7 @@ Object {
     "blocked": false,
     "idpUsed": "nemlogin",
     "loggedInAgencyId": "190101",
+    "loggedInBranchId": "190101",
     "municipality": null,
     "municipalityAgencyId": null,
     "uniqueId": "some-uniqueId",

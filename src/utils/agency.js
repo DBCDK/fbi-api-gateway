@@ -95,6 +95,48 @@ export async function hasCulrDataSync(branchId, context) {
   return !!(await isFolkAgency(branchId, context));
 }
 
+/**
+ * Function to check if an branch acts as independent agency
+ *
+ * @param {string} branchId // agencyId or branchId
+ * @returns {boolean}
+ */
+export function branchIsIndependent(branchId) {
+  // OBS se bort fra dette udkommenteret kode, ny dynamisk løsning kommer her.
+
+  // const loader = context?.getLoader || context?.datasources?.getLoader;
+
+  // // get AgencyId from used branchId
+  // const result = (await loader("library").load({ branchId })).result?.[0];
+
+  // // return agencyId
+  // const agencyId = result?.agencyId;
+
+  // // get AgencyId from used branchId
+  // const list = await loader("vipcore_BorrowerCheckList").load("");
+
+  // console.log(".......... list", agencyId, list);
+
+  const whitelist = [
+    // Agencies
+    "876040", // Nordjyske Gymnasiebiblioteker agency
+
+    // Branches
+    "872050", // Støvring Gymnasium, Biblioteket
+    "872060", // Hjørring Gymnasium og HF-kursus, Biblioteket
+    "872080", // Hasseris Gymnasium, Biblioteket
+    "872090", // Brønderslev Gymnasium og HF-Kursus, Biblioteket
+    "872100", // Vesthimmerlands Gymnasium & HF, Biblioteket
+    "872140", // Aalborghus Gymnasium, Biblioteket
+    "872340", // Frederikshavn Gymnasium, Gymnasiebiblioteket
+    "872520", // Aalborg Katedralskole, Biblioteket
+    "873310", // Nørresundby Gymnasium og HF, Biblioteket
+    "874100", // Dronninglund Gymnasium, Biblioteket
+  ];
+
+  return whitelist.includes(branchId);
+}
+
 export async function getUserFromAllUserStatusData(props, context) {
   const agencies = props?.agencies || context?.user?.agencies;
 
@@ -122,4 +164,30 @@ export async function getUserFromAllUserStatusData(props, context) {
 
   // Prioritize CPR over LOCAL data
   return Object.assign({}, ...locals, ...cpr);
+}
+
+/**
+ *
+ * Function to find agencyId from branchId
+ *
+ * @param {string} branchId
+ * @param {object} context
+ * @returns {string} agencyId
+ */
+
+export async function getAgencyIdByBranchId(branchId, context) {
+  const loader = context?.getLoader || context?.datasources?.getLoader;
+
+  // get AgencyId from used branchId
+  const result = (await loader("library").load({ branchId })).result?.[0];
+
+  // return agencyId
+  const agencyId = result?.agencyId;
+
+  //  Return branchId instead of agencyId if branch act independently
+  if (branchIsIndependent(branchId)) {
+    return branchId;
+  }
+
+  return agencyId;
 }
