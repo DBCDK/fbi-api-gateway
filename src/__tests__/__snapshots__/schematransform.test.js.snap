@@ -856,9 +856,6 @@ type Branch {
   branchCatalogueUrl: String
   lookupUrl: String
 
-  \\"\\"\\"Branch act as independent agency\\"\\"\\"
-  isIndependent: Boolean!
-
   \\"\\"\\"branchType is type of library branch. \\"\\"\\"
   branchType: String!
 
