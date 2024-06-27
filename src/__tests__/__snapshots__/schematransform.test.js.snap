@@ -3299,7 +3299,7 @@ type User {
   \\"\\"\\"Get one saved search by cql. Returns searchobject including id.\\"\\"\\"
   savedSearchByCql(cql: String!): SavedSearch
   agencies(language: LanguageCode): [Agency!]!
-  loggedInBranchId: String @deprecated(reason: \\"Use 'User.loggedInAgencyId' instead\\")
+  loggedInBranchId: String
   loggedInAgencyId: String
   municipalityNumber: String
   municipalityAgencyId: String

@@ -56,7 +56,7 @@ type User {
 
   
   agencies(language: LanguageCode): [Agency!]!
-  loggedInBranchId: String @deprecated(reason: "Use 'User.loggedInAgencyId' instead")
+  loggedInBranchId: String
   loggedInAgencyId: String
   municipalityNumber: String
   municipalityAgencyId: String
@@ -722,8 +722,7 @@ export const resolvers = {
     },
     async loggedInBranchId(parent, args, context, info) {
       const user = context?.user;
-
-      return user.loggedInAgencyId;
+      return user.loggedInBranchId;
     },
     async loggedInAgencyId(parent, args, context, info) {
       const user = context?.user;

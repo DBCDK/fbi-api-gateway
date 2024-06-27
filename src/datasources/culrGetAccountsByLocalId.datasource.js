@@ -99,10 +99,13 @@ export async function load({ agencyId, userId }, context) {
     parseString(res.body, async (err, result) => {
       let data = parseResponse(result);
 
-      // This check prevents FFU borchk authenticated users for accessing CULR data.
-      // only the loggedIn FFU library is returned, if it exist.
-      if (!(await hasCulrDataSync(agencyId, context))) {
-        data = omitCulrData(data, { agencyId, userId });
+      // If an account was found
+      if (data.guid) {
+        // This check prevents FFU borchk authenticated users for accessing CULR data.
+        // only the loggedIn FFU library is returned, if it exist.
+        if (!(await hasCulrDataSync(agencyId, context))) {
+          data = omitCulrData(data, { agencyId, userId });
+        }
       }
 
       return resolve(data);
@@ -137,10 +140,13 @@ export async function testLoad({ agencyId, userId }, context) {
     })),
   };
 
-  // This check prevents FFU borchk authenticated users for accessing CULR data.
-  // only the loggedIn FFU library is returned, if it exist.
-  if (!(await hasCulrDataSync(agencyId, context))) {
-    return omitCulrData(data, { agencyId, userId });
+  // If an account was found
+  if (data.guid) {
+    // This check prevents FFU borchk authenticated users for accessing CULR data.
+    // only the loggedIn FFU library is returned, if it exist.
+    if (!(await hasCulrDataSync(agencyId, context))) {
+      return omitCulrData(data, { agencyId, userId });
+    }
   }
 
   return data;
