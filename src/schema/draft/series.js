@@ -42,6 +42,11 @@ type Series {
   title: String!
   
   """
+  Additional information 
+  """
+  identifyingAddition: String
+  
+  """
   Description of the series
   """
   description: String
