@@ -55,7 +55,7 @@ type UnitDescription {
 }
 
 type PhysicalUnitDescription {
-  summaryFull: String!
+  summaryFull: String
   materialUnits: [UnitDescription!]
   numberOfPages: Int
   accompanyingMaterial: String
