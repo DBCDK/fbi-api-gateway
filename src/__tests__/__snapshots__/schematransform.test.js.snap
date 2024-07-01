@@ -2079,6 +2079,9 @@ type Series {
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 
+  \\"\\"\\"Additional information \\"\\"\\"
+  identifyingAddition: String
+
   \\"\\"\\"Description of the series\\"\\"\\"
   description: String
 
@@ -4908,6 +4911,9 @@ type Series {
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 
+  \\"\\"\\"Additional information \\"\\"\\"
+  identifyingAddition: String
+
   \\"\\"\\"Description of the series\\"\\"\\"
   description: String
 
@@ -6743,6 +6749,9 @@ type SerieWork {
 type Series {
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
+
+  \\"\\"\\"Additional information \\"\\"\\"
+  identifyingAddition: String
 
   \\"\\"\\"Description of the series\\"\\"\\"
   description: String
