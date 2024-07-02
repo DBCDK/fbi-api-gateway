@@ -296,6 +296,10 @@ export const resolvers = {
         (item) => item?.branchId === parent.branchId
       );
 
+      const holdingsItemsForBranchOnShelf = holdingsItemsForBranch?.filter(
+        (item) => item.notOnSHelf === false
+      );
+
       // Fetch detailed holdings (this will make a call to a local agency system)
       // Only fetch if we do not have holdings items on shelf (performance optimization)
       let detailedHoldings =
@@ -360,7 +364,11 @@ export const resolvers = {
           (holding) => holding?.branchId === parent.branchId
         )
       ) {
-        return { status: "ON_SHELF", items: holdingsItemsForBranch, lookupUrl };
+        return {
+          status: "ON_SHELF",
+          items: holdingsItemsForBranchOnShelf,
+          lookupUrl,
+        };
       }
 
       // Check if material is on shelf but not for loan at current branch
@@ -371,7 +379,7 @@ export const resolvers = {
       ) {
         return {
           status: "ON_SHELF_NOT_FOR_LOAN",
-          items: holdingsItemsForBranch,
+          items: holdingsItemsForBranchOnShelf,
           lookupUrl,
         };
       }
@@ -403,7 +411,7 @@ export const resolvers = {
         status,
         expectedAgencyReturnDate,
         expectedBranchReturnDate,
-        items: holdingsItemsForBranch,
+        items: holdingsItemsForBranchOnShelf,
         lookupUrl,
       };
     },
