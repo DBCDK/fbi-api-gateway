@@ -2,13 +2,19 @@ import config from "../config";
 
 const { url, ttl } = config.datasources.vipcore;
 
+function listMap(list) {
+  const map = {};
+  list.forEach((obj) => (map[obj.loginAgencyId] = obj));
+  return map;
+}
+
 export async function load(_key, context) {
   const res = await context?.fetch(
     `${url}/borrowerchecklist/login.bib.dk/true?trackingId=betabib`,
     { allowedErrorStatusCodes: [] }
   );
 
-  return res.body?.borrowerCheckLibrary;
+  return listMap(res.body?.borrowerCheckLibrary);
 }
 
 export const options = {

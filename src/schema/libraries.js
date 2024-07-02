@@ -45,6 +45,10 @@ export const typeDef = `
     culrDataSync: Boolean!
     agencyName: String
     agencyId: String!
+    """
+    Some independent branches is collected under a pseudo agencyId, This agencyId is removed by FBI-API but instead stored in this field
+    """
+    _agencyId: String,
     branchId: String!
     agencyType: AgencyType!
     name: String!
@@ -158,6 +162,9 @@ export const resolvers = {
     },
     agencyId(parent, args, context, info) {
       return parent.agencyId || "";
+    },
+    _agencyId(parent, args, context, info) {
+      return parent._agencyId;
     },
     branchId(parent, args, context, info) {
       return parent.branchId;

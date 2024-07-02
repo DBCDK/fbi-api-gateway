@@ -66,12 +66,22 @@ const LIBRARY = (branchId) => {
   }[branchId];
 };
 
+const VIP = () => {
+  return {
+    737000: { loginAgencyId: "737000" },
+    872100: { loginAgencyId: "872100" },
+  };
+};
+
 //  mocked datasources
 const datasources = {
   getLoader: (name) => {
     return {
       smaug: { load: async ({ accessToken }) => SMAUG(accessToken) },
       library: { load: async ({ branchId }) => LIBRARY(branchId) },
+      vipcore_BorrowerCheckList: {
+        load: async ({ branchId }) => VIP(),
+      },
     }[name];
   },
 };
