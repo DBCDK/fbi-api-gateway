@@ -856,6 +856,9 @@ type Branch {
   branchCatalogueUrl: String
   lookupUrl: String
 
+  \\"\\"\\"Branch act as independent, users can only be loggedIn at branch level\\"\\"\\"
+  branchLoginDetails: BranchLoginDetails
+
   \\"\\"\\"branchType is type of library branch. \\"\\"\\"
   branchType: String!
 
@@ -2623,6 +2626,13 @@ type UserParameter {
   userParameterType: VipUserParameter!
   parameterRequired: Boolean!
   description: String
+}
+
+type BranchLoginDetails {
+  allowsAgencyLogin: Boolean
+  allowsBranchLogin: Boolean
+  loginBranchId: String
+  loginAgencyId: String
 }
 
 type BranchResult {
