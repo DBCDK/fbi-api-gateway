@@ -68,11 +68,7 @@ const LIBRARY = (branchId) => {
 
 const VIP = () => {
   return {
-    710100: { loginAgencyId: "710100" },
     737000: { loginAgencyId: "737000" },
-    800010: { loginAgencyId: "800010" },
-    872960: { loginAgencyId: "872960" },
-    190101: { loginAgencyId: "190101" },
     872100: { loginAgencyId: "872100" },
   };
 };
