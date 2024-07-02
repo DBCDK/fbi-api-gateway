@@ -111,7 +111,8 @@ async function get() {
     return {
       ...branch,
       agencyId: isIndependent ? branchId : agencyId,
-      _agencyId: isIndependent ? agencyId : null,
+      // store original agencyId (Not manipulated)
+      _agencyId: agencyId,
       mobileLibraryLocations: branchMap[branchId]?.agencySubdivision,
     };
   });

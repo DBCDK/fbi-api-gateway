@@ -45,6 +45,10 @@ export const typeDef = `
     culrDataSync: Boolean!
     agencyName: String
     agencyId: String!
+    """
+    Some independent branches is collected under a pseudo agencyId, This agencyId is removed by FBI-API but instead stored in this field
+    """
+    _agencyId: String,
     branchId: String!
     agencyType: AgencyType!
     name: String!
@@ -64,11 +68,6 @@ export const typeDef = `
     branchWebsiteUrl: String
     branchCatalogueUrl: String
     lookupUrl: String
-
-    """
-    Branch act as independent, users can only be loggedIn at branch level
-    """
-    branchLoginDetails: BranchLoginDetails
     
     """
     branchType is type of library branch. 
@@ -95,13 +94,6 @@ export const typeDef = `
     If the branch type is 'bogbus', this field may contain a list of locations that the bus visits
     """
     mobileLibraryLocations: [String!]
-  }
-
-  type BranchLoginDetails{
-    allowsAgencyLogin: Boolean
-    allowsBranchLogin: Boolean
-    loginBranchId: String
-    loginAgencyId: String
   }
   
   type BranchResult{
@@ -150,23 +142,6 @@ export const resolvers = {
 
       return status === false;
     },
-    async branchLoginDetails(parent, args, context, info) {
-      const { agencyId, branchId } = parent;
-
-      const list = await context.datasources
-        .getLoader("vipcore_BorrowerCheckList")
-        .load("");
-
-      const allowsAgencyLogin = !!list[agencyId];
-      const allowsBranchLogin = !!list[branchId];
-
-      return {
-        allowsAgencyLogin,
-        allowsBranchLogin,
-        loginAgencyId: allowsAgencyLogin ? agencyId : null,
-        loginBranchId: allowsBranchLogin ? branchId : null,
-      };
-    },
     async borrowerCheck(parent, args, context, info) {
       // pjo 19/12/23 bug BIBDK2021-2294 . If libraries are not public (number starts with 7)
       // we prioritize branchId OVER agencyId - since FFU and foreign libraries decides on branch-level, if they use borrowerCheck or not
@@ -187,6 +162,9 @@ export const resolvers = {
     },
     agencyId(parent, args, context, info) {
       return parent.agencyId || "";
+    },
+    _agencyId(parent, args, context, info) {
+      return parent._agencyId;
     },
     branchId(parent, args, context, info) {
       return parent.branchId;
