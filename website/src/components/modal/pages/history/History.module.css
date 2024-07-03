@@ -85,6 +85,7 @@
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
 
   transition: box-shadow 0.3s;
+  z-index: 1;
 }
 
 .item.expanded.scrolled .display {

@@ -836,6 +836,11 @@ type Branch {
   culrDataSync: Boolean!
   agencyName: String
   agencyId: String!
+
+  \\"\\"\\"
+  Some independent branches is collected under a pseudo agencyId, This agencyId is removed by FBI-API but instead stored in this field
+  \\"\\"\\"
+  _agencyId: String
   branchId: String!
   agencyType: AgencyType!
   name: String!
@@ -1190,7 +1195,7 @@ type UnitDescription {
 }
 
 type PhysicalUnitDescription {
-  summaryFull: String!
+  summaryFull: String
   materialUnits: [UnitDescription!]
   numberOfPages: Int
   accompanyingMaterial: String
@@ -4026,7 +4031,7 @@ type UnitDescription {
 }
 
 type PhysicalUnitDescription {
-  summaryFull: String!
+  summaryFull: String
   materialUnits: [UnitDescription!]
   numberOfPages: Int
   accompanyingMaterial: String
@@ -5883,7 +5888,7 @@ type UnitDescription {
 }
 
 type PhysicalUnitDescription {
-  summaryFull: String!
+  summaryFull: String
   materialUnits: [UnitDescription!]
   numberOfPages: Int
   accompanyingMaterial: String

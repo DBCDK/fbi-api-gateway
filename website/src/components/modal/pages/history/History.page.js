@@ -241,7 +241,7 @@ function Item({
 
           <div className={styles.user}>
             <div className={styles.heading}>
-              <Text type="text1">Client details</Text>
+              <Text type="text1">Token details</Text>
             </div>
 
             <div className={styles.submitted}>
@@ -265,6 +265,14 @@ function Item({
             <div className={styles.token}>
               <Text type="text4">Access token</Text>
               <Text type="text1">{token}</Text>
+            </div>
+          </div>
+
+          <hr className={styles.divider} />
+
+          <div className={styles.user}>
+            <div className={styles.heading}>
+              <Text type="text1">Client details</Text>
             </div>
 
             <div className={styles.clientId}>
@@ -354,19 +362,25 @@ function Item({
               </div>
 
               <div className={styles.details}>
+                {user?.loggedInBranchId && (
+                  <div className={styles.loggedInBranchId}>
+                    <Text type="text4">LoggedInBranchId</Text>
+                    <Text type="text1">{user?.loggedInBranchId}</Text>
+                  </div>
+                )}
                 {user?.loggedInAgencyId && (
                   <div className={styles.loggedInAgencyId}>
                     <Text type="text4">LoggedInAgencyId</Text>
                     <Text type="text1">{user?.loggedInAgencyId}</Text>
                   </div>
                 )}
-                {user?.identityProviderUsed && (
-                  <div className={styles.i}>
-                    <Text type="text4">IdentityProviderUsed</Text>
-                    <Text type="text1">{user?.identityProviderUsed}</Text>
-                  </div>
-                )}
               </div>
+              {user?.identityProviderUsed && (
+                <div className={styles.i}>
+                  <Text type="text4">IdentityProviderUsed</Text>
+                  <Text type="text1">{user?.identityProviderUsed}</Text>
+                </div>
+              )}
             </div>
           )}
 

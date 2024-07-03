@@ -95,46 +95,42 @@ export async function hasCulrDataSync(branchId, context) {
   return !!(await isFolkAgency(branchId, context));
 }
 
+export function checkLoginIndependence(branch, list) {
+  const { branchId, agencyId } = branch;
+
+  // Check if the agency of the branch allows login (borrowercheck and login.bib.dk set to true)
+  const hasAgencyLogin = !!list[agencyId];
+  if (hasAgencyLogin) {
+    return false;
+  }
+
+  // Check if branch uses a different login agency than itself
+  // Branch has borrowercheck and login.bib.dk set to true, but uses a different agency for login.
+  const hasAlternativeAgencyLogin = list[branchId];
+  if (hasAlternativeAgencyLogin?.loginAgencyId !== branchId) {
+    return false;
+  }
+
+  // Only branch allows login - branch is independent
+  return true;
+}
+
 /**
  * Function to check if an branch acts as independent agency
+ * These branches is under a "pseudo" agencyId, where login is not possible.
+ * Branches has independent login (borrowercheck and login.bib.dk set to true).
  *
- * @param {string} branchId // agencyId or branchId
+ * @param {string} branch (agencyId and branchId)
+ * @param {context} context
  * @returns {boolean}
  */
-export function branchIsIndependent(branchId) {
-  // OBS se bort fra dette udkommenteret kode, ny dynamisk løsning kommer her.
+export async function branchIsIndependent(branch, context) {
+  const loader = context?.getLoader || context?.datasources?.getLoader;
 
-  // const loader = context?.getLoader || context?.datasources?.getLoader;
+  // get AgencyId from used branchId
+  const list = await loader("vipcore_BorrowerCheckList").load("");
 
-  // // get AgencyId from used branchId
-  // const result = (await loader("library").load({ branchId })).result?.[0];
-
-  // // return agencyId
-  // const agencyId = result?.agencyId;
-
-  // // get AgencyId from used branchId
-  // const list = await loader("vipcore_BorrowerCheckList").load("");
-
-  // console.log(".......... list", agencyId, list);
-
-  const whitelist = [
-    // Agencies
-    "876040", // Nordjyske Gymnasiebiblioteker agency
-
-    // Branches
-    "872050", // Støvring Gymnasium, Biblioteket
-    "872060", // Hjørring Gymnasium og HF-kursus, Biblioteket
-    "872080", // Hasseris Gymnasium, Biblioteket
-    "872090", // Brønderslev Gymnasium og HF-Kursus, Biblioteket
-    "872100", // Vesthimmerlands Gymnasium & HF, Biblioteket
-    "872140", // Aalborghus Gymnasium, Biblioteket
-    "872340", // Frederikshavn Gymnasium, Gymnasiebiblioteket
-    "872520", // Aalborg Katedralskole, Biblioteket
-    "873310", // Nørresundby Gymnasium og HF, Biblioteket
-    "874100", // Dronninglund Gymnasium, Biblioteket
-  ];
-
-  return whitelist.includes(branchId);
+  return checkLoginIndependence(branch, list);
 }
 
 export async function getUserFromAllUserStatusData(props, context) {
@@ -185,7 +181,7 @@ export async function getAgencyIdByBranchId(branchId, context) {
   const agencyId = result?.agencyId;
 
   //  Return branchId instead of agencyId if branch act independently
-  if (branchIsIndependent(branchId)) {
+  if (await branchIsIndependent(result, context)) {
     return branchId;
   }
 

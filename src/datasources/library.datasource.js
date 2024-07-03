@@ -10,12 +10,14 @@ import { orderBy } from "lodash";
 import request from "superagent";
 import config from "../config";
 import { createIndexer } from "../utils/searcher";
+import { checkLoginIndependence } from "../utils/agency";
 
 const fields = [
   "name",
   "agencyName",
   "agencyNames",
   "agencyId",
+  "_agencyId",
   "branchId",
   "city",
   "postalCode",
@@ -76,27 +78,44 @@ const timeToLiveMS = 1000 * 60 * 30;
  * @returns {Promise<*>}
  */
 async function get() {
-  // This contains mobileLibraryLocations (agencySubdivision) for bogbusser
-  const vipCoreUrl = `${config.datasources.vipcore.url}/findlibrary/all`;
-
   // This contain information with a different structure (but no agencySubdivision)
-  const url = `${config.datasources.vipcore.url}/alllibraries`;
+  const alllibrariesUrl = `${config.datasources.vipcore.url}/alllibraries`;
+
+  // This contains mobileLibraryLocations (agencySubdivision) for bogbusser
+  const findlibraryUrl = `${config.datasources.vipcore.url}/findlibrary/all`;
+
+  // borrowerchecklist
+  const borrowerchecklistUrl = `${config.datasources.vipcore.url}/borrowerchecklist/login.bib.dk/true`;
 
   // Fetch in parallel
   const res = await Promise.all([
-    (await request.get(url)).body.allLibraries,
-    (await request.get(vipCoreUrl)).body.pickupAgency,
+    (await request.get(alllibrariesUrl)).body.allLibraries,
+    (await request.get(findlibraryUrl)).body.pickupAgency,
+    (await request.get(borrowerchecklistUrl)).body.borrowerCheckLibrary,
   ]);
 
   // Make a map for fast branchId->branch lookups
   const branchMap = {};
   res[1]?.forEach((branch) => (branchMap[branch.branchId] = branch));
 
+  // Make a map for
+  const borchkMap = {};
+  res[2].forEach((obj) => (borchkMap[obj.loginAgencyId] = obj));
+
   // Merge mobileLibraryLocations into result
-  const branches = res[0]?.map((branch) => ({
-    ...branch,
-    mobileLibraryLocations: branchMap[branch.branchId]?.agencySubdivision,
-  }));
+  const branches = res[0]?.map((branch) => {
+    const { branchId, agencyId } = branch;
+
+    const isIndependent = checkLoginIndependence(branch, borchkMap);
+
+    return {
+      ...branch,
+      agencyId: isIndependent ? branchId : agencyId,
+      // store original agencyId (Not manipulated)
+      _agencyId: agencyId,
+      mobileLibraryLocations: branchMap[branchId]?.agencySubdivision,
+    };
+  });
 
   return branches;
 }
