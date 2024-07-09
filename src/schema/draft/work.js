@@ -120,6 +120,11 @@ type Work {
   Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
   """
   fictionNonfiction: FictionNonfiction
+  
+  """
+  Date of latest publication
+  """
+  latestPublicationDate: String
 
   """
   The type of material of the manifestation based on bibliotek.dk types
