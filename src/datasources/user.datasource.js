@@ -55,6 +55,7 @@ export async function load({ agencyId, userId }, context) {
       "Content-Type": "text/xml",
     },
     body: soap,
+    timeoutMs: 60000,
   });
 
   return reduceBody(res?.body);
