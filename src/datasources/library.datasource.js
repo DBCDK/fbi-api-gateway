@@ -214,6 +214,7 @@ export async function search(props, getFunc = doRequest) {
     digitalAccessSubscriptions = [],
     infomediaSubscriptions = [],
     status = "ALLE",
+    statuses = ["ALLE"],
     agencyTypes = ["ALLE"],
     bibdkExcludeBranches,
   } = props;
@@ -223,10 +224,15 @@ export async function search(props, getFunc = doRequest) {
   // filter on requested status
   const useAgencyTypesFilter = !agencyTypes.includes("ALLE");
   const useStatusFilter = status !== "ALLE";
+  const useStatusesFilter = !statuses.includes("ALLE");
 
   const shouldFilter =
-    bibdkExcludeBranches || useStatusFilter || useAgencyTypesFilter;
+    bibdkExcludeBranches ||
+    useStatusFilter ||
+    useAgencyTypesFilter ||
+    useStatusesFilter;
 
+  // should given branch be included in result ?
   const filterAndExclude = (branch) => {
     let include = true;
 
@@ -237,8 +243,14 @@ export async function search(props, getFunc = doRequest) {
         branch.pickupAllowed;
     }
 
+    // old status - one status only - deprecated
     if (include && useStatusFilter) {
       include = branch.status === translatedStatus(status);
+    }
+    // new statuses - an array of status - use this
+    if (include && useStatusesFilter) {
+      const translatedStatuses = statuses.map((stat) => translatedStatus(stat));
+      include = translatedStatuses.includes(branch.status);
     }
 
     if (include && useAgencyTypesFilter) {
