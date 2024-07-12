@@ -1,6 +1,10 @@
 # BIBDK Branches
 
 The following examples shows how to get information from branches
+<DeprecationBox deprecated="12/7-2024" expires="12/10-2024">
+		Please note that Field `status` is deprecated and will be removed. Use
+		`statuses` instead.
+</DeprecationBox>
 
 ## orderPolicy
 
@@ -19,6 +23,7 @@ The _**orderPossibleReason**_ responses are the following (below the pickupAgenc
 - _**NOT_OWNED_NO_ILL_LOC**_ - Item not available at pickupAgency, item not localised for ILL
 - _**OWNED_OWN_CATALOGUE**_ - Item available at pickupAgency, item may be ordered through the library's catalogue
 
+
 <InlineGraphiQL
   query={`query example_branches($q: String!, $pids: [String!]!) {
   branches(
@@ -27,6 +32,7 @@ The _**orderPossibleReason**_ responses are the following (below the pickupAgenc
     offset: 0
     bibdkExcludeBranches: true
     status: AKTIVE
+    statuses: [AKTIVE]
   ) {
     hitcount
     result {

@@ -106,7 +106,7 @@ type Query {
   """
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus, statuses: [LibraryStatus], bibdkExcludeBranches:Boolean, agencyTypes: [AgencyType!]): BranchResult! @complexity(value: 5, multipliers: ["limit"])
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus @deprecated, statuses: [LibraryStatus], bibdkExcludeBranches:Boolean, agencyTypes: [AgencyType!]): BranchResult! @complexity(value: 5, multipliers: ["limit"])
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   infomedia(id: String!): InfomediaResponse!
   session: Session
