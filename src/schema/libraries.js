@@ -143,9 +143,8 @@ export const resolvers = {
       return status === false;
     },
     async borrowerCheck(parent, args, context, info) {
-      // pjo 19/12/23 bug BIBDK2021-2294 . If libraries are not public (number starts with 7)
-      // we prioritize branchId OVER agencyId - since FFU and foreign libraries decides on branch-level, if they use borrowerCheck or not
-
+      // pjo 19/12/23 bug BIBDK2021-2294
+      // FFU and foreign libraries decides on branch-level, if they use borrowerCheck or not
       const isFFU = await isFFUAgency(parent?.agencyId);
 
       const libraryId = !isFFU
