@@ -20,6 +20,8 @@ export const typeDef = `
     games
     music
     sheetMusic
+
+    FICTION
   }
 
  type Inspiration {
@@ -31,6 +33,7 @@ const mapKeys = {
   childrenBooksFiction: "childrenbooks_fiction",
   eBooks: "ebooks",
   sheetMusic: "sheet_music",
+  FICTION: "fiction",
 };
 
 export const resolvers = {

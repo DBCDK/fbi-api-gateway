@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`fieldNameValidator error message testing sholud trow error 'something something...' 1`] = `
+Object {
+  "typeDefs": Object {
+    "definitions": Array [
+      Object {
+        "directives": Array [],
+        "fields": Array [],
+        "interfaces": Array [],
+        "kind": "ObjectTypeDefinition",
+        "name": Object {
+          "kind": "Name",
+          "value": "ost",
+        },
+      },
+    ],
+  },
+}
+`;
