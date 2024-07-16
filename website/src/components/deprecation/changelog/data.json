@@ -52,5 +52,11 @@
     "reason": "field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned",
     "deprecated": "15/11-2023",
     "expired": "15/02-2024"
+  },
+  {
+    "field": "Branches.status",
+    "reason": "field 'Branches.status' is replaced by 'Branches.statuses'",
+    "deprecated": "12/7-2024",
+    "expired": "12/10-2024"
   }
 ]
