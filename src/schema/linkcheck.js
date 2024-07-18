@@ -14,8 +14,8 @@ export const typeDef = `
  type LinkCheckResponse {
    url: String!
    status: LinkCheckStatus!
-   lastCheckedAt: DateTime
-   brokenSince: DateTime
+   lastCheckedAt: DateTimeScalar
+   brokenSince: DateTimeScalar
  }
  
  type LinkCheckService {

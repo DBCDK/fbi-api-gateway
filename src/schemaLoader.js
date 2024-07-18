@@ -4,6 +4,7 @@
  * It will check all files recursively in ./src/schema
  * and load type definitions and resolvers
  */
+import { startCase } from "lodash";
 
 import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { wrapSchema } from "@graphql-tools/wrap";
@@ -86,6 +87,15 @@ export function fieldNameValidator(props) {
   // Kind/type categories to omit
   const omit = ["DirectiveDefinition"];
 
+  // Kinds/types which should be a part of the tailing typeNameDefintion. e.g. UserStatus(Enum), User(Input)
+  const tailedTypes = [
+    "EnumTypeDefinition",
+    "InputObjectTypeDefinition",
+    "UnionTypeDefinition",
+    "ScalarTypeDefinition",
+    "InterfaceTypeDefinition",
+  ];
+
   // All fields and subfields in lowercase
   let lowerCasedTypeNames = [];
 
@@ -95,6 +105,7 @@ export function fieldNameValidator(props) {
   typeDefs?.definitions?.forEach((obj) => {
     const field = obj?.name?.value;
     const shouldOmit = omit.includes(obj?.kind);
+    const shouldHaveTypedTailing = tailedTypes.includes(obj?.kind);
 
     // field name exist
     if (field) {
@@ -103,7 +114,6 @@ export function fieldNameValidator(props) {
         // Check for field name doublets
         if (lowerCasedTypeNames.includes(field?.toLowerCase())) {
           console.log(`Type name '${field}' (${obj?.kind}) is already used`);
-
           // throw new Error(
           //   `Type name '${field}' (${obj?.kind}) is already used`
           // );
@@ -120,6 +130,21 @@ export function fieldNameValidator(props) {
           // throw new Error(
           //   `Type '${field}' (${obj?.kind}) is a TypeDefinition and should be written in PascalCase`
           // );
+        }
+
+        // Ensure correct tailed naming for Enum and Input types
+        if (shouldHaveTypedTailing) {
+          // Returns the first string in PascalCased type/kind e.g. Enum, Union, Interface
+          const tail = startCase(obj?.kind).split(" ")[0];
+
+          if (!field.endsWith(tail)) {
+            console.log(
+              `${field} is a ${obj?.kind} which should always end with '${tail}'`
+            );
+            // throw new Error(
+            //   `${field} is a ${obj?.kind} which should always end with '${tail}'`
+            // );
+          }
         }
       }
 
@@ -184,8 +209,22 @@ export function fieldNameValidator(props) {
  * and look for type definitions and resolvers.
  */
 function schemaLoader() {
-  let allTypeDefs = [enumFallbackDirectiveTypeDefs, ...scalarTypeDefs];
-  let allResolvers = { ...scalarResolvers };
+  // Custom selected scalar type defs (from graphiql-scalar lib)
+  const customScalarTypeDefs = ["DateTime"];
+
+  const _scalarResolvers = {};
+  const _scalarTypeDefs = [];
+
+  customScalarTypeDefs.forEach((val) => {
+    if (scalarTypeDefs.includes(`scalar ${val}`)) {
+      _scalarResolvers[`${val}Scalar`] = scalarResolvers[val];
+      _scalarTypeDefs.push(`scalar ${val}Scalar`);
+    }
+  });
+
+  let allTypeDefs = [enumFallbackDirectiveTypeDefs, ..._scalarTypeDefs];
+
+  let allResolvers = { ..._scalarResolvers };
 
   // Load files in schema folder
   const files = getFilesRecursive(`${__dirname}/schema`);
@@ -267,3 +306,54 @@ export async function getExecutableSchema({
 
   return schemaCache[key];
 }
+
+// function schemaLoader() {
+//   //  Custom selected scalar types from the graphiql-scalar lib
+//   const customScalars = ["DateTime"];
+
+//   let allTypeDefs = [...enumFallbackDirectiveTypeDefs, ...customScalars];
+//   let allResolvers = {};
+
+//   // Load files in schema folder
+//   const files = getFilesRecursive(`${__dirname}/schema`);
+
+//   // Require typeDefs and resolvers
+//   files.forEach((file) => {
+//     if (!file.path.endsWith(".js")) {
+//       return;
+//     }
+
+//     const { typeDef, resolvers } = require(file.path);
+
+//     const _scalarResolvers = {};
+//     const _scalarTypeDefs = [];
+
+//     if (typeDef) {
+//       allTypeDefs = [...allTypeDefs, typeDef];
+//       log.debug(`Found type definition in ${file.path}`);
+//     }
+
+//     if (resolvers) {
+//       allResolvers = { ...resolvers };
+//     }
+
+//     // Include only used customScalars to schema
+//     // Rename customScalars with tailing 'Scalar'
+//     if (typeDef && resolvers) {
+//       Object.entries(scalarResolvers).forEach(([k, v]) => {
+//         if (new RegExp(`: ${k}[^\\W]`).test(typeDef)) {
+//           _scalarResolvers[`${k}Scalar`] = v;
+//           _scalarTypeDefs.push(`scalar ${k}Scalar`);
+//         }
+//       });
+
+//       allTypeDefs = [...allTypeDefs, ..._scalarTypeDefs];
+//       allResolvers = merge({}, allResolvers, _scalarResolvers);
+//     }
+//   });
+
+//   return {
+//     typeDefs: mergeTypeDefs(allTypeDefs),
+//     resolvers: allResolvers,
+//   };
+// }

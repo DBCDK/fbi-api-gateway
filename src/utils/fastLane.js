@@ -10,7 +10,7 @@ const TIME_TO_LIVE_SECONDS = 60 * 10;
 const ALLOWED_TYPES = {
   Boolean: true,
   String: true,
-  DateTime: true,
+  DateTimeScalar: true,
   Int: true,
   BranchResult: true,
   Branch: true,

@@ -36,7 +36,7 @@ type User {
   """
   Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
   """  
-  createdAt: DateTime
+  createdAt: DateTimeScalar
   """
   We are allowed to store userdata for more than 30 days if set to true.
   """
@@ -94,7 +94,7 @@ type SavedSearch {
   """
   Creation timestamps
   """
-  createdAt: DateTime
+  createdAt: DateTimeScalar
   """
   cql including fieldSearch, facetts, quickfilter etc. 
   """
@@ -189,7 +189,7 @@ type BibliotekDkOrder  {
 
 }
 type Loan {
-  dueDate:	DateTime!
+  dueDate:	DateTimeScalar!
   loanId:	String!
   agencyId: String!
   creator: String
@@ -217,10 +217,10 @@ type Order {
   pickUpBranch: Branch!
   agencyId: String!
   holdQueuePosition: String
-  orderDate: DateTime!
+  orderDate: DateTimeScalar!
   creator: String
   title: String
-  pickUpExpiryDate: DateTime
+  pickUpExpiryDate: DateTimeScalar
   manifestation: Manifestation
   edition: String
   language: String
@@ -232,7 +232,7 @@ type Debt {
   agencyId: String!
   creator: String
   currency: String
-  date: DateTime
+  date: DateTimeScalar
   title: String
 }
 
@@ -259,7 +259,7 @@ type BookMark{
   materialType: String!
   materialId: String!
   bookmarkId: Int
-  createdAt: DateTime
+  createdAt: DateTimeScalar
   workId: String
 }
 
