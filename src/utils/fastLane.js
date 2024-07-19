@@ -69,7 +69,7 @@ const ALLOWED_TYPES = {
   SubjectType: true,
   Series: true,
   SerieWork: true,
-  Universe: true,
+  Universes: true,
   NumberInSeries: true,
   RecommendationResponse: true,
   Recommendation: true,

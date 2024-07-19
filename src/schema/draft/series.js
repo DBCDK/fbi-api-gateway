@@ -62,11 +62,6 @@ type Series {
   parallelTitles: [String!]!
 
   """
-  The number in the series as text qoutation and a number
-  """
-  numberInSeries: NumberInSeries @deprecated(reason: "field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned")
-
-  """
   Information about whether this work in the series should be read first
   """
   readThisFirst: Boolean
@@ -100,26 +95,6 @@ type Series {
 
 export const resolvers = {
   Work: {
-    // for backward compatibility -> serieservice v1 -> remove when deprecated
-    async seriesMembers(parent, args, context, info) {
-      const data = await context.datasources.getLoader("series").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
-
-      // grab persistentWorkId from the first serie found on serieservice v2
-      if (data && data.series && data.series?.[0].works) {
-        const works = await Promise.all(
-          data.series?.[0]?.works?.slice(0, 100).map(async (work) => {
-            return resolveWork({ id: work.persistentWorkId }, context);
-          })
-        );
-        return works;
-      }
-
-      return [];
-    },
-
     // Use the new serie service v2
     async series(parent, args, context, info) {
       const data = await context.datasources.getLoader("series").load({
@@ -153,19 +128,6 @@ export const resolvers = {
     },
     isPopular(parent, args, context, info) {
       return parent.type === "isPopular";
-    },
-    numberInSeries(parent, args, context, info) {
-      if (!parent.numberInSeries) {
-        return null;
-      }
-
-      const display = parent.numberInSeries;
-      const match = parent.numberInSeries.match(/\d+/g);
-
-      return {
-        display,
-        number: match?.map((str) => parseInt(str, 10)),
-      };
     },
     readThisFirst(parent, args, context, info) {
       if (typeof parent.readThisFirst === "undefined") {

@@ -85,12 +85,6 @@ export const typeDef = `
     temporarilyClosedReason: String
 
     """
-    When user is not logged in, this is null
-    Otherwise true or false
-    """
-    userIsBlocked: Boolean @deprecated(reason: "Use 'BranchResult.borrowerStatus' instead")
-
-    """
     If the branch type is 'bogbus', this field may contain a list of locations that the bus visits
     """
     mobileLibraryLocations: [String!]
@@ -132,16 +126,6 @@ export const typeDef = `
 export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
-    async userIsBlocked(parent, args, context, info) {
-      const { status } = await getUserBorrowerStatus(
-        {
-          agencyId: parent.agencyId,
-        },
-        context
-      );
-
-      return status === false;
-    },
     async borrowerCheck(parent, args, context, info) {
       // pjo 19/12/23 bug BIBDK2021-2294 . If libraries are not public (number starts with 7)
       // we prioritize branchId OVER agencyId - since FFU and foreign libraries decides on branch-level, if they use borrowerCheck or not

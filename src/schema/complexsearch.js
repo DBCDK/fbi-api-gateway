@@ -48,8 +48,6 @@ input ComplexSearchFilters {
 enum SortOrder {
   ASC
   DESC 
-  asc @deprecated
-  desc @deprecated
 }
 
 input Sort {
@@ -152,23 +150,6 @@ type ComplexSearchResponse {
   Error message, for instance if CQL is invalid
   """
   errorMessage: String
-
-  """
-  the query being executed
-  """  
-  solrQuery: String @deprecated
-  """
-  filter applied to the query
-  """
-  solrFilter: String @deprecated
-  """
-  Time to tokenize query
-  """
-  tokenizerDurationInMs: Int @deprecated
-  """
-  Time for execution on solr
-  """
-  solrExecutionDurationInMs: Int @deprecated
 }
 `;
 
@@ -214,7 +195,6 @@ export const resolvers = {
         .load(setPost(parent, context, args));
       return res?.errorMessage;
     },
-
     async facets(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
@@ -222,37 +202,6 @@ export const resolvers = {
 
       return res?.facets;
     },
-    async solrFilter(parent, args, context) {
-      const res = await context.datasources
-        .getLoader("complexsearch")
-        .load(setPost(parent, context, args));
-
-      return res?.solrFilter;
-    },
-    async solrQuery(parent, args, context) {
-      const res = await context.datasources
-        .getLoader("complexsearch")
-        .load(setPost(parent, context, args));
-
-      return res?.solrQuery;
-    },
-
-    async solrExecutionDurationInMs(parent, args, context) {
-      const res = await context.datasources
-        .getLoader("complexsearch")
-        .load(setPost(parent, context, args));
-
-      return res?.solrExecutionDurationInMs;
-    },
-
-    async tokenizerDurationInMs(parent, args, context) {
-      const res = await context.datasources
-        .getLoader("complexsearch")
-        .load(setPost(parent, context, args));
-
-      return res?.tokenizerDurationInMs;
-    },
-
     async works(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")

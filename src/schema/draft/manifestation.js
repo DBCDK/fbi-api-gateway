@@ -723,11 +723,6 @@ type Manifestation {
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
   relatedPublications: [RelatedPublication!]!
-
-  """
-  Physical description of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: "Use 'physicalDescription' instead")
   
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
@@ -749,11 +744,6 @@ type Manifestation {
   Series for this manifestation
   """
   series: [Series!]!
-
-  """
-  Universe for this manifestation
-  """
-  universe: Universe @deprecated(reason: "Use 'universes' instead")
   
   """
   Universes for this manifestation

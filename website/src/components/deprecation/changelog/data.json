@@ -52,5 +52,125 @@
     "reason": "field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned",
     "deprecated": "15/11-2023",
     "expired": "15/02-2024"
+  },
+  {
+    "field": "SortOrder.asc",
+    "reason": "field 'SortOrder.asc' is removed use SortOrder.ASC instead",
+    "deprecated": "06/02-2024",
+    "expired": "06/05-2024"
+  },
+  {
+    "field": "SortOrder.desc",
+    "reason": "field 'SortOrder.asc' is removed use SortOrder.DESC instead",
+    "deprecated": "06/02-2024",
+    "expired": "06/05-2024"
+  },
+  {
+    "field": "ComplexSearchResponse.solrQuery",
+    "reason": "field 'ComplexSearchResponse.solrQuery' is removed",
+    "deprecated": "01/02-2024",
+    "expired": "01/05-2024"
+  },
+  {
+    "field": "ComplexSearchResponse.solrFilter",
+    "reason": "field 'ComplexSearchResponse.solrFilter' is removed",
+    "deprecated": "01/02-2024",
+    "expired": "01/05-2024"
+  },
+  {
+    "field": "ComplexSearchResponse.tokenizerDurationInMs",
+    "reason": "field 'ComplexSearchResponse.tokenizerDurationInMs' is removed",
+    "deprecated": "01/02-2024",
+    "expired": "01/05-2024"
+  },
+  {
+    "field": "ComplexSearchResponse.solrExecutionDurationInMs",
+    "reason": "field 'ComplexSearchResponse.solrExecutionDurationInMs' is removed",
+    "deprecated": "01/02-2024",
+    "expired": "01/05-2024"
+  },
+  {
+    "field": "Branch.userIsBlocked",
+    "reason": "field 'Branch.userIsBlocked' is removed",
+    "deprecated": "01/09-2023",
+    "expired": "01/12-2024"
+  },
+  {
+    "field": "BibliotekDkOrder.closed",
+    "reason": "field 'BibliotekDkOrder.closed' is removed",
+    "deprecated": "01/06-2024",
+    "expired": "01/09-2024"
+  },
+  {
+    "field": "BibliotekDkOrder.autoForwardResult",
+    "reason": "field 'BibliotekDkOrder.autoForwardResult' is removed",
+    "deprecated": "01/06-2024",
+    "expired": "01/09-2024"
+  },
+  {
+    "field": "BibliotekDkOrder.placeOnHold",
+    "reason": "field 'BibliotekDkOrder.placeOnHold' is removed",
+    "deprecated": "01/06-2024",
+    "expired": "01/09-2024"
+  },
+  {
+    "field": "BibliotekDkOrder.pickupAgencyId",
+    "reason": "field 'BibliotekDkOrder.pickupAgencyId' is removed",
+    "deprecated": "01/06-2024",
+    "expired": "01/09-2024"
+  },
+  {
+    "field": "BibliotekDkOrder.pid",
+    "reason": "field 'BibliotekDkOrder.pid' is removed",
+    "deprecated": "01/06-2024",
+    "expired": "01/09-2024"
+  },
+  {
+    "field": "BibliotekDkOrder.pidOfPrimaryObject",
+    "reason": "field 'BibliotekDkOrder.pidOfPrimaryObject' is removed. Use workId from work instead",
+    "deprecated": "01/06-2024",
+    "expired": "01/09-2024"
+  },
+  {
+    "field": "BibliotekDkOrder.author",
+    "reason": "field 'BibliotekDkOrder.author' is removed. Use creators from work instead",
+    "deprecated": "01/06-2024",
+    "expired": "01/09-2024"
+  },
+  {
+    "field": "BibliotekDkOrder.title",
+    "reason": "field 'BibliotekDkOrder.title' is removed. Use titles from work instead",
+    "deprecated": "01/06-2024",
+    "expired": "01/09-2024"
+  },
+  {
+    "field": "BibliotekDkOrder.errorMessage",
+    "reason": "field 'BibliotekDkOrder.errorMessage' is removed",
+    "deprecated": "01/06-2024",
+    "expired": "01/09-2024"
+  },
+  {
+    "field": "AccessTypeCode.NOT_SPECIFIED",
+    "reason": "field 'AccessTypeCode.NOT_SPECIFIED' is removed",
+    "deprecated": "01/07-2022",
+    "expired": "01/10-2022"
+  },
+  {
+    "field": "Manifestation.physicalDescriptions",
+    "reason": "field is removed. Use Manifestation.physicalDescription instead",
+    "deprecated": "01/06-2024",
+    "expired": "01/10-2024"
+  },
+  {
+    "field": "Work.MaterialType.general",
+    "reason": "Use 'Work.materialTypes.materialTypeGeneral' instead",
+    "deprecated": "01/06-2024",
+    "expired": "01/10-2024"
+  },
+  {
+    "field": "Work.MaterialType.specific",
+    "reason": "Use 'Work.materialTypes.materialTypeSpecific' instead",
+    "deprecated": "01/06-2024",
+    "expired": "01/10-2024"
   }
 ]
