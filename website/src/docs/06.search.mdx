@@ -117,7 +117,7 @@ are returned.
       all: "harry",
     },
     facetLimit: 5,
-    facets: ["mainLanguages", "materialTypesSpecific"],
+    facets: ["MAINLANGUAGES", "MATERIALTYPESSPECIFIC"],
   }}
 />
 
@@ -151,7 +151,7 @@ is applied resulting in an updated facet result.
     },
     filters: { mainLanguages: ["Svensk"] },
     facetLimit: 5,
-    facets: ["mainLanguages", "materialTypesSpecific"],
+    facets: ["MAINLANGUAGES", "MATERIALTYPESSPECIFIC"],
   }}
 />
 
@@ -162,8 +162,9 @@ are AND'ed together. For instance (Svensk OR Engelsk) AND dvd.
 ## Range filters
 
 Some filters supports range. The following example uses ageRange. Other filters are lixRange and letRange.
+
 <InlineGraphiQL
-query={`query Example_FilterRange($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFilters!) {
+  query={`query Example_FilterRange($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFilters!) {
   search(q: $q, filters: $filters) {
     hitcount
     works(offset: 0, limit: 10) {
@@ -189,21 +190,17 @@ query={`query Example_FilterRange($q: SearchQuery!, $facets: [FacetField!]!, $fa
     }
   }
 }`}
-variables={{
-             q: {
-               all: "den grimme ælling"
-             },
-             filters: {
-               ageRange: [
-                 "4-6"
-               ]
-             },
-             facetLimit: 5,
-             facets: [
-               "age"
-             ]
-           }}
-           />
+  variables={{
+    q: {
+      all: "den grimme ælling",
+    },
+    filters: {
+      ageRange: ["4-6"],
+    },
+    facetLimit: 5,
+    facets: ["AGE"],
+  }}
+/>
 
 ## Facet performance :warning:
 
@@ -272,7 +269,7 @@ should be displayed.
 In the following example we only include works that are on the shelf in a specific branch.
 
 <InlineGraphiQL
-  query={`query Example_HoldingsFilters ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!, $filters: SearchFilters!) {
+  query={`query Example_HoldingsFilters ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!, $filters: SearchFilters!, $facets: [FacetField!]!) {
   search(q: $q, filters: $filters) {
     hitcount
     works(offset: $offset, limit: $limit) {
@@ -280,7 +277,7 @@ In the following example we only include works that are on the shelf in a specif
         main
       }
     }
-    facets(facets: [workTypes]) {
+    facets(facets: $facets) {
       name
       values(limit: 10) {
         key
@@ -295,6 +292,7 @@ In the following example we only include works that are on the shelf in a specif
       all: "Harry",
     },
     filters: { branchId: ["775122"], status: ["OnShelf"] },
+    facets: ["WORKTYPES"],
     offset: 0,
     limit: 5,
   }}

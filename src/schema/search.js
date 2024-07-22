@@ -1,7 +1,7 @@
 import translations from "../utils/translations.json";
 import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
-import { mapFacets } from "../utils/filtersAndFacetsMap";
+import { mapFacet, mapFacetEnum } from "../utils/filtersAndFacetsMap";
 
 /**
  * define a searchquery
@@ -48,25 +48,25 @@ input SearchQuery {
 The supported facet fields
 """
 enum FacetField {
-  workTypes
-  mainLanguages
-  materialTypesGeneral
-  materialTypesSpecific 
-  fictionalCharacters
-  genreAndForm
-  childrenOrAdults
-  accessTypes
-  fictionNonfiction
-  subjects
-  creators
-  canAlwaysBeLoaned
-  year
-  dk5
-  age
-  lix
-  let
-  generalAudience
-  libraryRecommendation
+  WORKTYPES
+  MAINLANGUAGES
+  MATERIALTYPESGENERAL
+  MATERIALTYPESSPECIFIC
+  FICTIONALCHARACTERS
+  GENREANDFORM
+  CHILDRENORADULTS
+  ACCESSTYPES
+  FICTIONNONFICTION
+  SUBJECTS
+  CREATORS
+  CANALWAYSBELOANED
+  YEAR
+  DK5
+  AGE
+  LIX
+  LET
+  GENERALAUDIENCE
+  LIBRARYRECOMMENDATION
 }
 
 """
@@ -142,6 +142,11 @@ type FacetResult {
   The name of the facet.
   """
   name: String!
+
+  """
+  The enum type of the facet.
+  """
+  type: FacetField!
 
   """
   The values of thie facet result
@@ -282,11 +287,22 @@ export const resolvers = {
 
       args.facets.forEach((key) => {
         const values = parent?.filters?.[key] || [];
-        /** we need to map some facets - name has changed in response : lix -> lix_range, let->let_range **/
-        const facet = res.find((obj) => obj.name === mapFacets([key])[0]);
+
+        console.log("vvvvvvvvvalues", values);
+
+        // maps result names to enum values
+        const facet = res.find((obj) => obj.name === mapFacetEnum(key));
         // now we find the facet
-        const copy = { ...facet, name: key, values: [] };
+        const copy = {
+          /** we need to map some facets - name has changed in response : lix -> lix_range, let->let_range **/
+          name: mapFacet(facet.name),
+          type: key,
+          values: [],
+        };
+
         values.forEach((value) => {
+          console.log("dddddddddddd", facet.values, value);
+
           // get selected term props
           const selected = facet?.values.find((obj) => obj.term === value);
           // Push to copy values

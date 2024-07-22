@@ -75,7 +75,7 @@ type Query {
     """    
     the type of index to get suggestions from
     """
-    type: ComplexSuggestionType!    
+    type: ComplexSuggestionType!
   ): ComplexSuggestResponse!
   
   suggest(
@@ -340,7 +340,6 @@ export const resolvers = {
     async complexSuggest(parent, args, context, info) {
       return args;
     },
-
     async localSuggest(parent, args, context, info) {
       return args;
     },
