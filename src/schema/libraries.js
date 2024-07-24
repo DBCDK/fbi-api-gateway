@@ -226,7 +226,7 @@ export const resolvers = {
       const userIdTypes = ["cpr", "barcode", "cardno", "customId"];
 
       // Find the userId type, exactly one will be used
-      const userIdType = userParameters.find(
+      const userIdType = userParameters?.find(
         (parameter) =>
           userIdTypes.includes(parameter.userParameterType) &&
           parameter.parameterRequired
@@ -253,7 +253,7 @@ export const resolvers = {
       const duplicates = [...userIdTypes, "userId"];
 
       // lowercase language
-      const language = parent.language?.toLowerCase();
+      const language = parent?.language?.toLowerCase();
 
       // Combine forced parameters with the rest and set order property
       result = [
@@ -274,8 +274,8 @@ export const resolvers = {
         // and it may be available in danish or english
         let description =
           res[`${userParameterName}Txt`]?.find((desc) =>
-            desc.language?.includes(language)
-          ) || res[`${userParameterName}Txt`][0];
+            desc?.language?.includes(language)
+          ) || res[`${userParameterName}Txt`]?.[0];
 
         return {
           ...parameter,

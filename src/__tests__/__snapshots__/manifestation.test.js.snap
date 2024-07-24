@@ -249,7 +249,6 @@ Object {
       },
       "materialTypes": Array [
         Object {
-          "general": "Dummy bøger",
           "materialTypeGeneral": Object {
             "code": "AUDIO_BOOKS",
             "display": "Dummy bøger",
@@ -258,7 +257,6 @@ Object {
             "code": "AUDIO_BOOK",
             "display": "Dummy bog",
           },
-          "specific": "Dummy bog",
         },
       ],
       "notes": Array [
@@ -273,20 +271,12 @@ Object {
       "ownerWork": Object {
         "workId": "work-of:870970-basis:26521556",
       },
-      "physicalDescriptions": Array [
-        Object {
-          "accompanyingMaterial": null,
-          "additionalDescription": null,
-          "extent": "Dummy 1 dvd-rom",
-          "numberOfPages": null,
-          "numberOfUnits": null,
-          "playingTime": null,
-          "requirements": "Dummy Nødvendigt udstyr Xbox One. - Med multiplayerfunktion",
-          "size": null,
-          "summary": "Dummy 1 dvd-rom Xbox One Nødvendigt udstyr Xbox One. - Med multiplayerfunktion Spiludvikler fremgår ikke af materialet",
-          "technicalInformation": "Dummy Xbox One",
-        },
-      ],
+      "physicalDescription": Object {
+        "accompanyingMaterial": null,
+        "materialUnits": null,
+        "numberOfPages": null,
+        "summaryFull": null,
+      },
       "pid": "870970-basis:26521556",
       "publisher": Array [
         "Dummy Lægeforeningen",
@@ -316,6 +306,7 @@ Object {
       "series": Array [
         Object {
           "numberInSeries": Object {
+            "display": "1",
             "number": Array [
               1,
             ],

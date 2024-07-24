@@ -62,6 +62,11 @@ type Series {
   parallelTitles: [String!]!
 
   """
+  The number in the series as text qoutation and a number
+  """
+  numberInSeries: NumberInSeries @deprecated(reason: "field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned")
+
+  """
   Information about whether this work in the series should be read first
   """
   readThisFirst: Boolean
@@ -128,6 +133,19 @@ export const resolvers = {
     },
     isPopular(parent, args, context, info) {
       return parent.type === "isPopular";
+    },
+    numberInSeries(parent, args, context, info) {
+      if (!parent.numberInSeries) {
+        return null;
+      }
+
+      const display = parent.numberInSeries;
+      const match = parent.numberInSeries.match(/\d+/g);
+
+      return {
+        display,
+        number: match?.map((str) => parseInt(str, 10)),
+      };
     },
     readThisFirst(parent, args, context, info) {
       if (typeof parent.readThisFirst === "undefined") {

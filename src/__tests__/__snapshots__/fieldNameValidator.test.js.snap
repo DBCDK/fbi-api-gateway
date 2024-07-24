@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`fieldNameValidator error message testing sholud trow error 'something something...' 1`] = `
+exports[`fieldNameValidator error message testing sholud throw error 'something something...' 1`] = `
 Object {
   "typeDefs": Object {
     "definitions": Array [

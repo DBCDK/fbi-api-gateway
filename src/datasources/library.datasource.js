@@ -218,7 +218,7 @@ export async function search(props, getFunc = doRequest) {
   } = props;
 
   // ensure lowercased language prop
-  const language = props.language?.toLowerCase() || "da";
+  const language = props?.language?.toLowerCase() || "da";
 
   await fetchIfOld(getFunc);
 

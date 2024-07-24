@@ -103,8 +103,14 @@ describe("Work", () => {
             code
           }
           materialTypes {
-            general
-            specific
+            materialTypeGeneral {
+              code
+              display
+            }
+            materialTypeSpecific {
+              code
+              display
+            }
           }
           series {
             title
@@ -118,10 +124,7 @@ describe("Work", () => {
             readThisWhenever
             isPopular
           }
-          seriesMembers {
-            workId
-          }
-          universe {
+          universes {
             title
           }
           subjects {

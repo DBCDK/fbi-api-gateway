@@ -112,17 +112,6 @@ enum HoldingsStatus {
   Holding is on loan
   """
   ONLOAN
-
-
-  """
-  Holding is physically available at the branch
-  """
-  OnShelf
-
-  """
-  Holding is on loan
-  """
-  OnLoan
 }
 
 """

@@ -402,6 +402,7 @@ export const FAKE_MANIFESTATION_1 = {
     },
   ],
   physicalDescriptions: [FAKE_PHYSICALDESCRIPTION],
+  physicalDescription: {},
   publicationYear: FAKE_PUBLICATIONYEAR,
   publisher: ["Dummy Lægeforeningen"],
   recordCreationDate: "Dummy 19830414",

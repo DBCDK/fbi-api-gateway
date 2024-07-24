@@ -95,7 +95,7 @@ test("user - get agency danish", async () => {
                 address
                 postalCode
                 mail
-                agencies(language: da) {
+                agencies(language: DA) {
                   result {
                     openingHours
                     name
@@ -124,7 +124,7 @@ test("user - get agency english", async () => {
                 address
                 postalCode
                 mail
-                agencies(language: en) {
+                agencies(language: EN) {
                   result {
                     openingHours
                     name
@@ -228,7 +228,10 @@ test("user - get loans", async () => {
                       workId
                     }
                     materialTypes {
-                      specific
+                      materialTypeSpecific {
+                        code
+                        display
+                      }
                     }
                     cover {
                       thumbnail

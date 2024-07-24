@@ -754,13 +754,9 @@ export const resolvers = {
 
         const { orderBy } = args;
 
-        console.log("orderByyyyyyyyyy", orderBy);
-
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
           .load({ uniqueId, orderBy });
-
-        console.log("rrrrrrrrrrrrrrrr", res);
 
         return { result: res?.result, hitcount: res?.result?.length || 0 };
       } catch (error) {
