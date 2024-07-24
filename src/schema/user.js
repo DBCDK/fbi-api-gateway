@@ -203,8 +203,8 @@ type BookMarkId {
   bookMarkId: Int!
 }
 enum BookMarkOrderBy{
-  createdAt
-  title
+  CREATEDAT
+  TITLE
 }
 type BookMark{
   materialType: String!
@@ -687,10 +687,12 @@ export const resolvers = {
         (account) => account.agencyId
       );
 
+      const language = args.language?.toLowerCase() || "da";
+
       let agencyInfos = await Promise.all(
         agencies.map(async (agencyid) => {
           const options = {
-            language: parent.language,
+            language,
             limit: 30,
             status: "AKTIVE",
             bibdkExcludeBranches: false,
@@ -752,9 +754,13 @@ export const resolvers = {
 
         const { orderBy } = args;
 
+        console.log("orderByyyyyyyyyy", orderBy);
+
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
           .load({ uniqueId, orderBy });
+
+        console.log("rrrrrrrrrrrrrrrr", res);
 
         return { result: res?.result, hitcount: res?.result?.length || 0 };
       } catch (error) {

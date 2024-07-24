@@ -52,8 +52,8 @@ export const typeDef = `
   }
 
   enum FeedbackThumb {
-    up
-    down
+    UP
+    DOWN
   }
 
   input DataCollectSearchFeedbackInput {

@@ -106,6 +106,17 @@ enum HoldingsStatus {
   """
   Holding is physically available at the branch
   """
+  ONSHELF
+
+  """
+  Holding is on loan
+  """
+  ONLOAN
+
+
+  """
+  Holding is physically available at the branch
+  """
   OnShelf
 
   """
@@ -288,8 +299,6 @@ export const resolvers = {
       args.facets.forEach((key) => {
         const values = parent?.filters?.[key] || [];
 
-        console.log("vvvvvvvvvalues", values);
-
         // maps result names to enum values
         const facet = res.find((obj) => obj.name === mapFacetEnum(key));
         // now we find the facet
@@ -301,8 +310,6 @@ export const resolvers = {
         };
 
         values.forEach((value) => {
-          console.log("dddddddddddd", facet.values, value);
-
           // get selected term props
           const selected = facet?.values.find((obj) => obj.term === value);
           // Push to copy values

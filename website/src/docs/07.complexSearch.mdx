@@ -1,10 +1,5 @@
 # Complex Search
 
-<DeprecationBox deprecated="25/1-2023" expires="25/4-2024">
-  Please note that Fields `solrQuery`, `solrFilter`, `tokenizerDurationInMs`,
-  and `solrExecutionDurationInMs` are deprecated and will be removed.
-</DeprecationBox>
-
 Version 1 of complex search.
 
 Complex search is a searchengine which supports bibliographic queries via CQL
@@ -20,11 +15,6 @@ Works from complexSearch supports:
 - sort
 - offset
 - limit
-
-<DeprecationBox deprecated="6/2-2024" expires="6/5-2024">
-  Please note that Enum sort values order.asc and order.desc are deprecated and
-  will be removed. Use order.ASC and order.DESC instead
-</DeprecationBox>
 
 ## Search with complex search
 
@@ -47,7 +37,7 @@ Works from complexSearch supports:
 }`}
   variables={{
     cql: "term.title=snemand*",
-    filters: { branchId: ["775122"], status: ["OnShelf"] },
+    filters: { branchId: ["775122"], status: ["ONSHELF"] },
     sort: [{ index: "sort.latestpublicationdate", order: "ASC" }],
     offset: 0,
     limit: 5,
@@ -95,7 +85,7 @@ Get a list of facets for given search query.
     cql: "term.title=snemand*",
     filters: {
       branchId: ["775122"],
-      status: ["OnShelf"],
+      status: ["ONSHELF"],
     },
     facets: {
       facetLimit: 5,

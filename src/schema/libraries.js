@@ -16,6 +16,17 @@ export const typeDef = `
     USYNLIG
   }  
   enum VipUserParameter {
+    CPR
+    USERID
+    BARCODE
+    CARDNO
+    CUSTOMID
+    USERDATEOFBIRTH
+    USERNAME
+    USERADDRESS
+    USERMAIL
+    USERTELEPHONE
+
     cpr
     userId
     barcode
@@ -36,6 +47,7 @@ export const typeDef = `
   }
   type UserParameter {
     userParameterType: VipUserParameter!
+    userParameterName: String!
     parameterRequired: Boolean!
     description: String
   }
@@ -240,6 +252,9 @@ export const resolvers = {
       // These are the forced parameters, and should not be repeated
       const duplicates = [...userIdTypes, "userId"];
 
+      // lowercase language
+      const language = parent.language?.toLowerCase();
+
       // Combine forced parameters with the rest and set order property
       result = [
         ...result,
@@ -249,18 +264,23 @@ export const resolvers = {
             !duplicates.includes(parameter.userParameterType)
         ),
       ].map((parameter) => {
+        //  Original type name is stored in the userParameterName field
+        const userParameterName = parameter.userParameterType;
+
+        // Converts userParameterType to UPPERCASED enum
+        const userParameterType = parameter.userParameterType?.toUpperCase();
+
         // in rare cases there is a description available
         // and it may be available in danish or english
         let description =
-          res[`${parameter.userParameterType}Txt`] &&
-          (res[`${parameter.userParameterType}Txt`].find(
-            (description) =>
-              description.language &&
-              description.language.includes(parent.language)
-          ) ||
-            res[`${parameter.userParameterType}Txt`][0]);
+          res[`${userParameterName}Txt`]?.find((desc) =>
+            desc.language?.includes(language)
+          ) || res[`${userParameterName}Txt`][0];
+
         return {
           ...parameter,
+          userParameterType,
+          userParameterName,
           description: description && description.value,
           order: order[parameter.userParameterType],
         };

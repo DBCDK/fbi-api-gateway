@@ -16,6 +16,13 @@ const mappedFilters = {
   letRange: "let_range",
 };
 
+const mappedFilterValues = {
+  status: {
+    ONSHELF: "OnShelf",
+    ONLOAN: "OnLoan",
+  },
+};
+
 /**
  * Map filters. Some filters are renamed for search service
  *
@@ -23,11 +30,14 @@ const mappedFilters = {
  * @returns {*}
  */
 export function mapFilters(filters) {
-  const returnObject = {};
-  for (const [key, value] of Object.entries(filters)) {
-    returnObject[mappedFilters[key] || key] = value;
-  }
-  return returnObject;
+  const obj = {};
+  Object.entries(filters).forEach(([key, value]) => {
+    if (mappedFilterValues[key]) {
+      value = [mappedFilterValues[key][value]] || value;
+    }
+    obj[mappedFilters[key] || key] = value;
+  });
+  return obj;
 }
 
 /** FACETS **/
