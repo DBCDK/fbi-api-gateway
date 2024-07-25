@@ -20,7 +20,7 @@ export default function Home() {
           <Col>
             <Text className={styles.text}>Hello! You have found the</Text>
             <Title as="h1" type="title6" className={styles.title}>
-              FBI API
+              <strong>[FUTURE]</strong> FBI API
             </Title>
           </Col>
         </Row>
