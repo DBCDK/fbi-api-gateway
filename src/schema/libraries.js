@@ -26,17 +26,6 @@ export const typeDef = `
     USERADDRESS
     USERMAIL
     USERTELEPHONE
-
-    cpr
-    userId
-    barcode
-    cardno
-    customId
-    userDateOfBirth
-    userName
-    userAddress
-    userMail
-    userTelephone
   }
   enum AgencyType {
     ALLE

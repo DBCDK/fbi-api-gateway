@@ -273,9 +273,18 @@ Object {
       },
       "physicalDescription": Object {
         "accompanyingMaterial": null,
-        "materialUnits": null,
-        "numberOfPages": null,
-        "summaryFull": null,
+        "materialUnits": Array [
+          Object {
+            "additionalDescription": null,
+            "extent": "615 sider",
+            "numberAndType": null,
+            "size": null,
+            "summary": "615 sider",
+            "technicalInformation": null,
+          },
+        ],
+        "numberOfPages": 615,
+        "summaryFull": "615 sider",
       },
       "pid": "870970-basis:26521556",
       "publisher": Array [

@@ -36,7 +36,7 @@ let externalSchema;
 
 // The internal schema
 let internalSchema = enumFallbackDirectiveTransformer(
-  makeExecutableSchema(fieldNameValidator(schemaLoader()))
+  makeExecutableSchema(fieldNameValidator(schemaLoader(), "LOG"))
 );
 
 /**
@@ -74,14 +74,23 @@ class PermissionsTransform {
  * Directive definitions are excepted
  *
  * @param {Schema} props
+ * @param {string} errorType (THROW | LOG | IGNORE)
  * @returns {object}
  */
 
 // dev mode only
-export function fieldNameValidator(props) {
+export function fieldNameValidator(props, errorType = "THROW") {
   //  This check is NOT for production
   if (process.env.NODE_ENV === "production") {
     return props;
+  }
+
+  // Function to handle Error messages (throw|log|ignore)
+  function handleError(message) {
+    if (errorType === "THROW") {
+      throw new Error(message);
+    }
+    errorType === "LOG" && console.log(message);
   }
 
   // Kind/type categories to omit
@@ -113,10 +122,7 @@ export function fieldNameValidator(props) {
       if (!shouldOmit) {
         // Check for field name doublets
         if (lowerCasedTypeNames.includes(field?.toLowerCase())) {
-          console.log(`Type name '${field}' (${obj?.kind}) is already used`);
-          // throw new Error(
-          //   `Type name '${field}' (${obj?.kind}) is already used`
-          // );
+          handleError(`Type name '${field}' (${obj?.kind}) is already used`);
         }
 
         // Add to name doublet array
@@ -124,12 +130,9 @@ export function fieldNameValidator(props) {
 
         // Ensure first letter in type def is uppercase
         if (/^\p{Ll}/u.test(field)) {
-          console.log(
+          handleError(
             `Type '${field}' (${obj?.kind}) is a TypeDefinition and should be written in PascalCase`
           );
-          // throw new Error(
-          //   `Type '${field}' (${obj?.kind}) is a TypeDefinition and should be written in PascalCase`
-          // );
         }
 
         // Ensure correct tailed naming for Enum and Input types
@@ -138,12 +141,9 @@ export function fieldNameValidator(props) {
           const tail = startCase(obj?.kind).split(" ")[0];
 
           if (!field.endsWith(tail)) {
-            console.log(
-              `${field} is a ${obj?.kind} which should always end with '${tail}'`
+            handleError(
+              `Type '${field}' is a ${obj?.kind} which should always end with '${tail}'`
             );
-            // throw new Error(
-            //   `${field} is a ${obj?.kind} which should always end with '${tail}'`
-            // );
           }
         }
       }
@@ -155,16 +155,16 @@ export function fieldNameValidator(props) {
       // ObjectTypeDefinition uses .fields and EnumValueDefinition uses .values
       const subfields = obj?.fields || obj?.values;
 
+      // All subfields in lowercase
+      let lowerCasedFieldNames = [];
+
       // Check the subfields of the typedef obj
       subfields?.forEach((obj) => {
         const subfield = obj?.name?.value;
         const kind = obj?.kind;
-        const isDeprecated = !!obj?.directives.find(
-          (obj) => obj.name.value === "deprecated"
+        const isDeprecated = !!obj?.directives?.find(
+          (obj) => obj?.name?.value === "deprecated"
         );
-
-        // All fields and subfields in lowercase
-        let lowerCasedFieldNames = [];
 
         // ignore deprecated fields
         if (!isDeprecated) {
@@ -174,23 +174,17 @@ export function fieldNameValidator(props) {
             if (kind === "EnumValueDefinition") {
               //  ensure enums is written all uppercase
               if (subfield !== subfield?.toUpperCase()) {
-                console.log(
+                handleError(
                   `Field '${subfield}' in type '${field}' (${obj?.kind}) is an enum and should be written all UPPERCASE`
                 );
-                // throw new Error(
-                //   `Field '${subfield}' in type '${field}' (${obj?.kind}) is an enum and should be written all UPPERCASE`
-                // );
               }
             }
 
             // handle if subfield name already exist
             if (lowerCasedFieldNames.includes(subfield?.toLowerCase())) {
-              console.log(
+              handleError(
                 `Field name '${subfield}' in '${field}' is already used`
               );
-              // throw new Error(
-              //   `Field name '${subfield}' in '${field}' is already used`
-              // );
             }
 
             //  add to name doublet array

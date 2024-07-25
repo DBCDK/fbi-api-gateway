@@ -2269,16 +2269,6 @@ enum VipUserParameter {
   USERADDRESS
   USERMAIL
   USERTELEPHONE
-  cpr
-  userId
-  barcode
-  cardno
-  customId
-  userDateOfBirth
-  userName
-  userAddress
-  userMail
-  userTelephone
 }
 
 enum AgencyType {
@@ -2384,9 +2374,6 @@ enum MoodSuggest {
   TITLE
   CREATOR
   TAG
-  title
-  creator
-  tag
 }
 
 \\"\\"\\"Response type for moodSuggest\\"\\"\\"
@@ -4904,9 +4891,6 @@ enum MoodSuggest {
   TITLE
   CREATOR
   TAG
-  title
-  creator
-  tag
 }
 
 \\"\\"\\"Response type for moodSuggest\\"\\"\\"

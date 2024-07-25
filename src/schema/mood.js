@@ -13,10 +13,6 @@ export const typeDef = `
       TITLE
       CREATOR
       TAG
-
-      title
-      creator
-      tag
    }
 
    """
