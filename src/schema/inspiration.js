@@ -4,7 +4,7 @@
  */
 
 export const typeDef = `
-  input CategoryFilter {
+  input CategoryFilterInput {
     category: CategoryFilters!
     subCategories: [String!]
   }
@@ -23,7 +23,7 @@ export const typeDef = `
   }
 
  type Inspiration {
-   categories(filter: [CategoryFilter!]): [Categories]!
+   categories(filter: [CategoryFilterInput!]): [Categories]!
  }`;
 
 const mapEnums = {

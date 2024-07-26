@@ -62,12 +62,12 @@ export const typeDef = `
     ALLTAGS
    }
    
-   input KidRecommenderTags{
+   input KidRecommenderTagsInput{
     tag: String
     weight: Int
    }
    
-   input MoodKidsRecommendFilters {
+   input MoodKidsRecommendFiltersInput {
     difficulty: [Int!]
     illustrationsLevel: [Int!]
     length: [Int!]
@@ -104,7 +104,7 @@ export const typeDef = `
     moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
     moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], hasCover:Boolean): [MoodTagRecommendResponse]!
     moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean):[MoodTagRecommendResponse]!
-    moodRecommendKids(tags: [KidRecommenderTags!], work: String, filters: MoodKidsRecommendFilters, dislikes:[String!], offset: Int, limit: Int):MoodRecommendKidsResponse!
+    moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes:[String!], offset: Int, limit: Int):MoodRecommendKidsResponse!
   }
 
   extend type Query {

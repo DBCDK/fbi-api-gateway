@@ -74,7 +74,7 @@ type CheckOrderPolicy {
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
-input ComplexSearchFilters {
+input ComplexSearchFiltersInput {
   \\"\\"\\"BranchId. \\"\\"\\"
   branchId: [String!]
 
@@ -108,7 +108,7 @@ enum SortOrder {
   DESC
 }
 
-input Sort {
+input SortInput {
   index: String!
   order: SortOrder!
 }
@@ -187,7 +187,7 @@ type ComplexSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!, sort: [Sort!]): [Work!]!
+  works(offset: Int!, limit: PaginationLimit!, sort: [SortInput!]): [Work!]!
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
@@ -301,7 +301,7 @@ input DeleteAccountInput {
   agencyId: String!
 }
 
-input CreateAccountTokens {
+input CreateAccountTokensInput {
   \\"\\"\\"
   FFU accessToken containing credentials for the account which the user will be associated with 
   \\"\\"\\"
@@ -317,7 +317,7 @@ input CreateAccountInput {
   \\"\\"\\"
   Tokens containing the credentials to create/associate a new user account
   \\"\\"\\"
-  tokens: CreateAccountTokens!
+  tokens: CreateAccountTokensInput!
 }
 
 input GetAccountsInput {
@@ -380,7 +380,7 @@ type Mutation {
   elba: ElbaServices!
   submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrderInput!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
   data_collect(input: DataCollectInput!): String!
   deleteOrder(
     \\"\\"\\"id of the order to be deleted\\"\\"\\"
@@ -421,14 +421,14 @@ type Query {
   monitor(name: String!): String!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService!
 
   \\"\\"\\"
   ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
   \\"\\"\\"
-  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
+  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
@@ -2150,20 +2150,20 @@ type HelpResponse {
   result: [HelpRow!]!
 }
 
-input DataCollectSearchRequest {
-  q: SearchQuery!
-  filters: SearchFilters
+input DataCollectSearchRequestInput {
+  q: SearchQueryInput!
+  filters: SearchFiltersInput
 }
 
 input DataCollectSearchWorkInput {
   search_query_hit: Int!
   search_query_work: String!
-  search_request: DataCollectSearchRequest!
+  search_request: DataCollectSearchRequestInput!
   session_id: String!
 }
 
 input DataCollectSearchInput {
-  search_request: DataCollectSearchRequest!
+  search_request: DataCollectSearchRequestInput!
   search_response_works: [String!]!
   search_offset: Int!
   session_id: String!
@@ -2224,7 +2224,7 @@ input DataCollectInput {
   example: DataCollectExampleInput
 }
 
-input CategoryFilter {
+input CategoryFilterInput {
   category: CategoryFilters!
   subCategories: [String!]
 }
@@ -2243,7 +2243,7 @@ enum CategoryFilters {
 }
 
 type Inspiration {
-  categories(filter: [CategoryFilter!]): [Categories]!
+  categories(filter: [CategoryFilterInput!]): [Categories]!
 }
 
 enum LanguageCode {
@@ -2409,12 +2409,12 @@ enum MoodSearchFieldValues {
   ALLTAGS
 }
 
-input KidRecommenderTags {
+input KidRecommenderTagsInput {
   tag: String
   weight: Int
 }
 
-input MoodKidsRecommendFilters {
+input MoodKidsRecommendFiltersInput {
   difficulty: [Int!]
   illustrationsLevel: [Int!]
   length: [Int!]
@@ -2446,7 +2446,7 @@ type MoodQueries {
   moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
   moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
   moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
-  moodRecommendKids(tags: [KidRecommenderTags!], work: String, filters: MoodKidsRecommendFilters, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
+  moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
 }
 
 enum SubmitOrderStatus {
@@ -2533,7 +2533,7 @@ enum OrderType {
   STACK_RETRIEVAL
 }
 
-input SubmitOrderUserParameters {
+input SubmitOrderUserParametersInput {
   cpr: String
   userId: String
   barcode: String
@@ -2558,7 +2558,7 @@ input SubmitOrderInput {
   expires is required to be iso 8601 dateTime eg. \\"2024-03-15T12:24:32Z\\"
   \\"\\"\\"
   expires: String
-  userParameters: SubmitOrderUserParameters!
+  userParameters: SubmitOrderUserParametersInput!
   author: String
   authorOfComponent: String
   pagination: String
@@ -2569,7 +2569,7 @@ input SubmitOrderInput {
   volume: String
 }
 
-input Material {
+input MaterialInput {
   pids: [String!]!
   key: String!
   publicationDate: String
@@ -2586,10 +2586,10 @@ input Material {
 }
 
 input SubmitMultipleOrdersInput {
-  materialsToOrder: [Material!]!
+  materialsToOrder: [MaterialInput!]!
   pickUpBranch: String!
   pickUpBranchSubdivision: String
-  userParameters: SubmitOrderUserParameters!
+  userParameters: SubmitOrderUserParametersInput!
   pagination: String
 }
 
@@ -2638,7 +2638,7 @@ type OrderStatusResponse {
   errorMessage: String
 }
 
-input PeriodicaArticleOrder {
+input PeriodicaArticleOrderInput {
   \\"\\"\\"The pid of an article or periodica\\"\\"\\"
   pid: String!
   pickUpBranch: String!
@@ -2673,7 +2673,7 @@ Using dayjs to format dates and support localization. https://day.js.org/docs/en
 scalar CustomDateFormat
 
 \\"\\"\\"The supported fields to query\\"\\"\\"
-input SearchQuery {
+input SearchQueryInput {
   \\"\\"\\"
   Search for title, creator, subject or a combination.
   This is typically used where a single search box is desired.
@@ -2714,7 +2714,7 @@ enum FacetField {
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
-input SearchFilters {
+input SearchFiltersInput {
   accessTypes: [String!]
   childrenOrAdults: [String!]
   creators: [String!]
@@ -3197,7 +3197,7 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the \`da
 scalar DateTime
 
 \\"\\"\\"Search Filters\\"\\"\\"
-input ComplexSearchFilters {
+input ComplexSearchFiltersInput {
   \\"\\"\\"BranchId. \\"\\"\\"
   branchId: [String!]
 
@@ -3231,7 +3231,7 @@ enum SortOrder {
   DESC
 }
 
-input Sort {
+input SortInput {
   index: String!
   order: SortOrder!
 }
@@ -3306,7 +3306,7 @@ type ComplexSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!, sort: [Sort!]): [Work!]!
+  works(offset: Int!, limit: PaginationLimit!, sort: [SortInput!]): [Work!]!
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
@@ -3324,7 +3324,7 @@ type Cover {
 
 type Mutation {
   elba: ElbaServices!
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrderInput!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
 }
 
 type Query {
@@ -3333,8 +3333,8 @@ type Query {
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
@@ -4926,12 +4926,12 @@ enum MoodSearchFieldValues {
   ALLTAGS
 }
 
-input KidRecommenderTags {
+input KidRecommenderTagsInput {
   tag: String
   weight: Int
 }
 
-input MoodKidsRecommendFilters {
+input MoodKidsRecommendFiltersInput {
   difficulty: [Int!]
   illustrationsLevel: [Int!]
   length: [Int!]
@@ -4963,10 +4963,10 @@ type MoodQueries {
   moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
   moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
   moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
-  moodRecommendKids(tags: [KidRecommenderTags!], work: String, filters: MoodKidsRecommendFilters, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
+  moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
 }
 
-input PeriodicaArticleOrder {
+input PeriodicaArticleOrderInput {
   \\"\\"\\"The pid of an article or periodica\\"\\"\\"
   pid: String!
   pickUpBranch: String!
@@ -4996,7 +4996,7 @@ type PeriodicaArticleOrderResponse {
 scalar PaginationLimit
 
 \\"\\"\\"The supported fields to query\\"\\"\\"
-input SearchQuery {
+input SearchQueryInput {
   \\"\\"\\"
   Search for title, creator, subject or a combination.
   This is typically used where a single search box is desired.
@@ -5037,7 +5037,7 @@ enum FacetField {
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
-input SearchFilters {
+input SearchFiltersInput {
   accessTypes: [String!]
   childrenOrAdults: [String!]
   creators: [String!]

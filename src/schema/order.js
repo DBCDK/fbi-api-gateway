@@ -173,7 +173,7 @@ export const typeDef = `
       STACK_RETRIEVAL
    }
 
-   input SubmitOrderUserParameters {
+   input SubmitOrderUserParametersInput {
       cpr: String,
       userId: String,
       barcode: String,
@@ -197,7 +197,7 @@ export const typeDef = `
     expires is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
     """
     expires: String
-    userParameters: SubmitOrderUserParameters!
+    userParameters: SubmitOrderUserParametersInput!
     author: String
     authorOfComponent: String
     pagination: String
@@ -208,7 +208,7 @@ export const typeDef = `
     volume: String
   }
 
-  input Material {
+  input MaterialInput {
     pids: [String!]!
     key: String!
     publicationDate: String
@@ -247,10 +247,10 @@ export const typeDef = `
 }
 
   input SubmitMultipleOrdersInput{
-    materialsToOrder: [Material!]!
+    materialsToOrder: [MaterialInput!]!
     pickUpBranch: String!
     pickUpBranchSubdivision: String
-    userParameters: SubmitOrderUserParameters!
+    userParameters: SubmitOrderUserParametersInput!
     pagination: String
   } 
   

@@ -19,7 +19,7 @@ Works from complexSearch supports:
 ## Search with complex search
 
 <InlineGraphiQL
-  query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFilters!, $sort: [Sort!]) {
+  query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFiltersInput!, $sort: [SortInput!]) {
   complexSearch(cql: $cql, filters: $filters) {
     hitcount
     errorMessage
@@ -68,7 +68,7 @@ Get a list of suggestion by providing a query and the type of suggestion wanted.
 Get a list of facets for given search query.
 
 <InlineGraphiQL
-  query={`query Example_ComplexSearch($cql: String!, $filters: ComplexSearchFilters!, $facets: ComplexSearchFacetsInput) {
+  query={`query Example_ComplexSearch($cql: String!, $filters: ComplexSearchFiltersInput!, $facets: ComplexSearchFacetsInput) {
   complexSearch(cql: $cql, filters: $filters, facets: $facets) {
     hitcount
     errorMessage

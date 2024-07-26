@@ -60,7 +60,7 @@ Additionally, manifestations are enriched with multiple aspects of audience leve
 Recommended works for children based on mood data. Input are mood data (tags).
 
 <InlineGraphiQL
-	query={`query Example_moodTagsRecommend($tags: [KidRecommenderTags!], $offset: Int!, $limit: PaginationLimit!) {
+	query={`query Example_moodTagsRecommend($tags: [KidRecommenderTagsInput!], $offset: Int!, $limit: PaginationLimit!) {
   mood {
     moodRecommendKids(tags: $tags) {
       works(offset: $offset, limit: $limit) {

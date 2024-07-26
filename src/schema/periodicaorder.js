@@ -6,7 +6,7 @@
 import { resolveBorrowerCheck } from "../utils/utils";
 
 export const typeDef = `
- input PeriodicaArticleOrder {
+ input PeriodicaArticleOrderInput {
     """
     The pid of an article or periodica
     """
@@ -33,7 +33,7 @@ export const typeDef = `
  }
 
  extend type Mutation {
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: "Use 'Elba.placeCopyRequest' instead")
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrderInput!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: "Use 'Elba.placeCopyRequest' instead")
 }
  `;
 

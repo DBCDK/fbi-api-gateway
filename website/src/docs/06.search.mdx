@@ -10,7 +10,7 @@ Note how _all_ in the query object is used to hold the query string. This is
 useful when one does not know if the query matches a title, a creator or a subject.
 
 <InlineGraphiQL
-  query={`query Example_BasicSearch ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
+  query={`query Example_BasicSearch ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimit!) {
       search(q: $q) {
         works(offset: $offset, limit: $limit) {
           titles {
@@ -37,7 +37,7 @@ The total number of pages is calculated by dividing _hitcount_ with _limit_.
 The example below returns the second page of the search result.
 
 <InlineGraphiQL
-  query={`query Example_SearchPagination ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
+  query={`query Example_SearchPagination ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimit!) {
       search(q: $q) {
         hitcount
         works(offset: $offset, limit: $limit) {
@@ -59,7 +59,7 @@ implementing the UI with multiple input fields.
 This example searches for _hopper_ as title, _hesteavl_ as subject, and _carl_ as creator.
 
 <InlineGraphiQL
-  query={`query Example_MultipleQSearch ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!) {
+  query={`query Example_MultipleQSearch ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimit!) {
     search(q: $q) {
       hitcount
       works(offset: $offset, limit: $limit) {
@@ -100,7 +100,7 @@ The following example is a search for _andersen_ where facet categories _mainLan
 are returned.
 
 <InlineGraphiQL
-  query={`query Example_SearchFacets ($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!) {
+  query={`query Example_SearchFacets ($q: SearchQueryInput!, $facets: [FacetField!]!, $facetLimit: Int!) {
       search(q: $q) {
         hitcount
         facets(facets: $facets) {
@@ -125,7 +125,7 @@ Afterwards, the term of the facet can be used as a filter. In this example, a la
 is applied resulting in an updated facet result.
 
 <InlineGraphiQL
-  query={`query Example_SearchFilters ($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFilters!) {
+  query={`query Example_SearchFilters ($q: SearchQueryInput!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFiltersInput!) {
       search(q: $q, filters: $filters) {
         hitcount
         works(offset: 0, limit: 10) {
@@ -164,7 +164,7 @@ are AND'ed together. For instance (Svensk OR Engelsk) AND dvd.
 Some filters supports range. The following example uses ageRange. Other filters are lixRange and letRange.
 
 <InlineGraphiQL
-  query={`query Example_FilterRange($q: SearchQuery!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFilters!) {
+  query={`query Example_FilterRange($q: SearchQueryInput!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFiltersInput!) {
   search(q: $q, filters: $filters) {
     hitcount
     works(offset: 0, limit: 10) {
@@ -217,7 +217,7 @@ I.e. you do not specify the facets you want to be returned, instead it is automa
 the end users input (the query and selected filters).
 
 <InlineGraphiQL
-  query={`query Example_IntelligentFacets ($q: SearchQuery!, $facetsLimit: Int!, $valuesLimit: Int!) {
+  query={`query Example_IntelligentFacets ($q: SearchQueryInput!, $facetsLimit: Int!, $valuesLimit: Int!) {
     search(q: $q) {
       hitcount
       intelligentFacets(limit: $facetsLimit) {
@@ -248,7 +248,7 @@ The score is a value between 0 and 1 and can be used to determine if a query sug
 should be displayed.
 
 <InlineGraphiQL
-  query={`query Example_DidYouMean($q: SearchQuery!, $limit: Int) {
+  query={`query Example_DidYouMean($q: SearchQueryInput!, $limit: Int) {
   search(q: $q) {
     didYouMean(limit: $limit) {
       query
@@ -269,7 +269,7 @@ should be displayed.
 In the following example we only include works that are on the shelf in a specific branch.
 
 <InlineGraphiQL
-  query={`query Example_HoldingsFilters ($q: SearchQuery!, $offset: Int!, $limit: PaginationLimit!, $filters: SearchFilters!, $facets: [FacetField!]!) {
+  query={`query Example_HoldingsFilters ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimit!, $filters: SearchFiltersInput!, $facets: [FacetField!]!) {
   search(q: $q, filters: $filters) {
     hitcount
     works(offset: $offset, limit: $limit) {

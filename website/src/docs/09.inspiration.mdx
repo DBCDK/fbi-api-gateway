@@ -14,7 +14,7 @@ _Categories_ and _subCategories_ is specified in the required _filters_ argument
 If no filters is given, the categories data will be empty.
 
 <InlineGraphiQL
-  query={`query Example_SpecificSubCategories ($limit: Int!, $filters: [CategoryFilter!]) {
+  query={`query Example_SpecificSubCategories ($limit: Int!, $filters: [CategoryFilterInput!]) {
   inspiration {
     categories(filter: $filters) {
       title
@@ -46,7 +46,7 @@ If no filters is given, the categories data will be empty.
 Leaving the subCategories prop empty on the filters argument, will return all subCategories for a given category.
 
 <InlineGraphiQL
-  query={`query Example_AllSubCategories ($limit: Int!, $filters: [CategoryFilter!]) {
+  query={`query Example_AllSubCategories ($limit: Int!, $filters: [CategoryFilterInput!]) {
   inspiration {
     categories(filter: $filters) {
       title

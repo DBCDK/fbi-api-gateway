@@ -18,7 +18,7 @@ export const typeDef = `
 """
 The supported fields to query
 """
-input SearchQuery {
+input SearchQueryInput {
 
   """
   Search for title, creator, subject or a combination.
@@ -72,7 +72,7 @@ enum FacetField {
 """
 Search Filters
 """
-input SearchFilters {
+input SearchFiltersInput {
   accessTypes: [String!]
   childrenOrAdults: [String!]
   creators: [String!]

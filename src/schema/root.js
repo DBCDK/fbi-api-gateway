@@ -40,13 +40,13 @@ type Query {
   monitor(name: String!): String!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
-  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
   """
   ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
   """
-  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
+  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
 
   localSuggest(
     """
@@ -106,7 +106,7 @@ type Query {
   """
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus @deprecated, statuses: [LibraryStatus], bibdkExcludeBranches:Boolean, agencyTypes: [AgencyType!]): BranchResult! @complexity(value: 5, multipliers: ["limit"])
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, statuses: [LibraryStatus], bibdkExcludeBranches:Boolean, agencyTypes: [AgencyType!]): BranchResult! @complexity(value: 5, multipliers: ["limit"])
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   infomedia(id: String!): InfomediaResponse!
   session: Session

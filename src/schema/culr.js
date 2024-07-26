@@ -149,7 +149,7 @@ input DeleteAccountInput {
     agencyId: String!
 }
 
-input CreateAccountTokens {
+input CreateAccountTokensInput {
 
   """
   FFU accessToken containing credentials for the account which the user will be associated with 
@@ -167,7 +167,7 @@ input CreateAccountInput {
   """
   Tokens containing the credentials to create/associate a new user account
   """
-  tokens: CreateAccountTokens!
+  tokens: CreateAccountTokensInput!
 }
 
 input GetAccountsInput {
