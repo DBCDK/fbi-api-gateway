@@ -155,9 +155,9 @@ enum ComplexSearchFacets {
 }
 
 \\"\\"\\"The facets to ask for\\"\\"\\"
-input complexSearchFacets {
+input ComplexSearchFacetsInput {
   facetLimit: Int!
-  facets: [ComplexSearchFacets!]!
+  facets: [ComplexSearchFacets!]
 }
 
 \\"\\"\\"A Facet value in response\\"\\"\\"
@@ -415,20 +415,20 @@ type Mutation {
 type Query {
   culr: CulrQuery!
   debug: Debug
-  mood: moodQueries!
+  mood: MoodQueries!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService!
 
   \\"\\"\\"
   ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
   \\"\\"\\"
-  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexFacetResponse!
+  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
@@ -441,7 +441,7 @@ type Query {
 
     \\"\\"\\"Id of branch to filter by\\"\\"\\"
     branchId: String
-  ): localSuggestResponse!
+  ): LocalSuggestResponse!
   complexSuggest(
     \\"\\"\\"The query to get suggestions for\\"\\"\\"
     q: String!
@@ -528,6 +528,9 @@ type HoldingsItem {
   department: String
   location: String
   subLocation: String
+  localizationPid: String
+  codes: String
+  localIdentifier: String
 }
 
 type HoldingsResponse {
@@ -1945,7 +1948,7 @@ type SuggestResponse {
   result: [Suggestion!]!
 }
 
-type localSuggestResponse {
+type LocalSuggestResponse {
   result: [Suggestion!]!
 }
 
@@ -2349,18 +2352,12 @@ type RenewLoanResponse {
 
 type Localizations {
   count: Int
-  agencies: [holdingAgency]
+  agencies: [HoldingAgency]
 }
 
-type holdingAgency {
+type HoldingAgency {
   agencyId: String
-  holdingItems: [holdingsItem]
-}
-
-type holdingsItem {
-  localizationPid: String
-  codes: String
-  localIdentifier: String
+  holdingItems: [HoldingsItem]
 }
 
 enum AvailabilityEnum {
@@ -2376,8 +2373,8 @@ enum MoodSuggest {
   TAG
 }
 
-\\"\\"\\"Response type for moodSuggest\\"\\"\\"
-type moodSuggestResponse {
+\\"\\"\\"The response type for moodSuggest\\"\\"\\"
+type MoodSuggestResponse {
   \\"\\"\\"Suggestion\\"\\"\\"
   term: String!
 
@@ -2386,18 +2383,15 @@ type moodSuggestResponse {
 
   \\"\\"\\"A work associated with the suggestion\\"\\"\\"
   work: Work
+
+  \\"\\"\\"Response is an array of MoodSuggestResponse\\"\\"\\"
+  response: [MoodSuggestResponse!]!
 }
 
 \\"\\"\\"Response type for moodTagRecommend\\"\\"\\"
 type MoodTagRecommendResponse {
   work: Work!
   similarity: Float
-}
-
-\\"\\"\\"The response type for moodSuggest\\"\\"\\"
-type MoodSuggestResponse {
-  \\"\\"\\"Response is an array of moodSuggestResponse\\"\\"\\"
-  response: [moodSuggestResponse!]!
 }
 
 \\"\\"\\"Supported fields for moodsearch request\\"\\"\\"
@@ -2440,7 +2434,7 @@ type MoodRecommendKidsResponse {
   works(offset: Int!, limit: PaginationLimit!): [Work!]!
 }
 
-type moodQueries {
+type MoodQueries {
   moodSearch(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
   moodSearchKids(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
   moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
@@ -3278,9 +3272,9 @@ enum ComplexSearchFacets {
 }
 
 \\"\\"\\"The facets to ask for\\"\\"\\"
-input complexSearchFacets {
+input ComplexSearchFacetsInput {
   facetLimit: Int!
-  facets: [ComplexSearchFacets!]!
+  facets: [ComplexSearchFacets!]
 }
 
 \\"\\"\\"A Facet value in response\\"\\"\\"
@@ -3328,13 +3322,13 @@ type Mutation {
 }
 
 type Query {
-  mood: moodQueries!
+  mood: MoodQueries!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
@@ -3348,7 +3342,7 @@ type Query {
 
     \\"\\"\\"Id of branch to filter by\\"\\"\\"
     branchId: String
-  ): localSuggestResponse!
+  ): LocalSuggestResponse!
   complexSuggest(
     \\"\\"\\"The query to get suggestions for\\"\\"\\"
     q: String!
@@ -4670,7 +4664,7 @@ type SuggestResponse {
   result: [Suggestion!]!
 }
 
-type localSuggestResponse {
+type LocalSuggestResponse {
   result: [Suggestion!]!
 }
 
@@ -4893,8 +4887,8 @@ enum MoodSuggest {
   TAG
 }
 
-\\"\\"\\"Response type for moodSuggest\\"\\"\\"
-type moodSuggestResponse {
+\\"\\"\\"The response type for moodSuggest\\"\\"\\"
+type MoodSuggestResponse {
   \\"\\"\\"Suggestion\\"\\"\\"
   term: String!
 
@@ -4903,18 +4897,15 @@ type moodSuggestResponse {
 
   \\"\\"\\"A work associated with the suggestion\\"\\"\\"
   work: Work
+
+  \\"\\"\\"Response is an array of MoodSuggestResponse\\"\\"\\"
+  response: [MoodSuggestResponse!]!
 }
 
 \\"\\"\\"Response type for moodTagRecommend\\"\\"\\"
 type MoodTagRecommendResponse {
   work: Work!
   similarity: Float
-}
-
-\\"\\"\\"The response type for moodSuggest\\"\\"\\"
-type MoodSuggestResponse {
-  \\"\\"\\"Response is an array of moodSuggestResponse\\"\\"\\"
-  response: [moodSuggestResponse!]!
 }
 
 \\"\\"\\"Supported fields for moodsearch request\\"\\"\\"
@@ -4957,7 +4948,7 @@ type MoodRecommendKidsResponse {
   works(offset: Int!, limit: PaginationLimit!): [Work!]!
 }
 
-type moodQueries {
+type MoodQueries {
   moodSearch(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
   moodSearchKids(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
   moodSuggest(q: String!, limit: Int): MoodSuggestResponse!

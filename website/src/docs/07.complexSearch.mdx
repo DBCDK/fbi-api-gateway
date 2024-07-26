@@ -68,7 +68,7 @@ Get a list of suggestion by providing a query and the type of suggestion wanted.
 Get a list of facets for given search query.
 
 <InlineGraphiQL
-  query={`query Example_ComplexSearch($cql: String!, $filters: ComplexSearchFilters!, $facets: complexSearchFacets) {
+  query={`query Example_ComplexSearch($cql: String!, $filters: ComplexSearchFilters!, $facets: ComplexSearchFacetsInput) {
   complexSearch(cql: $cql, filters: $filters, facets: $facets) {
     hitcount
     errorMessage

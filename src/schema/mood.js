@@ -18,7 +18,7 @@ export const typeDef = `
    """
    Response type for moodSuggest
    """
-   type moodSuggestResponse {
+   type MoodSuggestResponse {
     """
     Suggestion
     """
@@ -46,9 +46,9 @@ export const typeDef = `
    """
    type MoodSuggestResponse {
     """
-    Response is an array of moodSuggestResponse
+    Response is an array of MoodSuggestResponse
     """
-    response: [moodSuggestResponse!]!
+    response: [MoodSuggestResponse!]!
   }
 
   """
@@ -98,7 +98,7 @@ export const typeDef = `
     works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   }
 
-  type moodQueries {
+  type MoodQueries {
     moodSearch(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
     moodSearchKids(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
     moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
@@ -108,7 +108,7 @@ export const typeDef = `
   }
 
   extend type Query {
-    mood: moodQueries!
+    mood: MoodQueries!
   }
 
   `;
@@ -139,7 +139,7 @@ export const resolvers = {
     },
   },
 
-  moodQueries: {
+  MoodQueries: {
     async moodSearch(parent, args, context, info) {
       return {
         ...args,
@@ -215,7 +215,7 @@ export const resolvers = {
       return getSearchExpanded(res, context);
     },
   },
-  moodSuggestResponse: {
+  MoodSuggestResponse: {
     work(parent, args, context, info) {
       return resolveWork({ id: parent.work }, context);
     },

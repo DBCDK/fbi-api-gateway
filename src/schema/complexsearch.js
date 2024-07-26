@@ -102,9 +102,9 @@ enum ComplexSearchFacets {
 """
 The facets to ask for
 """
-input complexSearchFacets {
+input ComplexSearchFacetsInput {
   facetLimit: Int!
-  facets: [ComplexSearchFacets!]!
+  facets: [ComplexSearchFacets!]
 }
 
 """

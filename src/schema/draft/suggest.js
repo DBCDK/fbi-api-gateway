@@ -65,7 +65,7 @@ type SuggestResponse {
   result: [Suggestion!]!
 }
 
-type localSuggestResponse{
+type LocalSuggestResponse{
   result: [Suggestion!]!
 }
 `;
@@ -104,7 +104,7 @@ export const resolvers = {
       return res;
     },
   },
-  localSuggestResponse: {
+  LocalSuggestResponse: {
     async result(parent, args, context, info) {
       const res = await context.datasources.getLoader("prosper").load({
         ...parent,

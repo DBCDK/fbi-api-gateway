@@ -41,12 +41,12 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
   """
   ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
   """
-  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexFacetResponse!
+  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
 
   localSuggest(
     """
@@ -65,7 +65,7 @@ type Query {
     Id of branch to filter by
     """
     branchId: String    
-  ): localSuggestResponse! @complexity(value: 2, multipliers: ["limit"])
+  ): LocalSuggestResponse! @complexity(value: 2, multipliers: ["limit"])
   
   complexSuggest(
     """
