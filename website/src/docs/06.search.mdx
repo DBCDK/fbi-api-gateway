@@ -10,7 +10,7 @@ Note how _all_ in the query object is used to hold the query string. This is
 useful when one does not know if the query matches a title, a creator or a subject.
 
 <InlineGraphiQL
-  query={`query Example_BasicSearch ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimit!) {
+  query={`query Example_BasicSearch ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!) {
       search(q: $q) {
         works(offset: $offset, limit: $limit) {
           titles {
@@ -37,7 +37,7 @@ The total number of pages is calculated by dividing _hitcount_ with _limit_.
 The example below returns the second page of the search result.
 
 <InlineGraphiQL
-  query={`query Example_SearchPagination ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimit!) {
+  query={`query Example_SearchPagination ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!) {
       search(q: $q) {
         hitcount
         works(offset: $offset, limit: $limit) {
@@ -59,7 +59,7 @@ implementing the UI with multiple input fields.
 This example searches for _hopper_ as title, _hesteavl_ as subject, and _carl_ as creator.
 
 <InlineGraphiQL
-  query={`query Example_MultipleQSearch ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimit!) {
+  query={`query Example_MultipleQSearch ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!) {
     search(q: $q) {
       hitcount
       works(offset: $offset, limit: $limit) {
@@ -269,7 +269,7 @@ should be displayed.
 In the following example we only include works that are on the shelf in a specific branch.
 
 <InlineGraphiQL
-  query={`query Example_HoldingsFilters ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimit!, $filters: SearchFiltersInput!, $facets: [FacetField!]!) {
+  query={`query Example_HoldingsFilters ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!, $filters: SearchFiltersInput!, $facets: [FacetField!]!) {
   search(q: $q, filters: $filters) {
     hitcount
     works(offset: $offset, limit: $limit) {

@@ -1,7 +1,7 @@
 import { resolveWork } from "../utils/utils";
 
 export const typeDef = `
-union UniverseContent = Work | Series
+union UniverseContentUnion = Work | Series
 
 type Universe {
   """
@@ -47,7 +47,7 @@ type Universe {
 
 type UniverseContentResult {
   hitcount: Int!
-  entries: [UniverseContent!]!
+  entries: [UniverseContentUnion!]!
 }
 
 extend type Query {

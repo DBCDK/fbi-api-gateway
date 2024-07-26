@@ -1,5 +1,5 @@
 export const typeDef = `
-interface Subject {
+interface SubjectInterface {
   display: String!
 
   """
@@ -15,14 +15,14 @@ interface Subject {
   local: Boolean
 }
 
-type SubjectText implements Subject {
+type SubjectText implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type TimePeriod implements Subject {
+type TimePeriod implements SubjectInterface {
   type: SubjectType!
   period: Range!
   display: String!
@@ -30,28 +30,28 @@ type TimePeriod implements Subject {
   local: Boolean
 }
 
-type Mood implements Subject {
+type Mood implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type NarrativeTechnique implements Subject {
+type NarrativeTechnique implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type Setting implements Subject {
+type Setting implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type SubjectWithRating implements Subject {
+type SubjectWithRating implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
@@ -110,12 +110,12 @@ type SubjectContainer {
   """
   All subjects
   """
-  all: [Subject!]!
+  all: [SubjectInterface!]!
 
   """
   Only DBC verified subjects
   """
-  dbcVerified: [Subject!]!
+  dbcVerified: [SubjectInterface!]!
 }
 `;
 

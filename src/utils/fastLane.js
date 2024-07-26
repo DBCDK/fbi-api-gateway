@@ -18,7 +18,7 @@ const ALLOWED_TYPES = {
   Manifestation: true,
   ManifestationTitles: true,
   Work: true,
-  Creator: true,
+  CreatorInterface: true,
   MaterialType: true,
   Cover: true,
   Role: true,
@@ -51,7 +51,7 @@ const ALLOWED_TYPES = {
   PublicationYear: true,
   HostPublication: true,
   AccessType: true,
-  Access: false, // Disabled: Uniontype which can hold a user-specific url (proxy)
+  AccessUnion: false, // Disabled: Uniontype which can hold a user-specific url (proxy)
   AccessUrlType: true,
   FictionNonfiction: true,
   FictionNonfictionCode: true,
@@ -65,7 +65,7 @@ const ALLOWED_TYPES = {
   Relations: true,
   TableOfContent: true,
   SubjectContainer: true,
-  Subject: true,
+  SubjectInterface: true,
   SubjectType: true,
   Series: true,
   SerieWork: true,

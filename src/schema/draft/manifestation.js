@@ -161,7 +161,7 @@ type ManifestationPart {
   """
   The creator of the music track or literary analysis
   """
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   """
   Classification of this entry (music track or literary analysis)
@@ -171,7 +171,7 @@ type ManifestationPart {
   """
   Subjects of this entry (music track or literary analysis)
   """
-  subjects: [Subject!]
+  subjects: [SubjectInterface!]
 
   """
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
@@ -561,7 +561,7 @@ type Manifestation {
   """
   Different options to access manifestation
   """
-  access: [Access!]!
+  access: [AccessUnion!]!
 
   """
   Different kinds of definitions of appropriate audience for this manifestation
@@ -581,7 +581,7 @@ type Manifestation {
   """
   Contributors to the manifestation, actors, illustrators etc
   """
-  contributors: [Creator!]!
+  contributors: [CreatorInterface!]!
 
   """
   Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
@@ -596,7 +596,7 @@ type Manifestation {
   """
   Primary creators of the manifestation e.g. authors, directors, musicians etc
   """
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   """
   Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'

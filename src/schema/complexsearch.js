@@ -144,7 +144,7 @@ type ComplexSearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int! limit: PaginationLimit!, sort: [SortInput!]): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+  works(offset: Int! limit: PaginationLimitScalar!, sort: [SortInput!]): [Work!]! @complexity(value: 5, multipliers: ["limit"])
 
   """
   Error message, for instance if CQL is invalid

@@ -19,7 +19,7 @@ Works from complexSearch supports:
 ## Search with complex search
 
 <InlineGraphiQL
-  query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimit!, $filters: ComplexSearchFiltersInput!, $sort: [SortInput!]) {
+  query={`query Example_ComplexSearch ($cql: String!, $offset: Int!, $limit: PaginationLimitScalar!, $filters: ComplexSearchFiltersInput!, $sort: [SortInput!]) {
   complexSearch(cql: $cql, filters: $filters) {
     hitcount
     errorMessage

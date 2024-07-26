@@ -44,11 +44,11 @@ type User {
   """
   Orders made through bibliotek.dk
   """
-  bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
+  bibliotekDkOrders(offset: Int limit: PaginationLimitScalar): BibliotekDkOrders!
   """
   Saved searches from complex search
   """
-  savedSearches(offset: Int limit: PaginationLimit): SavedSearchResponse!
+  savedSearches(offset: Int limit: PaginationLimitScalar): SavedSearchResponse!
   """
   Get one saved search by cql. Returns searchobject including id.
   """

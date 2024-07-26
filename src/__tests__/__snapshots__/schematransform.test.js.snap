@@ -187,7 +187,7 @@ type ComplexSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!, sort: [SortInput!]): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!, sort: [SortInput!]): [Work!]!
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
@@ -468,7 +468,7 @@ type Query {
   \\"\\"\\"Get recommendations\\"\\"\\"
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
   help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, statuses: [LibraryStatus], bibdkExcludeBranches: Boolean, agencyTypes: [AgencyType!]): BranchResult!
+  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimitScalar, statuses: [LibraryStatus], bibdkExcludeBranches: Boolean, agencyTypes: [AgencyType!]): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
   infomedia(id: String!): InfomediaResponse!
   session: Session
@@ -731,7 +731,7 @@ type DigitalArticleService {
   issn: String!
 }
 
-union Access = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 
 type Translation {
   \\"\\"\\"
@@ -755,7 +755,7 @@ type Role {
   function: Translation!
 }
 
-type Person implements Subject & Creator {
+type Person implements SubjectInterface & CreatorInterface {
   \\"\\"\\"The person's whole name in normal order\\"\\"\\"
   display: String!
 
@@ -789,7 +789,7 @@ type Person implements Subject & Creator {
   local: Boolean
 }
 
-type Corporation implements Subject & Creator {
+type Corporation implements SubjectInterface & CreatorInterface {
   \\"\\"\\"The full corporation or conference name\\"\\"\\"
   display: String!
 
@@ -827,7 +827,7 @@ type Corporation implements Subject & Creator {
   local: Boolean
 }
 
-interface Creator {
+interface CreatorInterface {
   \\"\\"\\"Name of the creator\\"\\"\\"
   display: String!
 
@@ -1008,13 +1008,13 @@ type ManifestationPart {
   title: String!
 
   \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
   classifications: [Classification!]!
 
   \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [Subject!]
+  subjects: [SubjectInterface!]
 
   \\"\\"\\"
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
@@ -1318,7 +1318,7 @@ type Manifestation {
   accessTypes: [AccessType!]!
 
   \\"\\"\\"Different options to access manifestation\\"\\"\\"
-  access: [Access!]!
+  access: [AccessUnion!]!
 
   \\"\\"\\"
   Different kinds of definitions of appropriate audience for this manifestation
@@ -1336,7 +1336,7 @@ type Manifestation {
   classifications: [Classification!]!
 
   \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
-  contributors: [Creator!]!
+  contributors: [CreatorInterface!]!
 
   \\"\\"\\"
   Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
@@ -1349,7 +1349,7 @@ type Manifestation {
   \\"\\"\\"
   Primary creators of the manifestation e.g. authors, directors, musicians etc
   \\"\\"\\"
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   \\"\\"\\"
   Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
@@ -1643,7 +1643,7 @@ type Work {
   abstract: [String!]
 
   \\"\\"\\"Creators\\"\\"\\"
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   \\"\\"\\"DK5 main entry for this work\\"\\"\\"
   dk5MainEntry: DK5MainEntry
@@ -1787,7 +1787,7 @@ type Series {
   members(limit: Int, offset: Int): [SerieWork!]!
 }
 
-interface Subject {
+interface SubjectInterface {
   display: String!
 
   \\"\\"\\"
@@ -1800,14 +1800,14 @@ interface Subject {
   local: Boolean
 }
 
-type SubjectText implements Subject {
+type SubjectText implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type TimePeriod implements Subject {
+type TimePeriod implements SubjectInterface {
   type: SubjectType!
   period: Range!
   display: String!
@@ -1815,28 +1815,28 @@ type TimePeriod implements Subject {
   local: Boolean
 }
 
-type Mood implements Subject {
+type Mood implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type NarrativeTechnique implements Subject {
+type NarrativeTechnique implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type Setting implements Subject {
+type Setting implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type SubjectWithRating implements Subject {
+type SubjectWithRating implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
@@ -1887,10 +1887,10 @@ type Range {
 
 type SubjectContainer {
   \\"\\"\\"All subjects\\"\\"\\"
-  all: [Subject!]!
+  all: [SubjectInterface!]!
 
   \\"\\"\\"Only DBC verified subjects\\"\\"\\"
-  dbcVerified: [Subject!]!
+  dbcVerified: [SubjectInterface!]!
 }
 
 enum SuggestionType {
@@ -2427,17 +2427,17 @@ type MoodSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 \\"\\"\\"The reponse from moodsearchkids\\"\\"\\"
 type MoodSearchKidsResponse {
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 \\"\\"\\"The reponse from moodrecommenkids\\"\\"\\"
 type MoodRecommendKidsResponse {
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 type MoodQueries {
@@ -2665,12 +2665,7 @@ type PeriodicaArticleOrderResponse {
 }
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
-scalar PaginationLimit
-
-\\"\\"\\"
-Using dayjs to format dates and support localization. https://day.js.org/docs/en/display/format
-\\"\\"\\"
-scalar CustomDateFormat
+scalar PaginationLimitScalar
 
 \\"\\"\\"The supported fields to query\\"\\"\\"
 input SearchQueryInput {
@@ -2782,7 +2777,7 @@ type SearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 
   \\"\\"\\"
   Make sure only to fetch this when needed
@@ -2904,7 +2899,7 @@ type TestMutation {
   user(input: TestUserInput): String
 }
 
-union UniverseContent = Work | Series
+union UniverseContentUnion = Work | Series
 
 type Universe {
   \\"\\"\\"A key that identifies a universe.\\"\\"\\"
@@ -2936,7 +2931,7 @@ type Universe {
 
 type UniverseContentResult {
   hitcount: Int!
-  entries: [UniverseContent!]!
+  entries: [UniverseContentUnion!]!
 }
 
 type User {
@@ -2955,10 +2950,10 @@ type User {
   persistUserData: Boolean
 
   \\"\\"\\"Orders made through bibliotek.dk\\"\\"\\"
-  bibliotekDkOrders(offset: Int, limit: PaginationLimit): BibliotekDkOrders!
+  bibliotekDkOrders(offset: Int, limit: PaginationLimitScalar): BibliotekDkOrders!
 
   \\"\\"\\"Saved searches from complex search\\"\\"\\"
-  savedSearches(offset: Int, limit: PaginationLimit): SavedSearchResponse!
+  savedSearches(offset: Int, limit: PaginationLimitScalar): SavedSearchResponse!
 
   \\"\\"\\"Get one saved search by cql. Returns searchobject including id.\\"\\"\\"
   savedSearchByCql(cql: String!): SavedSearch
@@ -3306,7 +3301,7 @@ type ComplexSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!, sort: [SortInput!]): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!, sort: [SortInput!]): [Work!]!
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
@@ -3466,7 +3461,7 @@ type DigitalArticleService {
   issn: String!
 }
 
-union Access = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 
 type Translation {
   \\"\\"\\"
@@ -3490,7 +3485,7 @@ type Role {
   function: Translation!
 }
 
-type Person implements Subject & Creator {
+type Person implements SubjectInterface & CreatorInterface {
   \\"\\"\\"The person's whole name in normal order\\"\\"\\"
   display: String!
 
@@ -3524,7 +3519,7 @@ type Person implements Subject & Creator {
   local: Boolean
 }
 
-type Corporation implements Subject & Creator {
+type Corporation implements SubjectInterface & CreatorInterface {
   \\"\\"\\"The full corporation or conference name\\"\\"\\"
   display: String!
 
@@ -3562,7 +3557,7 @@ type Corporation implements Subject & Creator {
   local: Boolean
 }
 
-interface Creator {
+interface CreatorInterface {
   \\"\\"\\"Name of the creator\\"\\"\\"
   display: String!
 
@@ -3737,13 +3732,13 @@ type ManifestationPart {
   title: String!
 
   \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
   classifications: [Classification!]!
 
   \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [Subject!]
+  subjects: [SubjectInterface!]
 
   \\"\\"\\"
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
@@ -4047,7 +4042,7 @@ type Manifestation {
   accessTypes: [AccessType!]!
 
   \\"\\"\\"Different options to access manifestation\\"\\"\\"
-  access: [Access!]!
+  access: [AccessUnion!]!
 
   \\"\\"\\"
   Different kinds of definitions of appropriate audience for this manifestation
@@ -4065,7 +4060,7 @@ type Manifestation {
   classifications: [Classification!]!
 
   \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
-  contributors: [Creator!]!
+  contributors: [CreatorInterface!]!
 
   \\"\\"\\"
   Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
@@ -4078,7 +4073,7 @@ type Manifestation {
   \\"\\"\\"
   Primary creators of the manifestation e.g. authors, directors, musicians etc
   \\"\\"\\"
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   \\"\\"\\"
   Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
@@ -4368,7 +4363,7 @@ type Work {
   abstract: [String!]
 
   \\"\\"\\"Creators\\"\\"\\"
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   \\"\\"\\"DK5 main entry for this work\\"\\"\\"
   dk5MainEntry: DK5MainEntry
@@ -4512,7 +4507,7 @@ type Series {
   members(limit: Int, offset: Int): [SerieWork!]!
 }
 
-interface Subject {
+interface SubjectInterface {
   display: String!
 
   \\"\\"\\"
@@ -4525,14 +4520,14 @@ interface Subject {
   local: Boolean
 }
 
-type SubjectText implements Subject {
+type SubjectText implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type TimePeriod implements Subject {
+type TimePeriod implements SubjectInterface {
   type: SubjectType!
   period: Range!
   display: String!
@@ -4540,28 +4535,28 @@ type TimePeriod implements Subject {
   local: Boolean
 }
 
-type Mood implements Subject {
+type Mood implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type NarrativeTechnique implements Subject {
+type NarrativeTechnique implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type Setting implements Subject {
+type Setting implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type SubjectWithRating implements Subject {
+type SubjectWithRating implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
@@ -4612,10 +4607,10 @@ type Range {
 
 type SubjectContainer {
   \\"\\"\\"All subjects\\"\\"\\"
-  all: [Subject!]!
+  all: [SubjectInterface!]!
 
   \\"\\"\\"Only DBC verified subjects\\"\\"\\"
-  dbcVerified: [Subject!]!
+  dbcVerified: [SubjectInterface!]!
 }
 
 enum SuggestionType {
@@ -4944,17 +4939,17 @@ type MoodSearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 \\"\\"\\"The reponse from moodsearchkids\\"\\"\\"
 type MoodSearchKidsResponse {
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 \\"\\"\\"The reponse from moodrecommenkids\\"\\"\\"
 type MoodRecommendKidsResponse {
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 type MoodQueries {
@@ -4993,7 +4988,7 @@ type PeriodicaArticleOrderResponse {
 }
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
-scalar PaginationLimit
+scalar PaginationLimitScalar
 
 \\"\\"\\"The supported fields to query\\"\\"\\"
 input SearchQueryInput {
@@ -5105,7 +5100,7 @@ type SearchResponse {
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 
   \\"\\"\\"
   Make sure only to fetch this when needed
@@ -5128,7 +5123,7 @@ type DidYouMean {
   score: Float!
 }
 
-union UniverseContent = Work | Series
+union UniverseContentUnion = Work | Series
 
 type Universe {
   \\"\\"\\"A key that identifies a universe.\\"\\"\\"
@@ -5160,7 +5155,7 @@ type Universe {
 
 type UniverseContentResult {
   hitcount: Int!
-  entries: [UniverseContent!]!
+  entries: [UniverseContentUnion!]!
 }
 "
 `;
@@ -5290,7 +5285,7 @@ type DigitalArticleService {
   issn: String!
 }
 
-union Access = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 
 type Translation {
   \\"\\"\\"
@@ -5314,7 +5309,7 @@ type Role {
   function: Translation!
 }
 
-type Person implements Subject & Creator {
+type Person implements SubjectInterface & CreatorInterface {
   \\"\\"\\"The person's whole name in normal order\\"\\"\\"
   display: String!
 
@@ -5348,7 +5343,7 @@ type Person implements Subject & Creator {
   local: Boolean
 }
 
-type Corporation implements Subject & Creator {
+type Corporation implements SubjectInterface & CreatorInterface {
   \\"\\"\\"The full corporation or conference name\\"\\"\\"
   display: String!
 
@@ -5386,7 +5381,7 @@ type Corporation implements Subject & Creator {
   local: Boolean
 }
 
-interface Creator {
+interface CreatorInterface {
   \\"\\"\\"Name of the creator\\"\\"\\"
   display: String!
 
@@ -5529,13 +5524,13 @@ type ManifestationPart {
   title: String!
 
   \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
   classifications: [Classification!]!
 
   \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [Subject!]
+  subjects: [SubjectInterface!]
 
   \\"\\"\\"
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
@@ -5839,7 +5834,7 @@ type Manifestation {
   accessTypes: [AccessType!]!
 
   \\"\\"\\"Different options to access manifestation\\"\\"\\"
-  access: [Access!]!
+  access: [AccessUnion!]!
 
   \\"\\"\\"
   Different kinds of definitions of appropriate audience for this manifestation
@@ -5857,7 +5852,7 @@ type Manifestation {
   classifications: [Classification!]!
 
   \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
-  contributors: [Creator!]!
+  contributors: [CreatorInterface!]!
 
   \\"\\"\\"
   Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
@@ -5867,7 +5862,7 @@ type Manifestation {
   \\"\\"\\"
   Primary creators of the manifestation e.g. authors, directors, musicians etc
   \\"\\"\\"
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   \\"\\"\\"
   Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
@@ -6142,7 +6137,7 @@ type Work {
   abstract: [String!]
 
   \\"\\"\\"Creators\\"\\"\\"
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   \\"\\"\\"DK5 main entry for this work\\"\\"\\"
   dk5MainEntry: DK5MainEntry
@@ -6286,7 +6281,7 @@ type Series {
   members(limit: Int, offset: Int): [SerieWork!]!
 }
 
-interface Subject {
+interface SubjectInterface {
   display: String!
 
   \\"\\"\\"
@@ -6299,14 +6294,14 @@ interface Subject {
   local: Boolean
 }
 
-type SubjectText implements Subject {
+type SubjectText implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type TimePeriod implements Subject {
+type TimePeriod implements SubjectInterface {
   type: SubjectType!
   period: Range!
   display: String!
@@ -6314,28 +6309,28 @@ type TimePeriod implements Subject {
   local: Boolean
 }
 
-type Mood implements Subject {
+type Mood implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type NarrativeTechnique implements Subject {
+type NarrativeTechnique implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type Setting implements Subject {
+type Setting implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
   local: Boolean
 }
 
-type SubjectWithRating implements Subject {
+type SubjectWithRating implements SubjectInterface {
   type: SubjectType!
   display: String!
   language: Language
@@ -6386,10 +6381,10 @@ type Range {
 
 type SubjectContainer {
   \\"\\"\\"All subjects\\"\\"\\"
-  all: [Subject!]!
+  all: [SubjectInterface!]!
 
   \\"\\"\\"Only DBC verified subjects\\"\\"\\"
-  dbcVerified: [Subject!]!
+  dbcVerified: [SubjectInterface!]!
 }
 
 type Language {
@@ -6531,7 +6526,7 @@ type TvSeriesDetails {
   numbers: [Int!]
 }
 
-union UniverseContent = Work | Series
+union UniverseContentUnion = Work | Series
 
 type Universe {
   \\"\\"\\"A key that identifies a universe.\\"\\"\\"
@@ -6563,7 +6558,7 @@ type Universe {
 
 type UniverseContentResult {
   hitcount: Int!
-  entries: [UniverseContent!]!
+  entries: [UniverseContentUnion!]!
 }
 "
 `;

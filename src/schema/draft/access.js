@@ -96,7 +96,8 @@ type DigitalArticleService {
   """
   issn: String!
 }
-union Access = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 `;
 
 export const resolvers = {

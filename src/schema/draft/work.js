@@ -95,7 +95,7 @@ type Work {
   """
   Creators
   """
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   """
   DK5 main entry for this work
