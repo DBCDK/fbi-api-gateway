@@ -51,13 +51,13 @@ export const typeDef = `
     session_id: String!
   }
 
-  enum FeedbackThumb {
+  enum FeedbackThumbEnum {
     UP
     DOWN
   }
 
   input DataCollectSearchFeedbackInput {
-    thumbs: FeedbackThumb!
+    thumbs: FeedbackThumbEnum!
     query: String!
     reason: String!
   }

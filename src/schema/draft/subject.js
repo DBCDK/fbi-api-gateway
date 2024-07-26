@@ -5,7 +5,7 @@ interface SubjectInterface {
   """
   The type of subject - 'location', 'time period' etc., 'topic' if not specific kind of subject term
   """
-  type: SubjectType!
+  type: SubjectTypeEnum!
 
   """
   Language of the subject - contains display and isoCode 
@@ -16,14 +16,14 @@ interface SubjectInterface {
 }
 
 type SubjectText implements SubjectInterface {
-  type: SubjectType!
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
 type TimePeriod implements SubjectInterface {
-  type: SubjectType!
+  type: SubjectTypeEnum!
   period: Range!
   display: String!
   language: Language
@@ -31,28 +31,28 @@ type TimePeriod implements SubjectInterface {
 }
 
 type Mood implements SubjectInterface {
-  type: SubjectType!
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
 type NarrativeTechnique implements SubjectInterface {
-  type: SubjectType!
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
 type Setting implements SubjectInterface {
-  type: SubjectType!
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
 type SubjectWithRating implements SubjectInterface {
-  type: SubjectType!
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
@@ -63,7 +63,7 @@ type SubjectWithRating implements SubjectInterface {
   rating: Int
 }
 
-enum SubjectType {
+enum SubjectTypeEnum {
   TOPIC @fallback
   LOCATION
   FICTIONAL_CHARACTER

@@ -49,7 +49,7 @@ const orderStatusmessageMap = {
  */
 
 export const typeDef = `
-  enum SubmitOrderStatus {
+  enum SubmitOrderStatusEnum {
     """
     Borchk: User is blocked by agency
     """
@@ -150,7 +150,7 @@ export const typeDef = `
     if order was submitted successfully
     """
     ok: Boolean,
-    status: SubmitOrderStatus!,
+    status: SubmitOrderStatusEnum!,
     message: String,
     orderId: String,
     deleted: Boolean,
@@ -164,7 +164,7 @@ export const typeDef = `
     status: String
    }
 
-   enum OrderType {
+   enum OrderTypeEnum {
       ESTIMATE,
       HOLD,
       LOAN,
@@ -188,7 +188,7 @@ export const typeDef = `
    }
 
    input SubmitOrderInput{
-    orderType: OrderType,
+    orderType: OrderTypeEnum,
     pids: [String!]!,
     pickUpBranch: String!,
     key: String,
@@ -220,7 +220,7 @@ export const typeDef = `
     title: String
     exactEdition: Boolean
     expires: String
-    orderType: OrderType
+    orderType: OrderTypeEnum
     periodicaForm: CopyRequestInput
   }
 

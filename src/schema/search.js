@@ -47,7 +47,7 @@ input SearchQueryInput {
 """
 The supported facet fields
 """
-enum FacetField {
+enum FacetFieldEnum {
   WORKTYPES
   MAINLANGUAGES
   MATERIALTYPESGENERAL
@@ -91,7 +91,7 @@ input SearchFiltersInput {
   department: [String!]
   location: [String!]
   sublocation: [String!]
-  status: [HoldingsStatus!]
+  status: [HoldingsStatusEnum!]
   canAlwaysBeLoaned: [String!]
   
   age: [String!]
@@ -102,7 +102,7 @@ input SearchFiltersInput {
   libraryRecommendation: [String!]
 }
 
-enum HoldingsStatus {
+enum HoldingsStatusEnum {
   """
   Holding is physically available at the branch
   """
@@ -146,7 +146,7 @@ type FacetResult {
   """
   The enum type of the facet.
   """
-  type: FacetField!
+  type: FacetFieldEnum!
 
   """
   The values of thie facet result
@@ -172,7 +172,7 @@ type SearchResponse {
   Make sure only to fetch this when needed
   This may take seconds to complete
   """
-  facets(facets: [FacetField!]!): [FacetResult!]! @complexity(value: 5, multipliers: ["facets"])
+  facets(facets: [FacetFieldEnum!]!): [FacetResult!]! @complexity(value: 5, multipliers: ["facets"])
 
   """
   Will return the facets that best match the input query and filters

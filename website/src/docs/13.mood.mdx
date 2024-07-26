@@ -15,7 +15,7 @@ In the search response, you'll notice that some subjects are accompanied by a ra
 Additionally, manifestations are enriched with multiple aspects of audience level.
 
 <InlineGraphiQL
-  query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimitScalar!, $offset: Int!, $field: MoodSearchFieldValues!) {
+  query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimitScalar!, $offset: Int!, $field: MoodSearchFieldValuesEnum!) {
 	mood {
   moodSearchKids(q: $q, field: $field) {
     works(offset: $offset, limit: $limit) {

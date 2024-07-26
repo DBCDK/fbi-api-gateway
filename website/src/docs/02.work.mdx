@@ -329,7 +329,7 @@ translate data where possible.
 Only fields named _display_, _summary_ etc. may contain translations.
 
 <InlineGraphiQL
-  query={`query Example_WorkTranslations ($workId: String!, $language: LanguageCode) {
+  query={`query Example_WorkTranslations ($workId: String!, $language: LanguageCodeEnum) {
     work(id: $workId, language: $language) {
       mainLanguages {
         display

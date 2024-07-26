@@ -5,11 +5,11 @@
 
 export const typeDef = `
   input CategoryFilterInput {
-    category: CategoryFilters!
+    category: CategoryFiltersEnum!
     subCategories: [String!]
   }
 
-  enum CategoryFilters {
+  enum CategoryFiltersEnum {
     CHILDRENBOOKSNONFICTION
     CHILDRENBOOKSFICTION
     FICTION

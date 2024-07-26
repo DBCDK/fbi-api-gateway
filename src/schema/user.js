@@ -55,7 +55,7 @@ type User {
   savedSearchByCql(cql: String!): SavedSearch
 
   
-  agencies(language: LanguageCode): [Agency!]!
+  agencies(language: LanguageCodeEnum): [Agency!]!
   loggedInBranchId: String
   loggedInAgencyId: String
   municipalityNumber: String
@@ -68,7 +68,7 @@ type User {
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
-  bookmarks(orderBy:BookMarkOrderBy): BookMarkResponse!
+  bookmarks(orderBy:BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
   identityProviderUsed: String!
@@ -152,7 +152,7 @@ type Loan {
   manifestation: Manifestation
   materialType: String
 }
-enum OrderStatus {
+enum OrderStatusEnum {
   ACTIVE
   IN_PROCESS
   AVAILABLE_FOR_PICKUP
@@ -164,7 +164,7 @@ enum OrderStatus {
 type Order {
   orderId: String!,
   orderType: String
-  status: OrderStatus!
+  status: OrderStatusEnum!
   pickUpBranch: Branch!
   agencyId: String!
   holdQueuePosition: String
@@ -202,7 +202,7 @@ type UserDataResponse {
 type BookMarkId {
   bookMarkId: Int!
 }
-enum BookMarkOrderBy{
+enum BookMarkOrderByEnum {
   CREATEDAT
   TITLE
 }

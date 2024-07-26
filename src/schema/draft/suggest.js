@@ -1,14 +1,14 @@
 import { resolveWork } from "../../utils/utils";
 
 export const typeDef = `
-enum SuggestionType {
+enum SuggestionTypeEnum {
   SUBJECT
   TITLE
   CREATOR
   COMPOSIT
 }
 
-enum ComplexSuggestionType {
+enum ComplexSuggestionTypeEnum {
   HOSTPUBLICATION
   CONTRIBUTORFUNCTION
   CREATOR
@@ -44,7 +44,7 @@ type Suggestion {
   """
   The type of suggestion: creator, subject or title
   """
-  type: SuggestionType!
+  type: SuggestionTypeEnum!
 
   """
   The suggested term which can be searched for

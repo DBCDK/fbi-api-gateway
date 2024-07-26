@@ -69,7 +69,7 @@ type Person implements SubjectInterface & CreatorInterface {
   """
   roles: [Role!]!
 
-  type: SubjectType!
+  type: SubjectTypeEnum!
 
   language: Language
   local: Boolean
@@ -120,7 +120,7 @@ type Corporation implements SubjectInterface & CreatorInterface {
     """
     roles: [Role!]!
 
-    type: SubjectType!
+    type: SubjectTypeEnum!
 
     language: Language
     local: Boolean

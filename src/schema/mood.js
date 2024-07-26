@@ -9,7 +9,7 @@ export const typeDef = `
   """
   Type of moodSuggest response
   """
-   enum MoodSuggest {
+   enum MoodSuggestEnum {
       TITLE
       CREATOR
       TAG
@@ -26,7 +26,7 @@ export const typeDef = `
     """
     The type of suggestion title/creator/tag
     """
-    type: MoodSuggest!
+    type: MoodSuggestEnum!
     """
     A work associated with the suggestion
     """
@@ -54,7 +54,7 @@ export const typeDef = `
   """
   Supported fields for moodsearch request
   """
-   enum MoodSearchFieldValues {
+   enum MoodSearchFieldValuesEnum {
     ALL
     TITLE
     CREATOR
@@ -72,7 +72,7 @@ export const typeDef = `
     illustrationsLevel: [Int!]
     length: [Int!]
     realisticVsFictional: [Int!]
-    fictionNonfiction: FictionNonfictionCode
+    fictionNonfiction: FictionNonfictionCodeEnum
    }
 
    """
@@ -99,8 +99,8 @@ export const typeDef = `
   }
 
   type MoodQueries {
-    moodSearch(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
-    moodSearchKids(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
+    moodSearch(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchResponse!
+    moodSearchKids(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchKidsResponse!
     moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
     moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], hasCover:Boolean): [MoodTagRecommendResponse]!
     moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean):[MoodTagRecommendResponse]!

@@ -17,7 +17,7 @@ type GeneralMaterialType {
   """
   code for materialType # @TODO - is this a finite list ?? - and where to get it
   """
-  code: GeneralMaterialTypeCode!
+  code: GeneralMaterialTypeCodeEnum!
   """
   Ths string to display
   """
@@ -47,7 +47,7 @@ type MaterialType {
   materialTypeSpecific: SpecificMaterialType!
 }
 
-enum FictionNonfictionCode {
+enum FictionNonfictionCodeEnum {
   FICTION
   NONFICTION
   NOT_SPECIFIED
@@ -61,7 +61,7 @@ type FictionNonfiction {
   """
   Binary code fiction/nonfiction used for filtering
   """
-  code: FictionNonfictionCode!
+  code: FictionNonfictionCodeEnum!
 }
 type DK5MainEntry {
   """
@@ -140,7 +140,7 @@ type Work {
   """
   Worktypes for this work - 'none' replaced by 'other'
   """
-  workTypes: [WorkType!]!
+  workTypes: [WorkTypeEnum!]!
 
   """
   The year this work was originally published or produced
@@ -157,7 +157,7 @@ type Work {
   """
   manifestations: Manifestations!
 }
-enum WorkType {
+enum WorkTypeEnum {
   ANALYSIS
   ARTICLE
   BOOKDESCRIPTION

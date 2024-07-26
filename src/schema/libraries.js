@@ -9,13 +9,13 @@ import isEmpty from "lodash/isEmpty";
 import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
 
 export const typeDef = `
-  enum LibraryStatus {
+  enum LibraryStatusEnum {
     SLETTET
     AKTIVE
     ALLE
     USYNLIG
   }  
-  enum VipUserParameter {
+  enum VipUserParameterEnum {
     CPR
     USERID
     BARCODE
@@ -27,7 +27,7 @@ export const typeDef = `
     USERMAIL
     USERTELEPHONE
   }
-  enum AgencyType {
+  enum AgencyTypeEnum {
     ALLE
     SKOLEBIBLIOTEK,
     FOLKEBIBLIOTEK,
@@ -35,7 +35,7 @@ export const typeDef = `
     ANDRE
   }
   type UserParameter {
-    userParameterType: VipUserParameter!
+    userParameterType: VipUserParameterEnum!
     userParameterName: String!
     parameterRequired: Boolean!
     description: String
@@ -51,7 +51,7 @@ export const typeDef = `
     """
     _agencyId: String,
     branchId: String!
-    agencyType: AgencyType!
+    agencyType: AgencyTypeEnum!
     name: String!
     openingHours: String
     postalAddress: String

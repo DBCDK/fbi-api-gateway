@@ -100,7 +100,7 @@ The following example is a search for _andersen_ where facet categories _mainLan
 are returned.
 
 <InlineGraphiQL
-  query={`query Example_SearchFacets ($q: SearchQueryInput!, $facets: [FacetField!]!, $facetLimit: Int!) {
+  query={`query Example_SearchFacets ($q: SearchQueryInput!, $facets: [FacetFieldEnum!]!, $facetLimit: Int!) {
       search(q: $q) {
         hitcount
         facets(facets: $facets) {
@@ -125,7 +125,7 @@ Afterwards, the term of the facet can be used as a filter. In this example, a la
 is applied resulting in an updated facet result.
 
 <InlineGraphiQL
-  query={`query Example_SearchFilters ($q: SearchQueryInput!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFiltersInput!) {
+  query={`query Example_SearchFilters ($q: SearchQueryInput!, $facets: [FacetFieldEnum!]!, $facetLimit: Int!, $filters: SearchFiltersInput!) {
       search(q: $q, filters: $filters) {
         hitcount
         works(offset: 0, limit: 10) {
@@ -164,7 +164,7 @@ are AND'ed together. For instance (Svensk OR Engelsk) AND dvd.
 Some filters supports range. The following example uses ageRange. Other filters are lixRange and letRange.
 
 <InlineGraphiQL
-  query={`query Example_FilterRange($q: SearchQueryInput!, $facets: [FacetField!]!, $facetLimit: Int!, $filters: SearchFiltersInput!) {
+  query={`query Example_FilterRange($q: SearchQueryInput!, $facets: [FacetFieldEnum!]!, $facetLimit: Int!, $filters: SearchFiltersInput!) {
   search(q: $q, filters: $filters) {
     hitcount
     works(offset: 0, limit: 10) {
@@ -269,7 +269,7 @@ should be displayed.
 In the following example we only include works that are on the shelf in a specific branch.
 
 <InlineGraphiQL
-  query={`query Example_HoldingsFilters ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!, $filters: SearchFiltersInput!, $facets: [FacetField!]!) {
+  query={`query Example_HoldingsFilters ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!, $filters: SearchFiltersInput!, $facets: [FacetFieldEnum!]!) {
   search(q: $q, filters: $filters) {
     hitcount
     works(offset: $offset, limit: $limit) {

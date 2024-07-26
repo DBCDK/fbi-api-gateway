@@ -20,7 +20,7 @@ export const typeDef = `
     titleOfComponent: String
     pagination: String
  }
- enum PeriodicaArticleOrderStatus {
+ enum PeriodicaArticleOrderStatusEnum {
    OK
    ERROR_UNAUTHORIZED_USER
    ERROR_AGENCY_NOT_SUBSCRIBED
@@ -29,7 +29,7 @@ export const typeDef = `
    ERROR_NO_NAME_OR_EMAIL
  }
  type PeriodicaArticleOrderResponse {
-   status: PeriodicaArticleOrderStatus!
+   status: PeriodicaArticleOrderStatusEnum!
  }
 
  extend type Mutation {

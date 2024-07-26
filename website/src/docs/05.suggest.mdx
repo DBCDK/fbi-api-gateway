@@ -16,7 +16,7 @@ The following example gets suggestions for all agencies. Note that you can speci
 in this example subjects and creators are returned.
 
 <InlineGraphiQL
-  query={`query Example_Suggestions ($q: String!, $suggestTypes: [SuggestionType!]) {
+  query={`query Example_Suggestions ($q: String!, $suggestTypes: [SuggestionTypeEnum!]) {
   suggest(q: $q, suggestTypes: $suggestTypes) {
     result {
       type

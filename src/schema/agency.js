@@ -5,7 +5,7 @@ export const typeDef = `
 type Agency {
     id: String!
     name: String
-    type: AgencyType!
+    type: AgencyTypeEnum!
     numberOfBranches: Int!
     url: String!
 

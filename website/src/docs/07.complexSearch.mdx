@@ -49,7 +49,7 @@ Works from complexSearch supports:
 Get a list of suggestion by providing a query and the type of suggestion wanted.
 
 <InlineGraphiQL
-  query={`query Example_ComplexSuggester($q: String!, $type: ComplexSuggestionType!) {
+  query={`query Example_ComplexSuggester($q: String!, $type: ComplexSuggestionTypeEnum!) {
   complexSuggest(q: $q, type: $type) {
     result {
       type

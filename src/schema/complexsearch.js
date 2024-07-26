@@ -24,7 +24,7 @@ input ComplexSearchFiltersInput {
   """
   Onloan or OnShelf.
   """
-  status: [HoldingsStatus!]
+  status: [HoldingsStatusEnum!]
   """
   Id of agency.
   """
@@ -45,20 +45,20 @@ input ComplexSearchFiltersInput {
 
 
 
-enum SortOrder {
+enum SortOrderEnum {
   ASC
   DESC 
 }
 
 input SortInput {
   index: String!
-  order: SortOrder!
+  order: SortOrderEnum!
 }
 
 """
 The supported facet fields
 """
-enum ComplexSearchFacets {  
+enum ComplexSearchFacetsEnum {  
   AGES,
   CATALOGUECODE,
   CONTRIBUTOR,
@@ -104,7 +104,7 @@ The facets to ask for
 """
 input ComplexSearchFacetsInput {
   facetLimit: Int!
-  facets: [ComplexSearchFacets!]
+  facets: [ComplexSearchFacetsEnum!]
 }
 
 """

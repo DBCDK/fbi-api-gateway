@@ -12,7 +12,7 @@ In this example we search in the field 'ALL'.
 This is useful when one does not know if the query matches a title, a creator or a mood.
 
 <InlineGraphiQL
-  query={`query Example_moodmatch($q: String!, $limit: PaginationLimitScalar!, $offset: Int!, $field: MoodSearchFieldValues!) {
+  query={`query Example_moodmatch($q: String!, $limit: PaginationLimitScalar!, $offset: Int!, $field: MoodSearchFieldValuesEnum!) {
   mood {
   	moodSearch(q: $q, field: $field) {
     works(offset: $offset, limit: $limit) {

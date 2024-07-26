@@ -36,7 +36,7 @@ let externalSchema;
 
 // The internal schema
 let internalSchema = enumFallbackDirectiveTransformer(
-  makeExecutableSchema(fieldNameValidator(schemaLoader(), "LOG"))
+  makeExecutableSchema(fieldNameValidator(schemaLoader()))
 );
 
 /**
@@ -63,12 +63,19 @@ class PermissionsTransform {
 }
 
 /**
- * field/subfield validator
+ * Type, field/subfield validator
  *
- * Testing for:
- * Unique subfield names (regardless of UPPER/lower case)
- * Enums written in UPPERCASE
+ * Function is testing for:
+ *
+ * ObjectTypes i written in PascalCase (starting with a Capital letter)
+ * Unique Type subfield names (regardless of UPPER/lower case)
+ * EnumType values is written in all UPPERCASE
  * Types written in PascalCase
+ * InputTypes endping with 'Input'
+ * ScalarTypes ending with 'Scalar'
+ * EnumTypes ending with 'Enum'
+ * UnionTypes ending with 'Union'
+ * InterfaceTypes ending with 'Interface'
  *
  * Notes: ignores deprecated fields
  * Directive definitions are excepted
@@ -85,12 +92,22 @@ export function fieldNameValidator(props, errorType = "THROW") {
     return props;
   }
 
+  if (errorType === "LOG") {
+    console.info(
+      "########################### Field validations ###########################"
+    );
+    console.info(" ");
+  }
+
+  let hasError;
+
   // Function to handle Error messages (throw|log|ignore)
   function handleError(message) {
+    hasError = true;
     if (errorType === "THROW") {
       throw new Error(message);
     }
-    errorType === "LOG" && console.log(message);
+    errorType === "LOG" && console.error(message);
   }
 
   // Kind/type categories to omit
@@ -194,6 +211,17 @@ export function fieldNameValidator(props, errorType = "THROW") {
       });
     }
   });
+
+  //  If error handling type is "LOG"
+  if (errorType === "LOG") {
+    if (!hasError) {
+      console.info("... No field validation errors was found");
+    }
+    console.info(" ");
+    console.info(
+      "#########################################################################"
+    );
+  }
 
   return props;
 }

@@ -18,7 +18,7 @@ export const typeDef = `
 
   type Categories {
       title: String!
-      type: CategoryFilters!
+      type: CategoryFiltersEnum!
       subCategories: [Category!]! 
   }`;
 

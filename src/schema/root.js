@@ -38,8 +38,8 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation @complexity(value: 3)
   manifestations(faust: [String!], pid: [String!]): [Manifestation]! @complexity(value: 3, multipliers: ["pid", "faust"])
   monitor(name: String!): String!
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
-  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work @complexity(value: 5)
+  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCodeEnum): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
@@ -56,7 +56,7 @@ type Query {
     """    
     suggest type to include in result
     """
-    suggestType: [SuggestionType!]
+    suggestType: [SuggestionTypeEnum!]
     """
     Number of items to return
     """
@@ -75,11 +75,11 @@ type Query {
     """    
     the type of index to get suggestions from
     """
-    type: ComplexSuggestionType!
+    type: ComplexSuggestionTypeEnum!
   ): ComplexSuggestResponse!
   
   suggest(
-    workType: WorkType
+    workType: WorkTypeEnum
     """
     The query to get suggestions from
     """
@@ -88,12 +88,12 @@ type Query {
     """    
     suggest type to include in result
     """
-    suggestType: SuggestionType
+    suggestType: SuggestionTypeEnum
 
     """    
     suggest types to include in result
     """
-    suggestTypes: [SuggestionType!]
+    suggestTypes: [SuggestionTypeEnum!]
 
     """
     Number of items to return
@@ -105,9 +105,9 @@ type Query {
   Get recommendations
   """
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
-  help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimitScalar, statuses: [LibraryStatus], bibdkExcludeBranches:Boolean, agencyTypes: [AgencyType!]): BranchResult! @complexity(value: 5, multipliers: ["limit"])
-  deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
+  help(q: String!, language: LanguageCodeEnum): HelpResponse
+  branches(agencyid: String, branchId: String, language: LanguageCodeEnum, q: String, offset: Int, limit: PaginationLimitScalar, statuses: [LibraryStatusEnum], bibdkExcludeBranches:Boolean, agencyTypes: [AgencyTypeEnum!]): BranchResult! @complexity(value: 5, multipliers: ["limit"])
+  deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
   infomedia(id: String!): InfomediaResponse!
   session: Session
   howru:String
@@ -115,7 +115,7 @@ type Query {
   """
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   """
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches:Boolean): Localizations @complexity(value: 35, multipliers: ["pids"])
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches:Boolean): Localizations @complexity(value: 35, multipliers: ["pids"])
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
