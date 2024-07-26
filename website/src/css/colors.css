@@ -46,6 +46,7 @@ body {
   --hero-gradient-primary: #f8bbd0;
   --hero-gradient-secondary: #b3e5fc;
 }
+
 body.future {
   --primary: #b39ddb;
   --primary-dark: #7e57c2;

@@ -868,8 +868,8 @@
 .korin {
   -webkit-animation-name: running;
   animation-name: running;
-  -webkit-animation-duration: 0.2s;
-  animation-duration: 0.2s;
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
   -webkit-animation-timing-function: linear;
   animation-timing-function: linear;
   -webkit-animation-iteration-count: infinite;
