@@ -10,9 +10,9 @@ export const typeDef = `
   Type of moodSuggest response
   """
    enum MoodSuggest {
-      title
-      creator
-      tag
+      TITLE
+      CREATOR
+      TAG
    }
 
    """
@@ -153,6 +153,7 @@ export const resolvers = {
           ...args,
           ...{ agency: context.profile.agency, profile: context.profile.name },
         });
+
       return response;
     },
     async moodRecommendKids(parent, args, context, info) {
@@ -217,6 +218,9 @@ export const resolvers = {
   moodSuggestResponse: {
     work(parent, args, context, info) {
       return resolveWork({ id: parent.work }, context);
+    },
+    type(parent, args, context, info) {
+      return parent.type?.toUpperCase();
     },
   },
   MoodTagRecommendResponse: {

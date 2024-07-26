@@ -226,3 +226,25 @@
   bottom: -4px;
   left: 0;
 }
+
+/* pride border theme*/
+:global(body.future) .top:not(.index) .border {
+  content: "";
+  background: linear-gradient(
+    75deg,
+    var(--hero-gradient-primary),
+    var(--hero-gradient-secondary),
+    var(--hero-gradient-primary),
+    var(--hero-gradient-secondary)
+  );
+  display: block;
+  height: 4px;
+  width: 100%;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+}
+
+:global(body.dark) .top:not(.index) .border {
+  display: none;
+}

@@ -64,8 +64,14 @@ Object {
       },
       "materialTypes": Array [
         Object {
-          "general": "Dummy bøger",
-          "specific": "Dummy bog",
+          "materialTypeGeneral": Object {
+            "code": "AUDIO_BOOKS",
+            "display": "Dummy bøger",
+          },
+          "materialTypeSpecific": Object {
+            "code": "AUDIO_BOOK",
+            "display": "Dummy bog",
+          },
         },
       ],
       "series": Array [
@@ -82,32 +88,6 @@ Object {
           "readThisFirst": true,
           "readThisWhenever": null,
           "title": "De syv søstre-serien",
-        },
-      ],
-      "seriesMembers": Array [
-        Object {
-          "workId": "work-of:870970-basis:26521556",
-        },
-        Object {
-          "workId": "work-of:870970-basis:52970628",
-        },
-        Object {
-          "workId": "work-of:870970-basis:53280749",
-        },
-        Object {
-          "workId": "work-of:870970-basis:53802001",
-        },
-        Object {
-          "workId": "work-of:870970-basis:54189141",
-        },
-        Object {
-          "workId": "work-of:870970-basis:46656172",
-        },
-        Object {
-          "workId": "work-of:870970-basis:38500775",
-        },
-        Object {
-          "workId": "work-of:870970-basis:134823658",
         },
       ],
       "subjects": Object {
@@ -134,7 +114,11 @@ Object {
           "Dummy Oversat titel",
         ],
       },
-      "universe": null,
+      "universes": Array [
+        Object {
+          "title": "Some universe",
+        },
+      ],
       "workId": "work-of:870970-basis:26521556",
       "workTypes": Array [
         "LITERATURE",
@@ -147,9 +131,6 @@ Object {
       },
     },
   },
-  "errors": Array [
-    [GraphQLError: Cannot read properties of undefined (reading 'load')],
-  ],
 }
 `;
 

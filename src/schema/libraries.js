@@ -16,16 +16,16 @@ export const typeDef = `
     USYNLIG
   }  
   enum VipUserParameter {
-    cpr
-    userId
-    barcode
-    cardno
-    customId
-    userDateOfBirth
-    userName
-    userAddress
-    userMail
-    userTelephone
+    CPR
+    USERID
+    BARCODE
+    CARDNO
+    CUSTOMID
+    USERDATEOFBIRTH
+    USERNAME
+    USERADDRESS
+    USERMAIL
+    USERTELEPHONE
   }
   enum AgencyType {
     ALLE
@@ -36,6 +36,7 @@ export const typeDef = `
   }
   type UserParameter {
     userParameterType: VipUserParameter!
+    userParameterName: String!
     parameterRequired: Boolean!
     description: String
   }
@@ -85,12 +86,6 @@ export const typeDef = `
     temporarilyClosedReason: String
 
     """
-    When user is not logged in, this is null
-    Otherwise true or false
-    """
-    userIsBlocked: Boolean @deprecated(reason: "Use 'BranchResult.borrowerStatus' instead")
-
-    """
     If the branch type is 'bogbus', this field may contain a list of locations that the bus visits
     """
     mobileLibraryLocations: [String!]
@@ -132,16 +127,6 @@ export const typeDef = `
 export const resolvers = {
   // @see root.js for datasource::load
   Branch: {
-    async userIsBlocked(parent, args, context, info) {
-      const { status } = await getUserBorrowerStatus(
-        {
-          agencyId: parent.agencyId,
-        },
-        context
-      );
-
-      return status === false;
-    },
     async borrowerCheck(parent, args, context, info) {
       // pjo 19/12/23 bug BIBDK2021-2294
       // FFU and foreign libraries decides on branch-level, if they use borrowerCheck or not
@@ -229,7 +214,7 @@ export const resolvers = {
       const userIdTypes = ["cpr", "barcode", "cardno", "customId"];
 
       // Find the userId type, exactly one will be used
-      const userIdType = userParameters.find(
+      const userIdType = userParameters?.find(
         (parameter) =>
           userIdTypes.includes(parameter.userParameterType) &&
           parameter.parameterRequired
@@ -255,6 +240,9 @@ export const resolvers = {
       // These are the forced parameters, and should not be repeated
       const duplicates = [...userIdTypes, "userId"];
 
+      // lowercase language
+      const language = parent?.language?.toLowerCase();
+
       // Combine forced parameters with the rest and set order property
       result = [
         ...result,
@@ -264,18 +252,23 @@ export const resolvers = {
             !duplicates.includes(parameter.userParameterType)
         ),
       ].map((parameter) => {
+        //  Original type name is stored in the userParameterName field
+        const userParameterName = parameter.userParameterType;
+
+        // Converts userParameterType to UPPERCASED enum
+        const userParameterType = parameter.userParameterType?.toUpperCase();
+
         // in rare cases there is a description available
         // and it may be available in danish or english
         let description =
-          res[`${parameter.userParameterType}Txt`] &&
-          (res[`${parameter.userParameterType}Txt`].find(
-            (description) =>
-              description.language &&
-              description.language.includes(parent.language)
-          ) ||
-            res[`${parameter.userParameterType}Txt`][0]);
+          res[`${userParameterName}Txt`]?.find((desc) =>
+            desc?.language?.includes(language)
+          ) || res[`${userParameterName}Txt`]?.[0];
+
         return {
           ...parameter,
+          userParameterType,
+          userParameterName,
           description: description && description.value,
           order: order[parameter.userParameterType],
         };

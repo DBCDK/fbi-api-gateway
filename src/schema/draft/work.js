@@ -37,18 +37,6 @@ type SpecificMaterialType {
   
 type MaterialType {
   """
-  The general type of material of the manifestation based on a grouping of bibliotek.dk material types, e.g. bøger, lydbøger etc. 
-  @TODO - this on is deprecated pr. 1/2 '24
-  """
-  general: String! @deprecated(reason: "Use 'materialTypeGenerel' instead")
-
-  """
-  The type of material of the manifestation based on bibliotek.dk types
-  @TODO - this on is deprecated pr. 1/2 '24
-  """
-  specific: String! @deprecated(reason: "Use 'materialtTypeSpecific' instead")
-    
-  """
   jed 1.1 - the general materialtype
   """
   materialTypeGeneral: GeneralMaterialType!
@@ -58,8 +46,6 @@ type MaterialType {
   """
   materialTypeSpecific: SpecificMaterialType!
 }
-
-
 
 enum FictionNonfictionCode {
   FICTION
@@ -135,16 +121,6 @@ type Work {
   Series for this work
   """
   series: [Series!]!
-
-  """
-  Members of a series that this work is part of
-  """
-  seriesMembers: [Work!]! @complexity(value: 5) @deprecated(reason: "Use 'Work.series.members' instead")
-  
-  """
-  Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
-  """
-  universe: Universe @deprecated(reason: "Use 'universes' instead")
   
   """
   Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
@@ -330,12 +306,6 @@ export const resolvers = {
     },
   },
   MaterialType: {
-    general(parent, args, context, info) {
-      return parent.general.display;
-    },
-    specific(parent, args, context, info) {
-      return parent.specific.display;
-    },
     materialTypeGeneral(parent, args, context, info) {
       return parent.general;
     },

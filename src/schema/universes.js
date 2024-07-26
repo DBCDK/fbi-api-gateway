@@ -104,15 +104,6 @@ export const resolvers = {
         })) || []
       );
     },
-    // Use the new universe from series-service v2
-    async universe(parent, args, context, info) {
-      const data = await context.datasources.getLoader("universes").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
-
-      return data?.universes?.[0] || null;
-    },
   },
   Universe: {
     title(parent, args, context, info) {
@@ -156,15 +147,6 @@ export const resolvers = {
           ),
         })) || []
       );
-    },
-    // Use the new universe from series-service v2
-    async universe(parent, args, context, info) {
-      const data = await context.datasources.getLoader("universes").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
-
-      return data?.universes?.[0] || null;
     },
   },
   Query: {

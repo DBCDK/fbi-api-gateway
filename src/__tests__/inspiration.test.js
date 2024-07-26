@@ -9,7 +9,8 @@ test("Inspiration - get both 'nyeste' and 'populære' in 'fiction' and 'games'",
     query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -27,11 +28,11 @@ test("Inspiration - get both 'nyeste' and 'populære' in 'fiction' and 'games'",
     variables: {
       filters: [
         {
-          category: "fiction",
+          category: "FICTION",
           subCategories: ["nyeste", "populære"],
         },
         {
-          category: "games",
+          category: "GAMES",
           subCategories: ["nyeste", "populære"],
         },
       ],
@@ -47,7 +48,8 @@ test("Inspiration - 'populære' should sort before 'nyeste' in 'fiction'", async
     query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -65,7 +67,7 @@ test("Inspiration - 'populære' should sort before 'nyeste' in 'fiction'", async
     variables: {
       filters: [
         {
-          category: "fiction",
+          category: "FICTION",
           subCategories: ["populære", "nyeste"],
         },
       ],
@@ -81,7 +83,8 @@ test("Inspiration - only get 'nyeste' in 'fiction'", async () => {
     query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -99,7 +102,7 @@ test("Inspiration - only get 'nyeste' in 'fiction'", async () => {
     variables: {
       filters: [
         {
-          category: "fiction",
+          category: "FICTION",
           subCategories: ["nyeste"],
         },
       ],
@@ -115,7 +118,8 @@ test("Inspiration - Empty subCategories array returns all subCategories in 'fict
     query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -133,7 +137,7 @@ test("Inspiration - Empty subCategories array returns all subCategories in 'fict
     variables: {
       filters: [
         {
-          category: "fiction",
+          category: "FICTION",
           subCategories: [],
         },
       ],
@@ -149,7 +153,8 @@ test("Inspiration - no subCategories prop returns all subCategories in 'games'",
     query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -167,7 +172,7 @@ test("Inspiration - no subCategories prop returns all subCategories in 'games'",
     variables: {
       filters: [
         {
-          category: "games",
+          category: "GAMES",
         },
       ],
       limit: 5,
@@ -182,7 +187,8 @@ test("Inspiration - no categories returned when filters prop is empty", async ()
     query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -211,7 +217,8 @@ test("Inspiration - no categories returned when filters prop is missing", async 
     query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {

@@ -21,11 +21,11 @@ Object {
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -44,11 +44,11 @@ Object {
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -67,11 +67,11 @@ Object {
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -90,11 +90,11 @@ Object {
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -113,11 +113,11 @@ Object {
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -136,11 +136,11 @@ Object {
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -160,11 +160,11 @@ Kalø",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -183,11 +183,11 @@ Kalø",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -210,11 +210,11 @@ Fredag   kl. 9-15",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -233,11 +233,11 @@ Fredag   kl. 9-15",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -269,11 +269,11 @@ bibliotek.kk.dk/biblioteker/",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -293,11 +293,11 @@ bibliotek.kk.dk/biblioteker/",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -317,11 +317,11 @@ bibliotek.kk.dk/biblioteker",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -342,11 +342,11 @@ bibliotek.kk.dk/biblioteker/",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -366,11 +366,11 @@ bibliotek.kk.dk/biblioteker/",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -390,11 +390,11 @@ Se åbningstider på:
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -414,11 +414,11 @@ bibliotek.kk.dk/biblioteker/",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -438,11 +438,11 @@ bibliotek.kk.dk/biblioteker/",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -462,11 +462,11 @@ bibliotek.kk.dk/biblioteker/",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },
@@ -487,11 +487,11 @@ Nørrebrogade 208",
           "userParameters": Array [
             Object {
               "parameterRequired": true,
-              "userParameterType": "userId",
+              "userParameterType": "USERID",
             },
             Object {
               "parameterRequired": false,
-              "userParameterType": "userMail",
+              "userParameterType": "USERMAIL",
             },
           ],
         },

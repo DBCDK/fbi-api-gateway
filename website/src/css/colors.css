@@ -46,6 +46,17 @@ body {
   --hero-gradient-primary: #f8bbd0;
   --hero-gradient-secondary: #b3e5fc;
 }
+
+body.future {
+  --primary: #b39ddb;
+  --primary-dark: #7e57c2;
+
+  --secondary: #f50057;
+  --secondary-light: #ff4081;
+
+  --hero-gradient-primary: #7c4dff;
+  --hero-gradient-secondary: #ff4081;
+}
 body.easter {
   --primary: #ffca28;
   --primary-dark: #ffa726;
@@ -156,4 +167,7 @@ body.dark.pride {
 
   --secondary: #4dd0e1;
   --secondary-light: #80deea;
+}
+body.dark.future {
+  --secondary: #616161;
 }

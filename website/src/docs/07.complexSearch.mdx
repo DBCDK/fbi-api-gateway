@@ -1,8 +1,4 @@
 # Complex Search
-<DeprecationBox deprecated="25/1-2023" expires="25/4-2024">
-  Please note that Fields `solrQuery`,  `solrFilter`, `tokenizerDurationInMs`, and
-    `solrExecutionDurationInMs` are deprecated and will be removed.
-</DeprecationBox>
 
 Version 1 of complex search.
 
@@ -10,18 +6,15 @@ Complex search is a searchengine which supports bibliographic queries via CQL
 Currently supports the following indexes in the CQL query: [Full list of indexes](https://fbi-api.dbc.dk/indexmapper/)
 
 Currently complexSearch supports:
+
 - cql
 - filters
 
 Works from complexSearch supports:
+
 - sort
 - offset
 - limit
-
-<DeprecationBox deprecated="6/2-2024" expires="6/5-2024">
-  Please note that Enum sort values order.asc and order.desc are deprecated and will be removed.
-  Use order.ASC and order.DESC instead
-</DeprecationBox>
 
 ## Search with complex search
 
@@ -44,8 +37,8 @@ Works from complexSearch supports:
 }`}
   variables={{
     cql: "term.title=snemand*",
-    filters: { branchId: ["775122"], status: ["OnShelf"] },
-    sort: [{ index: "sort.latestpublicationdate", order: "ASC"}],
+    filters: { branchId: ["775122"], status: ["ONSHELF"] },
+    sort: [{ index: "sort.latestpublicationdate", order: "ASC" }],
     offset: 0,
     limit: 5,
   }}
@@ -56,7 +49,7 @@ Works from complexSearch supports:
 Get a list of suggestion by providing a query and the type of suggestion wanted.
 
 <InlineGraphiQL
-	query={`query Example_ComplexSuggester($q: String!, $type: ComplexSuggestionType!) {
+  query={`query Example_ComplexSuggester($q: String!, $type: ComplexSuggestionType!) {
   complexSuggest(q: $q, type: $type) {
     result {
       type
@@ -64,10 +57,10 @@ Get a list of suggestion by providing a query and the type of suggestion wanted.
     }
   }
 }`}
-	variables={{
-		q: "fisker",
-		type: "creator"
-	}}
+  variables={{
+    q: "fisker",
+    type: "CREATOR",
+  }}
 />
 
 ## Complex Search facets
@@ -75,7 +68,7 @@ Get a list of suggestion by providing a query and the type of suggestion wanted.
 Get a list of facets for given search query.
 
 <InlineGraphiQL
-	query={`query Example_ComplexSearch($cql: String!, $filters: ComplexSearchFilters!, $facets: complexSearchFacets) {
+  query={`query Example_ComplexSearch($cql: String!, $filters: ComplexSearchFilters!, $facets: complexSearchFacets) {
   complexSearch(cql: $cql, filters: $filters, facets: $facets) {
     hitcount
     errorMessage
@@ -88,29 +81,24 @@ Get a list of facets for given search query.
     }
   }
 }`}
-	variables={{
-		"cql": "term.title=snemand*",
-		"filters": {
-			"branchId": [
-				"775122"
-			],
-			"status": [
-				"OnShelf"
-			]
-		},
-		"facets": {
-			"facetLimit": 5,
-			"facets": [
-				"LET",
-				"LIX",
-				"PUBLICATIONYEAR",
-				"ACCESSTYPE",
-				"MOOD",
-				"NARRATIVETECHNIQUE",
-				"PEGI",
-				"SETTING"
-			]
-		}
-	}}
+  variables={{
+    cql: "term.title=snemand*",
+    filters: {
+      branchId: ["775122"],
+      status: ["ONSHELF"],
+    },
+    facets: {
+      facetLimit: 5,
+      facets: [
+        "LET",
+        "LIX",
+        "PUBLICATIONYEAR",
+        "ACCESSTYPE",
+        "MOOD",
+        "NARRATIVETECHNIQUE",
+        "PEGI",
+        "SETTING",
+      ],
+    },
+  }}
 />
-

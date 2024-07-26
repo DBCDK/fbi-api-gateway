@@ -18,5 +18,5 @@ export async function load() {
     },
   };
 
-  return restructureLinkStates(response.body.linkStates);
+  return restructureLinkStates(response.body?.linkStates);
 }

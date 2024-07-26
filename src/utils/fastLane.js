@@ -10,7 +10,7 @@ const TIME_TO_LIVE_SECONDS = 60 * 10;
 const ALLOWED_TYPES = {
   Boolean: true,
   String: true,
-  DateTime: true,
+  DateTimeScalar: true,
   Int: true,
   BranchResult: true,
   Branch: true,
@@ -69,7 +69,7 @@ const ALLOWED_TYPES = {
   SubjectType: true,
   Series: true,
   SerieWork: true,
-  Universe: true,
+  Universes: true,
   NumberInSeries: true,
   RecommendationResponse: true,
   Recommendation: true,

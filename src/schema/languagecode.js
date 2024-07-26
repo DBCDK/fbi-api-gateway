@@ -5,7 +5,7 @@
 
 export const typeDef = `
   enum LanguageCode {
-    da
-    en
+    DA
+    EN
   }
  `;

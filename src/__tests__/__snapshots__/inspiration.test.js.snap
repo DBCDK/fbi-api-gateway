@@ -6,7 +6,6 @@ Object {
     "inspiration": Object {
       "categories": Array [
         Object {
-          "category": "fiction",
           "subCategories": Array [
             Object {
               "result": Array [
@@ -59,6 +58,8 @@ Object {
               "title": "nyeste",
             },
           ],
+          "title": "fiction",
+          "type": "FICTION",
         },
       ],
     },
@@ -72,7 +73,6 @@ Object {
     "inspiration": Object {
       "categories": Array [
         Object {
-          "category": "fiction",
           "subCategories": Array [
             Object {
               "result": Array [
@@ -125,6 +125,8 @@ Object {
               "title": "populære",
             },
           ],
+          "title": "fiction",
+          "type": "FICTION",
         },
       ],
     },
@@ -138,7 +140,6 @@ Object {
     "inspiration": Object {
       "categories": Array [
         Object {
-          "category": "fiction",
           "subCategories": Array [
             Object {
               "result": Array [
@@ -191,9 +192,10 @@ Object {
               "title": "populære",
             },
           ],
+          "title": "fiction",
+          "type": "FICTION",
         },
         Object {
-          "category": "games",
           "subCategories": Array [
             Object {
               "result": Array [
@@ -246,6 +248,8 @@ Object {
               "title": "populære",
             },
           ],
+          "title": "games",
+          "type": "GAMES",
         },
       ],
     },
@@ -279,7 +283,6 @@ Object {
     "inspiration": Object {
       "categories": Array [
         Object {
-          "category": "games",
           "subCategories": Array [
             Object {
               "result": Array [
@@ -332,6 +335,8 @@ Object {
               "title": "populære",
             },
           ],
+          "title": "games",
+          "type": "GAMES",
         },
       ],
     },
@@ -345,7 +350,6 @@ Object {
     "inspiration": Object {
       "categories": Array [
         Object {
-          "category": "fiction",
           "subCategories": Array [
             Object {
               "result": Array [
@@ -373,6 +377,8 @@ Object {
               "title": "nyeste",
             },
           ],
+          "title": "fiction",
+          "type": "FICTION",
         },
       ],
     },

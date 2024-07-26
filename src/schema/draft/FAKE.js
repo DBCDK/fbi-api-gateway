@@ -292,12 +292,30 @@ export const FAKE_NOTES = {
   display: ["Dummy Indspillet i Ꜳrhus Musikhus 12.-14. juni 2020"],
 };
 
+export const FAKE_PHYSICALDESCRIPTIONS = [
+  {
+    summary:
+      "Dummy 1 dvd-rom Xbox One Nødvendigt udstyr Xbox One. - Med multiplayerfunktion Spiludvikler fremgår ikke af materialet",
+    extent: "Dummy 1 dvd-rom",
+    requirements: "Dummy Nødvendigt udstyr Xbox One. - Med multiplayerfunktion",
+    technicalInformation: "Dummy Xbox One",
+  },
+];
+
 export const FAKE_PHYSICALDESCRIPTION = {
-  summary:
-    "Dummy 1 dvd-rom Xbox One Nødvendigt udstyr Xbox One. - Med multiplayerfunktion Spiludvikler fremgår ikke af materialet",
-  extent: "Dummy 1 dvd-rom",
-  requirements: "Dummy Nødvendigt udstyr Xbox One. - Med multiplayerfunktion",
-  technicalInformation: "Dummy Xbox One",
+  summaryFull: "615 sider",
+  materialUnits: [
+    {
+      summary: "615 sider",
+      numberAndType: null,
+      extent: "615 sider",
+      additionalDescription: null,
+      size: null,
+      technicalInformation: null,
+    },
+  ],
+  numberOfPages: 615,
+  accompanyingMaterial: null,
 };
 
 export const FAKE_PUBLICATIONYEAR = {
@@ -401,7 +419,8 @@ export const FAKE_MANIFESTATION_1 = {
       issn: "Dummy 1399-4174",
     },
   ],
-  physicalDescriptions: [FAKE_PHYSICALDESCRIPTION],
+  physicalDescriptions: FAKE_PHYSICALDESCRIPTIONS,
+  physicalDescription: FAKE_PHYSICALDESCRIPTION,
   publicationYear: FAKE_PUBLICATIONYEAR,
   publisher: ["Dummy Lægeforeningen"],
   recordCreationDate: "Dummy 19830414",

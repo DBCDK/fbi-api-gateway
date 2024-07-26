@@ -100,26 +100,6 @@ type Series {
 
 export const resolvers = {
   Work: {
-    // for backward compatibility -> serieservice v1 -> remove when deprecated
-    async seriesMembers(parent, args, context, info) {
-      const data = await context.datasources.getLoader("series").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
-
-      // grab persistentWorkId from the first serie found on serieservice v2
-      if (data && data.series && data.series?.[0].works) {
-        const works = await Promise.all(
-          data.series?.[0]?.works?.slice(0, 100).map(async (work) => {
-            return resolveWork({ id: work.persistentWorkId }, context);
-          })
-        );
-        return works;
-      }
-
-      return [];
-    },
-
     // Use the new serie service v2
     async series(parent, args, context, info) {
       const data = await context.datasources.getLoader("series").load({

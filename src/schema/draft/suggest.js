@@ -9,19 +9,18 @@ enum SuggestionType {
 }
 
 enum ComplexSuggestionType {
-  hostpublication
-  contributorfunction
-  creator
-  default
-  creatorcontributorfunction
-  contributor
-  creatorfunction
-  subject
-  fictionalcharacter
-  title
-  creatorcontributor
-  series
-  publisher
+  HOSTPUBLICATION
+  CONTRIBUTORFUNCTION
+  CREATOR
+  DEFAULT
+  CREATORCONTRIBUTORFUNCTION
+  CREATORFUNCTION
+  SUBJECT
+  FICTIONALCHARACTER
+  TITLE
+  CREATORCONTRIBUTOR
+  SERIES
+  PUBLISHER
 }
 
 type ComplexSearchSuggestion {

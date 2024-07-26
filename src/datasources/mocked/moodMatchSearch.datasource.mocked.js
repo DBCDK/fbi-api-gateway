@@ -9,8 +9,6 @@ export async function load({
   profile,
   debug = false,
 }) {
-  console.log("MOODMATCHMOCKE");
-
   const mock = {
     responseHeader: {
       time: 14.062,

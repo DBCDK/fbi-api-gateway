@@ -60,63 +60,7 @@ type PhysicalUnitDescription {
   numberOfPages: Int
   accompanyingMaterial: String
 }
-
-type PhysicalDescription {
-  """
-  A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  summary: String!
   
-  """
-  Material that comes with the manifestation (bilag)
-  """
-  accompanyingMaterial: String
-  
-  """
-  Additional physical description of the manifestation (e.g illustrations etc)
-  """
-  additionalDescription: String
-  
-  """
-  Extent of the manifestation like pages and number of items
-  """
-  extent: String
-  
-  """
-  Number of pages of the manifestation as number
-  """
-  numberOfPages: Int
-
-  """
-  Number of units, like 3 cassettes, or 1 score etc.
-  """
-  numberOfUnits: String
-
-  """
-  The playing time of the manifestation (e.g 2 hours 5 minutes)
-  """
-  playingTime: String
-
-  """
-  The necessary equipment to use the material
-  """
-  requirements: String
-
-  """
-  Size of the manifestation
-  """
-  size: String
-
-  """
-  Technical information about the manifestation (e.g blu-ray disc)
-  """
-  technicalInformation: String
-
-  """
-  Ratio of text vs. illustration from 1-5 as a number, where 1 means no illustrations and 5 means illustrations on all pages
-  """
-  textVsIllustrations: Int
-}
 type RelatedPublication {
   """
   Notes describing the relation of the related periodical/journal/publication
@@ -723,16 +667,11 @@ type Manifestation {
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
   relatedPublications: [RelatedPublication!]!
-
-  """
-  Physical description of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: "Use 'physicalDescription' instead")
   
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   """
-  physicalDescription: PhysicalUnitDescription! 
+  physicalDescription: PhysicalUnitDescription!
  
 
   """
@@ -749,11 +688,6 @@ type Manifestation {
   Series for this manifestation
   """
   series: [Series!]!
-
-  """
-  Universe for this manifestation
-  """
-  universe: Universe @deprecated(reason: "Use 'universes' instead")
   
   """
   Universes for this manifestation

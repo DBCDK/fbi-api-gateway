@@ -26,7 +26,7 @@ export async function load({ urls }, context) {
     body: JSON.stringify({ urls }),
   });
 
-  return restructureLinkStates(res.body.linkStates);
+  return restructureLinkStates(res.body?.linkStates);
 }
 
 export const options = {
