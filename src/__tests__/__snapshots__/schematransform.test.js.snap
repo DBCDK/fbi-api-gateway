@@ -528,9 +528,6 @@ type HoldingsItem {
   department: String
   location: String
   subLocation: String
-  localizationPid: String
-  codes: String
-  localIdentifier: String
 }
 
 type HoldingsResponse {
@@ -2357,7 +2354,13 @@ type Localizations {
 
 type HoldingAgency {
   agencyId: String
-  holdingItems: [HoldingsItem]
+  holdingItems: [LocalizationsHoldingsItem]
+}
+
+type LocalizationsHoldingsItem {
+  localizationPid: String
+  codes: String
+  localIdentifier: String
 }
 
 enum AvailabilityEnum {
@@ -2373,8 +2376,8 @@ enum MoodSuggest {
   TAG
 }
 
-\\"\\"\\"The response type for moodSuggest\\"\\"\\"
-type MoodSuggestResponse {
+\\"\\"\\"MoodSuggest item\\"\\"\\"
+type MoodSuggestItem {
   \\"\\"\\"Suggestion\\"\\"\\"
   term: String!
 
@@ -2383,15 +2386,18 @@ type MoodSuggestResponse {
 
   \\"\\"\\"A work associated with the suggestion\\"\\"\\"
   work: Work
-
-  \\"\\"\\"Response is an array of MoodSuggestResponse\\"\\"\\"
-  response: [MoodSuggestResponse!]!
 }
 
 \\"\\"\\"Response type for moodTagRecommend\\"\\"\\"
 type MoodTagRecommendResponse {
   work: Work!
   similarity: Float
+}
+
+\\"\\"\\"The response type for moodSuggest\\"\\"\\"
+type MoodSuggestResponse {
+  \\"\\"\\"Response is an array of MoodSuggestResponse\\"\\"\\"
+  response: [MoodSuggestItem!]!
 }
 
 \\"\\"\\"Supported fields for moodsearch request\\"\\"\\"
@@ -4887,8 +4893,8 @@ enum MoodSuggest {
   TAG
 }
 
-\\"\\"\\"The response type for moodSuggest\\"\\"\\"
-type MoodSuggestResponse {
+\\"\\"\\"MoodSuggest item\\"\\"\\"
+type MoodSuggestItem {
   \\"\\"\\"Suggestion\\"\\"\\"
   term: String!
 
@@ -4897,15 +4903,18 @@ type MoodSuggestResponse {
 
   \\"\\"\\"A work associated with the suggestion\\"\\"\\"
   work: Work
-
-  \\"\\"\\"Response is an array of MoodSuggestResponse\\"\\"\\"
-  response: [MoodSuggestResponse!]!
 }
 
 \\"\\"\\"Response type for moodTagRecommend\\"\\"\\"
 type MoodTagRecommendResponse {
   work: Work!
   similarity: Float
+}
+
+\\"\\"\\"The response type for moodSuggest\\"\\"\\"
+type MoodSuggestResponse {
+  \\"\\"\\"Response is an array of MoodSuggestResponse\\"\\"\\"
+  response: [MoodSuggestItem!]!
 }
 
 \\"\\"\\"Supported fields for moodsearch request\\"\\"\\"

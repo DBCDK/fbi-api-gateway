@@ -16,9 +16,9 @@ export const typeDef = `
    }
 
    """
-   Response type for moodSuggest
+   MoodSuggest item
    """
-   type MoodSuggestResponse {
+   type MoodSuggestItem {
     """
     Suggestion
     """
@@ -48,7 +48,7 @@ export const typeDef = `
     """
     Response is an array of MoodSuggestResponse
     """
-    response: [MoodSuggestResponse!]!
+    response: [MoodSuggestItem!]!
   }
 
   """
@@ -215,7 +215,7 @@ export const resolvers = {
       return getSearchExpanded(res, context);
     },
   },
-  MoodSuggestResponse: {
+  MoodSuggestItem: {
     work(parent, args, context, info) {
       return resolveWork({ id: parent.work }, context);
     },

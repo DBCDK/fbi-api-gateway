@@ -82,7 +82,7 @@ const ALLOWED_TYPES = {
   Shelfmark: true,
   HoldingsResponse: true,
   HoldingsResponseStatus: true,
-  HoldingsItem: true,
+  LocalizationsHoldingsItem: true,
 };
 
 /**

@@ -8,9 +8,9 @@ type Localizations {
 }
 type HoldingAgency{
   agencyId: String
-  holdingItems: [HoldingsItem]
+  holdingItems: [LocalizationsHoldingsItem]
 }
-type HoldingsItem {
+type LocalizationsHoldingsItem {
   localizationPid: String
   codes: String
   localIdentifier: String
@@ -39,7 +39,7 @@ export const resolvers = {
       return parent.holdingItems;
     },
   },
-  HoldingsItem: {
+  LocalizationsHoldingsItem: {
     localizationPid(parent, args, context, info) {
       return parent.localizationPid;
     },
