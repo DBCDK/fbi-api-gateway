@@ -214,7 +214,7 @@ type BookMark{
   workId: String
 }
 
-type BookmarkResponse {
+type AddBookMarkResponse {
   bookmarksAdded: [BookMark]
   bookmarksAlreadyExists: [BookMark]
 }
@@ -283,7 +283,7 @@ type UserMutations {
   """
   Add a bookmark
   """
-  addBookmarks(bookmarks: [BookMarkInput!]!): BookmarkResponse
+  addBookmarks(bookmarks: [BookMarkInput!]!): AddBookMarkResponse
   """
   Delete a bookmark
   """
