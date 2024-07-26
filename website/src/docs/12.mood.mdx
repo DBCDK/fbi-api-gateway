@@ -6,13 +6,13 @@ You can search, get suggestions and recommendations based on this mood data coll
 
 ## Search with mood data
 
-A mood search request takes a query string as input and returns a list of works. 
-In this simple example we search for the mood 'uhyggelig' and ask for work titles to be returned. 
-In this example we search in the field 'ALL'. 
+A mood search request takes a query string as input and returns a list of works.
+In this simple example we search for the mood 'uhyggelig' and ask for work titles to be returned.
+In this example we search in the field 'ALL'.
 This is useful when one does not know if the query matches a title, a creator or a mood.
 
 <InlineGraphiQL
-  query={`query Example_moodmatch($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
+  query={`query Example_moodmatch($q: String!, $limit: PaginationLimitScalar!, $offset: Int!, $field: MoodSearchFieldValuesEnum!) {
   mood {
   	moodSearch(q: $q, field: $field) {
     works(offset: $offset, limit: $limit) {
@@ -25,11 +25,11 @@ This is useful when one does not know if the query matches a title, a creator or
   }
 }`}
   variables={{
-		"q": "uhyggelig",
-		"limit": 10,
-		"offset": 0,
-		"field": "ALL"
-	}}
+    q: "uhyggelig",
+    limit: 10,
+    offset: 0,
+    field: "ALL",
+  }}
 />
 
 ## Suggestions with mood data
@@ -49,7 +49,7 @@ on the corresponding _term_.
 The following example gets suggestions for the string 'spændende'.
 
 <InlineGraphiQL
-	query={`query Example_moodSuggest($q: String!) {
+  query={`query Example_moodSuggest($q: String!) {
 	mood {
   moodSuggest(q: $q) {
     response {
@@ -61,9 +61,9 @@ The following example gets suggestions for the string 'spændende'.
     }
   }}
 }`}
-	variables={{
-		"q": "spændende"
-	}}
+  variables={{
+    q: "spændende",
+  }}
 />
 
 ## Tags Recommendations mood data
@@ -71,7 +71,7 @@ The following example gets suggestions for the string 'spændende'.
 Get work recommendations from the mood data collection based on mood data. Input are mood data (tags).
 
 <InlineGraphiQL
-	query={`query Example_moodTagsRecommend($tags: [String!]!, $minus: [String!], $plus: [String!]) {
+  query={`query Example_moodTagsRecommend($tags: [String!]!, $minus: [String!], $plus: [String!]) {
 	mood {
   moodTagRecommend(tags: $tags, minus: $minus, plus: $plus) {
     work {
@@ -80,19 +80,11 @@ Get work recommendations from the mood data collection based on mood data. Input
     similarity
   }}
 }`}
-	variables={{
-		"tags": [
-			"spændende",
-			"uhyggelig",
-			"sjov"
-		],
-		"minus": [
-			"spændende"
-		],
-		"plus": [
-			"komisk"
-		]
-	}}
+  variables={{
+    tags: ["spændende", "uhyggelig", "sjov"],
+    minus: ["spændende"],
+    plus: ["komisk"],
+  }}
 />
 
 ## Work Recommendations mood data
@@ -100,7 +92,7 @@ Get work recommendations from the mood data collection based on mood data. Input
 Get work recommendations from the mood data collection based on other works from the same collection. Input are liked works (workIds).
 
 <InlineGraphiQL
-	query={`query Example_MoodWorkRecommend($likes: [String!]!, $maxAuthorRecommendations: Int, $dislikes: [String!]) {
+  query={`query Example_MoodWorkRecommend($likes: [String!]!, $maxAuthorRecommendations: Int, $dislikes: [String!]) {
   mood {
     moodWorkRecommend(
       dislikes: $dislikes
@@ -117,17 +109,9 @@ Get work recommendations from the mood data collection based on other works from
     }
   }
 }`}
-	variables={{
-		"likes": [
-			"work-of:870970-basis:38499386",
-			"work-of:870970-basis:01362305"
-		],
-		"dislikes": [
-			"work-of:870970-basis:38499386"
-		],
-		"maxAuthorRecommendations": 2
-	}}
+  variables={{
+    likes: ["work-of:870970-basis:38499386", "work-of:870970-basis:01362305"],
+    dislikes: ["work-of:870970-basis:38499386"],
+    maxAuthorRecommendations: 2,
+  }}
 />
-
-
-

@@ -18,7 +18,7 @@ export const typeDef = `
 """
 The supported fields to query
 """
-input SearchQuery {
+input SearchQueryInput {
 
   """
   Search for title, creator, subject or a combination.
@@ -47,7 +47,7 @@ input SearchQuery {
 """
 The supported facet fields
 """
-enum FacetField {
+enum FacetFieldEnum {
   WORKTYPES
   MAINLANGUAGES
   MATERIALTYPESGENERAL
@@ -72,7 +72,7 @@ enum FacetField {
 """
 Search Filters
 """
-input SearchFilters {
+input SearchFiltersInput {
   accessTypes: [String!]
   childrenOrAdults: [String!]
   creators: [String!]
@@ -91,7 +91,7 @@ input SearchFilters {
   department: [String!]
   location: [String!]
   sublocation: [String!]
-  status: [HoldingsStatus!]
+  status: [HoldingsStatusEnum!]
   canAlwaysBeLoaned: [String!]
   
   age: [String!]
@@ -102,7 +102,7 @@ input SearchFilters {
   libraryRecommendation: [String!]
 }
 
-enum HoldingsStatus {
+enum HoldingsStatusEnum {
   """
   Holding is physically available at the branch
   """
@@ -146,7 +146,7 @@ type FacetResult {
   """
   The enum type of the facet.
   """
-  type: FacetField!
+  type: FacetFieldEnum!
 
   """
   The values of thie facet result
@@ -166,13 +166,13 @@ type SearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+  works(offset: Int! limit: PaginationLimitScalar!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   
   """
   Make sure only to fetch this when needed
   This may take seconds to complete
   """
-  facets(facets: [FacetField!]!): [FacetResult!]! @complexity(value: 5, multipliers: ["facets"])
+  facets(facets: [FacetFieldEnum!]!): [FacetResult!]! @complexity(value: 5, multipliers: ["facets"])
 
   """
   Will return the facets that best match the input query and filters

@@ -44,18 +44,18 @@ type User {
   """
   Orders made through bibliotek.dk
   """
-  bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
+  bibliotekDkOrders(offset: Int limit: PaginationLimitScalar): BibliotekDkOrders!
   """
   Saved searches from complex search
   """
-  savedSearches(offset: Int limit: PaginationLimit): SavedSearchResponse!
+  savedSearches(offset: Int limit: PaginationLimitScalar): SavedSearchResponse!
   """
   Get one saved search by cql. Returns searchobject including id.
   """
   savedSearchByCql(cql: String!): SavedSearch
 
   
-  agencies(language: LanguageCode): [Agency!]!
+  agencies(language: LanguageCodeEnum): [Agency!]!
   loggedInBranchId: String
   loggedInAgencyId: String
   municipalityNumber: String
@@ -68,7 +68,7 @@ type User {
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
-  bookmarks(orderBy:BookMarkOrderBy): BookMarkResponse!
+  bookmarks(orderBy:BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
   identityProviderUsed: String!
@@ -152,7 +152,7 @@ type Loan {
   manifestation: Manifestation
   materialType: String
 }
-enum OrderStatus {
+enum OrderStatusEnum {
   ACTIVE
   IN_PROCESS
   AVAILABLE_FOR_PICKUP
@@ -164,7 +164,7 @@ enum OrderStatus {
 type Order {
   orderId: String!,
   orderType: String
-  status: OrderStatus!
+  status: OrderStatusEnum!
   pickUpBranch: Branch!
   agencyId: String!
   holdQueuePosition: String
@@ -202,7 +202,7 @@ type UserDataResponse {
 type BookMarkId {
   bookMarkId: Int!
 }
-enum BookMarkOrderBy{
+enum BookMarkOrderByEnum {
   CREATEDAT
   TITLE
 }
@@ -214,7 +214,7 @@ type BookMark{
   workId: String
 }
 
-type BookmarkResponse {
+type AddBookMarkResponse {
   bookmarksAdded: [BookMark]
   bookmarksAlreadyExists: [BookMark]
 }
@@ -283,7 +283,7 @@ type UserMutations {
   """
   Add a bookmark
   """
-  addBookmarks(bookmarks: [BookMarkInput!]!): BookmarkResponse
+  addBookmarks(bookmarks: [BookMarkInput!]!): AddBookMarkResponse
   """
   Delete a bookmark
   """

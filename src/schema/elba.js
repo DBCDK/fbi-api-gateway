@@ -4,7 +4,7 @@ import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 
 export const typeDef = `
 
- enum CopyRequestStatus {
+ enum CopyRequestStatusEnum {
    OK
    ERROR_UNAUTHENTICATED_USER
    ERROR_AGENCY_NOT_SUBSCRIBED
@@ -22,7 +22,7 @@ export const typeDef = `
  }
 
  type CopyRequestResponse {
-    status: CopyRequestStatus!
+    status: CopyRequestStatusEnum!
  }
 
  type ElbaServices {

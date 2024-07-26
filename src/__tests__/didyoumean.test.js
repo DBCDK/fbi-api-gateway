@@ -2,7 +2,7 @@ import { performTestQuery } from "../utils/utils";
 import { createMockedDataLoaders } from "../datasourceLoader";
 
 const query = `
-query DidYouMean($q: SearchQuery!, $limit: Int) {
+query DidYouMean($q: SearchQueryInput!, $limit: Int) {
     search(q: $q) {
       didYouMean(limit: $limit) {
         query

@@ -4,13 +4,13 @@
 export const typeDef = `
 type Localizations {
   count: Int
-  agencies: [holdingAgency]
+  agencies: [HoldingAgency]
 }
-type holdingAgency{
+type HoldingAgency{
   agencyId: String
-  holdingItems: [holdingsItem]
+  holdingItems: [LocalizationsHoldingsItem]
 }
-type holdingsItem {
+type LocalizationsHoldingsItem {
   localizationPid: String
   codes: String
   localIdentifier: String
@@ -31,7 +31,7 @@ export const resolvers = {
       return parent.agencies;
     },
   },
-  holdingAgency: {
+  HoldingAgency: {
     agencyId(parent, args, context, info) {
       return parent.agencyId;
     },
@@ -39,7 +39,7 @@ export const resolvers = {
       return parent.holdingItems;
     },
   },
-  holdingsItem: {
+  LocalizationsHoldingsItem: {
     localizationPid(parent, args, context, info) {
       return parent.localizationPid;
     },

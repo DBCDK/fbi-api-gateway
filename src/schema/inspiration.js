@@ -4,12 +4,12 @@
  */
 
 export const typeDef = `
-  input CategoryFilter {
-    category: CategoryFilters!
+  input CategoryFilterInput {
+    category: CategoryFiltersEnum!
     subCategories: [String!]
   }
 
-  enum CategoryFilters {
+  enum CategoryFiltersEnum {
     CHILDRENBOOKSNONFICTION
     CHILDRENBOOKSFICTION
     FICTION
@@ -23,7 +23,7 @@ export const typeDef = `
   }
 
  type Inspiration {
-   categories(filter: [CategoryFilter!]): [Categories]!
+   categories(filter: [CategoryFilterInput!]): [Categories]!
  }`;
 
 const mapEnums = {

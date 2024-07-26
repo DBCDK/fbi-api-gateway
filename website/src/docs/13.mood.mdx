@@ -15,7 +15,7 @@ In the search response, you'll notice that some subjects are accompanied by a ra
 Additionally, manifestations are enriched with multiple aspects of audience level.
 
 <InlineGraphiQL
-  query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimit!, $offset: Int!, $field: MoodSearchFieldValues!) {
+  query={`query Example_moodmatchkids($q: String!, $limit: PaginationLimitScalar!, $offset: Int!, $field: MoodSearchFieldValuesEnum!) {
 	mood {
   moodSearchKids(q: $q, field: $field) {
     works(offset: $offset, limit: $limit) {
@@ -60,7 +60,7 @@ Additionally, manifestations are enriched with multiple aspects of audience leve
 Recommended works for children based on mood data. Input are mood data (tags).
 
 <InlineGraphiQL
-	query={`query Example_moodTagsRecommend($tags: [KidRecommenderTags!], $offset: Int!, $limit: PaginationLimit!) {
+	query={`query Example_moodTagsRecommend($tags: [KidRecommenderTagsInput!], $offset: Int!, $limit: PaginationLimitScalar!) {
   mood {
     moodRecommendKids(tags: $tags) {
       works(offset: $offset, limit: $limit) {

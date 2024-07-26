@@ -1,7 +1,7 @@
 import { resolveManifestation } from "../../utils/utils";
 
 export const typeDef = `
-enum ReviewElementType {
+enum ReviewElementTypeEnum {
   ABSTRACT
   ACQUISITION_RECOMMENDATIONS
   AUDIENCE
@@ -29,7 +29,7 @@ type ReviewElement {
   manifestations: [Manifestation]
 
 
-  type: ReviewElementType
+  type: ReviewElementTypeEnum
 }
 
 type ManifestationReview {

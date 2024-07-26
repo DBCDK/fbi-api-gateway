@@ -49,7 +49,7 @@ const orderStatusmessageMap = {
  */
 
 export const typeDef = `
-  enum SubmitOrderStatus {
+  enum SubmitOrderStatusEnum {
     """
     Borchk: User is blocked by agency
     """
@@ -150,7 +150,7 @@ export const typeDef = `
     if order was submitted successfully
     """
     ok: Boolean,
-    status: SubmitOrderStatus!,
+    status: SubmitOrderStatusEnum!,
     message: String,
     orderId: String,
     deleted: Boolean,
@@ -164,7 +164,7 @@ export const typeDef = `
     status: String
    }
 
-   enum OrderType {
+   enum OrderTypeEnum {
       ESTIMATE,
       HOLD,
       LOAN,
@@ -173,7 +173,7 @@ export const typeDef = `
       STACK_RETRIEVAL
    }
 
-   input SubmitOrderUserParameters {
+   input SubmitOrderUserParametersInput {
       cpr: String,
       userId: String,
       barcode: String,
@@ -188,7 +188,7 @@ export const typeDef = `
    }
 
    input SubmitOrderInput{
-    orderType: OrderType,
+    orderType: OrderTypeEnum,
     pids: [String!]!,
     pickUpBranch: String!,
     key: String,
@@ -197,7 +197,7 @@ export const typeDef = `
     expires is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
     """
     expires: String
-    userParameters: SubmitOrderUserParameters!
+    userParameters: SubmitOrderUserParametersInput!
     author: String
     authorOfComponent: String
     pagination: String
@@ -208,7 +208,7 @@ export const typeDef = `
     volume: String
   }
 
-  input Material {
+  input MaterialInput {
     pids: [String!]!
     key: String!
     publicationDate: String
@@ -220,7 +220,7 @@ export const typeDef = `
     title: String
     exactEdition: Boolean
     expires: String
-    orderType: OrderType
+    orderType: OrderTypeEnum
     periodicaForm: CopyRequestInput
   }
 
@@ -247,10 +247,10 @@ export const typeDef = `
 }
 
   input SubmitMultipleOrdersInput{
-    materialsToOrder: [Material!]!
+    materialsToOrder: [MaterialInput!]!
     pickUpBranch: String!
     pickUpBranchSubdivision: String
-    userParameters: SubmitOrderUserParameters!
+    userParameters: SubmitOrderUserParametersInput!
     pagination: String
   } 
   

@@ -14,20 +14,16 @@ const errors = [
 ];
 
 export const typeDef = `
-enum InfomediaError {
+enum InfomediaErrorEnum {
   ${errors}
 }
-enum AccessStatus {
-  OK
-  USER_NOT_LOGGED_IN
-  MUNICIPALITY_NOT_SUBSCRIBED
-}
+
 type InfomediaResponse {
 
   """
   Infomedia error
   """
-  error: InfomediaError
+  error: InfomediaErrorEnum
 
   article: InfomediaArticle
 }

@@ -10,7 +10,7 @@ NOT_OWNED_ACCEPTED_BY_CONSORTIA -> ???
  */
 
 export const typeDef = `
-   enum OrderPossibleReason {
+   enum OrderPossibleReasonEnum {
      OWNED_ACCEPTED
      NOT_OWNED_ILL_LOC 
      OWNED_WRONG_MEDIUM_TYPE
@@ -24,7 +24,7 @@ export const typeDef = `
     lookUpUrls: [String!]!
     lookUpUrl: String
     orderPossible: Boolean
-    orderPossibleReason: OrderPossibleReason
+    orderPossibleReason: OrderPossibleReasonEnum
    }`;
 
 export const resolvers = {

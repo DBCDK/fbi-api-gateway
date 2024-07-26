@@ -4,7 +4,7 @@ import { performTestQuery } from "../utils/utils";
 test("moodMatchSearch", async () => {
   const result = await performTestQuery({
     query: `
-        query ($q: String!, $limit: PaginationLimit!, $offset: Int!) {
+        query ($q: String!, $limit: PaginationLimitScalar!, $offset: Int!) {
         mood{
         moodSearch(q: $q) {
           works(offset: $offset, limit: $limit) {

@@ -1,7 +1,7 @@
 import { resolveWork } from "../utils/utils";
 
 export const typeDef = `
-union UniverseContent = Work | Series
+union UniverseContentUnion = Work | Series
 
 type Universe {
   """
@@ -27,27 +27,27 @@ type Universe {
   """
   All series within the universe
   """
-  series(limit: Int, offset: Int, workType: WorkType): [Series!]!
+  series(limit: Int, offset: Int, workType: WorkTypeEnum): [Series!]!
   
   """
   All works within the universe but not in any series
   """
-  works(limit: Int, offset: Int, workType: WorkType): [Work!]! 
+  works(limit: Int, offset: Int, workType: WorkTypeEnum): [Work!]! 
 
   """
   work types that are in this universe
   """
-  workTypes: [WorkType!]!
+  workTypes: [WorkTypeEnum!]!
 
   """
   both series and works in a list
   """
-  content(limit: Int, offset: Int, workType: WorkType): UniverseContentResult!
+  content(limit: Int, offset: Int, workType: WorkTypeEnum): UniverseContentResult!
 }
 
 type UniverseContentResult {
   hitcount: Int!
-  entries: [UniverseContent!]!
+  entries: [UniverseContentUnion!]!
 }
 
 extend type Query {

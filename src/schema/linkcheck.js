@@ -4,7 +4,7 @@
  */
 
 export const typeDef = `
-  enum LinkCheckStatus {
+  enum LinkCheckStatusEnum {
     OK
     BROKEN
     INVALID
@@ -13,7 +13,7 @@ export const typeDef = `
 
  type LinkCheckResponse {
    url: String!
-   status: LinkCheckStatus!
+   status: LinkCheckStatusEnum!
    lastCheckedAt: DateTimeScalar
    brokenSince: DateTimeScalar
  }

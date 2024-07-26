@@ -2,7 +2,7 @@ import { createMockedDataLoaders } from "../datasourceLoader";
 import { performTestQuery } from "../utils/utils";
 
 const query = `
-mutation($input: PeriodicaArticleOrder!) {
+mutation($input: PeriodicaArticleOrderInput!) {
   submitPeriodicaArticleOrder(input: $input) {
     status
   }

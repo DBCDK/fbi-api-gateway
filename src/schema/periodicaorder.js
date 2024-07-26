@@ -6,7 +6,7 @@
 import { resolveBorrowerCheck } from "../utils/utils";
 
 export const typeDef = `
- input PeriodicaArticleOrder {
+ input PeriodicaArticleOrderInput {
     """
     The pid of an article or periodica
     """
@@ -20,7 +20,7 @@ export const typeDef = `
     titleOfComponent: String
     pagination: String
  }
- enum PeriodicaArticleOrderStatus {
+ enum PeriodicaArticleOrderStatusEnum {
    OK
    ERROR_UNAUTHORIZED_USER
    ERROR_AGENCY_NOT_SUBSCRIBED
@@ -29,11 +29,11 @@ export const typeDef = `
    ERROR_NO_NAME_OR_EMAIL
  }
  type PeriodicaArticleOrderResponse {
-   status: PeriodicaArticleOrderStatus!
+   status: PeriodicaArticleOrderStatusEnum!
  }
 
  extend type Mutation {
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: "Use 'Elba.placeCopyRequest' instead")
+  submitPeriodicaArticleOrder(input: PeriodicaArticleOrderInput!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: "Use 'Elba.placeCopyRequest' instead")
 }
  `;
 
