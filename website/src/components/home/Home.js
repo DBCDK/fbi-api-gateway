@@ -35,7 +35,7 @@ export default function Home() {
           <Row className={styles.content}>
             <Col>
               <Title as="h2" type="title1" className={styles.title}>
-                What does this <strong>'Future'</strong> thing mean?
+                What does this <strong>{"'Future'"}</strong> thing mean?
               </Title>
               <Text className={styles.text}>
                 This future version of the FBI-API is designed for significant
@@ -47,7 +47,7 @@ export default function Home() {
                 <Link href="https://fbi-api.dbc.dk/" underline>
                   here
                 </Link>{" "}
-                and we will return you 'back to the present' 🙃.
+                and we will return you {"'back to the present'"} 🙃.
               </Text>
             </Col>
           </Row>
