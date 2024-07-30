@@ -497,8 +497,6 @@ promExporterApp.listen(9599, () => {
       // console.log("##############", localSchema);
       // console.log("##############", remoteSchema);
 
-      console.log("¤¤¤¤¤¤¤¤¤¤¤¤", { remoteSchemaUrl, localSchemaUrl });
-
       const options = {
         headers: { Authorization: `bearer ${token}` },
         inputValueDeprecation: true,
@@ -508,6 +506,8 @@ promExporterApp.listen(9599, () => {
       try {
         result = await getDiff(remoteSchemaUrl, localSchemaUrl, options);
       } catch (e) {}
+
+      console.log("¤¤¤¤¤¤¤¤¤¤¤¤", result?.diff);
 
       res.status(200);
       return res.send(result);

@@ -39,7 +39,7 @@ export default function Wrap() {
               </Link>
               .
             </Text>
-            <div>{obj?.diffNoColor}</div>
+            <Diff>{obj?.diff}</Diff>
           </Col>
         </Row>
       </Layout>
