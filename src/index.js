@@ -15,7 +15,15 @@ import cors from "cors";
 //
 import { createHandler } from "graphql-http/lib/use/express";
 //
-import { parse, getOperationAST } from "graphql";
+import {
+  parse,
+  getOperationAST,
+  getIntrospectionQuery,
+  buildClientSchema,
+} from "graphql";
+
+import { getDiff } from "graphql-schema-diff";
+
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration } from "./utils/monitor";
@@ -432,6 +440,84 @@ promExporterApp.listen(9599, () => {
     const complexityClass = getQueryComplexityClass(queryComplexity);
 
     res.send({ complexity: queryComplexity, complexityClass });
+  });
+
+  /**
+   * Schema diff endpoint
+   * POST request
+   * token set as bearer header (Not required)
+   * query {string} and variables {string} set as body params.
+   */
+  app.post("/diff", async (req, res) => {
+    // get AccessToken from header
+    const token = req.headers.authorization?.replace(/bearer /i, "");
+
+    // Get body params
+    const { remoteSchemaUrl, localSchemaUrl } = req.body;
+
+    if (remoteSchemaUrl && localSchemaUrl) {
+      // Get client permissions from smuag
+      // let clientPermissions;
+      // try {
+      //   const url = config.datasources.smaug.url;
+      //   const smaug = (
+      //     await request.get(`${url}/configuration`).query({
+      //       token,
+      //     })
+      //   ).body;
+
+      //   // Set token client permissions
+      //   clientPermissions = smaug?.gateway;
+      // } catch (e) {
+      //   // No valid accessToken - fallbacks to default schema (introspect)
+      // }
+
+      // const localSchema = await getExecutableSchema({
+      //   clientPermissions: { gateway: { ...clientPermissions } },
+      //   hasAccessToken: !!(clientPermissions && token),
+      // });
+
+      // let remoteSchema;
+      // try {
+      //   const response = await request
+      //     .post(schemaUrl)
+      //     .set("Authorization", `bearer ${token}`)
+      //     .set("Content-Type", "application/json")
+      //     .set("Accept", "application/json")
+      //     .send({
+      //       query: getIntrospectionQuery({ inputValueDeprecation: true }),
+      //     });
+
+      //   const json = JSON.parse(response.text);
+      //   remoteSchema = buildClientSchema(json.data);
+      // } catch (e) {
+      //   // No valid accessToken - fallbacks to default schema (introspect)
+      // }
+
+      // console.log("##############", localSchema);
+      // console.log("##############", remoteSchema);
+
+      console.log("¤¤¤¤¤¤¤¤¤¤¤¤", { remoteSchemaUrl, localSchemaUrl });
+
+      const options = {
+        headers: { Authorization: `bearer ${token}` },
+        inputValueDeprecation: true,
+      };
+
+      let result;
+      try {
+        result = await getDiff(remoteSchemaUrl, localSchemaUrl, options);
+      } catch (e) {}
+
+      res.status(200);
+      return res.send(result);
+    }
+
+    res.status(400);
+    res.send({
+      statusCode: 400,
+      message: "Bad Request",
+    });
   });
 
   // Proxy to test user login website
