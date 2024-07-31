@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Diff from "@/components/diff";
+import Diff from "@/components/changes";
 
 export default function Page() {
   return (

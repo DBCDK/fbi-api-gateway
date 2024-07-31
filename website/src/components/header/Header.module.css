@@ -93,6 +93,10 @@
   display: none;
 }
 
+.links .link.changes a {
+  color: var(--secondary);
+}
+
 /* documentation */
 
 .top.documentation {

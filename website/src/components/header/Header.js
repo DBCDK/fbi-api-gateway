@@ -96,12 +96,9 @@ export default function Header() {
               </Link>
             </Text>
             {isFuture && (
-              <Text
-                type="text5"
-                className={`${styles.link} ${styles.download}`}
-              >
-                <Link href="/diff" disabled={!isValidToken}>
-                  [Diff]
+              <Text type="text5" className={`${styles.link} ${styles.changes}`}>
+                <Link href="/changes" disabled={!isValidToken}>
+                  [changes]
                 </Link>
               </Text>
             )}

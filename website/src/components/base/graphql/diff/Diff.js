@@ -153,7 +153,7 @@ export default function Diff() {
         </div>
       </section>
       <section>
-        <div className={styles.title}>Nice to know fields added</div>
+        <div className={styles.title}>"Nice to know" fields added</div>
         <div className={styles.wrap}>
           <ul>
             {map?.["FacetResult"] && (

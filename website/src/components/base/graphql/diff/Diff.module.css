@@ -11,7 +11,7 @@
 }
 
 .wrap {
-  background-color: var(--divider);
+  background-color: #f6f8fa;
   padding: var(--pt2);
 }
 
@@ -29,6 +29,7 @@
 
 .wrap ul li span strong {
   color: var(--info);
+  /* font-weight: normal; */
 }
 
 .wrap ul li span term {
