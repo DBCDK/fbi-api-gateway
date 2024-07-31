@@ -102,6 +102,93 @@ export default function Diff() {
           );
         }
       })}
+      <section>
+        <div className={styles.title}>Other changes</div>
+        <div className={styles.wrap}>
+          <ul>
+            {map?.["ComplexSearchSuggestion"] && (
+              <li className={styles.change}>
+                <span>
+                  <strong>ComplexSearchSuggestion</strong>.type typeOf
+                  <i> string!</i>
+                </span>
+                <span> ➡️ </span>
+                <span>
+                  typeOf <strong>ComplexSuggestionTypeEnum</strong>
+                </span>
+              </li>
+            )}
+            {map?.["FacetField"] && (
+              <li className={styles.change}>
+                <span>
+                  <strong>FacetField</strong>.name typeOf
+                  <i> string</i>
+                </span>
+                <span> ➡️ </span>
+                <span>
+                  typeOf <strong>FacetFieldEnum</strong>
+                </span>
+              </li>
+            )}
+            {map?.["Categories"] && (
+              <li className={styles.change}>
+                <span>
+                  <strong>Categories</strong>.category
+                </span>
+                <span> ➡️ </span>
+                <span>
+                  <strong>Categories</strong>.title
+                </span>
+              </li>
+            )}
+            {map?.["Categories"] && (
+              <li className={styles.del}>
+                <span>
+                  <strong>Query</strong>.inspiration language <i>argument</i>
+                </span>
+                <span> was removed</span>
+              </li>
+            )}
+          </ul>
+        </div>
+      </section>
+      <section>
+        <div className={styles.title}>Nice to know fields added</div>
+        <div className={styles.wrap}>
+          <ul>
+            {map?.["FacetResult"] && (
+              <li className={styles.change}>
+                <span>
+                  <strong>FacetResult</strong>.type field <term>added</term>
+                </span>
+                <span> - </span>
+                <span>holds the new (UPPERCASED) FacetFieldEnum value</span>
+              </li>
+            )}
+            {map?.["Categories"] && (
+              <li className={styles.change}>
+                <span>
+                  <strong>Categories</strong>.type field <term>added</term>
+                </span>
+                <span> - </span>
+                <span>
+                  holds the new (UPPERCASED) CategoryFiltersEnum value
+                </span>
+              </li>
+            )}
+            {map?.["UserParameter"] && (
+              <li className={styles.change}>
+                <span>
+                  <strong>UserParameter</strong>.userParameterName field
+                  <term> added</term>
+                </span>
+                <span> - </span>
+                <span>holds the old (lowercased) userParameterType value</span>
+              </li>
+            )}
+          </ul>
+        </div>
+      </section>
     </div>
   );
 }

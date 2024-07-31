@@ -30,7 +30,22 @@ export default function Wrap() {
               .
             </Text>
             <br />
-            <Text>What was actually changed ....</Text>
+            <Text type="text5" className>
+              What is actually changed ...
+            </Text>
+            <Text>
+              <ul>
+                <li>Unused Scalar types was removed from the schema</li>
+                <li>All previous deprecated fields are removed</li>
+                <li>All Types in now written in PascalCase</li>
+                <li>All Enum value fields is now written in UPPERCASE</li>
+                <li>All field names is now unique regardless caseing</li>
+                <li>All Input Types now have a tailed 'Input'</li>
+                <li>All Scalar Types now have a tailed 'Scalar'</li>
+                <li>All Union Types now have a tailed 'Union'</li>
+                <li>All Interface Types now have a tailed 'Interface'</li>
+              </ul>
+            </Text>
             <Diff />
           </Col>
         </Row>

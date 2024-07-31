@@ -23,8 +23,17 @@
   line-height: 1.75;
 }
 
+.wrap ul li i {
+  color: var(--secondary);
+}
+
 .wrap ul li span strong {
   color: var(--info);
+}
+
+.wrap ul li span term {
+  color: var(--success-dark);
+  font-weight: bold;
 }
 
 .wrap ul li.del span:last-of-type {
