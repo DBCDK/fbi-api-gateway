@@ -44,3 +44,8 @@
 .wrap ul li.change span:last-of-type {
   /* color: var(--info); */
 }
+
+/* selected dark theme */
+:global(body.dark) .wrap {
+  background: var(--dark);
+}

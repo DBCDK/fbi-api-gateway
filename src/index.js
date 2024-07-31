@@ -15,14 +15,7 @@ import cors from "cors";
 //
 import { createHandler } from "graphql-http/lib/use/express";
 //
-import {
-  parse,
-  getOperationAST,
-  getIntrospectionQuery,
-  buildClientSchema,
-} from "graphql";
-
-import { getDiff } from "graphql-schema-diff";
+import { parse, getOperationAST } from "graphql";
 
 import config from "./config";
 import howruHandler from "./howru";
