@@ -22,17 +22,17 @@ export default function Diff() {
 
   const titleMap = {
     DEPRECATED:
-      "Deprecated fields which was removed, type/fields after the arrow refers to alternative options",
+      "Deprecated fields that were removed; the type/fields after the arrow refer to alternative options.",
     TO_UPPERCASE_ENUM_VALUES:
-      "Enum types which VALUES was changed from lowercase to UPPERCASE",
-    TYPES_TO_PASCALCASE: "Types which was changed to PascalCase",
+      "Enum types whose values were changed from lowercase to UPPERCASE.",
+    TYPES_TO_PASCALCASE: "Types that were changed to PascalCase.",
     TYPES_TO_PASCALCASE_NAMECHANGE:
-      "Types which was renamed and changed to PascalCase",
-    TAILED_INPUT: "Input types which got tailed 'Input' added",
-    TAILED_SCALAR: "Scalar types which got tailed 'Scalar' added",
-    TAILED_INTERFACE: "Interface types which got tailed 'Interface' added",
-    TAILED_UNION: "Union types which got tailed 'Union' added",
-    TAILED_ENUM: "Enum types which got tailed 'Enum' added",
+      "Types that were renamed and changed to PascalCase.",
+    TAILED_INPUT: "Input types that have the suffix 'Input' added.",
+    TAILED_SCALAR: "Scalar types that have the suffix 'Scalar' added.",
+    TAILED_INTERFACE: "Interface types that have the suffix 'Interface' added.",
+    TAILED_UNION: "Union types that have the suffix 'Union' added.",
+    TAILED_ENUM: "Enum types that have the suffix 'Enum' added.",
   };
 
   return (

@@ -21,9 +21,9 @@ export default function Wrap() {
               GraphQL Schema <strong>[changes]</strong>
             </Title>
             <Text>
-              What has changed? Here you will find a detailed type diff between
-              the current and future FBI-API Looking for the full future schema?
-              Go{" "}
+              Here, you will find a detailed type comparison between the current
+              and future versions of the FBI-API. If you're looking for the
+              complete future schema, you can find it{" "}
               <Link href="/schema" underline>
                 here
               </Link>
@@ -31,38 +31,45 @@ export default function Wrap() {
             </Text>
             <br />
             <Text type="text5" className>
-              So what is actually changed ...
+              So, what's actually changed?
             </Text>
 
             <ul className={styles.list}>
               <li>
-                <Text>Unused Scalar types was removed from the schema</Text>
-              </li>
-              <li>
                 <Text>
-                  All current and previous deprecated fields was removed
+                  Unused scalar types have been removed from the schema.
                 </Text>
               </li>
               <li>
-                <Text>All Types in now written in PascalCase</Text>
+                <Text>
+                  All current and previously deprecated fields have been
+                  removed.
+                </Text>
               </li>
               <li>
-                <Text>All Enum value fields is now written in UPPERCASE</Text>
+                <Text>All types are now written in PascalCase.</Text>
               </li>
               <li>
-                <Text>All field names is now unique regardless caseing</Text>
+                <Text>All enum value fields are now written in UPPERCASE.</Text>
               </li>
               <li>
-                <Text>All Input Types now have a tailed 'Input'</Text>
+                <Text>
+                  All field names are now unique regardless of casing.
+                </Text>
               </li>
               <li>
-                <Text>All Scalar Types now have a tailed 'Scalar'</Text>
+                <Text>All input types now have the suffix 'Input'.</Text>
               </li>
               <li>
-                <Text>All Union Types now have a tailed 'Union'</Text>
+                <Text>All scalar types now have the suffix 'Scalar'.</Text>
               </li>
               <li>
-                <Text>All Interface Types now have a tailed 'Interface'</Text>
+                <Text>All union types now have the suffix 'Union'.</Text>
+              </li>
+              <li>
+                <Text>
+                  All interface types now have the suffix 'Interface'.
+                </Text>
               </li>
             </ul>
 
