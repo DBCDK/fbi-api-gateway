@@ -1,0 +1,36 @@
+.container {
+  margin-top: var(--pt4);
+}
+
+.container section {
+  margin-top: var(--pt4);
+}
+
+.title {
+  padding: var(--pt1) 0;
+}
+
+.wrap {
+  background-color: var(--divider);
+  padding: var(--pt2);
+}
+
+.wrap ul {
+  padding-left: var(--pt2);
+}
+
+.wrap ul li {
+  line-height: 1.75;
+}
+
+.wrap ul li span strong {
+  color: var(--info);
+}
+
+.wrap ul li.del span:last-of-type {
+  color: var(--error);
+}
+
+.wrap ul li.change span:last-of-type {
+  /* color: var(--info); */
+}
