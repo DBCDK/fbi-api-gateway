@@ -40,7 +40,7 @@ export default function Diff() {
       {Object.entries(diff).map(([k, v]) => {
         if (v.length > 0) {
           return (
-            <section>
+            <section key={k}>
               <div className={styles.title}>{titleMap[k]}</div>
               <div className={styles.wrap}>
                 <ul>
@@ -73,7 +73,7 @@ export default function Diff() {
                     const style = to ? styles.change : styles.del;
 
                     return (
-                      <li className={style}>
+                      <li className={style} key={from}>
                         <span>
                           {fromHasDot ? (
                             <>
@@ -153,7 +153,7 @@ export default function Diff() {
         </div>
       </section>
       <section>
-        <div className={styles.title}>"Nice to know" fields added</div>
+        <div className={styles.title}>{'"Nice to know" fields added'}</div>
         <div className={styles.wrap}>
           <ul>
             {map?.["FacetResult"] && (

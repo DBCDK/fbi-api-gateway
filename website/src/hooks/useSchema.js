@@ -14,7 +14,11 @@ export function useGraphQLUrl(origin) {
 
   return `${url}/${profile}/graphql`;
 }
-export default function useSchema(token, url = useGraphQLUrl()) {
+export default function useSchema(token, _url) {
+  const self = useGraphQLUrl();
+
+  const url = _url ?? self;
+
   const fetcher = async (url) => {
     const response = await fetch(url, {
       method: "POST",

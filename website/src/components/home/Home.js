@@ -47,7 +47,7 @@ export default function Home() {
                 <Link href="https://fbi-api.dbc.dk/" underline>
                   here
                 </Link>{" "}
-                and we'll take you {"'back to the present'"} 🫠.
+                {"and we'll take you 'back to the present'"} 🫠.
               </Text>
             </Col>
           </Row>

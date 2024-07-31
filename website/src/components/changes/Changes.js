@@ -21,9 +21,9 @@ export default function Wrap() {
               GraphQL Schema <strong>[changes]</strong>
             </Title>
             <Text>
-              Here, you will find a detailed type comparison between the current
-              and future versions of the FBI-API. If you're looking for the
-              complete future schema, you can find it{" "}
+              {
+                "Here, you will find a detailed type comparison between the current and future versions of the FBI-API. If you're looking for the complete future schema, you can find it "
+              }
               <Link href="/schema" underline>
                 here
               </Link>
@@ -31,7 +31,7 @@ export default function Wrap() {
             </Text>
             <br />
             <Text type="text5" className>
-              So, what's actually changed?
+              {"So, what's actually changed?"}
             </Text>
 
             <ul className={styles.list}>
@@ -58,17 +58,17 @@ export default function Wrap() {
                 </Text>
               </li>
               <li>
-                <Text>All input types now have the suffix 'Input'.</Text>
+                <Text>{"All input types now have the suffix 'Input'."}</Text>
               </li>
               <li>
-                <Text>All scalar types now have the suffix 'Scalar'.</Text>
+                <Text>{"All scalar types now have the suffix 'Scalar'."}</Text>
               </li>
               <li>
-                <Text>All union types now have the suffix 'Union'.</Text>
+                <Text>{"All union types now have the suffix 'Union'."}</Text>
               </li>
               <li>
                 <Text>
-                  All interface types now have the suffix 'Interface'.
+                  {"All interface types now have the suffix 'Interface'"}.
                 </Text>
               </li>
             </ul>
