@@ -83,6 +83,13 @@ function Menu({ modal, context }) {
             </Link>
           </Text>
         </Col>
+        <Col xs={12} as="li">
+          <Text type="text5" className={`${styles.link} ${styles.changes}`}>
+            <Link href="/schema" disabled={!isValidToken}>
+              view schema <strong>[changes]</strong>
+            </Link>
+          </Text>
+        </Col>
       </Row>
     </div>
   );

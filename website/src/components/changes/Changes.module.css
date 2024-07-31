@@ -1,0 +1,25 @@
+.container {
+  padding-top: var(--pt10);
+}
+
+.title {
+  margin: var(--pt4) 0 var(--pt2) 0;
+}
+
+.title strong {
+  color: var(--secondary);
+}
+
+.list {
+  padding-left: var(--pt4);
+}
+
+.list {
+  line-height: 1.75;
+}
+
+@media screen and (max-width: 576px) {
+  .container {
+    padding-top: var(--pt2);
+  }
+}

@@ -16,6 +16,7 @@ import cors from "cors";
 import { createHandler } from "graphql-http/lib/use/express";
 //
 import { parse, getOperationAST } from "graphql";
+
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration } from "./utils/monitor";

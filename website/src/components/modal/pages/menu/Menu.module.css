@@ -78,6 +78,10 @@
   flex-wrap: wrap;
 }
 
+.link.changes a strong {
+  color: var(--secondary);
+}
+
 @media (min-width: 576px) {
   .token {
     flex-wrap: nowrap;
