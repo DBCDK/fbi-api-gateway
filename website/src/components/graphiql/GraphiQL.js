@@ -149,7 +149,7 @@ export function GraphiQL({
 export default function Wrap() {
   const { selectedToken } = useStorage();
   const { schema } = useSchema(selectedToken);
-  const url = useGraphQLUrl(selectedToken);
+  const url = useGraphQLUrl();
 
   const router = useRouter();
 
