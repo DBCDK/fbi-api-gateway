@@ -104,7 +104,7 @@ export const resolvers = {
       const start = new Date(end);
       start.setDate(end.getDate() - 7);
 
-      const res = await context.datasources.getLoader("stats").load({
+      const res = await context.datasources.getLoader("elastic").load({
         start: start.toISOString(),
         end: end.toISOString(),
       });
