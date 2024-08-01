@@ -496,7 +496,7 @@ export const resolvers = {
       const failedAtCreation = [];
       const materialsToOrder = args?.input?.materialsToOrder;
 
-      if (!materialsToOrder || materialsToOrder.length === 0) {
+      if (!materialsToOrder || materialsToOrder?.length === 0) {
         return {
           successfullyCreated,
           failedAtCreation,
@@ -726,8 +726,8 @@ export const resolvers = {
         successfullyCreated,
         failedAtCreation,
         ok:
-          failedAtCreation.length === 0 &&
-          successfullyCreated.length === materialsToOrder.length,
+          failedAtCreation?.length === 0 &&
+          successfullyCreated?.length === materialsToOrder?.length,
         status: "OK",
       };
     },

@@ -206,7 +206,7 @@ export const resolvers = {
     term(parent, args, context) {
       // We only use danish translations for now
       return (
-        translations.facets[parent.facetName]?.[parent.term]?.da || parent.term
+        translations?.facets[parent.facetName]?.[parent.term]?.da || parent.term
       );
     },
     score(parent, args, context) {
@@ -252,7 +252,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return res.hitcount;
+      return res?.hitcount || 0;
     },
     async works(parent, args, context) {
       const res = await context.datasources.getLoader("simplesearch").load({
@@ -285,15 +285,15 @@ export const resolvers = {
 
       const response = [];
 
-      args.facets.forEach((key) => {
+      args.facets?.forEach((key) => {
         const values = parent?.filters?.[key] || [];
 
         // maps result names to enum values
-        const facet = res.find((obj) => obj.name === mapFacetEnum(key));
+        const facet = res?.find((obj) => obj?.name === mapFacetEnum(key));
         // now we find the facet
         const copy = {
           /** we need to map some facets - name has changed in response : lix -> lix_range, let->let_range **/
-          name: mapFacet(facet.name),
+          name: mapFacet(facet?.name),
           type: key,
           values: [],
         };

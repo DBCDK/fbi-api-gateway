@@ -26,7 +26,7 @@ export const typeDef = `
 export const resolvers = {
   LinkCheckService: {
     async checks(parent, args, context, info) {
-      if (args.urls.length > 0) {
+      if (args.urls?.length > 0) {
         return await context.datasources.getLoader("linkcheck").load(args);
       }
       return [];

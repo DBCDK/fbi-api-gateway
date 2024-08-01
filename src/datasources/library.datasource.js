@@ -274,7 +274,7 @@ export async function search(props, getFunc = doRequest) {
     });
 
     // If no match use fuzzy to find the nearest match
-    if (result.length === 0) {
+    if (result?.length === 0) {
       // try fuzzy  match
       result = index.search(q, branches, {
         ...searchOptions,

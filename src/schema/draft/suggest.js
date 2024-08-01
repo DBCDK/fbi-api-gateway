@@ -91,7 +91,7 @@ export const resolvers = {
         ...args,
         profile: context.profile,
       });
-      return res;
+      return res || [];
     },
   },
   ComplexSuggestResponse: {
@@ -101,7 +101,7 @@ export const resolvers = {
         q: parent.q,
         profile: context.profile,
       });
-      return res;
+      return res || [];
     },
   },
   LocalSuggestResponse: {

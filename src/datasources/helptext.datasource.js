@@ -131,7 +131,7 @@ export async function load({ q, language = "da" }) {
   // prefix match
   let result = index.search(q, docs, options);
 
-  if (result.length === 0) {
+  if (result?.length === 0) {
     // try fuzzy  match
     result = index.search(q, docs, {
       ...options,
