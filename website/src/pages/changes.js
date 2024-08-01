@@ -1,13 +1,13 @@
 import Head from "next/head";
-import Diff from "@/components/changes";
+import Changes from "@/components/changes";
 
 export default function Page() {
   return (
     <>
       <Head>
-        <title>FBI API | Diff</title>
+        <title>FBI API | changes</title>
       </Head>
-      <Diff />
+      <Changes />
     </>
   );
 }

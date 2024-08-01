@@ -1,18 +1,6 @@
 import { resolveSeries, resolveWork } from "../../utils/utils";
 
 export const typeDef = `
-type NumberInSeries {
-  """
-  The number in the series as text, quoted form the publication, e.g. 'Vol. IX'
-  """
-  display: String!
-
-  """
-  The number in the series as integer
-  """
-  number: [Int!]
-}
-
 type SerieWork {
   """
   The number of work in the series as a number (as text)
@@ -62,9 +50,9 @@ type Series {
   parallelTitles: [String!]!
 
   """
-  The number in the series as text qoutation and a number
+  The number in the series as text qoutation
   """
-  numberInSeries: NumberInSeries @deprecated(reason: "field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned")
+  numberInSeries: String
 
   """
   Information about whether this work in the series should be read first
@@ -135,17 +123,7 @@ export const resolvers = {
       return parent.type === "isPopular";
     },
     numberInSeries(parent, args, context, info) {
-      if (!parent.numberInSeries) {
-        return null;
-      }
-
-      const display = parent.numberInSeries;
-      const match = parent.numberInSeries.match(/\d+/g);
-
-      return {
-        display,
-        number: match?.map((str) => parseInt(str, 10)),
-      };
+      return parent.numberInSeries;
     },
     readThisFirst(parent, args, context, info) {
       if (typeof parent.readThisFirst === "undefined") {

@@ -24,15 +24,16 @@ export default function Diff() {
     DEPRECATED:
       "Deprecated fields that were removed; the type/fields after the arrow refer to alternative options.",
     TO_UPPERCASE_ENUM_VALUES:
-      "Enum types whose values were changed from lowercase to UPPERCASE.",
+      "Enum types whose VALUES were changed from lowercase to UPPERCASE.",
     TYPES_TO_PASCALCASE: "Types that were changed to PascalCase.",
     TYPES_TO_PASCALCASE_NAMECHANGE:
       "Types that were renamed and changed to PascalCase.",
-    TAILED_INPUT: "Input types that have the suffix 'Input' added.",
-    TAILED_SCALAR: "Scalar types that have the suffix 'Scalar' added.",
-    TAILED_INTERFACE: "Interface types that have the suffix 'Interface' added.",
-    TAILED_UNION: "Union types that have the suffix 'Union' added.",
-    TAILED_ENUM: "Enum types that have the suffix 'Enum' added.",
+    TAILED_INPUT: "Input types that have had the suffix 'Input' added.",
+    TAILED_SCALAR: "Scalar types that have had the suffix 'Scalar' added.",
+    TAILED_INTERFACE:
+      "Interface types that have had the suffix 'Interface' added.",
+    TAILED_UNION: "Union types that have had the suffix 'Union' added.",
+    TAILED_ENUM: "Enum types that have had the suffix 'Enum' added.",
   };
 
   return (
@@ -44,7 +45,7 @@ export default function Diff() {
               <div className={styles.title}>{titleMap[k]}</div>
               <div className={styles.wrap}>
                 <ul>
-                  {v.map(({ from, to }) => {
+                  {v.map(({ from, to, note }) => {
                     const fromHasDot = from.includes(".");
                     const toHasDot = to?.includes(".");
 
@@ -93,6 +94,7 @@ export default function Diff() {
                             tail
                           )}
                         </span>
+                        {note && <i className={styles.note}>{` ${note}`}</i>}
                       </li>
                     );
                   })}

@@ -383,10 +383,7 @@ describe("Manifestation", () => {
           }
           series {
             title
-            numberInSeries {
-              display
-              number
-            }
+            numberInSeries
           }          
           volume
           tableOfContents {

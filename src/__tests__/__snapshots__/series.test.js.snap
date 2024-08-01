@@ -56,12 +56,7 @@ Object {
               },
             },
           ],
-          "numberInSeries": Object {
-            "display": "7",
-            "number": Array [
-              7,
-            ],
-          },
+          "numberInSeries": "7",
           "readThisFirst": null,
           "readThisWhenever": null,
           "title": "De syv søstre-serien",

@@ -314,12 +314,7 @@ Object {
       ],
       "series": Array [
         Object {
-          "numberInSeries": Object {
-            "display": "1",
-            "number": Array [
-              1,
-            ],
-          },
+          "numberInSeries": "1",
           "title": "De syv søstre-serien",
         },
       ],
