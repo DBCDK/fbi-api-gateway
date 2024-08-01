@@ -82,6 +82,10 @@
   color: var(--secondary);
 }
 
+.link.changes a[disabled] strong {
+  color: var(--text-light);
+}
+
 @media (min-width: 576px) {
   .token {
     flex-wrap: nowrap;

@@ -97,6 +97,10 @@
   color: var(--secondary);
 }
 
+.links .link.changes a[disabled] {
+  color: var(--text-light);
+}
+
 /* documentation */
 
 .top.documentation {
