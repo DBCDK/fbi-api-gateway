@@ -78,12 +78,7 @@ Object {
         Object {
           "alternativeTitles": Array [],
           "isPopular": false,
-          "numberInSeries": Object {
-            "display": "1",
-            "number": Array [
-              1,
-            ],
-          },
+          "numberInSeries": "1",
           "parallelTitles": Array [],
           "readThisFirst": true,
           "readThisWhenever": null,

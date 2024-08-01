@@ -13,6 +13,7 @@
     "graphiql": "^3.0.5",
     "graphql": "^16.3.0",
     "graphql-voyager": "^2.0.0",
+    "graphql-ws": "^5.16.0",
     "isomorphic-unfetch": "^3.1.0",
     "lodash": "^4.17.21",
     "next": "^13.5.1",

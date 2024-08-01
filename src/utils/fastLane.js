@@ -69,7 +69,6 @@ const ALLOWED_TYPES = {
   Series: true,
   SerieWork: true,
   Universes: true,
-  NumberInSeries: true,
   RecommendationResponse: true,
   Recommendation: true,
   ManifestationParts: true,

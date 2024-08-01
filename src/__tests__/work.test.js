@@ -116,10 +116,7 @@ describe("Work", () => {
             title
             alternativeTitles
             parallelTitles
-            numberInSeries {
-              display
-              number
-            }
+            numberInSeries
             readThisFirst
             readThisWhenever
             isPopular
