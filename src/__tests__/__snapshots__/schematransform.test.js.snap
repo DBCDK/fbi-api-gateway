@@ -380,7 +380,6 @@ type Mutation {
   elba: ElbaServices!
   submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrderInput!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
   data_collect(input: DataCollectInput!): String!
   deleteOrder(
     \\"\\"\\"id of the order to be deleted\\"\\"\\"
@@ -2632,32 +2631,6 @@ type OrderStatusResponse {
   errorMessage: String
 }
 
-input PeriodicaArticleOrderInput {
-  \\"\\"\\"The pid of an article or periodica\\"\\"\\"
-  pid: String!
-  pickUpBranch: String!
-  userName: String
-  userMail: String
-  publicationDateOfComponent: String
-  volume: String
-  authorOfComponent: String
-  titleOfComponent: String
-  pagination: String
-}
-
-enum PeriodicaArticleOrderStatusEnum {
-  OK
-  ERROR_UNAUTHORIZED_USER
-  ERROR_AGENCY_NOT_SUBSCRIBED
-  ERROR_INVALID_PICKUP_BRANCH
-  ERROR_PID_NOT_RESERVABLE
-  ERROR_NO_NAME_OR_EMAIL
-}
-
-type PeriodicaArticleOrderResponse {
-  status: PeriodicaArticleOrderStatusEnum!
-}
-
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
 scalar PaginationLimitScalar
 
@@ -3313,7 +3286,6 @@ type Cover {
 
 type Mutation {
   elba: ElbaServices!
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrderInput!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: \\"Use 'Elba.placeCopyRequest' instead\\")
 }
 
 type Query {
@@ -4953,32 +4925,6 @@ type MoodQueries {
   moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
   moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
   moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
-}
-
-input PeriodicaArticleOrderInput {
-  \\"\\"\\"The pid of an article or periodica\\"\\"\\"
-  pid: String!
-  pickUpBranch: String!
-  userName: String
-  userMail: String
-  publicationDateOfComponent: String
-  volume: String
-  authorOfComponent: String
-  titleOfComponent: String
-  pagination: String
-}
-
-enum PeriodicaArticleOrderStatusEnum {
-  OK
-  ERROR_UNAUTHORIZED_USER
-  ERROR_AGENCY_NOT_SUBSCRIBED
-  ERROR_INVALID_PICKUP_BRANCH
-  ERROR_PID_NOT_RESERVABLE
-  ERROR_NO_NAME_OR_EMAIL
-}
-
-type PeriodicaArticleOrderResponse {
-  status: PeriodicaArticleOrderStatusEnum!
 }
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"

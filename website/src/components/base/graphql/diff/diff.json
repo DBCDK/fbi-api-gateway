@@ -59,7 +59,7 @@
         {"from": "MoodKidsRecommendFilters", "to": "MoodKidsRecommendFiltersInput"},
         {"from": "SubmitOrderUserParameters", "to": "SubmitOrderUserParametersInput"},
         {"from": "Material", "to": "MaterialInput"},
-        {"from": "PeriodicaArticleOrder", "to": "PeriodicaArticleOrderInput"},
+        {"from": "PeriodicaArticleOrder"},
         {"from": "SearchQuery", "to": "SearchQueryInput"}
     ],
     "TAILED_SCALAR": [
@@ -116,7 +116,7 @@
         {"from": "BookMarkOrderBy", "to": "BookMarkOrderByEnum"},
         {"from": "HoldingsStatus", "to": "HoldingsStatusEnum"},
         {"from": "FacetField", "to": "FacetFieldEnum"},
-        {"from": "PeriodicaArticleOrderStatus", "to": "PeriodicaArticleOrderStatusEnum"}
+        {"from": "PeriodicaArticleOrderStatus"}
     ]
 }
         
