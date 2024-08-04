@@ -20,6 +20,7 @@
 }
 
 .wrap ul li {
+  position: relative;
   line-height: 1.75;
 }
 
@@ -43,6 +44,34 @@
 
 .wrap ul li.change span:last-of-type {
   /* color: var(--info); */
+}
+
+.spinner {
+  position: absolute;
+  left: -56px;
+  top: 0;
+
+  width: 60px;
+  aspect-ratio: 4;
+  background: radial-gradient(circle closest-side, #000 90%, #0000) 0 /
+    calc(100% / 3) 100% space;
+  clip-path: inset(0 100% 0 0);
+  animation: l1 1s steps(4) infinite;
+}
+
+@keyframes l1 {
+  to {
+    clip-path: inset(0 -34% 0 0);
+  }
+}
+
+.wrap ul li.ignore {
+  opacity: 0.5;
+}
+
+.wrap ul li.ignore span:first-of-type,
+.wrap ul li.ignore span:last-of-type {
+  text-decoration: line-through;
 }
 
 /* selected dark theme */

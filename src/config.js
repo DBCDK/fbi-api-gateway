@@ -274,7 +274,7 @@ export default {
     elk: {
       url:
         process.env.ELK_URL ||
-        "https://elk.dbc.dk:9100/k8s-frontend-prod-*/_search",
+        "https://elk.dbc.dk:9100/k8s-febib-prod-*/_search",
       user: process.env.ELK_USER,
       password: process.env.ELK_PASSWORD,
       prefix: process.env.ELK_PREFIX || "elk-1",

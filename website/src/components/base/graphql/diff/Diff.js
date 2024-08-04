@@ -1,11 +1,73 @@
 import { useMemo } from "react";
-
-import styles from "./Diff.module.css";
-
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 
 import diff from "./diff";
+import useUsage from "@/hooks/useUsage";
+import useConfiguration from "@/hooks/useConfiguration";
+
+import styles from "./Diff.module.css";
+
+function Li({ from, to, note }) {
+  const { selectedToken } = useStorage();
+  const { configuration = {} } = useConfiguration(selectedToken);
+
+  const { agency, clientId } = configuration;
+
+  const fromHasDot = from.includes(".");
+  const fromArr = from?.split(".");
+  const fromType = fromHasDot ? fromArr[0] : from;
+  const fromField = fromHasDot && fromArr[1];
+
+  const options = {
+    days: 30,
+    q: fromHasDot ? fromField : from,
+    agencyId: agency,
+    profile: selectedToken.profile,
+    clientId,
+  };
+
+  const { isUsed, timestamp, stringQuery, operationName, isLoading } = useUsage(
+    selectedToken,
+    options
+  );
+
+  const toHasDot = to?.includes(".");
+  const toArr = to?.split(".");
+  const toType = toHasDot ? toArr[0] : to;
+  const toField = toHasDot && toArr[1];
+
+  const tail = to ? <strong>{to}</strong> : " was removed";
+  const style = to ? styles.change : styles.del;
+
+  const ignoreStyle = !isUsed && !isLoading ? styles.ignore : "";
+  // ⏳
+  return (
+    <li className={`${style} ${ignoreStyle}`}>
+      {isLoading && <div className={styles.spinner}> </div>}
+      <span>
+        {fromHasDot ? (
+          <>
+            <strong>{fromType}</strong>.{fromField}
+          </>
+        ) : (
+          <strong>{from}</strong>
+        )}
+      </span>
+      {to && <span> ➡️ </span>}
+      <span>
+        {toHasDot ? (
+          <>
+            <strong>{toType}</strong>.{toField}
+          </>
+        ) : (
+          tail
+        )}
+      </span>
+      {note && <i className={styles.note}>{` ${note}`}</i>}
+    </li>
+  );
+}
 
 export default function Diff() {
   const url = useGraphQLUrl("https://fbi-api.dbc.dk");
@@ -45,58 +107,28 @@ export default function Diff() {
               <div className={styles.title}>{titleMap[k]}</div>
               <div className={styles.wrap}>
                 <ul>
-                  {v.map(({ from, to, note }) => {
-                    const fromHasDot = from.includes(".");
-                    const toHasDot = to?.includes(".");
+                  {v.map((obj) => {
+                    const { from } = obj;
 
-                    const fromArr = from?.split(".");
-                    const fromType = fromHasDot ? fromArr[0] : from;
-                    const fromField = fromHasDot && fromArr[1];
+                    const hasDot = from.includes(".");
+                    const arr = from?.split(".");
+                    const type = hasDot ? arr[0] : from;
+                    const field = hasDot && arr[1];
 
-                    const toArr = to?.split(".");
-                    const toType = toHasDot ? toArr[0] : to;
-                    const toField = toHasDot && toArr[1];
-
-                    const hasAccess = fromHasDot
-                      ? map?.[fromType]?.fields?.find(
-                          ({ name }) => name === fromField
+                    const hasAccess = hasDot
+                      ? map?.[type]?.fields?.find(
+                          ({ name }) => name === field
                         ) ||
-                        map?.[fromType]?.enumValues?.find(
-                          ({ name }) => name === fromField
+                        map?.[type]?.enumValues?.find(
+                          ({ name }) => name === field
                         )
-                      : map[fromType];
+                      : map[type];
 
                     if (!hasAccess) {
                       return null;
                     }
 
-                    const tail = to ? <strong>{to}</strong> : " was removed";
-                    const style = to ? styles.change : styles.del;
-
-                    return (
-                      <li className={style} key={from}>
-                        <span>
-                          {fromHasDot ? (
-                            <>
-                              <strong>{fromType}</strong>.{fromField}
-                            </>
-                          ) : (
-                            <strong>{from}</strong>
-                          )}
-                        </span>
-                        {to && <span> ➡️ </span>}
-                        <span>
-                          {toHasDot ? (
-                            <>
-                              <strong>{toType}</strong>.{toField}
-                            </>
-                          ) : (
-                            tail
-                          )}
-                        </span>
-                        {note && <i className={styles.note}>{` ${note}`}</i>}
-                      </li>
-                    );
+                    return <Li key={from} {...obj} />;
                   })}
                 </ul>
               </div>
@@ -104,6 +136,9 @@ export default function Diff() {
           );
         }
       })}
+
+      <hr />
+
       <section>
         <div className={styles.title}>Other changes</div>
         <div className={styles.wrap}>
