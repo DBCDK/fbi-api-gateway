@@ -4,54 +4,49 @@ import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 
 import diff from "./diff";
 import useUsage from "@/hooks/useUsage";
-import useConfiguration from "@/hooks/useConfiguration";
 
 import styles from "./Diff.module.css";
 import Spinner from "../../spinner/Spinner";
+import { dateTimeConverter } from "@/components/utils";
+import { OverlayTrigger, Popover } from "react-bootstrap";
 
-function Li({ from, to, note, settings }) {
+function Li({ from, to, note, options }) {
   const { selectedToken } = useStorage();
-  const { configuration = {} } = useConfiguration(selectedToken);
-
-  const { agency, clientId } = configuration;
 
   const fromHasDot = from.includes(".");
   const fromArr = from?.split(".");
   const fromType = fromHasDot ? fromArr[0] : from;
   const fromField = fromHasDot && fromArr[1];
 
-  const options = {
-    days: 30,
-    q: fromHasDot ? fromField : from,
-  };
+  const q = fromHasDot ? fromField : from;
 
-  if (settings?.agency) {
-    options.agencyId = agency;
-  }
-  if (settings?.profile) {
-    options.profile = selectedToken.profile;
-  }
-  if (settings?.client) {
-    options.clientId = clientId;
-  }
-
-  const { isUsed, timestamp, stringQuery, operationName, isLoading } = useUsage(
-    selectedToken,
-    options
-  );
+  const {
+    isUsed,
+    timestamp,
+    stringQuery,
+    operationName,
+    isLoading,
+  } = useUsage(selectedToken, { q, options });
 
   const toHasDot = to?.includes(".");
   const toArr = to?.split(".");
   const toType = toHasDot ? toArr[0] : to;
   const toField = toHasDot && toArr[1];
 
-  const enabled = settings?.enabled;
+  const enabled = options?.enabled;
 
   const tail = to ? <strong>{to}</strong> : " was removed";
   const style = to ? styles.change : styles.del;
 
   const ignoreStyle = !isUsed && !isLoading && enabled ? styles.ignore : "";
   const isLoadingStyle = isLoading ? styles.isLoading : "";
+
+  const popover = (
+    <Popover id={from} className={styles.popover}>
+      <Popover.Body>{stringQuery}</Popover.Body>
+    </Popover>
+  );
+
   // ⏳
   return (
     <li className={`${style} ${isLoadingStyle} ${ignoreStyle}`}>
@@ -75,7 +70,20 @@ function Li({ from, to, note, settings }) {
           tail
         )}
       </span>
+
       {note && <i className={styles.note}>{` ${note}`}</i>}
+
+      {isUsed && (
+        <div className={styles.match}>
+          <i>
+            - Last found <strong>{dateTimeConverter(timestamp)}</strong> in
+            operation{" "}
+            <OverlayTrigger placement="right" overlay={popover}>
+              <strong>{operationName || "?"}</strong>
+            </OverlayTrigger>
+          </i>
+        </div>
+      )}
     </li>
   );
 }
@@ -139,7 +147,7 @@ export default function Diff({ options }) {
                       return null;
                     }
 
-                    return <Li key={from} {...obj} settings={options} />;
+                    return <Li key={from} {...obj} options={options} />;
                   })}
                 </ul>
               </div>

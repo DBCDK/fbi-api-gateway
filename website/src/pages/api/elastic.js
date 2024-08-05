@@ -1,6 +1,5 @@
 import fetch from "isomorphic-unfetch";
 import request from "superagent";
-import _permissions from "../../../../src/permissions.json";
 import config from "../../../../src/config.js";
 
 /**
@@ -130,15 +129,6 @@ async function getElasticSearchLog({
       },
     });
   }
-  console.log("prooooooooooops", {
-    start,
-    end,
-    q,
-    clientId,
-    agencyId,
-    profile,
-  });
-  console.log("rrrrrrrrrreq", req.query.bool.filter);
 
   return (await request.post(url).auth(user, password).send(req)).body;
 }
@@ -154,10 +144,10 @@ async function getConfiguration(token) {
 }
 
 /**
- * Handle smaug endpoint req and res
+ * Handle elasticSearch endpoint req and res
  */
 export default async function handler(req, res) {
-  const token = req.query.token;
+  const token = req.headers.authorization?.replace(/bearer /i, "");
 
   if (!token) {
     // Missing token -> throw bad request
@@ -170,38 +160,50 @@ export default async function handler(req, res) {
     case 200:
       const smaug_data = await smaug_response.json();
 
-      const days = args?.options?.days || 1;
+      const body = JSON.parse(req.body);
+
+      const options = body.options;
+
+      const profile = options.profile && body.profile;
+      const clientId = options.client && smaug_data.app?.clientId;
+      const agencyId = options.agency && smaug_data.agencyId;
+
+      const days = 30;
 
       const end = new Date();
       end.setUTCHours(0, 0, 0, 0);
       const start = new Date(end);
       start.setDate(end.getDate() - days);
 
-      const elastic_response = await getElasticSearchLog(token);
-
-      const res = await context.datasources.getLoader("elastic").load({
+      const elastic_response = await getElasticSearchLog({
         start: start.toISOString(),
         end: end.toISOString(),
-        clientId: args?.options?.clientId,
-        agencyId: args?.options?.agencyId,
-        profile: args?.options?.profile,
-        q: args?.options?.q,
+        q: body.q,
+        clientId,
+        agencyId,
+        profile,
       });
 
-      const hit = res.hits.hits[0];
+      const hit = elastic_response.hits.hits[0];
       const hasHit = !!hit;
 
       if (!hasHit) {
-        return {
+        return res.status(200).send({
           hasMatch: hasHit,
-          debug: { didTimeout: res.timed_out, totalMs: res.took },
-        };
+          debug: {
+            didTimeout: elastic_response.timed_out,
+            totalMs: elastic_response.took,
+          },
+        });
       }
 
       const source = hit?._source;
 
       const result = {
-        debug: { didTimeout: res.timed_out, totalMs: res.took },
+        debug: {
+          didTimeout: elastic_response.timed_out,
+          totalMs: elastic_response.took,
+        },
         hasMatch: hasHit,
         timestamp: source.timestamp,
         parsedQuery: source.parsedQuery,

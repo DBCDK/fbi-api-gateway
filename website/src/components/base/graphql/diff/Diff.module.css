@@ -52,6 +52,11 @@
   top: 0;
 }
 
+.wrap ul li .match i {
+  color: var(--text-dark);
+  font-size: 12px;
+}
+
 @keyframes l1 {
   to {
     clip-path: inset(0 -34% 0 0);
@@ -74,4 +79,11 @@
 /* selected dark theme */
 :global(body.dark) .wrap {
   background: var(--dark);
+}
+
+.popover > div:last-of-type {
+  box-sizing: border-box;
+  background-color: var(--white);
+  border-radius: var(--pt1);
+  box-shadow: 0px 3px 5px rgb(0, 0, 0, 0.25);
 }

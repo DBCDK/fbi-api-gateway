@@ -22,12 +22,7 @@ export default function Wrap() {
   });
 
   function updateOptions(key, value) {
-    let _options = { ...options };
-
-    // if (key === "enabled") {
-    //   Object.keys(options).forEach((k) => (_options[k] = value));
-    // }
-    setOptions({ ..._options, [key]: value });
+    setOptions({ ...options, [key]: value });
   }
 
   return (
@@ -120,8 +115,8 @@ export default function Wrap() {
 
             <Text>
               By default we will search in the log by matching your{" "}
-              <i>clientId</i>, <i>profile</i> and <i>agencyId</i> assoicated
-              with the selected token.
+              <i>clientId</i> and <i>agencyId</i> assoicated with the selected
+              token.
             </Text>
             <br />
             <Text>

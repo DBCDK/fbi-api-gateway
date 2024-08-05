@@ -1,7 +1,6 @@
 import styles from "./Chip.module.css";
 
 export default function Chip({ children, checked, onChange, disabled }) {
-  console.log(disabled);
   return (
     <span className={styles.chip}>
       <input
@@ -11,7 +10,7 @@ export default function Chip({ children, checked, onChange, disabled }) {
         disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
       />
-      <label for={children}>{children}</label>
+      <label htmlFor={children}>{children}</label>
     </span>
   );
 }

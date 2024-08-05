@@ -1,57 +1,35 @@
 import fetch from "isomorphic-unfetch";
 import useSWR from "swr";
 
-import { useGraphQLUrl } from "./useSchema";
-
 export default function useUsage(token, args = {}) {
-  const url = useGraphQLUrl();
-
-  console.log("fetcher args", args);
-
-  const fetcher = async (url) => {
-    const response = await fetch(url, {
+  const fetcher = async () => {
+    const response = await fetch("/api/elastic", {
       method: "POST",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
         Authorization: `bearer ${token?.token}`,
       },
       body: JSON.stringify({
-        query: `query ($options: UsageOptionsInput) {
-                  insights {
-                    usage(options: $options) {
-                      hasMatch
-                      parsedQuery
-                      opeartionName
-                      profile
-                      agencyId
-                      timestamp
-                      debug {
-                        totalMs
-                        didTimeout
-                      }
-                    }
-                  }
-                }`,
-        variables: {
-          options: {
-            ...args,
-          },
-        },
+        q: args?.q,
+        options: args?.options,
+        profile: token?.profile,
       }),
     });
 
     if (response.status !== 200) {
+      new Error("An error occurred while fetching the data.");
       return {};
     }
 
-    const res = await response.json();
-    return res.data.insights.usage;
+    return await response.json();
   };
 
-  const { data, error } = useSWR(token?.token && [url, args], fetcher, {
-    // revalidateIfStale: false,
-  });
+  const { data, error } = useSWR(
+    token?.token && ["/api/smaug", args],
+    fetcher,
+    {
+      // revalidateIfStale: false,
+    }
+  );
 
   return {
     isUsed: data?.hasMatch,
@@ -61,5 +39,6 @@ export default function useUsage(token, args = {}) {
     profile: data?.profile,
     agencyId: data?.agencyId,
     isLoading: !data && !error,
+    error,
   };
 }
