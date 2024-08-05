@@ -47,7 +47,7 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
 
   const res = result.body;
 
-  return Object.entries(res.facets).map(([name, facetResult]) => {
+  return Object.entries(res?.facets).map(([name, facetResult]) => {
     return {
       name,
       values: Object.entries(facetResult).map(([term, count]) => {

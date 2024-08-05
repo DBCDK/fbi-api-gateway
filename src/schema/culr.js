@@ -334,7 +334,7 @@ export const resolvers = {
       });
 
       // Check if user is already subscribed to agency
-      if (ENABLE_CREATED_CHECK && accounts.length > 0) {
+      if (ENABLE_CREATED_CHECK && accounts?.length > 0) {
         return {
           status: "ERROR_USER_ALREADY_CREATED",
         };

@@ -516,13 +516,13 @@ export const resolvers = {
 
       if (orderIds?.length > 0) {
         const workresult = await Promise.all(
-          res?.result.map(async (order) => {
+          res?.result?.map(async (order) => {
             //TODO: remove fetchOrderStatus call once frontend is updated to use titles and creators instead of titile and author.
             const orsResponse = await fetchOrderStatus(
               { orderIds: [order.orderId] },
               context
             );
-            const orsResult = orsResponse[0];
+            const orsResult = orsResponse?.[0];
             const workData = await resolveWork({ pid: order.pid }, context);
             const creators = [
               ...workData?.creators?.persons?.map((person) => ({

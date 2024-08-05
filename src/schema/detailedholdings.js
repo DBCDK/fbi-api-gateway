@@ -186,7 +186,7 @@ async function resolveLocalIdentifiers(pids, agencyId, context) {
  * - branch is a service-punkt
  */
 async function filterHoldings(holdings, context) {
-  if (!holdings.length) {
+  if (!holdings?.length) {
     return holdings;
   }
   return (
@@ -427,12 +427,12 @@ export const resolvers = {
     lamp(parent, args, context, info) {
       let statusobject = { message: "no_loc_no_holding", color: "none" };
       //check if there are any localizations at all
-      if (parent.holdingsitems === null && parent.holdingstatus.length < 1) {
+      if (parent.holdingsitems === null && parent.holdingstatus?.length < 1) {
         // no localizations - we can do nothing
         return statusobject;
       }
       // branch has no holding - there are localizations in agency
-      if (parent.holdingstatus.length < 1) {
+      if (parent.holdingstatus?.length < 1) {
         return { message: "loc_no_holding", color: "yellow" };
       }
       // branch has holding - check status

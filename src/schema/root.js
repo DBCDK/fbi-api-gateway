@@ -360,7 +360,7 @@ export const resolvers = {
     data_collect(parent, args, context, info) {
       // Check that exactly one input type is given
       const inputObjects = Object.values(args.input);
-      if (inputObjects.length !== 1) {
+      if (inputObjects?.length !== 1) {
         throw new Error("Exactly 1 input must be specified");
       }
 
