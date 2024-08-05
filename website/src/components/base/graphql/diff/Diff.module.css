@@ -50,13 +50,6 @@
   position: absolute;
   left: -56px;
   top: 0;
-
-  width: 60px;
-  aspect-ratio: 4;
-  background: radial-gradient(circle closest-side, #000 90%, #0000) 0 /
-    calc(100% / 3) 100% space;
-  clip-path: inset(0 100% 0 0);
-  animation: l1 1s steps(4) infinite;
 }
 
 @keyframes l1 {
@@ -66,7 +59,11 @@
 }
 
 .wrap ul li.ignore {
-  opacity: 0.5;
+  opacity: 0.4;
+}
+
+.wrap ul li.isLoading > *:not(.spinner) {
+  opacity: 0.4;
 }
 
 .wrap ul li.ignore span:first-of-type,

@@ -63,7 +63,7 @@ export const resolvers = {
       const res = await context.datasources.getLoader("elastic").load({
         start: start.toISOString(),
         end: end.toISOString(),
-        clientId: args?.options?.ClientId,
+        clientId: args?.options?.clientId,
         agencyId: args?.options?.agencyId,
         profile: args?.options?.profile,
         q: args?.options?.q,

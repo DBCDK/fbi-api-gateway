@@ -7,8 +7,9 @@ import useUsage from "@/hooks/useUsage";
 import useConfiguration from "@/hooks/useConfiguration";
 
 import styles from "./Diff.module.css";
+import Spinner from "../../spinner/Spinner";
 
-function Li({ from, to, note }) {
+function Li({ from, to, note, settings }) {
   const { selectedToken } = useStorage();
   const { configuration = {} } = useConfiguration(selectedToken);
 
@@ -22,10 +23,17 @@ function Li({ from, to, note }) {
   const options = {
     days: 30,
     q: fromHasDot ? fromField : from,
-    agencyId: agency,
-    profile: selectedToken.profile,
-    clientId,
   };
+
+  if (settings?.agency) {
+    options.agencyId = agency;
+  }
+  if (settings?.profile) {
+    options.profile = selectedToken.profile;
+  }
+  if (settings?.client) {
+    options.clientId = clientId;
+  }
 
   const { isUsed, timestamp, stringQuery, operationName, isLoading } = useUsage(
     selectedToken,
@@ -37,14 +45,17 @@ function Li({ from, to, note }) {
   const toType = toHasDot ? toArr[0] : to;
   const toField = toHasDot && toArr[1];
 
+  const enabled = settings?.enabled;
+
   const tail = to ? <strong>{to}</strong> : " was removed";
   const style = to ? styles.change : styles.del;
 
-  const ignoreStyle = !isUsed && !isLoading ? styles.ignore : "";
+  const ignoreStyle = !isUsed && !isLoading && enabled ? styles.ignore : "";
+  const isLoadingStyle = isLoading ? styles.isLoading : "";
   // ⏳
   return (
-    <li className={`${style} ${ignoreStyle}`}>
-      {isLoading && <div className={styles.spinner}> </div>}
+    <li className={`${style} ${isLoadingStyle} ${ignoreStyle}`}>
+      {isLoading && <Spinner className={styles.spinner} />}
       <span>
         {fromHasDot ? (
           <>
@@ -69,7 +80,7 @@ function Li({ from, to, note }) {
   );
 }
 
-export default function Diff() {
+export default function Diff({ options }) {
   const url = useGraphQLUrl("https://fbi-api.dbc.dk");
   const { selectedToken } = useStorage();
   const { json: remoteSchema } = useSchema(selectedToken, url);
@@ -128,7 +139,7 @@ export default function Diff() {
                       return null;
                     }
 
-                    return <Li key={from} {...obj} />;
+                    return <Li key={from} {...obj} settings={options} />;
                   })}
                 </ul>
               </div>

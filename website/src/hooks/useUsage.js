@@ -6,6 +6,8 @@ import { useGraphQLUrl } from "./useSchema";
 export default function useUsage(token, args = {}) {
   const url = useGraphQLUrl();
 
+  console.log("fetcher args", args);
+
   const fetcher = async (url) => {
     const response = await fetch(url, {
       method: "POST",

@@ -15,30 +15,20 @@ import Chip from "../base/chip";
 
 export default function Wrap() {
   const [options, setOptions] = useState({
-    profile: true,
+    profile: false,
     agency: true,
     client: true,
     enabled: true,
   });
 
   function updateOptions(key, value) {
-    console.log("update", key, value);
-
     let _options = { ...options };
 
-    if (key === "enabled") {
-      Object.keys(options).forEach((k) => {
-        console.log("????", k);
-        _options[k] = value;
-      });
-    }
-
-    console.log("_options", _options);
-
+    // if (key === "enabled") {
+    //   Object.keys(options).forEach((k) => (_options[k] = value));
+    // }
     setOptions({ ..._options, [key]: value });
   }
-
-  console.log("options", { ...options });
 
   return (
     <>
@@ -110,11 +100,12 @@ export default function Wrap() {
           <Col>
             <Text type="text5">Changelog enhancement</Text>
             <Text>
-              If the changelog enhancement is enabled, we will mark the
-              fields/types that have not been found in the FBI-API request log
-              for the last <strong>30 days</strong>. Please note that this is
-              only a guideline and is <strong>NOT</strong> a guarantee that your
-              application is not using the marked (<i>strikethrough</i>)
+              If the changelog enhancement is enabled, fields/types that have
+              not been found in the FBI-API request log for the past{" "}
+              <strong>30 days</strong>
+              will be marked with a <i>strikethrough</i>. Please note that this
+              is only a guideline and is <strong>NOT</strong> a guarantee that
+              your application does not use the marked <i>strikethrough</i>{" "}
               fields/types.
             </Text>
 
@@ -123,7 +114,7 @@ export default function Wrap() {
                 checked={options.enabled}
                 onChange={(state) => updateOptions("enabled", state)}
               >
-                {options.enabled ? "✔ Enabled" : "Enable"}
+                {options.enabled ? "✔ Enabled" : "✕ Enable"}
               </Chip>
             </div>
 
@@ -140,32 +131,32 @@ export default function Wrap() {
 
             <div className={styles.options}>
               <Chip
-                disabled={!options.enabled}
-                checked={options.client}
+                disabled={!options.enabled || !options.enabled}
+                checked={options.client && options.enabled}
                 onChange={(state) => updateOptions("client", state)}
               >
-                {options.client ? "✔" : "✕"} ClientId
+                {options.client && options.enabled ? "✔" : "✕"} ClientId
               </Chip>
               <Chip
-                disabled={!options.enabled}
-                checked={options.profile}
+                disabled={!options.enabled || !options.enabled}
+                checked={options.profile && options.enabled}
                 onChange={(state) => updateOptions("profile", state)}
               >
-                {options.profile ? "✔" : "✕"} Profile
+                {options.profile && options.enabled ? "✔" : "✕"} Profile
               </Chip>
               <Chip
-                disabled={!options.enabled}
-                checked={options.agency}
+                disabled={!options.enabled || !options.enabled}
+                checked={options.agency && options.enabled}
                 onChange={(state) => updateOptions("agency", state)}
               >
-                {options.agency ? "✔" : "✕"} AgencyId
+                {options.agency && options.enabled ? "✔" : "✕"} AgencyId
               </Chip>
             </div>
           </Col>
         </Row>
         <Row>
           <Col>
-            <Diff />
+            <Diff options={options} />
           </Col>
         </Row>
       </Layout>
