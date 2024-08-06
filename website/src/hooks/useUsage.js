@@ -33,6 +33,7 @@ export default function useUsage(token, args = {}) {
 
   return {
     isUsed: data?.hasMatch,
+    uuid: data?.uuid,
     timestamp: data?.timestamp,
     stringQuery: data?.parsedQuery,
     operationName: data?.opeartionName,

@@ -2,6 +2,8 @@ import fetch from "isomorphic-unfetch";
 import request from "superagent";
 import config from "../../../../src/config.js";
 
+//https://kibana.dbc.dk/app/kibana#/discover?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_a=(columns:!(parsedQuery,clientId,profile.combined),filters:!(('$state':(store:appState),exists:(field:parsedQuery.keyword),meta:(alias:!n,disabled:!f,index:'8a5a6670-94f6-11ee-9938-753d08cf4a51',key:parsedQuery.keyword,negate:!f,type:exists,value:exists)),('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'8a5a6670-94f6-11ee-9938-753d08cf4a51',key:sys_kubernetes.labels.app.keyword,negate:!f,params:(query:fbi-api-gateway),type:phrase),query:(match_phrase:(sys_kubernetes.labels.app.keyword:fbi-api-gateway)))),index:'8a5a6670-94f6-11ee-9938-753d08cf4a51',interval:auto,query:(language:lucene,query:''),sort:!(!('@timestamp',desc)))
+
 /**
  * remote smaug api call
  */
@@ -65,21 +67,29 @@ async function getElasticSearchLog({
     },
     query: {
       bool: {
-        must: [],
-        filter: [
+        must: [
           {
-            bool: {
-              should: [
-                {
-                  query_string: {
-                    fields: ["parsedQuery.keyword"],
-                    query: `*${q}*`,
-                  },
-                },
-              ],
-              minimum_should_match: 1,
+            query_string: {
+              query: `parsedQuery:"/${q}/"`,
+              analyze_wildcard: true,
+              time_zone: "Europe/Copenhagen",
             },
           },
+        ],
+        filter: [
+          // {
+          //   bool: {
+          //     should: [
+          //       {
+          //         query_string: {
+          //           fields: ["parsedQuery.keyword"],
+          //           query: `*${q}*`,
+          //         },
+          //       },
+          //     ],
+          //     minimum_should_match: 1,
+          //   },
+          // },
           {
             exists: {
               field: "parsedQuery.keyword",
@@ -204,6 +214,7 @@ export default async function handler(req, res) {
           didTimeout: elastic_response.timed_out,
           totalMs: elastic_response.took,
         },
+        uuid: source.uuid,
         hasMatch: hasHit,
         timestamp: source.timestamp,
         parsedQuery: source.parsedQuery,

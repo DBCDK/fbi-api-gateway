@@ -7,6 +7,7 @@ import useUsage from "@/hooks/useUsage";
 
 import styles from "./Diff.module.css";
 import Spinner from "../../spinner/Spinner";
+
 import { dateTimeConverter } from "@/components/utils";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 
@@ -21,6 +22,7 @@ function Li({ from, to, note, options }) {
   const q = fromHasDot ? fromField : from;
 
   const {
+    uuid,
     isUsed,
     timestamp,
     stringQuery,
@@ -43,7 +45,13 @@ function Li({ from, to, note, options }) {
 
   const popover = (
     <Popover id={from} className={styles.popover}>
-      <Popover.Body>{stringQuery}</Popover.Body>
+      <Popover.Body>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: stringQuery?.replaceAll(q, `<strong>${q}</strong>`),
+          }}
+        ></div>
+      </Popover.Body>
     </Popover>
   );
 
