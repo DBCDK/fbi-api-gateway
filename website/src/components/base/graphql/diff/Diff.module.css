@@ -27,6 +27,11 @@
   color: var(--secondary);
 }
 
+.wrap ul li.strikethrough span:first-of-type,
+.wrap ul li.strikethrough span:last-of-type {
+  text-decoration: line-through;
+}
+
 .wrap ul li span strong {
   color: var(--info);
   /* font-weight: normal; */

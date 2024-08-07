@@ -1,7 +1,7 @@
 {
     "DEPRECATED": [
-        {"from": "SortOrder.asc", "to": "SortOrder.ASC" },
-        {"from": "SortOrder.desc", "to": "SortOrder.DESC" },
+        {"from": "SortOrder.asc", "to": "SortOrderEnum.ASC"},
+        {"from": "SortOrder.desc", "to": "SortOrderEnum.DESC"},
         {"from": "ComplexSearchResponse.solrQuery"},
         {"from": "ComplexSearchResponse.solrFilter"},
         {"from": "ComplexSearchResponse.tokenizerDurationInMs"},
@@ -27,20 +27,20 @@
         {"from": "Work.universe", "to": "Work.universes"}
     ],
     "TO_UPPERCASE_ENUM_VALUES": [
-        {"from": "ComplexSuggestionType", "to": "ComplexSuggestionTypeEnum"},
-        {"from": "FacetField", "to": "FacetFieldEnum"},
-        {"from": "CategoryFilters", "to": "CategoryFiltersEnum"},
-        {"from": "FeedbackThumb", "to": "FeedbackThumbEnum"},
-        {"from": "LanguageCode", "to": "LanguageCodeEnum"},
-        {"from": "VipUserParameter", "to": "VipUserParameterEnum"},
-        {"from": "MoodSuggest", "to": "MoodSuggestEnum"},
-        {"from": "HoldingsStatus", "to": "HoldingsStatusEnum"},
-        {"from": "BookMarkOrderBy", "to": "BookMarkOrderByEnum"}
+        {"from": "ComplexSuggestionType", "to": "ComplexSuggestionTypeEnum", "internalOnly": false},
+        {"from": "FacetField", "to": "FacetFieldEnum", "internalOnly": false},
+        {"from": "CategoryFilters", "to": "CategoryFiltersEnum", "internalOnly": false},
+        {"from": "FeedbackThumb", "to": "FeedbackThumbEnum", "internalOnly": false},
+        {"from": "LanguageCode", "to": "LanguageCodeEnum", "internalOnly": false},
+        {"from": "VipUserParameter", "to": "VipUserParameterEnum", "internalOnly": true},
+        {"from": "MoodSuggest", "to": "MoodSuggestEnum", "internalOnly": false},
+        {"from": "HoldingsStatus", "to": "HoldingsStatusEnum", "internalOnly": false},
+        {"from": "BookMarkOrderBy", "to": "BookMarkOrderByEnum", "internalOnly": false}
     ],
     "TYPES_TO_PASCALCASE": [
-        {"from": "localSuggestResponse", "to": "LocalSuggestResponse"},
-        {"from": "holdingAgency", "to": "HoldingAgency"},
-        {"from": "moodQueries", "to": "MoodQueries"}
+        {"from": "localSuggestResponse", "to": "LocalSuggestResponse", "internalOnly": false},
+        {"from": "holdingAgency", "to": "HoldingAgency", "internalOnly": false},
+        {"from": "moodQueries", "to": "MoodQueries", "internalOnly": false}
     ],
     "TYPES_TO_PASCALCASE_NAMECHANGE": [
         {"from": "complexSearchFacets", "to": "ComplexSearchFacetsInput"},

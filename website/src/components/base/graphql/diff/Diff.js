@@ -45,7 +45,7 @@ export default function Diff() {
               <div className={styles.title}>{titleMap[k]}</div>
               <div className={styles.wrap}>
                 <ul>
-                  {v.map(({ from, to, note }) => {
+                  {v.map(({ from, to, note, internalOnly }) => {
                     const fromHasDot = from.includes(".");
                     const toHasDot = to?.includes(".");
 
@@ -73,8 +73,12 @@ export default function Diff() {
                     const tail = to ? <strong>{to}</strong> : " was removed";
                     const style = to ? styles.change : styles.del;
 
+                    const strikethrough = internalOnly
+                      ? styles.strikethrough
+                      : "";
+
                     return (
-                      <li className={style} key={from}>
+                      <li className={`${style} ${strikethrough}`} key={from}>
                         <span>
                           {fromHasDot ? (
                             <>
