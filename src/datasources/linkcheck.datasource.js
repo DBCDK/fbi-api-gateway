@@ -20,16 +20,13 @@ export function restructureLinkStates(data) {
  * Fetch url state from service
  */
 export async function load({ urls }, context) {
-  // Harcode OK, der er problemer med link tjekkeren, når den er fikset, kan vi aktivere den igen
-  return urls?.map((url) => ({ url, status: "OK" })) || [];
+  const res = await context.fetch(`${url}/checks`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ urls }),
+  });
 
-  // const res = await context.fetch(`${url}/checks`, {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ urls }),
-  // });
-
-  // return restructureLinkStates(res.body.linkStates);
+  return restructureLinkStates(res.body?.linkStates);
 }
 
 export const options = {
