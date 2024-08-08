@@ -5,7 +5,7 @@ export default function Page() {
   return (
     <>
       <Head>
-        <title>FBI API | changes</title>
+        <title>FBI API | Changes</title>
       </Head>
       <Changes />
     </>

@@ -18,6 +18,23 @@
   line-height: 1.75;
 }
 
+.options {
+  margin: var(--pt4) 0;
+}
+
+.options > span {
+  margin-right: var(--pt2);
+}
+
+.wrap {
+  margin-top: var(--pt4);
+}
+
+.wrap var {
+  font-style: normal;
+  text-decoration: line-through;
+}
+
 @media screen and (max-width: 576px) {
   .container {
     padding-top: var(--pt2);

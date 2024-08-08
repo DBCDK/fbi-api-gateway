@@ -27,9 +27,9 @@
   color: var(--secondary);
 }
 
-.wrap ul li.strikethrough span:first-of-type,
-.wrap ul li.strikethrough span:last-of-type {
+.wrap ul li.strikethrough {
   text-decoration: line-through;
+  opacity: 0.5;
 }
 
 .wrap ul li span strong {
