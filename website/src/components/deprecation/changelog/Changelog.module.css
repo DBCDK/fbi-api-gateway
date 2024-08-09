@@ -39,6 +39,12 @@
   vertical-align: bottom;
 }
 
+/*  */
+
+.spinner {
+  display: inline-block;
+}
+
 /* field type argument styles */
 .table td strong {
   color: var(--info);

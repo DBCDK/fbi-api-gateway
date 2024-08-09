@@ -3,11 +3,11 @@ import Table from "react-bootstrap/Table";
 
 import { daysBetween } from "@/components/utils";
 
-// import data from "./data.json";
-
 import styles from "./Changelog.module.css";
 import useSchema from "@/hooks/useSchema";
 import useStorage from "@/hooks/useStorage";
+import Text from "@/components/base/text";
+import Spinner from "@/components/base/spinner/Spinner";
 
 /**
  *
@@ -186,7 +186,7 @@ function buildTemplates(data) {
 
 export default function Changelog() {
   const { selectedToken } = useStorage();
-  const { json } = useSchema(selectedToken);
+  const { json, isLoading } = useSchema(selectedToken);
 
   const data = buildTemplates(getDeprecatedFields(json));
 
@@ -212,6 +212,19 @@ export default function Changelog() {
     [data]
   );
 
+  if (!data.length && isLoading) {
+    return (
+      <Text>
+        ... Searching for deprecated fields{" "}
+        <Spinner className={styles.spinner} />
+      </Text>
+    );
+  }
+
+  if (!data.length && !isLoading) {
+    return <Text>... Currently no deprecated fields 🤸</Text>;
+  }
+
   return (
     <Table className={styles.table} responsive="md">
       <thead>
@@ -233,7 +246,12 @@ export default function Changelog() {
             <td>
               <strong>{d.type}</strong>
               <span>.{d.field}</span>
-              {d.argument && <i>{d.argument}</i>}
+              {d.argument && (
+                <span>
+                  <span>argument</span>
+                  <i>{d.argument}</i>
+                </span>
+              )}
             </td>
             <td>{d.reason}</td>
             <td>{d.expires}</td>
