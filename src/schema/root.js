@@ -32,7 +32,7 @@ directive @complexity(
   # Optional multipliers
   multipliers: [String!]
 ) on FIELD_DEFINITION
-
+ 
 type Query {
   debug: Debug
   manifestation(pid: String, faust: String): Manifestation @complexity(value: 3)
