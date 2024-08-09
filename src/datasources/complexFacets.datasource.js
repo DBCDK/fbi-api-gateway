@@ -67,7 +67,7 @@ export async function load(
 
   return {
     errorMessage: json?.errorMessage,
-    hitcount: json.numFound,
+    hitcount: json?.numFound,
     facets: json?.facets || [],
   };
 }
