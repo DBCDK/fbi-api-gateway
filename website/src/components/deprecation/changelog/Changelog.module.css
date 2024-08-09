@@ -39,6 +39,26 @@
   vertical-align: bottom;
 }
 
+/*  */
+
+.spinner {
+  display: inline-block;
+}
+
+/* field type argument styles */
+.table td strong {
+  color: var(--info);
+}
+
+.table td span > span {
+  margin: 0 var(--pt1);
+}
+
+.table td i {
+  color: var(--error);
+  font-weight: bold;
+}
+
 /* expiration status class */
 .table tr.expire-more-or-eq-to-90-days td:last-child {
   border-right: 3px solid var(--success-dark);
