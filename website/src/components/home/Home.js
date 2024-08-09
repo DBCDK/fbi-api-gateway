@@ -15,7 +15,7 @@ import styles from "./Home.module.css";
 export default function Home() {
   const { theme } = useTheme();
 
-  const isFuture = theme === "future";
+  const isTemp = theme === "temp";
 
   return (
     <>
@@ -26,28 +26,28 @@ export default function Home() {
           <Col>
             <Text className={styles.text}>Hello! You have found the</Text>
             <Title as="h1" type="title6" className={styles.title}>
-              <strong>[FUTURE]</strong> FBI API
+              <strong>[Temporary]</strong> FBI API
             </Title>
           </Col>
         </Row>
 
-        {isFuture && (
+        {isTemp && (
           <Row className={styles.content}>
             <Col>
               <Title as="h2" type="title1" className={styles.title}>
-                What does this <strong>{"'Future'"}</strong> thing mean?
+                What does this <strong>{"'Temporary'"}</strong> thing mean?
               </Title>
               <Text className={styles.text}>
-                This future version of the FBI-API is designed for significant
-                schema migrations. It does not represent the current API schema
-                but rather depicts what it will look like in the near future.
+                This version of the FBI-API is designed for a more significant
+                schema migration. This is NOT how the schema currently looks
+                like.
               </Text>
               <Text className={styles.text}>
-                Just looking for the standard FBI-API? Click{" "}
+                Looking for the cureent FBI-API version? Click{" "}
                 <Link href="https://fbi-api.dbc.dk/" underline>
                   here
-                </Link>{" "}
-                {"and we'll take you 'back to the present'"} 🫠.
+                </Link>
+                .
               </Text>
             </Col>
           </Row>

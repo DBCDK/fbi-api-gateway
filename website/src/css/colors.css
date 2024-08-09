@@ -46,7 +46,16 @@ body {
   --hero-gradient-primary: #f8bbd0;
   --hero-gradient-secondary: #b3e5fc;
 }
+body.temp {
+  --primary: #bdbdbd;
+  --primary-dark: #757575;
 
+  --secondary: #ffca28;
+  --secondary-light: #ffca28;
+
+  --hero-gradient-primary: #bdbdbd;
+  --hero-gradient-secondary: #757575;
+}
 body.future {
   --primary: #b39ddb;
   --primary-dark: #7e57c2;
@@ -137,6 +146,11 @@ body.dark {
 body.dark code {
   background-color: var(--dark);
   color: #70bcff;
+}
+
+body.dark.temp {
+  --secondary: #ffca28;
+  --secondary-light: #ffca28;
 }
 
 body.dark.easter {

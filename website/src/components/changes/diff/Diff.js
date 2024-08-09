@@ -7,7 +7,7 @@ import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 
 import diff from "./diff";
 
-export default function Diff() {
+export default function Diff({ options }) {
   const url = useGraphQLUrl("https://fbi-api.dbc.dk");
   const { selectedToken } = useStorage();
   const { json: remoteSchema } = useSchema(selectedToken, url);
@@ -22,7 +22,7 @@ export default function Diff() {
 
   const titleMap = {
     DEPRECATED:
-      "Deprecated fields that were removed; the type/fields after the arrow refer to alternative options.",
+      "Deprecated fields that were removed. The type/field after the arrow refer to alternative options.",
     TO_UPPERCASE_ENUM_VALUES:
       "Enum types whose VALUES were changed from lowercase to UPPERCASE.",
     TYPES_TO_PASCALCASE: "Types that were changed to PascalCase.",
@@ -45,26 +45,29 @@ export default function Diff() {
               <div className={styles.title}>{titleMap[k]}</div>
               <div className={styles.wrap}>
                 <ul>
-                  {v.map(({ from, to, note }) => {
+                  {v.map(({ from, to, note, ignore }) => {
                     const fromHasDot = from.includes(".");
                     const toHasDot = to?.includes(".");
 
                     const fromArr = from?.split(".");
                     const fromType = fromHasDot ? fromArr[0] : from;
                     const fromField = fromHasDot && fromArr[1];
+                    const isValues =
+                      fromHasDot && fromField?.toLowerCase() === "values";
 
                     const toArr = to?.split(".");
                     const toType = toHasDot ? toArr[0] : to;
                     const toField = toHasDot && toArr[1];
 
-                    const hasAccess = fromHasDot
-                      ? map?.[fromType]?.fields?.find(
-                          ({ name }) => name === fromField
-                        ) ||
-                        map?.[fromType]?.enumValues?.find(
-                          ({ name }) => name === fromField
-                        )
-                      : map[fromType];
+                    const hasAccess =
+                      fromHasDot && !isValues
+                        ? map?.[fromType]?.fields?.find(
+                            ({ name }) => name === fromField
+                          ) ||
+                          map?.[fromType]?.enumValues?.find(
+                            ({ name }) => name === fromField
+                          )
+                        : map[fromType];
 
                     if (!hasAccess) {
                       return null;
@@ -73,10 +76,13 @@ export default function Diff() {
                     const tail = to ? <strong>{to}</strong> : " was removed";
                     const style = to ? styles.change : styles.del;
 
+                    const strikethrough =
+                      options.enabled && ignore ? styles.strikethrough : "";
+
                     return (
-                      <li className={style} key={from}>
+                      <li className={`${style} ${strikethrough}`} key={from}>
                         <span>
-                          {fromHasDot ? (
+                          {fromHasDot || isValues ? (
                             <>
                               <strong>{fromType}</strong>.{fromField}
                             </>

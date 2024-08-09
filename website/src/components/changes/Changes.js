@@ -1,16 +1,27 @@
+import { useState } from "react";
+
 import Layout from "@/components/base/layout";
 import Header from "@/components/header";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import { Col, Row } from "react-bootstrap";
 
-import Diff from "@/components/base/graphql/diff";
+import Diff from "./diff";
 
 import Link from "@/components/base/link";
 
 import styles from "./Changes.module.css";
+import Chip from "../base/chip/Chip";
 
 export default function Wrap() {
+  const [options, setOptions] = useState({
+    enabled: true,
+  });
+
+  function updateOptions(key, value) {
+    setOptions({ ...options, [key]: value });
+  }
+
   return (
     <>
       <Header />
@@ -72,8 +83,28 @@ export default function Wrap() {
                 </Text>
               </li>
             </ul>
+          </Col>
+        </Row>
 
-            <Diff />
+        <Row className={styles.wrap}>
+          <Col>
+            <Text type="text5">Reduce changelog</Text>
+            <Text>
+              Typenames used solely as internal references are marked with{" "}
+              <var>strikethrough</var> by default. To view the full changelog
+              without any strikethrough lines, you can disable this option here.
+            </Text>
+
+            <div className={styles.options}>
+              <Chip
+                checked={options.enabled}
+                onChange={(state) => updateOptions("enabled", state)}
+              >
+                {options.enabled ? "✔ Enabled" : "✕ Disabled"}
+              </Chip>
+            </div>
+
+            <Diff options={options} />
           </Col>
         </Row>
       </Layout>

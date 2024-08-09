@@ -27,6 +27,11 @@
   color: var(--secondary);
 }
 
+.wrap ul li.strikethrough {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
 .wrap ul li span strong {
   color: var(--info);
   /* font-weight: normal; */
