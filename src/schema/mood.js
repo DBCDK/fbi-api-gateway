@@ -99,10 +99,10 @@ export const typeDef = `
   }
 
   type MoodQueries {
-    moodSearch(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchResponse! 
+    moodSearch(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchResponse!
     moodSearchKids(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchKidsResponse!
     moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
-    moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], hasCover:Boolean): [MoodTagRecommendResponse]! 
+    moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], hasCover:Boolean): [MoodTagRecommendResponse]!
     moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean):[MoodTagRecommendResponse]!
     moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes:[String!], offset: Int, limit: Int):MoodRecommendKidsResponse!
   }
