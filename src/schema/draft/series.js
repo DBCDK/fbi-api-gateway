@@ -30,6 +30,11 @@ type Series {
   title: String!
   
   """
+  Identifier for the series
+  """
+  seriesId: String
+
+  """
   Additional information 
   """
   identifyingAddition: String
@@ -84,8 +89,14 @@ type Series {
   """
   members(limit: Int, offset: Int): [SerieWork!]! 
 }
-`;
 
+extend type Query {
+   series(seriesId:String!): Series
+}
+`;
+// extend type Query {
+//   series(seriesId:String!): Series
+// }
 export const resolvers = {
   Work: {
     // Use the new serie service v2
@@ -166,5 +177,15 @@ export const resolvers = {
 
       return resolveSeries(data, parent);
     },
+  },
+  Query: {
+    async series(parent, args, context, info) {
+      console.log("\n\n\n\n\n SERIES ID!! ", args.seriesId, "\n\n\n\n\n");
+      const seriesById = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: args.seriesId, profile: context.profile });
+     return {...seriesById, seriesId: args.seriesId};
+    },
+
   },
 };

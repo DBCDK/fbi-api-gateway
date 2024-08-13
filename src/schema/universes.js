@@ -5,9 +5,9 @@ union UniverseContentUnion = Work | Series
 
 type Universe {
   """
-  A key that identifies a universe.
+  An id that identifies a universe.
   """
-  key: String!
+  universeId: String
 
   """
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -51,7 +51,8 @@ type UniverseContentResult {
 }
 
 extend type Query {
-  universe(key: String!): Universe
+  universe(universeId:String!): Universe
+
 }
 
 `;
@@ -107,7 +108,7 @@ export const resolvers = {
   },
   Universe: {
     title(parent, args, context, info) {
-      return parent.universeTitle || "fisk";
+      return parent.universeTitle;
     },
     description(parent, args, context, info) {
       return parent.universeDescription;
@@ -131,6 +132,7 @@ export const resolvers = {
     },
   },
   Manifestation: {
+    //TODO: use identify endpoint instead!🚨
     // Use the new universe from series-service v2
     async universes(parent, args, context, info) {
       const data = await context.datasources.getLoader("universes").load({
@@ -152,19 +154,24 @@ export const resolvers = {
   Query: {
     async universe(parent, args, context, info) {
       // TODO, skip key parsing as soon as we can look up key directly from service
-      const key = Buffer.from(args.key, "base64url").toString("utf8");
-      const [workId, index] = key.split("|");
+     // const key = Buffer.from(args.key, "base64url").toString("utf8");
+     // const [workId, index] = key.split("|");
 
-      const data = await context.datasources.getLoader("universes").load({
-        workId: workId,
-        profile: context.profile,
-      });
+       const universeById =  await context.datasources
+        .getLoader("universeById")
+        .load({ universeId: args.universeId, profile: context.profile });
+      console.log("\n\n\n\n\n 🚧IN UNIVERSE!!! universeById", universeById,'\n\n\n\n\n');
+      // const data = await context.datasources.getLoader("universes").load({
+      //   workId: workId,
+      //   profile: context.profile,
+      // });
 
-      if (!data?.universes?.[index]) {
-        return null;
-      }
+      return {...universeById,  universeId: args.universeId};
+      // if (!data?.universes?.[index]) {
+      //   return null;
+      // }
 
-      return { ...data?.universes?.[index], key: args.key };
+      // return { ...data?.universes?.[index], key: args.key };
     },
   },
 };

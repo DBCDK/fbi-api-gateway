@@ -149,11 +149,18 @@ export default {
       ttl: process.env.UNIVERSES_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.UNIVERSES_PREFIX || "seriesservice-universes-2",
     },
+    seriesService: {
+      url:
+        process.env.SERIES_SERVICE_URL ||
+        "http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/",
+      ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
+      prefix: process.env.SERIES_PREFIX || "seriesservice-2",
+    },
     redis: {
       host: process.env.REDIS_HOST || "127.0.0.1",
       port: process.env.REDIS_PORT || "6379",
       prefix: process.env.REDIS_PREFIX || "bibdk-api-4",
-      enabled: process.env.REDIS_ENABLED || true,
+      enabled: false//false || process.env.REDIS_ENABLED || true,
     },
     simplesearch: {
       url:

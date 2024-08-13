@@ -1,5 +1,5 @@
 import config from "../config";
-
+//TODO change to datasources.seriesService
 const { url, ttl, prefix } = config.datasources.universe;
 
 const { url: jedUrl } = config.datasources.jed;
