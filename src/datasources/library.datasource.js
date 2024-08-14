@@ -114,6 +114,10 @@ async function get() {
       // store original agencyId (Not manipulated)
       _agencyId: agencyId,
       mobileLibraryLocations: branchMap[branchId]?.agencySubdivision,
+      openingHoursUrl:
+        branchMap[branchId]?.openingHoursUrl ||
+        branchMap[branchMap[branchId]?.agencyId]?.openingHoursUrl ||
+        null,
     };
   });
 
