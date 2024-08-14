@@ -846,6 +846,7 @@ type Branch {
   agencyType: AgencyType!
   name: String!
   openingHours: String
+  openingHoursUrl: String
   postalAddress: String
   postalCode: String
   userParameters: [UserParameter!]!
