@@ -588,11 +588,38 @@ export async function resolveAccess(manifestation, context) {
   }
 
   if (parent?.access?.interLibraryLoanIsPossible) {
-    res.push({ __typename: "InterLibraryLoan", loanIsPossible: true });
+    const forLoan = checkInterLibraryLoan(parent);
+    res.push({ __typename: "InterLibraryLoan", loanIsPossible: forLoan });
   }
 
   // Return array containing all types of access
   return _sortOnlineAccess(res);
+}
+
+/**
+ * Some sources are not for loan (fagbibliografier) - for now a statis list:
+ * 159080-fagbib - Besættelsesbibliografien
+ * 159081-fagbib - Bibliografi over Dansk Kunst
+ * 159082-fagbib - Dansk Historisk Bibliografi
+ * 159083-fagbib - Dansk Musiklitterær Bibliografi
+ * 159084-fagbib - Kongelige Teater programartikler
+ * 159085-fagbib - Dania Polyglotta
+ * 159086-fagbib - Sportline
+ * @param parent
+ */
+function checkInterLibraryLoan(parent) {
+  const notForLoan = [
+    "159080-fagbib",
+    "159081-fagbib",
+    "159082-fagbib",
+    "159083-fagbib",
+    "159084-fagbib",
+    "159085-fagbib",
+    "159086-fagbib",
+  ];
+  // we check on objectId - first part is the source
+  const source = parent?.objectId?.split(":")[0];
+  return !notForLoan.includes(source);
 }
 
 /**
