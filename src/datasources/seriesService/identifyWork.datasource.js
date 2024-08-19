@@ -18,7 +18,7 @@ export async function load({ workId, trackingId = null, profile }, context) {
   if (res.status === 404) {
     return null;
   }
-
+  //returns an object with series and universes {universes: [], series: [{"id": "1","title": "Tintins oplevelser"}]}
   return res;
 }
 

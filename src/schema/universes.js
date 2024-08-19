@@ -90,20 +90,44 @@ export const resolvers = {
   Work: {
     // Use the new universe from series-service v2
     async universes(parent, args, context, info) {
+      const { universes } = await context.datasources
+        .getLoader("identifyWork")
+        .load({
+          workId: parent.workId,
+          profile: context.profile,
+        });
+      console.log(
+        "\n\n\n identfied the following universe universes: ",
+        universes
+      );
+      console.log(
+        "\n\n\n univeses[0].identity.id: ",
+        universes[0]?.identity?.id
+      );
       const data = await context.datasources.getLoader("universes").load({
         workId: parent.workId,
         profile: context.profile,
       });
 
-      return (
-        data?.universes?.map((universe, index) => ({
-          ...universe,
-          // TODO, this key is replaced by key from service as soon as it is available
-          key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
-            "base64url"
-          ),
-        })) || []
+      const fetchedUniverses = await Promise.all(
+        universes?.map(async (universe) => {
+          console.log("\n\n\nuniverse.id", universe?.id);
+          const universeId = universe.identity?.id;
+          console.log("universeId", universeId);
+          // Fetch from universes
+          const universeById = await context.datasources
+            .getLoader("universeById")
+            .load({ universeId: universeId, profile: context.profile });
+
+          console.log("\n\n\n🚨universe by id", universeById);
+
+          // Return the fetched universe
+          return { ...universeById, universeId: universeId };
+        })
       );
+
+      console.log("fetchedUniverses", fetchedUniverses);
+      return fetchedUniverses;
     },
   },
   Universe: {
@@ -154,19 +178,23 @@ export const resolvers = {
   Query: {
     async universe(parent, args, context, info) {
       // TODO, skip key parsing as soon as we can look up key directly from service
-     // const key = Buffer.from(args.key, "base64url").toString("utf8");
-     // const [workId, index] = key.split("|");
+      // const key = Buffer.from(args.key, "base64url").toString("utf8");
+      // const [workId, index] = key.split("|");
 
-       const universeById =  await context.datasources
+      const universeById = await context.datasources
         .getLoader("universeById")
         .load({ universeId: args.universeId, profile: context.profile });
-      console.log("\n\n\n\n\n 🚧IN UNIVERSE!!! universeById", universeById,'\n\n\n\n\n');
+      console.log(
+        "\n\n\n\n\n 🚧IN UNIVERSE!!! universeById",
+        universeById,
+        "\n\n\n\n\n"
+      );
       // const data = await context.datasources.getLoader("universes").load({
       //   workId: workId,
       //   profile: context.profile,
       // });
 
-      return {...universeById,  universeId: args.universeId};
+      return { ...universeById, universeId: args.universeId };
       // if (!data?.universes?.[index]) {
       //   return null;
       // }
