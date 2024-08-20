@@ -302,7 +302,7 @@ export default {
       ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
     },
     userInfo: {
-      url: process.env.USER_INFO_URL || "https://login.bib.dk/userinfo",
+      url: process.env.USER_INFO_URL || "https://stg.login.bib.dk/userinfo",
       prefix: "userinfo",
       ttl: 60 * 5,
     },
