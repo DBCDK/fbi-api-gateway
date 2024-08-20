@@ -150,8 +150,6 @@ export const resolvers = {
     },
   },
   Manifestation: {
-    //TODO: use identify endpoint instead!🚨
-    // Use the new universe from series-service v2
     async universes(parent, args, context, info) {
       const { universes } = await context.datasources
         .getLoader("identifyWork")
