@@ -104,7 +104,6 @@ export const resolvers = {
       const fetchedUniverses = await Promise.all(
         universes?.map(async (universe, index) => {
           const universeId = universe.identity?.id;
-          console.log("universeId", universeId);
           //fetch from universes
           const universeById = await context.datasources
             .getLoader("universeById")
@@ -160,7 +159,6 @@ export const resolvers = {
       const fetchedUniverses = await Promise.all(
         universes?.map(async (universe, index) => {
           const universeId = universe.identity?.id;
-          console.log("universeId", universeId);
           //fetch from universes
           const universeById = await context.datasources
             .getLoader("universeById")

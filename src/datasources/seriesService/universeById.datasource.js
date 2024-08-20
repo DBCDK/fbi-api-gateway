@@ -27,7 +27,7 @@ export async function load(
 ) {
   const { agency, name } = profile;
   const params = `universes/${agency}/${name}/${universeId}`;
-  console.log(`\n\n\n\n\n${url}${params}\n\n\n`);
+
   const res = (
     await context?.fetch(`${url}${params}`, { allowedErrorStatusCodes: [404] })
   ).body;
