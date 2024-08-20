@@ -102,7 +102,7 @@ export const resolvers = {
           profile: context.profile,
         });
       const fetchedUniverses = await Promise.all(
-        universes?.map(async (universe) => {
+        universes?.map(async (universe, index) => {
           const universeId = universe.identity?.id;
           console.log("universeId", universeId);
           //fetch from universes
@@ -111,7 +111,13 @@ export const resolvers = {
             .load({ universeId: universeId, profile: context.profile });
 
           // return the fetched universe
-          return { ...universeById, universeId: universeId };
+          return {
+            ...universeById,
+            universeId: universeId,
+            key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
+              "base64url"
+            ),
+          };
         })
       );
 
@@ -147,20 +153,33 @@ export const resolvers = {
     //TODO: use identify endpoint instead!🚨
     // Use the new universe from series-service v2
     async universes(parent, args, context, info) {
-      const data = await context.datasources.getLoader("universes").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
+      const { universes } = await context.datasources
+        .getLoader("identifyWork")
+        .load({
+          workId: parent.workId,
+          profile: context.profile,
+        });
+      const fetchedUniverses = await Promise.all(
+        universes?.map(async (universe, index) => {
+          const universeId = universe.identity?.id;
+          console.log("universeId", universeId);
+          //fetch from universes
+          const universeById = await context.datasources
+            .getLoader("universeById")
+            .load({ universeId: universeId, profile: context.profile });
 
-      return (
-        data?.universes?.map((universe, index) => ({
-          ...universe,
-          // TODO, this key is replaced by key from service as soon as it is available
-          key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
-            "base64url"
-          ),
-        })) || []
+          // return the fetched universe
+          return {
+            ...universeById,
+            universeId: universeId,
+            key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
+              "base64url"
+            ),
+          };
+        })
       );
+
+      return fetchedUniverses;
     },
   },
   Query: {
