@@ -1,3 +1,4 @@
+//returns a series by seriesId
 import config from "../../config";
 
 const { url, ttl, prefix } = config.datasources.seriesService;

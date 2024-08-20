@@ -107,7 +107,7 @@ export const resolvers = {
           profile: context.profile,
         });
 
-        //then we fetch series data for each series id. (usually only one series id in the list)
+      //then we fetch series data for each series id. (usually only one series id in the list)
       const fetchedSeriesList = await Promise.all(
         series.map(async (item) => {
           const fetchedSeries = await context.datasources
@@ -118,7 +118,6 @@ export const resolvers = {
         })
       );
       return resolveSeries({ series: fetchedSeriesList }, parent);
-
     },
   },
 

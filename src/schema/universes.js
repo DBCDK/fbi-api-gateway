@@ -175,7 +175,7 @@ export const resolvers = {
       const universeId = args.universeId;
 
       if (args.key) {
-        //TODO: remove this after temp branch rull out 
+        //TODO: remove this after temp branch rull out
         const key = Buffer.from(args.key, "base64url").toString("utf8");
 
         const [workId, index] = key.split("|");

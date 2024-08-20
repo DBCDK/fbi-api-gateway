@@ -1,3 +1,5 @@
+//returns a universe by universeId
+
 import config from "../../config";
 
 const { url, ttl, prefix } = config.datasources.seriesService;
@@ -32,18 +34,6 @@ export async function load(
   if (res.status === 404 || !res.universe) {
     return null;
   }
-
-  //   const workTypes = new Set();
-  //   res.universe?.content?.forEach((item) => {
-  //     item.workTypes?.forEach((workType) =>
-  //       workTypes.add(workType.toUpperCase())
-  //     );
-  //   });
-
-  //   const uniqueWorkTypes = Array.from(workTypes);
-
-  //  return { ...res.universe, workTypes: uniqueWorkTypes };
-
   return await (async () => {
     const universe = res?.universe;
 
