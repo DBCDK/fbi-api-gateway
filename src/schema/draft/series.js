@@ -94,15 +94,11 @@ extend type Query {
    series(seriesId:String!): Series
 }
 `;
-// extend type Query {
-//   series(seriesId:String!): Series
-// }
+
 export const resolvers = {
   Work: {
     // Use the new serie service v2
     async series(parent, args, context, info) {
-      //fetch series id:
-      //for each id, fetch series'
       //first we feth the series ids
       const { series } = await context.datasources
         .getLoader("identifyWork")
@@ -111,15 +107,7 @@ export const resolvers = {
           profile: context.profile,
         });
 
-      console.log("\n\n\n seriesId: ", series, "\n\n\n ");
-
-      // const data = await context.datasources.getLoader("series").load({
-      //   workId: parent.workId,
-      //   profile: context.profile,
-      // });
-
-      //      console.log("\n\n\nDATA: ", data);
-      //then we fetch series data for each series id. (usually only one series id in the list)
+        //then we fetch series data for each series id. (usually only one series id in the list)
       const fetchedSeriesList = await Promise.all(
         series.map(async (item) => {
           const fetchedSeries = await context.datasources
@@ -129,14 +117,8 @@ export const resolvers = {
           return { ...fetchedSeries, seriesId: item.id };
         })
       );
-
-      console.log("fetchedSeriesList", fetchedSeriesList);
-      //console.log('\nparent',parent)
-
-      //return fetchedSeriesList;
       return resolveSeries({ series: fetchedSeriesList }, parent);
 
-      //return resolveSeries(data, parent);
     },
   },
 
@@ -210,7 +192,7 @@ export const resolvers = {
   },
   Query: {
     async series(parent, args, context, info) {
-      console.log("\n\n\n\n\n SERIES ID!! ", args.seriesId, "\n\n\n\n\n");
+      //fetch a series by the provided seriesId
       const seriesById = await context.datasources
         .getLoader("seriesById")
         .load({ seriesId: args.seriesId, profile: context.profile });

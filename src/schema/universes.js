@@ -5,6 +5,11 @@ union UniverseContentUnion = Work | Series
 
 type Universe {
   """
+  A key that identifies a universe.
+  """
+  key: String
+
+  """
   An id that identifies a universe.
   """
   universeId: String
@@ -51,7 +56,7 @@ type UniverseContentResult {
 }
 
 extend type Query {
-  universe(universeId:String!): Universe
+  universe(key: String, universeId:String): Universe
 
 }
 
@@ -96,37 +101,26 @@ export const resolvers = {
           workId: parent.workId,
           profile: context.profile,
         });
-      console.log(
-        "\n\n\n identfied the following universe universes: ",
-        universes
-      );
-      console.log(
-        "\n\n\n univeses[0].identity.id: ",
-        universes[0]?.identity?.id
-      );
-      const data = await context.datasources.getLoader("universes").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
+      //TODO: delete this
+      // const data = await context.datasources.getLoader("universes").load({
+      //   workId: parent.workId,
+      //   profile: context.profile,
+      // });
 
       const fetchedUniverses = await Promise.all(
         universes?.map(async (universe) => {
-          console.log("\n\n\nuniverse.id", universe?.id);
           const universeId = universe.identity?.id;
           console.log("universeId", universeId);
-          // Fetch from universes
+          //fetch from universes
           const universeById = await context.datasources
             .getLoader("universeById")
             .load({ universeId: universeId, profile: context.profile });
 
-          console.log("\n\n\n🚨universe by id", universeById);
-
-          // Return the fetched universe
+          // return the fetched universe
           return { ...universeById, universeId: universeId };
         })
       );
 
-      console.log("fetchedUniverses", fetchedUniverses);
       return fetchedUniverses;
     },
   },
@@ -178,28 +172,29 @@ export const resolvers = {
   Query: {
     async universe(parent, args, context, info) {
       // TODO, skip key parsing as soon as we can look up key directly from service
-      // const key = Buffer.from(args.key, "base64url").toString("utf8");
-      // const [workId, index] = key.split("|");
+      const universeId = args.universeId;
 
-      const universeById = await context.datasources
-        .getLoader("universeById")
-        .load({ universeId: args.universeId, profile: context.profile });
-      console.log(
-        "\n\n\n\n\n 🚧IN UNIVERSE!!! universeById",
-        universeById,
-        "\n\n\n\n\n"
-      );
-      // const data = await context.datasources.getLoader("universes").load({
-      //   workId: workId,
-      //   profile: context.profile,
-      // });
+      if (args.key) {
+        //TODO: remove this after temp branch rull out 
+        const key = Buffer.from(args.key, "base64url").toString("utf8");
 
-      return { ...universeById, universeId: args.universeId };
-      // if (!data?.universes?.[index]) {
-      //   return null;
-      // }
+        const [workId, index] = key.split("|");
 
-      // return { ...data?.universes?.[index], key: args.key };
+        const data = await context.datasources.getLoader("universes").load({
+          workId: workId,
+          profile: context.profile,
+        });
+
+        return { ...data?.universes?.[index], key: args.key };
+      } else if (universeId) {
+        const universeById = await context.datasources
+          .getLoader("universeById")
+          .load({ universeId: universeId, profile: context.profile });
+
+        return { ...universeById, universeId: args.universeId };
+      } else {
+        return null;
+      }
     },
   },
 };

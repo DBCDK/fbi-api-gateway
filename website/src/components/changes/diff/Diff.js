@@ -8,7 +8,7 @@ import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import diff from "./diff";
 
 export default function Diff({ options }) {
-  const url = useGraphQLUrl("http://fbi-api-gateway.febib-staging.svc.cloud.dbc.dk");
+  const url = useGraphQLUrl("https://fbi-api.dbc.dk");
   const { selectedToken } = useStorage();
   const { json: remoteSchema } = useSchema(selectedToken, url);
 
