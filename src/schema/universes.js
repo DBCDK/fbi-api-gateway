@@ -101,12 +101,6 @@ export const resolvers = {
           workId: parent.workId,
           profile: context.profile,
         });
-      //TODO: delete this
-      // const data = await context.datasources.getLoader("universes").load({
-      //   workId: parent.workId,
-      //   profile: context.profile,
-      // });
-
       const fetchedUniverses = await Promise.all(
         universes?.map(async (universe) => {
           const universeId = universe.identity?.id;
@@ -171,11 +165,9 @@ export const resolvers = {
   },
   Query: {
     async universe(parent, args, context, info) {
-      // TODO, skip key parsing as soon as we can look up key directly from service
-      const universeId = args.universeId;
-
       if (args.key) {
         //TODO: remove this after temp branch rull out
+        // TODO, skip key parsing as soon as we can look up key directly from service
         const key = Buffer.from(args.key, "base64url").toString("utf8");
 
         const [workId, index] = key.split("|");
@@ -186,10 +178,10 @@ export const resolvers = {
         });
 
         return { ...data?.universes?.[index], key: args.key };
-      } else if (universeId) {
+      } else if (args.universeId) {
         const universeById = await context.datasources
           .getLoader("universeById")
-          .load({ universeId: universeId, profile: context.profile });
+          .load({ universeId: args.universeId, profile: context.profile });
 
         return { ...universeById, universeId: args.universeId };
       } else {
