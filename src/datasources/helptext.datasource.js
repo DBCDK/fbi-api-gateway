@@ -5,16 +5,20 @@ import { createIndexer } from "../utils/searcher";
 const toDrupalLanguage = {
   da: "en",
   en: "en-gb",
+  DA: "en",
+  EN: "en-gb",
 };
 
 const fromDrupalLanguage = {
-  en: "da",
-  "en-gb": "en",
+  en: "DA",
+  "en-gb": "EN",
 };
 
 const toDrupalEnum = {
   da: "EN",
   en: "EN_GB",
+  DA: "EN",
+  EN: "EN_GB",
 };
 /**
  * Fetch all help texts from the Drupal backend
