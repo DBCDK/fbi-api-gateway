@@ -107,20 +107,22 @@ export const resolvers = {
           profile: context.profile,
         });
 
-      if (series) {
-        //then we fetch series data for each series id. (usually only one series id in the list)
-        const fetchedSeriesList = await Promise.all(
-          series?.map(async (item) => {
-            const fetchedSeries = await context.datasources
-              .getLoader("seriesById")
-              .load({ seriesId: item.id, profile: context.profile });
-
-            return { ...fetchedSeries, seriesId: item.id };
-          })
-        );
-        return resolveSeries({ series: fetchedSeriesList }, parent);
+      if (!series) {
+        //return empty if there is not series
+        return [];
       }
-      return [];
+
+      //then we fetch series data for each series id. (usually only one series id in the list)
+      const fetchedSeriesList = await Promise.all(
+        series?.map(async (item) => {
+          const fetchedSeries = await context.datasources
+            .getLoader("seriesById")
+            .load({ seriesId: item.id, profile: context.profile });
+
+          return { ...fetchedSeries, seriesId: item.id };
+        })
+      );
+      return resolveSeries({ series: fetchedSeriesList }, parent);
     },
   },
 
