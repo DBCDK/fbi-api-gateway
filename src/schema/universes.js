@@ -101,6 +101,9 @@ export const resolvers = {
           workId: parent.workId,
           profile: context.profile,
         });
+      if (!universes) {
+        return [];
+      }
       const fetchedUniverses = await Promise.all(
         universes?.map(async (universe, index) => {
           const universeId = universe.identity?.id;
@@ -156,6 +159,9 @@ export const resolvers = {
           workId: parent.workId,
           profile: context.profile,
         });
+      if (!universes) {
+        return [];
+      }
       const fetchedUniverses = await Promise.all(
         universes?.map(async (universe, index) => {
           const universeId = universe.identity?.id;

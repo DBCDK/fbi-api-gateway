@@ -107,6 +107,11 @@ export const resolvers = {
           profile: context.profile,
         });
 
+      if (!series) {
+        //return empty if there is not series
+        return [];
+      }
+
       //then we fetch series data for each series id. (usually only one series id in the list)
       const fetchedSeriesList = await Promise.all(
         series.map(async (item) => {
