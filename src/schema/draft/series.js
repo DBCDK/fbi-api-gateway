@@ -107,7 +107,6 @@ export const resolvers = {
           profile: context.profile,
         });
 
-      console.log("\n\n\nseries", series);
       if (series) {
         //then we fetch series data for each series id. (usually only one series id in the list)
         const fetchedSeriesList = await Promise.all(
