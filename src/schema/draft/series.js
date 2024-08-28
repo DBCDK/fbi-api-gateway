@@ -114,7 +114,7 @@ export const resolvers = {
 
       //then we fetch series data for each series id. (usually only one series id in the list)
       const fetchedSeriesList = await Promise.all(
-        series?.map(async (item) => {
+        series.map(async (item) => {
           const fetchedSeries = await context.datasources
             .getLoader("seriesById")
             .load({ seriesId: item.id, profile: context.profile });
