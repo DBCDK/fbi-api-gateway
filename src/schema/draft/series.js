@@ -30,6 +30,11 @@ type Series {
   title: String!
   
   """
+  Identifier for the series
+  """
+  seriesId: String
+
+  """
   Additional information 
   """
   identifyingAddition: String
@@ -84,18 +89,35 @@ type Series {
   """
   members(limit: Int, offset: Int): [SerieWork!]! 
 }
+
+extend type Query {
+   series(seriesId:String!): Series
+}
 `;
 
 export const resolvers = {
   Work: {
     // Use the new serie service v2
     async series(parent, args, context, info) {
-      const data = await context.datasources.getLoader("series").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
+      //first we feth the series ids
+      const { series } = await context.datasources
+        .getLoader("identifyWork")
+        .load({
+          workId: parent.workId,
+          profile: context.profile,
+        });
 
-      return resolveSeries(data, parent);
+      //then we fetch series data for each series id. (usually only one series id in the list)
+      const fetchedSeriesList = await Promise.all(
+        series.map(async (item) => {
+          const fetchedSeries = await context.datasources
+            .getLoader("seriesById")
+            .load({ seriesId: item.id, profile: context.profile });
+
+          return { ...fetchedSeries, seriesId: item.id };
+        })
+      );
+      return resolveSeries({ series: fetchedSeriesList }, parent);
     },
   },
 
@@ -165,6 +187,15 @@ export const resolvers = {
       });
 
       return resolveSeries(data, parent);
+    },
+  },
+  Query: {
+    async series(parent, args, context, info) {
+      //fetch a series by the provided seriesId
+      const seriesById = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: args.seriesId, profile: context.profile });
+      return { ...seriesById, seriesId: args.seriesId };
     },
   },
 };
