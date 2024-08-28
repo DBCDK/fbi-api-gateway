@@ -107,17 +107,21 @@ export const resolvers = {
           profile: context.profile,
         });
 
-      //then we fetch series data for each series id. (usually only one series id in the list)
-      const fetchedSeriesList = await Promise.all(
-        series.map(async (item) => {
-          const fetchedSeries = await context.datasources
-            .getLoader("seriesById")
-            .load({ seriesId: item.id, profile: context.profile });
+      console.log("\n\n\nseries", series);
+      if (series) {
+        //then we fetch series data for each series id. (usually only one series id in the list)
+        const fetchedSeriesList = await Promise.all(
+          series?.map(async (item) => {
+            const fetchedSeries = await context.datasources
+              .getLoader("seriesById")
+              .load({ seriesId: item.id, profile: context.profile });
 
-          return { ...fetchedSeries, seriesId: item.id };
-        })
-      );
-      return resolveSeries({ series: fetchedSeriesList }, parent);
+            return { ...fetchedSeries, seriesId: item.id };
+          })
+        );
+        return resolveSeries({ series: fetchedSeriesList }, parent);
+      }
+      return [];
     },
   },
 
