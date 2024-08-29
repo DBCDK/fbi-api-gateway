@@ -124,6 +124,7 @@ type ComplexSearchFacetResponse{
 }
 
 type ComplexFacetResponse {
+  hitcount: Int!
   facets: [ComplexSearchFacetResponse!]
 }
 
@@ -180,6 +181,12 @@ export const resolvers = {
         .getLoader("complexFacets")
         .load(setPost(parent, context, args));
       return res?.facets;
+    },
+    async hitcount(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("complexFacets")
+        .load(setPost(parent, context, args));
+      return res?.hitcount || 0;
     },
   },
   ComplexSearchResponse: {
