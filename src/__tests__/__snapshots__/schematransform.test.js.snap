@@ -173,6 +173,7 @@ type ComplexSearchFacetResponse {
 }
 
 type ComplexFacetResponse {
+  hitcount: Int!
   facets: [ComplexSearchFacetResponse!]
 }
 
