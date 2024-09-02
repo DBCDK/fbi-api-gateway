@@ -3,8 +3,6 @@ import config from "../config";
 import { createIndexer } from "../utils/searcher";
 
 const toDrupalLanguage = {
-  da: "en",
-  en: "en-gb",
   DA: "en",
   EN: "en-gb",
 };
@@ -15,8 +13,6 @@ const fromDrupalLanguage = {
 };
 
 const toDrupalEnum = {
-  da: "EN",
-  en: "EN_GB",
   DA: "EN",
   EN: "EN_GB",
 };
