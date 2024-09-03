@@ -173,6 +173,7 @@ type ComplexSearchFacetResponse {
 }
 
 type ComplexFacetResponse {
+  hitcount: Int!
   facets: [ComplexSearchFacetResponse!]
 }
 
@@ -414,6 +415,7 @@ type Mutation {
 type Query {
   culr: CulrQuery!
   debug: Debug
+  series(seriesId: String!): Series
   mood: MoodQueries!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
@@ -485,7 +487,7 @@ type Query {
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   stats: Stats
   test: Test
-  universe(key: String!): Universe
+  universe(key: String, universeId: String): Universe
   user: User
 }
 
@@ -1397,7 +1399,7 @@ type Manifestation {
   \\"\\"\\"
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescription: PhysicalUnitDescription!
+  physicalDescription: PhysicalUnitDescription
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -1731,6 +1733,9 @@ type SerieWork {
 type Series {
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
+
+  \\"\\"\\"Identifier for the series\\"\\"\\"
+  seriesId: String
 
   \\"\\"\\"Additional information \\"\\"\\"
   identifyingAddition: String
@@ -2860,7 +2865,10 @@ union UniverseContentUnion = Work | Series
 
 type Universe {
   \\"\\"\\"A key that identifies a universe.\\"\\"\\"
-  key: String!
+  key: String
+
+  \\"\\"\\"An id that identifies a universe.\\"\\"\\"
+  universeId: String
 
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -4084,7 +4092,7 @@ type Manifestation {
   \\"\\"\\"
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescription: PhysicalUnitDescription!
+  physicalDescription: PhysicalUnitDescription
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -4414,6 +4422,9 @@ type SerieWork {
 type Series {
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
+
+  \\"\\"\\"Identifier for the series\\"\\"\\"
+  seriesId: String
 
   \\"\\"\\"Additional information \\"\\"\\"
   identifyingAddition: String
@@ -5047,7 +5058,10 @@ union UniverseContentUnion = Work | Series
 
 type Universe {
   \\"\\"\\"A key that identifies a universe.\\"\\"\\"
-  key: String!
+  key: String
+
+  \\"\\"\\"An id that identifies a universe.\\"\\"\\"
+  universeId: String
 
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -5837,7 +5851,7 @@ type Manifestation {
   \\"\\"\\"
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescription: PhysicalUnitDescription!
+  physicalDescription: PhysicalUnitDescription
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -6153,6 +6167,9 @@ type Series {
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 
+  \\"\\"\\"Identifier for the series\\"\\"\\"
+  seriesId: String
+
   \\"\\"\\"Additional information \\"\\"\\"
   identifyingAddition: String
 
@@ -6440,7 +6457,10 @@ union UniverseContentUnion = Work | Series
 
 type Universe {
   \\"\\"\\"A key that identifies a universe.\\"\\"\\"
-  key: String!
+  key: String
+
+  \\"\\"\\"An id that identifies a universe.\\"\\"\\"
+  universeId: String
 
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe

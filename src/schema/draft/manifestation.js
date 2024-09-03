@@ -671,7 +671,7 @@ type Manifestation {
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   """
-  physicalDescription: PhysicalUnitDescription!
+  physicalDescription: PhysicalUnitDescription
  
 
   """

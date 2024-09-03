@@ -1,5 +1,4 @@
 import config from "../config";
-
 const { url, ttl, prefix } = config.datasources.universe;
 
 const { url: jedUrl } = config.datasources.jed;
