@@ -131,7 +131,6 @@ function getDeprecatedFields(json) {
   const types = json.data.__schema?.types;
   types?.forEach((obj) => {
     const target = getKind(obj);
-
     if (target) {
       const hits = [];
       obj?.[target]?.forEach((field) => {

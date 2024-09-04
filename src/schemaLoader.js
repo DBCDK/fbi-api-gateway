@@ -36,7 +36,7 @@ let externalSchema;
 
 // The internal schema
 let internalSchema = enumFallbackDirectiveTransformer(
-  makeExecutableSchema(fieldNameValidator(schemaLoader()))
+  makeExecutableSchema(fieldNameValidatorEnv(schemaLoader()))
 );
 
 /**
@@ -63,6 +63,21 @@ class PermissionsTransform {
 }
 
 /**
+ * Runs the fieldNameValidator function if environment is NOT production
+ *
+ * @param {Schema} props
+ * @param {string} errorType (THROW | LOG | IGNORE)
+ * @returns {object}
+ */
+function fieldNameValidatorEnv(props, errorType = "THROW") {
+  if (process.env.NODE_ENV === "production") {
+    return props;
+  }
+
+  return fieldNameValidator(props, errorType);
+}
+
+/**
  * Type, field/subfield validator
  *
  * Function is testing for:
@@ -77,8 +92,11 @@ class PermissionsTransform {
  * UnionTypes ending with 'Union'
  * InterfaceTypes ending with 'Interface'
  *
- * Notes: ignores deprecated fields
+ * Notes: The naming standard for deprecated fields are ignored ---> this check can be removed in future
  * Directive definitions are excepted
+ *
+ * Deprecation 'reason' are also validated.
+ * A deprecation reason should contain a expration date in the dd/mm-yyyy format.
  *
  * @param {Schema} props
  * @param {string} errorType (THROW | LOG | IGNORE)
@@ -88,9 +106,6 @@ class PermissionsTransform {
 // dev mode only
 export function fieldNameValidator(props, errorType = "THROW") {
   //  This check is NOT for production
-  if (process.env.NODE_ENV === "production") {
-    return props;
-  }
 
   if (errorType === "LOG") {
     console.info(
@@ -209,6 +224,42 @@ export function fieldNameValidator(props, errorType = "THROW") {
           }
         }
       });
+
+      /**
+       * Deprecated fields check
+       */
+      subfields?.forEach((obj) => {
+        const subfield = obj?.name?.value;
+        const isDeprecated = !!obj?.directives?.find(
+          (obj) => obj?.name?.value === "deprecated"
+        );
+
+        if (isDeprecated) {
+          const target = obj?.directives?.find(
+            (obj) => obj?.name?.value === "deprecated"
+          );
+
+          const reason = target?.arguments?.find(
+            ({ name }) => name?.value === "reason"
+          );
+
+          const value = reason?.value?.value;
+
+          // ensure reason includes an expires string and date has correct format
+          if (
+            !/expires: (0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[1,2])-(20)\d{2}/.test(
+              value
+            )
+          ) {
+            handleError(
+              `Deprecated field name '${subfield}' in '${field}' has wrong deprecation format. 
+
+              >>> Deprecation should contain a short text with an 'expires: dd/mm-yyyy suffix'
+              `
+            );
+          }
+        }
+      });
     }
   });
 
@@ -230,7 +281,7 @@ export function fieldNameValidator(props, errorType = "THROW") {
  * Will load all files in schema folder
  * and look for type definitions and resolvers.
  */
-function schemaLoader() {
+export function schemaLoader() {
   // Custom selected scalar type defs (from graphiql-scalar lib)
   const customScalarTypeDefs = ["DateTime"];
 
