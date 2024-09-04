@@ -2,7 +2,7 @@
 
 import { fieldNameValidator } from "../schemaLoader";
 
-import { getExecutableSchema, schemaLoader } from "../schemaLoader";
+import { schemaLoader } from "../schemaLoader";
 
 function ObjectTypeDefinition(name, fields = []) {
   return {
