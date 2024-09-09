@@ -83,7 +83,7 @@ pipeline {
 					image "docker-dbc.artifacts.dbccloud.dk/build-env:latest"
 					alwaysPull true
 				}
-			}           
+			}
 
 			when {
 				branch 'future'
