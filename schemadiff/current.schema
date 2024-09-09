@@ -9,19 +9,18 @@ directive @specifiedBy(
   url: String!
 ) on SCALAR
 
-union Access = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
-
 type AccessType {
   display: String!
-  code: AccessTypeCode!
+  code: AccessTypeCodeEnum!
 }
 
-enum AccessTypeCode {
+enum AccessTypeCodeEnum {
   PHYSICAL
   ONLINE
-  NOT_SPECIFIED @deprecated
   UNKNOWN
 }
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 
 type AccessUrl {
   """
@@ -39,13 +38,13 @@ type AccessUrl {
   loginRequired: Boolean!
 
   """The type of content that can be found at this URL"""
-  type: AccessUrlType
+  type: AccessUrlTypeEnum
 
   """Status from linkcheck"""
-  status: LinkStatus!
+  status: LinkStatusEnum!
 }
 
-enum AccessUrlType {
+enum AccessUrlTypeEnum {
   IMAGE
   OTHER
   RESOURCE
@@ -115,10 +114,10 @@ type CatalogueCodes {
 
 type ChildOrAdult {
   display: String!
-  code: ChildOrAdultCode!
+  code: ChildOrAdultCodeEnum!
 }
 
-enum ChildOrAdultCode {
+enum ChildOrAdultCodeEnum {
   FOR_CHILDREN
   FOR_ADULTS
 }
@@ -136,7 +135,7 @@ type Classification {
   """
   For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
   """
-  entryType: EntryType
+  entryType: EntryTypeEnum
 
   """Name of the classification system"""
   system: String!
@@ -148,14 +147,8 @@ type ComplexSearchFacetResponse {
   values: [ComplexSearchFacetValue!]
 }
 
-"""The facets to ask for"""
-input complexSearchFacets {
-  facetLimit: Int!
-  facets: [ComplexSearchFacets!]!
-}
-
 """The supported facet fields"""
-enum ComplexSearchFacets {
+enum ComplexSearchFacetsEnum {
   AGES
   CATALOGUECODE
   CONTRIBUTOR
@@ -195,6 +188,12 @@ enum ComplexSearchFacets {
   PUBLICATIONYEAR
 }
 
+"""The facets to ask for"""
+input ComplexSearchFacetsInput {
+  facetLimit: Int!
+  facets: [ComplexSearchFacetsEnum!]
+}
+
 """A Facet value in response"""
 type ComplexSearchFacetValue {
   key: String!
@@ -202,7 +201,7 @@ type ComplexSearchFacetValue {
 }
 
 """Search Filters"""
-input ComplexSearchFilters {
+input ComplexSearchFiltersInput {
   """BranchId. """
   branchId: [String!]
 
@@ -216,7 +215,7 @@ input ComplexSearchFilters {
   sublocation: [String!]
 
   """Onloan or OnShelf."""
-  status: [HoldingsStatus!]
+  status: [HoldingsStatusEnum!]
 
   """Id of agency."""
   agencyId: [String!]
@@ -242,22 +241,10 @@ type ComplexSearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int!, limit: PaginationLimit!, sort: [Sort!]): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!, sort: [SortInput!]): [Work!]!
 
   """Error message, for instance if CQL is invalid"""
   errorMessage: String
-
-  """the query being executed"""
-  solrQuery: String @deprecated
-
-  """filter applied to the query"""
-  solrFilter: String @deprecated
-
-  """Time to tokenize query"""
-  tokenizerDurationInMs: Int @deprecated
-
-  """Time for execution on solr"""
-  solrExecutionDurationInMs: Int @deprecated
 }
 
 type ComplexSearchSuggestion {
@@ -271,20 +258,19 @@ type ComplexSearchSuggestion {
   work: Work
 }
 
-enum ComplexSuggestionType {
-  hostpublication
-  contributorfunction
-  creator
-  default
-  creatorcontributorfunction
-  contributor
-  creatorfunction
-  subject
-  fictionalcharacter
-  title
-  creatorcontributor
-  series
-  publisher
+enum ComplexSuggestionTypeEnum {
+  HOSTPUBLICATION
+  CONTRIBUTORFUNCTION
+  CREATOR
+  DEFAULT
+  CREATORCONTRIBUTORFUNCTION
+  CREATORFUNCTION
+  SUBJECT
+  FICTIONALCHARACTER
+  TITLE
+  CREATORCONTRIBUTOR
+  SERIES
+  PUBLISHER
 }
 
 type ComplexSuggestResponse {
@@ -310,10 +296,10 @@ input CopyRequestInput {
 }
 
 type CopyRequestResponse {
-  status: CopyRequestStatus!
+  status: CopyRequestStatusEnum!
 }
 
-enum CopyRequestStatus {
+enum CopyRequestStatusEnum {
   OK
   ERROR_UNAUTHENTICATED_USER
   ERROR_AGENCY_NOT_SUBSCRIBED
@@ -329,7 +315,7 @@ enum CopyRequestStatus {
   INTERNAL_ERROR
 }
 
-type Corporation implements Subject & Creator {
+type Corporation implements SubjectInterface & CreatorInterface {
   """The full corporation or conference name"""
   display: String!
 
@@ -362,7 +348,7 @@ type Corporation implements Subject & Creator {
   A list of which kinds of contributions this corporation made to this creation
   """
   roles: [Role!]!
-  type: SubjectType!
+  type: SubjectTypeEnum!
   language: Language
   local: Boolean
 }
@@ -377,7 +363,7 @@ type Cover {
   origin: String
 }
 
-interface Creator {
+interface CreatorInterface {
   """Name of the creator"""
   display: String!
 
@@ -455,7 +441,7 @@ type ElbaServices {
   ): CopyRequestResponse!
 }
 
-enum EntryType {
+enum EntryTypeEnum {
   ADDITIONAL_ENTRY
   MAIN_ENTRY
   NATIONAL_BIBLIOGRAPHY_ENTRY
@@ -481,32 +467,35 @@ type Ereol {
 }
 
 """The supported facet fields"""
-enum FacetField {
-  workTypes
-  mainLanguages
-  materialTypesGeneral
-  materialTypesSpecific
-  fictionalCharacters
-  genreAndForm
-  childrenOrAdults
-  accessTypes
-  fictionNonfiction
-  subjects
-  creators
-  canAlwaysBeLoaned
-  year
-  dk5
-  age
-  lix
-  let
-  generalAudience
-  libraryRecommendation
+enum FacetFieldEnum {
+  WORKTYPES
+  MAINLANGUAGES
+  MATERIALTYPESGENERAL
+  MATERIALTYPESSPECIFIC
+  FICTIONALCHARACTERS
+  GENREANDFORM
+  CHILDRENORADULTS
+  ACCESSTYPES
+  FICTIONNONFICTION
+  SUBJECTS
+  CREATORS
+  CANALWAYSBELOANED
+  YEAR
+  DK5
+  AGE
+  LIX
+  LET
+  GENERALAUDIENCE
+  LIBRARYRECOMMENDATION
 }
 
 """The result for a specific facet"""
 type FacetResult {
   """The name of the facet."""
   name: String!
+
+  """The enum type of the facet."""
+  type: FacetFieldEnum!
 
   """The values of thie facet result"""
   values(limit: Int!): [FacetValue!]!
@@ -532,10 +521,10 @@ type FictionNonfiction {
   display: String!
 
   """Binary code fiction/nonfiction used for filtering"""
-  code: FictionNonfictionCode!
+  code: FictionNonfictionCodeEnum!
 }
 
-enum FictionNonfictionCode {
+enum FictionNonfictionCodeEnum {
   FICTION
   NONFICTION
   NOT_SPECIFIED
@@ -545,13 +534,13 @@ type GeneralMaterialType {
   """
   code for materialType # @TODO - is this a finite list ?? - and where to get it
   """
-  code: GeneralMaterialTypeCode!
+  code: GeneralMaterialTypeCodeEnum!
 
   """Ths string to display"""
   display: String!
 }
 
-enum GeneralMaterialTypeCode {
+enum GeneralMaterialTypeCodeEnum {
   ARTICLES
   AUDIO_BOOKS
   BOARD_GAMES
@@ -569,12 +558,12 @@ enum GeneralMaterialTypeCode {
   TV_SERIES
 }
 
-enum HoldingsStatus {
+enum HoldingsStatusEnum {
   """Holding is physically available at the branch"""
-  OnShelf
+  ONSHELF
 
   """Holding is on loan"""
-  OnLoan
+  ONLOAN
 }
 
 type HostPublication {
@@ -621,13 +610,13 @@ type HostPublication {
 
 type Identifier {
   """The type of identifier"""
-  type: IdentifierType!
+  type: IdentifierTypeEnum!
 
   """The actual identifier"""
   value: String!
 }
 
-enum IdentifierType {
+enum IdentifierTypeEnum {
   UPC
   URI
   DOI
@@ -655,7 +644,7 @@ type InfomediaArticle {
   html: String
 }
 
-enum InfomediaError {
+enum InfomediaErrorEnum {
   SERVICE_NOT_LICENSED
   SERVICE_UNAVAILABLE
   LIBRARY_NOT_FOUND
@@ -670,7 +659,7 @@ enum InfomediaError {
 
 type InfomediaResponse {
   """Infomedia error"""
-  error: InfomediaError
+  error: InfomediaErrorEnum
   article: InfomediaArticle
 }
 
@@ -686,7 +675,7 @@ type InterLibraryLoan {
   loanIsPossible: Boolean!
 }
 
-input KidRecommenderTags {
+input KidRecommenderTagsInput {
   tag: String
   weight: Int
 }
@@ -699,9 +688,9 @@ type Language {
   isoCode: String!
 }
 
-enum LanguageCode {
-  da
-  en
+enum LanguageCodeEnum {
+  DA
+  EN
 }
 
 type Languages {
@@ -753,7 +742,7 @@ type LevelForAudience {
 
 type LinkCheckResponse {
   url: String!
-  status: LinkCheckStatus!
+  status: LinkCheckStatusEnum!
   lastCheckedAt: DateTime
   brokenSince: DateTime
 }
@@ -762,21 +751,21 @@ type LinkCheckService {
   checks(urls: [String!]): [LinkCheckResponse!]!
 }
 
-enum LinkCheckStatus {
+enum LinkCheckStatusEnum {
   OK
   BROKEN
   INVALID
   GONE
 }
 
-enum LinkStatus {
+enum LinkStatusEnum {
   BROKEN
   GONE
   INVALID
   OK
 }
 
-type localSuggestResponse {
+type LocalSuggestResponse {
   result: [Suggestion!]!
 }
 
@@ -794,7 +783,7 @@ type Manifestation {
   accessTypes: [AccessType!]!
 
   """Different options to access manifestation"""
-  access: [Access!]!
+  access: [AccessUnion!]!
 
   """
   Different kinds of definitions of appropriate audience for this manifestation
@@ -812,7 +801,7 @@ type Manifestation {
   classifications: [Classification!]!
 
   """Contributors to the manifestation, actors, illustrators etc"""
-  contributors: [Creator!]!
+  contributors: [CreatorInterface!]!
 
   """
   Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
@@ -825,7 +814,7 @@ type Manifestation {
   """
   Primary creators of the manifestation e.g. authors, directors, musicians etc
   """
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   """
   Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
@@ -880,11 +869,6 @@ type Manifestation {
   relatedPublications: [RelatedPublication!]!
 
   """
-  Physical description of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: "Use 'physicalDescription' instead")
-
-  """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   """
   physicalDescription: PhysicalUnitDescription
@@ -899,9 +883,6 @@ type Manifestation {
 
   """Series for this manifestation"""
   series: [Series!]!
-
-  """Universe for this manifestation"""
-  universe: Universe @deprecated(reason: "Use 'universes' instead")
 
   """Universes for this manifestation"""
   universes: [Universe!]!
@@ -931,7 +912,7 @@ type Manifestation {
   tableOfContents: TableOfContent
 
   """Worktypes for this manifestations work"""
-  workTypes: [WorkType!]!
+  workTypes: [WorkTypeEnum!]!
 
   """The year this manifestation was originally published or produced"""
   workYear: PublicationYear
@@ -951,13 +932,13 @@ type ManifestationPart {
   title: String!
 
   """The creator of the music track or literary analysis"""
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   """Classification of this entry (music track or literary analysis)"""
   classifications: [Classification!]!
 
   """Subjects of this entry (music track or literary analysis)"""
-  subjects: [Subject!]
+  subjects: [SubjectInterface!]
 
   """
   Additional creator or contributor to this entry (music track or literary
@@ -982,10 +963,10 @@ type ManifestationParts {
   parts: [ManifestationPart!]!
 
   """The type of manifestation parts, is this music tracks, book parts etc."""
-  type: ManifestationPartType!
+  type: ManifestationPartTypeEnum!
 }
 
-enum ManifestationPartType {
+enum ManifestationPartTypeEnum {
   MUSIC_TRACKS
   SHEET_MUSIC_CONTENT
   PARTS_OF_BOOK
@@ -1054,19 +1035,6 @@ type ManifestationTitles {
 }
 
 type MaterialType {
-  """
-  The general type of material of the manifestation based on a grouping of
-  bibliotek.dk material types, e.g. bøger, lydbøger etc. 
-  @TODO - this on is deprecated pr. 1/2 '24
-  """
-  general: String! @deprecated(reason: "Use 'materialTypeGenerel' instead")
-
-  """
-  The type of material of the manifestation based on bibliotek.dk types
-  @TODO - this on is deprecated pr. 1/2 '24
-  """
-  specific: String! @deprecated(reason: "Use 'materialtTypeSpecific' instead")
-
   """jed 1.1 - the general materialtype"""
   materialTypeGeneral: GeneralMaterialType!
 
@@ -1082,37 +1050,37 @@ type MediaCouncilAgeRestriction {
   display: String
 }
 
-type Mood implements Subject {
-  type: SubjectType!
+type Mood implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
-input MoodKidsRecommendFilters {
+input MoodKidsRecommendFiltersInput {
   difficulty: [Int!]
   illustrationsLevel: [Int!]
   length: [Int!]
   realisticVsFictional: [Int!]
-  fictionNonfiction: FictionNonfictionCode
+  fictionNonfiction: FictionNonfictionCodeEnum
 }
 
-type moodQueries {
-  moodSearch(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
-  moodSearchKids(q: String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
+type MoodQueries {
+  moodSearch(q: String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchResponse!
+  moodSearchKids(q: String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchKidsResponse!
   moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
   moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
   moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
-  moodRecommendKids(tags: [KidRecommenderTags!], work: String, filters: MoodKidsRecommendFilters, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
+  moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
 }
 
 """The reponse from moodrecommenkids"""
 type MoodRecommendKidsResponse {
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 """Supported fields for moodsearch request"""
-enum MoodSearchFieldValues {
+enum MoodSearchFieldValuesEnum {
   ALL
   TITLE
   CREATOR
@@ -1122,7 +1090,7 @@ enum MoodSearchFieldValues {
 
 """The reponse from moodsearchkids"""
 type MoodSearchKidsResponse {
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 """The response from moodsearch"""
@@ -1130,23 +1098,23 @@ type MoodSearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 """Type of moodSuggest response"""
-enum MoodSuggest {
-  title
-  creator
-  tag
+enum MoodSuggestEnum {
+  TITLE
+  CREATOR
+  TAG
 }
 
-"""Response type for moodSuggest"""
-type moodSuggestResponse {
+"""MoodSuggest item"""
+type MoodSuggestItem {
   """Suggestion"""
   term: String!
 
   """The type of suggestion title/creator/tag"""
-  type: MoodSuggest!
+  type: MoodSuggestEnum!
 
   """A work associated with the suggestion"""
   work: Work
@@ -1154,8 +1122,8 @@ type moodSuggestResponse {
 
 """The response type for moodSuggest"""
 type MoodSuggestResponse {
-  """Response is an array of moodSuggestResponse"""
-  response: [moodSuggestResponse!]!
+  """Response is an array of MoodSuggestResponse"""
+  response: [MoodSuggestItem!]!
 }
 
 """Response type for moodTagRecommend"""
@@ -1167,11 +1135,10 @@ type MoodTagRecommendResponse {
 type Mutation {
   elba: ElbaServices!
   submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
-  submitPeriodicaArticleOrder(input: PeriodicaArticleOrder!, dryRun: Boolean): PeriodicaArticleOrderResponse! @deprecated(reason: "Use 'Elba.placeCopyRequest' instead")
 }
 
-type NarrativeTechnique implements Subject {
-  type: SubjectType!
+type NarrativeTechnique implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
@@ -1181,7 +1148,7 @@ type Note {
   """
   The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
   """
-  type: NoteType!
+  type: NoteTypeEnum!
 
   """Heading before note"""
   heading: String
@@ -1190,7 +1157,7 @@ type Note {
   display: [String!]!
 }
 
-enum NoteType {
+enum NoteTypeEnum {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
   DISSERTATION
@@ -1208,17 +1175,7 @@ enum NoteType {
   ESTIMATED_PLAYING_TIME_FOR_GAMES
 }
 
-type NumberInSeries {
-  """
-  The number in the series as text, quoted form the publication, e.g. 'Vol. IX'
-  """
-  display: String!
-
-  """The number in the series as integer"""
-  number: [Int!]
-}
-
-enum OrderType {
+enum OrderTypeEnum {
   ESTIMATE
   HOLD
   LOAN
@@ -1228,7 +1185,7 @@ enum OrderType {
 }
 
 """An integer in the range from 1 to 100"""
-scalar PaginationLimit
+scalar PaginationLimitScalar
 
 type PEGI {
   """Minimum age to play the game. PEGI rating"""
@@ -1238,33 +1195,7 @@ type PEGI {
   display: String
 }
 
-input PeriodicaArticleOrder {
-  """The pid of an article or periodica"""
-  pid: String!
-  pickUpBranch: String!
-  userName: String
-  userMail: String
-  publicationDateOfComponent: String
-  volume: String
-  authorOfComponent: String
-  titleOfComponent: String
-  pagination: String
-}
-
-type PeriodicaArticleOrderResponse {
-  status: PeriodicaArticleOrderStatus!
-}
-
-enum PeriodicaArticleOrderStatus {
-  OK
-  ERROR_UNAUTHORIZED_USER
-  ERROR_AGENCY_NOT_SUBSCRIBED
-  ERROR_INVALID_PICKUP_BRANCH
-  ERROR_PID_NOT_RESERVABLE
-  ERROR_NO_NAME_OR_EMAIL
-}
-
-type Person implements Subject & Creator {
+type Person implements SubjectInterface & CreatorInterface {
   """The person's whole name in normal order"""
   display: String!
 
@@ -1293,50 +1224,9 @@ type Person implements Subject & Creator {
   A list of which kinds of contributions this person made to this creation
   """
   roles: [Role!]!
-  type: SubjectType!
+  type: SubjectTypeEnum!
   language: Language
   local: Boolean
-}
-
-type PhysicalDescription {
-  """
-  A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  summary: String!
-
-  """Material that comes with the manifestation (bilag)"""
-  accompanyingMaterial: String
-
-  """
-  Additional physical description of the manifestation (e.g illustrations etc)
-  """
-  additionalDescription: String
-
-  """Extent of the manifestation like pages and number of items"""
-  extent: String
-
-  """Number of pages of the manifestation as number"""
-  numberOfPages: Int
-
-  """Number of units, like 3 cassettes, or 1 score etc."""
-  numberOfUnits: String
-
-  """The playing time of the manifestation (e.g 2 hours 5 minutes)"""
-  playingTime: String
-
-  """The necessary equipment to use the material"""
-  requirements: String
-
-  """Size of the manifestation"""
-  size: String
-
-  """Technical information about the manifestation (e.g blu-ray disc)"""
-  technicalInformation: String
-
-  """
-  Ratio of text vs. illustration from 1-5 as a number, where 1 means no illustrations and 5 means illustrations on all pages
-  """
-  textVsIllustrations: Int
 }
 
 type PhysicalUnitDescription {
@@ -1383,45 +1273,45 @@ type PublicationYear {
 }
 
 type Query {
-  mood: moodQueries!
+  mood: MoodQueries!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work
-  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCode): [Work]!
-  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work
+  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCodeEnum): [Work]!
+  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService!
   localSuggest(
     """The query to get suggestions from"""
     q: String!
 
     """suggest type to include in result"""
-    suggestType: [SuggestionType!]
+    suggestType: [SuggestionTypeEnum!]
 
     """Number of items to return"""
     limit: Int
 
     """Id of branch to filter by"""
     branchId: String
-  ): localSuggestResponse!
+  ): LocalSuggestResponse!
   complexSuggest(
     """The query to get suggestions for"""
     q: String!
 
     """the type of index to get suggestions from"""
-    type: ComplexSuggestionType!
+    type: ComplexSuggestionTypeEnum!
   ): ComplexSuggestResponse!
   suggest(
-    workType: WorkType
+    workType: WorkTypeEnum
 
     """The query to get suggestions from"""
     q: String!
 
     """suggest type to include in result"""
-    suggestType: SuggestionType
+    suggestType: SuggestionTypeEnum
 
     """suggest types to include in result"""
-    suggestTypes: [SuggestionType!]
+    suggestTypes: [SuggestionTypeEnum!]
 
     """Number of items to return"""
     limit: Int
@@ -1581,10 +1471,10 @@ type ReviewElement {
   Manifestations that can be used to generate and insert links into 'contentSubsitute'.
   """
   manifestations: [Manifestation]
-  type: ReviewElementType
+  type: ReviewElementTypeEnum
 }
 
-enum ReviewElementType {
+enum ReviewElementTypeEnum {
   ABSTRACT
   ACQUISITION_RECOMMENDATIONS
   AUDIENCE
@@ -1609,16 +1499,16 @@ type Role {
 
 type SchoolUse {
   display: String!
-  code: SchoolUseCode!
+  code: SchoolUseCodeEnum!
 }
 
-enum SchoolUseCode {
+enum SchoolUseCodeEnum {
   FOR_SCHOOL_USE
   FOR_TEACHER
 }
 
 """Search Filters"""
-input SearchFilters {
+input SearchFiltersInput {
   accessTypes: [String!]
   childrenOrAdults: [String!]
   creators: [String!]
@@ -1636,7 +1526,7 @@ input SearchFilters {
   department: [String!]
   location: [String!]
   sublocation: [String!]
-  status: [HoldingsStatus!]
+  status: [HoldingsStatusEnum!]
   canAlwaysBeLoaned: [String!]
   age: [String!]
   ageRange: [String!]
@@ -1647,7 +1537,7 @@ input SearchFilters {
 }
 
 """The supported fields to query"""
-input SearchQuery {
+input SearchQueryInput {
   """
   Search for title, creator, subject or a combination.
   This is typically used where a single search box is desired.
@@ -1672,13 +1562,13 @@ type SearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int!, limit: PaginationLimit!): [Work!]!
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 
   """
   Make sure only to fetch this when needed
   This may take seconds to complete
   """
-  facets(facets: [FacetField!]!): [FacetResult!]!
+  facets(facets: [FacetFieldEnum!]!): [FacetResult!]!
 
   """Will return the facets that best match the input query and filters"""
   intelligentFacets(limit: Int): [FacetResult!]!
@@ -1690,6 +1580,9 @@ type SearchResponse {
 type Series {
   """The title of the series"""
   title: String!
+
+  """Identifier for the series"""
+  seriesId: String
 
   """Additional information """
   identifyingAddition: String
@@ -1705,8 +1598,8 @@ type Series {
   """
   parallelTitles: [String!]!
 
-  """The number in the series as text qoutation and a number"""
-  numberInSeries: NumberInSeries @deprecated(reason: "field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned")
+  """The number in the series as text qoutation"""
+  numberInSeries: String
 
   """Information about whether this work in the series should be read first"""
   readThisFirst: Boolean
@@ -1747,8 +1640,8 @@ type SerieWork {
   readThisWhenever: Boolean
 }
 
-type Setting implements Subject {
-  type: SubjectType!
+type Setting implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
@@ -1764,16 +1657,14 @@ type Shelfmark {
   shelfmark: String!
 }
 
-input Sort {
+input SortInput {
   index: String!
-  order: SortOrder!
+  order: SortOrderEnum!
 }
 
-enum SortOrder {
+enum SortOrderEnum {
   ASC
   DESC
-  asc @deprecated
-  desc @deprecated
 }
 
 type SpecificMaterialType {
@@ -1784,35 +1675,35 @@ type SpecificMaterialType {
   display: String!
 }
 
-interface Subject {
+type SubjectContainer {
+  """All subjects"""
+  all: [SubjectInterface!]!
+
+  """Only DBC verified subjects"""
+  dbcVerified: [SubjectInterface!]!
+}
+
+interface SubjectInterface {
   display: String!
 
   """
   The type of subject - 'location', 'time period' etc., 'topic' if not specific kind of subject term
   """
-  type: SubjectType!
+  type: SubjectTypeEnum!
 
   """Language of the subject - contains display and isoCode """
   language: Language
   local: Boolean
 }
 
-type SubjectContainer {
-  """All subjects"""
-  all: [Subject!]!
-
-  """Only DBC verified subjects"""
-  dbcVerified: [Subject!]!
-}
-
-type SubjectText implements Subject {
-  type: SubjectType!
+type SubjectText implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
-enum SubjectType {
+enum SubjectTypeEnum {
   TOPIC
   LOCATION
   FICTIONAL_CHARACTER
@@ -1845,8 +1736,8 @@ enum SubjectType {
   ENVIRONMENT
 }
 
-type SubjectWithRating implements Subject {
-  type: SubjectType!
+type SubjectWithRating implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
@@ -1858,7 +1749,7 @@ type SubjectWithRating implements Subject {
 type SubmitOrder {
   """if order was submitted successfully"""
   ok: Boolean
-  status: SubmitOrderStatus!
+  status: SubmitOrderStatusEnum!
   message: String
   orderId: String
   deleted: Boolean
@@ -1866,7 +1757,7 @@ type SubmitOrder {
 }
 
 input SubmitOrderInput {
-  orderType: OrderType
+  orderType: OrderTypeEnum
   pids: [String!]!
   pickUpBranch: String!
   key: String
@@ -1876,7 +1767,7 @@ input SubmitOrderInput {
   expires is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
   """
   expires: String
-  userParameters: SubmitOrderUserParameters!
+  userParameters: SubmitOrderUserParametersInput!
   author: String
   authorOfComponent: String
   pagination: String
@@ -1887,7 +1778,7 @@ input SubmitOrderInput {
   volume: String
 }
 
-enum SubmitOrderStatus {
+enum SubmitOrderStatusEnum {
   """Borchk: User is blocked by agency"""
   BORCHK_USER_BLOCKED_BY_AGENCY
 
@@ -1945,7 +1836,7 @@ enum SubmitOrderStatus {
   ERROR_MISSING_PINCODE
 }
 
-input SubmitOrderUserParameters {
+input SubmitOrderUserParametersInput {
   cpr: String
   userId: String
   barcode: String
@@ -1961,7 +1852,7 @@ input SubmitOrderUserParameters {
 
 type Suggestion {
   """The type of suggestion: creator, subject or title"""
-  type: SuggestionType!
+  type: SuggestionTypeEnum!
 
   """The suggested term which can be searched for"""
   term: String!
@@ -1970,7 +1861,7 @@ type Suggestion {
   work: Work
 }
 
-enum SuggestionType {
+enum SuggestionTypeEnum {
   SUBJECT
   TITLE
   CREATOR
@@ -1987,8 +1878,8 @@ type TableOfContent {
   listOfContent: [TableOfContent!]
 }
 
-type TimePeriod implements Subject {
-  type: SubjectType!
+type TimePeriod implements SubjectInterface {
+  type: SubjectTypeEnum!
   period: Range!
   display: String!
   language: Language
@@ -2049,7 +1940,10 @@ type UnitDescription {
 
 type Universe {
   """A key that identifies a universe."""
-  key: String!
+  key: String
+
+  """An id that identifies a universe."""
+  universeId: String
 
   """
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -2063,24 +1957,24 @@ type Universe {
   description: String
 
   """All series within the universe"""
-  series(limit: Int, offset: Int, workType: WorkType): [Series!]!
+  series(limit: Int, offset: Int, workType: WorkTypeEnum): [Series!]!
 
   """All works within the universe but not in any series"""
-  works(limit: Int, offset: Int, workType: WorkType): [Work!]!
+  works(limit: Int, offset: Int, workType: WorkTypeEnum): [Work!]!
 
   """work types that are in this universe"""
-  workTypes: [WorkType!]!
+  workTypes: [WorkTypeEnum!]!
 
   """both series and works in a list"""
-  content(limit: Int, offset: Int, workType: WorkType): UniverseContentResult!
+  content(limit: Int, offset: Int, workType: WorkTypeEnum): UniverseContentResult!
 }
-
-union UniverseContent = Work | Series
 
 type UniverseContentResult {
   hitcount: Int!
-  entries: [UniverseContent!]!
+  entries: [UniverseContentUnion!]!
 }
+
+union UniverseContentUnion = Work | Series
 
 type Work {
   """Relations to other manifestations"""
@@ -2096,7 +1990,7 @@ type Work {
   abstract: [String!]
 
   """Creators"""
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   """DK5 main entry for this work"""
   dk5MainEntry: DK5MainEntry
@@ -2116,14 +2010,6 @@ type Work {
   """Series for this work"""
   series: [Series!]!
 
-  """Members of a series that this work is part of"""
-  seriesMembers: [Work!]! @deprecated(reason: "Use 'Work.series.members' instead")
-
-  """
-  Literary/movie universe this work is part of, e.g. Wizarding World, Marvel Universe
-  """
-  universe: Universe @deprecated(reason: "Use 'universes' instead")
-
   """
   Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
   """
@@ -2136,7 +2022,7 @@ type Work {
   genreAndForm: [String!]!
 
   """Worktypes for this work - 'none' replaced by 'other'"""
-  workTypes: [WorkType!]!
+  workTypes: [WorkTypeEnum!]!
 
   """The year this work was originally published or produced"""
   workYear: PublicationYear
@@ -2183,7 +2069,7 @@ type WorkTitles {
   tvSeries: TvSeries
 }
 
-enum WorkType {
+enum WorkTypeEnum {
   ANALYSIS
   ARTICLE
   BOOKDESCRIPTION
