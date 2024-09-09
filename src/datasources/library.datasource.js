@@ -213,7 +213,6 @@ export async function search(props, getFunc = doRequest) {
     limit = 10,
     offset = 0,
     agencyid,
-    language = "da",
     branchId,
     digitalAccessSubscriptions = [],
     infomediaSubscriptions = [],
@@ -222,6 +221,9 @@ export async function search(props, getFunc = doRequest) {
     agencyTypes = ["ALLE"],
     bibdkExcludeBranches,
   } = props;
+
+  // ensure lowercased language prop
+  const language = props?.language?.toLowerCase() || "da";
 
   await fetchIfOld(getFunc);
 
@@ -276,7 +278,7 @@ export async function search(props, getFunc = doRequest) {
     });
 
     // If no match use fuzzy to find the nearest match
-    if (result.length === 0) {
+    if (result?.length === 0) {
       // try fuzzy  match
       result = index.search(q, branches, {
         ...searchOptions,

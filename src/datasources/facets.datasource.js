@@ -4,7 +4,7 @@
 
 import config from "../config";
 import uniq from "lodash/uniq";
-import { mapFacets, mapFilters } from "../utils/filtersAndFacetsMap";
+import { mapFacetEnums, mapFilters } from "../utils/filtersAndFacetsMap";
 
 const {
   url,
@@ -27,7 +27,7 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
     profile: name,
   };
 
-  const mappedFacets = mapFacets(facets);
+  const mappedFacets = mapFacetEnums(facets);
   const mappedFilters = mapFilters(filters);
 
   // merge variables and statics
@@ -47,7 +47,7 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
 
   const res = result.body;
 
-  return Object.entries(res.facets).map(([name, facetResult]) => {
+  return Object.entries(res?.facets).map(([name, facetResult]) => {
     return {
       name,
       values: Object.entries(facetResult).map(([term, count]) => {

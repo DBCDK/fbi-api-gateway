@@ -1,12 +1,5 @@
 # Work
 
-<DeprecationBox deprecated="01/11-2023" expires="01/2-2024">
-  Please note that Fields `Work.materialTypes.specific` and
-  Work.materialTypes.general are deprecated and will be removed. Use
-  `Work.materialTypes.materialTypeGeneral.display` and
-  `Work.materialTypes.materialTypeSpecific.display` instead.
-</DeprecationBox>
-
 A work is some creation like a book, article, movie etc. It may exist in many different variants -
 in the API we call these manifestations. For instance, a book may be available in multiple physical
 and online variants or manifestations. And a movie could be streamed online or maybe borrowed on DVD
@@ -17,7 +10,7 @@ In the following examples, we show how to get metadata for a work and for its ma
 ## The Basics of a Work
 
 Different user interfaces have different needs, hence we offer several ways to fetch metadata.
-E.g. if you don’t need a lot of flexibility, fields named “display” or “summary” contain the
+E.g. if you don’t need a lot of flexibility, fields named “display” or “summaryFull” contain the
 most important information while hiding complexity.
 
 For example when fetching data based on a time period, the display could be “1980 - 1989". But users can also just use the
@@ -199,8 +192,8 @@ review is available on the manifestation at the path _review.reviewByLibrarians_
           title
           issue
         }
-        physicalDescriptions {
-          summary
+        physicalDescription {
+          summaryFull
         }
         review {
           rating
@@ -268,12 +261,6 @@ does not require substitution.
 
 ## Series
 
-<DeprecationBox deprecated="15/11-2023" expires="15/02-2024">
-  Please note that field `NumberInSeries.number` is removed and only the String
-  value of `NumberInSeries.display` is returned for field `numberInSeries` in
-  future
-</DeprecationBox>
-
 A work may be part of one or more series. The example below fetches the series title,
 some information about how the work itself fits inside the series and all members of the serie as works.
 
@@ -285,10 +272,7 @@ This Series field will only return `REGULAR_SERIES`.
   work(id: $workId) {
     series {
     	title
-      numberInSeries {
-        display
-        number
-      }
+      numberInSeries
       readThisFirst
       readThisWhenever
       members {
@@ -306,36 +290,6 @@ This Series field will only return `REGULAR_SERIES`.
     workId: "work-of:870970-basis:52557240",
   }}
 />
-
-## <DeprecationTitle>Series Members</DeprecationTitle>
-
-<DeprecationBorder>
-  <DeprecationBox deprecated="27/05-2023" expires="01/09-2023">
-    Please note that Field `Work.seriesMembers` is deprecated and will be removed. Use
-    `Work.series.members` instead. See [series](#Series) documentation
-    for details.
-  </DeprecationBox>
-
-<br />
-
-Fetch all the members (works) of a series that the referenced work is a member of,
-including the work itself.
-
-<InlineGraphiQL
-  query={`query Example_SeriesMembers ($workId: String!) {
-  work(id: $workId) {
-    seriesMembers {
-      titles {
-        main
-      }
-    }
-  }
-}`}
-  variables={{
-    workId: "work-of:870970-basis:52557240",
-  }}
-/>
-</DeprecationBorder>
 
 ## Universes
 
@@ -364,33 +318,6 @@ Universes can contain series and works that are not in any series
   }}
 />
 
-## <DeprecationTitle>Universe</DeprecationTitle>
-
-<DeprecationBorder>
-  <DeprecationBox deprecated="15/12-2023" expires="15/03-2024">
-    Please note that Field `Work.universe` is deprecated and will be removed. Use
-    `Work.universes` instead. See [universes](#Universes) documentation
-    for details.
-  </DeprecationBox>
-
-<br />
-
-Some works may be part of a universe, like the "Harry Potter Universe" in this example.
-
-<InlineGraphiQL
-  query={`query Example_WorkUniverse ($workId: String!) {
-  work(id: $workId) {
-    universe {
-      title
-    }
-  }
-}`}
-  variables={{
-    workId: "work-of:870970-basis:27267912",
-  }}
-/>
-</DeprecationBorder>
-
 ## Translations
 
 Some metadata may be available in English. Specify a language and we will
@@ -399,7 +326,7 @@ translate data where possible.
 Only fields named _display_, _summary_ etc. may contain translations.
 
 <InlineGraphiQL
-  query={`query Example_WorkTranslations ($workId: String!, $language: LanguageCode) {
+  query={`query Example_WorkTranslations ($workId: String!, $language: LanguageCodeEnum) {
     work(id: $workId, language: $language) {
       mainLanguages {
         display
@@ -409,6 +336,6 @@ Only fields named _display_, _summary_ etc. may contain translations.
   }`}
   variables={{
     workId: "work-of:870970-basis:52557240",
-    language: "en",
+    language: "EN",
   }}
 />

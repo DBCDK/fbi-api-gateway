@@ -1,7 +1,7 @@
 import translations from "../utils/translations.json";
 import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
-import { mapFacets } from "../utils/filtersAndFacetsMap";
+import { mapFacet, mapFacetEnum } from "../utils/filtersAndFacetsMap";
 
 /**
  * define a searchquery
@@ -18,7 +18,7 @@ export const typeDef = `
 """
 The supported fields to query
 """
-input SearchQuery {
+input SearchQueryInput {
 
   """
   Search for title, creator, subject or a combination.
@@ -47,32 +47,32 @@ input SearchQuery {
 """
 The supported facet fields
 """
-enum FacetField {
-  workTypes
-  mainLanguages
-  materialTypesGeneral
-  materialTypesSpecific 
-  fictionalCharacters
-  genreAndForm
-  childrenOrAdults
-  accessTypes
-  fictionNonfiction
-  subjects
-  creators
-  canAlwaysBeLoaned
-  year
-  dk5
-  age
-  lix
-  let
-  generalAudience
-  libraryRecommendation
+enum FacetFieldEnum {
+  WORKTYPES
+  MAINLANGUAGES
+  MATERIALTYPESGENERAL
+  MATERIALTYPESSPECIFIC
+  FICTIONALCHARACTERS
+  GENREANDFORM
+  CHILDRENORADULTS
+  ACCESSTYPES
+  FICTIONNONFICTION
+  SUBJECTS
+  CREATORS
+  CANALWAYSBELOANED
+  YEAR
+  DK5
+  AGE
+  LIX
+  LET
+  GENERALAUDIENCE
+  LIBRARYRECOMMENDATION
 }
 
 """
 Search Filters
 """
-input SearchFilters {
+input SearchFiltersInput {
   accessTypes: [String!]
   childrenOrAdults: [String!]
   creators: [String!]
@@ -91,7 +91,7 @@ input SearchFilters {
   department: [String!]
   location: [String!]
   sublocation: [String!]
-  status: [HoldingsStatus!]
+  status: [HoldingsStatusEnum!]
   canAlwaysBeLoaned: [String!]
   
   age: [String!]
@@ -102,16 +102,16 @@ input SearchFilters {
   libraryRecommendation: [String!]
 }
 
-enum HoldingsStatus {
+enum HoldingsStatusEnum {
   """
   Holding is physically available at the branch
   """
-  OnShelf
+  ONSHELF
 
   """
   Holding is on loan
   """
-  OnLoan
+  ONLOAN
 }
 
 """
@@ -144,6 +144,11 @@ type FacetResult {
   name: String!
 
   """
+  The enum type of the facet.
+  """
+  type: FacetFieldEnum!
+
+  """
   The values of thie facet result
   """
   values(limit: Int!): [FacetValue!]! @complexity(value: 2, multipliers: ["limit"])
@@ -161,13 +166,13 @@ type SearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+  works(offset: Int! limit: PaginationLimitScalar!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   
   """
   Make sure only to fetch this when needed
   This may take seconds to complete
   """
-  facets(facets: [FacetField!]!): [FacetResult!]! @complexity(value: 5, multipliers: ["facets"])
+  facets(facets: [FacetFieldEnum!]!): [FacetResult!]! @complexity(value: 5, multipliers: ["facets"])
 
   """
   Will return the facets that best match the input query and filters
@@ -201,7 +206,7 @@ export const resolvers = {
     term(parent, args, context) {
       // We only use danish translations for now
       return (
-        translations.facets[parent.facetName]?.[parent.term]?.da || parent.term
+        translations?.facets[parent.facetName]?.[parent.term]?.da || parent.term
       );
     },
     score(parent, args, context) {
@@ -247,7 +252,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return res.hitcount;
+      return res?.hitcount || 0;
     },
     async works(parent, args, context) {
       const res = await context.datasources.getLoader("simplesearch").load({
@@ -280,12 +285,19 @@ export const resolvers = {
 
       const response = [];
 
-      args.facets.forEach((key) => {
+      args.facets?.forEach((key) => {
         const values = parent?.filters?.[key] || [];
-        /** we need to map some facets - name has changed in response : lix -> lix_range, let->let_range **/
-        const facet = res.find((obj) => obj.name === mapFacets([key])[0]);
+
+        // maps result names to enum values
+        const facet = res?.find((obj) => obj?.name === mapFacetEnum(key));
         // now we find the facet
-        const copy = { ...facet, name: key, values: [] };
+        const copy = {
+          /** we need to map some facets - name has changed in response : lix -> lix_range, let->let_range **/
+          name: mapFacet(facet?.name),
+          type: key,
+          values: [],
+        };
+
         values.forEach((value) => {
           // get selected term props
           const selected = facet?.values.find((obj) => obj.term === value);

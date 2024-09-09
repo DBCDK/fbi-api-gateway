@@ -8,10 +8,7 @@ test("series - get series from workId", async () => {
             work(id: $workId) {
               series {
                 title
-                numberInSeries {
-                  display
-                  number
-                }
+                numberInSeries
                 readThisFirst
                 readThisWhenever
                 members {

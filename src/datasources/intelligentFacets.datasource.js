@@ -3,6 +3,7 @@
  */
 
 import config from "../config";
+import { mapFilters } from "../utils/filtersAndFacetsMap";
 
 const {
   url,
@@ -29,7 +30,8 @@ export async function load({ q, filters = {}, profile, limit = 10 }, context) {
   // merge variables and statics
   const query = {
     q,
-    filters,
+    // Rename some of the filter names
+    filters: mapFilters(filters),
     "facet.limit": limit,
     disable_fuzzy_search: disableFuzzySearch,
     ...statics,

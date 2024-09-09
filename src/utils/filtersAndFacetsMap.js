@@ -16,6 +16,13 @@ const mappedFilters = {
   letRange: "let_range",
 };
 
+const mappedFilterValues = {
+  status: {
+    ONSHELF: "OnShelf",
+    ONLOAN: "OnLoan",
+  },
+};
+
 /**
  * Map filters. Some filters are renamed for search service
  *
@@ -23,32 +30,68 @@ const mappedFilters = {
  * @returns {*}
  */
 export function mapFilters(filters) {
-  const returnObject = {};
-  for (const [key, value] of Object.entries(filters)) {
-    returnObject[mappedFilters[key] || key] = value;
-  }
-  return returnObject;
+  const obj = {};
+  Object.entries(filters).forEach(([key, value]) => {
+    if (mappedFilterValues[key]) {
+      value = [mappedFilterValues[key][value]] || value;
+    }
+    obj[mappedFilters[key] || key] = value;
+  });
+  return obj;
 }
 
 /** FACETS **/
 
-/**
- * Holds facets that needs to be renamed for facet service.
- * @type {{lix: string, let: string}}
- */
-const mappedFacets = {
-  lix: "lix_range",
-  let: "let_range",
+const mappedFacetEnums = {
+  WORKTYPES: "workTypes",
+  MAINLANGUAGES: "mainLanguages",
+  MATERIALTYPESGENERAL: "materialTypesGeneral",
+  MATERIALTYPESSPECIFIC: "materialTypesSpecific",
+  FICTIONALCHARACTERS: "fictionalCharacters",
+  GENREANDFORM: "genreAndForm",
+  CHILDRENORADULTS: "childrenOrAdults",
+  ACCESSTYPES: "accessTypes",
+  FICTIONNONFICTION: "fictionNonfiction",
+  SUBJECTS: "subjects",
+  CREATORS: "creators",
+  CANALWAYSBELOANED: "canAlwaysBeLoaned",
+  YEAR: "year",
+  DK5: "dk5",
+  AGE: "age",
+  LIX: "lix_range",
+  LET: "let_range",
+  GENERALAUDIENCE: "generalAudience",
+  LIBRARYRECOMMENDATION: "libraryRecommendation",
 };
+
+/**
+ * Some facets are renamed for simplesearch facet service.
+ * @param facets
+ * @returns {*}
+ */
+export function mapFacetEnum(facet) {
+  return mappedFacetEnums[facet] || facet;
+}
+
+/**
+ * Some facets are renamed for simplesearch facet service.
+ * @param facets
+ * @returns {*}
+ */
+export function mapFacetEnums(facets) {
+  const mapped = facets?.map((facet) => {
+    return mappedFacetEnums[facet] || facet;
+  });
+  return mapped;
+}
 
 /**
  * Some facets (for now lix, let) are renamed for simplesearch facet service.
  * @param facets
  * @returns {*}
  */
-export function mapFacets(facets) {
-  const mapped = facets?.map((facet) => {
-    return mappedFacets[facet] || facet;
-  });
-  return mapped;
+const mappedFacets = { lix_range: "lix", let_range: "let" };
+
+export function mapFacet(facet) {
+  return mappedFacets[facet] || facet;
 }

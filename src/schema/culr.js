@@ -9,7 +9,7 @@ import { getAccount, getAccounts } from "../utils/accounts";
 
 export const typeDef = `
 
-enum GetAccountsType {
+enum GetAccountsTypeEnum {
   
   """
   Forces a getAccountsByLocalId request, a localId and agencyId is used as credentials
@@ -22,7 +22,7 @@ enum GetAccountsType {
   GLOBAL
 }
 
-enum CreateAccountStatus {
+enum CreateAccountStatusEnum {
   """
   Account was successfully created
   """
@@ -79,7 +79,7 @@ enum CreateAccountStatus {
   ERROR_INVALID_PROVIDED_TOKEN
 }
 
-enum DeleteAccountStatus {
+enum DeleteAccountStatusEnum {
   """
   Account was successfully deleted
   """
@@ -122,11 +122,11 @@ enum DeleteAccountStatus {
 }
 
 type CreateAccountResponse {
-    status: CreateAccountStatus!
+    status: CreateAccountStatusEnum!
 }
 
 type DeleteAccountResponse {
-  status: DeleteAccountStatus!
+  status: DeleteAccountStatusEnum!
 }
 
 type CulrAccount {
@@ -149,7 +149,7 @@ input DeleteAccountInput {
     agencyId: String!
 }
 
-input CreateAccountTokens {
+input CreateAccountTokensInput {
 
   """
   FFU accessToken containing credentials for the account which the user will be associated with 
@@ -167,7 +167,7 @@ input CreateAccountInput {
   """
   Tokens containing the credentials to create/associate a new user account
   """
-  tokens: CreateAccountTokens!
+  tokens: CreateAccountTokensInput!
 }
 
 input GetAccountsInput {
@@ -213,7 +213,7 @@ type CulrQuery {
     """
     Force a specific dataloader
     """
-    type: GetAccountsType): CulrAccountResponse
+    type: GetAccountsTypeEnum): CulrAccountResponse
 }
 
 extend type Mutation {
@@ -334,7 +334,7 @@ export const resolvers = {
       });
 
       // Check if user is already subscribed to agency
-      if (ENABLE_CREATED_CHECK && accounts.length > 0) {
+      if (ENABLE_CREATED_CHECK && accounts?.length > 0) {
         return {
           status: "ERROR_USER_ALREADY_CREATED",
         };

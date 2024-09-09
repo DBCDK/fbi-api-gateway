@@ -4,18 +4,18 @@
  * so we make optional field per input type we want to support
  */
 export const typeDef = `
-  input DataCollectSearchRequest {
-    q: SearchQuery!
-    filters: SearchFilters
+  input DataCollectSearchRequestInput {
+    q: SearchQueryInput!
+    filters: SearchFiltersInput
   }
   input DataCollectSearchWorkInput {
     search_query_hit: Int!
     search_query_work: String!
-    search_request: DataCollectSearchRequest!
+    search_request: DataCollectSearchRequestInput!
     session_id: String!
   }
   input DataCollectSearchInput {
-    search_request: DataCollectSearchRequest!
+    search_request: DataCollectSearchRequestInput!
     search_response_works: [String!]!
     search_offset: Int!
     session_id: String!
@@ -51,13 +51,13 @@ export const typeDef = `
     session_id: String!
   }
 
-  enum FeedbackThumb {
-    up
-    down
+  enum FeedbackThumbEnum {
+    UP
+    DOWN
   }
 
   input DataCollectSearchFeedbackInput {
-    thumbs: FeedbackThumb!
+    thumbs: FeedbackThumbEnum!
     query: String!
     reason: String!
   }

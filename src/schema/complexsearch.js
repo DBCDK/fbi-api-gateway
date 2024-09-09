@@ -4,7 +4,7 @@ export const typeDef = `
 """
 Search Filters
 """
-input ComplexSearchFilters {
+input ComplexSearchFiltersInput {
   """
   BranchId. 
   """
@@ -24,7 +24,7 @@ input ComplexSearchFilters {
   """
   Onloan or OnShelf.
   """
-  status: [HoldingsStatus!]
+  status: [HoldingsStatusEnum!]
   """
   Id of agency.
   """
@@ -45,22 +45,20 @@ input ComplexSearchFilters {
 
 
 
-enum SortOrder {
+enum SortOrderEnum {
   ASC
   DESC 
-  asc @deprecated
-  desc @deprecated
 }
 
-input Sort {
+input SortInput {
   index: String!
-  order: SortOrder!
+  order: SortOrderEnum!
 }
 
 """
 The supported facet fields
 """
-enum ComplexSearchFacets {  
+enum ComplexSearchFacetsEnum {  
   AGES,
   CATALOGUECODE,
   CONTRIBUTOR,
@@ -104,9 +102,9 @@ enum ComplexSearchFacets {
 """
 The facets to ask for
 """
-input complexSearchFacets {
+input ComplexSearchFacetsInput {
   facetLimit: Int!
-  facets: [ComplexSearchFacets!]!
+  facets: [ComplexSearchFacetsEnum!]
 }
 
 """
@@ -147,29 +145,12 @@ type ComplexSearchResponse {
   """
   The works matching the given search query. Use offset and limit for pagination.
   """
-  works(offset: Int! limit: PaginationLimit!, sort: [Sort!]): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+  works(offset: Int! limit: PaginationLimitScalar!, sort: [SortInput!]): [Work!]! @complexity(value: 5, multipliers: ["limit"])
 
   """
   Error message, for instance if CQL is invalid
   """
   errorMessage: String
-
-  """
-  the query being executed
-  """  
-  solrQuery: String @deprecated
-  """
-  filter applied to the query
-  """
-  solrFilter: String @deprecated
-  """
-  Time to tokenize query
-  """
-  tokenizerDurationInMs: Int @deprecated
-  """
-  Time for execution on solr
-  """
-  solrExecutionDurationInMs: Int @deprecated
 }
 `;
 
@@ -221,7 +202,6 @@ export const resolvers = {
         .load(setPost(parent, context, args));
       return res?.errorMessage;
     },
-
     async facets(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
@@ -229,37 +209,6 @@ export const resolvers = {
 
       return res?.facets;
     },
-    async solrFilter(parent, args, context) {
-      const res = await context.datasources
-        .getLoader("complexsearch")
-        .load(setPost(parent, context, args));
-
-      return res?.solrFilter;
-    },
-    async solrQuery(parent, args, context) {
-      const res = await context.datasources
-        .getLoader("complexsearch")
-        .load(setPost(parent, context, args));
-
-      return res?.solrQuery;
-    },
-
-    async solrExecutionDurationInMs(parent, args, context) {
-      const res = await context.datasources
-        .getLoader("complexsearch")
-        .load(setPost(parent, context, args));
-
-      return res?.solrExecutionDurationInMs;
-    },
-
-    async tokenizerDurationInMs(parent, args, context) {
-      const res = await context.datasources
-        .getLoader("complexsearch")
-        .load(setPost(parent, context, args));
-
-      return res?.tokenizerDurationInMs;
-    },
-
     async works(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")

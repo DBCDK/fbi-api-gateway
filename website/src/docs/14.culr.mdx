@@ -15,7 +15,7 @@ The optional _folk_ token is used to only allow creation for a specific CPR numb
 
 The returned _status_ can be one of the following:
 
-<DescribeEnum name="CreateAccountStatus" />
+<DescribeEnum name="CreateAccountStatusEnum" />
 
 <InlineGraphiQL
   query={`
@@ -47,7 +47,7 @@ Only accounts attached to the header bearer token can be deleted.
 
 The returned _status_ can be one of the following:
 
-<DescribeEnum name="DeleteAccountStatus" />
+<DescribeEnum name="DeleteAccountStatusEnum" />
 
 <InlineGraphiQL
   query={`
@@ -103,7 +103,7 @@ A `type` argument can be added, to force a selection between _getAccountsByLocal
 
 The provided _type_ can be one of the following:
 
-<DescribeEnum name="GetAccountsType" />
+<DescribeEnum name="GetAccountsTypeEnum" />
 
 <InlineGraphiQL
   query={`

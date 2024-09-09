@@ -1,18 +1,6 @@
 import { resolveSeries, resolveWork } from "../../utils/utils";
 
 export const typeDef = `
-type NumberInSeries {
-  """
-  The number in the series as text, quoted form the publication, e.g. 'Vol. IX'
-  """
-  display: String!
-
-  """
-  The number in the series as integer
-  """
-  number: [Int!]
-}
-
 type SerieWork {
   """
   The number of work in the series as a number (as text)
@@ -42,6 +30,11 @@ type Series {
   title: String!
   
   """
+  Identifier for the series
+  """
+  seriesId: String
+
+  """
   Additional information 
   """
   identifyingAddition: String
@@ -62,9 +55,9 @@ type Series {
   parallelTitles: [String!]!
 
   """
-  The number in the series as text qoutation and a number
+  The number in the series as text qoutation
   """
-  numberInSeries: NumberInSeries @deprecated(reason: "field 'NumberInSeries.number' is removed and only String value of 'NumberInSeries.display' is returned")
+  numberInSeries: String
 
   """
   Information about whether this work in the series should be read first
@@ -96,38 +89,40 @@ type Series {
   """
   members(limit: Int, offset: Int): [SerieWork!]! 
 }
+
+extend type Query {
+   series(seriesId:String!): Series
+}
 `;
 
 export const resolvers = {
   Work: {
-    // for backward compatibility -> serieservice v1 -> remove when deprecated
-    async seriesMembers(parent, args, context, info) {
-      const data = await context.datasources.getLoader("series").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
-
-      // grab persistentWorkId from the first serie found on serieservice v2
-      if (data && data.series && data.series?.[0].works) {
-        const works = await Promise.all(
-          data.series?.[0]?.works?.slice(0, 100).map(async (work) => {
-            return resolveWork({ id: work.persistentWorkId }, context);
-          })
-        );
-        return works;
-      }
-
-      return [];
-    },
-
     // Use the new serie service v2
     async series(parent, args, context, info) {
-      const data = await context.datasources.getLoader("series").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
+      //first we feth the series ids
+      const { series } = await context.datasources
+        .getLoader("identifyWork")
+        .load({
+          workId: parent.workId,
+          profile: context.profile,
+        });
 
-      return resolveSeries(data, parent);
+      if (!series) {
+        //return empty if there is not series
+        return [];
+      }
+
+      //then we fetch series data for each series id. (usually only one series id in the list)
+      const fetchedSeriesList = await Promise.all(
+        series.map(async (item) => {
+          const fetchedSeries = await context.datasources
+            .getLoader("seriesById")
+            .load({ seriesId: item.id, profile: context.profile });
+
+          return { ...fetchedSeries, seriesId: item.id };
+        })
+      );
+      return resolveSeries({ series: fetchedSeriesList }, parent);
     },
   },
 
@@ -155,17 +150,7 @@ export const resolvers = {
       return parent.type === "isPopular";
     },
     numberInSeries(parent, args, context, info) {
-      if (!parent.numberInSeries) {
-        return null;
-      }
-
-      const display = parent.numberInSeries;
-      const match = parent.numberInSeries.match(/\d+/g);
-
-      return {
-        display,
-        number: match?.map((str) => parseInt(str, 10)),
-      };
+      return parent.numberInSeries;
     },
     readThisFirst(parent, args, context, info) {
       if (typeof parent.readThisFirst === "undefined") {
@@ -207,6 +192,15 @@ export const resolvers = {
       });
 
       return resolveSeries(data, parent);
+    },
+  },
+  Query: {
+    async series(parent, args, context, info) {
+      //fetch a series by the provided seriesId
+      const seriesById = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: args.seriesId, profile: context.profile });
+      return { ...seriesById, seriesId: args.seriesId };
     },
   },
 };

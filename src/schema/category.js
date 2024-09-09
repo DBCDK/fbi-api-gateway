@@ -17,17 +17,15 @@ export const typeDef = `
   }
 
   type Categories {
-      category: String!
+      title: String!
+      type: CategoryFiltersEnum!
       subCategories: [Category!]! 
   }`;
 
 export const resolvers = {
   Categories: {
-    category(parent, args) {
+    title(parent, args) {
       return parent.category;
-    },
-    subCategories(parent, args) {
-      return parent.subCategories;
     },
   },
   Category: {

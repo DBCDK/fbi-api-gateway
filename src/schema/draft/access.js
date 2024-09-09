@@ -1,13 +1,12 @@
 import { resolveAccess } from "./draft_utils_manifestations";
 
 export const typeDef = `
-enum AccessTypeCode {
+enum AccessTypeCodeEnum {
   PHYSICAL
   ONLINE
-  NOT_SPECIFIED @deprecated
   UNKNOWN
 }
-enum AccessUrlType {
+enum AccessUrlTypeEnum {
   IMAGE
   OTHER
   RESOURCE
@@ -16,7 +15,7 @@ enum AccessUrlType {
   THUMBNAIL
 }
 
-enum LinkStatus {
+enum LinkStatusEnum {
   BROKEN
   GONE
   INVALID
@@ -25,7 +24,7 @@ enum LinkStatus {
 
 type AccessType {
   display: String!
-  code: AccessTypeCode!
+  code: AccessTypeCodeEnum!
 }
 type Ereol {
   """
@@ -72,12 +71,12 @@ type AccessUrl {
   """
   The type of content that can be found at this URL
   """
-  type: AccessUrlType
+  type: AccessUrlTypeEnum
   
   """
   Status from linkcheck
   """
-  status: LinkStatus!
+  status: LinkStatusEnum!
 }
 type InterLibraryLoan {
   """
@@ -97,7 +96,8 @@ type DigitalArticleService {
   """
   issn: String!
 }
-union Access = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 `;
 
 export const resolvers = {

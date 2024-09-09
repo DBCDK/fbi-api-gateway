@@ -17,6 +17,7 @@ import Pride from "./pride";
 import Halloween from "./halloween";
 
 import styles from "./Hero.module.css";
+import Future from "./future";
 
 export default function Hero({ className = "" }) {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function Hero({ className = "" }) {
   const isEaster = theme === "easter";
   const isPride = theme === "pride";
   const isHalloween = theme === "halloween";
+  const isFuture = theme === "future";
 
   const inputIsValid =
     selectedToken && configuration && Object?.keys(configuration).length;
@@ -41,6 +43,7 @@ export default function Hero({ className = "" }) {
       {isEaster && <Chicken />}
       {isPride && <Pride />}
       {isHalloween && <Halloween />}
+      {isFuture && <Future />}
       <Container>
         <Row className={styles.row}>
           <Col>

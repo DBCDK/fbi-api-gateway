@@ -1,0 +1,56 @@
+.container {
+  margin-top: var(--pt4);
+}
+
+.container section {
+  margin-top: var(--pt4);
+}
+
+.title {
+  padding: var(--pt1) 0;
+}
+
+.wrap {
+  background-color: #f6f8fa;
+  padding: var(--pt2);
+}
+
+.wrap ul {
+  padding-left: var(--pt2);
+}
+
+.wrap ul li {
+  line-height: 1.75;
+}
+
+.wrap ul li i {
+  color: var(--secondary);
+}
+
+.wrap ul li.strikethrough {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.wrap ul li span strong {
+  color: var(--info);
+  /* font-weight: normal; */
+}
+
+.wrap ul li span term {
+  color: var(--success-dark);
+  font-weight: bold;
+}
+
+.wrap ul li.del span:last-of-type {
+  color: var(--error);
+}
+
+.wrap ul li.change span:last-of-type {
+  /* color: var(--info); */
+}
+
+/* selected dark theme */
+:global(body.dark) .wrap {
+  background: var(--dark);
+}

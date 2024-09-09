@@ -38,15 +38,15 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation @complexity(value: 3)
   manifestations(faust: [String!], pid: [String!]): [Manifestation]! @complexity(value: 3, multipliers: ["pid", "faust"])
   monitor(name: String!): String!
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCode): Work @complexity(value: 5)
-  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCode): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
-  search(q: SearchQuery!, filters: SearchFilters, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexSearchResponse!
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work @complexity(value: 5)
+  works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCodeEnum): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
+  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
   """
   ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
   """
-  complexFacets(cql: String!, filters: ComplexSearchFilters, facets: complexSearchFacets): ComplexFacetResponse!
+  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
 
   localSuggest(
     """
@@ -56,7 +56,7 @@ type Query {
     """    
     suggest type to include in result
     """
-    suggestType: [SuggestionType!]
+    suggestType: [SuggestionTypeEnum!]
     """
     Number of items to return
     """
@@ -65,7 +65,7 @@ type Query {
     Id of branch to filter by
     """
     branchId: String    
-  ): localSuggestResponse! @complexity(value: 2, multipliers: ["limit"])
+  ): LocalSuggestResponse! @complexity(value: 2, multipliers: ["limit"])
   
   complexSuggest(
     """
@@ -75,11 +75,11 @@ type Query {
     """    
     the type of index to get suggestions from
     """
-    type: ComplexSuggestionType!    
+    type: ComplexSuggestionTypeEnum!
   ): ComplexSuggestResponse!
   
   suggest(
-    workType: WorkType
+    workType: WorkTypeEnum
     """
     The query to get suggestions from
     """
@@ -88,12 +88,12 @@ type Query {
     """    
     suggest type to include in result
     """
-    suggestType: SuggestionType
+    suggestType: SuggestionTypeEnum
 
     """    
     suggest types to include in result
     """
-    suggestTypes: [SuggestionType!]
+    suggestTypes: [SuggestionTypeEnum!]
 
     """
     Number of items to return
@@ -105,9 +105,9 @@ type Query {
   Get recommendations
   """
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
-  help(q: String!, language: LanguageCode): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCode, q: String, offset: Int, limit: PaginationLimit, status: LibraryStatus @deprecated, statuses: [LibraryStatus], bibdkExcludeBranches:Boolean, agencyTypes: [AgencyType!]): BranchResult! @complexity(value: 5, multipliers: ["limit"])
-  deleteOrder(orderId: String!, orderType: OrderType!): SubmitOrder
+  help(q: String!, language: LanguageCodeEnum): HelpResponse
+  branches(agencyid: String, branchId: String, language: LanguageCodeEnum, q: String, offset: Int, limit: PaginationLimitScalar, statuses: [LibraryStatusEnum], bibdkExcludeBranches:Boolean, agencyTypes: [AgencyTypeEnum!]): BranchResult! @complexity(value: 5, multipliers: ["limit"])
+  deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
   infomedia(id: String!): InfomediaResponse!
   session: Session
   howru:String
@@ -115,11 +115,11 @@ type Query {
   """
   localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
   """
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCode, status: LibraryStatus, bibdkExcludeBranches:Boolean): Localizations 
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches:Boolean): Localizations @complexity(value: 35, multipliers: ["pids"])
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
-  inspiration(language: LanguageCode, limit: Int): Inspiration! 
+  inspiration(limit: Int): Inspiration! 
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
 }
 
@@ -236,7 +236,7 @@ export const resolvers = {
       const offset = args.offset ?? 0;
       const limit = args.limit ?? 10;
       const availabilityTypes = args.availabilityTypes ?? ["NOW"];
-      const language = args.language ?? "da";
+      const language = args?.language?.toLowerCase() ?? "da";
       const status = args.status ?? "ALLE";
       const bibdkExcludeBranches = args.bibdkExcludeBranches;
 
@@ -341,7 +341,6 @@ export const resolvers = {
     async complexSuggest(parent, args, context, info) {
       return args;
     },
-
     async localSuggest(parent, args, context, info) {
       return args;
     },
@@ -361,7 +360,7 @@ export const resolvers = {
     data_collect(parent, args, context, info) {
       // Check that exactly one input type is given
       const inputObjects = Object.values(args.input);
-      if (inputObjects.length !== 1) {
+      if (inputObjects?.length !== 1) {
         throw new Error("Exactly 1 input must be specified");
       }
 

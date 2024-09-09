@@ -41,7 +41,7 @@ export async function load(
   ).body;
 
   // Get hitcount
-  const hitcount = response.hits;
+  const hitcount = response?.hits;
 
   // Select range between offset and limit
   return {

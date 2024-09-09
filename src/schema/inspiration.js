@@ -4,27 +4,40 @@
  */
 
 export const typeDef = `
-  input CategoryFilter {
-    category: CategoryFilters!
+  input CategoryFilterInput {
+    category: CategoryFiltersEnum!
     subCategories: [String!]
   }
 
-  enum CategoryFilters {
-    childrenBooksNonfiction
-    childrenBooksFiction
-    fiction
-    nonfiction
-    eBooks
-    articles
-    movies
-    games
-    music
-    sheetMusic
+  enum CategoryFiltersEnum {
+    CHILDRENBOOKSNONFICTION
+    CHILDRENBOOKSFICTION
+    FICTION
+    NONFICTION
+    EBOOKS
+    ARTICLES
+    MOVIES
+    GAMES
+    MUSIC
+    SHEETMUSIC
   }
 
  type Inspiration {
-   categories(filter: [CategoryFilter!]): [Categories]!
+   categories(filter: [CategoryFilterInput!]): [Categories]!
  }`;
+
+const mapEnums = {
+  CHILDRENBOOKSNONFICTION: "childrenBooksNonfiction",
+  CHILDRENBOOKSFICTION: "childrenBooksFiction",
+  FICTION: "fiction",
+  NONFICTION: "nonfiction",
+  EBOOKS: "eBooks",
+  ARTICLES: "articles",
+  MOVIES: "movies",
+  GAMES: "games",
+  MUSIC: "music",
+  SHEETMUSIC: "sheetMusic",
+};
 
 const mapKeys = {
   childrenBooksNonfiction: "childrenbooks_nonfiction",
@@ -46,13 +59,15 @@ export const resolvers = {
       }
 
       return args?.filter?.map(({ category, subCategories }) => {
+        const key = mapEnums[category];
         // Some data keys differs from enum types - e.g. We do not use _ in api
-        const data = res[mapKeys[category] || category];
+        const data = res[mapKeys[key] || key];
 
         // filter subCategory data if any given
         if (subCategories?.length) {
           return {
-            category,
+            category: key,
+            type: category,
             subCategories: subCategories
               .map((sub) => data.find(({ title }) => title === sub))
               .filter((element) => element !== undefined),
@@ -60,7 +75,8 @@ export const resolvers = {
         }
 
         return {
-          category,
+          category: key,
+          type: category,
           subCategories: data,
         };
       });

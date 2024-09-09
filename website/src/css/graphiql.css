@@ -877,7 +877,7 @@ button.graphiql-button {
 .graphiql-spinner {
   height: 56px;
   margin: auto;
-  margin-top: var(--px-16);
+  margin-top: 30%;
   width: 56px;
 }
 .graphiql-spinner:after {

@@ -4,7 +4,7 @@
  */
 
 export const typeDef = `
-  enum LinkCheckStatus {
+  enum LinkCheckStatusEnum {
     OK
     BROKEN
     INVALID
@@ -13,9 +13,9 @@ export const typeDef = `
 
  type LinkCheckResponse {
    url: String!
-   status: LinkCheckStatus!
-   lastCheckedAt: DateTime
-   brokenSince: DateTime
+   status: LinkCheckStatusEnum!
+   lastCheckedAt: DateTimeScalar
+   brokenSince: DateTimeScalar
  }
  
  type LinkCheckService {
@@ -26,7 +26,7 @@ export const typeDef = `
 export const resolvers = {
   LinkCheckService: {
     async checks(parent, args, context, info) {
-      if (args.urls.length > 0) {
+      if (args.urls?.length > 0) {
         return await context.datasources.getLoader("linkcheck").load(args);
       }
       return [];

@@ -12,10 +12,10 @@ function parseResponse(response) {
 }
 
 export function formatResponseToRis(response) {
-  const obj = response.ris;
+  const obj = response?.ris;
   let result = "";
   for (let key in obj) {
-    if (Object.keys(obj[key]).length > 0) {
+    if (Object.keys(obj[key])?.length > 0) {
       if (key === "AU") {
         // If author has middle name as part of last name, move it to first name.
         if (Array.isArray(obj[key].value)) {

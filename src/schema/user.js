@@ -36,7 +36,7 @@ type User {
   """
   Creation date in userdata service. Returns a timestamp with ISO 8601 format and in Coordinated Universal Time (UTC)
   """  
-  createdAt: DateTime
+  createdAt: DateTimeScalar
   """
   We are allowed to store userdata for more than 30 days if set to true.
   """
@@ -44,18 +44,18 @@ type User {
   """
   Orders made through bibliotek.dk
   """
-  bibliotekDkOrders(offset: Int limit: PaginationLimit): BibliotekDkOrders!
+  bibliotekDkOrders(offset: Int limit: PaginationLimitScalar): BibliotekDkOrders!
   """
   Saved searches from complex search
   """
-  savedSearches(offset: Int limit: PaginationLimit): SavedSearchResponse!
+  savedSearches(offset: Int limit: PaginationLimitScalar): SavedSearchResponse!
   """
   Get one saved search by cql. Returns searchobject including id.
   """
   savedSearchByCql(cql: String!): SavedSearch
 
   
-  agencies(language: LanguageCode): [Agency!]!
+  agencies(language: LanguageCodeEnum): [Agency!]!
   loggedInBranchId: String
   loggedInAgencyId: String
   municipalityNumber: String
@@ -68,7 +68,7 @@ type User {
   orders: [Order!]! @complexity(value: 5)
   loans: [Loan!]! @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
-  bookmarks(orderBy:BookMarkOrderBy): BookMarkResponse!
+  bookmarks(orderBy:BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
   identityProviderUsed: String!
@@ -94,7 +94,7 @@ type SavedSearch {
   """
   Creation timestamps
   """
-  createdAt: DateTime
+  createdAt: DateTimeScalar
   """
   cql including fieldSearch, facetts, quickfilter etc. 
   """
@@ -130,66 +130,17 @@ type BibliotekDkOrder  {
   orderId: String!
 
   """
-  Whether the order is open or closed
-  """
-  closed: Boolean @deprecated
-
-  """
-  Indicates if the order has been automated
-  """
-  autoForwardResult: String @deprecated
-  
-  """
-  Confirms a reservation has been made 
-  """
-  placeOnHold: String @deprecated
-      
-  """
-  The branch where the user should collect the material
-  """
-  pickupAgencyId: String @deprecated
-  
-  """
-  pid associated with the order
-  """
-  pid: String @deprecated
-  
-  """
-  Unique identifier of the primary bibliographic object. Useful if a collection consists of multiple objects.
-  """
-  pidOfPrimaryObject: String @deprecated(reason: "Use workId from work instead")
-
-  """
   Work data for the given order
   """
   work: Work
 
   """
-  Author of the material
-  """
-  author: String  @deprecated(reason: "Use creators from work instead")
-  
-  """
-  Title of the material
-  """
-  title: String  @deprecated(reason: "Use titles from work instead")
-  
-  """
   Date and time when the order was created
   """
   creationDate: String
-
-  """
-  Error message if ors-maintenance request fails
-  """
-  errorMessage: String @deprecated
-
-
-
-
 }
 type Loan {
-  dueDate:	DateTime!
+  dueDate:	DateTimeScalar!
   loanId:	String!
   agencyId: String!
   creator: String
@@ -201,7 +152,7 @@ type Loan {
   manifestation: Manifestation
   materialType: String
 }
-enum OrderStatus {
+enum OrderStatusEnum {
   ACTIVE
   IN_PROCESS
   AVAILABLE_FOR_PICKUP
@@ -213,14 +164,14 @@ enum OrderStatus {
 type Order {
   orderId: String!,
   orderType: String
-  status: OrderStatus!
+  status: OrderStatusEnum!
   pickUpBranch: Branch!
   agencyId: String!
   holdQueuePosition: String
-  orderDate: DateTime!
+  orderDate: DateTimeScalar!
   creator: String
   title: String
-  pickUpExpiryDate: DateTime
+  pickUpExpiryDate: DateTimeScalar
   manifestation: Manifestation
   edition: String
   language: String
@@ -232,7 +183,7 @@ type Debt {
   agencyId: String!
   creator: String
   currency: String
-  date: DateTime
+  date: DateTimeScalar
   title: String
 }
 
@@ -251,19 +202,19 @@ type UserDataResponse {
 type BookMarkId {
   bookMarkId: Int!
 }
-enum BookMarkOrderBy{
-  createdAt
-  title
+enum BookMarkOrderByEnum {
+  CREATEDAT
+  TITLE
 }
 type BookMark{
   materialType: String!
   materialId: String!
   bookmarkId: Int
-  createdAt: DateTime
+  createdAt: DateTimeScalar
   workId: String
 }
 
-type BookmarkResponse {
+type AddBookMarkResponse {
   bookmarksAdded: [BookMark]
   bookmarksAlreadyExists: [BookMark]
 }
@@ -332,7 +283,7 @@ type UserMutations {
   """
   Add a bookmark
   """
-  addBookmarks(bookmarks: [BookMarkInput!]!): BookmarkResponse
+  addBookmarks(bookmarks: [BookMarkInput!]!): AddBookMarkResponse
   """
   Delete a bookmark
   """
@@ -565,13 +516,13 @@ export const resolvers = {
 
       if (orderIds?.length > 0) {
         const workresult = await Promise.all(
-          res?.result.map(async (order) => {
+          res?.result?.map(async (order) => {
             //TODO: remove fetchOrderStatus call once frontend is updated to use titles and creators instead of titile and author.
             const orsResponse = await fetchOrderStatus(
               { orderIds: [order.orderId] },
               context
             );
-            const orsResult = orsResponse[0];
+            const orsResult = orsResponse?.[0];
             const workData = await resolveWork({ pid: order.pid }, context);
             const creators = [
               ...workData?.creators?.persons?.map((person) => ({
@@ -736,10 +687,12 @@ export const resolvers = {
         (account) => account.agencyId
       );
 
+      const language = args.language?.toLowerCase() || "da";
+
       let agencyInfos = await Promise.all(
         agencies.map(async (agencyid) => {
           const options = {
-            language: parent.language,
+            language,
             limit: 30,
             status: "AKTIVE",
             bibdkExcludeBranches: false,

@@ -21,7 +21,7 @@ function checkpids(pids) {
 }
 */
 export function parseResponse(localizations) {
-  let count = localizations?.[0]?.agency.length;
+  let count = localizations?.[0]?.agency?.length;
   const agencies = localizations?.[0]?.agency;
 
   if (count > 0) {
@@ -47,7 +47,7 @@ export function parseResponse(localizations) {
         agencyMap.push({ agencyId: value.agencyId, holdingItems: [holding] });
       }
     }
-    return { count: agencyMap.length, agencies: agencyMap };
+    return { count: agencyMap?.length, agencies: agencyMap };
   } else {
     return { count: count };
   }

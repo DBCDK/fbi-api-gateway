@@ -1,11 +1,11 @@
 export const typeDef = `
-interface Subject {
+interface SubjectInterface {
   display: String!
 
   """
   The type of subject - 'location', 'time period' etc., 'topic' if not specific kind of subject term
   """
-  type: SubjectType!
+  type: SubjectTypeEnum!
 
   """
   Language of the subject - contains display and isoCode 
@@ -15,44 +15,44 @@ interface Subject {
   local: Boolean
 }
 
-type SubjectText implements Subject {
-  type: SubjectType!
+type SubjectText implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
-type TimePeriod implements Subject {
-  type: SubjectType!
+type TimePeriod implements SubjectInterface {
+  type: SubjectTypeEnum!
   period: Range!
   display: String!
   language: Language
   local: Boolean
 }
 
-type Mood implements Subject {
-  type: SubjectType!
+type Mood implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
-type NarrativeTechnique implements Subject {
-  type: SubjectType!
+type NarrativeTechnique implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
-type Setting implements Subject {
-  type: SubjectType!
+type Setting implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
 }
 
-type SubjectWithRating implements Subject {
-  type: SubjectType!
+type SubjectWithRating implements SubjectInterface {
+  type: SubjectTypeEnum!
   display: String!
   language: Language
   local: Boolean
@@ -63,7 +63,7 @@ type SubjectWithRating implements Subject {
   rating: Int
 }
 
-enum SubjectType {
+enum SubjectTypeEnum {
   TOPIC @fallback
   LOCATION
   FICTIONAL_CHARACTER
@@ -110,12 +110,12 @@ type SubjectContainer {
   """
   All subjects
   """
-  all: [Subject!]!
+  all: [SubjectInterface!]!
 
   """
   Only DBC verified subjects
   """
-  dbcVerified: [Subject!]!
+  dbcVerified: [SubjectInterface!]!
 }
 `;
 

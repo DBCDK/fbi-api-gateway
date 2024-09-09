@@ -13,7 +13,7 @@ test("search - with all filters and facets", async () => {
           works(offset: 0, limit: 10) {
             workId
           }   
-          facets(facets: [mainLanguages, materialTypesSpecific]) {
+          facets(facets: [MAINLANGUAGES, MATERIALTYPESSPECIFIC]) {
             name
             values(limit: 5) {
               term

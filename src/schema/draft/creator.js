@@ -22,7 +22,7 @@ type Role {
   function: Translation!
 
 }
-type Person implements Subject & Creator {
+type Person implements SubjectInterface & CreatorInterface {
   
   """
   The person's whole name in normal order
@@ -69,12 +69,12 @@ type Person implements Subject & Creator {
   """
   roles: [Role!]!
 
-  type: SubjectType!
+  type: SubjectTypeEnum!
 
   language: Language
   local: Boolean
 }
-type Corporation implements Subject & Creator {
+type Corporation implements SubjectInterface & CreatorInterface {
     """
     The full corporation or conference name
     """
@@ -120,12 +120,12 @@ type Corporation implements Subject & Creator {
     """
     roles: [Role!]!
 
-    type: SubjectType!
+    type: SubjectTypeEnum!
 
     language: Language
     local: Boolean
 }
-interface Creator {
+interface CreatorInterface {
   """
   Name of the creator
   """

@@ -322,8 +322,6 @@ describe("Manifestation", () => {
             type
           }
           materialTypes {
-            general
-            specific
             materialTypeGeneral{
               code
               display
@@ -349,17 +347,18 @@ describe("Manifestation", () => {
             urlText
             url
           }
-          physicalDescriptions {
-            summary
-            accompanyingMaterial
-            additionalDescription
-            extent
+          physicalDescription {
+            summaryFull
+            materialUnits {
+              summary
+              numberAndType
+              extent
+              additionalDescription
+              size
+              technicalInformation
+            }
             numberOfPages
-            numberOfUnits
-            playingTime
-            requirements
-            size
-            technicalInformation
+            accompanyingMaterial
           }
           publisher
           
@@ -384,9 +383,7 @@ describe("Manifestation", () => {
           }
           series {
             title
-            numberInSeries {
-              number
-            }
+            numberInSeries
           }          
           volume
           tableOfContents {

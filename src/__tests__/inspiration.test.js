@@ -6,10 +6,11 @@ import { performTestQuery } from "../utils/utils";
 
 test("Inspiration - get both 'nyeste' and 'populære' in 'fiction' and 'games'", async () => {
   const result = await performTestQuery({
-    query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
+    query: `query ($limit: Int!, $filters: [CategoryFilterInput!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -27,11 +28,11 @@ test("Inspiration - get both 'nyeste' and 'populære' in 'fiction' and 'games'",
     variables: {
       filters: [
         {
-          category: "fiction",
+          category: "FICTION",
           subCategories: ["nyeste", "populære"],
         },
         {
-          category: "games",
+          category: "GAMES",
           subCategories: ["nyeste", "populære"],
         },
       ],
@@ -44,10 +45,11 @@ test("Inspiration - get both 'nyeste' and 'populære' in 'fiction' and 'games'",
 
 test("Inspiration - 'populære' should sort before 'nyeste' in 'fiction'", async () => {
   const result = await performTestQuery({
-    query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
+    query: `query ($limit: Int!, $filters: [CategoryFilterInput!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -65,7 +67,7 @@ test("Inspiration - 'populære' should sort before 'nyeste' in 'fiction'", async
     variables: {
       filters: [
         {
-          category: "fiction",
+          category: "FICTION",
           subCategories: ["populære", "nyeste"],
         },
       ],
@@ -78,10 +80,11 @@ test("Inspiration - 'populære' should sort before 'nyeste' in 'fiction'", async
 
 test("Inspiration - only get 'nyeste' in 'fiction'", async () => {
   const result = await performTestQuery({
-    query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
+    query: `query ($limit: Int!, $filters: [CategoryFilterInput!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -99,7 +102,7 @@ test("Inspiration - only get 'nyeste' in 'fiction'", async () => {
     variables: {
       filters: [
         {
-          category: "fiction",
+          category: "FICTION",
           subCategories: ["nyeste"],
         },
       ],
@@ -112,10 +115,11 @@ test("Inspiration - only get 'nyeste' in 'fiction'", async () => {
 
 test("Inspiration - Empty subCategories array returns all subCategories in 'fiction'", async () => {
   const result = await performTestQuery({
-    query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
+    query: `query ($limit: Int!, $filters: [CategoryFilterInput!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -133,7 +137,7 @@ test("Inspiration - Empty subCategories array returns all subCategories in 'fict
     variables: {
       filters: [
         {
-          category: "fiction",
+          category: "FICTION",
           subCategories: [],
         },
       ],
@@ -146,10 +150,11 @@ test("Inspiration - Empty subCategories array returns all subCategories in 'fict
 
 test("Inspiration - no subCategories prop returns all subCategories in 'games'", async () => {
   const result = await performTestQuery({
-    query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
+    query: `query ($limit: Int!, $filters: [CategoryFilterInput!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -167,7 +172,7 @@ test("Inspiration - no subCategories prop returns all subCategories in 'games'",
     variables: {
       filters: [
         {
-          category: "games",
+          category: "GAMES",
         },
       ],
       limit: 5,
@@ -179,10 +184,11 @@ test("Inspiration - no subCategories prop returns all subCategories in 'games'",
 
 test("Inspiration - no categories returned when filters prop is empty", async () => {
   const result = await performTestQuery({
-    query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
+    query: `query ($limit: Int!, $filters: [CategoryFilterInput!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {
@@ -208,10 +214,11 @@ test("Inspiration - no categories returned when filters prop is empty", async ()
 
 test("Inspiration - no categories returned when filters prop is missing", async () => {
   const result = await performTestQuery({
-    query: `query ($limit: Int!, $filters: [CategoryFilter!]) {
+    query: `query ($limit: Int!, $filters: [CategoryFilterInput!]) {
       inspiration {
         categories(filter: $filters) {
-          category
+          title
+          type
           subCategories {
             title
             result(limit: $limit) {

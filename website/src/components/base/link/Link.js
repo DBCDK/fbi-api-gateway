@@ -46,6 +46,7 @@ export default function Link({
         }}
         className={`${styles.link} ${keepActiveClass} ${disabledClass} ${underlineClass} ${className}`}
         tabIndex={disabled ? "-1" : tabIndex}
+        disabled={disabled}
         {...props}
       >
         {children}

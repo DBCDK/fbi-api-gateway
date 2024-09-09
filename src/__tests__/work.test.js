@@ -103,25 +103,25 @@ describe("Work", () => {
             code
           }
           materialTypes {
-            general
-            specific
+            materialTypeGeneral {
+              code
+              display
+            }
+            materialTypeSpecific {
+              code
+              display
+            }
           }
           series {
             title
             alternativeTitles
             parallelTitles
-            numberInSeries {
-              display
-              number
-            }
+            numberInSeries
             readThisFirst
             readThisWhenever
             isPopular
           }
-          seriesMembers {
-            workId
-          }
-          universe {
+          universes {
             title
           }
           subjects {

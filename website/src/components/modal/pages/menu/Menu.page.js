@@ -10,6 +10,7 @@ import Link from "@/components/base/link";
 import Label from "@/components/base/label";
 
 import styles from "./Menu.module.css";
+import useTheme from "@/hooks/useTheme";
 
 /**
  * The Component function
@@ -23,12 +24,15 @@ import styles from "./Menu.module.css";
 function Menu({ modal, context }) {
   const { selectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
+  const { theme } = useTheme();
 
   const isValidToken =
     selectedToken &&
     configuration &&
     Object?.keys(configuration).length &&
     configuration.agency;
+
+  const isTemp = theme === "temp";
 
   return (
     <div className={`${styles.menu}`}>
@@ -83,6 +87,15 @@ function Menu({ modal, context }) {
             </Link>
           </Text>
         </Col>
+        {isTemp && (
+          <Col xs={12} as="li">
+            <Text type="text5" className={`${styles.link} ${styles.changes}`}>
+              <Link href="/schema" disabled={!isValidToken}>
+                view schema <strong>[changes]</strong>
+              </Link>
+            </Text>
+          </Col>
+        )}
       </Row>
     </div>
   );

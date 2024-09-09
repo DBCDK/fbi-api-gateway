@@ -9,16 +9,16 @@ export const typeDef = `
   """
   Type of moodSuggest response
   """
-   enum MoodSuggest {
-      title
-      creator
-      tag
+   enum MoodSuggestEnum {
+      TITLE
+      CREATOR
+      TAG
    }
 
    """
-   Response type for moodSuggest
+   MoodSuggest item
    """
-   type moodSuggestResponse {
+   type MoodSuggestItem {
     """
     Suggestion
     """
@@ -26,7 +26,7 @@ export const typeDef = `
     """
     The type of suggestion title/creator/tag
     """
-    type: MoodSuggest!
+    type: MoodSuggestEnum!
     """
     A work associated with the suggestion
     """
@@ -46,15 +46,15 @@ export const typeDef = `
    """
    type MoodSuggestResponse {
     """
-    Response is an array of moodSuggestResponse
+    Response is an array of MoodSuggestResponse
     """
-    response: [moodSuggestResponse!]!
+    response: [MoodSuggestItem!]!
   }
 
   """
   Supported fields for moodsearch request
   """
-   enum MoodSearchFieldValues {
+   enum MoodSearchFieldValuesEnum {
     ALL
     TITLE
     CREATOR
@@ -62,17 +62,17 @@ export const typeDef = `
     ALLTAGS
    }
    
-   input KidRecommenderTags{
+   input KidRecommenderTagsInput{
     tag: String
     weight: Int
    }
    
-   input MoodKidsRecommendFilters {
+   input MoodKidsRecommendFiltersInput {
     difficulty: [Int!]
     illustrationsLevel: [Int!]
     length: [Int!]
     realisticVsFictional: [Int!]
-    fictionNonfiction: FictionNonfictionCode
+    fictionNonfiction: FictionNonfictionCodeEnum
    }
 
    """
@@ -82,33 +82,33 @@ export const typeDef = `
     """
     The works matching the given search query. Use offset and limit for pagination.
     """
-    works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+    works(offset: Int! limit: PaginationLimitScalar!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   }
   """
   The reponse from moodsearchkids
   """
   type MoodSearchKidsResponse {
-    works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+    works(offset: Int! limit: PaginationLimitScalar!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   }
   
   """
   The reponse from moodrecommenkids
   """
   type MoodRecommendKidsResponse {
-    works(offset: Int! limit: PaginationLimit!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+    works(offset: Int! limit: PaginationLimitScalar!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
   }
 
-  type moodQueries {
-    moodSearch(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchResponse!
-    moodSearchKids(q:String!, field: MoodSearchFieldValues, offset: Int, limit: Int): MoodSearchKidsResponse!
+  type MoodQueries {
+    moodSearch(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchResponse!
+    moodSearchKids(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchKidsResponse!
     moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
     moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], hasCover:Boolean): [MoodTagRecommendResponse]!
     moodWorkRecommend(likes:[String!]!, dislikes:[String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean):[MoodTagRecommendResponse]!
-    moodRecommendKids(tags: [KidRecommenderTags!], work: String, filters: MoodKidsRecommendFilters, dislikes:[String!], offset: Int, limit: Int):MoodRecommendKidsResponse!
+    moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes:[String!], offset: Int, limit: Int):MoodRecommendKidsResponse!
   }
 
   extend type Query {
-    mood: moodQueries!
+    mood: MoodQueries!
   }
 
   `;
@@ -139,7 +139,7 @@ export const resolvers = {
     },
   },
 
-  moodQueries: {
+  MoodQueries: {
     async moodSearch(parent, args, context, info) {
       return {
         ...args,
@@ -153,6 +153,7 @@ export const resolvers = {
           ...args,
           ...{ agency: context.profile.agency, profile: context.profile.name },
         });
+
       return response;
     },
     async moodRecommendKids(parent, args, context, info) {
@@ -214,9 +215,12 @@ export const resolvers = {
       return getSearchExpanded(res, context);
     },
   },
-  moodSuggestResponse: {
+  MoodSuggestItem: {
     work(parent, args, context, info) {
       return resolveWork({ id: parent.work }, context);
+    },
+    type(parent, args, context, info) {
+      return parent.type?.toUpperCase();
     },
   },
   MoodTagRecommendResponse: {

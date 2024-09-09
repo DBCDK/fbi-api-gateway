@@ -4,6 +4,7 @@
  * It will check all files recursively in ./src/schema
  * and load type definitions and resolvers
  */
+import { startCase } from "lodash";
 
 import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { wrapSchema } from "@graphql-tools/wrap";
@@ -35,7 +36,7 @@ let externalSchema;
 
 // The internal schema
 let internalSchema = enumFallbackDirectiveTransformer(
-  makeExecutableSchema(schemaLoader())
+  makeExecutableSchema(fieldNameValidator(schemaLoader()))
 );
 
 /**
@@ -62,12 +63,190 @@ class PermissionsTransform {
 }
 
 /**
+ * Type, field/subfield validator
+ *
+ * Function is testing for:
+ *
+ * ObjectTypes i written in PascalCase (starting with a Capital letter)
+ * Unique Type subfield names (regardless of UPPER/lower case)
+ * EnumType values is written in all UPPERCASE
+ * Types written in PascalCase
+ * InputTypes endping with 'Input'
+ * ScalarTypes ending with 'Scalar'
+ * EnumTypes ending with 'Enum'
+ * UnionTypes ending with 'Union'
+ * InterfaceTypes ending with 'Interface'
+ *
+ * Notes: ignores deprecated fields
+ * Directive definitions are excepted
+ *
+ * @param {Schema} props
+ * @param {string} errorType (THROW | LOG | IGNORE)
+ * @returns {object}
+ */
+
+// dev mode only
+export function fieldNameValidator(props, errorType = "THROW") {
+  //  This check is NOT for production
+  if (process.env.NODE_ENV === "production") {
+    return props;
+  }
+
+  if (errorType === "LOG") {
+    console.info(
+      "########################### Field validations ###########################"
+    );
+    console.info(" ");
+  }
+
+  let hasError;
+
+  // Function to handle Error messages (throw|log|ignore)
+  function handleError(message) {
+    hasError = true;
+    if (errorType === "THROW") {
+      throw new Error(message);
+    }
+    errorType === "LOG" && console.error(message);
+  }
+
+  // Kind/type categories to omit
+  const omit = ["DirectiveDefinition"];
+
+  // Kinds/types which should be a part of the tailing typeNameDefintion. e.g. UserStatus(Enum), User(Input)
+  const tailedTypes = [
+    "EnumTypeDefinition",
+    "InputObjectTypeDefinition",
+    "UnionTypeDefinition",
+    "ScalarTypeDefinition",
+    "InterfaceTypeDefinition",
+  ];
+
+  // All fields and subfields in lowercase
+  let lowerCasedTypeNames = [];
+
+  // schema
+  const typeDefs = props.typeDefs;
+
+  typeDefs?.definitions?.forEach((obj) => {
+    const field = obj?.name?.value;
+    const shouldOmit = omit.includes(obj?.kind);
+    const shouldHaveTypedTailing = tailedTypes.includes(obj?.kind);
+
+    // field name exist
+    if (field) {
+      // Tjek if the type of field is omitted
+      if (!shouldOmit) {
+        // Check for field name doublets
+        if (lowerCasedTypeNames.includes(field?.toLowerCase())) {
+          handleError(`Type name '${field}' (${obj?.kind}) is already used`);
+        }
+
+        // Add to name doublet array
+        lowerCasedTypeNames.push(field?.toLowerCase());
+
+        // Ensure first letter in type def is uppercase
+        if (/^\p{Ll}/u.test(field)) {
+          handleError(
+            `Type '${field}' (${obj?.kind}) is a TypeDefinition and should be written in PascalCase`
+          );
+        }
+
+        // Ensure correct tailed naming for Enum and Input types
+        if (shouldHaveTypedTailing) {
+          // Returns the first string in PascalCased type/kind e.g. Enum, Union, Interface
+          const tail = startCase(obj?.kind).split(" ")[0];
+
+          if (!field.endsWith(tail)) {
+            handleError(
+              `Type '${field}' is a ${obj?.kind} which should always end with '${tail}'`
+            );
+          }
+        }
+      }
+
+      /**
+       * Subfields check
+       */
+
+      // ObjectTypeDefinition uses .fields and EnumValueDefinition uses .values
+      const subfields = obj?.fields || obj?.values;
+
+      // All subfields in lowercase
+      let lowerCasedFieldNames = [];
+
+      // Check the subfields of the typedef obj
+      subfields?.forEach((obj) => {
+        const subfield = obj?.name?.value;
+        const kind = obj?.kind;
+        const isDeprecated = !!obj?.directives?.find(
+          (obj) => obj?.name?.value === "deprecated"
+        );
+
+        // ignore deprecated fields
+        if (!isDeprecated) {
+          // has subfields
+          if (subfield) {
+            // handle enum subfields (all UPPERCASE check)
+            if (kind === "EnumValueDefinition") {
+              //  ensure enums is written all uppercase
+              if (subfield !== subfield?.toUpperCase()) {
+                handleError(
+                  `Field '${subfield}' in type '${field}' (${obj?.kind}) is an enum and should be written all UPPERCASE`
+                );
+              }
+            }
+
+            // handle if subfield name already exist
+            if (lowerCasedFieldNames.includes(subfield?.toLowerCase())) {
+              handleError(
+                `Field name '${subfield}' in '${field}' is already used`
+              );
+            }
+
+            //  add to name doublet array
+            lowerCasedFieldNames.push(subfield?.toLowerCase());
+          }
+        }
+      });
+    }
+  });
+
+  //  If error handling type is "LOG"
+  if (errorType === "LOG") {
+    if (!hasError) {
+      console.info("... No field validation errors was found");
+    }
+    console.info(" ");
+    console.info(
+      "#########################################################################"
+    );
+  }
+
+  return props;
+}
+
+/**
  * Will load all files in schema folder
  * and look for type definitions and resolvers.
  */
 function schemaLoader() {
-  let allTypeDefs = [enumFallbackDirectiveTypeDefs, ...scalarTypeDefs];
-  let allResolvers = { ...scalarResolvers };
+  // Custom selected scalar type defs (from graphiql-scalar lib)
+  const customScalarTypeDefs = ["DateTime"];
+
+  const _scalarResolvers = {};
+  const _scalarTypeDefs = [];
+
+  customScalarTypeDefs.forEach((val) => {
+    if (scalarTypeDefs.includes(`scalar ${val}`)) {
+      _scalarResolvers[`${val}Scalar`] = scalarResolvers[val];
+      _scalarTypeDefs.push(`scalar ${val}Scalar`);
+    }
+  });
+
+  let allTypeDefs = [enumFallbackDirectiveTypeDefs, ..._scalarTypeDefs];
+
+  let allResolvers = { ..._scalarResolvers };
 
   // Load files in schema folder
   const files = getFilesRecursive(`${__dirname}/schema`);

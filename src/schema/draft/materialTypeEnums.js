@@ -1,5 +1,5 @@
 export const typeDef = `
-enum GeneralMaterialTypeCode {
+enum GeneralMaterialTypeCodeEnum {
   ARTICLES
   AUDIO_BOOKS
   BOARD_GAMES

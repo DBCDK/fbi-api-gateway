@@ -1,0 +1,40 @@
+.chip {
+  display: inline-block;
+}
+
+.chip input[type="checkbox"] {
+  display: none;
+}
+
+.chip input[type="checkbox"] + label {
+  -webkit-transition: all 500ms ease;
+  transition: all 500ms ease;
+
+  font-size: 14px;
+  font-family: var(--font-mono-semibold);
+  height: var(--pt5);
+  border-radius: calc(var(--pt5) / 2);
+
+  cursor: pointer;
+
+  color: var(--text-light);
+
+  border: solid 2px var(--divider);
+  padding: 0.5rem 2rem;
+
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.chip input[type="checkbox"]:checked + label {
+  -webkit-transition: all 500ms ease;
+  transition: all 500ms ease;
+  color: var(--secondary);
+  border-color: var(--secondary);
+}
+
+.chip input[type="checkbox"][disabled] + label {
+  cursor: default;
+}

@@ -1,27 +1,26 @@
 import { resolveWork } from "../../utils/utils";
 
 export const typeDef = `
-enum SuggestionType {
+enum SuggestionTypeEnum {
   SUBJECT
   TITLE
   CREATOR
   COMPOSIT
 }
 
-enum ComplexSuggestionType {
-  hostpublication
-  contributorfunction
-  creator
-  default
-  creatorcontributorfunction
-  contributor
-  creatorfunction
-  subject
-  fictionalcharacter
-  title
-  creatorcontributor
-  series
-  publisher
+enum ComplexSuggestionTypeEnum {
+  HOSTPUBLICATION
+  CONTRIBUTORFUNCTION
+  CREATOR
+  DEFAULT
+  CREATORCONTRIBUTORFUNCTION
+  CREATORFUNCTION
+  SUBJECT
+  FICTIONALCHARACTER
+  TITLE
+  CREATORCONTRIBUTOR
+  SERIES
+  PUBLISHER
 }
 
 type ComplexSearchSuggestion {
@@ -45,7 +44,7 @@ type Suggestion {
   """
   The type of suggestion: creator, subject or title
   """
-  type: SuggestionType!
+  type: SuggestionTypeEnum!
 
   """
   The suggested term which can be searched for
@@ -66,7 +65,7 @@ type SuggestResponse {
   result: [Suggestion!]!
 }
 
-type localSuggestResponse{
+type LocalSuggestResponse{
   result: [Suggestion!]!
 }
 `;
@@ -92,7 +91,7 @@ export const resolvers = {
         ...args,
         profile: context.profile,
       });
-      return res;
+      return res || [];
     },
   },
   ComplexSuggestResponse: {
@@ -102,10 +101,10 @@ export const resolvers = {
         q: parent.q,
         profile: context.profile,
       });
-      return res;
+      return res || [];
     },
   },
-  localSuggestResponse: {
+  LocalSuggestResponse: {
     async result(parent, args, context, info) {
       const res = await context.datasources.getLoader("prosper").load({
         ...parent,

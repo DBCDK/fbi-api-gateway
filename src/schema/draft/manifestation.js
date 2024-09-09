@@ -60,63 +60,7 @@ type PhysicalUnitDescription {
   numberOfPages: Int
   accompanyingMaterial: String
 }
-
-type PhysicalDescription {
-  """
-  A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  summary: String!
   
-  """
-  Material that comes with the manifestation (bilag)
-  """
-  accompanyingMaterial: String
-  
-  """
-  Additional physical description of the manifestation (e.g illustrations etc)
-  """
-  additionalDescription: String
-  
-  """
-  Extent of the manifestation like pages and number of items
-  """
-  extent: String
-  
-  """
-  Number of pages of the manifestation as number
-  """
-  numberOfPages: Int
-
-  """
-  Number of units, like 3 cassettes, or 1 score etc.
-  """
-  numberOfUnits: String
-
-  """
-  The playing time of the manifestation (e.g 2 hours 5 minutes)
-  """
-  playingTime: String
-
-  """
-  The necessary equipment to use the material
-  """
-  requirements: String
-
-  """
-  Size of the manifestation
-  """
-  size: String
-
-  """
-  Technical information about the manifestation (e.g blu-ray disc)
-  """
-  technicalInformation: String
-
-  """
-  Ratio of text vs. illustration from 1-5 as a number, where 1 means no illustrations and 5 means illustrations on all pages
-  """
-  textVsIllustrations: Int
-}
 type RelatedPublication {
   """
   Notes describing the relation of the related periodical/journal/publication
@@ -153,7 +97,7 @@ type RelatedPublication {
   """
   url: String
 }
-enum NoteType {
+enum NoteTypeEnum {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
   DISSERTATION
@@ -170,27 +114,27 @@ enum NoteType {
   TECHNICAL_REQUIREMENTS
   ESTIMATED_PLAYING_TIME_FOR_GAMES
 }
-enum ChildOrAdultCode {
+enum ChildOrAdultCodeEnum {
   FOR_CHILDREN
   FOR_ADULTS @fallback
 }
 type ChildOrAdult {
   display: String!
-  code: ChildOrAdultCode!
+  code: ChildOrAdultCodeEnum!
 }
-enum SchoolUseCode {
+enum SchoolUseCodeEnum {
   FOR_SCHOOL_USE @fallback
   FOR_TEACHER
 }
 type SchoolUse {
   display: String!
-  code: SchoolUseCode!
+  code: SchoolUseCodeEnum!
 }
 type Note {
   """
   The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
   """
-  type: NoteType!
+  type: NoteTypeEnum!
 
   """
   Heading before note
@@ -202,7 +146,7 @@ type Note {
   """
   display: [String!]!  
 }
-enum ManifestationPartType {
+enum ManifestationPartTypeEnum {
   MUSIC_TRACKS
   SHEET_MUSIC_CONTENT
   PARTS_OF_BOOK
@@ -217,7 +161,7 @@ type ManifestationPart {
   """
   The creator of the music track or literary analysis
   """
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   """
   Classification of this entry (music track or literary analysis)
@@ -227,7 +171,7 @@ type ManifestationPart {
   """
   Subjects of this entry (music track or literary analysis)
   """
-  subjects: [Subject!]
+  subjects: [SubjectInterface!]
 
   """
   Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
@@ -258,7 +202,7 @@ type ManifestationParts {
   """
   The type of manifestation parts, is this music tracks, book parts etc.
   """
-  type: ManifestationPartType!
+  type: ManifestationPartTypeEnum!
 }
 type Languages {
   """
@@ -296,7 +240,7 @@ type Languages {
   """
   abstract: [Language!]
 }
-enum IdentifierType {
+enum IdentifierTypeEnum {
   UPC
   URI
   DOI
@@ -314,7 +258,7 @@ type Identifier {
   """
   The type of identifier
   """
-  type: IdentifierType!
+  type: IdentifierTypeEnum!
 
   """
   The actual identifier
@@ -435,7 +379,7 @@ type Edition {
   """
   publicationYear: PublicationYear
 }
-enum EntryType {
+enum EntryTypeEnum {
   ADDITIONAL_ENTRY @fallback
   MAIN_ENTRY
   NATIONAL_BIBLIOGRAPHY_ENTRY
@@ -460,7 +404,7 @@ type Classification {
   """
   For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
   """
-  entryType: EntryType
+  entryType: EntryTypeEnum
 
   """
   Name of the classification system
@@ -617,7 +561,7 @@ type Manifestation {
   """
   Different options to access manifestation
   """
-  access: [Access!]!
+  access: [AccessUnion!]!
 
   """
   Different kinds of definitions of appropriate audience for this manifestation
@@ -637,7 +581,7 @@ type Manifestation {
   """
   Contributors to the manifestation, actors, illustrators etc
   """
-  contributors: [Creator!]!
+  contributors: [CreatorInterface!]!
 
   """
   Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
@@ -652,7 +596,7 @@ type Manifestation {
   """
   Primary creators of the manifestation e.g. authors, directors, musicians etc
   """
-  creators: [Creator!]!
+  creators: [CreatorInterface!]!
 
   """
   Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
@@ -723,17 +667,11 @@ type Manifestation {
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
   relatedPublications: [RelatedPublication!]!
-
-  """
-  Physical description of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  physicalDescriptions: [PhysicalDescription!]! @deprecated(reason: "Use 'physicalDescription' instead")
   
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   """
-  physicalDescription: PhysicalUnitDescription 
- 
+  physicalDescription: PhysicalUnitDescription
 
   """
   Publisher of this manifestion
@@ -749,11 +687,6 @@ type Manifestation {
   Series for this manifestation
   """
   series: [Series!]!
-
-  """
-  Universe for this manifestation
-  """
-  universe: Universe @deprecated(reason: "Use 'universes' instead")
   
   """
   Universes for this manifestation
@@ -788,7 +721,7 @@ type Manifestation {
   """
   Worktypes for this manifestations work
   """
-  workTypes: [WorkType!]!
+  workTypes: [WorkTypeEnum!]!
 
   """
   The year this manifestation was originally published or produced

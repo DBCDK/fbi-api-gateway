@@ -33,7 +33,6 @@
     "esm-wallaby": "^3.2.28",
     "express": "^4.17.1",
     "fast-jwt": "^3.3.2",
-    "graphiql": "^1.11.5",
     "graphql": "^15.8.0",
     "graphql-http": "^1.22.0",
     "graphql-query-complexity": "^0.12.0",

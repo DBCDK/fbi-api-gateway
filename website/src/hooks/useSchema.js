@@ -4,16 +4,20 @@ import useSWR from "swr";
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql";
 import useStorage from "./useStorage";
 
-export function useGraphQLUrl() {
+export function useGraphQLUrl(origin) {
+  const url = origin
+    ? origin
+    : typeof window !== "undefined" && window.location.origin;
+
   const { selectedToken } = useStorage();
   const { profile = "default" } = selectedToken || {};
 
-  return `${
-    typeof window !== "undefined" && window.location.origin
-  }/${profile}/graphql`;
+  return `${url}/${profile}/graphql`;
 }
-export default function useSchema(token) {
-  const url = useGraphQLUrl();
+export default function useSchema(token, _url) {
+  const self = useGraphQLUrl();
+
+  const url = _url ?? self;
 
   const fetcher = async (url) => {
     const response = await fetch(url, {

@@ -8,9 +8,15 @@ import Link from "@/components/base/link";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 
+import useTheme from "@/hooks/useTheme";
+
 import styles from "./Home.module.css";
 
 export default function Home() {
+  const { theme } = useTheme();
+
+  const isTemp = theme === "temp";
+
   return (
     <>
       <Header />
@@ -20,11 +26,32 @@ export default function Home() {
           <Col>
             <Text className={styles.text}>Hello! You have found the</Text>
             <Title as="h1" type="title6" className={styles.title}>
-              FBI API
+              <strong>[Temporary]</strong> FBI API
             </Title>
           </Col>
         </Row>
 
+        {isTemp && (
+          <Row className={styles.content}>
+            <Col>
+              <Title as="h2" type="title1" className={styles.title}>
+                What does this <strong>{"'Temporary'"}</strong> thing mean?
+              </Title>
+              <Text className={styles.text}>
+                This version of the FBI-API is designed for a more significant
+                schema migration. This is NOT how the schema currently looks
+                like.
+              </Text>
+              <Text className={styles.text}>
+                Looking for the cureent FBI-API version? Click{" "}
+                <Link href="https://fbi-api.dbc.dk/" underline>
+                  here
+                </Link>
+                .
+              </Text>
+            </Col>
+          </Row>
+        )}
         <Row className={styles.content}>
           <Col>
             <Title as="h2" type="title1" className={styles.title}>

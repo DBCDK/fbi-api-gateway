@@ -39,7 +39,7 @@ export default function Header() {
 
   const { selectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
-  const { icon } = useTheme();
+  const { icon, theme } = useTheme();
 
   const isValidToken =
     selectedToken &&
@@ -50,6 +50,7 @@ export default function Header() {
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
   const isSchema = router.pathname === "/schema";
+  const isTemp = theme === "temp";
 
   const indexStyles = isIndex ? styles.index : "";
   const documentationStyles = isDocumentation ? styles.documentation : "";
@@ -94,6 +95,13 @@ export default function Header() {
                 Schema
               </Link>
             </Text>
+            {isTemp && (
+              <Text type="text5" className={`${styles.link} ${styles.changes}`}>
+                <Link href="/changes" disabled={!isValidToken}>
+                  [Changes]
+                </Link>
+              </Text>
+            )}
           </Col>
 
           <Col className={styles.middle}>

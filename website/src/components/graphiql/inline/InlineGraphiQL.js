@@ -132,7 +132,7 @@ export function InlineGraphiQL({
   const prettifyEditors = usePrettifyEditors();
 
   const { selectedToken } = useStorage();
-  const url = useGraphQLUrl(selectedToken);
+  const url = useGraphQLUrl();
 
   const [isReady, setIsReady] = useState(false);
 
@@ -233,7 +233,7 @@ export function InlineGraphiQL({
 export default function Wrap(props) {
   const { selectedToken } = useStorage();
   const { schema } = useSchema(selectedToken);
-  const url = useGraphQLUrl(selectedToken);
+  const url = useGraphQLUrl();
 
   const { query: initialQuery, variables: initialVariabels = "" } = props;
 
