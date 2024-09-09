@@ -2669,6 +2669,7 @@ enum FacetFieldEnum {
   LET
   GENERALAUDIENCE
   LIBRARYRECOMMENDATION
+  GAMEPLATFORM
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -4961,6 +4962,7 @@ enum FacetFieldEnum {
   LET
   GENERALAUDIENCE
   LIBRARYRECOMMENDATION
+  GAMEPLATFORM
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
