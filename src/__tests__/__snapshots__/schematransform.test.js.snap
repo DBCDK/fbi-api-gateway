@@ -3063,6 +3063,7 @@ enum FacetField {
   let
   generalAudience
   libraryRecommendation
+  gamePlatform
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -5497,6 +5498,7 @@ enum FacetField {
   let
   generalAudience
   libraryRecommendation
+  gamePlatform
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
