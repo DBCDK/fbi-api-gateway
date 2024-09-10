@@ -45,7 +45,7 @@ export default function Diff({ options }) {
               <div className={styles.title}>{titleMap[k]}</div>
               <div className={styles.wrap}>
                 <ul>
-                  {v.map(({ from, to, note, ignore }) => {
+                  {v.map(({ from, to, note, ignore, typesRemoved }) => {
                     const fromHasDot = from.includes(".");
                     const toHasDot = to?.includes(".");
 
@@ -100,6 +100,24 @@ export default function Diff({ options }) {
                             tail
                           )}
                         </span>
+                        {typesRemoved && (
+                          <div>
+                            Results in the removal of the following types
+                            <ul>
+                              {typesRemoved.map((t) => {
+                                return (
+                                  <li key={t.type}>
+                                    {t.type}
+                                    {t.fields.map((f) => {
+                                      return <span key={f}> {f}</span>;
+                                    })}
+                                    <div>hep</div>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        )}
                         {note && <i className={styles.note}>{` ${note}`}</i>}
                       </li>
                     );

@@ -1,124 +1,297 @@
 {
-    "DEPRECATED": [
-        {"from": "SortOrder.asc", "to": "SortOrderEnum.ASC"},
-        {"from": "SortOrder.desc", "to": "SortOrderEnum.DESC"},
-        {"from": "ComplexSearchResponse.solrQuery"},
-        {"from": "ComplexSearchResponse.solrFilter"},
-        {"from": "ComplexSearchResponse.tokenizerDurationInMs"},
-        {"from": "ComplexSearchResponse.solrExecutionDurationInMs"},
-        {"from": "Branch.userIsBlocked"},
-        {"from": "Mutation.submitPeriodicaArticleOrder"},
-        {"from": "BibliotekDkOrder.closed"},
-        {"from": "BibliotekDkOrder.autoForwardResult"},
-        {"from": "BibliotekDkOrder.placeOnHold"},
-        {"from": "BibliotekDkOrder.pickupAgencyId"},
-        {"from": "BibliotekDkOrder.pid"},
-        {"from": "BibliotekDkOrder.pidOfPrimaryObject", "to": "Work.workId"},
-        {"from": "BibliotekDkOrder.author", "to": "Work.creators"},
-        {"from": "BibliotekDkOrder.title", "to": "Work.title"},
-        {"from": "BibliotekDkOrder.errorMessage"},
-        {"from": "AccessTypeCode.NOT_SPECIFIED"},
-        {"from": "Manifestation.physicalDescriptions", "to": "Manifestation.physicalDescription"},
-        {"from": "Manifestation.universe", "to": "Manifestation.universes"},
-        {"from": "Series.numberInSeries", "to": "Series.numberInSeries", "note": "String"},
-        {"from": "MaterialType.general", "to": "MaterialType.materialTypeGeneral"},
-        {"from": "MaterialType.specific", "to": "MaterialType.materialTypeSpecific"},
-        {"from": "Work.seriesMembers"},
-        {"from": "Work.universe", "to": "Work.universes"}
-    ],
-    "TO_UPPERCASE_ENUM_VALUES": [
-        {"from": "ComplexSuggestionType.values", "to": "ComplexSuggestionTypeEnum.VALUES", "note": "UPPERCASED"},
-        {"from": "FacetField.values", "to": "FacetFieldEnum.VALUES", "note": "UPPERCASED"},
-        {"from": "CategoryFilters.values", "to": "CategoryFiltersEnum.VALUES", "note": "UPPERCASED"},
-        {"from": "FeedbackThumb.values", "to": "FeedbackThumbEnum.VALUES", "note": "UPPERCASED"},
-        {"from": "LanguageCode.values", "to": "LanguageCodeEnum.VALUES", "note": "UPPERCASED"},
-        {"from": "VipUserParameter.values", "to": "VipUserParameterEnum.VALUES", "note": "UPPERCASED"},
-        {"from": "MoodSuggest.values", "to": "MoodSuggestEnum.VALUES", "note": "UPPERCASED"},
-        {"from": "HoldingsStatus.values", "to": "HoldingsStatusEnum.VALUES", "note": "UPPERCASED"},
-        {"from": "BookMarkOrderBy.values", "to": "BookMarkOrderByEnum.VALUES", "note": "UPPERCASED"}
-    ],
-    "TYPES_TO_PASCALCASE": [
-        {"from": "localSuggestResponse", "to": "LocalSuggestResponse", "ignore": true},
-        {"from": "holdingAgency", "to": "HoldingAgency", "ignore": true},
-        {"from": "moodQueries", "to": "MoodQueries", "ignore": true}
-    ],
-    "TYPES_TO_PASCALCASE_NAMECHANGE": [
-        {"from": "complexSearchFacets", "to": "ComplexSearchFacetsInput"},
-        {"from": "holdingsItem", "to": "LocalizationsHoldingsItem", "ignore": true},
-        {"from": "moodSuggestResponse", "to": "MoodSuggestItem", "ignore": true},
-        {"from": "BookmarkResponse", "to": "AddBookMarkResponse", "ignore": true}
-    ],
-    "TAILED_INPUT": [
-        {"from": "complexSearchFacets", "to": "ComplexSearchFacetsInput"},
-        {"from": "ComplexSearchFilters", "to": "ComplexSearchFiltersInput"},
-        {"from": "Sort", "to": "SortInput"},
-        {"from": "CreateAccountTokens", "to": "CreateAccountTokensInput", "ignore": true},
-        {"from": "DataCollectSearchRequest", "to": "DataCollectSearchRequestInput", "ignore": true},
-        {"from": "CategoryFilter", "to": "CategoryFilterInput"},
-        {"from": "KidRecommenderTags", "to": "KidRecommenderTagsInput"},
-        {"from": "MoodKidsRecommendFilters", "to": "MoodKidsRecommendFiltersInput"},
-        {"from": "SubmitOrderUserParameters", "to": "SubmitOrderUserParametersInput", "ignore": true},
-        {"from": "Material", "to": "MaterialInput", "ignore": true},
-        {"from": "PeriodicaArticleOrder"},
-        {"from": "SearchQuery", "to": "SearchQueryInput"}
-    ],
-    "TAILED_SCALAR": [
-        {"from": "PaginationLimit", "to": "PaginationLimitScalar"},
-        {"from": "CustomDateFormat"}
-    ],
-    "TAILED_INTERFACE": [
-        {"from": "Creator", "to": "CreatorInterface"},
-        {"from": "Subject", "to": "SubjectInterface"}
-    ],
-    "TAILED_UNION": [
-        {"from": "UniverseContent", "to": "UniverseContentUnion", "ignore": true},
-        {"from": "Access", "to": "AccessUnion", "ignore": true}
-    ],
-    "TAILED_ENUM": [
-        {"from": "OrderPossibleReason", "to": "OrderPossibleReasonEnum", "ignore": true},
-        {"from": "SortOrder", "to": "SortOrderEnum", "ignore": true},
-        {"from": "GetAccountsType", "to": "GetAccountsTypeEnum"},
-        {"from": "CreateAccountStatus", "to": "CreateAccountStatusEnum", "ignore": true},
-        {"from": "DeleteAccountStatus", "to": "DeleteAccountStatusEnum", "ignore": true},
-        {"from": "ComplexSearchFacets", "to": "ComplexSearchFacetsEnum", "ignore": true},
-        {"from": "HoldingsResponseStatus", "to": "HoldingsResponseStatusEnum", "ignore": true},
-        {"from": "AccessTypeCode", "to": "AccessTypeCodeEnum", "ignore": true},
-        {"from": "AccessUrlType", "to": "AccessUrlTypeEnum", "ignore": true},
-        {"from": "LinkStatus", "to": "LinkStatusEnum", "ignore": true},
-        {"from": "SubjectType", "to": "SubjectTypeEnum", "ignore": true},
-        {"from": "SuggestionType", "to": "SuggestionTypeEnum"},
-        {"from": "ComplexSuggestionType", "to": "ComplexSuggestionTypeEnum"},
-        {"from": "FictionNonfictionCode", "to": "FictionNonfictionCodeEnum", "ignore": true},
-        {"from": "WorkType", "to": "WorkTypeEnum"},
-        {"from": "CopyRequestStatus", "to": "CopyRequestStatusEnum", "ignore": true},
-        {"from": "InfomediaError", "to": "InfomediaErrorEnum", "ignore": true},
-        {"from": "AccessStatus"},
-        {"from": "NoteType", "to": "NoteTypeEnum", "ignore": true},
-        {"from": "ChildOrAdultCode", "to": "ChildOrAdultCodeEnum", "ignore": true},
-        {"from": "SchoolUseCode", "to": "SchoolUseCodeEnum", "ignore": true},
-        {"from": "ManifestationPartType", "to": "ManifestationPartTypeEnum", "ignore": true},
-        {"from": "IdentifierType", "to": "IdentifierTypeEnum", "ignore": true},
-        {"from": "EntryType", "to": "EntryTypeEnum", "ignore": true},
-        {"from": "GeneralMaterialTypeCode", "to": "GeneralMaterialTypeCodeEnum", "ignore": true},
-        {"from": "ReviewElementType", "to": "ReviewElementTypeEnum", "ignore": true},
-        {"from": "CategoryFilters", "to": "CategoryFiltersEnum", "ignore": true},
-        {"from": "LanguageCode", "to": "LanguageCodeEnum"},
-        {"from": "LibraryStatus", "to": "LibraryStatusEnum"},
-        {"from": "VipUserParameter", "to": "VipUserParameterEnum", "ignore": true},
-        {"from": "AgencyType", "to": "AgencyTypeEnum"},
-        {"from": "LinkCheckStatus", "to": "LinkCheckStatusEnum", "ignore": true},
-        {"from": "MoodSuggest", "to": "MoodSuggestEnum", "ignore": true},
-        {"from": "SubmitOrderStatus", "to": "SubmitOrderStatusEnum", "ignore": true},
-        {"from": "OrderType", "to": "OrderTypeEnum"},
-        {"from": "MoodSearchFieldValues", "to": "MoodSearchFieldValuesEnum"},
-        {"from": "FeedbackThumb", "to": "FeedbackThumbEnum", "ignore": true},
-        {"from": "OrderStatus", "to": "OrderStatusEnum", "ignore": true},
-        {"from": "BookMarkOrderBy", "to": "BookMarkOrderByEnum"},
-        {"from": "HoldingsStatus", "to": "HoldingsStatusEnum", "ignore": true},
-        {"from": "FacetField", "to": "FacetFieldEnum"},
-        {"from": "PeriodicaArticleOrderStatus"}
-    ]
+  "DEPRECATED": [
+    { "from": "SortOrder.asc", "to": "SortOrderEnum.ASC" },
+    { "from": "SortOrder.desc", "to": "SortOrderEnum.DESC" },
+    { "from": "ComplexSearchResponse.solrQuery" },
+    { "from": "ComplexSearchResponse.solrFilter" },
+    { "from": "ComplexSearchResponse.tokenizerDurationInMs" },
+    { "from": "ComplexSearchResponse.solrExecutionDurationInMs" },
+    { "from": "Branch.userIsBlocked" },
+    {
+      "from": "Mutation.submitPeriodicaArticleOrder",
+      "to": "Elba.placeCopyRequest",
+      "typesRemoved": [
+        {
+          "type": "input PeriodicaArticleOrder",
+          "fields": [
+            "pid",
+            "pickUpBranch",
+            "userName",
+            "userMail",
+            "publicationDateOfComponent",
+            "volume",
+            "authorOfComponent",
+            "titleOfComponent",
+            "pagination"
+          ]
+        },
+        {
+          "type": "type PeriodicaArticleOrderResponse",
+          "fields": ["status"]
+        },
+        {
+          "type": "enum PeriodicaArticleOrderStatus",
+          "fields": [
+            "OK",
+            "ERROR_UNAUTHORIZED_USER",
+            "ERROR_AGENCY_NOT_SUBSCRIBED",
+            "ERROR_INVALID_PICKUP_BRANCH",
+            "ERROR_PID_NOT_RESERVABLE",
+            "ERROR_NO_NAME_OR_EMAIL"
+          ]
+        }
+      ]
+    },
+    { "from": "BibliotekDkOrder.closed" },
+    { "from": "BibliotekDkOrder.autoForwardResult" },
+    { "from": "BibliotekDkOrder.placeOnHold" },
+    { "from": "BibliotekDkOrder.pickupAgencyId" },
+    { "from": "BibliotekDkOrder.pid" },
+    { "from": "BibliotekDkOrder.pidOfPrimaryObject", "to": "Work.workId" },
+    { "from": "BibliotekDkOrder.author", "to": "Work.creators" },
+    { "from": "BibliotekDkOrder.title", "to": "Work.title" },
+    { "from": "BibliotekDkOrder.errorMessage" },
+    { "from": "AccessTypeCode.NOT_SPECIFIED" },
+    {
+      "from": "Manifestation.physicalDescriptions",
+      "to": "Manifestation.physicalDescription",
+      "typesRemoved": [
+        {
+          "type": "type PhysicalDescription",
+          "fields": [
+            "summary",
+            "accompanyingMaterial",
+            "additionalDescription",
+            "extent",
+            "numberOfPages",
+            "numberOfUnits",
+            "playingTime",
+            "requirements",
+            "size",
+            "technicalInformation",
+            "textVsIllustrations"
+          ]
+        }
+      ]
+    },
+    { "from": "Manifestation.universe", "to": "Manifestation.universes" },
+    {
+      "from": "Series.numberInSeries",
+      "to": "Series.numberInSeries",
+      "note": "String"
+    },
+    {
+      "from": "MaterialType.general",
+      "to": "MaterialType.materialTypeGeneral"
+    },
+    {
+      "from": "MaterialType.specific",
+      "to": "MaterialType.materialTypeSpecific"
+    },
+    { "from": "Work.seriesMembers", "to": "Work.series.members" },
+    { "from": "Work.universe", "to": "Work.universes" }
+  ],
+  "TO_UPPERCASE_ENUM_VALUES": [
+    {
+      "from": "ComplexSuggestionType.values",
+      "to": "ComplexSuggestionTypeEnum.VALUES",
+      "note": "UPPERCASED"
+    },
+    {
+      "from": "FacetField.values",
+      "to": "FacetFieldEnum.VALUES",
+      "note": "UPPERCASED"
+    },
+    {
+      "from": "CategoryFilters.values",
+      "to": "CategoryFiltersEnum.VALUES",
+      "note": "UPPERCASED"
+    },
+    {
+      "from": "FeedbackThumb.values",
+      "to": "FeedbackThumbEnum.VALUES",
+      "note": "UPPERCASED"
+    },
+    {
+      "from": "LanguageCode.values",
+      "to": "LanguageCodeEnum.VALUES",
+      "note": "UPPERCASED"
+    },
+    {
+      "from": "VipUserParameter.values",
+      "to": "VipUserParameterEnum.VALUES",
+      "note": "UPPERCASED"
+    },
+    {
+      "from": "MoodSuggest.values",
+      "to": "MoodSuggestEnum.VALUES",
+      "note": "UPPERCASED"
+    },
+    {
+      "from": "HoldingsStatus.values",
+      "to": "HoldingsStatusEnum.VALUES",
+      "note": "UPPERCASED"
+    },
+    {
+      "from": "BookMarkOrderBy.values",
+      "to": "BookMarkOrderByEnum.VALUES",
+      "note": "UPPERCASED"
+    }
+  ],
+  "TYPES_TO_PASCALCASE": [
+    {
+      "from": "localSuggestResponse",
+      "to": "LocalSuggestResponse",
+      "ignore": true
+    },
+    { "from": "holdingAgency", "to": "HoldingAgency", "ignore": true },
+    { "from": "moodQueries", "to": "MoodQueries", "ignore": true }
+  ],
+  "TYPES_TO_PASCALCASE_NAMECHANGE": [
+    { "from": "complexSearchFacets", "to": "ComplexSearchFacetsInput" },
+    {
+      "from": "holdingsItem",
+      "to": "LocalizationsHoldingsItem",
+      "ignore": true
+    },
+    { "from": "moodSuggestResponse", "to": "MoodSuggestItem", "ignore": true },
+    { "from": "BookmarkResponse", "to": "AddBookMarkResponse", "ignore": true }
+  ],
+  "TAILED_INPUT": [
+    { "from": "complexSearchFacets", "to": "ComplexSearchFacetsInput" },
+    { "from": "ComplexSearchFilters", "to": "ComplexSearchFiltersInput" },
+    { "from": "Sort", "to": "SortInput" },
+    {
+      "from": "CreateAccountTokens",
+      "to": "CreateAccountTokensInput",
+      "ignore": true
+    },
+    {
+      "from": "DataCollectSearchRequest",
+      "to": "DataCollectSearchRequestInput",
+      "ignore": true
+    },
+    { "from": "CategoryFilter", "to": "CategoryFilterInput" },
+    { "from": "KidRecommenderTags", "to": "KidRecommenderTagsInput" },
+    {
+      "from": "MoodKidsRecommendFilters",
+      "to": "MoodKidsRecommendFiltersInput"
+    },
+    {
+      "from": "SubmitOrderUserParameters",
+      "to": "SubmitOrderUserParametersInput",
+      "ignore": true
+    },
+    { "from": "Material", "to": "MaterialInput", "ignore": true },
+    { "from": "PeriodicaArticleOrder" },
+    { "from": "SearchQuery", "to": "SearchQueryInput" }
+  ],
+  "TAILED_SCALAR": [
+    { "from": "PaginationLimit", "to": "PaginationLimitScalar" },
+    { "from": "CustomDateFormat" }
+  ],
+  "TAILED_INTERFACE": [
+    { "from": "Creator", "to": "CreatorInterface" },
+    { "from": "Subject", "to": "SubjectInterface" }
+  ],
+  "TAILED_UNION": [
+    { "from": "UniverseContent", "to": "UniverseContentUnion", "ignore": true },
+    { "from": "Access", "to": "AccessUnion", "ignore": true }
+  ],
+  "TAILED_ENUM": [
+    {
+      "from": "OrderPossibleReason",
+      "to": "OrderPossibleReasonEnum",
+      "ignore": true
+    },
+    { "from": "SortOrder", "to": "SortOrderEnum", "ignore": true },
+    { "from": "GetAccountsType", "to": "GetAccountsTypeEnum" },
+    {
+      "from": "CreateAccountStatus",
+      "to": "CreateAccountStatusEnum",
+      "ignore": true
+    },
+    {
+      "from": "DeleteAccountStatus",
+      "to": "DeleteAccountStatusEnum",
+      "ignore": true
+    },
+    {
+      "from": "ComplexSearchFacets",
+      "to": "ComplexSearchFacetsEnum",
+      "ignore": true
+    },
+    {
+      "from": "HoldingsResponseStatus",
+      "to": "HoldingsResponseStatusEnum",
+      "ignore": true
+    },
+    { "from": "AccessTypeCode", "to": "AccessTypeCodeEnum", "ignore": true },
+    { "from": "AccessUrlType", "to": "AccessUrlTypeEnum", "ignore": true },
+    { "from": "LinkStatus", "to": "LinkStatusEnum", "ignore": true },
+    { "from": "SubjectType", "to": "SubjectTypeEnum", "ignore": true },
+    { "from": "SuggestionType", "to": "SuggestionTypeEnum" },
+    { "from": "ComplexSuggestionType", "to": "ComplexSuggestionTypeEnum" },
+    {
+      "from": "FictionNonfictionCode",
+      "to": "FictionNonfictionCodeEnum",
+      "ignore": true
+    },
+    { "from": "WorkType", "to": "WorkTypeEnum" },
+    {
+      "from": "CopyRequestStatus",
+      "to": "CopyRequestStatusEnum",
+      "ignore": true
+    },
+    { "from": "InfomediaError", "to": "InfomediaErrorEnum", "ignore": true },
+    { "from": "AccessStatus" },
+    { "from": "NoteType", "to": "NoteTypeEnum", "ignore": true },
+    {
+      "from": "ChildOrAdultCode",
+      "to": "ChildOrAdultCodeEnum",
+      "ignore": true
+    },
+    { "from": "SchoolUseCode", "to": "SchoolUseCodeEnum", "ignore": true },
+    {
+      "from": "ManifestationPartType",
+      "to": "ManifestationPartTypeEnum",
+      "ignore": true
+    },
+    { "from": "IdentifierType", "to": "IdentifierTypeEnum", "ignore": true },
+    { "from": "EntryType", "to": "EntryTypeEnum", "ignore": true },
+    {
+      "from": "GeneralMaterialTypeCode",
+      "to": "GeneralMaterialTypeCodeEnum",
+      "ignore": true
+    },
+    {
+      "from": "ReviewElementType",
+      "to": "ReviewElementTypeEnum",
+      "ignore": true
+    },
+    { "from": "CategoryFilters", "to": "CategoryFiltersEnum", "ignore": true },
+    { "from": "LanguageCode", "to": "LanguageCodeEnum" },
+    { "from": "LibraryStatus", "to": "LibraryStatusEnum" },
+    {
+      "from": "VipUserParameter",
+      "to": "VipUserParameterEnum",
+      "ignore": true
+    },
+    { "from": "AgencyType", "to": "AgencyTypeEnum" },
+    { "from": "LinkCheckStatus", "to": "LinkCheckStatusEnum", "ignore": true },
+    { "from": "MoodSuggest", "to": "MoodSuggestEnum", "ignore": true },
+    {
+      "from": "SubmitOrderStatus",
+      "to": "SubmitOrderStatusEnum",
+      "ignore": true
+    },
+    { "from": "OrderType", "to": "OrderTypeEnum" },
+    { "from": "MoodSearchFieldValues", "to": "MoodSearchFieldValuesEnum" },
+    { "from": "FeedbackThumb", "to": "FeedbackThumbEnum", "ignore": true },
+    { "from": "OrderStatus", "to": "OrderStatusEnum", "ignore": true },
+    { "from": "BookMarkOrderBy", "to": "BookMarkOrderByEnum" },
+    { "from": "HoldingsStatus", "to": "HoldingsStatusEnum", "ignore": true },
+    { "from": "FacetField", "to": "FacetFieldEnum" },
+    { "from": "PeriodicaArticleOrderStatus" }
+  ]
 }
-        
-
-
