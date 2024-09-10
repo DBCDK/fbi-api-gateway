@@ -51,6 +51,7 @@ export default function Header() {
   const isDocumentation = router.pathname === "/documentation";
   const isSchema = router.pathname === "/schema";
   const isTemp = theme === "temp";
+  const isFuture = theme === "future";
 
   const indexStyles = isIndex ? styles.index : "";
   const documentationStyles = isDocumentation ? styles.documentation : "";
@@ -95,6 +96,13 @@ export default function Header() {
                 Schema
               </Link>
             </Text>
+            {isFuture && (
+              <Text type="text5" className={`${styles.link} ${styles.changes}`}>
+                <Link href="/insights" disabled={!isValidToken}>
+                  [Insights]
+                </Link>
+              </Text>
+            )}
             {isTemp && (
               <Text type="text5" className={`${styles.link} ${styles.changes}`}>
                 <Link href="/changes" disabled={!isValidToken}>

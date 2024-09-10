@@ -1,0 +1,34 @@
+.container {
+  padding-top: var(--pt10);
+}
+
+.title {
+  margin: var(--pt4) 0 var(--pt2) 0;
+}
+
+.title strong {
+  color: var(--secondary);
+}
+
+.settings {
+  padding-top: var(--pt6);
+
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filters {
+  padding-top: var(--pt2);
+  display: flex;
+  justify-content: space-between;
+}
+
+.options > span {
+  margin-right: var(--pt2);
+}
+
+@media screen and (max-width: 576px) {
+  .container {
+    padding-top: var(--pt2);
+  }
+}

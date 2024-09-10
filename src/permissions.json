@@ -21,7 +21,8 @@
       "relatedSubjects",
       "linkCheck",
       "mood",
-      "submitOrder"
+      "submitOrder",
+      "insights"
     ],
     "denyTypes": ["CheckOrderPolicy", "Availability", "SEO", "WorkReview"]
   },

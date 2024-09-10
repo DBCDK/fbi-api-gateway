@@ -99,7 +99,7 @@ export const typeDef = `
   }
 
   type MoodQueries {
-    moodSearch(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchResponse!
+    moodSearch(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchResponse! @deprecated(reason: "some reason... expire: 20/09-2024")
     moodSearchKids(q:String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchKidsResponse!
     moodSuggest(q:String!, limit: Int):MoodSuggestResponse!
     moodTagRecommend(tags: [String!]!, limit:Int, plus: [String!], minus: [String!], hasCover:Boolean): [MoodTagRecommendResponse]!
