@@ -7,41 +7,30 @@
     { "from": "ComplexSearchResponse.tokenizerDurationInMs" },
     { "from": "ComplexSearchResponse.solrExecutionDurationInMs" },
     { "from": "Branch.userIsBlocked" },
+
     {
       "from": "Mutation.submitPeriodicaArticleOrder",
       "to": "Elba.placeCopyRequest",
-      "typesRemoved": [
-        {
-          "type": "input PeriodicaArticleOrder",
-          "fields": [
-            "pid",
-            "pickUpBranch",
-            "userName",
-            "userMail",
-            "publicationDateOfComponent",
-            "volume",
-            "authorOfComponent",
-            "titleOfComponent",
-            "pagination"
-          ]
-        },
-        {
-          "type": "type PeriodicaArticleOrderResponse",
-          "fields": ["status"]
-        },
-        {
-          "type": "enum PeriodicaArticleOrderStatus",
-          "fields": [
-            "OK",
-            "ERROR_UNAUTHORIZED_USER",
-            "ERROR_AGENCY_NOT_SUBSCRIBED",
-            "ERROR_INVALID_PICKUP_BRANCH",
-            "ERROR_PID_NOT_RESERVABLE",
-            "ERROR_NO_NAME_OR_EMAIL"
-          ]
-        }
+      "affectedFields": [
+        { "from": "PeriodicaArticleOrder.pid", "to": "CopyRequestInput.pid" },
+        { "from": "PeriodicaArticleOrder.pickUpBranch", "to": "CopyRequestInput.pickUpAgencySubdivision" },
+        { "from": "PeriodicaArticleOrder.userName", "to": "CopyRequestInput.userName" },
+        { "from": "PeriodicaArticleOrder.userMail", "to": "CopyRequestInput.userMail" },
+        { "from": "PeriodicaArticleOrder.publicationDateOfComponent", "to": "CopyRequestInput.publicationDateOfComponent" },
+        { "from": "PeriodicaArticleOrder.volume", "to": "CopyRequestInput.volumeOfComponent" },
+        { "from": "PeriodicaArticleOrder.authorOfComponent", "to": "CopyRequestInput.authorOfComponent" },
+        { "from": "PeriodicaArticleOrder.titleOfComponent", "to": "CopyRequestInput.titleOfComponent" },
+        { "from": "PeriodicaArticleOrder.pagination", "to": "CopyRequestInput.pagesOfComponent" },
+        { "from": "PeriodicaArticleOrderResponse.status", "to": "CopyRequestResponse.status" },
+        { "from": "PeriodicaArticleOrderStatus.OK", "to": "CopyRequestStatusEnum.OK" },
+        { "from": "PeriodicaArticleOrderStatus.ERROR_UNAUTHORIZED_USER", "to": "CopyRequestStatusEnum.ERROR_UNAUTHENTICATED_USER" },
+        { "from": "PeriodicaArticleOrderStatus.ERROR_AGENCY_NOT_SUBSCRIBED", "to": "CopyRequestStatusEnum.ERROR_AGENCY_NOT_SUBSCRIBED" },
+        { "from": "PeriodicaArticleOrderStatus.ERROR_INVALID_PICKUP_BRANCH", "to": "CopyRequestStatusEnum.ERROR_INVALID_PICKUP_BRANCH" },
+        { "from": "PeriodicaArticleOrderStatus.ERROR_PID_NOT_RESERVABLE", "to": "CopyRequestStatusEnum.ERROR_PID_NOT_RESERVABLE" },
+        { "from": "PeriodicaArticleOrderStatus.ERROR_NO_NAME_OR_EMAIL", "to": "CopyRequestStatusEnum.UNKNOWN_USER" }
       ]
     },
+
     { "from": "BibliotekDkOrder.closed" },
     { "from": "BibliotekDkOrder.autoForwardResult" },
     { "from": "BibliotekDkOrder.placeOnHold" },
@@ -52,26 +41,22 @@
     { "from": "BibliotekDkOrder.title", "to": "Work.title" },
     { "from": "BibliotekDkOrder.errorMessage" },
     { "from": "AccessTypeCode.NOT_SPECIFIED" },
+
     {
       "from": "Manifestation.physicalDescriptions",
       "to": "Manifestation.physicalDescription",
-      "typesRemoved": [
-        {
-          "type": "type PhysicalDescription",
-          "fields": [
-            "summary",
-            "accompanyingMaterial",
-            "additionalDescription",
-            "extent",
-            "numberOfPages",
-            "numberOfUnits",
-            "playingTime",
-            "requirements",
-            "size",
-            "technicalInformation",
-            "textVsIllustrations"
-          ]
-        }
+      "affectedFields": [
+        { "from": "PhysicalDescription.summary", "to": "UnitDescription.summary" },
+        { "from": "PhysicalDescription.accompanyingMaterial", "to": "PhysicalUnitDescription.accompanyingMaterial" },
+        { "from": "PhysicalDescription.additionalDescription", "to": "UnitDescription.additionalDescription" },
+        { "from": "PhysicalDescription.extent", "to": "UnitDescription.extent" },
+        { "from": "PhysicalDescription.numberOfPages", "to": "PhysicalUnitDescription.numberOfPages" },
+        { "from": "PhysicalDescription.numberOfUnits", "to": "PhysicalUnitDescription.materialUnits" },
+        { "from": "PhysicalDescription.playingTime", "to": "UnitDescription.extent" },
+        { "from": "PhysicalDescription.requirements", "to": "Note.display", "note": "type TECHNICAL_REQUIREMENTS" },
+        { "from": "PhysicalDescription.size", "to": "UnitDescription.size" },
+        { "from": "PhysicalDescription.technicalInformation", "to": "UnitDescription.technicalInformation" },
+        { "from": "PhysicalDescription.textVsIllustrations", "to": "LevelForAudience.illustrationsLevel" }
       ]
     },
     { "from": "Manifestation.universe", "to": "Manifestation.universes" },
