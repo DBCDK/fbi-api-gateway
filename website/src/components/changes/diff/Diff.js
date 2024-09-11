@@ -36,6 +36,70 @@ export default function Diff({ options }) {
     TAILED_ENUM: "Enum types that have had the suffix 'Enum' added.",
   };
 
+  // Funcion to build the html for the changes diff
+  function createHtmlFields(data) {
+    return data.map(({ from, to, note, ignore, affectedFields }, idx) => {
+      const fromHasDot = from.includes(".");
+      const toHasDot = to?.includes(".");
+
+      const fromArr = from?.split(".");
+      const fromType = fromHasDot ? fromArr[0] : from;
+      const fromField = fromHasDot && fromArr[1];
+      const isValues = fromHasDot && fromField?.toLowerCase() === "values";
+
+      const toArr = to?.split(".");
+      const toType = toHasDot ? toArr[0] : to;
+      const toField = toHasDot && toArr[1];
+
+      const hasAccess = true;
+      fromHasDot && !isValues
+        ? map?.[fromType]?.fields?.find(({ name }) => name === fromField) ||
+          map?.[fromType]?.enumValues?.find(({ name }) => name === fromField)
+        : map[fromType];
+
+      if (!hasAccess) {
+        return null;
+      }
+
+      const tail = to ? <strong>{to}</strong> : " was removed";
+      const style = to ? styles.change : styles.del;
+
+      const strikethrough =
+        options.enabled && ignore ? styles.strikethrough : "";
+
+      return (
+        <li className={`${style} ${strikethrough}`} key={`${idx}-${from}`}>
+          <span>
+            {fromHasDot || isValues ? (
+              <>
+                <strong>{fromType}</strong>.{fromField}
+              </>
+            ) : (
+              <strong>{from}</strong>
+            )}
+          </span>
+          {to && <span> ➡️ </span>}
+          <span>
+            {toHasDot ? (
+              <>
+                <strong>{toType}</strong>.{toField}
+              </>
+            ) : (
+              tail
+            )}
+          </span>
+          {affectedFields && (
+            <div>
+              <p>Fields affected due to the above field deprecation</p>
+              <ul>{createHtmlFields(affectedFields)}</ul>
+            </div>
+          )}
+          {note && <i className={styles.note}>{` ${note}`}</i>}
+        </li>
+      );
+    });
+  }
+
   return (
     <div className={styles.container}>
       {Object.entries(diff).map(([k, v]) => {
@@ -44,67 +108,7 @@ export default function Diff({ options }) {
             <section key={k}>
               <div className={styles.title}>{titleMap[k]}</div>
               <div className={styles.wrap}>
-                <ul>
-                  {v.map(({ from, to, note, ignore }) => {
-                    const fromHasDot = from.includes(".");
-                    const toHasDot = to?.includes(".");
-
-                    const fromArr = from?.split(".");
-                    const fromType = fromHasDot ? fromArr[0] : from;
-                    const fromField = fromHasDot && fromArr[1];
-                    const isValues =
-                      fromHasDot && fromField?.toLowerCase() === "values";
-
-                    const toArr = to?.split(".");
-                    const toType = toHasDot ? toArr[0] : to;
-                    const toField = toHasDot && toArr[1];
-
-                    const hasAccess =
-                      fromHasDot && !isValues
-                        ? map?.[fromType]?.fields?.find(
-                            ({ name }) => name === fromField
-                          ) ||
-                          map?.[fromType]?.enumValues?.find(
-                            ({ name }) => name === fromField
-                          )
-                        : map[fromType];
-
-                    if (!hasAccess) {
-                      return null;
-                    }
-
-                    const tail = to ? <strong>{to}</strong> : " was removed";
-                    const style = to ? styles.change : styles.del;
-
-                    const strikethrough =
-                      options.enabled && ignore ? styles.strikethrough : "";
-
-                    return (
-                      <li className={`${style} ${strikethrough}`} key={from}>
-                        <span>
-                          {fromHasDot || isValues ? (
-                            <>
-                              <strong>{fromType}</strong>.{fromField}
-                            </>
-                          ) : (
-                            <strong>{from}</strong>
-                          )}
-                        </span>
-                        {to && <span> ➡️ </span>}
-                        <span>
-                          {toHasDot ? (
-                            <>
-                              <strong>{toType}</strong>.{toField}
-                            </>
-                          ) : (
-                            tail
-                          )}
-                        </span>
-                        {note && <i className={styles.note}>{` ${note}`}</i>}
-                      </li>
-                    );
-                  })}
-                </ul>
+                <ul>{createHtmlFields(v)}</ul>
               </div>
             </section>
           );

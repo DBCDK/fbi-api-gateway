@@ -42,6 +42,15 @@
   font-weight: bold;
 }
 
+.wrap ul ul {
+  padding: 0 var(--pt2) var(--pt1) var(--pt2);
+}
+
+.wrap ul li p {
+  padding: var(--pt1) 0 0 0;
+  font-style: italic;
+}
+
 .wrap ul li.del span:last-of-type {
   color: var(--error);
 }
