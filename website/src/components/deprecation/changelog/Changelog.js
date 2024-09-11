@@ -3,9 +3,11 @@ import Table from "react-bootstrap/Table";
 
 import { daysBetween } from "@/components/utils";
 
-import data from "./data.json";
-
 import styles from "./Changelog.module.css";
+import useSchema from "@/hooks/useSchema";
+import useStorage from "@/hooks/useStorage";
+import Text from "@/components/base/text";
+import Spinner from "@/components/base/spinner/Spinner";
 
 /**
  *
@@ -49,14 +51,10 @@ function reformatUTC(str) {
  *
  * @returns {string}
  */
-function getStatusClass({ expired, deprecated }) {
-  const expDays = daysBetween(localDateToUTC(expired), reformatUTC(new Date()));
-  const depDays = daysBetween(
-    localDateToUTC(deprecated),
-    reformatUTC(new Date())
-  );
+function getStatusClass({ expires }) {
+  const expDays = daysBetween(localDateToUTC(expires), reformatUTC(new Date()));
 
-  if (depDays >= 0 || expDays >= 90) {
+  if (expDays >= 90) {
     return "expire-more-or-eq-to-90-days";
   }
   if (expDays >= 15) {
@@ -67,15 +65,138 @@ function getStatusClass({ expired, deprecated }) {
   }
 }
 
+function getKind(obj) {
+  switch (obj?.kind) {
+    case "OBJECT":
+    case "INTERFACE":
+      return "fields";
+    case "INPUT_OBJECT":
+      return "inputFields";
+    case "ENUM":
+      return "enumValues";
+    case "SCALAR":
+    case "UNION":
+      return null;
+    default:
+      return null;
+  }
+}
+
+function selectArgFields(arg) {
+  if (!arg) {
+    return [];
+  }
+
+  const split = arg?.deprecationReason?.split("expires:");
+  const expires = split?.[1]?.trim() || null;
+  const deprecationReason = split?.[0]?.trim() || null;
+
+  return {
+    name: arg?.name,
+    type: arg?.type,
+    expires,
+    isDeprecated: arg?.isDeprecated,
+    deprecationReason,
+  };
+}
+
+// combines the the type/field to a changelog obj structure
+function selectFields(type, field) {
+  const split = field?.deprecationReason?.split("expires:");
+  const expires = split?.[1]?.trim() || null;
+  const deprecationReason = split?.[0]?.trim() || null;
+
+  return {
+    type: { name: type?.name, kind: type?.kind },
+    field: {
+      name: field?.name,
+      type: field?.type,
+      expires,
+      args: field.args
+        ?.filter((a) => a.isDeprecated)
+        .map((arg) => selectArgFields(arg)),
+      isDeprecated: field?.isDeprecated,
+      deprecationReason,
+    },
+  };
+}
+
+function getDeprecatedFields(json) {
+  const arr = [];
+
+  if (!json?.data) {
+    return arr;
+  }
+
+  const types = json.data.__schema?.types;
+  types?.forEach((obj) => {
+    const target = getKind(obj);
+    if (target) {
+      const hits = [];
+      obj?.[target]?.forEach((field) => {
+        if (field.isDeprecated) {
+          hits.push(field);
+        }
+        field.args?.forEach(
+          (arg) => arg.isDeprecated && hits.push({ ...field, args: [arg] })
+        );
+      });
+
+      if (hits.length) {
+        hits.forEach((hit) => arr.push(selectFields(obj, hit)));
+      }
+    }
+  });
+
+  return arr;
+}
+
+function buildTemplates(data) {
+  if (!data || !data.length) {
+    return [];
+  }
+
+  const temps = [];
+  data.forEach(({ type, field }) => {
+    const base = {
+      kind: type.kind,
+      type: type.name,
+      field: field.name,
+      reason: field.deprecationReason,
+      expires: field.expires,
+    };
+
+    if (field.isDeprecated) {
+      temps.push(base);
+    } else {
+      field.args?.forEach((args) =>
+        temps.push({
+          ...base,
+          argument: args.name,
+          reason: args.deprecationReason,
+          expires: args.expires,
+        })
+      );
+    }
+  });
+
+  return temps;
+}
+
 export default function Changelog() {
+  const { selectedToken } = useStorage();
+  const { json, isLoading } = useSchema(selectedToken);
+
+  const data = buildTemplates(getDeprecatedFields(json));
+
   // Expired fields
   const expired = useMemo(
     () =>
       [...data]
         .filter(
-          ({ expired }) => reformatUTC(new Date()) >= localDateToUTC(expired)
+          ({ expires }) => reformatUTC(new Date()) >= localDateToUTC(expires)
         )
-        .sort((a, b) => localDateToUTC(b.expired) - localDateToUTC(a.expired)),
+        .sort((a, b) => localDateToUTC(b.expires) - localDateToUTC(a.expires)),
     [data]
   );
 
@@ -84,21 +205,33 @@ export default function Changelog() {
     () =>
       [...data]
         .filter(
-          ({ expired }) => reformatUTC(new Date()) < localDateToUTC(expired)
+          ({ expires }) => reformatUTC(new Date()) < localDateToUTC(expires)
         )
-        .sort((a, b) => localDateToUTC(a.expired) - localDateToUTC(b.expired)),
+        .sort((a, b) => localDateToUTC(a.expires) - localDateToUTC(b.expires)),
     [data]
   );
+
+  if (!data.length && isLoading) {
+    return (
+      <Text>
+        ... Searching for deprecated fields{" "}
+        <Spinner className={styles.spinner} />
+      </Text>
+    );
+  }
+
+  if (!data.length && !isLoading) {
+    return <Text>... Currently no deprecated fields 🤸</Text>;
+  }
 
   return (
     <Table className={styles.table} responsive="md">
       <thead>
         <tr>
           <th>#</th>
-          <th>Field</th>
-          <th>Reason</th>
-          <th>Deprecated</th>
-          <th>Expires/Expired</th>
+          <th>Path</th>
+          <th>Reason / Alternative</th>
+          <th>Expires / Expired</th>
         </tr>
       </thead>
 
@@ -109,9 +242,18 @@ export default function Changelog() {
             className={styles[getStatusClass(d)]}
           >
             <td>{idx + 1}</td>
-            {Object.values(d).map((v, idx) => (
-              <td key={`${v}-${idx}`}>{v}</td>
-            ))}
+            <td>
+              <strong>{d.type}</strong>
+              <span>.{d.field}</span>
+              {d.argument && (
+                <span>
+                  <span>argument</span>
+                  <i>{d.argument}</i>
+                </span>
+              )}
+            </td>
+            <td>{d.reason}</td>
+            <td>{d.expires}</td>
           </tr>
         ))}
       </tbody>
@@ -131,9 +273,18 @@ export default function Changelog() {
                 className={styles[getStatusClass(d)]}
               >
                 <td>{idx + 1}</td>
-                {Object.values(d).map((v, idx) => (
-                  <td key={`${v}-${idx}`}>{v}</td>
-                ))}
+                <td>
+                  <strong>{d.type}</strong>
+                  <span>.{d.field}</span>
+                  {d.argument && (
+                    <span>
+                      <span>argument</span>
+                      <i>{d.argument}</i>
+                    </span>
+                  )}
+                </td>
+                <td>{d.reason}</td>
+                <td>{d.expires}</td>
               </tr>
             ))}
           </tbody>

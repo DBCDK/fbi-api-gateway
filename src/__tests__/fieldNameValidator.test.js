@@ -2,6 +2,8 @@
 
 import { fieldNameValidator } from "../schemaLoader";
 
+import { schemaLoader } from "../schemaLoader";
+
 function ObjectTypeDefinition(name, fields = []) {
   return {
     kind: "ObjectTypeDefinition",
@@ -93,7 +95,19 @@ const DEPRECATED = {
     kind: "Name",
     value: "deprecated",
   },
-  arguments: [],
+  arguments: [
+    {
+      kind: "Argument",
+      name: {
+        kind: "Name",
+        value: "reason",
+      },
+      value: {
+        kind: "StringValue",
+        value: "some valuable reason... expires: 31/12-2024",
+      },
+    },
+  ],
 };
 
 describe("fieldNameValidator error message testing", () => {
@@ -246,5 +260,22 @@ describe("fieldNameValidator error message testing", () => {
     expect(test).toThrow(
       "'SomeUnionWithoutTypedTailing' is a UnionTypeDefinition which should always end with 'Union'"
     );
+  });
+});
+
+let internalSchema;
+// used to break an ongoing build if a schema is invalid
+describe("Real schmea name validation", () => {
+  beforeEach(() => {
+    if (!internalSchema) {
+      internalSchema = schemaLoader();
+    }
+  });
+
+  test("sholud test real schema", async () => {
+    const SCHEMA = internalSchema;
+
+    const test = () => fieldNameValidator(SCHEMA, "THROW");
+    expect(test).not.toThrow(Error);
   });
 });

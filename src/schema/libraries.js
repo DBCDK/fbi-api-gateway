@@ -54,6 +54,7 @@ export const typeDef = `
     agencyType: AgencyTypeEnum!
     name: String!
     openingHours: String
+    openingHoursUrl: String
     postalAddress: String
     postalCode: String
     userParameters: [UserParameter!]!
@@ -422,6 +423,7 @@ export const resolvers = {
     result(parent, args, context, info) {
       return parent.result;
     },
+
     async borrowerStatus(parent, args, context, info) {
       const agencyId = parent.result?.[0]?.agencyId;
 

@@ -46,18 +46,56 @@ type Shelfmark {
 }
 
 type UnitDescription {
+  """
+  Assemblance of the data from all the other properties, separated by a comma
+  """
   summary: String!
-  numberAndType: String                   
+
+  """
+  Technical formats, e.g. Playstation 4, blu-ray
+  """
+  numberAndType: String
+
+  """
+  Number of pages, tab (books, articles etc.) or playingtime (cd, dvd etc.)
+  """
   extent: String
+
+  """
+  Other physical description, eg. illustrations, color or b/w, mono/stereo, rpm
+  """
   additionalDescription: String
+
+  """
+  Size of the material unit
+  """
   size: String
+
+  """
+  Technical formats, e.g. Playstation 4, blu-ray
+  """
   technicalInformation: String
 }
 
 type PhysicalUnitDescription {
+  """
+  A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
+  """
   summaryFull: String
+  
+  """
+  List of units contained within the material
+  """
   materialUnits: [UnitDescription!]
+
+  """
+  Number of pages of the manifestation as number
+  """
   numberOfPages: Int
+
+  """
+  Material that comes with the manifestation (bilag)
+  """
   accompanyingMaterial: String
 }
   
@@ -672,7 +710,6 @@ type Manifestation {
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   """
   physicalDescription: PhysicalUnitDescription
- 
 
   """
   Publisher of this manifestion

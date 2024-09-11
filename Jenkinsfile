@@ -42,9 +42,8 @@ pipeline {
             }
         }
         stage('Push to Artifactory') {
-           when {
-               branch 'future'
-           }
+            when { anyOf { branch 'master'; branch 'future' } }
+
             steps {
                 script {
                     if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
@@ -55,7 +54,29 @@ pipeline {
                     }
                 } }
         }
-       stage("Update 'future' version number") {
+
+        stage("Update 'staging' version number") {
+            agent {
+                docker {
+                    label 'devel10'
+                    image "docker-dbc.artifacts.dbccloud.dk/build-env:latest"
+                    alwaysPull true
+                }
+            }
+            when {
+                branch 'master'
+            }
+            steps {
+                dir("deploy") {
+                    sh """#!/usr/bin/env bash
+						set-new-version configuration.yaml ${env.GITLAB_PRIVATE_TOKEN} ${env.GITLAB_ID} ${env.DOCKER_TAG} -b staging
+					"""
+                }
+            }
+        }
+
+
+       stage("Update 'future'  version number") {
 			agent {
 				docker {
 					label 'devel10'
@@ -63,6 +84,7 @@ pipeline {
 					alwaysPull true
 				}
 			}
+
 			when {
 				branch 'future'
 			}

@@ -1,0 +1,87 @@
+@charset "UTF-8";
+.spinner::before {
+  width: var(--pt2);
+  height: var(--pt2);
+  font-size: var(--pt2);
+  text-align: center;
+
+  content: "🕛";
+  -webkit-animation: emojiLoader 0.96s steps(11) infinite forwards 0s;
+  animation: emojiLoader 0.96s steps(11) infinite forwards 0s;
+}
+@-webkit-keyframes emojiLoader {
+  0% {
+    content: "🕛";
+  }
+  8.3333333333% {
+    content: "🕐";
+  }
+  16.6666666667% {
+    content: "🕑";
+  }
+  25% {
+    content: "🕒";
+  }
+  33.3333333333% {
+    content: "🕓";
+  }
+  41.6666666667% {
+    content: "🕔";
+  }
+  50% {
+    content: "🕕";
+  }
+  58.3333333333% {
+    content: "🕖";
+  }
+  66.6666666667% {
+    content: "🕗";
+  }
+  75% {
+    content: "🕘";
+  }
+  83.3333333333% {
+    content: "🕙";
+  }
+  91.6666666667% {
+    content: "🕚";
+  }
+}
+@keyframes emojiLoader {
+  0% {
+    content: "🕛";
+  }
+  8.3333333333% {
+    content: "🕐";
+  }
+  16.6666666667% {
+    content: "🕑";
+  }
+  25% {
+    content: "🕒";
+  }
+  33.3333333333% {
+    content: "🕓";
+  }
+  41.6666666667% {
+    content: "🕔";
+  }
+  50% {
+    content: "🕕";
+  }
+  58.3333333333% {
+    content: "🕖";
+  }
+  66.6666666667% {
+    content: "🕗";
+  }
+  75% {
+    content: "🕘";
+  }
+  83.3333333333% {
+    content: "🕙";
+  }
+  91.6666666667% {
+    content: "🕚";
+  }
+}
