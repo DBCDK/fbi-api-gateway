@@ -33,6 +33,7 @@ function Menu({ modal, context }) {
     configuration.agency;
 
   const isTemp = theme === "temp";
+  const isFuture = theme === "future";
 
   return (
     <div className={`${styles.menu}`}>
@@ -87,7 +88,7 @@ function Menu({ modal, context }) {
             </Link>
           </Text>
         </Col>
-        {isTemp && (
+        {(isTemp || isFuture) && (
           <Col xs={12} as="li">
             <Text type="text5" className={`${styles.link} ${styles.changes}`}>
               <Link href="/schema" disabled={!isValidToken}>
