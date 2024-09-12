@@ -72,6 +72,12 @@ type HoldingsResponse {
   Url to local site, where holding details may be found
   """
   lookupUrl: String
+
+  """
+  The number of items owned by the agency.
+  Returns null if it is unknown
+  """
+  ownedByAgency: Int
 }
 
 extend type Branch {
@@ -278,6 +284,10 @@ export const resolvers = {
             (localIdentifier) => localIdentifier.localizationPid
           ),
         });
+      const ownedByAgency =
+        holdingsItemsForAgency?.filter(
+          (item) => item.status !== "Discarded" && item.status !== "Lost"
+        )?.length || null;
 
       holdingsItemsForAgency = holdingsItemsForAgency?.map((item) => ({
         ...item,
@@ -368,6 +378,7 @@ export const resolvers = {
           status: "ON_SHELF",
           items: holdingsItemsForBranchOnShelf,
           lookupUrl,
+          ownedByAgency,
         };
       }
 
@@ -381,6 +392,7 @@ export const resolvers = {
           status: "ON_SHELF_NOT_FOR_LOAN",
           items: holdingsItemsForBranchOnShelf,
           lookupUrl,
+          ownedByAgency,
         };
       }
 
@@ -413,6 +425,7 @@ export const resolvers = {
         expectedBranchReturnDate,
         items: holdingsItemsForBranchOnShelf,
         lookupUrl,
+        ownedByAgency,
       };
     },
   },
