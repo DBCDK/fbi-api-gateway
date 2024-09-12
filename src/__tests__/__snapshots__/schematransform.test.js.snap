@@ -328,7 +328,7 @@ input GetAccountsInput {
   accessToken: String!
 }
 
-type CulrMutate {
+type BibdkCulrMutationFields {
   \\"\\"\\"Add an agency to a CPR validated user\\"\\"\\"
   createAccount(
     input: CreateAccountInput!
@@ -352,7 +352,7 @@ type CulrMutate {
   ): DeleteAccountResponse!
 }
 
-type CulrQuery {
+type BibdkCulrQueryFields {
   \\"\\"\\"Get all user accounts within the given agency by a global id\\"\\"\\"
   getAccounts(
     input: GetAccountsInput
@@ -360,6 +360,46 @@ type CulrQuery {
     \\"\\"\\"Force a specific dataloader\\"\\"\\"
     type: GetAccountsTypeEnum
   ): CulrAccountResponse
+}
+
+type CulrQuery {
+  \\"\\"\\"Bibliotek.dk specific culr query fields\\"\\"\\"
+  bibdk: BibdkCulrQueryFields!
+
+  \\"\\"\\"Get all user accounts within the given agency by a global id\\"\\"\\"
+  getAccounts(
+    input: GetAccountsInput
+
+    \\"\\"\\"Force a specific dataloader\\"\\"\\"
+    type: GetAccountsTypeEnum
+  ): CulrAccountResponse
+}
+
+type CulrMutate {
+  \\"\\"\\"Bibliotek.dk specific culr mutation fields\\"\\"\\"
+  bibdk: BibdkCulrMutationFields!
+
+  \\"\\"\\"Add an agency to a CPR validated user\\"\\"\\"
+  createAccount(
+    input: CreateAccountInput!
+
+    \\"\\"\\"
+    If dryRun is set to true, the actual service is never called
+    Used for testing
+    \\"\\"\\"
+    dryRun: Boolean
+  ): CreateAccountResponse!
+
+  \\"\\"\\"Remove an agency from a user\\"\\"\\"
+  deleteAccount(
+    input: DeleteAccountInput!
+
+    \\"\\"\\"
+    If dryRun is set to true, the actual service is never called
+    Used for testing
+    \\"\\"\\"
+    dryRun: Boolean
+  ): DeleteAccountResponse!
 }
 
 type Mutation {
