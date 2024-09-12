@@ -553,6 +553,12 @@ type HoldingsResponse {
 
   \\"\\"\\"Url to local site, where holding details may be found\\"\\"\\"
   lookupUrl: String
+
+  \\"\\"\\"
+  The number of items owned by the agency.
+  Returns null if it is unknown
+  \\"\\"\\"
+  ownedByAgency: Int
 }
 
 type Branch {
