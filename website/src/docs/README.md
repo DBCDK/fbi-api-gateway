@@ -46,18 +46,20 @@ Creating a deprecation notification box can bed done by using the `<DeprecationB
 InlineGraphiql examples and other supported documentation components and markup can be included in the children of the `<DeprecationBox />` component.
 
 ### GraphQL Schema
-In graphQL the deprecation flag should be set on the field or type, which is deprecated.
+In graphQL the deprecation flag should be set on the field, which is deprecated.
 
 Deprecation in the schema could look like this:
 
 ```
 type SomeType {
- field: [Type!]! @deprecated(reason: "Use 'Type.field.field'")
+ field: [Type!]! @deprecated(reason: "Use 'Type.field' instead expires: 01/01-2099")
  ...,
 }
 ```
 
+! deprecation MUST contain an 'expires' substring, in the dd/mm-yyyy format.
+
 The field/type can still be accessed and user of the API will still get the requested data, but the subject will no longer be auto suggested and will get highlighted as deprecated when used.
 
 ### Changelog
-Add the deprecated type or field to the changelog, this can be done by adding an object to the changelog data array and fill in the deprecation details. The changelog `data.json` file can be found in the `components/deprecation/changelog`. 
+Deprecation is automatically added to the changelog table.

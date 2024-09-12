@@ -179,7 +179,7 @@ input GetAccountsInput {
 }
 
 
-type CulrMutate {
+type BibdkCulrMutationFields {
 
     """
     Add an agency to a CPR validated user
@@ -204,7 +204,8 @@ type CulrMutate {
     dryRun: Boolean): DeleteAccountResponse!
 }
 
-type CulrQuery {
+
+type BibdkCulrQueryFields{
   """
   Get all user accounts within the given agency by a global id
   """
@@ -216,8 +217,57 @@ type CulrQuery {
     type: GetAccountsTypeEnum): CulrAccountResponse
 }
 
+type CulrQuery {
+
+  """
+  Bibliotek.dk specific culr query fields
+  """
+  bibdk: BibdkCulrQueryFields!
+
+  """
+  Get all user accounts within the given agency by a global id
+  """
+  getAccounts(input: GetAccountsInput, 
+    
+  """
+  Force a specific dataloader
+  """
+  type: GetAccountsTypeEnum): CulrAccountResponse
+}
+
+
+type CulrMutate {
+  
+  """
+  Bibliotek.dk specific culr mutation fields
+  """
+  bibdk: BibdkCulrMutationFields!
+
+  """
+  Add an agency to a CPR validated user
+  """
+  createAccount(input: CreateAccountInput!, 
+
+  """
+  If dryRun is set to true, the actual service is never called
+  Used for testing
+  """
+  dryRun: Boolean): CreateAccountResponse!
+
+  """
+  Remove an agency from a user
+  """
+  deleteAccount(input: DeleteAccountInput!, 
+
+  """
+  If dryRun is set to true, the actual service is never called
+  Used for testing
+  """
+  dryRun: Boolean): DeleteAccountResponse!
+}
+
 extend type Mutation {
-    culr: CulrMutate!
+  culr: CulrMutate!
 }
 
 extend type Query {
@@ -238,7 +288,68 @@ export const resolvers = {
     },
   },
 
+  CulrQuery: {
+    async bibdk(parent, args, context, info) {
+      return {};
+    },
+
+    async getAccounts(parent, args, context, info) {
+      const accessToken = args.input?.accessToken;
+      const type = args.type;
+
+      // Specific dataloader type
+      const isLocal = type === "LOCAL";
+      const isGlobal = type === "GLOBAL";
+
+      // userInfo
+      let user = context?.user;
+
+      // update user for provided accessToken
+      if (accessToken) {
+        user = (
+          await context.datasources.getLoader("userinfo").load({
+            accessToken,
+          })
+        ).attributes;
+      }
+
+      if (!user?.userId) {
+        return null;
+      }
+
+      // select dataloader
+      let dataloader = isValidCpr(user.userId)
+        ? "culrGetAccountsByGlobalId"
+        : "culrGetAccountsByLocalId";
+
+      // force specific dataloader if type is set
+      if (isLocal) {
+        dataloader = "culrGetAccountsByLocalId";
+      }
+
+      if (isGlobal) {
+        dataloader = "culrGetAccountsByGlobalId";
+      }
+
+      // Retrieve user culr account
+      const response = await context.datasources.getLoader(dataloader).load({
+        userId: user.userId,
+        agencyId: user.loggedInAgencyId,
+      });
+
+      if (!response?.guid) {
+        return null;
+      }
+
+      return response;
+    },
+  },
+
   CulrMutate: {
+    async bibdk(parent, args, context, info) {
+      return {};
+    },
+
     async createAccount(parent, args, context, info) {
       const accessToken = context.accessToken;
       const ffuToken = args.input?.tokens?.ffu;
@@ -396,7 +507,7 @@ export const resolvers = {
     },
   },
 
-  CulrQuery: {
+  BibdkCulrQueryFields: {
     async getAccounts(parent, args, context, info) {
       const accessToken = args.input?.accessToken;
       const type = args.type;
@@ -446,6 +557,164 @@ export const resolvers = {
       }
 
       return response;
+    },
+  },
+
+  BibdkCulrMutationFields: {
+    async createAccount(parent, args, context, info) {
+      const accessToken = context.accessToken;
+      const ffuToken = args.input?.tokens?.ffu;
+      const folkToken = args.input?.tokens?.folk;
+
+      const dryRun = args.dryRun;
+
+      // settings
+      const ENABLE_CPR_CHECK = true;
+      const ENABLE_CPR_MATCH_CHECK = true;
+      const ENABLE_FFU_CHECK = true;
+      const ENABLE_CREATED_CHECK = true;
+
+      // token is not authenticated - anonymous token used
+      // Note that we check on 'id' and not the culr 'uniqueId' - as the user may not exist in culr
+      if (!context?.user?.userId) {
+        return {
+          status: "ERROR_UNAUTHENTICATED_TOKEN",
+        };
+      }
+
+      const user = {};
+
+      // Get user from provided ffuToken
+      user.ffu = (
+        await context.datasources.getLoader("userinfo").load({
+          accessToken: ffuToken,
+        })
+      )?.attributes;
+
+      if (!user.ffu) {
+        return {
+          status: "ERROR_INVALID_PROVIDED_TOKEN",
+        };
+      }
+
+      // Validate FFU Agency from FFU user credentials
+      const loggedInAgencyId = user.ffu?.loggedInAgencyId;
+
+      if (
+        ENABLE_FFU_CHECK &&
+        (await hasCulrDataSync(loggedInAgencyId, context))
+      ) {
+        return {
+          status: "ERROR_INVALID_AGENCY",
+        };
+      }
+
+      // Get account from bearer token / autorization header
+      user.bearer = await getAccount(accessToken, context, {
+        type: "CPR",
+      });
+
+      // Ensure that userId from the fetched account is a valid CPR
+      if (ENABLE_CPR_CHECK && !isValidCpr(user.bearer?.userIdValue)) {
+        return {
+          status: "ERROR_INVALID_CPR",
+        };
+      }
+
+      // If CPR match is enabled and the optional folkToken is provided
+      if (folkToken && ENABLE_CPR_MATCH_CHECK) {
+        // Get account from provided folkToken
+        user.folk = await getAccount(folkToken, context, {
+          type: "CPR",
+        });
+
+        // Ensure that userId from the fetched account is a valid CPR
+        if (ENABLE_CPR_CHECK && !isValidCpr(user.folk?.userIdValue)) {
+          return {
+            status: "ERROR_INVALID_CPR",
+          };
+        }
+
+        if (user.folk?.userIdValue !== user.bearer?.userIdValue) {
+          return {
+            status: "ERROR_CPR_MISMATCH",
+          };
+        }
+      }
+
+      // CPR from Bearer token selected account
+      const cpr = user.bearer?.userIdValue;
+
+      // FFU credentials
+      const localId = user.ffu?.userId;
+      const agencyId = user.ffu?.loggedInAgencyId;
+
+      // Ensure account is not already attached to user
+      const accounts = await getAccounts(accessToken, context, {
+        id: localId,
+        agency: agencyId,
+      });
+
+      // Check if user is already subscribed to agency
+      if (ENABLE_CREATED_CHECK && accounts?.length > 0) {
+        return {
+          status: "ERROR_USER_ALREADY_CREATED",
+        };
+      }
+
+      // If account not already exist - Create user account for agency
+
+      // Check for dryRun
+      if (dryRun) {
+        return {
+          status: "OK",
+        };
+      }
+
+      // Ensure account is not connected to any other user, by removing it
+      // Swap bearer accessToken for FFU accessToken
+      const copyContext = { ...context, accessToken: ffuToken };
+
+      // Remove existing account
+      await deleteFFUAccount({ agencyId, dryRun, context: copyContext });
+
+      // Create the account
+      const response = await context.datasources
+        .getLoader("culrCreateAccount")
+        .load({ agencyId, cpr, localId });
+
+      // Response errors - localid is already in use on this agency
+      if (response.code === "TRANSACTION_ERROR") {
+        return {
+          status: "ERROR_LOCALID_NOT_UNIQUE",
+        };
+      }
+
+      // AgencyID
+      if (response.code === "ILLEGAL_ARGUMENT") {
+        return {
+          status: "ERROR_AGENCYID_NOT_PERMITTED",
+        };
+      }
+
+      if (response.code === "OK200") {
+        // clear user redis cache for userinfo
+        await context.datasources
+          .getLoader("userinfo")
+          .clearRedis({ accessToken });
+
+        return {
+          status: "OK",
+        };
+      }
+
+      return { status: "ERROR" };
+    },
+
+    async deleteAccount(parent, args, context, info) {
+      const agencyId = args.input?.agencyId;
+      const dryRun = args.dryRun;
+      return deleteFFUAccount({ agencyId, dryRun, context });
     },
   },
 };

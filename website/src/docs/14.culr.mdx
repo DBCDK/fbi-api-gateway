@@ -21,8 +21,10 @@ The returned _status_ can be one of the following:
   query={`
     mutation Example_CreateAccount($input: CreateAccountInput!) {
       culr {
-        createAccount(input: $input, dryRun: true) {
-            status
+        bibdk {
+          createAccount(input: $input, dryRun: true) {
+              status
+          }
         }
       }
     }
@@ -53,9 +55,11 @@ The returned _status_ can be one of the following:
   query={`
     mutation Example_DeleteAccount($input: DeleteAccountInput!) {
         culr {
+          bibdk {
             deleteAccount(input: $input, dryRun: true) {
                 status
             }
+          }
         }
     }
 `}
@@ -82,13 +86,15 @@ All libraries are supported.
   query={`
     query Example_GetAccounts {
       culr {
-        getAccounts {
-          municipalityNo
-          guid
-          accounts {
-            agencyId
-            userIdType
-            userIdValue
+        bibdk {
+          getAccounts {
+            municipalityNo
+            guid
+            accounts {
+              agencyId
+              userIdType
+              userIdValue
+            }
           }
         }
       }
@@ -108,17 +114,19 @@ The provided _type_ can be one of the following:
 <InlineGraphiQL
   query={`
     query Example_GetAccounts($input: GetAccountsInput) {
-        culr {
-            getAccounts(input: $input, type: GLOBAL) {
-                municipalityNo
-                guid
-                accounts {
-                    agencyId
-                    userIdType
-                    userIdValue
-                }
+      culr {
+        bibdk {
+          getAccounts(input: $input, type: GLOBAL) {
+            municipalityNo
+            guid
+            accounts {
+              agencyId
+              userIdType
+              userIdValue
             }
+          }
         }
+      }
     }
 `}
   variables={{
