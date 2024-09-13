@@ -1,4 +1,6 @@
-# Culr
+# BIBDK CULR
+
+⚠️ This is BIBDK specific culr fields
 
 CULR (_Core User Library Registry_) receives local user identifiers from affiliated
 data providers (eg. libraries) and assigns a global user id (_GUID_) for each unique user.
@@ -20,8 +22,8 @@ The returned _status_ can be one of the following:
 <InlineGraphiQL
   query={`
     mutation Example_CreateAccount($input: CreateAccountInput!) {
-      culr {
-        bibdk {
+      bibdk {
+        culr {
           createAccount(input: $input, dryRun: true) {
               status
           }
@@ -54,8 +56,8 @@ The returned _status_ can be one of the following:
 <InlineGraphiQL
   query={`
     mutation Example_DeleteAccount($input: DeleteAccountInput!) {
-        culr {
-          bibdk {
+        bibdk {
+          culr {
             deleteAccount(input: $input, dryRun: true) {
                 status
             }
@@ -85,8 +87,8 @@ All libraries are supported.
 <InlineGraphiQL
   query={`
     query Example_GetAccounts {
-      culr {
-        bibdk {
+      bibdk {
+        culr {
           getAccounts {
             municipalityNo
             guid
@@ -114,8 +116,8 @@ The provided _type_ can be one of the following:
 <InlineGraphiQL
   query={`
     query Example_GetAccounts($input: GetAccountsInput) {
-      culr {
-        bibdk {
+      bibdk {
+        culr {
           getAccounts(input: $input, type: GLOBAL) {
             municipalityNo
             guid

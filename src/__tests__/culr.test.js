@@ -21,35 +21,41 @@ describe("Culr", () => {
 
   const createAccount = `
     mutation Test_CreateAccount($input: CreateAccountInput!) {
+      bibdk {
         culr {
-            createAccount(input: $input, dryRun: false) {
-                status
-            }
+          createAccount(input: $input, dryRun: false) {
+              status
+          }
         }
+      }
     } `;
 
   const deleteAccount = `
     mutation Test_DeleteAccount($input: DeleteAccountInput!) {
+      bibdk {
         culr {
-            deleteAccount(input: $input, dryRun: false) {
-                status
-            }
+          deleteAccount(input: $input, dryRun: false) {
+              status
+          }
         }
+      }
     } `;
 
   const getAccounts = `
     query Test_GetAccounts($input: GetAccountsInput) {
-      culr {
-        getAccounts(input: $input) {
-          municipalityNo
-          guid
-          accounts {
-            agencyId
-            userIdType
-            userIdValue
+      bibdk {
+        culr {
+          getAccounts(input: $input) {
+            municipalityNo
+            guid
+            accounts {
+              agencyId
+              userIdType
+              userIdValue
+            }
           }
         }
-      }
+      } 
     } `;
 
   it("CreateAccount | Should give status ERROR_UNAUTHENTICATED_TOKEN", async () => {
@@ -72,9 +78,11 @@ describe("Culr", () => {
 
     expect(result).toEqual({
       data: {
-        culr: {
-          createAccount: {
-            status: "ERROR_UNAUTHENTICATED_TOKEN",
+        bibdk: {
+          culr: {
+            createAccount: {
+              status: "ERROR_UNAUTHENTICATED_TOKEN",
+            },
           },
         },
       },
@@ -102,9 +110,11 @@ describe("Culr", () => {
 
     expect(result).toEqual({
       data: {
-        culr: {
-          createAccount: {
-            status: "ERROR_INVALID_CPR",
+        bibdk: {
+          culr: {
+            createAccount: {
+              status: "ERROR_INVALID_CPR",
+            },
           },
         },
       },
@@ -132,9 +142,11 @@ describe("Culr", () => {
 
     expect(result).toEqual({
       data: {
-        culr: {
-          createAccount: {
-            status: "ERROR_CPR_MISMATCH",
+        bibdk: {
+          culr: {
+            createAccount: {
+              status: "ERROR_CPR_MISMATCH",
+            },
           },
         },
       },
@@ -161,9 +173,11 @@ describe("Culr", () => {
 
     expect(result).toEqual({
       data: {
-        culr: {
-          createAccount: {
-            status: "ERROR_INVALID_AGENCY",
+        bibdk: {
+          culr: {
+            createAccount: {
+              status: "ERROR_INVALID_AGENCY",
+            },
           },
         },
       },
@@ -191,9 +205,11 @@ describe("Culr", () => {
 
     expect(result).toEqual({
       data: {
-        culr: {
-          createAccount: {
-            status: "ERROR_USER_ALREADY_CREATED",
+        bibdk: {
+          culr: {
+            createAccount: {
+              status: "ERROR_USER_ALREADY_CREATED",
+            },
           },
         },
       },
@@ -221,9 +237,11 @@ describe("Culr", () => {
 
     expect(result).toEqual({
       data: {
-        culr: {
-          createAccount: {
-            status: "OK",
+        bibdk: {
+          culr: {
+            createAccount: {
+              status: "OK",
+            },
           },
         },
       },
@@ -248,8 +266,10 @@ describe("Culr", () => {
 
     expect(result).toEqual({
       data: {
-        culr: {
-          getAccounts: null,
+        bibdk: {
+          culr: {
+            getAccounts: null,
+          },
         },
       },
     });
