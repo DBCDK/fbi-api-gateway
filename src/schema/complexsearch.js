@@ -96,8 +96,8 @@ enum ComplexSearchFacetsEnum {
   LIX,
   LET,
   PUBLICATIONYEAR,
-  
-}
+  SOURCE
+  }
 
 """
 The facets to ask for
