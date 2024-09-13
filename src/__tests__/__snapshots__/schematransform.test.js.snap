@@ -39,169 +39,143 @@ type AgencyUser {
   blocked: Boolean!
 }
 
-type Category {
-  title: String!
-  result(limit: Int): [CategoryResult!]!
+type BibdkMutate {
+  culr: BibdkCulrMutationFields!
 }
 
-type CategoryResult {
-  work: Work!
-  manifestation: Manifestation!
+type BibdkQuery {
+  culr: BibdkCulrQueryFields!
 }
 
-type Categories {
-  title: String!
-  type: CategoryFiltersEnum!
-  subCategories: [Category!]!
-}
-
-enum OrderPossibleReasonEnum {
-  OWNED_ACCEPTED
-  NOT_OWNED_ILL_LOC
-  OWNED_WRONG_MEDIUM_TYPE
-  NOT_OWNED_WRONG_ILL_MEDIUM_TYPE
-  NOT_OWNED_NO_ILL_LOC
-  OWNED_OWN_CATALOGUE
-  NOT_OWNED_ACCEPTED_BY_CONSORTIA
-  INTERNAL_ERROR
-}
-
-type CheckOrderPolicy {
-  lookUpUrls: [String!]!
-  lookUpUrl: String
-  orderPossible: Boolean
-  orderPossibleReason: OrderPossibleReasonEnum
-}
-
-\\"\\"\\"Search Filters\\"\\"\\"
-input ComplexSearchFiltersInput {
-  \\"\\"\\"BranchId. \\"\\"\\"
-  branchId: [String!]
-
-  \\"\\"\\"Overall location in library (eg. Voksne).\\"\\"\\"
-  department: [String!]
-
-  \\"\\"\\"Where is the book physically located  (eg. skønlitteratur).\\"\\"\\"
-  location: [String!]
-
-  \\"\\"\\"More specific location (eg. Fantasy).\\"\\"\\"
-  sublocation: [String!]
-
-  \\"\\"\\"Onloan or OnShelf.\\"\\"\\"
-  status: [HoldingsStatusEnum!]
-
-  \\"\\"\\"Id of agency.\\"\\"\\"
-  agencyId: [String!]
-
-  \\"\\"\\"Name of the branch.\\"\\"\\"
-  branch: [String!]
-
-  \\"\\"\\"Local id of the item.\\"\\"\\"
-  itemId: [String!]
-
-  \\"\\"\\"Id of publishing issue.\\"\\"\\"
-  issueId: [String!]
-}
-
-enum SortOrderEnum {
-  ASC
-  DESC
-}
-
-input SortInput {
-  index: String!
-  order: SortOrderEnum!
-}
-
-\\"\\"\\"The supported facet fields\\"\\"\\"
-enum ComplexSearchFacetsEnum {
-  AGES
-  CATALOGUECODE
-  CONTRIBUTOR
-  CONTRIBUTORFUNCTION
-  CREATOR
-  CREATORCONTRIBUTOR
-  CREATORCONTRIBUTORFUNCTION
-  CREATORFUNCTION
-  FICTIONALCHARACTER
-  FILMNATIONALITY
-  GAMEPLATFORM
-  GENERALAUDIENCE
-  GENERALMATERIALTYPE
-  GENREANDFORM
-  ISSUE
-  LANGUAGE
-  LIBRARYRECOMMENDATION
-  MAINLANGUAGE
-  MUSICALENSEMBLEORCAST
-  PLAYERS
-  PRIMARYTARGET
-  SPECIFICMATERIALTYPE
-  SPOKENLANGUAGE
-  SUBTITLELANGUAGE
-  TYPEOFSCORE
-  SUBJECT
-  HOSTPUBLICATION
-  SERIES
-  MEDIACOUNCILAGERESTRICTION
-  ACCESSTYPE
-  MOOD
-  NARRATIVETECHNIQUE
-  PEGI
-  SETTING
-  LIX
-  LET
-  PUBLICATIONYEAR
-}
-
-\\"\\"\\"The facets to ask for\\"\\"\\"
-input ComplexSearchFacetsInput {
-  facetLimit: Int!
-  facets: [ComplexSearchFacetsEnum!]
-}
-
-\\"\\"\\"A Facet value in response\\"\\"\\"
-type ComplexSearchFacetValue {
-  key: String!
-  score: Int!
-}
-
-\\"\\"\\"The complete facet in response\\"\\"\\"
-type ComplexSearchFacetResponse {
-  name: String
-  values: [ComplexSearchFacetValue!]
-}
-
-type ComplexFacetResponse {
-  hitcount: Int!
-  facets: [ComplexSearchFacetResponse!]
-}
-
-\\"\\"\\"The search response\\"\\"\\"
-type ComplexSearchResponse {
-  \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
-  hitcount: Int!
-
-  \\"\\"\\"Facets for this response\\"\\"\\"
-  facets: [ComplexSearchFacetResponse!]
+type Mutation {
+  bibdk: BibdkMutate!
+  culr: CulrMutate!
 
   \\"\\"\\"
-  The works matching the given search query. Use offset and limit for pagination.
+  Order digital article through Digital Article Service
+  Link to article is sent via email
   \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimitScalar!, sort: [SortInput!]): [Work!]!
+  digitalArticleService(
+    \\"\\"\\"The pid of an article or periodica\\"\\"\\"
+    pid: String!
+    publicationDateOfComponent: String
+    volume: String
+    authorOfComponent: String
+    titleOfComponent: String
+    pagination: String
+  ): DigitalArticleServiceResponse!
+  elba: ElbaServices!
+  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+  submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
+  data_collect(input: DataCollectInput!): String!
+  deleteOrder(
+    \\"\\"\\"id of the order to be deleted\\"\\"\\"
+    orderId: String!
 
-  \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
-  errorMessage: String
+    \\"\\"\\"The agency where the order is placed.\\"\\"\\"
+    agencyId: String!
+
+    \\"\\"\\"
+    If this is true, the order is not actually deleted (is useful when generating examples).
+    \\"\\"\\"
+    dryRun: Boolean
+  ): DeleteOrderResponse
+  renewLoan(
+    \\"\\"\\"id of the loan to be renewed\\"\\"\\"
+    loanId: String!
+
+    \\"\\"\\"The agency where the loan is to be renewed.\\"\\"\\"
+    agencyId: String!
+
+    \\"\\"\\"
+    If this is true, the loan is not actually renewed (is useful when generating examples).
+    \\"\\"\\"
+    dryRun: Boolean
+  ): RenewLoanResponse
+  submitSession(input: SessionInput!): String!
+  deleteSession: String!
+  test: TestMutation
+  users: UserMutations!
 }
 
-type Cover {
-  detail_117: String
-  detail_207: String
-  detail_42: String
-  detail_500: String
-  thumbnail: String
-  detail: String
-  origin: String
+type Query {
+  bibdk: BibdkQuery!
+  culr: CulrQuery!
+  debug: Debug
+  series(seriesId: String!): Series
+  mood: MoodQueries!
+  manifestation(pid: String, faust: String): Manifestation
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
+  monitor(name: String!): String!
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work
+  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCodeEnum): [Work]!
+  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  linkCheck: LinkCheckService!
+
+  \\"\\"\\"
+  ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
+  \\"\\"\\"
+  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
+  localSuggest(
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: [SuggestionTypeEnum!]
+
+    \\"\\"\\"Number of items to return\\"\\"\\"
+    limit: Int
+
+    \\"\\"\\"Id of branch to filter by\\"\\"\\"
+    branchId: String
+  ): LocalSuggestResponse!
+  complexSuggest(
+    \\"\\"\\"The query to get suggestions for\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"the type of index to get suggestions from\\"\\"\\"
+    type: ComplexSuggestionTypeEnum!
+  ): ComplexSuggestResponse!
+  suggest(
+    workType: WorkTypeEnum
+
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: SuggestionTypeEnum
+
+    \\"\\"\\"suggest types to include in result\\"\\"\\"
+    suggestTypes: [SuggestionTypeEnum!]
+
+    \\"\\"\\"Number of items to return\\"\\"\\"
+    limit: Int
+  ): SuggestResponse!
+
+  \\"\\"\\"Get recommendations\\"\\"\\"
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
+  help(q: String!, language: LanguageCodeEnum): HelpResponse
+  branches(agencyid: String, branchId: String, language: LanguageCodeEnum, q: String, offset: Int, limit: PaginationLimitScalar, statuses: [LibraryStatusEnum], bibdkExcludeBranches: Boolean, agencyTypes: [AgencyTypeEnum!]): BranchResult!
+  deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
+  infomedia(id: String!): InfomediaResponse!
+  session: Session
+  howru: String
+  localizations(pids: [String!]!): Localizations
+
+  \\"\\"\\"
+  localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
+  \\"\\"\\"
+  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches: Boolean): Localizations
+  refWorks(pids: [String!]!): String!
+  ris(pids: [String!]!): String!
+  relatedSubjects(q: [String!]!, limit: Int): [String!]
+  inspiration(limit: Int): Inspiration!
+  orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
+  stats: Stats
+  test: Test
+  universe(key: String, universeId: String): Universe
+  user: User
 }
 
 enum GetAccountsTypeEnum {
@@ -362,173 +336,180 @@ type BibdkCulrQueryFields {
   ): CulrAccountResponse
 }
 
+type Category {
+  title: String!
+  result(limit: Int): [CategoryResult!]!
+}
+
+type CategoryResult {
+  work: Work!
+  manifestation: Manifestation!
+}
+
+type Categories {
+  title: String!
+  type: CategoryFiltersEnum!
+  subCategories: [Category!]!
+}
+
+enum OrderPossibleReasonEnum {
+  OWNED_ACCEPTED
+  NOT_OWNED_ILL_LOC
+  OWNED_WRONG_MEDIUM_TYPE
+  NOT_OWNED_WRONG_ILL_MEDIUM_TYPE
+  NOT_OWNED_NO_ILL_LOC
+  OWNED_OWN_CATALOGUE
+  NOT_OWNED_ACCEPTED_BY_CONSORTIA
+  INTERNAL_ERROR
+}
+
+type CheckOrderPolicy {
+  lookUpUrls: [String!]!
+  lookUpUrl: String
+  orderPossible: Boolean
+  orderPossibleReason: OrderPossibleReasonEnum
+}
+
+\\"\\"\\"Search Filters\\"\\"\\"
+input ComplexSearchFiltersInput {
+  \\"\\"\\"BranchId. \\"\\"\\"
+  branchId: [String!]
+
+  \\"\\"\\"Overall location in library (eg. Voksne).\\"\\"\\"
+  department: [String!]
+
+  \\"\\"\\"Where is the book physically located  (eg. skønlitteratur).\\"\\"\\"
+  location: [String!]
+
+  \\"\\"\\"More specific location (eg. Fantasy).\\"\\"\\"
+  sublocation: [String!]
+
+  \\"\\"\\"Onloan or OnShelf.\\"\\"\\"
+  status: [HoldingsStatusEnum!]
+
+  \\"\\"\\"Id of agency.\\"\\"\\"
+  agencyId: [String!]
+
+  \\"\\"\\"Name of the branch.\\"\\"\\"
+  branch: [String!]
+
+  \\"\\"\\"Local id of the item.\\"\\"\\"
+  itemId: [String!]
+
+  \\"\\"\\"Id of publishing issue.\\"\\"\\"
+  issueId: [String!]
+}
+
+enum SortOrderEnum {
+  ASC
+  DESC
+}
+
+input SortInput {
+  index: String!
+  order: SortOrderEnum!
+}
+
+\\"\\"\\"The supported facet fields\\"\\"\\"
+enum ComplexSearchFacetsEnum {
+  AGES
+  CATALOGUECODE
+  CONTRIBUTOR
+  CONTRIBUTORFUNCTION
+  CREATOR
+  CREATORCONTRIBUTOR
+  CREATORCONTRIBUTORFUNCTION
+  CREATORFUNCTION
+  FICTIONALCHARACTER
+  FILMNATIONALITY
+  GAMEPLATFORM
+  GENERALAUDIENCE
+  GENERALMATERIALTYPE
+  GENREANDFORM
+  ISSUE
+  LANGUAGE
+  LIBRARYRECOMMENDATION
+  MAINLANGUAGE
+  MUSICALENSEMBLEORCAST
+  PLAYERS
+  PRIMARYTARGET
+  SPECIFICMATERIALTYPE
+  SPOKENLANGUAGE
+  SUBTITLELANGUAGE
+  TYPEOFSCORE
+  SUBJECT
+  HOSTPUBLICATION
+  SERIES
+  MEDIACOUNCILAGERESTRICTION
+  ACCESSTYPE
+  MOOD
+  NARRATIVETECHNIQUE
+  PEGI
+  SETTING
+  LIX
+  LET
+  PUBLICATIONYEAR
+  SOURCE
+}
+
+\\"\\"\\"The facets to ask for\\"\\"\\"
+input ComplexSearchFacetsInput {
+  facetLimit: Int!
+  facets: [ComplexSearchFacetsEnum!]
+}
+
+\\"\\"\\"A Facet value in response\\"\\"\\"
+type ComplexSearchFacetValue {
+  key: String!
+  score: Int!
+}
+
+\\"\\"\\"The complete facet in response\\"\\"\\"
+type ComplexSearchFacetResponse {
+  name: String
+  values: [ComplexSearchFacetValue!]
+}
+
+type ComplexFacetResponse {
+  hitcount: Int!
+  facets: [ComplexSearchFacetResponse!]
+}
+
+\\"\\"\\"The search response\\"\\"\\"
+type ComplexSearchResponse {
+  \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"Facets for this response\\"\\"\\"
+  facets: [ComplexSearchFacetResponse!]
+
+  \\"\\"\\"
+  The works matching the given search query. Use offset and limit for pagination.
+  \\"\\"\\"
+  works(offset: Int!, limit: PaginationLimitScalar!, sort: [SortInput!]): [Work!]!
+
+  \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
+  errorMessage: String
+}
+
+type Cover {
+  detail_117: String
+  detail_207: String
+  detail_42: String
+  detail_500: String
+  thumbnail: String
+  detail: String
+  origin: String
+}
+
 type CulrQuery {
   \\"\\"\\"Bibliotek.dk specific culr query fields\\"\\"\\"
   bibdk: BibdkCulrQueryFields!
-
-  \\"\\"\\"Get all user accounts within the given agency by a global id\\"\\"\\"
-  getAccounts(
-    input: GetAccountsInput
-
-    \\"\\"\\"Force a specific dataloader\\"\\"\\"
-    type: GetAccountsTypeEnum
-  ): CulrAccountResponse
 }
 
 type CulrMutate {
   \\"\\"\\"Bibliotek.dk specific culr mutation fields\\"\\"\\"
   bibdk: BibdkCulrMutationFields!
-
-  \\"\\"\\"Add an agency to a CPR validated user\\"\\"\\"
-  createAccount(
-    input: CreateAccountInput!
-
-    \\"\\"\\"
-    If dryRun is set to true, the actual service is never called
-    Used for testing
-    \\"\\"\\"
-    dryRun: Boolean
-  ): CreateAccountResponse!
-
-  \\"\\"\\"Remove an agency from a user\\"\\"\\"
-  deleteAccount(
-    input: DeleteAccountInput!
-
-    \\"\\"\\"
-    If dryRun is set to true, the actual service is never called
-    Used for testing
-    \\"\\"\\"
-    dryRun: Boolean
-  ): DeleteAccountResponse!
-}
-
-type Mutation {
-  culr: CulrMutate!
-
-  \\"\\"\\"
-  Order digital article through Digital Article Service
-  Link to article is sent via email
-  \\"\\"\\"
-  digitalArticleService(
-    \\"\\"\\"The pid of an article or periodica\\"\\"\\"
-    pid: String!
-    publicationDateOfComponent: String
-    volume: String
-    authorOfComponent: String
-    titleOfComponent: String
-    pagination: String
-  ): DigitalArticleServiceResponse!
-  elba: ElbaServices!
-  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
-  submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
-  data_collect(input: DataCollectInput!): String!
-  deleteOrder(
-    \\"\\"\\"id of the order to be deleted\\"\\"\\"
-    orderId: String!
-
-    \\"\\"\\"The agency where the order is placed.\\"\\"\\"
-    agencyId: String!
-
-    \\"\\"\\"
-    If this is true, the order is not actually deleted (is useful when generating examples).
-    \\"\\"\\"
-    dryRun: Boolean
-  ): DeleteOrderResponse
-  renewLoan(
-    \\"\\"\\"id of the loan to be renewed\\"\\"\\"
-    loanId: String!
-
-    \\"\\"\\"The agency where the loan is to be renewed.\\"\\"\\"
-    agencyId: String!
-
-    \\"\\"\\"
-    If this is true, the loan is not actually renewed (is useful when generating examples).
-    \\"\\"\\"
-    dryRun: Boolean
-  ): RenewLoanResponse
-  submitSession(input: SessionInput!): String!
-  deleteSession: String!
-  test: TestMutation
-  users: UserMutations!
-}
-
-type Query {
-  culr: CulrQuery!
-  debug: Debug
-  series(seriesId: String!): Series
-  mood: MoodQueries!
-  manifestation(pid: String, faust: String): Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
-  monitor(name: String!): String!
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work
-  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCodeEnum): [Work]!
-  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
-  linkCheck: LinkCheckService!
-
-  \\"\\"\\"
-  ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
-  \\"\\"\\"
-  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
-  localSuggest(
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: [SuggestionTypeEnum!]
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-
-    \\"\\"\\"Id of branch to filter by\\"\\"\\"
-    branchId: String
-  ): LocalSuggestResponse!
-  complexSuggest(
-    \\"\\"\\"The query to get suggestions for\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"the type of index to get suggestions from\\"\\"\\"
-    type: ComplexSuggestionTypeEnum!
-  ): ComplexSuggestResponse!
-  suggest(
-    workType: WorkTypeEnum
-
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: SuggestionTypeEnum
-
-    \\"\\"\\"suggest types to include in result\\"\\"\\"
-    suggestTypes: [SuggestionTypeEnum!]
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-  ): SuggestResponse!
-
-  \\"\\"\\"Get recommendations\\"\\"\\"
-  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-  help(q: String!, language: LanguageCodeEnum): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCodeEnum, q: String, offset: Int, limit: PaginationLimitScalar, statuses: [LibraryStatusEnum], bibdkExcludeBranches: Boolean, agencyTypes: [AgencyTypeEnum!]): BranchResult!
-  deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
-  infomedia(id: String!): InfomediaResponse!
-  session: Session
-  howru: String
-  localizations(pids: [String!]!): Localizations
-
-  \\"\\"\\"
-  localizationsWithHoldings parses ALL localizations and ALL detailedholdings. Returns agencies with holdings on shelf
-  \\"\\"\\"
-  localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches: Boolean): Localizations
-  refWorks(pids: [String!]!): String!
-  ris(pids: [String!]!): String!
-  relatedSubjects(q: [String!]!, limit: Int): [String!]
-  inspiration(limit: Int): Inspiration!
-  orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
-  stats: Stats
-  test: Test
-  universe(key: String, universeId: String): Universe
-  user: User
 }
 
 type Complexity {
@@ -3230,6 +3211,63 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the \`da
 \\"\\"\\"
 scalar DateTime
 
+type Mutation {
+  elba: ElbaServices!
+}
+
+type Query {
+  mood: MoodQueries!
+  manifestation(pid: String, faust: String): Manifestation
+  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
+  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work
+  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCodeEnum): [Work]!
+  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  linkCheck: LinkCheckService!
+  localSuggest(
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: [SuggestionTypeEnum!]
+
+    \\"\\"\\"Number of items to return\\"\\"\\"
+    limit: Int
+
+    \\"\\"\\"Id of branch to filter by\\"\\"\\"
+    branchId: String
+  ): LocalSuggestResponse!
+  complexSuggest(
+    \\"\\"\\"The query to get suggestions for\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"the type of index to get suggestions from\\"\\"\\"
+    type: ComplexSuggestionTypeEnum!
+  ): ComplexSuggestResponse!
+  suggest(
+    workType: WorkTypeEnum
+
+    \\"\\"\\"The query to get suggestions from\\"\\"\\"
+    q: String!
+
+    \\"\\"\\"suggest type to include in result\\"\\"\\"
+    suggestType: SuggestionTypeEnum
+
+    \\"\\"\\"suggest types to include in result\\"\\"\\"
+    suggestTypes: [SuggestionTypeEnum!]
+
+    \\"\\"\\"Number of items to return\\"\\"\\"
+    limit: Int
+  ): SuggestResponse!
+
+  \\"\\"\\"Get recommendations\\"\\"\\"
+  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
+  infomedia(id: String!): InfomediaResponse!
+  refWorks(pids: [String!]!): String!
+  ris(pids: [String!]!): String!
+  relatedSubjects(q: [String!]!, limit: Int): [String!]
+}
+
 \\"\\"\\"Search Filters\\"\\"\\"
 input ComplexSearchFiltersInput {
   \\"\\"\\"BranchId. \\"\\"\\"
@@ -3309,6 +3347,7 @@ enum ComplexSearchFacetsEnum {
   LIX
   LET
   PUBLICATIONYEAR
+  SOURCE
 }
 
 \\"\\"\\"The facets to ask for\\"\\"\\"
@@ -3354,63 +3393,6 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
-}
-
-type Mutation {
-  elba: ElbaServices!
-}
-
-type Query {
-  mood: MoodQueries!
-  manifestation(pid: String, faust: String): Manifestation
-  manifestations(faust: [String!], pid: [String!]): [Manifestation]!
-  work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work
-  works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCodeEnum): [Work]!
-  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
-  linkCheck: LinkCheckService!
-  localSuggest(
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: [SuggestionTypeEnum!]
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-
-    \\"\\"\\"Id of branch to filter by\\"\\"\\"
-    branchId: String
-  ): LocalSuggestResponse!
-  complexSuggest(
-    \\"\\"\\"The query to get suggestions for\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"the type of index to get suggestions from\\"\\"\\"
-    type: ComplexSuggestionTypeEnum!
-  ): ComplexSuggestResponse!
-  suggest(
-    workType: WorkTypeEnum
-
-    \\"\\"\\"The query to get suggestions from\\"\\"\\"
-    q: String!
-
-    \\"\\"\\"suggest type to include in result\\"\\"\\"
-    suggestType: SuggestionTypeEnum
-
-    \\"\\"\\"suggest types to include in result\\"\\"\\"
-    suggestTypes: [SuggestionTypeEnum!]
-
-    \\"\\"\\"Number of items to return\\"\\"\\"
-    limit: Int
-  ): SuggestResponse!
-
-  \\"\\"\\"Get recommendations\\"\\"\\"
-  recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-  infomedia(id: String!): InfomediaResponse!
-  refWorks(pids: [String!]!): String!
-  ris(pids: [String!]!): String!
-  relatedSubjects(q: [String!]!, limit: Int): [String!]
 }
 
 enum AccessTypeCodeEnum {
