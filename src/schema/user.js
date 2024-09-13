@@ -18,7 +18,7 @@ import { hasInfomediaAccess } from "../utils/access";
 
 import { isValidCpr } from "../utils/cpr";
 import { log } from "dbc-node-logger";
-import { deleteFFUAccount } from "./culr";
+import { deleteFFUAccount } from "./bibdk/culr";
 import { getUserFromAllUserStatusData, hasCulrDataSync } from "../utils/agency";
 
 /**
