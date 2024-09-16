@@ -232,7 +232,7 @@
   width: 50%;
 }
 
-.item.missingConfig .details > div p:last-child {
+.item.missingConfig .clientId ~ .details > div p:last-child {
   color: var(--error);
   font-family: var(--font-mono-semibold);
 }

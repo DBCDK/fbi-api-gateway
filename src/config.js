@@ -257,8 +257,10 @@ export default {
       url: process.env.SMAUG_URL || "https://auth-config.dbc.dk",
     },
     culr: {
-      url:
-        process.env.CULR_URL || "https://culr.addi.dk/1.6/CulrWebService?wsdl",
+      url: "http://culrservice-1-7.iscrum-culr-prod.svc.cloud.dbc.dk/1.7/api",
+      soap_url:
+        process.env.CULR_SOAP_URL ||
+        "https://culr.addi.dk/1.6/CulrWebService?wsdl", // soap version of culr will be removed in future
       authenticationUser: process.env.CULR_USER,
       authenticationGroup: process.env.CULR_GROUP,
       authenticationPassword: process.env.CULR_PASSWORD,

@@ -1,4 +1,14 @@
-{
+{ 
+  "bibdk": {
+    "allowRootFields": [
+      
+    ]
+  },
+  "fbs": {
+    "allowRootFields": [
+      "culr"
+    ]
+  },
   "ddbcms": {
     "allowRootFields": [
       "draft",

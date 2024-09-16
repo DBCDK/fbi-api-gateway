@@ -135,7 +135,7 @@ type CulrAccount {
   userIdValue: String!
 }
 
-type CulrAccountResponse {
+type BibdkCulrAccountResponse {
   accounts: [CulrAccount!]!
   municipalityNo: String
   guid: String
@@ -212,7 +212,7 @@ type BibdkCulrQueryFields{
     """
     Force a specific dataloader
     """
-    type: GetAccountsTypeEnum): CulrAccountResponse
+    type: GetAccountsTypeEnum): BibdkCulrAccountResponse
 }
 
 `;
