@@ -5,8 +5,9 @@ data providers (eg. libraries) and assigns a global user id (_GUID_) for each un
 
 ## GetAccountsByGlobalId
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
-In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+Method to retrieve all accounts under the user's patron based on either CPR, CICEROUID, or SYSTEMUID.
+
+⚠️ For this example to work, you need to provide real CPR number in the variables.
 
 <InlineGraphiQL
   query={`
@@ -38,8 +39,9 @@ In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicu
 
 ## GetAccountsByLocalId
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
-In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+Method to retrieve all accounts under the user's patron based on localId.
+
+⚠️ For this example to work, you need to provide real userCredentials in the variables.
 
 <InlineGraphiQL
   query={`
@@ -71,8 +73,9 @@ In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicu
 
 ## HasCulrAccount
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
-In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+Method to validate whether a UUID GUID exists in CULR.
+
+⚠️ For this example to work, you need to provide real GUID in the variables.
 
 <InlineGraphiQL
   query={`
@@ -95,8 +98,11 @@ In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicu
 
 ## CreateAccount
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
-In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+Method to create a new account that can either be of local or global type (CPR, CICEROUID, or SYSTEMUID).
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK_200".
+
+⚠️ For this example to work, you need to provide a real agencyId and userCredentials in the variables.
 
 <InlineGraphiQL
   query={`
@@ -130,8 +136,11 @@ In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicu
 
 ## UpdateAccount
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
-In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+Method to update an account, only supports updating the municipality number.
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK_200".
+
+⚠️ For this example to work, you need to provide a real agencyId and userCredentials in the variables.
 
 <InlineGraphiQL
   query={`
@@ -165,8 +174,11 @@ In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicu
 
 ## DeleteAccount
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
-In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+Method to delete a user's account. If it is the user's last account, the patron will also be deactivated.
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK_200".
+
+⚠️ For this example to work, you need to provide a real agencyId and userCredentials in the variables.
 
 <InlineGraphiQL
   query={`
@@ -196,10 +208,11 @@ In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicu
   }}
 />
 
-## GetAccountsFromProvider
+## GetAccountFromProvider
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
-In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+Method to retrieve an account from a provider, either using local ID or CPR number.
+
+⚠️ For this example to work, you need to provide a real agencyId and userCredentials in the variables.
 
 <InlineGraphiQL
   query={`
@@ -232,8 +245,13 @@ In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicu
 
 ## DeleteAccountsFromProvider
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
-In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+Method to delete all accounts under a specific provider.
+
+⚠️ Note! that this will delete ALL accounts within the given agencyId
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK_200".
+
+⚠️ For this example to work, you need to provide a real agencyId in the variables.
 
 <InlineGraphiQL
   query={`

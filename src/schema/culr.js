@@ -6,7 +6,7 @@
 export const typeDef = `
 
 enum CulrResponseCodesEnum {
-  OK200
+  OK_200
   NO_AUTHORISATION
   ACCOUNT_ALREADY_EXISTS
   TRANSACTION_ERROR
@@ -31,223 +31,220 @@ enum UserIdTypesEnum {
 
 input GlobalUIDInput {
   """
-  Den specifikke globalt unikke type.
+  The specific globally unique type.
   """
   uidType: GlobalUidTypesEnum!
   """
-  Den globalt unikke types værdi.
+  The value of the globally unique type.
   """
   uidValue: String!
 }
 
 input LocalUIDInput {
   """
-  Biblioteksnummer i form af et 6-cifret nummer.
+  Library number in the form of a 6-digit number.
   """
   agencyId: String!
   """
-  Brugerens identifikation på det givne bibliotek.
+  User's identification at the given library.
   """
   userIdValue: String!
 }
 
 input UserIdValueAndTypeInput {
   """
-  Brugerens type.
+  User's type.
   """
   userIdType: UserIdTypesEnum!
   """
-  Brugerens types værdi.
+  The value of the user's type.
   """
   userIdValue: String!
 }
 
 type Account {
   """
-  AgencyId på den provider der har oprettet den givne account.
+  AgencyId of the provider that created the given account.
   """
   provider: String
   """
-  Typen på den givne account.
+  The type of the given account.
   """
   userIdType: UserIdTypesEnum
   """
-  Typens værdi.
+  The value of the type.
   """
   userIdValue: String
 }
 
 type CulrResponseStatus {
   """
-  Status kode på svaret.
+  Status code of the response.
   """
   code: CulrResponseCodesEnum
   """
-  Hvis svaret ikke er OK200 kan der i dette felt stå en forklaring på eventuelle fejl.
+  If the response is not OK200, this field may contain an explanation of any errors.
   """
   message: String
 }
 
 type CulrResponse {
   """
-  Hvis den givne GUID tekst streng findes i CULR. Er kun sat hvis der svares tilbage på et kald af hasculraccount.
+  Indicates if the given GUID text string exists in CULR. Only set if responding to a call of hasculraccount.
   """
   hasCulrAccount: Boolean
   """
-  Status på det udførte kald.
+  Status of the executed call.
   """
   responseStatus: CulrResponseStatus!
 }
 
 type CulrAccountResponse {
   """
-  Liste af brugerens accounts.
+  List of the user's accounts.
   """
   accounts: [Account]!
   """
-  Kommunenummer hvis det er sat på brugerens patron.
+  Municipality number if set on the user's patron.
   """
   municipalityNo: String
   """
-  GUID tilknyttet brugerens patron hvis det findes.
+  GUID associated with the user's patron if it exists.
   """
   guid: String
   """
-  Status på det udførte kald.
+  Status of the executed call.
   """
   responseStatus: CulrResponseStatus!
 }
 
 type CulrQuery {
   """
-  Metode til at hente alle accounts under brugerens patron baseret på enten CPR, CiceroUid eller SystemUid.
+  Method to retrieve all accounts under the user's patron based on either CPR, CICEROUID, or SYSTEMUID.
   """  
   getAccountsByGlobalId(
     """
-    Globalt unikke brugerid og type
+    Globally unique user ID and type.
     """
     userCredentials: GlobalUIDInput!
-  ) : CulrAccountResponse
+  ) : CulrAccountResponse!
 
   """
-  Metode til at hente alle accounts under brugerens patron baseret på localId.
+  Method to retrieve all accounts under the user's patron based on localId.
   """
   getAccountsByLocalId(
     """
-    Brugerens agencyId og lokalId
+    The user's agencyId and localId.
     """
     userCredentials: LocalUIDInput!
-  ) : CulrAccountResponse
+  ) : CulrAccountResponse!
 
   """
-  Metode til at validere om et uuid guid findes i culr.
+  Method to validate whether a UUID GUID exists in CULR.
   """
   hasCulrAccount(
     """
-    GUID tekst streng der ønskes tjekket.
+    GUID text string to be checked.
     """
     guid: String!
-  ): CulrResponse
+  ): CulrResponse!
 
   """
-  Metode til at hente en account fra en provider, enten ved hjælp af lokal id eller CPR nummer
+  Method to retrieve an account from a provider, either using local ID or CPR number.
   """
   getAccountFromProvider(
     """
-    Biblioteket hvor den givne handling er tilknyttet.
+    The library where the given action is associated.
     """
     agencyId: String!
     """
-    Brugerens type og værdi. F.eks. CPR og CPR-nummer eller LOCALID og LOCALID-nummer.
+    The user's type and value. For example, CPR and CPR number or LOCALID and LOCALID number.
     """
     userCredentials: UserIdValueAndTypeInput!
-  ) : CulrAccountResponse
+  ) : CulrAccountResponse!
 }
 
 type CulrMutate {
 
   """
-  Metode til at oprette en ny account kan som enten kan af typen local eller global (CPR, CiceroUid eller SystemUid). 
+  Method to create a new account that can either be of local or global type (CPR, CICEROUID, or SYSTEMUID).
   """
   createAccount(
     """
-    Biblioteket hvor den givne handling er tilknyttet.
+    The library where the given action is associated.
     """
     agencyId: String!
     """
-    Brugerens type og værdi. F.eks. CPR og CPR-nummer eller LOCALID og LOCALID-nummer.
+    The user's type and value. For example, CPR and CPR number or LOCALID and LOCALID number.
     """
     userCredentials: UserIdValueAndTypeInput!
     """
-    Globalt unikke brugerid og type.
+    Globally unique user ID and type.
     """
     globalUID: GlobalUIDInput
     """
-    Brugerens 3-cifret kommunenummer
+    The user's 3-digit municipality number.
     """
     municipalityNo: String
     """
     If dryRun is set to true, the service will not be called.
     """
     dryRun: Boolean!
-  ) : CulrResponse
+  ) : CulrResponse!
 
   """
-  Metode til at opdatere en konto, understøtter kun opdatering af kommunenummer (municipality number).
+  Method to update an account, only supports updating the municipality number.
   """
   updateAccount(
     """
-    Biblioteket hvor den givne handling er tilknyttet.
+    The library where the given action is associated.
     """
     agencyId: String!
     """
-    Brugerens type og værdi. F.eks. CPR og CPR-nummer eller LOCALID og LOCALID-nummer.
+    The user's type and value. For example, CPR and CPR number or LOCALID and LOCALID number.
     """
     userCredentials: UserIdValueAndTypeInput!
     """
-    Brugerens 3-cifret kommunenummer
+    The user's 3-digit municipality number.
     """
     municipalityNo: String
     """
     If dryRun is set to true, the service will not be called.
     """
     dryRun: Boolean!
-  ) : CulrResponse
+  ) : CulrResponse!
 
   """
-  Metode til at slette en account for en bruger. Hvis det er brugerens  sidste account vil patron også blive nedlagt.
+  Method to delete a user's account. If it is the user's last account, the patron will also be deactivated.
   """
   deleteAccount(
     """
-    Biblioteket hvor den givne handling er tilknyttet.
+    The library where the given action is associated.
     """
     agencyId: String!
     """
-    Brugerens type og værdi. F.eks. CPR og CPR-nummer eller LOCALID og LOCALID-nummer.
+    The user's type and value. For example, CPR and CPR number or LOCALID and LOCALID number.
     """
     userCredentials: UserIdValueAndTypeInput!
     """
     If dryRun is set to true, the service will not be called.
     """
     dryRun: Boolean!
-  ) : CulrResponse
+  ) : CulrResponse!
 
   """
-  Metode til at slette alle brugerens kontoer under en specifik provider
+  Method to delete all accounts under a specific provider.
   """
   deleteAccountsFromProvider(
-
     """
-    Biblioteket hvor den givne handling er tilknyttet.
+    The library where the given action is associated.
     """
     agencyId: String!
-
     """
     If dryRun is set to true, the service will not be called.
     """
     dryRun: Boolean!
-    
-  ) : CulrResponse
+  ) : CulrResponse!
 }
 
 extend type Mutation {
@@ -280,7 +277,7 @@ export const resolvers = {
         return {
           hasCulrAccount: null,
           responseStatus: {
-            responseCode: "OK200",
+            responseCode: "OK_200",
             responseMessage: null,
           },
         };
@@ -297,7 +294,7 @@ export const resolvers = {
         return {
           hasCulrAccount: null,
           responseStatus: {
-            responseCode: "OK200",
+            responseCode: "OK_200",
             responseMessage: null,
           },
         };
@@ -314,7 +311,7 @@ export const resolvers = {
         return {
           hasCulrAccount: null,
           responseStatus: {
-            responseCode: "OK200",
+            responseCode: "OK_200",
             responseMessage: null,
           },
         };
@@ -331,7 +328,7 @@ export const resolvers = {
         return {
           hasCulrAccount: null,
           responseStatus: {
-            responseCode: "OK200",
+            responseCode: "OK_200",
             responseMessage: null,
           },
         };

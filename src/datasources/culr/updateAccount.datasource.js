@@ -2,8 +2,6 @@
  * @file This datasource is used to retrieve a users agency accounts from CULR
  */
 
-import { log } from "dbc-node-logger";
-
 import config from "../../config";
 
 const { url } = config.datasources.culr;
