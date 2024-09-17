@@ -51,6 +51,17 @@ input LocalUIDInput {
   userIdValue: String!
 }
 
+input UserIdValueAndTypeInput {
+  """
+  Brugerens type.
+  """
+  userIdType: UserIdTypesEnum!
+  """
+  Brugerens types værdi.
+  """
+  userIdValue: String!
+}
+
 type Account {
   """
   AgencyId på den provider der har oprettet den givne account.
@@ -112,34 +123,131 @@ type CulrQuery {
   Metode til at hente alle accounts under brugerens patron baseret på enten CPR, CiceroUid eller SystemUid.
   """  
   getAccountsByGlobalId(
-
-  """
-  Globalt unikke brugerid og type
-  """
-  userCredentials: GlobalUIDInput!) : CulrAccountResponse
+    """
+    Globalt unikke brugerid og type
+    """
+    userCredentials: GlobalUIDInput!
+  ) : CulrAccountResponse
 
   """
   Metode til at hente alle accounts under brugerens patron baseret på localId.
   """
   getAccountsByLocalId(
-
-  """
-  Brugerens agencyId og lokalId
-  """
-  userCredentials: LocalUIDInput!) : CulrAccountResponse
+    """
+    Brugerens agencyId og lokalId
+    """
+    userCredentials: LocalUIDInput!
+  ) : CulrAccountResponse
 
   """
   Metode til at validere om et uuid guid findes i culr.
   """
   hasCulrAccount(
+    """
+    GUID tekst streng der ønskes tjekket.
+    """
+    guid: String!
+  ): CulrResponse
+
   """
-  GUID tekst streng der ønskes tjekket.
+  Metode til at hente en account fra en provider, enten ved hjælp af lokal id eller CPR nummer
   """
-  guid: String!): CulrResponse
+  getAccountFromProvider(
+    """
+    Biblioteket hvor den givne handling er tilknyttet.
+    """
+    agencyId: String!
+    """
+    Brugerens type og værdi. F.eks. CPR og CPR-nummer eller LOCALID og LOCALID-nummer.
+    """
+    userCredentials: UserIdValueAndTypeInput!
+  ) : CulrAccountResponse
 }
 
 type CulrMutate {
-  createAccount: String
+
+  """
+  Metode til at oprette en ny account kan som enten kan af typen local eller global (CPR, CiceroUid eller SystemUid). 
+  """
+  createAccount(
+    """
+    Biblioteket hvor den givne handling er tilknyttet.
+    """
+    agencyId: String!
+    """
+    Brugerens type og værdi. F.eks. CPR og CPR-nummer eller LOCALID og LOCALID-nummer.
+    """
+    userCredentials: UserIdValueAndTypeInput!
+    """
+    Globalt unikke brugerid og type.
+    """
+    globalUID: GlobalUIDInput
+    """
+    Brugerens 3-cifret kommunenummer
+    """
+    municipalityNo: String
+    """
+    If dryRun is set to true, the service will not be called.
+    """
+    dryRun: Boolean!
+  ) : CulrResponse
+
+  """
+  Metode til at opdatere en konto, understøtter kun opdatering af kommunenummer (municipality number).
+  """
+  updateAccount(
+    """
+    Biblioteket hvor den givne handling er tilknyttet.
+    """
+    agencyId: String!
+    """
+    Brugerens type og værdi. F.eks. CPR og CPR-nummer eller LOCALID og LOCALID-nummer.
+    """
+    userCredentials: UserIdValueAndTypeInput!
+    """
+    Brugerens 3-cifret kommunenummer
+    """
+    municipalityNo: String
+    """
+    If dryRun is set to true, the service will not be called.
+    """
+    dryRun: Boolean!
+  ) : CulrResponse
+
+  """
+  Metode til at slette en account for en bruger. Hvis det er brugerens  sidste account vil patron også blive nedlagt.
+  """
+  deleteAccount(
+    """
+    Biblioteket hvor den givne handling er tilknyttet.
+    """
+    agencyId: String!
+    """
+    Brugerens type og værdi. F.eks. CPR og CPR-nummer eller LOCALID og LOCALID-nummer.
+    """
+    userCredentials: UserIdValueAndTypeInput!
+    """
+    If dryRun is set to true, the service will not be called.
+    """
+    dryRun: Boolean!
+  ) : CulrResponse
+
+  """
+  Metode til at slette alle brugerens kontoer under en specifik provider
+  """
+  deleteAccountsFromProvider(
+
+    """
+    Biblioteket hvor den givne handling er tilknyttet.
+    """
+    agencyId: String!
+
+    """
+    If dryRun is set to true, the service will not be called.
+    """
+    dryRun: Boolean!
+    
+  ) : CulrResponse
 }
 
 extend type Mutation {
@@ -166,7 +274,73 @@ export const resolvers = {
 
   CulrMutate: {
     async createAccount(parent, args, context, info) {
-      return "hej";
+      const { dryRun } = args;
+
+      if (dryRun) {
+        return {
+          hasCulrAccount: null,
+          responseStatus: {
+            responseCode: "OK200",
+            responseMessage: null,
+          },
+        };
+      }
+
+      // Create account
+      return await context.datasources.getLoader("createAccount").load(args);
+    },
+
+    async updateAccount(parent, args, context, info) {
+      const { dryRun } = args;
+
+      if (dryRun) {
+        return {
+          hasCulrAccount: null,
+          responseStatus: {
+            responseCode: "OK200",
+            responseMessage: null,
+          },
+        };
+      }
+
+      // Update user account by provided credentials
+      return await context.datasources.getLoader("updateAccount").load(args);
+    },
+
+    async deleteAccount(parent, args, context, info) {
+      const { dryRun } = args;
+
+      if (dryRun) {
+        return {
+          hasCulrAccount: null,
+          responseStatus: {
+            responseCode: "OK200",
+            responseMessage: null,
+          },
+        };
+      }
+
+      // Get the account by global credentials
+      return await context.datasources.getLoader("deleteAccount").load(args);
+    },
+
+    async deleteAccountsFromProvider(parent, args, context, info) {
+      const { agencyId, dryRun } = args;
+
+      if (dryRun) {
+        return {
+          hasCulrAccount: null,
+          responseStatus: {
+            responseCode: "OK200",
+            responseMessage: null,
+          },
+        };
+      }
+
+      // Delete all provider accounts
+      return await context.datasources
+        .getLoader("deleteAllAccountsFromProvider")
+        .load({ agencyId });
     },
   },
 
@@ -196,6 +370,15 @@ export const resolvers = {
       return await context.datasources
         .getLoader("hasCulrAccount")
         .load({ guid });
+    },
+
+    async getAccountFromProvider(parent, args, context, info) {
+      const { agencyId, userCredentials } = args;
+
+      // get user accounts for the provided credentials
+      return await context.datasources
+        .getLoader("getAccountFromProvider")
+        .load({ agencyId, userCredentials });
     },
   },
 

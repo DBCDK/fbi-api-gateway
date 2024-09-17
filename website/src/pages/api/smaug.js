@@ -104,6 +104,13 @@ export default async function handler(req, res) {
 
             // add to result
             result = { ...result, profiles };
+
+          default:
+            // No profiles found for agencyId
+            result = {
+              ...result,
+              profiles: ["none"],
+            };
         }
       }
 

@@ -1,3 +1,256 @@
 # CULR
 
-hej
+CULR (_Core User Library Registry_) receives local user identifiers from affiliated
+data providers (eg. libraries) and assigns a global user id (_GUID_) for each unique user.
+
+## GetAccountsByGlobalId
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
+In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+
+<InlineGraphiQL
+  query={`
+    query Example_getAccountsByGlobalId($userCredentials: GlobalUIDInput!) {
+        culr {
+            getAccountsByGlobalId(userCredentials: $userCredentials) {
+            accounts {
+                provider
+                userIdType
+                userIdValue
+            }
+            municipalityNo
+            guid
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    userCredentials: {
+      uidType: "CPR",
+      uidValue: "0102034444",
+    },
+  }}
+/>
+
+## GetAccountsByLocalId
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
+In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+
+<InlineGraphiQL
+  query={`
+    query Example_getAccountsByLocalId($userCredentials: LocalUIDInput!) {
+        culr {
+            getAccountsByLocalId(userCredentials: $userCredentials) {
+            accounts {
+                provider
+                userIdType
+                userIdValue
+            }
+            municipalityNo
+            guid
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+        }
+`}
+  variables={{
+    userCredentials: {
+      agencyId: "790942",
+      userIdValue: "12345678",
+    },
+  }}
+/>
+
+## HasCulrAccount
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
+In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+
+<InlineGraphiQL
+  query={`
+    query Example_hasCulrAccount($guid: String!) {
+        culr {
+            hasCulrAccount(guid: $guid) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    guid: "1a2b3c4d-1a2b-3c4d-5678-1a2b3c4d5e6f",
+  }}
+/>
+
+## CreateAccount
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
+In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_createAccount($agencyId: String!, $userCredentials: UserIdValueAndTypeInput!, $municipalityNo: String, $globalUID: GlobalUIDInput, $dryRun: Boolean!) {
+        culr {
+            createAccount(
+            agencyId: $agencyId
+            userCredentials: $userCredentials
+            globalUID: $globalUID
+            municipalityNo: $municipalityNo
+            dryRun: $dryRun
+            ) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+        }
+    }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    userCredentials: {
+      userIdType: "CPR",
+      userIdValue: "0102034444",
+    },
+    dryRun: true,
+  }}
+/>
+
+## UpdateAccount
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
+In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_updateAccount($agencyId: String!, $userCredentials: UserIdValueAndTypeInput!, $municipalityNo: String, $dryRun: Boolean!) {
+        culr {
+            updateAccount(
+            agencyId: $agencyId
+            userCredentials: $userCredentials
+            municipalityNo: $municipalityNo
+            dryRun: $dryRun
+            ) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    municipalityNo: "123",
+    userCredentials: {
+      userIdType: "CPR",
+      userIdValue: "0102034444",
+    },
+    dryRun: true,
+  }}
+/>
+
+## DeleteAccount
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
+In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_deleteAccount($agencyId: String!, $userCredentials: UserIdValueAndTypeInput!, $dryRun: Boolean!) {
+        culr {
+            deleteAccount(
+            agencyId: $agencyId
+            userCredentials: $userCredentials
+            dryRun: $dryRun
+            ) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    userCredentials: {
+      userIdType: "CPR",
+      userIdValue: "0102034444",
+    },
+    dryRun: true,
+  }}
+/>
+
+## GetAccountsFromProvider
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
+In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+
+<InlineGraphiQL
+  query={`
+    query Example_getAccountFromProvider($agencyId: String!, $userCredentials: UserIdValueAndTypeInput!) {
+        culr {
+            getAccountFromProvider(agencyId: $agencyId, userCredentials: $userCredentials) {
+            accounts {
+                provider
+                userIdType
+                userIdValue
+            }
+            municipalityNo
+            guid
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    userCredentials: {
+      userIdType: "CPR",
+      userIdValue: "0102034444",
+    },
+  }}
+/>
+
+## DeleteAccountsFromProvider
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In facilisis accumsan augue, id faucibus erat bibendum nec.
+In consequat dolor vel ultricies fringilla. Fusce tristique erat et felis vehicula, id mattis tortor aliquet.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_deleteAccountsByProvider($agencyId: String!, $dryRun: Boolean!) {
+        culr {
+            deleteAccountsFromProvider(agencyId: $agencyId, dryRun: $dryRun) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    dryRun: true,
+  }}
+/>
