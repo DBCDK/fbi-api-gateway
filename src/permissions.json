@@ -1,4 +1,10 @@
 {
+  "fbs:system": {
+    "allowRootFields": [
+      "culr",
+      "vip"
+    ]
+  },
   "ddbcms": {
     "allowRootFields": [
       "draft",
@@ -27,6 +33,7 @@
   },
   "default": {
     "allowRootFields": [
+      "vip",
       "draft",
       "manifestation",
       "manifestations",
