@@ -3,7 +3,7 @@ import config from "../../config";
 const { url, ttl, prefix } = config.datasources.vipcore;
 
 /**
- * Search for vip agencies using vip-core->agencyinfo
+ * Search for vip opensearch profiles using vip-core->opensearchprofile
  */
 export async function load({ agencyId, profileName }, context) {
   const res = await context.fetch(url + "/opensearchprofile", {
