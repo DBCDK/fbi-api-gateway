@@ -1,7 +1,6 @@
 import { createMockedDataLoaders } from "../datasourceLoader";
 import { printSchema, buildClientSchema } from "graphql";
 import { performTestQuery } from "../utils/utils";
-import permissions from "../permissions.json";
 
 const introspectionQuery = `
 query IntrospectionQuery {

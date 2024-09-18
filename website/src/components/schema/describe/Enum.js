@@ -34,7 +34,7 @@ export default function DescribeEnum({ name }) {
               <em>
                 <strong>{entry.name}</strong>
               </em>{" "}
-              - {entry.description}
+              {entry.description && `- ${entry.description}`}
             </p>
           </li>
         );

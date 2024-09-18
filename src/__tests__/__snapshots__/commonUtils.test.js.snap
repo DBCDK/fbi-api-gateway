@@ -3,6 +3,7 @@
 exports[`Permissions Empty gateway object in smaug configuration gives default permissions 1`] = `
 Object {
   "allowRootFields": Array [
+    "debug",
     "draft",
     "manifestation",
     "manifestations",
@@ -22,6 +23,8 @@ Object {
     "library",
     "relatedSubjects",
     "linkCheck",
+    "series",
+    "universe",
     "mood",
   ],
   "denyTypes": Array [
@@ -43,6 +46,7 @@ Object {
 exports[`Permissions Role from gateway object in smaug configuration gives the roles' permissions 1`] = `
 Object {
   "allowRootFields": Array [
+    "debug",
     "draft",
     "manifestation",
     "manifestations",
@@ -62,6 +66,8 @@ Object {
     "library",
     "relatedSubjects",
     "linkCheck",
+    "series",
+    "universe",
     "mood",
     "submitOrder",
   ],
@@ -77,6 +83,7 @@ Object {
 exports[`Permissions Unknown role from gateway object in smaug configuration gives default permissions 1`] = `
 Object {
   "allowRootFields": Array [
+    "debug",
     "draft",
     "manifestation",
     "manifestations",
@@ -96,6 +103,8 @@ Object {
     "library",
     "relatedSubjects",
     "linkCheck",
+    "series",
+    "universe",
     "mood",
   ],
   "denyTypes": Array [
@@ -115,6 +124,7 @@ Object {
 exports[`Permissions no gateway object in smaug configuration gives default permissions 1`] = `
 Object {
   "allowRootFields": Array [
+    "debug",
     "draft",
     "manifestation",
     "manifestations",
@@ -134,6 +144,8 @@ Object {
     "library",
     "relatedSubjects",
     "linkCheck",
+    "series",
+    "universe",
     "mood",
   ],
   "denyTypes": Array [
