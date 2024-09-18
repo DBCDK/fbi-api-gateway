@@ -12,6 +12,7 @@ export async function load(args, context) {
       "Content-type": "application/json",
     },
     body: JSON.stringify(args),
+    allowedErrorStatusCodes: [404],
   });
 
   return res?.body;

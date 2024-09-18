@@ -12,6 +12,7 @@ export async function load({ agencyId, profileName }, context) {
       "Content-type": "application/json",
     },
     body: JSON.stringify({ agencyId, profileName, profileVersion: 3 }),
+    allowedErrorStatusCodes: [404],
   });
 
   return res?.body;
