@@ -270,7 +270,7 @@ export default {
     statsbiblioteket: {
       url:
         process.env.STATSBIBLIOTEKET_URL ||
-        "http://webservice.statsbiblioteket.dk",
+        "https://webservice.statsbiblioteket.dk",
       user: process.env.STATSBIBLIOTEKET_USER,
       password: process.env.STATSBIBLIOTEKET_PASSWORD,
       enabled: process.env.STATSBIBLIOTEKET_ENABLED || false,
