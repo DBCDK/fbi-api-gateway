@@ -17,16 +17,13 @@ It retrieves fields such as the agency's ID, city, CVR number, and branch names 
   query={`query ExampleVipAgencyInfo($city: String!) {
   vip {
     agencyInfo(city: $city) {
-      hitcount
-      result {
-        pickupAgency {
-          agencyId
-          city
-          agencyCvrNumber
-          branchName {
-            language
-            value
-          }
+      pickupAgency {
+        agencyId
+        city
+        agencyCvrNumber
+        branchName {
+          language
+          value
         }
       }
     }
