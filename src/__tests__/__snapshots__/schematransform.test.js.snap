@@ -3404,6 +3404,8 @@ type Mutation {
 }
 
 type Query {
+  debug: Debug
+  series(seriesId: String!): Series
   mood: MoodQueries!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
@@ -3454,6 +3456,7 @@ type Query {
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
+  universe(key: String, universeId: String): Universe
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -3581,6 +3584,15 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
+}
+
+type Complexity {
+  value: String!
+  class: String!
+}
+
+type Debug {
+  complexity: Complexity!
 }
 
 enum AccessTypeCodeEnum {

@@ -19,6 +19,7 @@ export async function load({ agencyId }, context) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ agencyId }),
+    allowedErrorStatusCodes: [],
   });
 
   return res.body;

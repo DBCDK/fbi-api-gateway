@@ -18,7 +18,7 @@ import { log } from "dbc-node-logger";
 import drupalSchema from "./schema/external/drupal";
 import { getFilesRecursive } from "./utils/utils";
 import { wrapResolvers } from "./utils/wrapResolvers";
-import permissions from "./permissions.json";
+
 import merge from "lodash/merge";
 import { parseClientPermissions } from "../commonUtils";
 import enumFallbackDirective from "./utils/enumFallbackDirective";
@@ -344,7 +344,8 @@ export async function getExecutableSchema({
     // Merge external and internal schemas
     const mergedSchema = loadExternal
       ? mergeSchemas({
-          schemas: [externalSchema, internalSchema],
+          // schemas: [externalSchema, internalSchema],
+          schemas: [internalSchema],
         })
       : internalSchema;
 

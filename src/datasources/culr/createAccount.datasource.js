@@ -25,6 +25,7 @@ export async function load(props, context) {
       globalUID,
       municipalityNo,
     }),
+    allowedErrorStatusCodes: [],
   });
 
   return res.body;

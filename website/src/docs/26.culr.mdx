@@ -3,9 +3,13 @@
 CULR (_Core User Library Registry_) receives local user identifiers from affiliated
 data providers (eg. libraries) and assigns a global user id (_GUID_) for each unique user.
 
+The responseStatus _code_ can be one of the following enum values
+
+<DescribeEnum name="CulrResponseCodesEnum" />
+
 ## GetAccountsByGlobalId
 
-Method to retrieve all accounts under the user's patron based on either CPR, CICEROUID, or SYSTEMUID.
+Method to retrieve all accounts under the user's patron based on eithDescribeEnumer CPR, CICEROUID, or SYSTEMUID.
 
 ⚠️ For this example to work, you need to provide real CPR number in the variables.
 

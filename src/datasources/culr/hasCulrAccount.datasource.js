@@ -19,6 +19,7 @@ export async function load({ guid }, context) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ guid }),
+    allowedErrorStatusCodes: [],
   });
 
   return res.body;

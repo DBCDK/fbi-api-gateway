@@ -1,5 +1,5 @@
 import fetch from "isomorphic-unfetch";
-import _permissions from "../../../../src/permissions.json";
+import _permissions from "../../../../src/permissions";
 import config from "../../../../src/config.js";
 import { parseClientPermissions } from "../../../../commonUtils";
 
