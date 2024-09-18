@@ -222,16 +222,22 @@ function getLookupUrl(branch, localIdentifiers) {
     const pids = localIdentifiers?.map((id) => id.localizationPid);
     return `${branch?.lookupUrl}${encodeURIComponent(pids?.join(" OR "))}`;
   }
-  const identifiers =
-    localIdentifiers &&
-    encodeURIComponent(
-      uniq(localIdentifiers?.map((id) => id?.localIdentifier))?.join(" OR ")
-    );
+  const allIdentifiers =
+    localIdentifiers?.map((id) => id?.localIdentifier) || [];
 
-  // cosnt localIdentifiersJoined =
+  // Check if we need to use a single identifier or multiple
+  const selectedIdentifiers =
+    branch?.lookupUrl?.includes("/record/") ||
+    branch?.lookupUrl?.includes("/work/")
+      ? allIdentifiers?.[0]
+      : encodeURIComponent(uniq(allIdentifiers)?.join(" OR "));
+
+  // Replace all _IDNR_ with identifers
   if (branch?.lookupUrl?.includes("_IDNR_")) {
-    return branch.lookupUrl.replace("_IDNR_", identifiers);
+    return branch.lookupUrl.replace(/_IDNR_/g, selectedIdentifiers);
   }
+
+  // Well.. This is a fallback
   if (branch?.lookupUrl) {
     return branch.lookupUrl + identifiers;
   }

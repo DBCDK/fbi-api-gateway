@@ -258,7 +258,11 @@ export default {
     },
     culr: {
       url:
-        process.env.CULR_URL || "https://culr.addi.dk/1.6/CulrWebService?wsdl",
+        process.env.CULR_URL ||
+        "http://culrservice-1-7.iscrum-culr-prod.svc.cloud.dbc.dk/1.7/api",
+      soap_url:
+        process.env.CULR_SOAP_URL ||
+        "https://culr.addi.dk/1.6/CulrWebService?wsdl", // soap version of culr will be removed in future
       authenticationUser: process.env.CULR_USER,
       authenticationGroup: process.env.CULR_GROUP,
       authenticationPassword: process.env.CULR_PASSWORD,
@@ -266,7 +270,7 @@ export default {
     statsbiblioteket: {
       url:
         process.env.STATSBIBLIOTEKET_URL ||
-        "http://webservice.statsbiblioteket.dk",
+        "https://webservice.statsbiblioteket.dk",
       user: process.env.STATSBIBLIOTEKET_USER,
       password: process.env.STATSBIBLIOTEKET_PASSWORD,
       enabled: process.env.STATSBIBLIOTEKET_ENABLED || false,

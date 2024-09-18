@@ -176,6 +176,9 @@ type Query {
   test: Test
   universe(key: String, universeId: String): Universe
   user: User
+
+  \\"\\"\\"Returns null if authorization fails.\\"\\"\\"
+  vip: VipResponse!
 }
 
 enum GetAccountsTypeEnum {
@@ -265,7 +268,7 @@ type CulrAccount {
   userIdValue: String!
 }
 
-type CulrAccountResponse {
+type BibdkCulrAccountResponse {
   accounts: [CulrAccount!]!
   municipalityNo: String
   guid: String
@@ -333,7 +336,7 @@ type BibdkCulrQueryFields {
 
     \\"\\"\\"Force a specific dataloader\\"\\"\\"
     type: GetAccountsTypeEnum
-  ): CulrAccountResponse
+  ): BibdkCulrAccountResponse
 }
 
 type Category {
@@ -502,14 +505,202 @@ type Cover {
   origin: String
 }
 
+enum CulrResponseCodesEnum {
+  OK_200
+  NO_AUTHORISATION
+  ACCOUNT_ALREADY_EXISTS
+  TRANSACTION_ERROR
+  ILLEGAL_ARGUMENT
+  UNKNOWN_ERROR
+  ACCOUNT_DOES_NOT_EXIST
+  PROGRAM_ERROR
+  COULD_NOT_AUTHENTICATE
+}
+
+enum GlobalUidTypesEnum {
+  CICEROUID
+  SYSTEMUID
+  CPR
+}
+
+enum UserIdTypesEnum {
+  LOCAL
+  UNILOGIN
+  CPR
+}
+
+input GlobalUIDInput {
+  \\"\\"\\"The specific globally unique type.\\"\\"\\"
+  uidType: GlobalUidTypesEnum!
+
+  \\"\\"\\"The value of the globally unique type.\\"\\"\\"
+  uidValue: String!
+}
+
+input LocalUIDInput {
+  \\"\\"\\"Library number in the form of a 6-digit number.\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"User's identification at the given library.\\"\\"\\"
+  userIdValue: String!
+}
+
+input UserIdValueAndTypeInput {
+  \\"\\"\\"User's type.\\"\\"\\"
+  userIdType: UserIdTypesEnum!
+
+  \\"\\"\\"The value of the user's type.\\"\\"\\"
+  userIdValue: String!
+}
+
+type Account {
+  \\"\\"\\"AgencyId of the provider that created the given account.\\"\\"\\"
+  provider: String
+
+  \\"\\"\\"The type of the given account.\\"\\"\\"
+  userIdType: UserIdTypesEnum
+
+  \\"\\"\\"The value of the type.\\"\\"\\"
+  userIdValue: String
+}
+
+type CulrResponseStatus {
+  \\"\\"\\"Status code of the response.\\"\\"\\"
+  code: CulrResponseCodesEnum
+
+  \\"\\"\\"
+  If the response is not OK200, this field may contain an explanation of any errors.
+  \\"\\"\\"
+  message: String
+}
+
+type CulrResponse {
+  \\"\\"\\"
+  Indicates if the given GUID text string exists in CULR. Only set if responding to a call of hasculraccount.
+  \\"\\"\\"
+  hasCulrAccount: Boolean
+
+  \\"\\"\\"Status of the executed call.\\"\\"\\"
+  responseStatus: CulrResponseStatus!
+}
+
+type CulrAccountResponse {
+  \\"\\"\\"List of the user's accounts.\\"\\"\\"
+  accounts: [Account]!
+
+  \\"\\"\\"Municipality number if set on the user's patron.\\"\\"\\"
+  municipalityNo: String
+
+  \\"\\"\\"GUID associated with the user's patron if it exists.\\"\\"\\"
+  guid: String
+
+  \\"\\"\\"Status of the executed call.\\"\\"\\"
+  responseStatus: CulrResponseStatus!
+}
+
 type CulrQuery {
-  \\"\\"\\"Bibliotek.dk specific culr query fields\\"\\"\\"
-  bibdk: BibdkCulrQueryFields!
+  \\"\\"\\"
+  Method to retrieve all accounts under the user's patron based on either CPR, CICEROUID, or SYSTEMUID.
+  \\"\\"\\"
+  getAccountsByGlobalId(
+    \\"\\"\\"Globally unique user ID and type.\\"\\"\\"
+    userCredentials: GlobalUIDInput!
+  ): CulrAccountResponse!
+
+  \\"\\"\\"
+  Method to retrieve all accounts under the user's patron based on localId.
+  \\"\\"\\"
+  getAccountsByLocalId(
+    \\"\\"\\"The user's agencyId and localId.\\"\\"\\"
+    userCredentials: LocalUIDInput!
+  ): CulrAccountResponse!
+
+  \\"\\"\\"Method to validate whether a UUID GUID exists in CULR.\\"\\"\\"
+  hasCulrAccount(
+    \\"\\"\\"GUID text string to be checked.\\"\\"\\"
+    guid: String!
+  ): CulrResponse!
+
+  \\"\\"\\"
+  Method to retrieve an account from a provider, either using local ID or CPR number.
+  \\"\\"\\"
+  getAccountFromProvider(
+    \\"\\"\\"The library where the given action is associated.\\"\\"\\"
+    agencyId: String!
+
+    \\"\\"\\"
+    The user's type and value. For example, CPR and CPR number or LOCALID and LOCALID number.
+    \\"\\"\\"
+    userCredentials: UserIdValueAndTypeInput!
+  ): CulrAccountResponse!
 }
 
 type CulrMutate {
-  \\"\\"\\"Bibliotek.dk specific culr mutation fields\\"\\"\\"
-  bibdk: BibdkCulrMutationFields!
+  \\"\\"\\"
+  Method to create a new account that can either be of local or global type (CPR, CICEROUID, or SYSTEMUID).
+  \\"\\"\\"
+  createAccount(
+    \\"\\"\\"The library where the given action is associated.\\"\\"\\"
+    agencyId: String!
+
+    \\"\\"\\"
+    The user's type and value. For example, CPR and CPR number or LOCALID and LOCALID number.
+    \\"\\"\\"
+    userCredentials: UserIdValueAndTypeInput!
+
+    \\"\\"\\"Globally unique user ID and type.\\"\\"\\"
+    globalUID: GlobalUIDInput
+
+    \\"\\"\\"The user's 3-digit municipality number.\\"\\"\\"
+    municipalityNo: String
+
+    \\"\\"\\"If dryRun is set to true, the service will not be called.\\"\\"\\"
+    dryRun: Boolean!
+  ): CulrResponse!
+
+  \\"\\"\\"
+  Method to update an account, only supports updating the municipality number.
+  \\"\\"\\"
+  updateAccount(
+    \\"\\"\\"The library where the given action is associated.\\"\\"\\"
+    agencyId: String!
+
+    \\"\\"\\"
+    The user's type and value. For example, CPR and CPR number or LOCALID and LOCALID number.
+    \\"\\"\\"
+    userCredentials: UserIdValueAndTypeInput!
+
+    \\"\\"\\"The user's 3-digit municipality number.\\"\\"\\"
+    municipalityNo: String
+
+    \\"\\"\\"If dryRun is set to true, the service will not be called.\\"\\"\\"
+    dryRun: Boolean!
+  ): CulrResponse!
+
+  \\"\\"\\"
+  Method to delete a user's account. If it is the user's last account, the patron will also be deactivated.
+  \\"\\"\\"
+  deleteAccount(
+    \\"\\"\\"The library where the given action is associated.\\"\\"\\"
+    agencyId: String!
+
+    \\"\\"\\"
+    The user's type and value. For example, CPR and CPR number or LOCALID and LOCALID number.
+    \\"\\"\\"
+    userCredentials: UserIdValueAndTypeInput!
+
+    \\"\\"\\"If dryRun is set to true, the service will not be called.\\"\\"\\"
+    dryRun: Boolean!
+  ): CulrResponse!
+
+  \\"\\"\\"Method to delete all accounts under a specific provider.\\"\\"\\"
+  deleteAccountsFromProvider(
+    \\"\\"\\"The library where the given action is associated.\\"\\"\\"
+    agencyId: String!
+
+    \\"\\"\\"If dryRun is set to true, the service will not be called.\\"\\"\\"
+    dryRun: Boolean!
+  ): CulrResponse!
 }
 
 type Complexity {
@@ -3197,6 +3388,427 @@ type UserMutations {
   \\"\\"\\"Delete one or more saved searches\\"\\"\\"
   deleteSavedSearches(savedSearchIds: [Int!]!): SavedSearchDeleteResponse
 }
+
+enum VipLanguageTypeEnum {
+  DAN
+  ENG
+}
+
+type VipLanguageTypeAttribute {
+  \\"\\"\\"Language type. Can be either \\"DAN\\" or \\"ENG\\".\\"\\"\\"
+  language: VipLanguageTypeEnum
+
+  \\"\\"\\"Value. Example: \\"Hillerød Bibliotek\\" or \\"Hillerød Public Library\\".\\"\\"\\"
+  value: String
+}
+
+type Geolocation {
+  \\"\\"\\"Latitudinal coordinate. Example: \\"55.680887\\".\\"\\"\\"
+  latitude: Float
+
+  \\"\\"\\"Longitudinal coordinate. Example: \\"12.573619\\".\\"\\"\\"
+  longitude: Float
+}
+
+enum VipLibraryTypeEnum {
+  ALLE
+  FOLKEBIBLIOTEK
+  FORSKNINGSBIBLIOTEK
+  SKOILEBIBLIOTEK
+  OTHER
+}
+
+enum VipLibraryStatusEnum {
+  ALLE
+  AKTIVE
+  USYNLIG
+  SLETTET
+}
+
+type VipProfile {
+  \\"\\"\\"Profile name. Example: \\"opac\\".\\"\\"\\"
+  profileName: String
+
+  \\"\\"\\"Use present sources. Indicates if this profile uses available sources.\\"\\"\\"
+  usePresentSources: Boolean
+
+  \\"\\"\\"List of sources.\\"\\"\\"
+  source: [VipSource]
+}
+
+type VipRelation {
+  \\"\\"\\"RDF label. Example: \\"dbcaddi:continues\\".\\"\\"\\"
+  rdfLabel: String
+
+  \\"\\"\\"RDF inverse. The inverse RDF label. Example: \\"dbcaddi:continuedIn\\".\\"\\"\\"
+  rdfInverse: String
+}
+
+type VipSource {
+  \\"\\"\\"Source name. Example: \\"Artikelbasens avisartikler med infomedialink\\".\\"\\"\\"
+  sourceName: String
+
+  \\"\\"\\"Source searchable. Indicates whether the source is searchable.\\"\\"\\"
+  sourceSearchable: Boolean
+
+  \\"\\"\\"
+  Source contained in. ID of the source that contains this source. Example: \\"870971-avis\\".
+  \\"\\"\\"
+  sourceContainedIn: String
+
+  \\"\\"\\"Source identifier. Example: \\"870971-avisinf\\".\\"\\"\\"
+  sourceIdentifier: String
+
+  \\"\\"\\"Source owner. Only filled if not querying for v3. Example: \\"100200\\".\\"\\"\\"
+  sourceOwner: String
+
+  \\"\\"\\"Source format. Only filled if not querying for v3. Example: \\"catalog\\".\\"\\"\\"
+  sourceFormat: String
+
+  \\"\\"\\"List of the source's relations.\\"\\"\\"
+  relation: [VipRelation]
+}
+
+type VipResponse {
+  agencyInfo(
+    \\"\\"\\"
+    Agency ID of the library, supports either agency ID or ISIL.
+    Example: 721900, DK-721900
+    \\"\\"\\"
+    branchId: String
+
+    \\"\\"\\"
+    Agency name of the library, can be part of the name. Search is case-insensitive.
+    Example: \\"hillerød\\" will find \\"Hillerød Bibliotekerne\\"
+    \\"\\"\\"
+    agencyName: String
+
+    \\"\\"\\"
+    Agency ID. Search for all libraries under a single main library. Also supports searching using ISIL.
+    Example: 721900 will find 721900, 721902, 721903, and 721904
+    Example: DK-721900 will find 721900, 721902, 721903, and 721904
+    \\"\\"\\"
+    agencyId: String
+
+    \\"\\"\\"
+    Agency address. Search using whole or part of the address. Search is case-insensitive.
+    Example: \\"christian\\" will match \\"Christiansgade 1\\"
+    \\"\\"\\"
+    agencyAddress: String
+
+    \\"\\"\\"
+    Postal code. Search using a 4-digit Danish postal code.
+    Example: 3400 or 9000
+    \\"\\"\\"
+    postalCode: String
+
+    \\"\\"\\"
+    City. Search using the whole or part of the city name. Search is case-insensitive.
+    Example: \\"illerø\\" will match \\"Hillerød\\"
+    \\"\\"\\"
+    city: String
+
+    \\"\\"\\"Last updated date.\\"\\"\\"
+    lastUpdated: String
+
+    \\"\\"\\"Library type. Search using the type of library.\\"\\"\\"
+    libraryType: VipLibraryTypeEnum
+
+    \\"\\"\\"Library status. Search using the library status.\\"\\"\\"
+    libraryStatus: VipLibraryStatusEnum
+
+    \\"\\"\\"
+    Pickup allowed. Search for libraries that allow pickup. Can be \\"true\\" or \\"false\\".
+    \\"\\"\\"
+    pickupAllowed: Boolean
+  ): [VipAgencyInfo!]!
+  opensearchProfiles(agencyId: String!, profileName: String): [VipProfile!]!
+}
+
+type VipAgencyInfo {
+  pickupAgency: VipAgency
+  iso18626: VipIso18626
+  z3950Ill: Vipz3950Ill
+}
+
+type VipAgency {
+  \\"\\"\\"Agency name. Example: \\"Hillerød Bibliotekerne\\".\\"\\"\\"
+  agencyName: String
+
+  \\"\\"\\"
+  Agency ID. If this is a branch, this will be the main library's ID. Example: \\"721900\\".
+  \\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"Type of agency. Example: \\"Public Library\\".\\"\\"\\"
+  agencyType: String
+
+  \\"\\"\\"Agency email address. Example: \\"bibliotek@hillerod.dk\\".\\"\\"\\"
+  agencyEmail: String
+
+  \\"\\"\\"Agency phone number. Example: \\"72 32 58 00\\".\\"\\"\\"
+  agencyPhone: String
+
+  \\"\\"\\"Agency fax number. Example: \\"72 32 58 00\\".\\"\\"\\"
+  agencyFax: String
+
+  \\"\\"\\"Agency CVR number. Example: \\"29189366\\".\\"\\"\\"
+  agencyCvrNumber: String
+
+  \\"\\"\\"Agency P number. Example: \\"1003280670\\".\\"\\"\\"
+  agencyPNumber: String
+
+  \\"\\"\\"Agency EAN number. Example: \\"5798008307713\\".\\"\\"\\"
+  agencyEanNumber: String
+
+  \\"\\"\\"Agency branch ID. Example: \\"721902\\".\\"\\"\\"
+  branchId: String!
+
+  \\"\\"\\"Branch type. Example: \\"f\\".\\"\\"\\"
+  branchType: String
+
+  \\"\\"\\"Branch name. Example: \\"Skævinge\\" or \\"Skævinge Library\\".\\"\\"\\"
+  branchName: [VipLanguageTypeAttribute]
+
+  \\"\\"\\"
+  Branch short name. Example: \\"Hillerød Bibliotekerne\\" or \\"Hillerød Library\\".
+  \\"\\"\\"
+  branchShortName: [VipLanguageTypeAttribute]
+
+  \\"\\"\\"Branch phone number. Example: \\"72325900\\".\\"\\"\\"
+  branchPhone: String
+
+  \\"\\"\\"Branch email address. Example: \\"bibliotek@hillerod.dk\\".\\"\\"\\"
+  branchEmail: String
+
+  \\"\\"\\"Branch ILL email address. Example: \\"danbib@hillerod.dk\\".\\"\\"\\"
+  branchIllEmail: String
+
+  \\"\\"\\"Branch is an agency.\\"\\"\\"
+  branchIsAgency: Boolean
+
+  \\"\\"\\"Agency address. Example: \\"Christiansgade 1\\".\\"\\"\\"
+  postalAddress: String
+
+  \\"\\"\\"Agency postal code. Example: \\"3400\\".\\"\\"\\"
+  postalCode: String
+
+  \\"\\"\\"City. Example: \\"Hillerød\\".\\"\\"\\"
+  city: String
+
+  \\"\\"\\"Agency ISIL number. Example: \\"DK-721900\\".\\"\\"\\"
+  isil: String
+
+  \\"\\"\\"Junction. Routing drop-off point. Example: \\"715700\\".\\"\\"\\"
+  junction: String
+
+  \\"\\"\\"Branch P number. Example: \\"1003280670\\".\\"\\"\\"
+  branchPNumber: String
+
+  \\"\\"\\"Branch catalog URL. Example: \\"https://hilbib.dk\\".\\"\\"\\"
+  branchCatalogueUrl: String
+
+  \\"\\"\\"Lookup URL. Example: \\"https://hilbib.dk/work/work-of:870970-basis:\\".\\"\\"\\"
+  lookupUrl: String
+
+  \\"\\"\\"Branch website URL. Example: \\"https://hilbib.dk\\".\\"\\"\\"
+  branchWebsiteUrl: String
+
+  \\"\\"\\"Service declaration URL. Example: \\"https://www.hvidovrebib.dk\\".\\"\\"\\"
+  serviceDeclarationUrl: String
+
+  \\"\\"\\"
+  Registration form URL. URL for registering new users. Example: \\"https://hilbib.dk/registration\\".
+  \\"\\"\\"
+  registrationFormUrl: String
+
+  \\"\\"\\"
+  Registration form URL text. Text shown with the URL for registering new users. Example: \\"Create a library user\\".
+  \\"\\"\\"
+  registrationFormUrlText: String
+
+  \\"\\"\\"Library.dk support email. Example: \\"bibliotek@kff.kk.dk\\".\\"\\"\\"
+  librarydkSupportEmail: String
+
+  \\"\\"\\"Library.dk support phone. Example: \\"33 66 30 00\\".\\"\\"\\"
+  librarydkSupportPhone: String
+
+  \\"\\"\\"
+  Agency subdivisions. List of the library’s subdivisions. Example: \\"Vigersted (Community Hall)\\", \\"Ørslev (Brugsen)\\", \\"Høm (Høm Byvej v. Smedemestervej 1)\\".
+  \\"\\"\\"
+  agencySubdivision: [String]
+
+  \\"\\"\\"
+    Opening hours. Example: \\"Opening hours
+  See opening hours on:
+  bibliotek.kk.dk/biblioteker\\".
+  \\"\\"\\"
+  openingHours: [VipLanguageTypeAttribute]
+
+  \\"\\"\\"Temporarily closed. Indicates if the library is temporarily closed.\\"\\"\\"
+  temporarilyClosed: Boolean
+
+  \\"\\"\\"
+  Temporarily closed reason. Message when the library is temporarily closed.
+  \\"\\"\\"
+  temporarilyClosedReason: [VipLanguageTypeAttribute]
+
+  \\"\\"\\"
+  ILL order receipt text. Example: \\"https://bibliotek.kk.dk/help/general-info/library-regulations\\".
+  \\"\\"\\"
+  illOrderReceiptText: [VipLanguageTypeAttribute]
+
+  \\"\\"\\"Pickup allowed. Indicates if the library allows material pickup.\\"\\"\\"
+  pickupAllowed: Boolean
+
+  \\"\\"\\"NCIP lookup user.\\"\\"\\"
+  ncipLookupUser: Boolean
+
+  \\"\\"\\"NCIP renew order.\\"\\"\\"
+  ncipRenewOrder: Boolean
+
+  \\"\\"\\"NCIP cancel order.\\"\\"\\"
+  ncipCancelOrder: Boolean
+
+  \\"\\"\\"NCIP update order.\\"\\"\\"
+  ncipUpdateOrder: Boolean
+
+  \\"\\"\\"NCIP server address. Example: \\"https://cicero-fbs.com/rest/ncip/\\".\\"\\"\\"
+  ncipServerAddress: String
+
+  \\"\\"\\"NCIP server password.\\"\\"\\"
+  ncipPassword: String
+
+  \\"\\"\\"
+  Drop-off branch. Branch used for returning materials. Example: \\"710123\\".
+  \\"\\"\\"
+  dropOffBranch: String
+
+  \\"\\"\\"
+  Drop-off name. Name of the branch used for returns. Example: \\"Copenhagen Library central sorting\\".
+  \\"\\"\\"
+  dropOffName: String
+
+  \\"\\"\\"
+  Last update. The last update of the library’s VIP data. Example: \\"2024-08-11\\".
+  \\"\\"\\"
+  lastUpdated: String
+
+  \\"\\"\\"Is OCLC library. The library has records in WorldCat.\\"\\"\\"
+  isOclcRsLibrary: Boolean
+
+  \\"\\"\\"State and university library copy service.\\"\\"\\"
+  stateAndUniversityLibraryCopyService: Boolean
+
+  \\"\\"\\"Geo location. Geographical coordinates.\\"\\"\\"
+  geolocation: Geolocation
+
+  \\"\\"\\"Head of institution name. Example: \\"Jakob Heide Petersen\\".\\"\\"\\"
+  headOfInstitutionName: String
+
+  \\"\\"\\"Head of institution title. Example: \\"Head of Copenhagen Libraries\\".\\"\\"\\"
+  headOfInstitutionTitle: String
+
+  \\"\\"\\"
+  Branch service text. Example: \\"We lend books to big and small readers\\".
+  \\"\\"\\"
+  branchServiceTxt: String
+
+  \\"\\"\\"
+  National delivery service. Indicates if the library is part of the national delivery scheme.
+  \\"\\"\\"
+  nationalDeliveryService: Boolean
+
+  \\"\\"\\"
+  Will receive ILL. Indicates if the library accepts interlibrary loan requests.
+  \\"\\"\\"
+  willReceiveIll: Boolean
+
+  \\"\\"\\"
+  Will receive ILL text. Message when the library does not accept interlibrary loan requests. Example: \\"Faaborg Public Library is closed from 24/12 to 1/1. Danbib orders are not processed during this period. From 2/1, orders will be processed again at Faaborg-Midtfyn Libraries.\\".
+  \\"\\"\\"
+  willReceiveIllTxt: String
+
+  \\"\\"\\"Localisation name. The name used in Netpunkt. Example: \\"KKB\\".\\"\\"\\"
+  localisationName: String
+
+  \\"\\"\\"Route number.\\"\\"\\"
+  routeNumber: String
+
+  \\"\\"\\"
+  ILL service text. Example: \\"https://bibliotek.kk.dk/help/general-info/library-regulations\\".
+  \\"\\"\\"
+  illServiceTxt: String
+
+  \\"\\"\\"
+  Opening hours URL. Link to the library’s opening hours. Example: \\"https://www.bibliotek.alleroed.dk/opening-hours\\".
+  \\"\\"\\"
+  openingHoursUrl: String
+
+  \\"\\"\\"Payment URL. Example: \\"https://www.hilbib.dk\\".\\"\\"\\"
+  paymentUrl: String
+
+  \\"\\"\\"
+  Head of branch name. Name of the branch manager. Example: \\"Stine Holmstrøm Have\\".
+  \\"\\"\\"
+  headOfBranchName: String
+
+  \\"\\"\\"Head of branch title. Example: \\"Library Manager\\".\\"\\"\\"
+  headOfBranchTitle: String
+}
+
+type VipIso18626 {
+  \\"\\"\\"
+  ISO18626 address. ISO18626 server address. Example: \\"https://iso18626.addi.dk/copa-rs/app/iso18626/\\".
+  \\"\\"\\"
+  iso18626Address: String
+
+  \\"\\"\\"ISO18626 password.\\"\\"\\"
+  iso18626Password: String
+}
+
+type Vipz3950Ill {
+  \\"\\"\\"
+  Z39.50 address. Z39.50 server address. Example: \\"87.48.149.131:2100/default\\".
+  \\"\\"\\"
+  z3950Address: String
+
+  \\"\\"\\"Z39.50 group ID.\\"\\"\\"
+  z3950GroupId: String
+
+  \\"\\"\\"Z39.50 user ID.\\"\\"\\"
+  z3950UserId: String
+
+  \\"\\"\\"Z39.50 password.\\"\\"\\"
+  z3950Password: String
+
+  \\"\\"\\"ILL request.\\"\\"\\"
+  illRequest: Boolean
+
+  \\"\\"\\"ILL answer.\\"\\"\\"
+  illAnswer: Boolean
+
+  \\"\\"\\"ILL shipped.\\"\\"\\"
+  illShipped: Boolean
+
+  \\"\\"\\"ILL cancel.\\"\\"\\"
+  illCancel: Boolean
+
+  \\"\\"\\"ILL cancel reply.\\"\\"\\"
+  illCancelReply: Boolean
+
+  \\"\\"\\"ILL cancel reply synchronous.\\"\\"\\"
+  illCancelReplySynchronous: Boolean
+
+  \\"\\"\\"ILL renew.\\"\\"\\"
+  illRenew: Boolean
+
+  \\"\\"\\"ILL renew answer.\\"\\"\\"
+  illRenewAnswer: Boolean
+
+  \\"\\"\\"ILL renew answer synchronous.\\"\\"\\"
+  illRenewAnswerSynchronous: Boolean
+}
 "
 `;
 
@@ -3216,6 +3828,8 @@ type Mutation {
 }
 
 type Query {
+  debug: Debug
+  series(seriesId: String!): Series
   mood: MoodQueries!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
@@ -3266,6 +3880,7 @@ type Query {
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!]
+  universe(key: String, universeId: String): Universe
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -3393,6 +4008,15 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
+}
+
+type Complexity {
+  value: String!
+  class: String!
+}
+
+type Debug {
+  complexity: Complexity!
 }
 
 enum AccessTypeCodeEnum {

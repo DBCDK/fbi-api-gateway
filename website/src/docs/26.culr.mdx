@@ -1,0 +1,278 @@
+# CULR
+
+CULR (_Core User Library Registry_) receives local user identifiers from affiliated
+data providers (eg. libraries) and assigns a global user id (_GUID_) for each unique user.
+
+The responseStatus _code_ can be one of the following enum values
+
+<DescribeEnum name="CulrResponseCodesEnum" />
+
+## GetAccountsByGlobalId
+
+Method to retrieve all accounts under the user's patron based on eithDescribeEnumer CPR, CICEROUID, or SYSTEMUID.
+
+⚠️ For this example to work, you need to provide real CPR number in the variables.
+
+<InlineGraphiQL
+  query={`
+    query Example_getAccountsByGlobalId($userCredentials: GlobalUIDInput!) {
+        culr {
+            getAccountsByGlobalId(userCredentials: $userCredentials) {
+            accounts {
+                provider
+                userIdType
+                userIdValue
+            }
+            municipalityNo
+            guid
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    userCredentials: {
+      uidType: "CPR",
+      uidValue: "0102034444",
+    },
+  }}
+/>
+
+## GetAccountsByLocalId
+
+Method to retrieve all accounts under the user's patron based on localId.
+
+⚠️ For this example to work, you need to provide real userCredentials in the variables.
+
+<InlineGraphiQL
+  query={`
+    query Example_getAccountsByLocalId($userCredentials: LocalUIDInput!) {
+        culr {
+            getAccountsByLocalId(userCredentials: $userCredentials) {
+            accounts {
+                provider
+                userIdType
+                userIdValue
+            }
+            municipalityNo
+            guid
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+        }
+`}
+  variables={{
+    userCredentials: {
+      agencyId: "790942",
+      userIdValue: "12345678",
+    },
+  }}
+/>
+
+## HasCulrAccount
+
+Method to validate whether a UUID GUID exists in CULR.
+
+⚠️ For this example to work, you need to provide real GUID in the variables.
+
+<InlineGraphiQL
+  query={`
+    query Example_hasCulrAccount($guid: String!) {
+        culr {
+            hasCulrAccount(guid: $guid) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    guid: "1a2b3c4d-1a2b-3c4d-5678-1a2b3c4d5e6f",
+  }}
+/>
+
+## CreateAccount
+
+Method to create a new account that can either be of local or global type (CPR, CICEROUID, or SYSTEMUID).
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK_200".
+
+⚠️ For this example to work, you need to provide a real agencyId and userCredentials in the variables.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_createAccount($agencyId: String!, $userCredentials: UserIdValueAndTypeInput!, $municipalityNo: String, $globalUID: GlobalUIDInput, $dryRun: Boolean!) {
+        culr {
+            createAccount(
+            agencyId: $agencyId
+            userCredentials: $userCredentials
+            globalUID: $globalUID
+            municipalityNo: $municipalityNo
+            dryRun: $dryRun
+            ) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+        }
+    }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    userCredentials: {
+      userIdType: "CPR",
+      userIdValue: "0102034444",
+    },
+    dryRun: true,
+  }}
+/>
+
+## UpdateAccount
+
+Method to update an account, only supports updating the municipality number.
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK_200".
+
+⚠️ For this example to work, you need to provide a real agencyId and userCredentials in the variables.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_updateAccount($agencyId: String!, $userCredentials: UserIdValueAndTypeInput!, $municipalityNo: String, $dryRun: Boolean!) {
+        culr {
+            updateAccount(
+            agencyId: $agencyId
+            userCredentials: $userCredentials
+            municipalityNo: $municipalityNo
+            dryRun: $dryRun
+            ) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    municipalityNo: "123",
+    userCredentials: {
+      userIdType: "CPR",
+      userIdValue: "0102034444",
+    },
+    dryRun: true,
+  }}
+/>
+
+## DeleteAccount
+
+Method to delete a user's account. If it is the user's last account, the patron will also be deactivated.
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK_200".
+
+⚠️ For this example to work, you need to provide a real agencyId and userCredentials in the variables.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_deleteAccount($agencyId: String!, $userCredentials: UserIdValueAndTypeInput!, $dryRun: Boolean!) {
+        culr {
+            deleteAccount(
+            agencyId: $agencyId
+            userCredentials: $userCredentials
+            dryRun: $dryRun
+            ) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    userCredentials: {
+      userIdType: "CPR",
+      userIdValue: "0102034444",
+    },
+    dryRun: true,
+  }}
+/>
+
+## GetAccountFromProvider
+
+Method to retrieve an account from a provider, either using local ID or CPR number.
+
+⚠️ For this example to work, you need to provide a real agencyId and userCredentials in the variables.
+
+<InlineGraphiQL
+  query={`
+    query Example_getAccountFromProvider($agencyId: String!, $userCredentials: UserIdValueAndTypeInput!) {
+        culr {
+            getAccountFromProvider(agencyId: $agencyId, userCredentials: $userCredentials) {
+            accounts {
+                provider
+                userIdType
+                userIdValue
+            }
+            municipalityNo
+            guid
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    userCredentials: {
+      userIdType: "CPR",
+      userIdValue: "0102034444",
+    },
+  }}
+/>
+
+## DeleteAccountsFromProvider
+
+Method to delete all accounts under a specific provider.
+
+⚠️ Note! that this will delete ALL accounts within the given agencyId
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK_200".
+
+⚠️ For this example to work, you need to provide a real agencyId in the variables.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_deleteAccountsByProvider($agencyId: String!, $dryRun: Boolean!) {
+        culr {
+            deleteAccountsFromProvider(agencyId: $agencyId, dryRun: $dryRun) {
+            hasCulrAccount
+            responseStatus {
+                code
+                message
+            }
+            }
+        }
+    }
+`}
+  variables={{
+    agencyId: "790942",
+    dryRun: true,
+  }}
+/>
