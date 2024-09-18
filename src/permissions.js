@@ -46,6 +46,7 @@ export default {
       "orderStatus",
       "test",
       "user",
+      // mutation
       "submitOrder",
       "submitMultipleOrders",
       "data_collect",
@@ -54,6 +55,9 @@ export default {
       "submitSession",
       "deleteSession",
       "users",
+      // drupal
+      "nodeById",
+      "nodeQuery",
     ],
     denyTypes: [],
   },

@@ -344,8 +344,7 @@ export async function getExecutableSchema({
     // Merge external and internal schemas
     const mergedSchema = loadExternal
       ? mergeSchemas({
-          // schemas: [externalSchema, internalSchema],
-          schemas: [internalSchema],
+          schemas: [externalSchema, internalSchema],
         })
       : internalSchema;
 
