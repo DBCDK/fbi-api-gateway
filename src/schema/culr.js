@@ -381,16 +381,16 @@ export const resolvers = {
 
   CulrAccountResponse: {
     accounts(parent, args, context, info) {
-      return parent.account;
+      return parent?.account || [];
     },
   },
 
   CulrResponseStatus: {
     code(parent, args, context, info) {
-      return parent.responseCode;
+      return parent?.responseCode;
     },
     message(parent, args, context, info) {
-      return parent.responseMessage;
+      return parent?.responseMessage;
     },
   },
 };
