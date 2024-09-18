@@ -226,9 +226,11 @@ function getLookupUrl(branch, localIdentifiers) {
     localIdentifiers?.map((id) => id?.localIdentifier) || [];
 
   // Check if we need to use a single identifier or multiple
-  const selectedIdentifiers = branch?.lookupUrl?.includes("/record/")
-    ? allIdentifiers?.[0]
-    : encodeURIComponent(uniq(allIdentifiers)?.join(" OR "));
+  const selectedIdentifiers =
+    branch?.lookupUrl?.includes("/record/") ||
+    branch?.lookupUrl?.includes("/work/")
+      ? allIdentifiers?.[0]
+      : encodeURIComponent(uniq(allIdentifiers)?.join(" OR "));
 
   // Replace all _IDNR_ with identifers
   if (branch?.lookupUrl?.includes("_IDNR_")) {
