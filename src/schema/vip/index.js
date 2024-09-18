@@ -171,13 +171,8 @@ type VipResponse {
     Pickup allowed. Search for libraries that allow pickup. Can be "true" or "false".
     """
     pickupAllowed: Boolean
-  ): VipAgencyInfoResponse!
+  ): [VipAgencyInfo!]!
   opensearchProfiles(agencyId: String!, profileName: String): [VipProfile!]!
-}
-
-type VipAgencyInfoResponse {
-  hitcount: Int!
-  result: [VipAgencyInfo!]!
 }
 
 type VipAgencyInfo {
@@ -552,22 +547,19 @@ export const resolvers = {
     async agencyInfo(parent, args, context, info) {
       const libraryType = LIBRARY_TYPE_MAPPING[args?.libraryType];
       const libraryStatus = LIBRARY_STATUS_MAPPING[args?.libraryStatus];
-      console.log(args, { libraryType, libraryStatus });
+
       // Check permissions for accessing vip
       const danbibRead = await danbibReadPermissions(context);
 
       if (!danbibRead) {
-        return { hitcount: 0, result: [] };
+        return [];
       }
 
       const res = await context.datasources
         .getLoader("vipagencyinfo")
         .load({ ...args, libraryType, libraryStatus });
 
-      return {
-        hitcount: res?.agencyInfo?.length || 0,
-        result: res?.agencyInfo || [],
-      };
+      return res?.agencyInfo || [];
     },
   },
 };
