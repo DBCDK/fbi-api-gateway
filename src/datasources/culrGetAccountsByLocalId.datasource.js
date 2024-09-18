@@ -11,7 +11,7 @@ import { omitCulrData } from "../utils/omitCulrData";
 import { hasCulrDataSync } from "../utils/agency";
 
 const {
-  url,
+  soap_url: url,
   authenticationUser,
   authenticationGroup,
   authenticationPassword,

@@ -9,7 +9,7 @@ import config from "../config";
 import { getTestUser, storeTestUser } from "../utils/testUserStore";
 
 const {
-  url,
+  soap_url: url,
   authenticationUser,
   authenticationGroup,
   authenticationPassword,

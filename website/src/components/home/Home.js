@@ -16,6 +16,7 @@ export default function Home() {
   const { theme } = useTheme();
 
   const isTemp = theme === "temp";
+  const isFuture = theme === "future";
 
   return (
     <>
@@ -31,7 +32,7 @@ export default function Home() {
           </Col>
         </Row>
 
-        {isTemp && (
+        {(isTemp || isFuture) && (
           <Row className={styles.content}>
             <Col>
               <Title as="h2" type="title1" className={styles.title}>
