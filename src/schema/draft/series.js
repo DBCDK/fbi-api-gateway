@@ -119,9 +119,14 @@ export const resolvers = {
             .getLoader("seriesById")
             .load({ seriesId: item.id, profile: context.profile });
 
+          if (!fetchedSeries?.seriesTitle) {
+            log.error("Series not found with ID:" + item?.id);
+          }
+
           return { ...fetchedSeries, seriesId: item.id };
         })
       );
+
       return resolveSeries({ series: fetchedSeriesList }, parent);
     },
   },
@@ -132,7 +137,7 @@ export const resolvers = {
       const limit = Boolean(args.limit) ? args.limit : 50;
       const offset = Boolean(args.offset) ? args.offset : 0;
 
-      const works = parent.works.slice(offset, offset + limit);
+      const works = parent?.works?.slice?.(offset, offset + limit) || [];
 
       // filter out persistentWorkIds that can NOT be resolved - we need to await a resolve to know :)
       const results = await Promise.all(
