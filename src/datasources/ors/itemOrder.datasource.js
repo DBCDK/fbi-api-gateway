@@ -13,10 +13,9 @@ export async function load({ itemId }, context) {
     method: "GET",
   });
 
-  console.log("###############", res);
+  console.log("reseeeeeeeeeeeeeeeeeee", res.body);
 
-  //we expect orderList to always have one element since we are rquesting for a specific orderId.
-  return res;
+  return res.body;
 }
 
 // export const options = {

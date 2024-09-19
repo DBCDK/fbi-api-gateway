@@ -6,30 +6,56 @@
 // timestamp: DateTimeScalar
 
 export const typeDef = `
+  type ItemIdResponse {
+    """
+    Message field in case of an error.
+    """
+    message: String
+    """
+    ItemId response object.
+    """
+    itemOrderEntity: ItemOrderEntity
+  } 
 
-type OrsResponseStatus {
-  code: String!
-  message: String
-}
+  type ItemOrderEntity {
+    """
+    Key for the row in the database, can be ignored as it's only relevant for ORS.
+    """
+    itemOrderKey: Int!
+    """
+    Order ID associated with the item ID.
+    """
+    orderId: String!
+    """
+    Item ID, the same value that was queried.
+    """
+    itemId: String!
+    """
+    Agency ID of the lender of the material.
+    """
+    responderId: String!
+    """
+    Agency ID of the borrower of the material.
+    """
+    requesterId: String!
+    """
+    Timestamp of when the row was created in the database.
+    Example: "2024-09-09T07:32:24.081+00:00"
+    """
+    timestamp: String!
+  }
 
-type ItemOrderResponse { 
-  itemOrderKey: Int
-  orderId: String
-  itemId: String
-  responderId: String
-  requesterId: String
-  timestamp: String
-  responseStatus: OrsResponseStatus!
-} 
+  type OrsQuery {
+    """
+    Method to retrieve sender and receiver information from ORS based on an itemId.
+    """
+    itemOrder(itemId: String!): ItemIdResponse!
+  }
 
-type OrsQuery {
-  itemOrder(itemId: String!): ItemOrderResponse
-}
-
-extend type Query {
-  ors: OrsQuery!
-}
- `;
+  extend type Query {
+    ors: OrsQuery!
+  }
+`;
 
 export const resolvers = {
   Query: {
@@ -43,25 +69,19 @@ export const resolvers = {
       const { itemId } = args;
 
       // Get the account by global credentials
-      const res = await context.datasources
-        .getLoader("itemOrder")
-        .load({ itemId });
-
-      return {
-        ...res?.body,
-        responseStatus: { code: res?.status, message: res?.body.message },
-      };
+      return await context.datasources.getLoader("itemOrder").load({ itemId });
     },
   },
 
-  OrsResponseStatus: {
-    code(parent, args, context, info) {
-      console.log("fffffff", parent);
-
-      return parent?.code;
-    },
+  ItemIdResponse: {
     message(parent, args, context, info) {
-      return parent?.message;
+      return parent?.message || null;
+    },
+    itemOrderEntity(parent, args, context, info) {
+      if (parent?.message) {
+        return null;
+      }
+      return parent.itemOrderEntity;
     },
   },
 };
