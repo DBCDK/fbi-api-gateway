@@ -104,6 +104,7 @@ type Query {
   debug: Debug
   series(seriesId: String!): Series
   mood: MoodQueries!
+  ors: OrsQuery!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   monitor(name: String!): String!
@@ -2871,6 +2872,46 @@ type OrderStatusResponse {
   errorMessage: String
 }
 
+type ItemIdResponse {
+  \\"\\"\\"Message field in case of an error.\\"\\"\\"
+  message: String
+
+  \\"\\"\\"ItemId response object.\\"\\"\\"
+  itemOrderEntity: ItemOrderEntity
+}
+
+type ItemOrderEntity {
+  \\"\\"\\"
+  Key for the row in the database, can be ignored as it's only relevant for ORS.
+  \\"\\"\\"
+  itemOrderKey: Int!
+
+  \\"\\"\\"Order ID associated with the item ID.\\"\\"\\"
+  orderId: String!
+
+  \\"\\"\\"Item ID, the same value that was queried.\\"\\"\\"
+  itemId: String!
+
+  \\"\\"\\"Agency ID of the lender of the material.\\"\\"\\"
+  responderId: String!
+
+  \\"\\"\\"Agency ID of the borrower of the material.\\"\\"\\"
+  requesterId: String!
+
+  \\"\\"\\"
+  Timestamp of when the row was created in the database.
+  Example: \\"2024-09-09T07:32:24.081+00:00\\"
+  \\"\\"\\"
+  timestamp: String!
+}
+
+type OrsQuery {
+  \\"\\"\\"
+  Method to retrieve sender and receiver information from ORS based on an itemId.
+  \\"\\"\\"
+  itemOrder(itemId: String!): ItemIdResponse!
+}
+
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
 scalar PaginationLimitScalar
 
@@ -3831,6 +3872,7 @@ type Query {
   debug: Debug
   series(seriesId: String!): Series
   mood: MoodQueries!
+  ors: OrsQuery!
   manifestation(pid: String, faust: String): Manifestation
   manifestations(faust: [String!], pid: [String!]): [Manifestation]!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work
@@ -5622,6 +5664,46 @@ type MoodQueries {
   moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
   moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
   moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
+}
+
+type ItemIdResponse {
+  \\"\\"\\"Message field in case of an error.\\"\\"\\"
+  message: String
+
+  \\"\\"\\"ItemId response object.\\"\\"\\"
+  itemOrderEntity: ItemOrderEntity
+}
+
+type ItemOrderEntity {
+  \\"\\"\\"
+  Key for the row in the database, can be ignored as it's only relevant for ORS.
+  \\"\\"\\"
+  itemOrderKey: Int!
+
+  \\"\\"\\"Order ID associated with the item ID.\\"\\"\\"
+  orderId: String!
+
+  \\"\\"\\"Item ID, the same value that was queried.\\"\\"\\"
+  itemId: String!
+
+  \\"\\"\\"Agency ID of the lender of the material.\\"\\"\\"
+  responderId: String!
+
+  \\"\\"\\"Agency ID of the borrower of the material.\\"\\"\\"
+  requesterId: String!
+
+  \\"\\"\\"
+  Timestamp of when the row was created in the database.
+  Example: \\"2024-09-09T07:32:24.081+00:00\\"
+  \\"\\"\\"
+  timestamp: String!
+}
+
+type OrsQuery {
+  \\"\\"\\"
+  Method to retrieve sender and receiver information from ORS based on an itemId.
+  \\"\\"\\"
+  itemOrder(itemId: String!): ItemIdResponse!
 }
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
