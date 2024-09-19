@@ -13,14 +13,12 @@ export async function load({ itemId }, context) {
     method: "GET",
   });
 
-  console.log("reseeeeeeeeeeeeeeeeeee", res.body);
-
   return res.body;
 }
 
-// export const options = {
-//   redis: {
-//     ttl,
-//     prefix,
-//   },
-// };
+export const options = {
+  redis: {
+    ttl,
+    prefix,
+  },
+};
