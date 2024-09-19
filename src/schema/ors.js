@@ -13,11 +13,11 @@ type OrsResponseStatus {
 }
 
 type ItemOrderResponse { 
-  itemOrderKey: int, 
-  orderId: String, 
-  itemId": String, 
-  responderId: String, 
-  requesterId: String, 
+  itemOrderKey: Int
+  orderId: String
+  itemId: String
+  responderId: String
+  requesterId: String
   timestamp: String
   responseStatus: OrsResponseStatus!
 } 
@@ -39,20 +39,29 @@ export const resolvers = {
   },
 
   OrsQuery: {
-    async ors(parent, args, context, info) {
+    async itemOrder(parent, args, context, info) {
       const { itemId } = args;
 
       // Get the account by global credentials
-      return await context.datasources.getLoader("itemOrder").load({ itemId });
+      const res = await context.datasources
+        .getLoader("itemOrder")
+        .load({ itemId });
+
+      return {
+        ...res?.body,
+        responseStatus: { code: res?.status, message: res?.body.message },
+      };
     },
   },
 
   OrsResponseStatus: {
     code(parent, args, context, info) {
-      return parent?.responseCode;
+      console.log("fffffff", parent);
+
+      return parent?.code;
     },
     message(parent, args, context, info) {
-      return parent?.responseMessage;
+      return parent?.message;
     },
   },
 };

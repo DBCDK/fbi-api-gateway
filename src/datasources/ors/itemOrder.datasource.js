@@ -1,4 +1,4 @@
-import config from "../config";
+import config from "../../config";
 const { url, ttl, prefix } = config.datasources.orderStatus;
 
 /**
@@ -16,7 +16,7 @@ export async function load({ itemId }, context) {
   console.log("###############", res);
 
   //we expect orderList to always have one element since we are rquesting for a specific orderId.
-  return res?.body;
+  return res;
 }
 
 // export const options = {
