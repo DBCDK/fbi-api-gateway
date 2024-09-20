@@ -513,7 +513,7 @@ async function danbibReadPermissions(context) {
 
   // Check permissions for accessing vip
   return !!userinfo?.attributes?.dbcidp?.find((entry) => {
-    return entry?.rights?.find((rightsEntry) => {
+    return entry?.rights?.find?.((rightsEntry) => {
       return (
         rightsEntry?.name === "READ" && rightsEntry?.productName === "DANBIB"
       );
