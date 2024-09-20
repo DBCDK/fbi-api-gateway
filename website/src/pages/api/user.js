@@ -150,7 +150,7 @@ export default async function handler(req, res) {
 
       // unique agencyId list
       const agencies = [];
-      attributes.agencies.forEach(
+      attributes.agencies?.forEach?.(
         ({ agencyId }) =>
           !agencies.includes(agencyId) && agencies.push(agencyId)
       );
