@@ -2,6 +2,10 @@
 
 This section provides examples for retrieving agency information and Opensearch profiles using VIP.
 
+The `status` field can be one of the following enum values
+
+<DescribeEnum name="VipResponseStatusEnum" />
+
 ## Agency Information
 
 In this example, we are fetching basic information about agencies located in **Herlev**.
@@ -17,13 +21,16 @@ It retrieves fields such as the agency's ID, city, CVR number, and branch names 
   query={`query ExampleVipAgencyInfo($city: String!) {
   vip {
     agencyInfo(city: $city) {
-      pickupAgency {
-        agencyId
-        city
-        agencyCvrNumber
-        branchName {
-          language
-          value
+      status
+      result {
+        pickupAgency {
+          agencyId
+          city
+          agencyCvrNumber
+          branchName {
+            language
+            value
+          }
         }
       }
     }
@@ -49,9 +56,12 @@ This query returns the names of the profiles. You can also extend the query to r
 
 <InlineGraphiQL
   query={`query ExampleVipOpensearchProfile($agencyId: String!) {
-  vip {
+    vip {
     opensearchProfiles(agencyId: $agencyId) {
-      profileName
+      status
+      result {
+        profileName
+      }
     }
   }
 }`}

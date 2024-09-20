@@ -144,7 +144,7 @@ export default async function handler(req, res) {
 
       user.omittedCulrData = attributes.omittedCulrData;
 
-      const hasCPRValidatedAccount = !!attributes.agencies.find(
+      const hasCPRValidatedAccount = !!attributes.agencies?.find?.(
         (a) => a.userIdType === "CPR"
       );
 
@@ -168,7 +168,9 @@ export default async function handler(req, res) {
         attributes.idpUsed === "nemlogin" || hasCPRValidatedAccount;
 
       // userinfo account select (CPR prioritized)
-      const account = attributes.agencies.find((a) => a.userIdType === "CPR");
+      const account = attributes.agencies?.find?.(
+        (a) => a.userIdType === "CPR"
+      );
 
       const userstatus_response = await getOpenUserStatus({
         loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
