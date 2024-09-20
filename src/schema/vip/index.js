@@ -113,6 +113,21 @@ type VipSource {
   relation: [VipRelation]
 }
 
+enum VipResponseStatusEnum {
+  OK_200
+  NO_AUTHORISATION
+}
+
+type AgencyInfoResponse {
+  result: [VipAgencyInfo!]!
+  status: VipResponseStatusEnum!
+}
+
+type OpensearchProfilesResponse {
+  result: [VipProfile!]!
+  status: VipResponseStatusEnum!
+}
+
 type VipResponse {
   agencyInfo(
     """
@@ -171,8 +186,8 @@ type VipResponse {
     Pickup allowed. Search for libraries that allow pickup. Can be "true" or "false".
     """
     pickupAllowed: Boolean
-  ): [VipAgencyInfo!]!
-  opensearchProfiles(agencyId: String!, profileName: String): [VipProfile!]!
+  ): AgencyInfoResponse! 
+  opensearchProfiles(agencyId: String!, profileName: String): OpensearchProfilesResponse! 
 }
 
 type VipAgencyInfo {
@@ -560,6 +575,34 @@ export const resolvers = {
         .load({ ...args, libraryType, libraryStatus });
 
       return res?.agencyInfo || [];
+    },
+  },
+
+  AgencyInfoResponse: {
+    result(parent, args, context, info) {
+      return parent;
+    },
+
+    async status(parent, args, context, info) {
+      const danbibRead = await danbibReadPermissions(context);
+      if (danbibRead) {
+        return "OK_200";
+      }
+      return "NO_AUTHORISATION";
+    },
+  },
+
+  OpensearchProfilesResponse: {
+    result(parent, args, context, info) {
+      return parent;
+    },
+
+    async status(parent, args, context, info) {
+      const danbibRead = await danbibReadPermissions(context);
+      if (danbibRead) {
+        return "OK_200";
+      }
+      return "NO_AUTHORISATION";
     },
   },
 };

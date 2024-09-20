@@ -17,7 +17,7 @@ export async function load(props, context) {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      "content-type": "application/json",
     },
     body: JSON.stringify({
       agencyId,
