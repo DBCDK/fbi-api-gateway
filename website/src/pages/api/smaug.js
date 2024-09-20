@@ -97,20 +97,18 @@ export default async function handler(req, res) {
         // Get Search Profiles from vipcore
         const vipcore_response = await getProfiles(configuration.agency);
 
-        switch (vipcore_response.status) {
-          case 200:
-            const vipcore_data = await vipcore_response.json();
-            const profiles = selectProfiles(vipcore_data);
+        if (vipcore_response.status === 200) {
+          const vipcore_data = await vipcore_response.json();
+          const profiles = selectProfiles(vipcore_data);
 
-            // add to result
-            result = { ...result, profiles };
-
-          default:
-            // No profiles found for agencyId
-            result = {
-              ...result,
-              profiles: ["none"],
-            };
+          // add to result
+          result = { ...result, profiles };
+        } else {
+          // No profiles found for agencyId
+          result = {
+            ...result,
+            profiles: ["none"],
+          };
         }
       }
 

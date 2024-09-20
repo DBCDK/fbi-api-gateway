@@ -239,7 +239,7 @@ function getLookupUrl(branch, localIdentifiers) {
 
   // Well.. This is a fallback
   if (branch?.lookupUrl) {
-    return branch.lookupUrl + identifiers;
+    return branch.lookupUrl + selectedIdentifiers;
   }
 }
 
