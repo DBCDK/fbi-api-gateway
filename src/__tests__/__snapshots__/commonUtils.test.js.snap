@@ -26,6 +26,7 @@ Object {
     "series",
     "universe",
     "mood",
+    "ors",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -69,6 +70,7 @@ Object {
     "series",
     "universe",
     "mood",
+    "ors",
     "submitOrder",
   ],
   "denyTypes": Array [
@@ -106,6 +108,7 @@ Object {
     "series",
     "universe",
     "mood",
+    "ors",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -147,6 +150,7 @@ Object {
     "series",
     "universe",
     "mood",
+    "ors",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",

@@ -289,7 +289,9 @@ function Item({
               </div>
               <div>
                 <Text type="text4">Profile</Text>
-                <Text type="text1">{profile || "None 😵‍💫"}</Text>
+                <Text type="text1">
+                  {profile || "None 😵‍💫"} {profile === "none" && "⚠️"}
+                </Text>
               </div>
             </div>
           </div>

@@ -51,6 +51,9 @@ export default function Profile({ id = "dropdown", className = "" }) {
       title="Search profile"
     >
       <Dropdown.Toggle id={id} className={styles.toggle}>
+        {hasProfile === "none" && (
+          <i title="no profiles found for associated agency">⚠️</i>
+        )}{" "}
         {selectedProfile}
       </Dropdown.Toggle>
       <Dropdown.Menu className={styles.menu}>

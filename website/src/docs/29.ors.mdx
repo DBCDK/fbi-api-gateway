@@ -1,0 +1,32 @@
+# ORS
+
+## ItemOrder
+
+Method to retrieve sender and receiver information from ORS based on an itemId.
+
+If no entity is found, the `message` field will display _"No items found"_; otherwise, it will be _null_.
+
+⚠️ For this example to work, you need to provide a real _itemId_ in the variables.
+
+<InlineGraphiQL
+  query={`
+    query Example_itemOrder($itemId: String!) {
+        ors {
+            itemOrder(itemId: $itemId) {
+                message
+                itemOrderEntity {
+                    itemOrderKey
+                    orderId
+                    itemId
+                    responderId
+                    requesterId
+                    timestamp
+                }
+            }
+        }
+    }
+`}
+  variables={{
+    itemId: "some-itemId",
+  }}
+/>
