@@ -65,23 +65,25 @@ export function resolveSeries(data, parent) {
   }
 
   return (
-    data?.series?.map((serie) => {
-      const match = serie.works?.find(
-        ({ persistentWorkId }) => persistentWorkId === workId
-      );
+    data?.series
+      ?.filter?.((serie) => !!serie?.seriesTitle)
+      ?.map((serie) => {
+        const match = serie.works?.find(
+          ({ persistentWorkId }) => persistentWorkId === workId
+        );
 
-      // Select from specific member and add to series level
-      const readThisFirst = match?.readThisFirst || null;
-      const readThisWhenever = match?.readThisWhenever || null;
-      const numberInSeries = match?.numberInSeries || null;
+        // Select from specific member and add to series level
+        const readThisFirst = match?.readThisFirst || null;
+        const readThisWhenever = match?.readThisWhenever || null;
+        const numberInSeries = match?.numberInSeries || null;
 
-      return {
-        numberInSeries,
-        readThisFirst,
-        readThisWhenever,
-        ...serie,
-      };
-    }) || []
+        return {
+          numberInSeries,
+          readThisFirst,
+          readThisWhenever,
+          ...serie,
+        };
+      }) || []
   );
 }
 

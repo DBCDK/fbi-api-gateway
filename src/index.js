@@ -15,7 +15,7 @@ import cors from "cors";
 //
 import { createHandler } from "graphql-http/lib/use/express";
 //
-import { parse, getOperationAST } from "graphql";
+import { parse, getOperationAST, GraphQLError } from "graphql";
 
 import config from "./config";
 import howruHandler from "./howru";
@@ -376,9 +376,35 @@ promExporterApp.listen(9599, () => {
         if (!req.graphQLErrors) {
           req.graphQLErrors = [];
         }
-        req.graphQLErrors.push(graphQLError.message);
 
-        return graphQLError;
+        // Loop through errors until we find the most original error
+        let originalError = graphQLError;
+        while (originalError?.originalError) {
+          originalError = originalError?.originalError;
+        }
+
+        const isInternalError = !(originalError instanceof GraphQLError);
+
+        const errorForLog = isInternalError
+          ? {
+              ...graphQLError,
+              message: "Internal server error. " + graphQLError?.message,
+            }
+          : graphQLError;
+
+        req.graphQLErrors.push(errorForLog);
+
+        if (isInternalError) {
+          // If this is an internal server error, we dont show the actual error to the user
+          // Instead we provide a trackingId that can be used to find the real message in the logs
+          return {
+            message: "Internal server error",
+            trackingId: req?.datasources?.stats?.uuid || null,
+          };
+        } else {
+          // Typically a query error that is passed directly to the user
+          return graphQLError;
+        }
       },
     });
 
