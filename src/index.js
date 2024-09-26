@@ -20,6 +20,7 @@ import { parse, getOperationAST, GraphQLError } from "graphql";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration } from "./utils/monitor";
+
 import {
   validateQueryComplexity,
   getQueryComplexity,
@@ -37,6 +38,8 @@ import isFastLaneQuery, {
 import { start as startResourceMonitor } from "./utils/resourceMonitor";
 import hasExternalRequest from "./utils/externalRequest";
 import { dataCollectMiddleware } from "./utils/dataCollect";
+
+const MAX_QUERY_DEPTH = config.query.maxDepth;
 
 startResourceMonitor();
 
@@ -322,6 +325,52 @@ promExporterApp.listen(9599, () => {
       return fieldName.startsWith("__");
     });
   }
+
+  // Query complexity middleware
+  app.post("/:profile/graphql", async (req, res, next) => {
+    const { query } = req.body;
+
+    // Parse queryen til en AST
+    const ast = parse(query);
+
+    // Funktion til at beregne dybden af en query
+    function getQueryDepth(node, depth = 0) {
+      if (depth > MAX_QUERY_DEPTH) {
+        return depth;
+      }
+
+      if (!node || !node.selectionSet) {
+        return depth;
+      }
+
+      const depths = node.selectionSet.selections.map((selection) =>
+        getQueryDepth(selection, depth + 1)
+      );
+
+      return Math.max(...depths);
+    }
+
+    // Find root-operationen (query/mutation/subscription)
+    const operationDefinition = ast.definitions.find(
+      (def) => def.kind === "OperationDefinition"
+    );
+
+    // calck depth
+    const queryDepth = getQueryDepth(operationDefinition);
+
+    // operation name
+    const operationName = operationDefinition?.name?.value || "opearation";
+
+    if (queryDepth > MAX_QUERY_DEPTH) {
+      res.status(417);
+      return res.send({
+        statusCode: 400,
+        message: `'${operationName}' exceeds maximum operation depth of ${MAX_QUERY_DEPTH}`,
+      });
+    }
+
+    next();
+  });
 
   // Query complexity middleware
   app.post("/:profile/graphql", async (req, res) => {
