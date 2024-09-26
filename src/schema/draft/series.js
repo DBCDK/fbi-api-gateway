@@ -1,3 +1,5 @@
+import { log } from "dbc-node-logger";
+
 import { resolveSeries, resolveWork } from "../../utils/utils";
 
 export const typeDef = `
