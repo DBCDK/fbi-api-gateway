@@ -46,11 +46,18 @@ const noStorage = {
  * @returns {component}
  */
 function DummyContainer({ inView }) {
-  const dummyContainerRef = useRef();
+  //  force update for intersection observer (else ref will be undefined)
+  const [_, setReady] = useState(false);
+
+  const dummyContainerRef = useRef(null);
   const dummyContainerInView = useIntersection(
     dummyContainerRef.current,
     "0px"
   );
+
+  useEffect(() => {
+    setReady(true);
+  }, []);
 
   useEffect(() => {
     if (dummyContainerInView) {
@@ -247,7 +254,7 @@ export default function Wrap(props) {
   }, [selectedToken]);
 
   if (!show || !schema) {
-    return <DummyContainer inView={() => setShow(true)} show={true} />;
+    return <DummyContainer inView={() => setShow(true)} />;
   }
 
   const fetcher = async ({ query, variables = {} }) => {

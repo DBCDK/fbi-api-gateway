@@ -4,8 +4,9 @@
   font-size: 12px;
 }
 
-.depth :before {
-  background-color: var(--divider) !important;
+.depth button {
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
+  outline: hsla(var(--color-neutral), var(--alpha-background-light)) auto 1px;
 }
 
 .depth .button p {

@@ -6,7 +6,7 @@ export default {
   query: {
     maxDepth: process.env.MAX_QUERY_DEPTH
       ? parseInt(process.env.MAX_QUERY_DEPTH, 10)
-      : 10,
+      : 15,
     maxComplexity: process.env.MAX_QUERY_COMPLEXITY
       ? parseInt(process.env.MAX_QUERY_COMPLEXITY, 10)
       : 1000,

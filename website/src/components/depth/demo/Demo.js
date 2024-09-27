@@ -3,10 +3,10 @@ import config from "../../../../../src/config.js";
 import Chart from "../chart";
 
 export default function Demo() {
-  const [value, setValue] = useState(650);
+  const [value, setValue] = useState(5);
   const interval = useRef();
 
-  const values = [650, 250, 1200, 2500, 1800, 25];
+  const values = [5, 8, 15, 2, 6, 2, 25];
 
   useEffect(() => {
     if (!interval.current) {
@@ -25,7 +25,7 @@ export default function Demo() {
   return (
     <Chart
       value={value}
-      limit={config?.query?.maxComplexity}
+      limit={config?.query?.maxDepth}
       speed={1}
       states={{
         0: { color: "var(--success-dark)" },

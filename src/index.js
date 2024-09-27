@@ -326,7 +326,7 @@ promExporterApp.listen(9599, () => {
     });
   }
 
-  // Query complexity middleware
+  // Query Depth middleware
   app.post("/:profile/graphql", async (req, res, next) => {
     const { query } = req.body;
 
