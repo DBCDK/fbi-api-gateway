@@ -134,6 +134,7 @@ promExporterApp.listen(9599, () => {
         datasources: req.datasources.stats.summary(),
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
+        queryDepth: req.queryDepth,
         queryComplexity: req.queryComplexity,
         queryComplexityClass: complexityClass,
         isIntrospectionQuery: req.isIntrospectionQuery,

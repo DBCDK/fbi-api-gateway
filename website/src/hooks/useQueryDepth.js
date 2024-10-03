@@ -36,7 +36,11 @@ const useQueryDepth = (astNode) => {
     }
   }, [astNode]);
 
-  return { depth, maxDepth: config?.query?.maxDepth };
+  return {
+    depth,
+    maxDepth: 15,
+    // maxDepth: config?.query?.maxDepth
+  };
 };
 
 export default useQueryDepth;
