@@ -23,53 +23,62 @@ export function getDepthClass(depth, maxDepth) {
   return "rejected";
 }
 
-export default function DepthButton({ className = "", query = "" }) {
+export default function DepthButton({ className = "", query }) {
   // Parse the query into an AST
-  const ast = parse(query);
 
-  // Use the custom hook to get the query depth
-  const { depth, maxDepth } = useQueryDepth(ast.definitions[0]);
+  try {
+    const ast = query && parse(query);
 
-  const elRef = useRef();
-  const [show, setShow] = useState(false);
+    if (!ast) {
+      return null;
+    }
 
-  const type = getDepthClass(depth, maxDepth);
+    // Use the custom hook to get the query depth
+    const { depth, maxDepth } = useQueryDepth(ast?.definitions[0]);
 
-  const typeColorClass = type ? styles[`color-${type}`] : "";
+    const elRef = useRef();
+    const [show, setShow] = useState(false);
 
-  return (
-    <span ref={elRef} className={`${styles.depth} ${className}`}>
-      <ToolbarButton
-        className={styles.button}
-        label="Query depth"
-        onClick={() => setShow(true)}
-      >
-        <Progress.Circle
-          value={depth}
-          limit={maxDepth}
-          speed={1}
-          states={{
-            0: { color: "var(--success-dark)" },
-            60: { color: "var(--warning-dark)" },
-            100: { color: "var(--error)" },
-          }}
-        />
-      </ToolbarButton>
-      <Overlay
-        show={show}
-        container={elRef}
-        placement={"right"}
-        rootClose={true}
-        onHide={() => setShow(false)}
-        className={styles.overlay}
-      >
-        <div>
-          <Text type="text1">
-            {`Query Depth: `}
-            <span className={typeColorClass}>{depth}</span>
-          </Text>
-        </div>
-      </Overlay>
-    </span>
-  );
+    const type = getDepthClass(depth, maxDepth);
+
+    const typeColorClass = type ? styles[`color-${type}`] : "";
+
+    return (
+      <span ref={elRef} className={`${styles.depth} ${className}`}>
+        <ToolbarButton
+          className={styles.button}
+          label="Query depth"
+          onClick={() => setShow(true)}
+        >
+          <Progress.Circle
+            value={depth}
+            limit={maxDepth}
+            speed={50}
+            states={{
+              0: { color: "var(--success-dark)" },
+              60: { color: "var(--warning-dark)" },
+              101: { color: "var(--error)" },
+            }}
+          />
+        </ToolbarButton>
+        <Overlay
+          show={show}
+          container={elRef}
+          placement={"right"}
+          rootClose={true}
+          onHide={() => setShow(false)}
+          className={styles.overlay}
+        >
+          <div>
+            <Text type="text1">
+              {"Query depth: "}
+              <span className={typeColorClass}>{depth}</span>
+            </Text>
+          </div>
+        </Overlay>
+      </span>
+    );
+  } catch {
+    return null;
+  }
 }

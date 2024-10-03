@@ -38,6 +38,7 @@ import isFastLaneQuery, {
 import { start as startResourceMonitor } from "./utils/resourceMonitor";
 import hasExternalRequest from "./utils/externalRequest";
 import { dataCollectMiddleware } from "./utils/dataCollect";
+import { validateQueryDepth } from "./utils/depth";
 
 const MAX_QUERY_DEPTH = config.query.maxDepth;
 
@@ -333,39 +334,20 @@ promExporterApp.listen(9599, () => {
     // Parse queryen til en AST
     const ast = parse(query);
 
-    // Funktion til at beregne dybden af en query
-    function getQueryDepth(node, depth = 0) {
-      if (depth > MAX_QUERY_DEPTH) {
-        return depth;
-      }
-
-      if (!node || !node.selectionSet) {
-        return depth;
-      }
-
-      const depths = node.selectionSet.selections.map((selection) =>
-        getQueryDepth(selection, depth + 1)
-      );
-
-      return Math.max(...depths);
-    }
-
     // Find root-operationen (query/mutation/subscription)
-    const operationDefinition = ast.definitions.find(
+    const node = ast.definitions.find(
       (def) => def.kind === "OperationDefinition"
     );
 
-    // calck depth
-    const queryDepth = getQueryDepth(operationDefinition);
+    const result = validateQueryDepth(node);
 
-    // operation name
-    const operationName = operationDefinition?.name?.value || "opearation";
+    req.queryDepth = result.value;
 
-    if (queryDepth > MAX_QUERY_DEPTH) {
-      res.status(417);
+    if (result.statusCode !== 200) {
+      res.status(res.statusCode);
       return res.send({
-        statusCode: 400,
-        message: `'${operationName}' exceeds maximum operation depth of ${MAX_QUERY_DEPTH}`,
+        statusCode: result.statusCode,
+        message: result.message,
       });
     }
 

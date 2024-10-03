@@ -2,15 +2,24 @@
  * @file Type definitions and resolvers for debug
  */
 
+import config from "../config";
+
 // OBS! Complexity should be 0 for all debug fields! - so this dont affect the complexity score
 export const typeDef = `
 type Complexity {
-    value: String! @complexity(value: 0)
+    value: Int! @complexity(value: 0)
+    max: Int! @complexity(value: 0)
     class: String! @complexity(value: 0)
+}
+
+type Depth {
+    value: Int! @complexity(value: 0)
+    max: Int! @complexity(value: 0)
 }
 
 type Debug {
   complexity: Complexity! @complexity(value: 0)
+  depth: Depth! @complexity(value: 0)
 }
 
 extend type Query {
@@ -27,7 +36,18 @@ export const resolvers = {
   Debug: {
     async complexity(parent, args, context, info) {
       const { queryComplexity, queryComplexityClass } = context;
-      return { value: queryComplexity, class: queryComplexityClass };
+      const maxComplexity = config?.query?.maxComplexity;
+      return {
+        value: queryComplexity,
+        max: maxComplexity,
+        class: queryComplexityClass,
+      };
+    },
+    async depth(parent, args, context, info) {
+      const { queryDepth } = context;
+      const maxDepth = config?.query?.maxDepth;
+
+      return { value: queryDepth, max: maxDepth };
     },
   },
 };

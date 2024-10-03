@@ -6,7 +6,7 @@ export default function Demo() {
   const [value, setValue] = useState(5);
   const interval = useRef();
 
-  const values = [5, 8, 15, 2, 6, 2, 25];
+  const values = [5, 12, 7, 2, 25, 10];
 
   useEffect(() => {
     if (!interval.current) {
@@ -26,10 +26,10 @@ export default function Demo() {
     <Chart
       value={value}
       limit={config?.query?.maxDepth}
-      speed={1}
+      speed={50}
       states={{
         0: { color: "var(--success-dark)" },
-        20: { color: "var(--warning-dark)" },
+        60: { color: "var(--warning-dark)" },
         100: { color: "var(--error)" },
       }}
     />
