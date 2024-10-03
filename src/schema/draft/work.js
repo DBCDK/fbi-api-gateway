@@ -325,7 +325,7 @@ export const resolvers = {
   },
   Language: {
     isoCode(parent, args, context, info) {
-      return parent?.iso639Set2 || "";
+      return parent?.isoCode || parent?.iso639Set2 || "";
     },
   },
 };
