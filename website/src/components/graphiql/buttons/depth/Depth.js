@@ -29,10 +29,6 @@ export default function DepthButton({ className = "", query }) {
   try {
     const ast = query && parse(query);
 
-    if (!ast) {
-      return null;
-    }
-
     // Use the custom hook to get the query depth
     const { depth, maxDepth } = useQueryDepth(ast?.definitions[0]);
 
