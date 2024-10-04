@@ -20,6 +20,7 @@ import { parse, getOperationAST, GraphQLError } from "graphql";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics, observeDuration } from "./utils/monitor";
+
 import {
   validateQueryComplexity,
   getQueryComplexity,
@@ -37,6 +38,7 @@ import isFastLaneQuery, {
 import { start as startResourceMonitor } from "./utils/resourceMonitor";
 import hasExternalRequest from "./utils/externalRequest";
 import { dataCollectMiddleware } from "./utils/dataCollect";
+import { validateQueryDepth } from "./utils/depth";
 
 startResourceMonitor();
 
@@ -130,6 +132,7 @@ promExporterApp.listen(9599, () => {
         datasources: req.datasources.stats.summary(),
         profile: req.profile,
         total_ms: Math.round(seconds * 1000),
+        queryDepth: req.queryDepth,
         queryComplexity: req.queryComplexity,
         queryComplexityClass: complexityClass,
         isIntrospectionQuery: req.isIntrospectionQuery,
@@ -322,6 +325,34 @@ promExporterApp.listen(9599, () => {
       return fieldName.startsWith("__");
     });
   }
+
+  // Query Depth middleware
+  app.post("/:profile/graphql", async (req, res, next) => {
+    const { query } = req.body;
+    try {
+      // Parse queryen til en AST
+      const ast = parse(query);
+
+      // Find root-operationen (query/mutation/subscription)
+      const node = ast.definitions.find(
+        (def) => def.kind === "OperationDefinition"
+      );
+
+      const result = validateQueryDepth(node);
+
+      req.queryDepth = result.value;
+
+      if (result.statusCode !== 200) {
+        res.status(res.statusCode);
+        return res.send({
+          statusCode: result.statusCode,
+          message: result.message,
+        });
+      }
+    } catch {}
+
+    next();
+  });
 
   // Query complexity middleware
   app.post("/:profile/graphql", async (req, res) => {

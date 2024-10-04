@@ -705,12 +705,19 @@ type CulrMutate {
 }
 
 type Complexity {
-  value: String!
+  value: Int!
+  max: Int!
   class: String!
+}
+
+type Depth {
+  value: Int!
+  max: Int!
 }
 
 type Debug {
   complexity: Complexity!
+  depth: Depth!
 }
 
 enum HoldingsResponseStatusEnum {
@@ -4072,12 +4079,19 @@ type Cover {
 }
 
 type Complexity {
-  value: String!
+  value: Int!
+  max: Int!
   class: String!
+}
+
+type Depth {
+  value: Int!
+  max: Int!
 }
 
 type Debug {
   complexity: Complexity!
+  depth: Depth!
 }
 
 enum AccessTypeCodeEnum {

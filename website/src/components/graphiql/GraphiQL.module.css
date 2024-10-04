@@ -3,14 +3,8 @@
   margin-top: var(--pt1);
 }
 
-.graphiql .curl .button p,
-.graphiql .complexity .button p {
-  color: hsla(var(--color-neutral), var(--alpha-tertiary));
-  font-style: italic;
-  font-size: 12px;
-}
-
 /* custom complexity button */
+
 .graphiql .complexity {
   margin-top: auto;
 }
@@ -18,29 +12,6 @@
 .graphiql .complexity .button p {
   font-style: unset;
 }
-
-.complexityOverlay {
-  background-color: var(--divider);
-}
-
-.complexityOverlay p span {
-  text-transform: capitalize;
-  font-family: var(--font-mono-semibold);
-}
-
-.complexityOverlay .color-simple {
-  color: var(--success-dark);
-}
-
-.complexityOverlay .color-complex {
-  color: var(--warning-dark);
-}
-
-.complexityOverlay .color-critical {
-  color: var(--error);
-}
-
-/*  */
 
 .graphiql :global(.graphiql-container) {
   height: calc(100vh - 68px);

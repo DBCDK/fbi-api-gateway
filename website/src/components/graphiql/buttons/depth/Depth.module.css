@@ -1,0 +1,40 @@
+.depth .button p {
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
+  font-style: italic;
+  font-size: 12px;
+}
+
+.depth button {
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
+  outline: hsla(var(--color-neutral), var(--alpha-background-light)) auto 1px;
+}
+
+.depth .button p {
+  font-style: unset;
+}
+
+.overlay {
+  background-color: var(--divider);
+}
+
+.overlay p span {
+  text-transform: capitalize;
+  font-family: var(--font-mono-semibold);
+}
+
+.overlay .color-simple {
+  color: var(--success-dark);
+}
+
+.overlay .color-complex {
+  color: var(--warning-dark);
+}
+
+.overlay .color-rejected {
+  color: var(--error);
+}
+
+:global(body.dark) .depth :before,
+:global(body.dark) .depth span {
+  background-color: var(--dark) !important;
+}

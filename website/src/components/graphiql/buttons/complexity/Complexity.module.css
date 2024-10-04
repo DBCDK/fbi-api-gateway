@@ -1,0 +1,34 @@
+.complexity .button p {
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
+  font-style: italic;
+  font-size: 12px;
+}
+
+.complexity .button p {
+  font-style: unset;
+}
+
+.complexityOverlay {
+  background-color: var(--divider);
+}
+
+.complexityOverlay p span {
+  text-transform: capitalize;
+  font-family: var(--font-mono-semibold);
+}
+
+.complexityOverlay .color-simple {
+  color: var(--success-dark);
+}
+
+.complexityOverlay .color-complex {
+  color: var(--warning-dark);
+}
+
+.complexityOverlay .color-critical {
+  color: var(--error);
+}
+
+:global(body.dark) .complexity span {
+  background-color: var(--dark) !important;
+}

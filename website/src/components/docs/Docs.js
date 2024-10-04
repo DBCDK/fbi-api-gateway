@@ -18,6 +18,7 @@ import {
 
 import Progress from "@/components/base/progress";
 import Complexity from "@/components/complexity";
+import Depth from "@/components/depth";
 import Header from "@/components/header";
 import Menu from "@/components/menu";
 
@@ -31,6 +32,7 @@ const customComponents = {
   Changelog,
   Progress,
   Complexity,
+  Depth,
   DescribeEnum,
 };
 
