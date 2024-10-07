@@ -814,6 +814,8 @@ type Branch {
   branchWebsiteUrl: String
   branchCatalogueUrl: String
   lookupUrl: String
+  branchPhone: String
+  branchEmail: String
 
   \\"\\"\\"branchType is type of library branch. \\"\\"\\"
   branchType: String!
