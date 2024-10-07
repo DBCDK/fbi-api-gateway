@@ -11,6 +11,16 @@ type Language {
   ISO639-2 language code
   """
   isoCode: String!
+  
+   """
+  ISO639-1 language code (2 letters)
+  """
+  iso639Set1: String!
+  
+  """
+  ISO639-2 language code (3 letters)
+  """
+  iso639Set2: String!
 }
 
 type GeneralMaterialType {
