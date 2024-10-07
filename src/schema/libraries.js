@@ -70,6 +70,8 @@ export const typeDef = `
     branchWebsiteUrl: String
     branchCatalogueUrl: String
     lookupUrl: String
+    branchPhone: String
+    branchEmail: String
     
     """
     branchType is type of library branch. 
