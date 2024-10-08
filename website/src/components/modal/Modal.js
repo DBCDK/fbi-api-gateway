@@ -14,7 +14,7 @@ export default function Modal({
       placement="end"
       onHide={onHide}
       className={`${styles.offcanvas} ${className}`}
-      onScroll={(e) => setDistance(e.target.scrollY)}
+      // onScroll={(e) => setDistance(e.target.scrollY)}
     >
       {title && (
         <Offcanvas.Header className={styles.header} closeButton>

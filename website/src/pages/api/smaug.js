@@ -77,7 +77,7 @@ export default async function handler(req, res) {
   let result = {};
 
   switch (smaug_response.status) {
-    case 200:
+    case 200: {
       const smaug_data = await smaug_response.json();
       const configuration = selectConfigurations(smaug_data);
 
@@ -113,6 +113,7 @@ export default async function handler(req, res) {
       }
 
       return res.status(200).send(result);
+    }
     default:
       return res.status(smaug_response.status).send({});
   }

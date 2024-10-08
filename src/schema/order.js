@@ -668,9 +668,8 @@ export const resolvers = {
       //Place other orders
 
       //flatten all orders with periodicaForm, can i either be digital article orders OR physical periodica orders
-      const flattenedOrders = (hasDigitalArticleService
-        ? nonPeriodicaOrders
-        : materialsToOrder
+      const flattenedOrders = (
+        hasDigitalArticleService ? nonPeriodicaOrders : materialsToOrder
       )?.map((order) => {
         const { periodicaForm, ...restOfOrder } = order;
         return {
