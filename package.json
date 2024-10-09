@@ -15,7 +15,7 @@
     "test": "jest",
     "prettier": "prettier --write 'src/**/*.js'",
     "postinstall": "(cd testuser-website && npm i); (cd website && npm i);",
-    "build": "npm run lint && (cd testuser-website && npm run build && npm prune --production); (cd website && npm run build && npm prune --production);",
+    "build": "eslint . && (cd testuser-website && npm run build && npm prune --production) && (cd website && npm run build && npm prune --production);",
     "lint": "eslint ."
   },
   "author": "Frontend @ DBC",
