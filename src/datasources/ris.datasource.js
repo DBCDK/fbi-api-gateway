@@ -53,7 +53,7 @@ export function formatResponseToRis(response) {
       } else {
         for (let m in obj[key]) {
           if (obj[key][m].hasOwnProperty("value")) {
-            if (obj[key][l]?.value[0].hasOwnProperty("contentText")) {
+            if (obj[key][m]?.value[0].hasOwnProperty("contentText")) {
               result += key + "  - " + obj[key][m].value[0].contentText + "\n";
             } else {
               result += key + "  - " + obj[key][m].value + "\n";

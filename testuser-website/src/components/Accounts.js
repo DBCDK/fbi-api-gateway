@@ -18,7 +18,11 @@ export function Accounts() {
         <p>{user.name} er endnu ikke oprettet på noget bibliotek</p>
       )}
       {filteredAccounts?.map((account) => (
-        <AccountListItem account={account} loginAgencyId={loginAgencyId} />
+        <AccountListItem
+          key={account.agency.agencyName}
+          account={account}
+          loginAgencyId={loginAgencyId}
+        />
       ))}
 
       <div className={styles.Bottom}>

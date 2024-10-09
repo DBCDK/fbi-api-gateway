@@ -2,96 +2,25 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { GraphiQLInterface } from "graphiql";
 
-import Progress from "@/components/base/progress";
-
 import {
   GraphiQLProvider,
   useExecutionContext,
   useEditorContext,
   usePrettifyEditors,
-  ToolbarButton,
 } from "@graphiql/react";
 
 import { generateCurl } from "@/components/utils";
 
-import Text from "@/components/base/text";
-import Overlay from "@/components/base/overlay";
+import Header from "@/components/header";
 
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 
-import useComplexity from "@/hooks/useComplexity";
-
-import Header from "@/components/header";
+import QueryDepthButton from "./buttons/depth";
+import ComplexityButton from "./buttons/complexity";
+import CurlButton from "./buttons/curl";
 
 import styles from "./GraphiQL.module.css";
-
-export function ComplexityButton({ value, type, limit, className }) {
-  const complexityRef = useRef();
-  const [show, setShow] = useState(false);
-
-  const typeColorClass = type ? styles[`color-${type}`] : "";
-
-  return (
-    <span ref={complexityRef} className={`${styles.complexity} ${className}`}>
-      <ToolbarButton
-        className={styles.button}
-        label="Query complexity"
-        onClick={() => setShow(true)}
-      >
-        <Progress.Circle
-          value={value}
-          limit={limit}
-          speed={1}
-          states={{
-            0: { color: "var(--success-dark)" },
-            20: { color: "var(--warning-dark)" },
-            100: { color: "var(--error)" },
-          }}
-        />
-      </ToolbarButton>
-      <Overlay
-        show={show}
-        container={complexityRef}
-        placement={"right"}
-        rootClose={true}
-        onHide={() => setShow(false)}
-        className={styles.complexityOverlay}
-      >
-        <div>
-          <Text type="text1">
-            {`Complexity: ${value} `}
-            <span className={typeColorClass}>{type}</span>
-          </Text>
-        </div>
-      </Overlay>
-    </span>
-  );
-}
-
-function CurlButton({ onClick }) {
-  const curlRef = useRef();
-  const [showCopy, setShowCopy] = useState(false);
-
-  return (
-    <span ref={curlRef} className={styles.curl}>
-      <ToolbarButton
-        className={styles.button}
-        onClick={() => {
-          onClick();
-          setShowCopy(true);
-          setTimeout(() => setShowCopy(false), 2000);
-        }}
-        label="Copy request as curl"
-      >
-        <Text type="text1">curl</Text>
-      </ToolbarButton>
-      <Overlay show={navigator?.clipboard && showCopy} container={curlRef}>
-        <Text type="text1">Copied to clipboard 📋</Text>
-      </Overlay>
-    </span>
-  );
-}
 
 export function GraphiQL({
   onEditQuery,
@@ -154,11 +83,6 @@ export default function Wrap() {
   const router = useRouter();
 
   const parameters = { ...router.query };
-
-  const { complexity, complexityClass, limit } = useComplexity({
-    token: selectedToken?.token,
-    ...parameters,
-  });
 
   const curl = generateCurl({
     ...parameters,
@@ -230,14 +154,21 @@ export default function Wrap() {
         toolbar={{
           additionalContent: [
             <CurlButton
+              className={styles.curl}
               key="copy-curl-btn"
               onClick={() => navigator?.clipboard?.writeText?.(curl)}
             />,
+
             <ComplexityButton
-              value={complexity}
-              type={complexityClass}
-              limit={limit}
+              {...parameters}
+              className={styles.complexity}
               key="complexity-btn"
+            />,
+
+            <QueryDepthButton
+              className={styles.depthButton}
+              query={parameters.query || initQueryParams.query}
+              key="query-depth-btn"
             />,
           ],
         }}

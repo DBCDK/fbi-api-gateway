@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import config from "../../../../../src/config.js";
 import Chart from "../chart";
 
 export default function Demo() {
@@ -24,7 +25,7 @@ export default function Demo() {
   return (
     <Chart
       value={value}
-      limit={2500}
+      limit={config?.query?.maxComplexity}
       speed={1}
       states={{
         0: { color: "var(--success-dark)" },

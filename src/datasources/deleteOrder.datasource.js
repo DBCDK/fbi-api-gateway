@@ -6,11 +6,8 @@ import config from "../config";
 import { auditTrace, ACTIONS } from "@dbcdk/dbc-audittrail-logger";
 
 const { url } = config.datasources.openuserstatus;
-const {
-  authenticationUser,
-  authenticationGroup,
-  authenticationPassword,
-} = config.datasources.openorder;
+const { authenticationUser, authenticationGroup, authenticationPassword } =
+  config.datasources.openorder;
 
 /**
  * Constructs soap request to perform cancelOrder request

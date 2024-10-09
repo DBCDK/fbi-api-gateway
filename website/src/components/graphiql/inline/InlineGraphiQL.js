@@ -20,11 +20,12 @@ import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 import Input from "@/components/base/input";
 
-import { ComplexityButton } from "../GraphiQL";
+import ComplexityButton from "../buttons/complexity";
 
 import Overlay from "@/components/base/overlay";
 
 import styles from "./InlineGraphiQL.module.css";
+import DepthButton from "../buttons/depth/Depth";
 
 // A storage implementation that does nothing
 // Basically prevents inline graphiql to interfere with the "real" graphiql
@@ -45,11 +46,18 @@ const noStorage = {
  * @returns {component}
  */
 function DummyContainer({ inView }) {
-  const dummyContainerRef = useRef();
+  //  force update for intersection observer (else ref will be undefined)
+  const [_, setReady] = useState(false);
+
+  const dummyContainerRef = useRef(null);
   const dummyContainerInView = useIntersection(
     dummyContainerRef.current,
     "0px"
   );
+
+  useEffect(() => {
+    setReady(true);
+  }, []);
 
   useEffect(() => {
     if (dummyContainerInView) {
@@ -241,18 +249,12 @@ export default function Wrap(props) {
   const [query, setQuery] = useState(initialQuery);
   const [variables, setVariables] = useState(initialVariabels);
 
-  const { complexity, complexityClass, limit } = useComplexity({
-    token: selectedToken?.token,
-    variables,
-    query,
-  });
-
   useEffect(() => {
     setShow(false);
   }, [selectedToken]);
 
   if (!show || !schema) {
-    return <DummyContainer inView={() => setShow(true)} show={true} />;
+    return <DummyContainer inView={() => setShow(true)} />;
   }
 
   const fetcher = async ({ query, variables = {} }) => {
@@ -284,11 +286,15 @@ export default function Wrap(props) {
         onEditQuery={setQuery}
         toolbar={{
           additionalContent: [
+            <DepthButton
+              className={styles.depth}
+              query={query}
+              key="complexity-btn"
+            />,
             <ComplexityButton
               className={styles.complexity}
-              value={complexity}
-              type={complexityClass}
-              limit={limit}
+              variables={variables}
+              query={query}
               key="complexity-btn"
             />,
           ],

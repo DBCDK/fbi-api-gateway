@@ -2,11 +2,8 @@ import config from "../config";
 import { generateName } from "../utils/nameGenerator";
 
 const { url } = config.datasources.openuserstatus;
-const {
-  authenticationUser,
-  authenticationGroup,
-  authenticationPassword,
-} = config.datasources.openorder;
+const { authenticationUser, authenticationGroup, authenticationPassword } =
+  config.datasources.openorder;
 
 const constructSoap = ({ agencyId, userId }) => {
   let soap = `

@@ -85,6 +85,13 @@ The complexity value can be reduced by minimizing the amount of data requested. 
 Other complexity reducements can be attained by breaking down requests to the API into parallel requests and merging the responses on the client-side.
 Lazy loading is also an effective method, which defers content loading until necessary, improving performance and reducing initial load times.
 
+## Query Depth
+
+In addition to complexity calculations, a query depth limit has been implemented.
+Queries exceeding **15** levels will be rejected to prevent server overloads, mitigate DDOS attacks, and ensure system stability.
+
+>         <Depth.Demo />
+
 ## Deprecation
 
 FBI-API is a versionless API, which enables the continuous addition of new types and fields to the API. However, this also means that data models can change, and fields can be renamed, moved, or removed, resulting in breaking changes.

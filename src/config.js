@@ -4,6 +4,9 @@ export default {
   },
   port: process.env.PORT || 3000,
   query: {
+    maxDepth: process.env.MAX_QUERY_DEPTH
+      ? parseInt(process.env.MAX_QUERY_DEPTH, 10)
+      : 15,
     maxComplexity: process.env.MAX_QUERY_COMPLEXITY
       ? parseInt(process.env.MAX_QUERY_COMPLEXITY, 10)
       : 1000,
@@ -67,9 +70,9 @@ export default {
     jed: {
       url:
         process.env.JED_URL ||
-        "http://jed-presentation-1-1-service.cisterne.svc.cloud.dbc.dk",
+        "http://jed-presentation-1-2-service.cisterne.svc.cloud.dbc.dk",
       ttl: process.env.JED_TIME_TO_LIVE_SECONDS || 60 * 10,
-      prefix: process.env.JED_PREFIX || "jed-1",
+      prefix: process.env.JED_PREFIX || "jed-2",
     },
     openformat: {
       url:

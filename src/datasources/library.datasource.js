@@ -118,6 +118,8 @@ async function get() {
         branchMap[branchId]?.openingHoursUrl ||
         branchMap[branchMap[branchId]?.agencyId]?.openingHoursUrl ||
         null,
+      branchPhone: branchMap[branchId]?.branchPhone,
+      branchEmail: branchMap[branchId]?.branchEmail,
     };
   });
 

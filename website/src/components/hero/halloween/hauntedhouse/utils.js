@@ -1,3 +1,4 @@
+/* eslint-disable */
 export function flashlight() {
   // svg credit to Freepik https://www.freepik.com/free-vector/halloween-background-design-with-haunted-house-and-cemetery_3214325.htm
 

@@ -3,6 +3,7 @@
  * with support for syntax highlighting
  */
 
+import { inspect } from "@graphql-tools/utils";
 import { invariant } from "graphql/jsutils/invariant";
 
 import { isPrintableAsBlockString } from "graphql/language/blockString";

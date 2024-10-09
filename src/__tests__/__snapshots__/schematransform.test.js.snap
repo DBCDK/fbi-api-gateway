@@ -705,12 +705,19 @@ type CulrMutate {
 }
 
 type Complexity {
-  value: String!
+  value: Int!
+  max: Int!
   class: String!
+}
+
+type Depth {
+  value: Int!
+  max: Int!
 }
 
 type Debug {
   complexity: Complexity!
+  depth: Depth!
 }
 
 enum HoldingsResponseStatusEnum {
@@ -807,6 +814,8 @@ type Branch {
   branchWebsiteUrl: String
   branchCatalogueUrl: String
   lookupUrl: String
+  branchPhone: String
+  branchEmail: String
 
   \\"\\"\\"branchType is type of library branch. \\"\\"\\"
   branchType: String!
@@ -3589,8 +3598,6 @@ type VipResponse {
 
 type VipAgencyInfo {
   pickupAgency: VipAgency
-  iso18626: VipIso18626
-  z3950Ill: Vipz3950Ill
 }
 
 type VipAgency {
@@ -4074,12 +4081,19 @@ type Cover {
 }
 
 type Complexity {
-  value: String!
+  value: Int!
+  max: Int!
   class: String!
+}
+
+type Depth {
+  value: Int!
+  max: Int!
 }
 
 type Debug {
   complexity: Complexity!
+  depth: Depth!
 }
 
 enum AccessTypeCodeEnum {

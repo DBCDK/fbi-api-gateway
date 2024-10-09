@@ -192,8 +192,6 @@ type VipResponse {
 
 type VipAgencyInfo {
   pickupAgency: VipAgency
-  iso18626: VipIso18626
-  z3950Ill: Vipz3950Ill
 }
 type VipAgency {
   """

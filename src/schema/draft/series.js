@@ -145,7 +145,8 @@ export const resolvers = {
       const results = await Promise.all(
         works.map((work) => resolveWork({ id: work.persistentWorkId }, context))
       );
-      return works.filter((_v, index) => results[index] !== null);
+
+      return works.filter((_v, index) => !!results[index]);
     },
     title(parent, args, context, info) {
       return parent.seriesTitle;
