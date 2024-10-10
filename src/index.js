@@ -6,39 +6,25 @@ import { log } from "dbc-node-logger";
 import { getExecutableSchema } from "./schemaLoader";
 import express from "express";
 import request from "superagent";
-
-import createHash from "./utils/hash";
-
 import { createProxyMiddleware } from "http-proxy-middleware";
-
 import cors from "cors";
-//
-import { createHandler } from "graphql-http/lib/use/express";
-//
-import { parse, getOperationAST, GraphQLError } from "graphql";
-
 import config from "./config";
 import howruHandler from "./howru";
-import { metrics, observeDuration } from "./utils/monitor";
-
+import { metrics } from "./utils/monitor";
 import {
-  validateQueryComplexity,
   getQueryComplexity,
   getQueryComplexityClass,
 } from "./utils/complexity";
-import createDataLoaders from "./datasourceLoader";
-
-import { v4 as uuid } from "uuid";
-import isbot from "isbot";
-import { parseTestToken } from "./utils/testUserStore";
-import isFastLaneQuery, {
-  fastLaneMiddleware,
-  getFastLane,
-} from "./utils/fastLane";
+import { fastLaneMiddleware } from "./middlewares/fastLane";
+import { performanceTracker } from "./middlewares/track";
 import { start as startResourceMonitor } from "./utils/resourceMonitor";
-import hasExternalRequest from "./utils/externalRequest";
 import { dataCollectMiddleware } from "./utils/dataCollect";
-import { validateQueryDepth } from "./utils/depth";
+import { parseToken } from "./middlewares/parseToken";
+import { initDataloaders } from "./middlewares/dataloaders";
+import { validateToken } from "./middlewares/validateToken";
+import { fetchUserInfo } from "./middlewares/fetchUserInfo";
+import { validateDepth } from "./middlewares/validateQueryDepth";
+import { resolveGraphQLQuery } from "./middlewares/resolveGraphQLQuery";
 
 startResourceMonitor();
 
@@ -95,352 +81,17 @@ promExporterApp.listen(9599, () => {
     next();
   });
 
-  app.post("/:profile/graphql", fastLaneMiddleware);
-
-  // Middleware that monitors performance of those GraphQL queries
-  // which specify a monitor name.
-  app.post("/:profile/graphql", async (req, res, next) => {
-    const start = process.hrtime();
-    res.once("finish", () => {
-      const elapsed = process.hrtime(start);
-      const seconds = elapsed[0] + elapsed[1] / 1e9;
-
-      // Convert variables to strings, to make sure there are no type conflicts,
-      // when log is indexed
-      let queryVariables = {};
-      if (req.queryVariables) {
-        Object.entries(req.queryVariables).forEach(
-          ([key, val]) =>
-            (queryVariables[key] =
-              typeof val === "string" ? val : JSON.stringify(val))
-        );
-      }
-
-      // Get query complexity class (simple|complex|critical|rejected)
-      const complexityClass = getQueryComplexityClass(req.queryComplexity);
-
-      const userAgent = req.get("User-Agent");
-
-      const accessTokenHash = createHash(req.accessToken);
-
-      // detailed logging for SLA
-      log.info("TRACK", {
-        clientId: req?.smaug?.app?.clientId,
-        uuid: req?.datasources?.stats.uuid,
-        parsedQuery: req.parsedQuery,
-        queryVariables,
-        datasources: req.datasources.stats.summary(),
-        profile: req.profile,
-        total_ms: Math.round(seconds * 1000),
-        queryDepth: req.queryDepth,
-        queryComplexity: req.queryComplexity,
-        queryComplexityClass: complexityClass,
-        isIntrospectionQuery: req.isIntrospectionQuery,
-        graphQLErrors: req.graphQLErrors && JSON.stringify(req.graphQLErrors),
-        userAgent,
-        userAgentIsBot: isbot(userAgent),
-        ip: req?.smaug?.app?.ips?.[0],
-        isAuthenticatedToken: !!req.user?.userId,
-        hasUniqueId: !!req.user?.uniqueId,
-        accessTokenHash,
-        isTestToken: req.isTestToken,
-        fastLane: req.fastLane,
-        operationName: req.operationName,
-      });
-      // monitorName is added to context/req in the monitor resolver
-      if (req.monitorName) {
-        observeDuration(req.monitorName, seconds);
-      }
-    });
-    next();
-  });
-
-  /**
-   * Middleware for parsing access token
-   */
-  app.post("/:profile/graphql", async (req, res, next) => {
-    // Get bearer token from authorization header
-
-    req.tracking = {
-      consent: req.headers["x-tracking-consent"] === "true",
-      uniqueVisitorId: req.headers["x-unique-visitor-id"],
-    };
-
-    req.rawAccessToken = req.headers.authorization?.replace(/bearer /i, "");
-    req.isTestToken = req.rawAccessToken?.startsWith("test");
-    if (req.isTestToken) {
-      // Using a test token will automatically mock certain datasources
-      // making it possible to have test users
-      const testToken = parseTestToken(req.rawAccessToken);
-      req.testUser = testToken.testUser;
-      req.accessToken = testToken.accessToken;
-    } else {
-      req.accessToken = req.rawAccessToken;
-    }
-
-    next();
-  });
-
-  /**
-   * Middleware for collecting data
-   */
-  app.post("/:profile/graphql", dataCollectMiddleware);
-
-  /**
-   * Middleware for initializing dataloaders
-   */
-  app.post("/:profile/graphql", async (req, res, next) => {
-    req.datasources = createDataLoaders(
-      uuid(),
-      req.testUser,
-      req.accessToken,
-      req.tracking
-    );
-    next();
-  });
-
-  /**
-   * Middleware for validating access token, and fetching smaug configuration
-   */
-  app.post("/:profile/graphql", async (req, res, next) => {
-    // Get graphQL params
-    try {
-      const graphQLParams = req.body;
-      const document = parse(graphQLParams.query);
-      const ast = getOperationAST(document);
-      req.operationName =
-        ast?.kind === "OperationDefinition" && ast?.name?.value;
-
-      req.queryVariables = graphQLParams.variables;
-      req.parsedQuery = graphQLParams.query
-        .replace(/\n/g, " ")
-        .replace(/\s+/g, " ");
-      req.queryDocument = document;
-
-      // Check if query is introspection query
-      req.isIntrospectionQuery = isIntrospectionQuery(ast);
-    } catch (e) {}
-
-    // Fetch Smaug client configuration
-    try {
-      req.smaug =
-        req.accessToken &&
-        (await req.datasources.getLoader("smaug").load({
-          accessToken: req.accessToken,
-        }));
-      req.smaug.app.ips = (req.ips.length && req.ips) || [req.ip];
-
-      // Agency of the smaug client
-      const agency = req.smaug?.agencyId;
-
-      req.profile = {
-        agency,
-        name: req.params.profile,
-        combined: `${agency}/${req.params.profile}`,
-      };
-    } catch (e) {
-      if (e.response && e.response.statusCode !== 404) {
-        log.error("Error fetching from smaug", { response: e });
-        res.status(500);
-        return res.send({
-          statusCode: 500,
-          message: "Internal server error",
-        });
-      }
-    }
-
-    // If query is introspection, we allow access even though
-    // No token is given
-    if (!req.isIntrospectionQuery) {
-      // Invalid access token
-      if (!req.smaug) {
-        res.status(403);
-        return res.send({
-          statusCode: 403,
-          message: "Unauthorized",
-        });
-      }
-
-      // Access token is valid, but client is not configured properly
-      if (!req.profile?.agency) {
-        log.error(
-          `Missing agency in configuration for client ${req.smaug?.app?.clientId}`
-        );
-        res.status(403);
-        return res.send({
-          statusCode: 403,
-          message:
-            "Invalid client configuration. Missing agency in configuration for client.",
-        });
-      }
-    }
-
-    next();
-  });
-
-  /**
-   * Middleware for fetching user information (for authenticated tokens)
-   */
-  app.post("/:profile/graphql", async (req, res, next) => {
-    // Provided token is authenticated
-    const user = req.smaug?.user;
-    const isAuthenticated = user?.id;
-
-    // isUnknownSmaugUser is currently a nemlogin user with no associated agencies
-    const isUnknownSmaugUser = !user?.agency && !user?.pin && !user?.uniqueId;
-
-    // skip userinfo if token is anonymous
-    if (!isAuthenticated && !isUnknownSmaugUser) {
-      return next();
-    }
-
-    try {
-      const userinfo =
-        req.accessToken &&
-        (await req.datasources.getLoader("userinfo").load({
-          accessToken: req.accessToken,
-        }));
-
-      req.user = userinfo?.attributes || null;
-    } catch (e) {
-      log.error("Error fetching from userinfo", { response: e });
-      res.status(500);
-      return res.send({
-        statusCode: 500,
-        message: "Internal server error",
-      });
-    }
-
-    next();
-  });
-
-  /**
-   * Check if operation is introspection
-   * @param {*} operation
-   * @returns
-   */
-  function isIntrospectionQuery(operation) {
-    return operation.selectionSet.selections.every((selection) => {
-      const fieldName = selection.name.value;
-      return fieldName.startsWith("__");
-    });
-  }
-
-  // Query Depth middleware
-  app.post("/:profile/graphql", async (req, res, next) => {
-    const { query } = req.body;
-    try {
-      // Parse queryen til en AST
-      const ast = parse(query);
-
-      // Find root-operationen (query/mutation/subscription)
-      const node = ast.definitions.find(
-        (def) => def.kind === "OperationDefinition"
-      );
-
-      const result = validateQueryDepth(node);
-
-      req.queryDepth = result.value;
-
-      if (result.statusCode !== 200) {
-        res.status(res.statusCode);
-        return res.send({
-          statusCode: result.statusCode,
-          message: result.message,
-        });
-      }
-    } catch {}
-
-    next();
-  });
-
-  // Query complexity middleware
-  app.post("/:profile/graphql", async (req, res) => {
-    const schema = await getExecutableSchema({
-      clientPermissions: { gateway: { ...req?.smaug?.gateway } },
-      hasAccessToken: !!req.accessToken,
-    });
-
-    const { query, variables } = req.body;
-
-    // Set incomming query complexity
-    req.queryComplexity = getQueryComplexity({ query, variables, schema });
-
-    // Get query complexity category (simple|complex|critical|rejected)
-    req.queryComplexityClass = getQueryComplexityClass(req.queryComplexity);
-
-    req.withExternalRequest = hasExternalRequest(req?.datasources);
-
-    // Set SLA headers
-    res.set({
-      "dbcdk-clientId": req?.smaug?.app?.clientId,
-      "dbcdk-complexityClass": req.queryComplexityClass,
-      "dbcdk-traceId": req?.datasources?.stats.uuid,
-      "dbcdk-withExternalRequest": req?.withExternalRequest,
-    });
-
-    // check if the query allows for fast lane
-    req.fastLane =
-      !req.isIntrospectionQuery && isFastLaneQuery(req.queryDocument, schema);
-
-    if (req.fastLane) {
-      req.fastLaneKey = JSON.stringify({
-        query,
-        variables,
-        profile: req.profile,
-      });
-      const fastLaneRes = await getFastLane(
-        req.fastLaneKey,
-        req.datasources.stats
-      );
-      if (fastLaneRes) {
-        req.fastLaneRes = true;
-        return res.send(fastLaneRes);
-      }
-    }
-
-    const handler = createHandler({
-      schema,
-      validationRules: [validateQueryComplexity({ query, variables })],
-      context: req,
-      formatError: (graphQLError) => {
-        if (!req.graphQLErrors) {
-          req.graphQLErrors = [];
-        }
-
-        // Loop through errors until we find the most original error
-        let originalError = graphQLError;
-        while (originalError?.originalError) {
-          originalError = originalError?.originalError;
-        }
-
-        const isInternalError = !(originalError instanceof GraphQLError);
-
-        const errorForLog = isInternalError
-          ? {
-              ...graphQLError,
-              message: "Internal server error. " + graphQLError?.message,
-            }
-          : graphQLError;
-
-        req.graphQLErrors.push(errorForLog);
-
-        if (isInternalError) {
-          // If this is an internal server error, we dont show the actual error to the user
-          // Instead we provide a trackingId that can be used to find the real message in the logs
-          return {
-            message: "Internal server error",
-            trackingId: req?.datasources?.stats?.uuid || null,
-          };
-        } else {
-          // Typically a query error that is passed directly to the user
-          return graphQLError;
-        }
-      },
-    });
-
-    return handler(req, res);
-  });
+  app.post("/:profile/graphql", [
+    fastLaneMiddleware,
+    performanceTracker,
+    parseToken,
+    dataCollectMiddleware,
+    initDataloaders,
+    validateToken,
+    fetchUserInfo,
+    validateDepth,
+    resolveGraphQLQuery,
+  ]);
 
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
