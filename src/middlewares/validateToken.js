@@ -1,3 +1,6 @@
+import { log } from "dbc-node-logger";
+import { getOperationAST, parse } from "graphql";
+
 function isIntrospectionQuery(operation) {
   return operation.selectionSet.selections.every((selection) => {
     const fieldName = selection.name.value;

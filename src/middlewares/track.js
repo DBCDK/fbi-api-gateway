@@ -2,6 +2,7 @@ import { getQueryComplexityClass } from "../utils/complexity";
 import createHash from "../utils/hash";
 import { log } from "dbc-node-logger";
 import isbot from "isbot";
+import { observeDuration } from "../utils/monitor";
 
 /**
  * Middleware that monitors performance of those GraphQL queries

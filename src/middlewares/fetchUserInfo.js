@@ -1,3 +1,5 @@
+import { log } from "dbc-node-logger";
+
 /**
  * Middleware for fetching user information (for authenticated tokens)
  */
