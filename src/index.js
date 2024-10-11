@@ -25,6 +25,7 @@ import { validateToken } from "./middlewares/validateToken";
 import { fetchUserInfo } from "./middlewares/fetchUserInfo";
 import { validateDepth } from "./middlewares/validateQueryDepth";
 import { resolveGraphQLQuery } from "./middlewares/resolveGraphQLQuery";
+import { validateAgencyId } from "./middlewares/validateagencyId";
 
 startResourceMonitor();
 
@@ -88,6 +89,20 @@ promExporterApp.listen(9599, () => {
     dataCollectMiddleware,
     initDataloaders,
     validateToken,
+    validateAgencyId,
+    fetchUserInfo,
+    validateDepth,
+    resolveGraphQLQuery,
+  ]);
+
+  app.post("/:agencyId/:profile/graphql", [
+    fastLaneMiddleware,
+    performanceTracker,
+    parseToken,
+    dataCollectMiddleware,
+    initDataloaders,
+    validateToken,
+    validateAgencyId,
     fetchUserInfo,
     validateDepth,
     resolveGraphQLQuery,

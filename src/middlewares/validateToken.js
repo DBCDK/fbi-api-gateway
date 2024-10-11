@@ -39,7 +39,7 @@ export async function validateToken(req, res, next) {
     req.smaug.app.ips = (req.ips.length && req.ips) || [req.ip];
 
     // Agency of the smaug client
-    const agency = req.smaug?.agencyId;
+    const agency = req.params?.agencyId || req.smaug?.agencyId;
 
     req.profile = {
       agency,
