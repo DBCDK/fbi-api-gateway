@@ -12,7 +12,10 @@ export function useGraphQLUrl(origin) {
   const { selectedToken } = useStorage();
   const { profile = "default" } = selectedToken || {};
 
-  return `${url}/${profile}/graphql`;
+  // some profiles may contain spaces
+  const encodedProfile = encodeURIComponent(profile);
+
+  return `${url}/${encodedProfile}/graphql`;
 }
 export default function useSchema(token, _url) {
   const self = useGraphQLUrl();

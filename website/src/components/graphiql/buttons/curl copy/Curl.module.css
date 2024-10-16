@@ -1,0 +1,5 @@
+.curl .button p {
+  color: hsla(var(--color-neutral), var(--alpha-tertiary));
+  font-style: italic;
+  font-size: 12px;
+}

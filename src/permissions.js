@@ -8,7 +8,6 @@ const defaultSettings = {
     "search",
     "work",
     "works",
-    "search",
     "suggest",
     "complexSearch",
     "complexSuggest",
