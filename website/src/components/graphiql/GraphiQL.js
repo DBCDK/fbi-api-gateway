@@ -9,8 +9,6 @@ import {
   usePrettifyEditors,
 } from "@graphiql/react";
 
-import { generateCurl } from "@/components/utils";
-
 import Header from "@/components/header";
 
 import useStorage from "@/hooks/useStorage";
@@ -21,6 +19,7 @@ import ComplexityButton from "./buttons/complexity";
 import CurlButton from "./buttons/curl";
 
 import styles from "./GraphiQL.module.css";
+import useQuery from "@/hooks/useQuery";
 
 export function GraphiQL({
   onEditQuery,
@@ -82,21 +81,15 @@ export default function Wrap() {
 
   const router = useRouter();
 
-  const parameters = { ...router.query };
+  const { params, initialParams } = useQuery();
 
-  const curl = generateCurl({
-    ...parameters,
-    url,
-    token: selectedToken?.token,
-  });
-
-  const [initQueryParams, setInitQueryParams] = useState();
+  const [init, setInit] = useState(false);
 
   useEffect(() => {
-    setInitQueryParams(parameters);
+    setInit(true);
   }, []);
 
-  if (!initQueryParams) {
+  if (!init) {
     return null;
   }
 
@@ -122,23 +115,23 @@ export default function Wrap() {
   };
 
   function onEditQuery(newQuery) {
-    parameters.query = newQuery;
+    params.query = newQuery;
     updateURL();
   }
 
   function onEditVariables(newVariables) {
-    parameters.variables = newVariables;
+    params.variables = newVariables;
     updateURL();
   }
 
   function onTabChange({ query: newQuery, variables: newVariables }) {
-    parameters.query = newQuery;
-    parameters.variables = newVariables;
+    params.query = newQuery;
+    params.variables = newVariables;
     updateURL();
   }
 
   function updateURL() {
-    router.replace({ query: parameters });
+    router.replace({ query: params });
   }
 
   return (
@@ -146,28 +139,24 @@ export default function Wrap() {
       fetcher={fetcher}
       schema={schema}
       schemaDescription={true}
-      query={initQueryParams.query}
-      variables={initQueryParams.variables}
-      operationName={initQueryParams.operationName}
+      query={params.query}
+      variables={params.variables}
+      operationName={params.operationName}
     >
       <GraphiQL
         toolbar={{
           additionalContent: [
-            <CurlButton
-              className={styles.curl}
-              key="copy-curl-btn"
-              onClick={() => navigator?.clipboard?.writeText?.(curl)}
-            />,
+            <CurlButton className={styles.curl} key="copy-curl-btn" />,
 
             <ComplexityButton
-              {...parameters}
+              {...params}
               className={styles.complexity}
               key="complexity-btn"
             />,
 
             <QueryDepthButton
               className={styles.depthButton}
-              query={parameters.query || initQueryParams.query}
+              query={params.query || initialParams.query}
               key="query-depth-btn"
             />,
           ],

@@ -14,7 +14,7 @@
   /* default text */
   font-size: 16px;
   font-family: var(--font-mono-regular);
-  background-color: white;
+  background-color: var(--white);
 }
 
 .input:focus-visible {
