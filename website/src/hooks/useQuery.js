@@ -16,6 +16,17 @@ const fetchParamsFromRouter = (router) => {
   return { query, variables };
 };
 
+// Function to trim the GraphQL query and variables
+const trimParams = (params) => {
+  const trimmedQuery = params?.query
+    ? params.query.replace(/\s+/g, " ").trim()
+    : "";
+  const trimmedVariables = params?.variables
+    ? JSON.stringify(JSON.parse(params.variables), null, 0)
+    : "{}";
+  return { query: trimmedQuery, variables: trimmedVariables };
+};
+
 export default function useQuery() {
   // initial state of the url
   const [initialParams, setInitialParams] = useState(locale);
@@ -74,9 +85,13 @@ export default function useQuery() {
     mutate(locale, false);
   };
 
+  // Get trimmed params
+  const trimmedParams = trimParams(data);
+
   return {
     initialParams,
     params: data,
+    trimmedParams,
     updateParams,
   };
 }

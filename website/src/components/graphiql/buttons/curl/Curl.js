@@ -18,7 +18,7 @@ import { debounce } from "lodash";
 
 export default function CurlButton({ className }) {
   const { setSelectedToken } = useStorage();
-  const { params, updateParams } = useQuery();
+  const { params, trimmedParams, updateParams } = useQuery();
 
   const { run = null } = useExecutionContext({
     nonNull: true,
@@ -44,6 +44,12 @@ export default function CurlButton({ className }) {
   const elRef = useRef();
   const btnRef = useRef();
 
+  // Old and submitted curl is defined equal
+  // We only look on the query and variabels for this
+  const isEqual =
+    trimmedParams?.query === json?.data?.query &&
+    trimmedParams?.variables === JSON.stringify(json?.data?.variables);
+
   // store curl in value if/when curl exist.
   useEffect(() => {
     if (curl && value === "") {
@@ -64,12 +70,11 @@ export default function CurlButton({ className }) {
 
         //  Try to prettify and run
         //  Note that this only works inside a GraphiQL contextProvider
-        setTimeout(() => {
-          prettifyEditors?.();
-          run?.();
-        }, 100);
+        setTimeout(() => prettifyEditors?.(), 100);
+        setTimeout(() => run?.(), 500);
 
         setSubmitting(false);
+        setCurlVisibility(false);
       }
     }
   }, [submitting, hasError]);
@@ -92,8 +97,8 @@ export default function CurlButton({ className }) {
   const inputHasValueClass = !!value ? styles.hasValue : "";
   const hasParseErrorClass = !!value && hasError ? styles.hasError : "";
 
-  const runHiddenClass = !value || curl === value ? styles.hidden : "";
-  const copyHiddenClass = value !== curl ? styles.hidden : "";
+  const runHiddenClass = !value || isEqual ? styles.hidden : "";
+  const copyHiddenClass = !value || !isEqual ? styles.hidden : "";
   const restoreHiddenClass = value ? styles.hidden : "";
 
   const handleOnChange = debounce((value) => setValue(value), 300);

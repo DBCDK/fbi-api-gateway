@@ -146,11 +146,7 @@ export default function Wrap() {
       <GraphiQL
         toolbar={{
           additionalContent: [
-            <CurlButton
-              className={styles.curl}
-              key="copy-curl-btn"
-              caller={GraphiQL}
-            />,
+            <CurlButton className={styles.curl} key="copy-curl-btn" />,
 
             <ComplexityButton
               {...params}
