@@ -29,7 +29,7 @@
 .overlay .input {
   height: var(--pt5);
   width: 250px;
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .overlay .wrap:hover .input.hasValue ~ .clear,
@@ -72,7 +72,7 @@
   margin: 4px;
   background-color: var(--divider);
   box-shadow: none;
-  transform: translateX(110%);
+  transform: translateX(125%);
   right: 0;
   top: 0;
 }
@@ -83,6 +83,11 @@
   margin-left: var(--pt1);
 }
 
+.restore span {
+  display: block;
+  transform: rotate(270deg);
+}
+
 .run.hidden,
 .copy.hidden,
 .restore.hidden {
@@ -91,4 +96,26 @@
 
 .overlay.hasError .input {
   border-color: var(--error) !important;
+}
+
+/* Darkmode */
+
+:global(body.dark) .overlay {
+  background-color: transparent;
+}
+
+:global(body.dark) .overlay .input {
+  background-color: var(--text-light);
+  color: var(--text-dark);
+}
+
+:global(body.dark) .run,
+:global(body.dark) .restore,
+:global(body.dark) .copy {
+  background-color: var(--text-light);
+}
+
+:global(body.dark) .clear,
+:global(body.dark) .paste {
+  background-color: var(--dark-light);
 }

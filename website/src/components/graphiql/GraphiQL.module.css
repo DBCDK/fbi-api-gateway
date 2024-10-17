@@ -1,4 +1,10 @@
 /* custom curl button */
+
+.graphiql {
+  /* prevents bootstrap overlays from flickering screen */
+  overflow: hidden;
+}
+
 .graphiql .curl {
   margin-top: var(--pt1);
 }

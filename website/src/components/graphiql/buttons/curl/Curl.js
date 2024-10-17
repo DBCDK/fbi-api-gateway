@@ -156,7 +156,8 @@ export default function CurlButton({ className }) {
           onClick={() => setValue(curl)}
           title="Restore original curl"
         >
-          🪄
+          <span>⤴️</span>
+          {/* 🪄 */}
         </Button>
         <Button
           secondary
