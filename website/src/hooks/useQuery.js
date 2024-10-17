@@ -18,7 +18,7 @@ const fetchParamsFromRouter = (router) => {
 
 export default function useQuery() {
   // initial state of the url
-  const [initialParams, setInitialParams] = useState(null);
+  const [initialParams, setInitialParams] = useState(locale);
 
   // Router
   const router = useRouter();
@@ -32,22 +32,15 @@ export default function useQuery() {
     if (router.isReady) {
       const instanceKey = JSON.stringify(router.query);
 
-      console.log("???????????++ instanceKey", instanceKey);
-
       if (initializedKey !== instanceKey) {
         const initialParamsFromRouter = fetchParamsFromRouter(router);
 
         if (locale !== initialParamsFromRouter) {
-          console.log("!!! running ???????????++", {
-            initialParamsFromRouter,
-            data,
-          });
-
           // Set global state
           locale = initialParamsFromRouter;
 
           // Store current url params state
-          setInitialParams(initialParamsFromRouter);
+          setInitialParams(locale);
 
           // Update SWR cache
           mutate(locale, false);
@@ -61,18 +54,13 @@ export default function useQuery() {
 
   // Function to manually update params and update SWR cache
   const updateParams = (newParams = {}) => {
-    console.log("!!! newParams", newParams);
-
     const { query, variables } = newParams;
 
     if (query) {
       if (typeof query === "string") {
-        console.log("!!! here????????");
         locale = { ...locale, query };
       }
     }
-
-    console.log("!!! locale 1", locale);
 
     if (variables) {
       if (typeof variables === "string") {
@@ -82,13 +70,9 @@ export default function useQuery() {
       }
     }
 
-    console.log("!!! locale 2", locale);
-
     // Update SWR cache with the new params
     mutate(locale, false);
   };
-
-  console.log("### ... _useQuery router", { initialParams, params: data });
 
   return {
     initialParams,

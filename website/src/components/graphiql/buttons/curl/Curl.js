@@ -7,50 +7,103 @@ import Button from "@/components/base/button";
 import useStorage from "@/hooks/useStorage";
 import useParseCurl from "@/hooks/useParseCurl";
 import useQuery from "@/hooks/useQuery";
-import { useGraphQLUrl } from "@/hooks/useSchema";
+
+import { useExecutionContext, usePrettifyEditors } from "@graphiql/react";
+
 import { useCreateCurl } from "@/hooks/useCreateCurl";
 import { ToolbarButton } from "@graphiql/react";
 
 import styles from "./Curl.module.css";
+import { debounce } from "lodash";
 
 export default function CurlButton({ className }) {
   const { setSelectedToken } = useStorage();
   const { params, updateParams } = useQuery();
 
+  const { run = null } = useExecutionContext({
+    nonNull: true,
+  });
+
+  const prettifyEditors = usePrettifyEditors();
+
   const curl = useCreateCurl({
     ...params,
   });
 
-  console.log("ccccurl", curl);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [curlVisible, setCurlVisibility] = useState(false);
+  const [copyVisible, setCopyVisibility] = useState(false);
+
+  const [clipboardPasteVisible, setClipboardPasteVisible] = useState(false);
 
   const [value, setValue] = useState("");
-  const { json } = useParseCurl(value);
+  const { json, isValidCurlCommand, hasError } = useParseCurl(value);
 
-  // update if curl
+  const inputRef = useRef();
+  const elRef = useRef();
+  const btnRef = useRef();
+
+  // store curl in value if/when curl exist.
   useEffect(() => {
     if (curl && value === "") {
       setValue(curl);
     }
   }, [curl]);
 
-  console.log("... Curl", { params, json: json?.data });
+  // Submitt
+  useEffect(() => {
+    if (submitting) {
+      // Run if no curl parse errors found
+      if (!hasError) {
+        // submitted curl params + profile and token
+        const { data: params, token, profile } = json;
 
-  const [curlVisible, setCurlVisibility] = useState(false);
-  const [copyVisible, setCopyVisibility] = useState(false);
+        updateParams({ ...params });
+        token && profile && setSelectedToken(token, profile);
 
-  const elRef = useRef();
-  const btnRef = useRef();
+        //  Try to prettify and run
+        //  Note that this only works inside a GraphiQL contextProvider
+        setTimeout(() => {
+          prettifyEditors?.();
+          run?.();
+        }, 100);
+
+        setSubmitting(false);
+      }
+    }
+  }, [submitting, hasError]);
+
+  // Effect for updating the clipboardPasteVisible
+  // - this will only show the paste button, if a valid curl is in the users clipboard
+  useEffect(() => {
+    if (document?.hasFocus?.()) {
+      navigator?.clipboard?.readText?.().then((txt) => {
+        const isValid = isValidCurlCommand(txt);
+
+        if (isValid !== clipboardPasteVisible) {
+          setClipboardPasteVisible(isValid);
+        }
+      });
+    }
+  });
 
   // Hide buttons according to input
-  const runHiddenClass = curl === value ? styles.hidden : "";
+  const inputHasValueClass = !!value ? styles.hasValue : "";
+  const hasParseErrorClass = !!value && hasError ? styles.hasError : "";
+
+  const runHiddenClass = !value || curl === value ? styles.hidden : "";
   const copyHiddenClass = value !== curl ? styles.hidden : "";
+  const restoreHiddenClass = value ? styles.hidden : "";
+
+  const handleOnChange = debounce((value) => setValue(value), 300);
 
   return (
-    <span ref={elRef} className={`${styles.curl} ${className}`}>
+    <span ref={elRef} className={`${styles.curl}  ${className}`}>
       <ToolbarButton
         className={styles.button}
         onClick={() => setCurlVisibility(!curlVisible)}
-        label="Copy request as curl"
+        label="Copy or submit a curl"
       >
         <Text type="text1">curl</Text>
       </ToolbarButton>
@@ -59,31 +112,58 @@ export default function CurlButton({ className }) {
         container={elRef}
         rootClose={true}
         onHide={() => setCurlVisibility(false)}
-        className={styles.overlay}
+        className={`${styles.overlay} ${hasParseErrorClass}`}
       >
         <div className={styles.wrap}>
           <Input
+            elRef={inputRef}
             value={value}
-            className={styles.input}
-            onChange={(e) => setValue(e.target.value)}
+            className={`${inputHasValueClass} ${styles.input}`}
+            onChange={(e) => handleOnChange(e.target.value)}
           />
           <Button
             secondary
             className={styles.clear}
-            onClick={() => setValue("")}
+            onClick={() => {
+              setValue("");
+              setTimeout(() => inputRef?.current?.focus(), 100);
+            }}
             title="Clear input"
           >
             ✖
           </Button>
+          {navigator?.clipboard && clipboardPasteVisible && (
+            <Button
+              secondary
+              className={styles.paste}
+              onClick={() => {
+                if (!value) {
+                  navigator?.clipboard?.readText?.().then((txt) => {
+                    setValue(txt);
+                  });
+                }
+              }}
+              title="Paste from clipboard"
+            >
+              📋
+            </Button>
+          )}
         </div>
+
         <Button
           secondary
-          disabled={!value}
+          className={`${styles.restore} ${restoreHiddenClass}`}
+          onClick={() => setValue(curl)}
+          title="Restore original curl"
+        >
+          🪄
+        </Button>
+        <Button
+          secondary
+          disabled={hasError}
           className={`${styles.run} ${runHiddenClass}`}
-          onClick={() => {
-            updateParams({ ...json?.data });
-          }}
-          title="Excecute curl"
+          onClick={() => setSubmitting(true)}
+          title="Submit curl"
         >
           🚀
         </Button>
@@ -98,7 +178,8 @@ export default function CurlButton({ className }) {
           title="Copy curl"
           elRef={btnRef}
         >
-          📋
+          📝
+          {/* 📄 */}
         </Button>
       </Overlay>
       <Overlay
@@ -107,6 +188,14 @@ export default function CurlButton({ className }) {
         className={styles.copied}
       >
         <Text type="text1">Copied to clipboard 📋</Text>
+      </Overlay>
+
+      <Overlay
+        show={!!value && hasError}
+        container={inputRef}
+        className={styles.error}
+      >
+        <Text type="text1">This is not a valid curl 🧐</Text>
       </Overlay>
     </span>
   );

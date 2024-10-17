@@ -32,20 +32,25 @@
   color: var(--text-light);
 }
 
-.overlay .wrap:hover .clear {
+.overlay .wrap:hover .input.hasValue ~ .clear,
+.overlay .wrap:hover .input:not(.hasValue) ~ .paste {
   transform: translateX(0);
 }
 
-.overlay .wrap:focus-within .clear {
+.overlay .wrap:focus-within .input.hasValue ~ .clear,
+.overlay .wrap:focus-within .input:not(.hasValue) ~ .paste {
   transform: translateX(0);
 }
 
-.clear {
+.clear,
+.paste {
   transition-duration: 0.2s;
 }
 
 .run,
 .clear,
+.paste,
+.restore,
 .copy {
   width: var(--pt5);
   padding: 0;
@@ -59,7 +64,8 @@
   font-size: var(--pt2) !important;
 }
 
-.wrap .clear {
+.wrap .clear,
+.wrap .paste {
   width: var(--pt4);
   max-height: var(--pt4);
   position: absolute;
@@ -72,11 +78,17 @@
 }
 
 .run,
+.restore,
 .copy {
   margin-left: var(--pt1);
 }
 
 .run.hidden,
-.copy.hidden {
+.copy.hidden,
+.restore.hidden {
   display: none;
+}
+
+.overlay.hasError .input {
+  border-color: var(--error) !important;
 }
