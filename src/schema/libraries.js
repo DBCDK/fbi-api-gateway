@@ -40,11 +40,42 @@ export const typeDef = `
     parameterRequired: Boolean!
     description: String
   }
+  
+  type AutomationParams {
+    """
+    AgencyId of given provider
+    """
+    provider: String
+    """
+    Ill parameters for given provider
+    """
+    materials: [Materials]!
+  }
+  type Materials {
+    """
+    Material id (1, 2, 3, 4, 5, 6, 7, 9)
+    """
+    material: Int!
+    """
+    Name of materialtype eg. "Bøger på dansk", "Lydmaterialer på bånd", osv.
+    """
+    name: String!
+    """
+    Does given provider loan this material ?
+    """
+    willProvide: Boolean!    
+    """    
+    Period from acquisition of material to ill loan eg. 60 (days)
+    """
+    period: Int!
+  }
+  
   type Branch{
     """Whether this branch's agency supports borrowerCheck"""
     borrowerCheck: Boolean!
     culrDataSync: Boolean!
     agencyName: String
+    autoIll: AutomationParams!
     agencyId: String!
     """
     Some independent branches is collected under a pseudo agencyId, This agencyId is removed by FBI-API but instead stored in this field
@@ -99,7 +130,7 @@ export const typeDef = `
     borrowerStatus: BorrowerStatus
     result: [Branch!]!
     agencyUrl: String
-  }
+  }  
 
     """
     Indicates if user is blocked for a given agency or 
@@ -193,6 +224,19 @@ export const resolvers = {
     lookupUrl(parent, args, context, info) {
       return parent.lookupUrl || "";
     },
+
+    /**
+     * Resolver to fetch autoIll paramters from vip-core
+     */
+
+    async autoIll(parent, args, context, info) {
+      const res = await context.datasources
+        .getLoader("vipcore_AutoIll")
+        .load(parent?.agencyId, context);
+
+      return res;
+    },
+
     /**
      * This resolver fetches user parameters from vip-core
      * These parameters describe what user info needs to be sent to openorder
