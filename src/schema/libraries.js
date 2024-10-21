@@ -49,7 +49,7 @@ export const typeDef = `
     """
     Ill parameters for given provider
     """
-    materials: [Materials]!
+    materials: [Materials!]!
   }
   type Materials {
     """
