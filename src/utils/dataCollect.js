@@ -45,7 +45,6 @@ export function dataCollectMiddleware(req, res, next) {
       data = {
         ...data,
         ip: null,
-        "session-id": null,
         "user-id": null,
       };
     }
