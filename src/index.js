@@ -25,7 +25,7 @@ import { validateToken } from "./middlewares/validateToken";
 import { fetchUserInfo } from "./middlewares/fetchUserInfo";
 import { validateDepth } from "./middlewares/validateQueryDepth";
 import { resolveGraphQLQuery } from "./middlewares/resolveGraphQLQuery";
-import { validateAgencyId } from "./middlewares/validateagencyId";
+import { validateAgencyId } from "./middlewares/validateAgencyId";
 
 startResourceMonitor();
 
