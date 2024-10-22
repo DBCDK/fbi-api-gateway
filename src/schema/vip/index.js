@@ -128,6 +128,39 @@ type OpensearchProfilesResponse {
   status: VipResponseStatusEnum!
 }
 
+type AutoIllParamsResponse {  
+  automationParams: [AutomationParams]  
+}
+
+type AutomationParams {
+    """
+    AgencyId of given provider
+    """
+    provider: String
+    """
+    Ill parameters for given provider
+    """
+    materials: [Materials]
+  }
+type Materials {
+    """
+    Material id (1, 2, 3, 4, 5, 6, 7, 9)
+    """
+    material: Int!
+    """
+    Name of materialtype eg. "Bøger på dansk", "Lydmaterialer på bånd", osv.
+    """
+    name: String!
+    """
+    Does given provider loan this material ?
+    """
+    willProvide: Boolean!    
+    """    
+    Period from acquisition of material to ill loan eg. 60 (days)
+    """
+    period: Int!
+}  
+
 type VipResponse {
   agencyInfo(
     """
@@ -188,6 +221,7 @@ type VipResponse {
     pickupAllowed: Boolean
   ): AgencyInfoResponse! 
   opensearchProfiles(agencyId: String!, profileName: String): OpensearchProfilesResponse! 
+  autoIll(agencyId: String): AutoIllParamsResponse!
 }
 
 type VipAgencyInfo {
@@ -545,6 +579,24 @@ export const resolvers = {
     },
   },
   VipResponse: {
+    /**
+     * Resolver to fetch autoIll paramters from vip-core
+     */
+    async autoIll(parent, args, context, info) {
+      // Check permissions for accessing vip
+      const danbibRead = await danbibReadPermissions(context);
+
+      if (!danbibRead) {
+        return [];
+      }
+
+      const res = await context.datasources
+        .getLoader("vipautoIll")
+        .load(args?.agencyId || "", context);
+
+      return { automationParams: res?.automationParams };
+    },
+
     async opensearchProfiles(parent, args, context, info) {
       const danbibRead = await danbibReadPermissions(context);
       if (!danbibRead) {
