@@ -39,36 +39,7 @@ export const typeDef = `
     userParameterName: String!
     parameterRequired: Boolean!
     description: String
-  }
-  
-  type AutomationParams {
-    """
-    AgencyId of given provider
-    """
-    provider: String
-    """
-    Ill parameters for given provider
-    """
-    materials: [Materials!]!
-  }
-  type Materials {
-    """
-    Material id (1, 2, 3, 4, 5, 6, 7, 9)
-    """
-    material: Int!
-    """
-    Name of materialtype eg. "Bøger på dansk", "Lydmaterialer på bånd", osv.
-    """
-    name: String!
-    """
-    Does given provider loan this material ?
-    """
-    willProvide: Boolean!    
-    """    
-    Period from acquisition of material to ill loan eg. 60 (days)
-    """
-    period: Int!
-  }
+  }  
   
   type Branch{
     """Whether this branch's agency supports borrowerCheck"""
@@ -228,13 +199,15 @@ export const resolvers = {
     /**
      * Resolver to fetch autoIll paramters from vip-core
      */
-
     async autoIll(parent, args, context, info) {
       const res = await context.datasources
-        .getLoader("vipcore_AutoIll")
+        .getLoader("vipautoIll")
         .load(parent?.agencyId, context);
 
-      return res;
+      return res?.automationParams?.find(
+        (autoill) => autoill?.provider === parent?.agencyId
+      );
+      // return res;
     },
 
     /**
