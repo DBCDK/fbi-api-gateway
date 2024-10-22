@@ -207,7 +207,6 @@ export const resolvers = {
       return res?.automationParams?.find(
         (autoill) => autoill?.provider === parent?.agencyId
       );
-      // return res;
     },
 
     /**

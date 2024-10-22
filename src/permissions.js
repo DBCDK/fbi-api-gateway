@@ -58,7 +58,6 @@ export default {
       // drupal
       "nodeById",
       "nodeQuery",
-      "vip",
     ],
     denyTypes: [],
   },
