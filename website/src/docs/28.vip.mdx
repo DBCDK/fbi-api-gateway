@@ -69,3 +69,28 @@ This query returns the names of the profiles. You can also extend the query to r
     agencyId: "716300",
   }}
 />
+
+## Automation parameters
+
+VIP allows you to fetch Ill parameters defining what type of materials to be handled automatically
+
+### Example: Fetching ill parameters by AgencyId
+
+<InlineGraphiQL
+	query={`query ExampleVipAutomationParameters($agencyId: String!) {
+    vip {
+    autoIll(agencyId: $agencyId) {
+      automationParams {
+        provider
+        materials {
+          name
+          willProvide
+        }
+      }
+    }
+  }
+}`}
+	variables={{
+		agencyId: "710100",
+	}}
+/>
