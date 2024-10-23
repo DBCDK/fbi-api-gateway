@@ -788,6 +788,7 @@ type Branch {
   borrowerCheck: Boolean!
   culrDataSync: Boolean!
   agencyName: String
+  autoIll: AutomationParams!
   agencyId: String!
 
   \\"\\"\\"
@@ -3540,6 +3541,34 @@ type OpensearchProfilesResponse {
   status: VipResponseStatusEnum!
 }
 
+type AutoIllParamsResponse {
+  automationParams: [AutomationParams]
+}
+
+type AutomationParams {
+  \\"\\"\\"AgencyId of given provider\\"\\"\\"
+  provider: String
+
+  \\"\\"\\"Ill parameters for given provider\\"\\"\\"
+  materials: [Materials]
+}
+
+type Materials {
+  \\"\\"\\"Material id (1, 2, 3, 4, 5, 6, 7, 9)\\"\\"\\"
+  material: Int!
+
+  \\"\\"\\"
+  Name of materialtype eg. \\"Bøger på dansk\\", \\"Lydmaterialer på bånd\\", osv.
+  \\"\\"\\"
+  name: String!
+
+  \\"\\"\\"Does given provider loan this material ?\\"\\"\\"
+  willProvide: Boolean!
+
+  \\"\\"\\"Period from acquisition of material to ill loan eg. 60 (days)\\"\\"\\"
+  period: Int!
+}
+
 type VipResponse {
   agencyInfo(
     \\"\\"\\"
@@ -3594,6 +3623,7 @@ type VipResponse {
     pickupAllowed: Boolean
   ): AgencyInfoResponse!
   opensearchProfiles(agencyId: String!, profileName: String): OpensearchProfilesResponse!
+  autoIll(agencyId: String): AutoIllParamsResponse!
 }
 
 type VipAgencyInfo {

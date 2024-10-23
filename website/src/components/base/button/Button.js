@@ -20,6 +20,7 @@ function Button({
   tabIndex = "0",
   // primary = true,
   secondary = false,
+  elRef = null,
   ...props
 }) {
   const disabledStyle = disabled ? styles.disabled : "";
@@ -29,6 +30,7 @@ function Button({
   return (
     <button
       {...props}
+      ref={elRef}
       type={type}
       className={`${styles.button} ${styles[size]} ${styles[style]} ${className} ${disabledStyle}`}
       onClick={(e) => onClick && onClick(e)}

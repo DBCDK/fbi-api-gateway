@@ -3,3 +3,119 @@
   font-style: italic;
   font-size: 12px;
 }
+
+.overlay {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.overlay > div {
+  padding: 0;
+  border-radius: 25px;
+
+  display: flex;
+}
+
+.overlay .wrap {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+
+  box-shadow: 0px 3px 5px rgb(0, 0, 0, 0.25);
+
+  border-radius: calc(var(--pt5) / 2);
+}
+
+.overlay .input {
+  height: var(--pt5);
+  width: 250px;
+  color: var(--text-dark);
+}
+
+.overlay .wrap:hover .input.hasValue ~ .clear,
+.overlay .wrap:hover .input:not(.hasValue) ~ .paste {
+  transform: translateX(0);
+}
+
+.overlay .wrap:focus-within .input.hasValue ~ .clear,
+.overlay .wrap:focus-within .input:not(.hasValue) ~ .paste {
+  transform: translateX(0);
+}
+
+.clear,
+.paste {
+  transition-duration: 0.2s;
+}
+
+.run,
+.clear,
+.paste,
+.restore,
+.copy {
+  width: var(--pt5);
+  padding: 0;
+  max-height: var(--pt5);
+  min-width: unset;
+  display: block;
+
+  background-color: var(--white);
+  box-shadow: 0px 3px 5px rgb(0, 0, 0, 0.25);
+
+  font-size: var(--pt2) !important;
+}
+
+.wrap .clear,
+.wrap .paste {
+  width: var(--pt4);
+  max-height: var(--pt4);
+  position: absolute;
+  margin: 4px;
+  background-color: var(--divider);
+  box-shadow: none;
+  transform: translateX(125%);
+  right: 0;
+  top: 0;
+}
+
+.run,
+.restore,
+.copy {
+  margin-left: var(--pt1);
+}
+
+.restore span {
+  display: block;
+  transform: rotate(270deg);
+}
+
+.run.hidden,
+.copy.hidden,
+.restore.hidden {
+  display: none;
+}
+
+.overlay.hasError .input {
+  border-color: var(--error) !important;
+}
+
+/* Darkmode */
+
+:global(body.dark) .overlay {
+  background-color: transparent;
+}
+
+:global(body.dark) .overlay .input {
+  background-color: var(--text-light);
+  color: var(--text-dark);
+}
+
+:global(body.dark) .run,
+:global(body.dark) .restore,
+:global(body.dark) .copy {
+  background-color: var(--text-light);
+}
+
+:global(body.dark) .clear,
+:global(body.dark) .paste {
+  background-color: var(--dark-light);
+}

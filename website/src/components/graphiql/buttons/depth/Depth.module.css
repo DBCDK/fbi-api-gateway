@@ -38,3 +38,8 @@
 :global(body.dark) .depth span {
   background-color: var(--dark) !important;
 }
+
+:global(body.dark) .depth :before,
+:global(body.dark) .depth button {
+  outline: hsla(var(--color-neutral), var(--alpha-background-dark)) auto 1px;
+}
