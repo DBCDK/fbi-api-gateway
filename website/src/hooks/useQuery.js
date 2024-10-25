@@ -21,9 +21,17 @@ const trimParams = (params) => {
   const trimmedQuery = params?.query
     ? params.query.replace(/\s+/g, " ").trim()
     : "";
-  const trimmedVariables = params?.variables
-    ? JSON.stringify(JSON.parse(params.variables), null, 0)
-    : "{}";
+
+  let trimmedVariables = "{}";
+  if (params?.variables) {
+    try {
+      trimmedVariables = JSON.stringify(JSON.parse(params.variables), null, 0);
+    } catch (error) {
+      console.error("Invalid JSON in variables:", error);
+      trimmedVariables = "{}"; // Fallback to empty JSON object if parsing fails
+    }
+  }
+
   return { query: trimmedQuery, variables: trimmedVariables };
 };
 
