@@ -48,6 +48,22 @@ export async function load({ accessToken }, context) {
     // FFU Borchk authentication, is not safe enough to expose CULR data.
     const loggedInId = loggedInBranchId || attributes?.loggedInAgencyId;
 
+    // If no uniqueId was found for the user, we check with culr, if a user was found on the agencyId instead
+    // BIBDK connected FFU users, exist in Culr with agencyId only. The bibdk provided id for /userinfo will be an branchId.
+    if (!attributes.uniqueId) {
+      // Retrieve user culr account
+      const response = await context
+        .getLoader("culrGetAccountsByLocalId")
+        .load({
+          userId: attributes.userId,
+          agencyId: attributes.loggedInAgencyId,
+        });
+
+      if (response?.omittedCulrData) {
+        attributes.omittedCulrData = response?.omittedCulrData;
+      }
+    }
+
     //  Only relevant if user exist in CULR
     if (attributes.uniqueId) {
       // User exist in CULR
