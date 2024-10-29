@@ -130,6 +130,8 @@ export async function branchIsIndependent(branch, context) {
   // get AgencyId from used branchId
   const list = await loader("vipcore_BorrowerCheckList").load("");
 
+  console.error("lllllllllllllll", list);
+
   return checkLoginIndependence(branch, list);
 }
 
@@ -177,13 +179,19 @@ export async function getAgencyIdByBranchId(branchId, context) {
   // get AgencyId from used branchId
   const result = (await loader("library").load({ branchId })).result?.[0];
 
+  console.error("#############", result);
+
   // return agencyId
   const agencyId = result?.agencyId;
 
   //  Return branchId instead of agencyId if branch act independently
   if (await branchIsIndependent(result, context)) {
+    console.error("????????????????? 1", branchId);
+
     return branchId;
   }
+
+  console.error("????????????????? 2", agencyId);
 
   return agencyId;
 }

@@ -39,6 +39,12 @@ const SMAUG = (accessToken) => {
         agency: "872100",
       },
     },
+    // Token for connected user (FFU & Folk) which has loggedIn by an FFU branch
+    FFU_BRANCH_AUTHENTICATED_TOKEN: {
+      user: {
+        agency: "800021",
+      },
+    },
   }[accessToken];
 };
 
@@ -63,6 +69,9 @@ const LIBRARY = (branchId) => {
     872100: {
       result: [{ agencyType: "FORSKNINGSBIBLIOTEK", agencyId: "876040" }],
     },
+    800021: {
+      result: [{ agencyType: "FORSKNINGSBIBLIOTEK", agencyId: "800010" }],
+    },
   }[branchId];
 };
 
@@ -70,7 +79,21 @@ const VIP = () => {
   return {
     737000: { loginAgencyId: "737000" },
     872100: { loginAgencyId: "872100" },
+    800010: { loginAgencyId: "800010" },
   };
+};
+
+const CULR = (agencyId) => {
+  return {
+    800010: {
+      omittedCulrData: {
+        hasOmittedCulrUniqueId: true,
+        hasOmittedCulrMunicipality: true,
+        hasOmittedCulrMunicipalityAgencyId: true,
+        hasOmittedCulrAccounts: true,
+      },
+    },
+  }[agencyId];
 };
 
 //  mocked datasources
@@ -79,8 +102,11 @@ const datasources = {
     return {
       smaug: { load: async ({ accessToken }) => SMAUG(accessToken) },
       library: { load: async ({ branchId }) => LIBRARY(branchId) },
+      culrGetAccountsByLocalId: {
+        load: async ({ agencyId }) => CULR(agencyId),
+      },
       vipcore_BorrowerCheckList: {
-        load: async ({ branchId }) => VIP(),
+        load: async () => VIP(),
       },
     }[name];
   },
@@ -291,7 +317,7 @@ describe("userinfo", () => {
    * OBS! Also an omittedCulrData object should be added - This object should reflect all stripped culr data.
    * OBS!! municipalityAgencyId is set to 800010 - this solves the problem for digital article service for KB
    */
-  test("FFU authenticated user connected to FOLK library", async () => {
+  test("FFU authenticated user connected to FOLK library (Agency login)", async () => {
     const context = {
       ...datasources,
       fetch: () => ({
@@ -313,6 +339,44 @@ describe("userinfo", () => {
 
     const result = await load(
       { accessToken: "FFU_AUTHENTICATED_TOKEN" },
+      context
+    );
+
+    expect(result).toMatchSnapshot();
+  });
+
+  /**
+   * FFU authenticated user connected to a Folk library. OBS! Only data from the FFU library should be returned here!
+   * OBS! Also an omittedCulrData object should be added - This object should reflect all stripped culr data.
+   * OBS!! municipalityAgencyId is set to 800010 - this solves the problem for digital article service for KB
+   *
+   * For the FFU BRANCH login, /userinfo will not retrieve the user's connected CULR accounts (only agencyId exist in CULR).
+   * Therefore, we perform this check ourselves to ensure that the omittedDataObject matches the actual user data
+   */
+  test.only("FFU authenticated user connected to FOLK library (Branch login)", async () => {
+    const context = {
+      ...datasources,
+      fetch: () => ({
+        body: {
+          attributes: {
+            ...DEFAULT_USERINFO.attributes,
+            uniqueId: null,
+            municipality: null,
+            municipalityAgencyId: null,
+            agencies: [
+              {
+                agencyId: "800021",
+                userId: "some-localId",
+                userIdType: "LOCAL",
+              },
+            ],
+          },
+        },
+      }),
+    };
+
+    const result = await load(
+      { accessToken: "FFU_BRANCH_AUTHENTICATED_TOKEN" },
       context
     );
 
