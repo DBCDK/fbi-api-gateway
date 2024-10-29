@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { GraphiQLInterface } from "graphiql";
+import { debounce } from "lodash";
 
 import {
   GraphiQLProvider,
@@ -13,13 +14,13 @@ import Header from "@/components/header";
 
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
+import useQuery from "@/hooks/useQuery";
 
 import QueryDepthButton from "./buttons/depth";
 import ComplexityButton from "./buttons/complexity";
 import CurlButton from "./buttons/curl";
 
 import styles from "./GraphiQL.module.css";
-import useQuery from "@/hooks/useQuery";
 
 export function GraphiQL({
   onEditQuery,
@@ -130,30 +131,29 @@ export default function Wrap() {
     updateURL();
   }
 
-  function updateURL() {
+  // debounce for performance enhancement
+  const updateURL = debounce(() => {
     router.replace({ query: params });
-  }
+  }, 300);
 
   return (
     <GraphiQLProvider
       fetcher={fetcher}
       schema={schema}
       schemaDescription={true}
-      query={params.query}
-      variables={params.variables}
-      operationName={params.operationName}
+      query={initialParams.query}
+      variables={initialParams.variables}
+      operationName={initialParams.operationName}
     >
       <GraphiQL
         toolbar={{
           additionalContent: [
             <CurlButton className={styles.curl} key="copy-curl-btn" />,
-
             <ComplexityButton
               {...params}
               className={styles.complexity}
               key="complexity-btn"
             />,
-
             <QueryDepthButton
               className={styles.depthButton}
               query={params.query || initialParams.query}
