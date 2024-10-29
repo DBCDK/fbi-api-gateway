@@ -82,14 +82,6 @@ export default function Wrap() {
 
   const router = useRouter();
 
-  // old
-  // const params = { ...router.query };
-  // const [initialParams, setInitialParams] = useState();
-  // useEffect(() => {
-  //   setInitialParams(params);
-  // }, []);
-
-  // new
   const { params, initialParams } = useQuery();
 
   const [init, setInit] = useState(false);
@@ -139,6 +131,7 @@ export default function Wrap() {
     updateURL();
   }
 
+  // debounce for performance enhancement
   const updateURL = debounce(() => {
     router.replace({ query: params });
   }, 300);
