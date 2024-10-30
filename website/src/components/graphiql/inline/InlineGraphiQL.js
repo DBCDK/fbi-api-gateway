@@ -289,7 +289,7 @@ export default function Wrap(props) {
             <DepthButton
               className={styles.depth}
               query={query}
-              key="complexity-btn"
+              key="depth-btn"
             />,
             <ComplexityButton
               className={styles.complexity}

@@ -4,6 +4,7 @@ import config from "../../../../src/config";
 import { setMunicipalityAgencyId } from "../../../../src/utils/municipalityAgencyId";
 import { omitUserinfoCulrData } from "../../../../src/utils/omitCulrData";
 import { search } from "../../../../src/datasources/library.datasource";
+import { load as getAccountsByLocalId } from "../../../../src/datasources/culrGetAccountsByLocalId.datasource";
 import {
   _isFFUAgency,
   getAgencyIdByBranchId,
@@ -136,13 +137,41 @@ export default async function handler(req, res) {
       // update loggedInAgencyId on user
       user.loggedInAgencyId = attributes?.loggedInAgencyId;
 
-      // This check prevents FFU users from accessing CULR data.
-      // FFU Borchk authentication, is not safe enough to expose CULR data.
-      if (isFFULogin) {
-        attributes = omitUserinfoCulrData(attributes);
+      // If no uniqueId was found for the user, we check with culr, if a user was found on the agencyId instead
+      // BIBDK connected FFU users, exist in Culr with agencyId only. The bibdk provided id for /userinfo will be an branchId.
+      if (!attributes.uniqueId) {
+        // Retrieve user culr account
+        const response = await getAccountsByLocalId(
+          {
+            userId: attributes.userId,
+            agencyId: attributes.loggedInAgencyId,
+          },
+          {
+            fetch: async (url, attr) => {
+              const res = await fetch(url, attr);
+              return { body: await res.text() };
+            },
+            getLoader: () => ({
+              load: async (attr) => await search(attr),
+            }),
+          }
+        );
+
+        if (response?.omittedCulrData) {
+          attributes.omittedCulrData = response?.omittedCulrData;
+        }
       }
 
-      user.omittedCulrData = attributes.omittedCulrData;
+      // only relevant if user is found in CULR (has uniqueId)
+      if (attributes.uniqueId) {
+        // This check prevents FFU users from accessing CULR data.
+        // FFU Borchk authentication, is not safe enough to expose CULR data.
+        if (isFFULogin) {
+          attributes = omitUserinfoCulrData(attributes);
+        }
+      }
+
+      user.omittedCulrData = attributes.omittedCulrData || null;
 
       const hasCPRValidatedAccount = !!attributes.agencies?.find?.(
         (a) => a.userIdType === "CPR"
