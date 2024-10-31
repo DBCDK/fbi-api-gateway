@@ -1,20 +1,6 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import useSWR from "swr";
-
-// Global state
-let locale = { query: "", variables: "" };
-
-// Global hook initialization flag
-let initializedKey = null;
-
-// Custom fetcher
-const fetcher = () => locale;
-
-const fetchParamsFromRouter = (router) => {
-  const { query = "", variables = "" } = router.query;
-  return { query, variables };
-};
+import { useRouter } from "next/router";
 
 // Function to trim the GraphQL query and variables
 const trimParams = (params) => {
@@ -36,70 +22,55 @@ const trimParams = (params) => {
 };
 
 export default function useQuery() {
-  // initial state of the url
-  const [initialParams, setInitialParams] = useState(locale);
-
-  // Router
   const router = useRouter();
 
-  // SWR for managing params state
-  const { data, mutate } = useSWR("useQuery", fetcher, {
-    fallbackData: locale, // Use fallbackData to ensure SWR has initial values
+  // Funktion til at hente params fra routerens query
+  const getParamsFromRouter = () => ({
+    query: router.query.query || "",
+
+    variables: router.query.variables || "",
   });
 
-  useEffect(() => {
-    if (router.isReady) {
-      const instanceKey = JSON.stringify(router.query);
+  // Hent params fra URL'en
+  const params = getParamsFromRouter();
 
-      if (initializedKey !== instanceKey) {
-        const initialParamsFromRouter = fetchParamsFromRouter(router);
-
-        if (locale !== initialParamsFromRouter) {
-          // Set global state
-          locale = initialParamsFromRouter;
-
-          // Store current url params state
-          setInitialParams(locale);
-
-          // Update SWR cache
-          mutate(locale, false);
-
-          // Mark as initialized with the current router query
-          initializedKey = instanceKey;
-        }
-      }
+  // Synkroniser initialParams på tværs af komponenter med SWR
+  const { data: initialParams, mutate: setInitialParams } = useSWR(
+    "initial-query-params",
+    {
+      fallbackData: params,
     }
-  }, [router.isReady, router.query, mutate]);
+  );
 
-  // Function to manually update params and update SWR cache
-  const updateParams = (newParams = {}) => {
-    const { query, variables } = newParams;
+  // Funktion til manuelt at opdatere initialParams
+  const updateInitialParams = useCallback(
+    (newInitialParams) => {
+      setInitialParams((prevParams) => {
+        const updatedQuery =
+          typeof newInitialParams.query === "string"
+            ? newInitialParams.query
+            : prevParams.query;
 
-    if (query) {
-      if (typeof query === "string") {
-        locale = { ...locale, query };
-      }
-    }
+        const updatedVariables =
+          newInitialParams.variables != null
+            ? typeof newInitialParams.variables === "string"
+              ? newInitialParams.variables
+              : JSON.stringify(newInitialParams.variables)
+            : prevParams.variables;
 
-    if (variables) {
-      if (typeof variables === "string") {
-        locale = { ...locale, variables };
-      } else {
-        locale = { ...locale, variables: JSON.stringify(variables) };
-      }
-    }
-
-    // Update SWR cache with the new params
-    mutate(locale, false);
-  };
-
-  // Get trimmed params
-  const trimmedParams = trimParams(data);
+        return {
+          query: updatedQuery,
+          variables: updatedVariables,
+        };
+      });
+    },
+    [setInitialParams]
+  );
 
   return {
-    initialParams,
-    params: data,
-    trimmedParams,
-    updateParams,
+    params, // Aktuelle params fra routerens query
+    trimmedParams: trimParams(params), // trimmed aktuelle params fra routerens query
+    initialParams, // Initiale params, synkroniseret via SWR
+    updateInitialParams, // Funktion til at opdatere initialParams
   };
 }

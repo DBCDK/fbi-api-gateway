@@ -18,7 +18,7 @@ import { debounce } from "lodash";
 
 export default function CurlButton({ className }) {
   const { setSelectedToken } = useStorage();
-  const { params, trimmedParams, updateParams } = useQuery();
+  const { params, trimmedParams, updateInitialParams } = useQuery();
 
   const { run = null } = useExecutionContext({
     nonNull: true,
@@ -65,7 +65,7 @@ export default function CurlButton({ className }) {
         // submitted curl params + profile and token
         const { data: params, token, profile } = json;
 
-        updateParams({ ...params });
+        updateInitialParams({ ...params });
         token && profile && setSelectedToken(token, profile);
 
         //  Try to prettify and run
