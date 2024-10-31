@@ -6,7 +6,7 @@ import { parseString } from "xml2js";
 import { log } from "dbc-node-logger";
 
 import config from "../config";
-import { accountsToCulr, getTestUser } from "../utils/testUserStore";
+
 import { omitCulrData } from "../utils/omitCulrData";
 import { hasCulrDataSync } from "../utils/agency";
 
@@ -117,6 +117,8 @@ export async function load({ agencyId, userId }, context) {
  * Gets the CULR account information
  */
 export async function testLoad({ agencyId, userId }, context) {
+  const { accountsToCulr, getTestUser } = require("../utils/testUserStore");
+
   const testUser = await getTestUser(context);
   const localAccount = testUser.accounts.find(
     (account) => agencyId === account.agency && account.localId === userId

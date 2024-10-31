@@ -62,8 +62,9 @@ export function omitCulrData(data, user) {
     municipalityNo: null,
     accounts: filteredAccounts,
     omittedCulrData: {
-      hasOmittedCulrGuid: !!data?.guid,
-      hasOmittedCulrMunicipalityNo: !!data?.municipalityNo,
+      hasOmittedCulrUniqueId: !!data?.guid,
+      hasOmittedCulrMunicipality: !!data?.municipalityNo,
+      hasOmittedCulrMunicipalityAgencyId: !!data?.municipalityNo,
       hasOmittedCulrAccounts: data?.accounts?.length > filteredAccounts.length,
     },
   };

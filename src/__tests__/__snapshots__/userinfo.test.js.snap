@@ -22,7 +22,7 @@ Object {
 }
 `;
 
-exports[`userinfo FFU authenticated user connected to FOLK library 1`] = `
+exports[`userinfo FFU authenticated user connected to FOLK library (Agency login) 1`] = `
 Object {
   "attributes": Object {
     "agencies": Array [
@@ -38,6 +38,34 @@ Object {
     "loggedInBranchId": "800010",
     "municipality": null,
     "municipalityAgencyId": "800010",
+    "omittedCulrData": Object {
+      "hasOmittedCulrAccounts": true,
+      "hasOmittedCulrMunicipality": true,
+      "hasOmittedCulrMunicipalityAgencyId": true,
+      "hasOmittedCulrUniqueId": true,
+    },
+    "uniqueId": null,
+    "userId": "some-userId",
+  },
+}
+`;
+
+exports[`userinfo FFU authenticated user connected to FOLK library (Branch login) 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [
+      Object {
+        "agencyId": "800021",
+        "userId": "some-localId",
+        "userIdType": "LOCAL",
+      },
+    ],
+    "blocked": false,
+    "idpUsed": "borchk",
+    "loggedInAgencyId": "800010",
+    "loggedInBranchId": "800021",
+    "municipality": null,
+    "municipalityAgencyId": "800021",
     "omittedCulrData": Object {
       "hasOmittedCulrAccounts": true,
       "hasOmittedCulrMunicipality": true,

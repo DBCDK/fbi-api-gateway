@@ -74,7 +74,6 @@ type User {
   identityProviderUsed: String!
   hasCulrUniqueId: Boolean!
   omittedCulrData: OmittedCulrDataResponse
-
 }
 
 type SavedSearchResponse {
