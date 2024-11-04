@@ -1021,7 +1021,7 @@ export const resolvers = {
         }
         //profile agency id. Used to filter studiesøg bookmarks
         const agencyId = context.profile.agency;
-        
+
         const res = await context.datasources
           .getLoader("userDataAddBookmarks")
           .load({
