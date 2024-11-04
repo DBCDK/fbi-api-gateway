@@ -3,8 +3,11 @@ import { getTestUser } from "../utils/testUserStore";
 import { filterDuplicateAgencies } from "../utils/utils";
 
 const { url } = config.datasources.openuserstatus;
-const { authenticationUser, authenticationGroup, authenticationPassword } =
-  config.datasources.openorder;
+const {
+  authenticationUser,
+  authenticationGroup,
+  authenticationPassword,
+} = config.datasources.openorder;
 
 /**
  * SOAP request
