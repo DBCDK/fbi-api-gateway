@@ -463,7 +463,7 @@ button.graphiql-un-styled {
   background-color: hsla(var(--color-neutral), var(--alpha-background-medium));
 }
 :is(.graphiql-un-styled, button.graphiql-un-styled):focus {
-  outline: hsla(var(--color-neutral), var(--alpha-background-heavy)) auto 1px;
+  outline: hsla(var(--color-neutral), var(--alpha-background-dark)) auto 1px;
 }
 .graphiql-button,
 button.graphiql-button {

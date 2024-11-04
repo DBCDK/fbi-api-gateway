@@ -1,21 +1,17 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/router";
-import { GraphiQLInterface } from "graphiql";
 import { debounce } from "lodash";
-
 import {
   GraphiQLProvider,
   useExecutionContext,
   useEditorContext,
   usePrettifyEditors,
 } from "@graphiql/react";
-
+import { GraphiQLInterface } from "graphiql";
 import Header from "@/components/header";
-
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useQuery from "@/hooks/useQuery";
-
 import QueryDepthButton from "./buttons/depth";
 import ComplexityButton from "./buttons/complexity";
 import CurlButton from "./buttons/curl";
@@ -28,17 +24,12 @@ export function GraphiQL({
   onTabChange,
   toolbar,
 }) {
-  const { tabs, activeTabIndex } = useEditorContext({
-    nonNull: true,
-  });
-
+  const { tabs, activeTabIndex } = useEditorContext({ nonNull: true });
   const { run, isFetching } = useExecutionContext({
     caller: GraphiQL,
     nonNull: true,
   });
-
   const prettifyEditors = usePrettifyEditors();
-
   const tab = tabs[activeTabIndex];
 
   const [isReady, setIsReady] = useState(false);
@@ -47,19 +38,17 @@ export function GraphiQL({
   }, []);
 
   useEffect(() => {
-    if (isReady) {
-      if (!tab.response && tab.query && !isFetching) {
-        try {
-          prettifyEditors();
-          run();
-        } catch (err) {}
-      }
+    if (isReady && !tab.response && tab.query && !isFetching) {
+      try {
+        prettifyEditors();
+        run();
+      } catch (err) {}
     }
-  }, [tab, isReady]);
+  }, [tab, isReady, isFetching, prettifyEditors, run]);
 
   useEffect(() => {
     onTabChange(tabs[activeTabIndex]);
-  }, [activeTabIndex]);
+  }, [activeTabIndex, onTabChange, tabs]);
 
   return (
     <div className={styles.graphiql}>
@@ -79,27 +68,19 @@ export default function Wrap() {
   const { selectedToken } = useStorage();
   const { schema } = useSchema(selectedToken);
   const url = useGraphQLUrl();
-
   const router = useRouter();
-
   const { params, initialParams } = useQuery();
 
   const [init, setInit] = useState(false);
+  const initialParamsUpdated = useRef(false);
 
   useEffect(() => {
     setInit(true);
   }, []);
 
-  if (!init) {
-    return null;
-  }
-
   const fetcher = async ({ query, variables = {} }) => {
     if (!selectedToken?.token) {
-      return {
-        statusCode: 403,
-        message: "Unauthorized",
-      };
+      return { statusCode: 403, message: "Unauthorized" };
     }
     const data = await fetch(url, {
       method: "POST",
@@ -116,25 +97,42 @@ export default function Wrap() {
   };
 
   function onEditQuery(newQuery) {
-    params.query = newQuery;
-    updateURL();
+    const updatedParams = { ...params, query: newQuery };
+    updateURL(updatedParams);
   }
 
   function onEditVariables(newVariables) {
-    params.variables = newVariables;
-    updateURL();
+    const updatedParams = { ...params, variables: newVariables };
+    updateURL(updatedParams);
   }
 
   function onTabChange({ query: newQuery, variables: newVariables }) {
-    params.query = newQuery;
-    params.variables = newVariables;
-    updateURL();
+    const updatedParams = {
+      ...params,
+      query: newQuery,
+      variables: newVariables,
+    };
+    updateURL(updatedParams);
   }
 
-  // debounce for performance enhancement
-  const updateURL = debounce(() => {
-    router.replace({ query: params });
-  }, 300);
+  const updateURL = useCallback(
+    debounce((updatedParams) => {
+      router.replace({ query: updatedParams });
+    }, 300),
+    [router]
+  );
+
+  useEffect(() => {
+    // Update URL only once with initialParams
+    if (initialParams && !initialParamsUpdated.current) {
+      router.replace({ query: initialParams });
+      initialParamsUpdated.current = true; // Prevent future updates
+    }
+  }, [initialParams, router]);
+
+  if (!init) {
+    return null;
+  }
 
   return (
     <GraphiQLProvider
@@ -161,8 +159,8 @@ export default function Wrap() {
             />,
           ],
         }}
-        onEditQuery={(newQuery) => onEditQuery(newQuery)}
-        onEditVariables={(newVariables) => onEditVariables(newVariables)}
+        onEditQuery={onEditQuery}
+        onEditVariables={onEditVariables}
         onTabChange={onTabChange}
       />
     </GraphiQLProvider>
