@@ -996,7 +996,6 @@ export const resolvers = {
     },
     async addBookmarks(parent, args, context, info) {
       const user = context?.user;
-      console.log("context.user", context.user);
 
       /**
        * Handles single or multiple additions to bookmarks.
@@ -1022,8 +1021,7 @@ export const resolvers = {
         }
         //profile agency id. Used to filter studiesøg bookmarks
         const agencyId = context.profile.agency;
-        console.log("\n\n\n🎉context.PROFILE: agencyId", agencyId);
-
+        
         const res = await context.datasources
           .getLoader("userDataAddBookmarks")
           .load({
