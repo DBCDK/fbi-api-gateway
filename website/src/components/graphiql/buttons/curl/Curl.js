@@ -82,16 +82,23 @@ export default function CurlButton({ className }) {
   // Effect for updating the clipboardPasteVisible
   // - this will only show the paste button, if a valid curl is in the users clipboard
   useEffect(() => {
-    if (document?.hasFocus?.()) {
-      navigator?.clipboard?.readText?.().then((txt) => {
-        const isValid = isValidCurlCommand(txt);
+    const handleFocus = async () => {
+      try {
+        const txt = await navigator.clipboard.readText();
+        setClipboardPasteVisible(isValidCurlCommand(txt));
+      } catch (error) {
+        console.warn("Clipboard read failed:", error);
+      }
+    };
 
-        if (isValid !== clipboardPasteVisible) {
-          setClipboardPasteVisible(isValid);
-        }
-      });
+    if (navigator?.clipboard?.readText) {
+      window.addEventListener("focus", handleFocus);
     }
-  });
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
 
   // Hide buttons according to input
   const inputHasValueClass = !!value ? styles.hasValue : "";
