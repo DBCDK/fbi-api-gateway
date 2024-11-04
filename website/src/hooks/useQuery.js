@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/router";
 
@@ -24,17 +24,16 @@ const trimParams = (params) => {
 export default function useQuery() {
   const router = useRouter();
 
-  // Funktion til at hente params fra routerens query
+  // Function to get params from the router's query
   const getParamsFromRouter = () => ({
     query: router.query.query || "",
-
     variables: router.query.variables || "",
   });
 
-  // Hent params fra URL'en
+  // Fetch params from URL
   const params = getParamsFromRouter();
 
-  // Synkroniser initialParams på tværs af komponenter med SWR
+  // Synchronize initialParams across components with SWR
   const { data: initialParams, mutate: setInitialParams } = useSWR(
     "initial-query-params",
     {
@@ -42,7 +41,18 @@ export default function useQuery() {
     }
   );
 
-  // Funktion til manuelt at opdatere initialParams
+  // useRef to track if initialParams has been set once
+  const hasSetInitialParams = useRef(false);
+
+  // Set initialParams only on the first render
+  useEffect(() => {
+    if (!hasSetInitialParams.current) {
+      setInitialParams(params);
+      hasSetInitialParams.current = true;
+    }
+  }, [params, setInitialParams]);
+
+  // Function to manually update initialParams
   const updateInitialParams = useCallback(
     (newInitialParams) => {
       setInitialParams((prevParams) => {
@@ -68,9 +78,9 @@ export default function useQuery() {
   );
 
   return {
-    params, // Aktuelle params fra routerens query
-    trimmedParams: trimParams(params), // trimmed aktuelle params fra routerens query
-    initialParams, // Initiale params, synkroniseret via SWR
-    updateInitialParams, // Funktion til at opdatere initialParams
+    params, // Current params from router's query
+    trimmedParams: trimParams(params), // Trimmed current params from router's query
+    initialParams, // Initial params, synchronized via SWR
+    updateInitialParams, // Function to update initialParams
   };
 }
