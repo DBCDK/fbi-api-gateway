@@ -23,8 +23,10 @@ import merge from "lodash/merge";
 import { parseClientPermissions } from "../commonUtils";
 import enumFallbackDirective from "./utils/enumFallbackDirective";
 
-const { enumFallbackDirectiveTypeDefs, enumFallbackDirectiveTransformer } =
-  enumFallbackDirective();
+const {
+  enumFallbackDirectiveTypeDefs,
+  enumFallbackDirectiveTransformer,
+} = enumFallbackDirective();
 
 // Stores the transformed schemas
 const schemaCache = {};

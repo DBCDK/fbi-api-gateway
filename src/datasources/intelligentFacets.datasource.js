@@ -5,8 +5,14 @@
 import config from "../config";
 import { mapFilters } from "../utils/filtersAndFacetsMap";
 
-const { url, prefix, ttl, token, firstHits, disableFuzzySearch } =
-  config.datasources.facets;
+const {
+  url,
+  prefix,
+  ttl,
+  token,
+  firstHits,
+  disableFuzzySearch,
+} = config.datasources.facets;
 
 export async function load({ q, filters = {}, profile, limit = 10 }, context) {
   const { agency, name } = profile;

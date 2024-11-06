@@ -1,7 +1,10 @@
 import config from "../config";
 const { url } = config.datasources.openuserstatus;
-const { authenticationUser, authenticationGroup, authenticationPassword } =
-  config.datasources.openorder;
+const {
+  authenticationUser,
+  authenticationGroup,
+  authenticationPassword,
+} = config.datasources.openorder;
 
 /**
  * SOAP request

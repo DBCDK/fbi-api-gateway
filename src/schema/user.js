@@ -211,6 +211,7 @@ type BookMark{
   bookmarkId: Int
   createdAt: DateTimeScalar
   workId: String
+  agencyId: String
 }
 
 type AddBookMarkResponse {
@@ -752,10 +753,11 @@ export const resolvers = {
         validateUserId(uniqueId);
 
         const { orderBy } = args;
-
+        // filter by agencyId to seperate studiesøg and bibliotek.dk bookmarks
+        const agencyId = context.profile.agency;
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
-          .load({ uniqueId, orderBy });
+          .load({ uniqueId, orderBy, agencyId });
 
         return { result: res?.result, hitcount: res?.result?.length || 0 };
       } catch (error) {
@@ -1017,6 +1019,8 @@ export const resolvers = {
         if (!args.bookmarks || args.bookmarks.length === 0) {
           throw new Error("Bookmarks not set");
         }
+        //profile agency id. Used to filter studiesøg bookmarks
+        const agencyId = context.profile.agency;
 
         const res = await context.datasources
           .getLoader("userDataAddBookmarks")
@@ -1028,6 +1032,7 @@ export const resolvers = {
                 materialType: bookmark.materialType,
                 materialId: bookmark.materialId,
                 title: bookmark.title,
+                agencyId: agencyId,
               };
             }),
           });

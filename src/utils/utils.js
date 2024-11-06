@@ -697,15 +697,13 @@ function handleLocalizationsWithKglBibliotek(
   localizationsWithHoldings,
   kglBibBranchIds = kglBibBranchIdSet
 ) {
-  const localizationsWithHoldingsNotKglBibliotek =
-    localizationsWithHoldings.filter(
-      (agency) => !kglBibBranchIds.has(agency.agencyId)
-    );
+  const localizationsWithHoldingsNotKglBibliotek = localizationsWithHoldings.filter(
+    (agency) => !kglBibBranchIds.has(agency.agencyId)
+  );
 
-  const localizationsWithHoldingsIsKglBibliotek =
-    localizationsWithHoldings.filter((agency) =>
-      kglBibBranchIds.has(agency.agencyId)
-    );
+  const localizationsWithHoldingsIsKglBibliotek = localizationsWithHoldings.filter(
+    (agency) => kglBibBranchIds.has(agency.agencyId)
+  );
 
   const aggregatedAvailability = localizationsWithHoldingsNotKglBibliotek.sort(
     (a, b) => {
@@ -820,12 +818,13 @@ export async function resolveLocalizationsWithHoldings({
     }
   );
 
-  const localizationsWithHoldingsAndHandledKglBibliotek =
-    handleLocalizationsWithKglBibliotek(allLocalzationsWithExpectedDelivery);
+  const localizationsWithHoldingsAndHandledKglBibliotek = handleLocalizationsWithKglBibliotek(
+    allLocalzationsWithExpectedDelivery
+  );
 
   // AgencyNames for sorting by agencyName, via library datasource from vipCore
-  const libraryDatasourcePromise =
-    localizationsWithHoldingsAndHandledKglBibliotek?.map(async (library) => {
+  const libraryDatasourcePromise = localizationsWithHoldingsAndHandledKglBibliotek?.map(
+    async (library) => {
       const agencyId = library.agencyId;
 
       const res = await context.datasources.getLoader("library").load({
@@ -845,7 +844,8 @@ export async function resolveLocalizationsWithHoldings({
         expectedDelivery: availability,
         availability: availability,
       };
-    });
+    }
+  );
 
   const libraryDatasource = (
     await Promise.all(libraryDatasourcePromise)
@@ -896,7 +896,10 @@ export function isCPRNumber(uniqueId) {
  */
 export function isPeriodica(periodicaForm) {
   if (!periodicaForm) return false;
-  const { authorOfComponent, titleOfComponent, pagesOfComponent } =
-    periodicaForm;
+  const {
+    authorOfComponent,
+    titleOfComponent,
+    pagesOfComponent,
+  } = periodicaForm;
   return authorOfComponent || titleOfComponent || pagesOfComponent;
 }

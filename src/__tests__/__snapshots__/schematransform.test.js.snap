@@ -3413,6 +3413,7 @@ type BookMark {
   bookmarkId: Int
   createdAt: DateTime
   workId: String
+  agencyId: String
 }
 
 type AddBookMarkResponse {

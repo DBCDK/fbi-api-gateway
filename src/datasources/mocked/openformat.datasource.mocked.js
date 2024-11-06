@@ -8,13 +8,15 @@ export function load(pid) {
       details: {
         abstract: {
           value: {
-            $: "Den ellers så pæne familie Didriksen går straks i aktion som detektiver, da det viser sig, at deres ret så usædvanlige hund er blevet kidnappet af en mistænkelig iskagemand!",
+            $:
+              "Den ellers så pæne familie Didriksen går straks i aktion som detektiver, da det viser sig, at deres ret så usædvanlige hund er blevet kidnappet af en mistænkelig iskagemand!",
           },
         },
         catalogcode: { value: { $: "DLF201207 BKM201207" } },
         content: {
           value: {
-            $: "Jeg bor i Hvidovre ; Jeg fremlejer en lejlighed ; Modsætningen mellem",
+            $:
+              "Jeg bor i Hvidovre ; Jeg fremlejer en lejlighed ; Modsætningen mellem",
           },
         },
         creators: {
@@ -119,7 +121,8 @@ export function load(pid) {
             pages: { $: "S. 70-73" },
             author: { $: "Hallbæck-Andersen, Charlotte" },
             title: {
-              $: "Bo bedre på din krops betingelser: 8 indretningstips, der gør din bolig og dig meget sundere",
+              $:
+                "Bo bedre på din krops betingelser: 8 indretningstips, der gør din bolig og dig meget sundere",
             },
           },
         },
@@ -175,7 +178,8 @@ export function load(pid) {
         ],
         title: {
           value: {
-            $: "Bo bedre på din krops betingelser : 8 indretningstips, der gør din bolig og dig meget sundere",
+            $:
+              "Bo bedre på din krops betingelser : 8 indretningstips, der gør din bolig og dig meget sundere",
           },
         },
         tracks: [null, null],
@@ -220,7 +224,8 @@ export function load(pid) {
         onlineAccess: {
           value: {
             link: {
-              $: "https://litteratursiden.dk/boeger/fortiden-er-ikke-hvad-den-har-vaeret",
+              $:
+                "https://litteratursiden.dk/boeger/fortiden-er-ikke-hvad-den-har-vaeret",
             },
           },
         },
@@ -248,7 +253,8 @@ export function load(pid) {
         materialType: { $: "Anmeldelse" },
         notes: {
           value: {
-            $: "Dejlig er jorden Hvis Dublin var en kvinde, ville jeg gifte mig med hende Den som blinker er bange for døden",
+            $:
+              "Dejlig er jorden Hvis Dublin var en kvinde, ville jeg gifte mig med hende Den som blinker er bange for døden",
           },
         },
         publication: { publicationYear: { $: "2018" } },
@@ -258,23 +264,27 @@ export function load(pid) {
           value: {
             about: {
               text: {
-                $: 'Erindringsroman, baseret på forfatterens opvækst i huset på "anstalten", et nordtysk psykiatrisk hospital, hvor faren er overlæge. Joachim er familiens yngste, fantasi- og temperamentsfulde søn. En følsom og selvironisk læseoplevelse for alle, der synes om et særpræget miljø, markante personligheder og barokke situationer med autentisk baggrund',
+                $:
+                  'Erindringsroman, baseret på forfatterens opvækst i huset på "anstalten", et nordtysk psykiatrisk hospital, hvor faren er overlæge. Joachim er familiens yngste, fantasi- og temperamentsfulde søn. En følsom og selvironisk læseoplevelse for alle, der synes om et særpræget miljø, markante personligheder og barokke situationer med autentisk baggrund',
               },
             },
             description: {
               text: {
-                $: "Forfatterens bøger er bestsellers i Tyskland og han er samtidig en kendt skuespiller. Han er født i 1967 og bogen begynder, da han er 7 år. Joachim er en nysgerrig og tænksom dreng med jævnlige, ustyrlige raserianfald,  2 provokerende storebrødre, en tålmodig mor og en far, der er helt sin egen. Familielivet skildres med kærlighed og lune, det samme gælder skildringen af de psykiatriske patienter, der udgør naboskabet. Pointen i dette stykke autofiktion fra Slesvig-området er at tilværelsen ikke er lineær, og fortiden ikke en fasttømret størrelse. Menneskers uperfekthed er helt i orden. Bogen slutter med den voksne Joachims tilbageblik på sit barndomsland",
+                $:
+                  "Forfatterens bøger er bestsellers i Tyskland og han er samtidig en kendt skuespiller. Han er født i 1967 og bogen begynder, da han er 7 år. Joachim er en nysgerrig og tænksom dreng med jævnlige, ustyrlige raserianfald,  2 provokerende storebrødre, en tålmodig mor og en far, der er helt sin egen. Familielivet skildres med kærlighed og lune, det samme gælder skildringen af de psykiatriske patienter, der udgør naboskabet. Pointen i dette stykke autofiktion fra Slesvig-området er at tilværelsen ikke er lineær, og fortiden ikke en fasttømret størrelse. Menneskers uperfekthed er helt i orden. Bogen slutter med den voksne Joachims tilbageblik på sit barndomsland",
               },
             },
             evaluation: {
               text: {
-                $: "Skøn barndomsskildring, selvironisk, vemodig og kærlig, fra en tid med mindre mainstream og glatpolering. Med plads til refleksion mellem de lettere bizarre scener",
+                $:
+                  "Skøn barndomsskildring, selvironisk, vemodig og kærlig, fra en tid med mindre mainstream og glatpolering. Med plads til refleksion mellem de lettere bizarre scener",
               },
             },
             other: [
               {
                 text: {
-                  $: "Bogen indgår i forfatterens selvbiografiske serie, denne 2. del er den første, der er oversat til dansk. Man kan sammenligne med fx ",
+                  $:
+                    "Bogen indgår i forfatterens selvbiografiske serie, denne 2. del er den første, der er oversat til dansk. Man kan sammenligne med fx ",
                 },
                 faust: { $: "28858817" },
                 title: { $: "Dejlig er jorden" },
@@ -316,10 +326,12 @@ export function load(pid) {
         notes: {
           value: [
             {
-              $: "Dejlig er jorden Hvis Dublin var en kvinde, ville jeg gifte mig med hende Den som blinker er bange for døden",
+              $:
+                "Dejlig er jorden Hvis Dublin var en kvinde, ville jeg gifte mig med hende Den som blinker er bange for døden",
             },
             {
-              $: "Materialevurdering oprindeligt udarbejdet til bogudgave fra 2018",
+              $:
+                "Materialevurdering oprindeligt udarbejdet til bogudgave fra 2018",
             },
           ],
         },
@@ -330,28 +342,33 @@ export function load(pid) {
           value: {
             all: {
               text: {
-                $: "Materialevurdering oprindeligt udarbejdet til bogudgave fra 2018",
+                $:
+                  "Materialevurdering oprindeligt udarbejdet til bogudgave fra 2018",
               },
             },
             about: {
               text: {
-                $: 'Erindringsroman, baseret på forfatterens opvækst i huset på "anstalten", et nordtysk psykiatrisk hospital, hvor faren er overlæge. Joachim er familiens yngste, fantasi- og temperamentsfulde søn. En følsom og selvironisk læseoplevelse for alle, der synes om et særpræget miljø, markante personligheder og barokke situationer med autentisk baggrund',
+                $:
+                  'Erindringsroman, baseret på forfatterens opvækst i huset på "anstalten", et nordtysk psykiatrisk hospital, hvor faren er overlæge. Joachim er familiens yngste, fantasi- og temperamentsfulde søn. En følsom og selvironisk læseoplevelse for alle, der synes om et særpræget miljø, markante personligheder og barokke situationer med autentisk baggrund',
               },
             },
             description: {
               text: {
-                $: "Forfatterens bøger er bestsellers i Tyskland og han er samtidig en kendt skuespiller. Han er født i 1967 og bogen begynder, da han er 7 år. Joachim er en nysgerrig og tænksom dreng med jævnlige, ustyrlige raserianfald,  2 provokerende storebrødre, en tålmodig mor og en far, der er helt sin egen. Familielivet skildres med kærlighed og lune, det samme gælder skildringen af de psykiatriske patienter, der udgør naboskabet. Pointen i dette stykke autofiktion fra Slesvig-området er at tilværelsen ikke er lineær, og fortiden ikke en fasttømret størrelse. Menneskers uperfekthed er helt i orden. Bogen slutter med den voksne Joachims tilbageblik på sit barndomsland",
+                $:
+                  "Forfatterens bøger er bestsellers i Tyskland og han er samtidig en kendt skuespiller. Han er født i 1967 og bogen begynder, da han er 7 år. Joachim er en nysgerrig og tænksom dreng med jævnlige, ustyrlige raserianfald,  2 provokerende storebrødre, en tålmodig mor og en far, der er helt sin egen. Familielivet skildres med kærlighed og lune, det samme gælder skildringen af de psykiatriske patienter, der udgør naboskabet. Pointen i dette stykke autofiktion fra Slesvig-området er at tilværelsen ikke er lineær, og fortiden ikke en fasttømret størrelse. Menneskers uperfekthed er helt i orden. Bogen slutter med den voksne Joachims tilbageblik på sit barndomsland",
               },
             },
             evaluation: {
               text: {
-                $: "Skøn barndomsskildring, selvironisk, vemodig og kærlig, fra en tid med mindre mainstream og glatpolering. Med plads til refleksion mellem de lettere bizarre scener",
+                $:
+                  "Skøn barndomsskildring, selvironisk, vemodig og kærlig, fra en tid med mindre mainstream og glatpolering. Med plads til refleksion mellem de lettere bizarre scener",
               },
             },
             other: [
               {
                 text: {
-                  $: "Bogen indgår i forfatterens selvbiografiske serie, denne 2. del er den første, der er oversat til dansk. Man kan sammenligne med fx ",
+                  $:
+                    "Bogen indgår i forfatterens selvbiografiske serie, denne 2. del er den første, der er oversat til dansk. Man kan sammenligne med fx ",
                 },
                 faust: { $: "28858817" },
                 title: { $: "Dejlig er jorden" },
@@ -393,10 +410,12 @@ export function load(pid) {
         notes: {
           value: [
             {
-              $: "Dejlig er jorden Hvis Dublin var en kvinde, ville jeg gifte mig med hende Den som blinker er bange for døden",
+              $:
+                "Dejlig er jorden Hvis Dublin var en kvinde, ville jeg gifte mig med hende Den som blinker er bange for døden",
             },
             {
-              $: "Materialevurdering oprindeligt udarbejdet til udgave fra 2018",
+              $:
+                "Materialevurdering oprindeligt udarbejdet til udgave fra 2018",
             },
           ],
         },
@@ -407,28 +426,33 @@ export function load(pid) {
           value: {
             all: {
               text: {
-                $: "Materialevurdering oprindeligt udarbejdet til udgave fra 2018",
+                $:
+                  "Materialevurdering oprindeligt udarbejdet til udgave fra 2018",
               },
             },
             about: {
               text: {
-                $: 'Erindringsroman, baseret på forfatterens opvækst i huset på "anstalten", et nordtysk psykiatrisk hospital, hvor faren er overlæge. Joachim er familiens yngste, fantasi- og temperamentsfulde søn. En følsom og selvironisk læseoplevelse for alle, der synes om et særpræget miljø, markante personligheder og barokke situationer med autentisk baggrund',
+                $:
+                  'Erindringsroman, baseret på forfatterens opvækst i huset på "anstalten", et nordtysk psykiatrisk hospital, hvor faren er overlæge. Joachim er familiens yngste, fantasi- og temperamentsfulde søn. En følsom og selvironisk læseoplevelse for alle, der synes om et særpræget miljø, markante personligheder og barokke situationer med autentisk baggrund',
               },
             },
             description: {
               text: {
-                $: "Forfatterens bøger er bestsellers i Tyskland og han er samtidig en kendt skuespiller. Han er født i 1967 og bogen begynder, da han er 7 år. Joachim er en nysgerrig og tænksom dreng med jævnlige, ustyrlige raserianfald,  2 provokerende storebrødre, en tålmodig mor og en far, der er helt sin egen. Familielivet skildres med kærlighed og lune, det samme gælder skildringen af de psykiatriske patienter, der udgør naboskabet. Pointen i dette stykke autofiktion fra Slesvig-området er at tilværelsen ikke er lineær, og fortiden ikke en fasttømret størrelse. Menneskers uperfekthed er helt i orden. Bogen slutter med den voksne Joachims tilbageblik på sit barndomsland",
+                $:
+                  "Forfatterens bøger er bestsellers i Tyskland og han er samtidig en kendt skuespiller. Han er født i 1967 og bogen begynder, da han er 7 år. Joachim er en nysgerrig og tænksom dreng med jævnlige, ustyrlige raserianfald,  2 provokerende storebrødre, en tålmodig mor og en far, der er helt sin egen. Familielivet skildres med kærlighed og lune, det samme gælder skildringen af de psykiatriske patienter, der udgør naboskabet. Pointen i dette stykke autofiktion fra Slesvig-området er at tilværelsen ikke er lineær, og fortiden ikke en fasttømret størrelse. Menneskers uperfekthed er helt i orden. Bogen slutter med den voksne Joachims tilbageblik på sit barndomsland",
               },
             },
             evaluation: {
               text: {
-                $: "Skøn barndomsskildring, selvironisk, vemodig og kærlig, fra en tid med mindre mainstream og glatpolering. Med plads til refleksion mellem de lettere bizarre scener",
+                $:
+                  "Skøn barndomsskildring, selvironisk, vemodig og kærlig, fra en tid med mindre mainstream og glatpolering. Med plads til refleksion mellem de lettere bizarre scener",
               },
             },
             other: [
               {
                 text: {
-                  $: "Bogen indgår i forfatterens selvbiografiske serie, denne 2. del er den første, der er oversat til dansk. Man kan sammenligne med fx ",
+                  $:
+                    "Bogen indgår i forfatterens selvbiografiske serie, denne 2. del er den første, der er oversat til dansk. Man kan sammenligne med fx ",
                 },
                 faust: { $: "28858817" },
                 title: { $: "Dejlig er jorden" },
@@ -628,7 +652,8 @@ export function load(pid) {
       details: {
         abstract: {
           value: {
-            $: "I sin kontroversielle selvbiografiske skildring beretter Knausgård om sit dilemma mellem at være uforstyrret, ambitiøs forfatter og samtidig være familiefar med kone og tre børn",
+            $:
+              "I sin kontroversielle selvbiografiske skildring beretter Knausgård om sit dilemma mellem at være uforstyrret, ambitiøs forfatter og samtidig være familiefar med kone og tre børn",
           },
         },
         catalogcode: {
@@ -793,7 +818,8 @@ export function load(pid) {
       details: {
         abstract: {
           value: {
-            $: "Selvbiografisk roman med nærgående beskrivelse af at vokse op og blive til i en sammensat verden med udgangspunkt i faderens død og hovedpersonens selvrealisering som forfatter",
+            $:
+              "Selvbiografisk roman med nærgående beskrivelse af at vokse op og blive til i en sammensat verden med udgangspunkt i faderens død og hovedpersonens selvrealisering som forfatter",
           },
         },
         catalogcode: { value: { $: "ACC201225 DBF201340 BKM201340" } },
@@ -1397,12 +1423,14 @@ export function load(pid) {
           value: {
             about: {
               text: {
-                $: "Til dig som er vant til at sluge Sara Blædels krimier er her godt nyt. Louise Rick er atter efterforskende hovedperson. På Bornholm findes liget af en ung pige i en klippesprække i Ekkodalen. Hun forsvandt sporløst på en lejrskoletur i 1995",
+                $:
+                  "Til dig som er vant til at sluge Sara Blædels krimier er her godt nyt. Louise Rick er atter efterforskende hovedperson. På Bornholm findes liget af en ung pige i en klippesprække i Ekkodalen. Hun forsvandt sporløst på en lejrskoletur i 1995",
               },
             },
             description: {
               text: {
-                $: "Louise Rick er egentlig på orlov fra jobbet i drabsafdelingen, men er hjemme fra sin jordomrejse, da hendes bror forsøger at begå selvmord efter at hans kone, Trine, endnu engang har forladt ham og parrets to børn. Susan hed den unge pige, der blev fundet i Ekkodalen. Da Louise kigger Trines ting igennem opdager hun måske en sammenhæng. Et foto afslører, at Trine var med på den famøse lejrskoletur og altså klassekammerat med Susan. Samtidig opsøger Camilla Lind fra Morgenavisen en anden af Susans gamle klassekammerater, Pia, for at opdage hun lige har begået selvmord. Er der en sammenhæng mellem det hele, og kan Louise måske opklare et ældre mordmysterium på Bornholm? Det er krimi nr. 10 med Louise Rick som hovedperson og efterforsker. Sara Blædel har senest skrevet trilogien om skoleportrætfotografen Ilka begyndende med ",
+                $:
+                  "Louise Rick er egentlig på orlov fra jobbet i drabsafdelingen, men er hjemme fra sin jordomrejse, da hendes bror forsøger at begå selvmord efter at hans kone, Trine, endnu engang har forladt ham og parrets to børn. Susan hed den unge pige, der blev fundet i Ekkodalen. Da Louise kigger Trines ting igennem opdager hun måske en sammenhæng. Et foto afslører, at Trine var med på den famøse lejrskoletur og altså klassekammerat med Susan. Samtidig opsøger Camilla Lind fra Morgenavisen en anden af Susans gamle klassekammerater, Pia, for at opdage hun lige har begået selvmord. Er der en sammenhæng mellem det hele, og kan Louise måske opklare et ældre mordmysterium på Bornholm? Det er krimi nr. 10 med Louise Rick som hovedperson og efterforsker. Sara Blædel har senest skrevet trilogien om skoleportrætfotografen Ilka begyndende med ",
               },
               faust: {
                 $: "52408725",
@@ -1413,12 +1441,14 @@ export function load(pid) {
             },
             evaluation: {
               text: {
-                $: "Underholdende krimi på niveau med de andre i serien. Helt sikkert guf for de mange som sluger Blædel og som holder af en krimi, som foregår i Danmark",
+                $:
+                  "Underholdende krimi på niveau med de andre i serien. Helt sikkert guf for de mange som sluger Blædel og som holder af en krimi, som foregår i Danmark",
               },
             },
             other: {
               text: {
-                $: "Matcher krimier af Elsebeth Egholm og Liza Marklund, hvor hovedpersonen også ofte blander efterforskning og privatliv sammen med store konsekvenser",
+                $:
+                  "Matcher krimier af Elsebeth Egholm og Liza Marklund, hvor hovedpersonen også ofte blander efterforskning og privatliv sammen med store konsekvenser",
               },
             },
           },
