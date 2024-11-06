@@ -100,6 +100,7 @@ type Mutation {
 
 type Query {
   bibdk: BibdkQuery!
+  bibevents(input: BibEventsQueryInput): Bibevents!
   culr: CulrQuery!
   debug: Debug
   series(seriesId: String!): Series
@@ -338,6 +339,50 @@ type BibdkCulrQueryFields {
     \\"\\"\\"Force a specific dataloader\\"\\"\\"
     type: GetAccountsTypeEnum
   ): BibdkCulrAccountResponse
+}
+
+type BibEventFacet {
+  value: String
+  count: Int
+}
+
+type BibEvent {
+  title: String
+  timestamp: String
+  shortlink: String
+  uuid: String
+  date: String
+  time: String
+  prices: [String!]
+  library: String
+  tags: [String!]
+  description: String
+  details: [String!]
+  imageUrl: String
+  category: String
+  audience: String
+}
+
+type BibeventFacets {
+  audience: [BibEventFacet!]!
+  tags: [BibEventFacet!]!
+  category: [BibEventFacet!]!
+  library: [BibEventFacet!]!
+}
+
+type Bibevents {
+  hitcount: Int!
+  events: [BibEvent!]!
+  facets: BibeventFacets!
+}
+
+input BibEventsQueryInput {
+  offset: Int
+  limit: Int
+  audience: [String!]
+  library: [String!]
+  tags: [String!]
+  category: [String!]
 }
 
 type Category {
