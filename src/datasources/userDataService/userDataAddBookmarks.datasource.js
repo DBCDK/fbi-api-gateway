@@ -6,7 +6,7 @@ const { url } = config.datasources.userdata;
  *
  * bookmarks {materialType: string, materialId: string}
  */
-export async function load({ uniqueId, bookmarks }, context) {
+export async function load({ uniqueId, bookmarks, agencyId }, context) {
   const endpoint = url + "bookmark/add";
   try {
     const res = await context.fetch(endpoint, {
@@ -14,7 +14,7 @@ export async function load({ uniqueId, bookmarks }, context) {
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify({ smaugUserId: uniqueId, bookmarks }),
+      body: JSON.stringify({ smaugUserId: uniqueId, bookmarks, agencyId }),
     });
 
     return res.body;

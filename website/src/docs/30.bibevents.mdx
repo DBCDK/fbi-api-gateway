@@ -1,0 +1,57 @@
+# Bibevents
+
+All events from every folkebibliotek
+
+<InlineGraphiQL
+  query={`
+    query bibevents($input: BibEventsQueryInput) {
+  bibevents(input: $input) {
+    hitcount
+    facets {
+      audience {
+        value
+        count
+      }
+      library {
+        value
+        count
+      }
+      tags {
+        value
+        count
+      }
+      category {
+        value
+        count
+      }
+    }
+    events {
+      title
+      audience
+      timestamp
+      shortlink
+      uuid
+      date
+      time
+      prices
+      library
+      tags
+      description
+      details
+      imageUrl
+      category
+    }
+  }
+}
+`}
+  variables={{
+    input: {
+      offset: 0,
+      limit: 20,
+      audience: ["børn"],
+      tags: ["musik"],
+      library: [],
+      category: [],
+    },
+  }}
+/>

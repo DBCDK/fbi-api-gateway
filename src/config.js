@@ -18,6 +18,12 @@ export default {
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 20000,
   datasources: {
+    bibevents: {
+      url:
+        process.env.BIBEVENTS_URL ||
+        "http://bibevents-api.febib-prod.svc.cloud.dbc.dk",
+      prefix: process.env.BIBEVENTS_PREFIX || "bibevents-1",
+    },
     ocn2pid: {
       url:
         process.env.OCN_TO_PID_URL ||
