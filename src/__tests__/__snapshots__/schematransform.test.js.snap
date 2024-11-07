@@ -447,6 +447,9 @@ input ComplexSearchFiltersInput {
 
   \\"\\"\\"Id of publishing issue.\\"\\"\\"
   issueId: [String!]
+
+  \\"\\"\\"Date of first accession\\"\\"\\"
+  firstAccessionDate: String
 }
 
 enum SortOrderEnum {
@@ -4057,6 +4060,9 @@ input ComplexSearchFiltersInput {
 
   \\"\\"\\"Id of publishing issue.\\"\\"\\"
   issueId: [String!]
+
+  \\"\\"\\"Date of first accession\\"\\"\\"
+  firstAccessionDate: String
 }
 
 enum SortOrderEnum {
