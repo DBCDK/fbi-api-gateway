@@ -41,6 +41,10 @@ input ComplexSearchFiltersInput {
   Id of publishing issue.
   """
   issueId: [String!]
+  """
+  Date of first accession
+  """
+  firstAccessionDate: String
 }
 
 
