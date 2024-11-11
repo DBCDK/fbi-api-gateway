@@ -54,19 +54,32 @@ export function parseResponse(localizations) {
 }
 
 // TODO - holdingsitems
-export async function load({ pids }, context) {
+export async function load({ pids, localizationsRole }, context) {
+  const body = {
+    agencyId: 870970,
+    pid: pids,
+    mergePids: true,
+  };
+
+  if (typeof localizationsRole === "undefined") {
+    // Fallback to bibdk when role is undefined
+    body.role = "bibdk";
+  } else if (localizationsRole === "bibdk") {
+    // Role is explicitly set to bibdk
+    body.role = "bibdk";
+  } else if (localizationsRole !== null) {
+    // When role is a string that is not bibdk, we set to danbib
+    // a role explicitly set to null, will not send a role to the service
+    body.role = "danbib";
+  }
+
   try {
     const response = await context.fetch(url + "localizations", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        agencyId: 870970,
-        role: "bibdk",
-        pid: pids,
-        mergePids: true,
-      }),
+      body: JSON.stringify(body),
     });
 
     return parseResponse(response?.body?.localizations);
