@@ -18,7 +18,6 @@ export async function load(args, context) {
       queryParams += delimiter + key + "=" + encodeURIComponent(valArr);
     }
   });
-  console.log(`${url}/api/events${queryParams}`);
   const res = await context.fetch(`${url}/api/events${queryParams}`);
   return res;
 }

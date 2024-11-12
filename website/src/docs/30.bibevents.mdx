@@ -3,16 +3,23 @@
 All events from every folkebibliotek
 
 <InlineGraphiQL
-  query={`
-    query bibevents($input: BibEventsQueryInput) {
+  query={`query bibevents($input: BibEventsQueryInput) {
   bibevents(input: $input) {
     hitcount
     facets {
-      audience {
+      state {
         value
         count
       }
-      library {
+      branches {
+        value
+        count
+      }
+      addressCity {
+        value
+        count
+      }
+      branchId {
         value
         count
       }
@@ -20,26 +27,21 @@ All events from every folkebibliotek
         value
         count
       }
-      category {
-        value
-        count
-      }
     }
     events {
-      title
-      audience
-      timestamp
-      shortlink
       uuid
-      date
-      time
-      prices
-      library
-      tags
+      title
       description
-      details
-      imageUrl
-      category
+      url
+      createdAt
+      updatedAt
+      ticketManagerRelevance
+      state
+      branches
+      addressCity
+      tags
+      body
+      branchId
     }
   }
 }
@@ -48,10 +50,7 @@ All events from every folkebibliotek
     input: {
       offset: 0,
       limit: 20,
-      audience: ["børn"],
       tags: ["musik"],
-      library: [],
-      category: [],
     },
   }}
 />
