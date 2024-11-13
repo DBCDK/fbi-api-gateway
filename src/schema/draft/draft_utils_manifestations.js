@@ -590,8 +590,6 @@ export async function resolveAccess(manifestation, context) {
     }
   }
 
-  // we need localizations
-
   if (parent?.access?.interLibraryLoanIsPossible) {
     const forLoan = await checkInterLibraryLoan(parent, context);
     res.push({ __typename: "InterLibraryLoan", loanIsPossible: forLoan });
