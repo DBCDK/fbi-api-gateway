@@ -16,8 +16,11 @@
  */
 
 import * as consts from "./FAKE";
-import { getArray, resolveManifestation } from "../../utils/utils";
-import { collectSubFields } from "@graphql-tools/utils";
+import {
+  getArray,
+  resolveLocalizations,
+  resolveManifestation,
+} from "../../utils/utils";
 import translations from "../../utils/translations.json";
 
 /**
@@ -587,8 +590,10 @@ export async function resolveAccess(manifestation, context) {
     }
   }
 
+  // we need localizations
+
   if (parent?.access?.interLibraryLoanIsPossible) {
-    const forLoan = checkInterLibraryLoan(parent);
+    const forLoan = await checkInterLibraryLoan(parent, context);
     res.push({ __typename: "InterLibraryLoan", loanIsPossible: forLoan });
   }
 
@@ -598,6 +603,7 @@ export async function resolveAccess(manifestation, context) {
 
 /**
  * Some sources are not for loan (fagbibliografier) - for now a statis list:
+ * This method is only called if interLibraryLoan is true - We know that for a fact
  * 159080-fagbib - Besættelsesbibliografien
  * 159081-fagbib - Bibliografi over Dansk Kunst
  * 159082-fagbib - Dansk Historisk Bibliografi
@@ -606,9 +612,11 @@ export async function resolveAccess(manifestation, context) {
  * 159085-fagbib - Dania Polyglotta
  * 159086-fagbib - Sportline
  * @param parent
+ * @param context
  */
-function checkInterLibraryLoan(parent) {
-  const notForLoan = [
+async function checkInterLibraryLoan(parent, context) {
+  // This is a blacklist of bases NOT to be loaned
+  const notForLoanList = [
     "159080-fagbib",
     "159081-fagbib",
     "159082-fagbib",
@@ -619,7 +627,25 @@ function checkInterLibraryLoan(parent) {
   ];
   // we check on objectId - first part is the source
   const source = parent?.objectId?.split(":")[0];
-  return !notForLoan.includes(source);
+  const notForLoan = notForLoanList.includes(source);
+  if (notForLoan) {
+    return false;
+  }
+
+  //if collectionidentifiers includes 870970-accessnew it may be loaned
+  const isNewMaterial =
+    parent?.collectionIdentifiers?.includes("870970-accessnew");
+
+  if (isNewMaterial) {
+    return true;
+  }
+  // we need localization to determine if manifestation is for loan
+  // last check - if there are no localizations it should NOT be for loan
+  const localizations = await resolveLocalizations(
+    { pids: [parent?.pid] },
+    context
+  );
+  return localizations?.length > 0;
 }
 
 /**
