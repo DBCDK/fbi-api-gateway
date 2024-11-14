@@ -16,11 +16,7 @@
  */
 
 import * as consts from "./FAKE";
-import {
-  getArray,
-  resolveLocalizations,
-  resolveManifestation,
-} from "../../utils/utils";
+import { getArray, resolveManifestation } from "../../utils/utils";
 import translations from "../../utils/translations.json";
 
 /**
