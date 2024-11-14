@@ -591,8 +591,16 @@ export async function resolveAccess(manifestation, context) {
   }
 
   if (parent?.access?.interLibraryLoanIsPossible) {
-    const forLoan = await checkInterLibraryLoan(parent, context);
-    res.push({ __typename: "InterLibraryLoan", loanIsPossible: forLoan });
+    //if collectionidentifiers includes 870970-accessnew it may be loaned
+    const isNewMaterial =
+      parent?.collectionIdentifiers?.includes("870970-accessnew");
+
+    const forLoan = checkInterLibraryLoan(parent, context);
+    res.push({
+      __typename: "InterLibraryLoan",
+      loanIsPossible: forLoan,
+      accessNew: isNewMaterial,
+    });
   }
 
   // Return array containing all types of access
@@ -612,7 +620,7 @@ export async function resolveAccess(manifestation, context) {
  * @param parent
  * @param context
  */
-async function checkInterLibraryLoan(parent, context) {
+function checkInterLibraryLoan(parent, context) {
   // This is a blacklist of bases NOT to be loaned
   const notForLoanList = [
     "159080-fagbib",
@@ -625,25 +633,7 @@ async function checkInterLibraryLoan(parent, context) {
   ];
   // we check on objectId - first part is the source
   const source = parent?.objectId?.split(":")[0];
-  const notForLoan = notForLoanList.includes(source);
-  if (notForLoan) {
-    return false;
-  }
-
-  //if collectionidentifiers includes 870970-accessnew it may be loaned
-  const isNewMaterial =
-    parent?.collectionIdentifiers?.includes("870970-accessnew");
-
-  if (isNewMaterial) {
-    return true;
-  }
-  // we need localization to determine if manifestation is for loan
-  // last check - if there are no localizations it should NOT be for loan
-  const localizations = await resolveLocalizations(
-    { pids: [parent?.pid] },
-    context
-  );
-  return localizations?.length > 0;
+  return !notForLoanList.includes(source);
 }
 
 /**
