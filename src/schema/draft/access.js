@@ -83,6 +83,10 @@ type InterLibraryLoan {
   Is true when manifestation can be borrowed via ill
   """
   loanIsPossible: Boolean!
+  """
+  Is newly added - nice to know if there are no localizations
+  """
+  accessNew: Boolean!  
 }
 type InfomediaService {
   """
