@@ -1,4 +1,5 @@
 import { set, get } from "../datasources/redis.datasource";
+import { fastLaneEnabled } from "../config";
 
 const { visit } = require("graphql");
 
@@ -140,6 +141,9 @@ function getAllTypesFromQuery(document, schema) {
  * Check if the query allows for fast lane
  */
 export default function isFastLaneQuery(document, schema) {
+  if (!fastLaneEnabled) {
+    return false;
+  }
   try {
     if (
       document.definitions.find(
