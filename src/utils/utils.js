@@ -622,6 +622,7 @@ export async function resolveLocalizations(args, context) {
     .getLoader("localizations")
     .load({
       pids: pids,
+      localizationsRole: context?.smaug?.gateway?.localizationsRole,
     });
 
   const realAgenciesMap = {};

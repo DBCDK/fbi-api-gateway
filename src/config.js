@@ -17,6 +17,7 @@ export default {
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 20000,
+  fastLaneEnabled: process.env.FASTLANE_ENABLED == "1" ? true : false,
   datasources: {
     bibevents: {
       url:

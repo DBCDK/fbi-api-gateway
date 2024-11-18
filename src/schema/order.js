@@ -655,6 +655,7 @@ export const resolvers = {
             if (!submitOrderRes || submitOrderRes.status !== "OK") {
               // Creation failed
               failedAtCreation.push(material.key);
+              // @TODO - it would be nice to get a status from here - it will make it easier to debug
               return;
             }
             successfullyCreated.push(material.key);

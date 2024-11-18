@@ -8,27 +8,27 @@ type BibEventFacet {
 
 
 type BibEvent {
-  title: String
-  timestamp: String
-  shortlink: String
   uuid: String
-  date: String
-  time: String
-  prices: [String!]
-  library: String
-  tags: [String!]
+  title: String
   description: String
-  details: [String!]
-  imageUrl: String
-  category: String
-  audience: String
+  url: String
+  createdAt: String
+  updatedAt: String
+  ticketManagerRelevance: Boolean
+  state: String
+  branches: [String!]
+  addressCity: String
+  tags: [String!]
+  body: String
+  branchId: String
 }
 
 type BibeventFacets {
-  audience: [BibEventFacet!]!
-  tags: [BibEventFacet!]!
-  category: [BibEventFacet!]!
-  library: [BibEventFacet!]!
+  state: [BibEventFacet!]
+  branches: [BibEventFacet!]
+  tags: [BibEventFacet!]
+  addressCity: [BibEventFacet!]
+  branchId: [BibEventFacet!]
 }
 
 type Bibevents {
@@ -40,10 +40,11 @@ type Bibevents {
 input BibEventsQueryInput {
   offset: Int
   limit: Int
-  audience: [String!]
-  library: [String!]
+  state: [String!]
+  branches: [String!]
   tags: [String!]
-  category: [String!]
+  addressCity: [String!]
+  branchId: [String!]
 }
 
 extend type Query {
