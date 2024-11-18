@@ -1,11 +1,8 @@
 import config from "../config";
 
 const { url } = config.datasources.openuserstatus;
-const {
-  authenticationUser,
-  authenticationGroup,
-  authenticationPassword,
-} = config.datasources.openorder;
+const { authenticationUser, authenticationGroup, authenticationPassword } =
+  config.datasources.openorder;
 
 /**
  * SOAP request
@@ -65,7 +62,7 @@ const callService = async ({ agencyId, userId }, context) => {
       "Content-Type": "text/xml",
     },
     body: soap,
-    timeoutMs: 60000,
+    timeoutMs: 240000,
   });
 
   return reduceBody(res?.body, agencyId);
