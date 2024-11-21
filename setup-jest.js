@@ -12,3 +12,9 @@ jest.mock("fast-jwt", () => ({
   default: "mockedDefaultExport",
   createSigner: jest.fn(),
 }));
+
+jest.mock("nanoid", () => ({
+  __esModule: true, // this property makes it work
+  default: "mockedDefaultExport",
+  nanoid: jest.fn(),
+}));
