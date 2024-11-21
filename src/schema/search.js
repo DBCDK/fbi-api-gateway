@@ -67,6 +67,7 @@ enum FacetField {
   let
   generalAudience
   libraryRecommendation
+  gamePlatform
 }
 
 """

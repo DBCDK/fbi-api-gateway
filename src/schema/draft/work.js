@@ -343,4 +343,9 @@ export const resolvers = {
       return parent.specific;
     },
   },
+  Language: {
+    isoCode(parent, args, context, info) {
+      return parent?.isoCode || parent?.iso639Set2 || "";
+    },
+  },
 };

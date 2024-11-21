@@ -435,6 +435,7 @@ type ComplexSearchFacetResponse {
 }
 
 type ComplexFacetResponse {
+  hitcount: Int!
   facets: [ComplexSearchFacetResponse!]
 }
 
@@ -845,6 +846,7 @@ type Branch {
   agencyType: AgencyType!
   name: String!
   openingHours: String
+  openingHoursUrl: String
   postalAddress: String
   postalCode: String
   userParameters: [UserParameter!]!
@@ -1731,7 +1733,7 @@ type Manifestation {
   \\"\\"\\"
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescription: PhysicalUnitDescription!
+  physicalDescription: PhysicalUnitDescription
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -3061,6 +3063,7 @@ enum FacetField {
   let
   generalAudience
   libraryRecommendation
+  gamePlatform
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -4570,7 +4573,7 @@ type Manifestation {
   \\"\\"\\"
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescription: PhysicalUnitDescription!
+  physicalDescription: PhysicalUnitDescription
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
@@ -5495,6 +5498,7 @@ enum FacetField {
   let
   generalAudience
   libraryRecommendation
+  gamePlatform
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -6427,7 +6431,7 @@ type Manifestation {
   \\"\\"\\"
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   \\"\\"\\"
-  physicalDescription: PhysicalUnitDescription!
+  physicalDescription: PhysicalUnitDescription
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
