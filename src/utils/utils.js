@@ -6,6 +6,8 @@ import { log } from "dbc-node-logger";
 import config from "../config";
 import { isFFUAgency } from "./agency";
 
+import { createTraceId } from "./trace";
+
 export async function performTestQuery({
   query,
   variables,
@@ -335,7 +337,30 @@ export async function resolveWork(args, context) {
     profile: context.profile,
   });
 
-  return w;
+  if (w) {
+    const withTraceId = { ...w, traceId: createTraceId() };
+    withTraceId.manifestations = {
+      bestRepresentations: w.manifestations.bestRepresentations.map((m) => ({
+        ...m,
+        traceId: createTraceId(),
+      })),
+      first: { ...w.manifestations.first, traceId: createTraceId() },
+      latest: { ...w.manifestations.latest, traceId: createTraceId() },
+      order: w.manifestations.order.map((m) => ({
+        ...m,
+        traceId: createTraceId(),
+      })),
+      mostRelevant: w.manifestations.mostRelevant.map((m) => ({
+        ...m,
+        traceId: createTraceId(),
+      })),
+      all: w.manifestations.all.map((m) => ({
+        ...m,
+        traceId: createTraceId(),
+      })),
+    };
+    return withTraceId;
+  }
 }
 
 /**
@@ -364,12 +389,11 @@ export async function resolveManifestation(args, context) {
     id: pid,
     profile: context.profile,
   });
-
   if (!m) {
     return null;
   }
 
-  return m;
+  return { ...m, traceId: createTraceId() };
 }
 
 /**
@@ -698,13 +722,15 @@ function handleLocalizationsWithKglBibliotek(
   localizationsWithHoldings,
   kglBibBranchIds = kglBibBranchIdSet
 ) {
-  const localizationsWithHoldingsNotKglBibliotek = localizationsWithHoldings.filter(
-    (agency) => !kglBibBranchIds.has(agency.agencyId)
-  );
+  const localizationsWithHoldingsNotKglBibliotek =
+    localizationsWithHoldings.filter(
+      (agency) => !kglBibBranchIds.has(agency.agencyId)
+    );
 
-  const localizationsWithHoldingsIsKglBibliotek = localizationsWithHoldings.filter(
-    (agency) => kglBibBranchIds.has(agency.agencyId)
-  );
+  const localizationsWithHoldingsIsKglBibliotek =
+    localizationsWithHoldings.filter((agency) =>
+      kglBibBranchIds.has(agency.agencyId)
+    );
 
   const aggregatedAvailability = localizationsWithHoldingsNotKglBibliotek.sort(
     (a, b) => {
@@ -819,13 +845,12 @@ export async function resolveLocalizationsWithHoldings({
     }
   );
 
-  const localizationsWithHoldingsAndHandledKglBibliotek = handleLocalizationsWithKglBibliotek(
-    allLocalzationsWithExpectedDelivery
-  );
+  const localizationsWithHoldingsAndHandledKglBibliotek =
+    handleLocalizationsWithKglBibliotek(allLocalzationsWithExpectedDelivery);
 
   // AgencyNames for sorting by agencyName, via library datasource from vipCore
-  const libraryDatasourcePromise = localizationsWithHoldingsAndHandledKglBibliotek?.map(
-    async (library) => {
+  const libraryDatasourcePromise =
+    localizationsWithHoldingsAndHandledKglBibliotek?.map(async (library) => {
       const agencyId = library.agencyId;
 
       const res = await context.datasources.getLoader("library").load({
@@ -845,8 +870,7 @@ export async function resolveLocalizationsWithHoldings({
         expectedDelivery: availability,
         availability: availability,
       };
-    }
-  );
+    });
 
   const libraryDatasource = (
     await Promise.all(libraryDatasourcePromise)
@@ -897,10 +921,7 @@ export function isCPRNumber(uniqueId) {
  */
 export function isPeriodica(periodicaForm) {
   if (!periodicaForm) return false;
-  const {
-    authorOfComponent,
-    titleOfComponent,
-    pagesOfComponent,
-  } = periodicaForm;
+  const { authorOfComponent, titleOfComponent, pagesOfComponent } =
+    periodicaForm;
   return authorOfComponent || titleOfComponent || pagesOfComponent;
 }

@@ -577,6 +577,13 @@ type Manifestations {
 
 type Manifestation {
   """
+  A unique identifier for tracking user interactions with this manifestation. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  """
+  traceId: String!
+
+  """
   Unique identification of the manifestation e.g 870970-basis:54029519
   """
   pid: String!
