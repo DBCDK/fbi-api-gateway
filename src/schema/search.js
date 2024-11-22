@@ -218,7 +218,7 @@ export const resolvers = {
     type(parent, args, context) {
       if (!parent.type) {
         log.error("undefined ENUM returned from FacetFieldEnum", {
-          trackingId: context.datasources.stats.uuid,
+          trackingId: context?.datasources?.stats?.uuid,
         });
       }
 
