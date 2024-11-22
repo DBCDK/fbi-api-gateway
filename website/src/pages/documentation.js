@@ -4,6 +4,7 @@ import Link from "@/components/base/link";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Docs from "@/components/docs";
+import useTheme from "@/hooks/useTheme";
 
 const components = {
   h1: ({ children }) => (
@@ -37,7 +38,7 @@ export default function Page() {
   return (
     <>
       <Head>
-        <title>FBI API | Documentation</title>
+        <title>[old] FBI API | Documentation</title>
       </Head>
       <MDXProvider components={components}>
         <Docs />

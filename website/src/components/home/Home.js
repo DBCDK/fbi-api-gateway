@@ -9,13 +9,8 @@ import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 
 import styles from "./Home.module.css";
-import useTheme from "@/hooks/useTheme";
 
 export default function Home() {
-  const { theme } = useTheme();
-
-  const isOld = theme === "old";
-
   return (
     <>
       <Header />
@@ -25,7 +20,7 @@ export default function Home() {
           <Col>
             <Text className={styles.text}>Hello! You have found the</Text>
             <Title as="h1" type="title6" className={styles.title}>
-              {isOld && <strong>[Old]</strong>} FBI API
+              <strong>[old]</strong> FBI API
             </Title>
           </Col>
         </Row>

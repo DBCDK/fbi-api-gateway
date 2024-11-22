@@ -1,11 +1,12 @@
 import Home from "@/components/home";
+import useTheme from "@/hooks/useTheme";
 import Head from "next/head";
 
-export default function Page(props) {
+export default function Page() {
   return (
     <>
       <Head>
-        <title>FBI API</title>
+        <title>[old] FBI API</title>
       </Head>
       <Home />
     </>
