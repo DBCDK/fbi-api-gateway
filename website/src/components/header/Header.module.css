@@ -66,6 +66,10 @@
   display: flex;
 }
 
+.logo strong {
+  color: var(--primary-dark);
+}
+
 .logo a:hover {
   color: var(--white);
 }

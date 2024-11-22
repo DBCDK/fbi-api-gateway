@@ -26,6 +26,8 @@ export default function Header() {
   const [isSticky, setIsSticky] = useState(false);
   const [show, setShow] = useState(false);
 
+  const { theme } = useTheme();
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([e]) => setIsSticky(e.intersectionRatio < 1),
@@ -57,6 +59,8 @@ export default function Header() {
 
   const stickyClass = isSticky ? styles.sticky : "";
 
+  const isOld = theme === "old";
+
   return (
     <header
       className={`${styles.top} ${stickyClass} ${indexStyles} ${documentationStyles} ${schemaStyles}`}
@@ -67,7 +71,8 @@ export default function Header() {
           <Col className={styles.left}>
             <Title className={styles.logo}>
               <span>
-                <Link href="/">FBI API</Link> {icon}
+                <Link href="/">{isOld && <strong>[Old]</strong>} FBI API</Link>{" "}
+                {icon}
               </span>
             </Title>
           </Col>

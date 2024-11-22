@@ -89,6 +89,7 @@ const icons = {
   easter: "🐤",
   pride: "🏳️‍🌈",
   halloween: "🎃",
+  old: "👴",
 };
 
 const holidays = {
