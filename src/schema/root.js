@@ -17,6 +17,7 @@ import {
 import translations from "../utils/translations.json";
 import isEmpty from "lodash/isEmpty";
 import createHash from "../utils/hash";
+import { GraphQLError } from "graphql";
 
 /**
  * The root type definitions
@@ -304,9 +305,14 @@ export const resolvers = {
       return resolveWork(args, context);
     },
     async search(parent, args, context, info) {
+      if (Object.keys(args.q).length === 0) {
+        throw new GraphQLError(
+          "The Q argument must include one of the following fields: 'all', 'creator', 'subject', or 'title'"
+        );
+      }
+
       if (args.filters) {
         const filters = translateFilters(args.filters);
-
         return { ...args, filters };
       }
 
