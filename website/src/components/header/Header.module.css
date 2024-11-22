@@ -74,6 +74,10 @@
   align-self: center;
 }
 
+.logo strong {
+  color: var(--primary-dark);
+}
+
 /* links */
 
 .links {
