@@ -334,5 +334,10 @@ export default {
       ttl: process.env.ORDERSTATUS_TIME_TO_LIVE_SECONDS || 60 * 5,
       prefix: "orderstatus",
     },
+    datahub: {
+      url:
+        process.env.DATAHUB_URL ||
+        "http://apievent-collector.de-staging.svc.cloud.dbc.dk",
+    },
   },
 };

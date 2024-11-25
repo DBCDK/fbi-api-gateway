@@ -126,6 +126,70 @@ The changelog table contains a list of both previous and current deprecated fiel
 
 <Changelog />
 
+## Tracking user interactions
+
+Trace IDs play a crucial role in tracking and linking user actions across API requests.
+By including these identifiers, you can connect current user actions to previous ones, providing valuable insights into user behavior.
+These insights can help refine and optimize features like search, recommenders, and suggesters.
+
+This guide explains how to include the necessary headers in your API requests and provides practical examples to get you started.
+
+### Request Headers
+
+To enable tracking of user interactions, certain headers must be included in your API requests.
+These headers capture essential information such as user consent for tracking, unique visitor identifiers, and trace IDs
+that link actions across requests.
+
+#### 1. **`x-tracking-consent`**
+
+Indicates whether the user has given consent for tracking. This header ensures compliance with privacy requirements and determines whether tracking-related headers can be used.
+
+Set to `true` when the user has consented to tracking, otherwise `false`.
+
+#### 2. **`x-visitor-id`**
+
+A unique identifier for the visitor. The method for generating this identifier depends on whether the user has given consent for tracking:
+
+- With consent: Generate a UUID and store it in a cookie for persistent identification.
+- Without consent: Use a cookieless approach, such as browser fingerprinting, to generate the UUID.
+
+This ensures compliance with user preferences while still enabling actionable analytics.
+
+#### 3. **`x-parent-trace-id`**
+
+The trace ID from a previous request. This header links the current request to its causal chain, enabling better tracking of user interactions.
+The trace ID is provided in the response of a prior API call and should be included in subsequent requests to maintain continuity and context.
+
+### Example
+
+The following example demonstrates an API request that includes the required headers and retrieves the traceId and workId for the next request.
+One of the traceIds from the response should be used as the x-parent-trace-id in subsequent requests to maintain continuity and link user actions effectively.
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: bearer ..." \
+  -H "x-tracking-consent: true" \
+  -H "x-visitor-id: test-visitor-id" \
+  -H "x-parent-trace-id: test-trace-id" \
+  -d '{
+    "query": "query Example_SearchWithTrace($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!) {
+      search(q: $q) {
+        works(offset: $offset, limit: $limit) {
+          workId
+          traceId
+        }
+      }
+   }",
+    "variables": {
+      "q": { "all": "test" },
+      "offset": 0,
+      "limit": 10
+    }
+  }' \
+  https://fbi-api.dbc.dk/opac/graphql
+```
+
 ## Feedback
 
 If you have any ideas on how to improve the developer experience, don't hesitate to contact us at [kundeservice@dbc.dk](mailto:kundeservice@dbc.dk).

@@ -265,15 +265,19 @@ export const resolvers = {
       return res?.hitcount || 0;
     },
     async works(parent, args, context) {
-      const res = await context.datasources.getLoader("simplesearch").load({
+      const input = {
         ...parent,
         ...args,
         profile: context.profile,
-      });
+      };
+      const res = await context.datasources
+        .getLoader("simplesearch")
+        .load(input);
 
       const expanded = await Promise.all(
         res.result.map(async ({ workid }) => {
           const work = await resolveWork({ id: workid }, context);
+
           if (!work) {
             // log for debugging - see BIBDK2021-1256
             log.error("WORKID NOT FOUND in jed-presentation service", {
@@ -283,8 +287,11 @@ export const resolvers = {
           return work;
         })
       );
+      const filtered = expanded.filter((work) => !!work);
 
-      return expanded.filter((work) => !!work);
+      context?.dataHub?.createSearchEvent({ input, works: filtered });
+
+      return filtered;
     },
     async facets(parent, args, context) {
       const res = await context.datasources.getLoader("facets").load({
