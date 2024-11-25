@@ -280,7 +280,7 @@ export const resolvers = {
       );
       const filtered = expanded.filter((work) => !!work);
 
-      context.dataHub.createSearchEvent({ input, works: filtered });
+      context?.dataHub?.createSearchEvent({ input, works: filtered });
 
       return filtered;
     },
