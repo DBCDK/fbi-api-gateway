@@ -26,6 +26,7 @@ import { fetchUserInfo } from "./middlewares/fetchUserInfo";
 import { validateDepth } from "./middlewares/validateQueryDepth";
 import { resolveGraphQLQuery } from "./middlewares/resolveGraphQLQuery";
 import { validateAgencyId } from "./middlewares/validateAgencyId";
+import { dataHubMiddleware } from "./middlewares/dataHubMiddleware";
 
 startResourceMonitor();
 
@@ -87,6 +88,7 @@ promExporterApp.listen(9599, () => {
     performanceTracker,
     parseToken,
     dataCollectMiddleware,
+    dataHubMiddleware,
     initDataloaders,
     validateToken,
     validateAgencyId,
@@ -100,6 +102,7 @@ promExporterApp.listen(9599, () => {
     performanceTracker,
     parseToken,
     dataCollectMiddleware,
+    dataHubMiddleware,
     initDataloaders,
     validateToken,
     validateAgencyId,

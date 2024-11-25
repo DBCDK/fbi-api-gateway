@@ -2,7 +2,6 @@ import translations from "../utils/translations.json";
 import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 import { mapFacet, mapFacetEnum } from "../utils/filtersAndFacetsMap";
-import { createSearchEvent } from "../utils/trace";
 
 /**
  * define a searchquery
@@ -281,9 +280,7 @@ export const resolvers = {
       );
       const filtered = expanded.filter((work) => !!work);
 
-      context.datasources
-        .getLoader("datahub")
-        .load(createSearchEvent({ input, works: filtered }, context));
+      context.dataHub.createSearchEvent({ input, works: filtered });
 
       return filtered;
     },
