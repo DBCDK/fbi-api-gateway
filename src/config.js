@@ -336,7 +336,7 @@ export default {
     },
     datahub: {
       url:
-        process.env.USERDATA_URL ||
+        process.env.DATAHUB_URL ||
         "http://apievent-collector.de-staging.svc.cloud.dbc.dk",
     },
   },

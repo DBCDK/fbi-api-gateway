@@ -35,7 +35,6 @@ export function dataHubMiddleware(req, res, next) {
 
   function createSearchEvent({ input, works }) {
     const context = getContext();
-
     if (!context.sessionToken) {
       // We cant send this event, since sessionToken is required
       return;
@@ -51,6 +50,7 @@ export function dataHubMiddleware(req, res, next) {
       traceId: w.traceId,
     }));
     const event = {
+      context,
       kind: "SEARCH",
       variables,
       result: {
