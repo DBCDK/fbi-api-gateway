@@ -38,10 +38,9 @@ export function dataHubMiddleware(req, res, next) {
 
     if (!context.sessionToken) {
       // We cant send this event, since sessionToken is required
-      //   return;
+      return;
     }
 
-    console.log("HEEEST", context);
     const variables = {
       q: input?.q,
       offset: input?.offset,
