@@ -18,8 +18,8 @@ export function dataHubMiddleware(req, res, next) {
     // - Uses the uniqueId from culr if available.
     // - Otherwise, a hashed userId (if userId exists).
     const userToken = trackingConsentGiven
-      ? context.user?.uniqueId ||
-        (context.user?.userId ? createHash(context.user?.userId) : null)
+      ? req.user?.uniqueId ||
+        (req.user?.userId ? createHash(req.user?.userId) : null)
       : null;
 
     // Trace ID passed from a previous FBI-API response.
