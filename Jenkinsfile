@@ -42,7 +42,7 @@ pipeline {
             }
         }
         stage('Push to Artifactory') {
-            when { anyOf { branch 'master'; branch 'future' } }
+            when { anyOf { branch 'master'; branch 'prod' } }
 
             steps {
                 script {
@@ -76,7 +76,7 @@ pipeline {
         }
 
 
-       stage("Update 'future'  version number") {
+       stage("Update 'prod'  version number") {
 			agent {
 				docker {
 					label 'devel10'
