@@ -91,6 +91,13 @@ type DK5MainEntry {
 }
 type Work {
   """
+  A unique identifier for tracking user interactions with this work.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  """
+  traceId: String!
+
+  """
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
   """
   workId: String!

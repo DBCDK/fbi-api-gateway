@@ -175,7 +175,7 @@ export default {
     simplesearch: {
       url:
         process.env.SIMPLESEARCH_URL ||
-        "http://simple-search-fbiapi-1-4.mi-prod.svc.cloud.dbc.dk/search",
+        "http://simple-search-fbiapi-1-6.mi-prod.svc.cloud.dbc.dk/search",
       prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-6",
       token: process.env.SIMPLESEARCH_TOKEN,
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
@@ -238,7 +238,7 @@ export default {
     facets: {
       url:
         process.env.FACETS_URL ||
-        "http://simple-search-fbiapi-1-4.mi-prod.svc.cloud.dbc.dk/facets",
+        "http://simple-search-fbiapi-1-6.mi-prod.svc.cloud.dbc.dk/facets",
       prefix: process.env.FACETS_PREFIX || "facets-1",
       token: process.env.FACETS_TOKEN,
       ttl: process.env.FACETS_TIME_TO_LIVE_SECONDS || 10,
@@ -333,6 +333,11 @@ export default {
         "http://ors-maintenance.iscrum-ors-prod.svc.cloud.dbc.dk:8080/",
       ttl: process.env.ORDERSTATUS_TIME_TO_LIVE_SECONDS || 60 * 5,
       prefix: "orderstatus",
+    },
+    datahub: {
+      url:
+        process.env.DATAHUB_URL ||
+        "http://apievent-collector.de-staging.svc.cloud.dbc.dk",
     },
   },
 };
