@@ -146,7 +146,7 @@ async function resolveUnits(pids, context) {
         (manifestation) => manifestation.unitId === unitId
       );
       unit?.forEach((manifestation) => {
-        unitPids[manifestation.pid] = true;
+        unitPids[manifestation.objectId] = true;
       });
     })
   );
