@@ -126,9 +126,7 @@ The changelog table contains a list of both previous and current deprecated fiel
 
 <Changelog />
 
-## Tracking user interactions (Pending Approval)
-
-_This section is under review and may still change_
+## Tracking user interactions
 
 Trace IDs play a crucial role in tracking and linking user actions across API requests.
 By including these identifiers, you can connect current user actions to previous ones, providing valuable insights into user behavior.
@@ -148,16 +146,16 @@ Indicates whether the user has given consent for tracking. This header ensures c
 
 Set to `true` when the user has consented to tracking, otherwise `false`.
 
-#### 2. **`x-visitor-id`**
+#### 2. **`x-session-token`**
 
-A unique identifier for the visitor. The method for generating this identifier depends on whether the user has given consent for tracking:
+A unique identifier for the session. The method for generating this identifier depends on whether the user has given consent for tracking:
 
 - With consent: Generate a UUID and store it in a cookie for persistent identification.
 - Without consent: Use a cookieless approach, such as browser fingerprinting, to generate the UUID.
 
 This ensures compliance with user preferences while still enabling actionable analytics.
 
-#### 3. **`x-parent-trace-id`**
+#### 3. **`x-caused-by`**
 
 The trace ID from a previous request. This header links the current request to its causal chain, enabling better tracking of user interactions.
 The trace ID is provided in the response of a prior API call and should be included in subsequent requests to maintain continuity and context.
@@ -165,15 +163,15 @@ The trace ID is provided in the response of a prior API call and should be inclu
 ### Example
 
 The following example demonstrates an API request that includes the required headers and retrieves the traceId and workId for the next request.
-One of the traceIds from the response should be used as the x-parent-trace-id in subsequent requests to maintain continuity and link user actions effectively.
+One of the traceIds from the response should be used as the x-caused-by in subsequent requests to maintain continuity and link user actions effectively.
 
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
   -H "Authorization: bearer ..." \
   -H "x-tracking-consent: true" \
-  -H "x-visitor-id: test-visitor-id" \
-  -H "x-parent-trace-id: test-trace-id" \
+  -H "x-session-token: test-session-token" \
+  -H "x-caused-by: test-trace-id" \
   -d '{
     "query": "query Example_SearchWithTrace($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!) {
       search(q: $q) {
