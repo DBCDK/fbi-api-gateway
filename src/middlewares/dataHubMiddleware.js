@@ -61,7 +61,83 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
-  req.dataHub = { createSearchEvent };
+  function createWorkEvent({ input = {}, work }) {
+    const { id, faust, pid, oclc } = input;
+    const context = getContext();
+    if (!context.sessionToken || !work) {
+      return;
+    }
+
+    const variables = { id, faust, pid, oclc };
+    const identifiers = [{ identifer: work?.workId, traceId: work?.traceId }];
+    const event = {
+      context,
+      kind: "WORK",
+      variables,
+      result: {
+        identifiers,
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
+  function createSuggestEvent({ input = {}, suggestions }) {
+    const { q, suggestStypes } = input;
+    const context = getContext();
+    if (!context.sessionToken) {
+      return;
+    }
+
+    const variables = { q, suggestStypes };
+
+    const event = {
+      context,
+      kind: "SUGGEST",
+      variables,
+      result: {
+        suggestions: suggestions?.map((s) => ({
+          term: s.term,
+          type: s.type,
+          traceId: s.traceId,
+        })),
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
+  function createComplexSuggestEvent({ input = {}, suggestions }) {
+    const { q, suggestStypes } = input;
+    const context = getContext();
+    if (!context.sessionToken) {
+      return;
+    }
+
+    const variables = { q, suggestStypes };
+
+    const event = {
+      context,
+      kind: "COMPLEX_SEARCH_SUGGEST",
+      variables,
+      result: {
+        suggestions: suggestions?.map((s) => ({
+          term: s.term,
+          type: s.type,
+          traceId: s.traceId,
+        })),
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
+  req.dataHub = {
+    createSearchEvent,
+    createWorkEvent,
+    createSuggestEvent,
+    createComplexSuggestEvent,
+  };
 
   next();
 }
