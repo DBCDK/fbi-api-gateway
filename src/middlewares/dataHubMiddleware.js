@@ -25,12 +25,13 @@ export function dataHubMiddleware(req, res, next) {
     // Trace ID passed from a previous FBI-API response.
     const causedBy = req.headers["x-parent-trace-id"];
 
-    return {
-      systemId,
-      sessionToken,
-      causedBy: causedBy ? [causedBy] : [],
-      userToken,
-    };
+    let res = { systemId, sessionToken, causedBy: causedBy ? [causedBy] : [] };
+
+    if (userToken) {
+      res.userToken = userToken;
+    }
+
+    return res;
   }
 
   function createSearchEvent({ input, works }) {
