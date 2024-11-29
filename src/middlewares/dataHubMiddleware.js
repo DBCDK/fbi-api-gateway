@@ -12,7 +12,7 @@ export function dataHubMiddleware(req, res, next) {
     // Visitor ID:
     // - Without tracking consent, the client app should use browser fingerprinting.
     // - With tracking consent, the client app should use a long lived cookie.
-    const sessionToken = req.headers["x-visitor-id"];
+    const sessionToken = req.headers["x-session-token"];
 
     // User ID (only used if user is logged in and tracking consent is given):
     // - Uses the uniqueId from culr if available.
@@ -23,7 +23,7 @@ export function dataHubMiddleware(req, res, next) {
       : null;
 
     // Trace ID passed from a previous FBI-API response.
-    const causedBy = req.headers["x-parent-trace-id"];
+    const causedBy = req.headers["x-caused-by"];
 
     let res = { systemId, sessionToken, causedBy: causedBy ? [causedBy] : [] };
 

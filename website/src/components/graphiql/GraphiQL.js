@@ -89,7 +89,7 @@ export default function Wrap() {
         "Content-Type": "application/json",
         Authorization: `bearer ${selectedToken?.token}`,
         "X-Tracking-Consent": "false",
-        "X-Visitor-Id": "test-visitor-id",
+        "X-Session-Token": "test-session-token",
       },
       body: JSON.stringify({ query, variables }),
       credentials: "same-origin",
