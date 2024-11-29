@@ -2227,6 +2227,13 @@ enum ComplexSuggestionTypeEnum {
 }
 
 type ComplexSearchSuggestion {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this suggestion is selected.
+  \\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"The type of suggestion\\"\\"\\"
   type: String!
 
@@ -2238,6 +2245,13 @@ type ComplexSearchSuggestion {
 }
 
 type Suggestion {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this suggestion is selected.
+  \\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"The type of suggestion: creator, subject or title\\"\\"\\"
   type: SuggestionTypeEnum!
 
@@ -5495,6 +5509,13 @@ enum ComplexSuggestionTypeEnum {
 }
 
 type ComplexSearchSuggestion {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this suggestion is selected.
+  \\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"The type of suggestion\\"\\"\\"
   type: String!
 
@@ -5506,6 +5527,13 @@ type ComplexSearchSuggestion {
 }
 
 type Suggestion {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this suggestion is selected.
+  \\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"The type of suggestion: creator, subject or title\\"\\"\\"
   type: SuggestionTypeEnum!
 
