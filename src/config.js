@@ -339,5 +339,10 @@ export default {
         process.env.DATAHUB_URL ||
         "http://apievent-collector.de-staging.svc.cloud.dbc.dk",
     },
+    pseudonymizer: {
+      url:
+        process.env.PSEUDONYMIZER_URL ||
+        "https://pseudonymizer-service.de-pseudonymizer-staging.svc.cloud.dbc.dk",
+    },
   },
 };
