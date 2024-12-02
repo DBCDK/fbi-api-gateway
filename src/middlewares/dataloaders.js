@@ -10,7 +10,8 @@ export function initDataloaders(req, res, next) {
     uuid(),
     req.testUser,
     req.accessToken,
-    req.tracking
+    req.tracking,
+    req.dataHub
   );
   next();
 }
