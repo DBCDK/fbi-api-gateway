@@ -72,6 +72,11 @@ type HoldingsResponse {
   Url to local site, where holding details may be found
   """
   lookupUrl: String
+  
+  """
+  Urls to local site - one for each identifier
+  """
+  lookupUrls: [String!]  
 
   """
   The number of items owned by the agency.
@@ -220,7 +225,7 @@ async function filterHoldings(holdings, context) {
 function getLookupUrl(branch, localIdentifiers) {
   if (branch?.lookupUrl?.includes("search/ting")) {
     const pids = localIdentifiers?.map((id) => id.localizationPid);
-    return `${branch?.lookupUrl}${encodeURIComponent(pids?.join(" OR "))}`;
+    return [`${branch?.lookupUrl}${encodeURIComponent(pids?.join(" OR "))}`];
   }
   const allIdentifiers =
     localIdentifiers?.map((id) => id?.localIdentifier) || [];
@@ -234,12 +239,14 @@ function getLookupUrl(branch, localIdentifiers) {
 
   // Replace all _IDNR_ with identifers
   if (branch?.lookupUrl?.includes("_IDNR_")) {
-    return branch.lookupUrl.replace(/_IDNR_/g, selectedIdentifiers);
+    return allIdentifiers?.map((ident) =>
+      branch.lookupUrl.replace(/_IDNR_/g, ident)
+    );
   }
 
   // Well.. This is a fallback
   if (branch?.lookupUrl) {
-    return branch.lookupUrl + selectedIdentifiers;
+    return [branch.lookupUrl + selectedIdentifiers];
   }
 }
 
@@ -250,6 +257,7 @@ export const resolvers = {
       // Expand pids, we include pids from units
       const uniquePids = await resolveUnits(args.pids, context);
 
+      //@TODO .. if there are more than one pid we want the newest first :)
       // If no pids are found, we return
       if (!uniquePids?.length) {
         return { status: "UNKNOWN_MATERIAL" };
@@ -276,7 +284,8 @@ export const resolvers = {
         return { status: "NOT_OWNED" };
       }
 
-      const lookupUrl = getLookupUrl(parent, localIdentifiers);
+      const lookupUrls = getLookupUrl(parent, localIdentifiers);
+      const lookupUrl = lookupUrls?.[0];
 
       // Date of today, for instance 2024-04-14
       const today = getIsoDate();
@@ -384,6 +393,7 @@ export const resolvers = {
           status: "ON_SHELF",
           items: holdingsItemsForBranchOnShelf,
           lookupUrl,
+          lookupUrls,
           ownedByAgency,
         };
       }
@@ -398,6 +408,7 @@ export const resolvers = {
           status: "ON_SHELF_NOT_FOR_LOAN",
           items: holdingsItemsForBranchOnShelf,
           lookupUrl,
+          lookupUrls,
           ownedByAgency,
         };
       }
@@ -431,6 +442,7 @@ export const resolvers = {
         expectedBranchReturnDate,
         items: holdingsItemsForBranchOnShelf,
         lookupUrl,
+        lookupUrls,
         ownedByAgency,
       };
     },
