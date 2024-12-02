@@ -24,9 +24,6 @@ const defaultSettings = {
     "universe",
     "mood",
     "ors",
-
-    // OBS! this may not be for everyone
-    "marc",
   ],
   denyTypes: ["CheckOrderPolicy", "Availability", "SEO"],
 };
