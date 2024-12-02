@@ -24,6 +24,9 @@ const defaultSettings = {
     "universe",
     "mood",
     "ors",
+
+    // OBS! this may not be for everyone
+    "marc",
   ],
   denyTypes: ["CheckOrderPolicy", "Availability", "SEO"],
 };
@@ -62,7 +65,7 @@ export default {
     denyTypes: [],
   },
   "fbs:system": {
-    allowRootFields: ["culr", "vip"],
+    allowRootFields: ["culr", "vip", "marc"],
     denyTypes: [],
   },
   ddbcms: {

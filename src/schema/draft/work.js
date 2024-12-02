@@ -98,6 +98,11 @@ type Work {
   traceId: String!
 
   """
+  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
+  """
+  marcId: String!
+
+  """
   Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
   """
   workId: String!

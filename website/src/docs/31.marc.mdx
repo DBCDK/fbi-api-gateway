@@ -1,0 +1,33 @@
+# MARC
+
+Field for presenting bibliographic records in MARC format.
+
+## GetRecordByRecordId
+
+Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
+
+The record identifier `recordId` should be presented in the format:  
+`agencyId`:`bibliographicRecordId`
+
+The serialization format of the MARC record content, is _marcXchange_.
+
+<InlineGraphiQL
+  query={`
+    query ($id: String!) {
+      marc {
+        getMarcByRecodId(recordId: $id) {
+          agency {
+            agencyId
+          }
+          bibliographicRecordId
+          contentSerializationFormat
+          deleted
+          content
+        }
+      }
+    }
+`}
+  variables={{
+    id: "870970:138824578",
+  }}
+/>
