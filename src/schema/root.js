@@ -254,16 +254,41 @@ export const resolvers = {
       return "gr8";
     },
     async manifestation(parent, args, context, info) {
-      return resolveManifestation(args, context);
+      const res = await resolveManifestation(args, context);
+
+      context?.dataHub?.createManifestationEvent({
+        input: args,
+        manifestation: res,
+      });
+
+      return res;
     },
     async manifestations(parent, args, context, info) {
       if (args.faust) {
         return Promise.all(
-          args.faust.map((faust) => resolveManifestation({ faust }, context))
+          args.faust.map(async (faust) => {
+            const m = await resolveManifestation({ faust }, context);
+            if (m) {
+              context?.dataHub?.createManifestationEvent({
+                input: { faust },
+                manifestation: m,
+              });
+            }
+            return m;
+          })
         );
       } else if (args.pid) {
         return Promise.all(
-          args.pid.map((pid) => resolveManifestation({ pid }, context))
+          args.pid.map(async (pid) => {
+            const m = await resolveManifestation({ pid }, context);
+            if (m) {
+              context?.dataHub?.createManifestationEvent({
+                input: { pid },
+                manifestation: m,
+              });
+            }
+            return m;
+          })
         );
       }
       return [];
