@@ -12,7 +12,7 @@ type MarcRecord {
   """
   The bibliographic record identifier
   """
-  bibliographicRecordId: Int
+  bibliographicRecordId: Int!
 
   """
   The MARC record collection content as marcXchange XML string
@@ -23,12 +23,12 @@ type MarcRecord {
   """
   The serialization format of the MARC record content. Defaults to 'marcXchange'
   """
-  contentSerializationFormat: String
+  contentSerializationFormat: String!
 
   """
   Flag indicating whether or not the record is deleted
   """
-  deleted: Boolean
+  deleted: Boolean!
 }
 
 type Marc {
