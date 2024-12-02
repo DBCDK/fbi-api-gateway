@@ -1,7 +1,10 @@
-import createHash from "../utils/hash";
+import isbot from "isbot";
 
 // TODO add descriptions of headers in our documentation
 export function dataHubMiddleware(req, res, next) {
+  const userAgent = req?.get?.("User-Agent");
+  const isBot = isbot(userAgent);
+
   async function getContext() {
     // The ID identifying the calling system (a smaug client id)
     const systemId = req?.smaug?.app?.clientId;
@@ -34,13 +37,29 @@ export function dataHubMiddleware(req, res, next) {
       )?.token;
     }
 
+    if (!sessionToken && req?.accessToken) {
+      // If sessionToken was not sent as a header, we use a pseudonymized accessToken
+      res.sessionToken = (
+        await req.datasources.getLoader("pseudonymizer").load(req.accessToken)
+      )?.token;
+    }
+
     return res;
+  }
+
+  function shouldSendEvent(eventContext) {
+    if (!eventContext.sessionToken) {
+      return false;
+    }
+    if (isBot) {
+      return false;
+    }
+    return true;
   }
 
   async function createSearchEvent({ input, works }) {
     const context = await getContext();
-    if (!context.sessionToken) {
-      // We cant send this event, since sessionToken is required
+    if (!shouldSendEvent(context)) {
       return;
     }
 
@@ -68,7 +87,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createWorkEvent({ input = {}, work }) {
     const { id, faust, pid, oclc } = input;
     const context = await getContext();
-    if (!context.sessionToken || !work) {
+    if (!shouldSendEvent(context)) {
       return;
     }
 
@@ -89,7 +108,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createSuggestEvent({ input = {}, suggestions }) {
     const { q, suggestStypes } = input;
     const context = await getContext();
-    if (!context.sessionToken) {
+    if (!shouldSendEvent(context)) {
       return;
     }
 
@@ -114,10 +133,9 @@ export function dataHubMiddleware(req, res, next) {
   async function createComplexSuggestEvent({ input = {}, suggestions }) {
     const { q, suggestStypes } = input;
     const context = await getContext();
-    if (!context.sessionToken) {
+    if (!shouldSendEvent(context)) {
       return;
     }
-
     const variables = { q, suggestStypes };
 
     const event = {
@@ -136,11 +154,38 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
+  async function createSubmitOrderEvent({ input = {}, order }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const event = {
+      kind: "SUBMIT_ORDER",
+      context,
+      variables: {
+        input: {
+          pids: input?.pids,
+          pickUpBranch: input?.pickUpBranch,
+        },
+      },
+      result: {
+        submitOrder: {
+          status: order?.status,
+          orderId: order?.orderId,
+        },
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
   req.dataHub = {
     createSearchEvent,
     createWorkEvent,
     createSuggestEvent,
     createComplexSuggestEvent,
+    createSubmitOrderEvent,
   };
 
   next();
