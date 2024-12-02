@@ -37,6 +37,13 @@ export function dataHubMiddleware(req, res, next) {
       )?.token;
     }
 
+    if (!sessionToken && req?.accessToken) {
+      // If sessionToken was not sent as a header, we use a pseudonymized accessToken
+      res.sessionToken = (
+        await req.datasources.getLoader("pseudonymizer").load(req.accessToken)
+      )?.token;
+    }
+
     return res;
   }
 
