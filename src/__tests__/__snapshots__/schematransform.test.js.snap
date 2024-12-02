@@ -823,6 +823,9 @@ type HoldingsResponse {
   \\"\\"\\"Url to local site, where holding details may be found\\"\\"\\"
   lookupUrl: String
 
+  \\"\\"\\"Urls to local site - one for each identifier\\"\\"\\"
+  lookupUrls: [String!]
+
   \\"\\"\\"
   The number of items owned by the agency.
   Returns null if it is unknown
