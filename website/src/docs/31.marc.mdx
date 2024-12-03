@@ -2,7 +2,7 @@
 
 Field for presenting bibliographic records in MARC format.
 
-## GetRecordByRecordId
+## Get by recordId
 
 Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
 
@@ -13,12 +13,11 @@ The serialization format of the MARC record content, is _marcXchange_.
 
 <InlineGraphiQL
   query={`
-    query ($id: String!) {
+    query Example_GetMarcByRecordId($id: String!) {
       marc {
-        getMarcByRecodId(recordId: $id) {
-          agency {
-            agencyId
-          }
+        getMarcByRecordId(recordId: $id) {
+          id
+          agencyId
           bibliographicRecordId
           contentSerializationFormat
           deleted
@@ -29,5 +28,55 @@ The serialization format of the MARC record content, is _marcXchange_.
 `}
   variables={{
     id: "870970:138824578",
+  }}
+/>
+
+## Get by Manifestation
+
+Access to a marc record can also be done by the `marc` field directly on a manifestaion
+
+<InlineGraphiQL
+  query={`
+    query Example_MarcRecordManifestation($pid: String!) {
+      manifestation(pid: $pid) {
+        pid
+        marc {
+          id
+          agencyId
+          bibliographicRecordId
+          contentSerializationFormat
+          deleted
+          content
+        }
+      }
+    }
+`}
+  variables={{
+    pid: "870970-basis:42097675",
+  }}
+/>
+
+## Get by Work
+
+Like manifestations, access to a marc record can also be done by the `marc` field on a work
+
+<InlineGraphiQL
+  query={`
+    query Example_MarcRecordWork($id: String!) {
+      work(id: $id) {
+        workId
+        marc {
+          id
+          agencyId
+          bibliographicRecordId
+          contentSerializationFormat
+          deleted
+          content
+        }
+      }
+    }
+`}
+  variables={{
+    id: "work-of:870970-basis:48953786",
   }}
 />

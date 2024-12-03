@@ -5,20 +5,25 @@
 export const typeDef = `
 type MarcRecord {
   """
+  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
+  """
+  id: String!
+
+  """
   The library agency
   """
-  agency: Branch
+  agencyId: String!
 
   """
   The bibliographic record identifier
   """
-  bibliographicRecordId: Int!
+  bibliographicRecordId: String!
 
   """
   The MARC record collection content as marcXchange XML string
 
   """
-  content: String
+  content: String!
 
   """
   The serialization format of the MARC record content. Defaults to 'marcXchange'
@@ -35,7 +40,7 @@ type Marc {
   """
   Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
   """
-  getMarcByRecodId(
+  getMarcByRecordId(
   """
   The record identifier on the form {agencyId}:{bibliographicRecordId}
   """
@@ -46,7 +51,20 @@ extend type Query {
   """
   Field for presenting bibliographic records in MARC format
   """
-  marc: Marc 
+  marc: Marc!
+}
+
+extend type Work {
+    """
+    Field for presenting bibliographic records in MARC format
+    """
+    marc: MarcRecord
+}
+extend type Manifestation {
+    """
+    Field for presenting bibliographic records in MARC format
+    """
+    marc: MarcRecord
 }
 `;
 
@@ -57,7 +75,7 @@ export const resolvers = {
     },
   },
   Marc: {
-    async getMarcByRecodId(parent, args, context, info) {
+    async getMarcByRecordId(parent, args, context, info) {
       const recordId = args.recordId;
 
       return await context.datasources
@@ -65,14 +83,22 @@ export const resolvers = {
         .load({ recordId });
     },
   },
-  MarcRecord: {
-    async agency(parent, args, context, info) {
-      const agencyid = parent.agencyId;
-      const res = await context.datasources.getLoader("library").load({
-        agencyid,
-      });
+  Work: {
+    async marc(parent, args, context, info) {
+      const recordId = parent.marcId;
 
-      return res?.result?.[0];
+      return await context.datasources
+        .getLoader("getMarcByRecordId")
+        .load({ recordId });
+    },
+  },
+  Manifestation: {
+    async marc(parent, args, context, info) {
+      const recordId = parent.marcId;
+
+      return await context.datasources
+        .getLoader("getMarcByRecordId")
+        .load({ recordId });
     },
   },
 };

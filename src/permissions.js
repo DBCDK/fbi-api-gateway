@@ -24,6 +24,7 @@ const defaultSettings = {
     "universe",
     "mood",
     "ors",
+    "marc",
   ],
   denyTypes: ["CheckOrderPolicy", "Availability", "SEO"],
 };
@@ -62,7 +63,7 @@ export default {
     denyTypes: [],
   },
   "fbs:system": {
-    allowRootFields: ["culr", "vip", "marc"],
+    allowRootFields: ["work", "manifestation", "culr", "vip", "marc"],
     denyTypes: [],
   },
   ddbcms: {

@@ -585,11 +585,6 @@ type Manifestation {
   traceId: String!
 
   """
-  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
-  """
-  marcId: String!
-
-  """
   Unique identification of the manifestation e.g 870970-basis:54029519
   """
   pid: String!
