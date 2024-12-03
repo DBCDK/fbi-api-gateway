@@ -6,8 +6,7 @@ Field for presenting bibliographic records in MARC format.
 
 Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
 
-The record identifier `recordId` should be presented in the format:  
-`agencyId`:`bibliographicRecordId`
+The record identifier `recordId` can be extracted from either a work `Work.marc.id` or an manifestation `Manifestation.marc.id`
 
 The serialization format of the MARC record content, is _marcXchange_.
 
