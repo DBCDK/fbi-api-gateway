@@ -554,17 +554,29 @@ extend type Query {
 `;
 
 async function danbibReadPermissions(context) {
-  const userinfo = await context.datasources.getLoader("userinfo").load({
-    accessToken: context.accessToken,
-  });
+  const isAuthenticated = !!context.smaug?.user?.id;
+
+  let idpRights = [];
+  if (isAuthenticated) {
+    (
+      await context.datasources.getLoader("userinfo").load({
+        accessToken: context.accessToken,
+      })
+    )?.attributes?.dbcidp?.forEach((entry) =>
+      entry?.rights?.forEach((rightEntry) => {
+        idpRights.push(rightEntry);
+      })
+    );
+  } else {
+    // Anonymous tokens may have access via smaug configuration
+    idpRights = context?.smaug?.anonymousIdpRights;
+  }
 
   // Check permissions for accessing vip
-  return !!userinfo?.attributes?.dbcidp?.find((entry) => {
-    return entry?.rights?.find?.((rightsEntry) => {
-      return (
-        rightsEntry?.name === "READ" && rightsEntry?.productName === "DANBIB"
-      );
-    });
+  return idpRights?.find?.((rightsEntry) => {
+    return (
+      rightsEntry?.name === "READ" && rightsEntry?.productName === "DANBIB"
+    );
   });
 }
 export const resolvers = {

@@ -1,3 +1,4 @@
+import { createTraceId } from "../../utils/trace";
 import { resolveWork } from "../../utils/utils";
 
 export const typeDef = `
@@ -24,6 +25,14 @@ enum ComplexSuggestionTypeEnum {
 }
 
 type ComplexSearchSuggestion {
+
+  """
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this suggestion is selected.
+  """
+  traceId: String!
+
   """
   The type of suggestion
   """
@@ -41,6 +50,14 @@ type ComplexSearchSuggestion {
 }
 
 type Suggestion {
+
+  """
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this suggestion is selected.
+  """
+  traceId: String!
+
   """
   The type of suggestion: creator, subject or title
   """
@@ -86,32 +103,58 @@ export const resolvers = {
   },
   SuggestResponse: {
     async result(parent, args, context, info) {
-      const res = await context.datasources.getLoader("suggester").load({
+      const input = {
         ...parent,
         ...args,
         profile: context.profile,
-      });
-      return res || [];
+      };
+      const res = await context.datasources.getLoader("suggester").load(input);
+      const suggestions = res?.map((entry) => ({
+        ...entry,
+        traceId: createTraceId(),
+      }));
+
+      context?.dataHub?.createSuggestEvent({ input, suggestions });
+
+      return suggestions || [];
     },
   },
   ComplexSuggestResponse: {
     async result(parent, args, context, info) {
-      const res = await context.datasources.getLoader("complexSuggest").load({
-        type: parent.type,
-        q: parent.q,
+      const input = {
+        ...parent,
+        ...args,
         profile: context.profile,
-      });
-      return res || [];
+      };
+      const res = await context.datasources
+        .getLoader("complexSuggest")
+        .load(input);
+
+      const suggestions = res?.map((entry) => ({
+        ...entry,
+        traceId: createTraceId(),
+      }));
+      context?.dataHub?.createComplexSuggestEvent({ input, suggestions });
+      return suggestions || [];
     },
   },
   LocalSuggestResponse: {
     async result(parent, args, context, info) {
-      const res = await context.datasources.getLoader("prosper").load({
+      const input = {
         ...parent,
         ...args,
         profile: context.profile,
-      });
-      return res;
+      };
+      const res = await context.datasources.getLoader("prosper").load(input);
+
+      const suggestions = res?.map((entry) => ({
+        ...entry,
+        traceId: createTraceId(),
+      }));
+
+      context?.dataHub?.createSuggestEvent({ input, suggestions });
+
+      return suggestions || [];
     },
   },
 };

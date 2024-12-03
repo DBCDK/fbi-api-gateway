@@ -135,7 +135,14 @@ export async function load(
       orderSystem,
     });
 
-    return parseOrder(order);
+    const parsedOrder = parseOrder(order);
+
+    context?.dataHub?.createSubmitOrderEvent({
+      input,
+      order: parsedOrder,
+    });
+
+    return parsedOrder;
   } catch (e) {
     log.error("SUBMIT ORDER: Error placing order", { parameters });
     return null;

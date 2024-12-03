@@ -16,6 +16,14 @@ const components = {
       {children}
     </Title>
   ),
+  h3: ({ children }) => (
+    <Title type="title7" as="h3">
+      {children}
+    </Title>
+  ),
+  code: ({ children }) => (
+    <code style={{ whiteSpaceCollapse: "preserve" }}>{children}</code>
+  ),
   p: ({ children }) => <Text type="text2">{children}</Text>,
   li: ({ children }) => (
     <li>

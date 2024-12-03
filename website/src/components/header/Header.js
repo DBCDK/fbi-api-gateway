@@ -52,6 +52,7 @@ export default function Header() {
   const isSchema = router.pathname === "/schema";
   const isTemp = theme === "temp";
   const isFuture = theme === "future";
+  const isOld = theme === "old";
 
   const indexStyles = isIndex ? styles.index : "";
   const documentationStyles = isDocumentation ? styles.documentation : "";
@@ -69,7 +70,10 @@ export default function Header() {
           <Col className={styles.left}>
             <Title className={styles.logo}>
               <span>
-                <Link href="/">FBI API</Link> {icon}
+                <Link href="/">
+                  {isOld && <strong>{"[old]"}</strong>} FBI API
+                </Link>{" "}
+                {icon}
               </span>
             </Title>
           </Col>

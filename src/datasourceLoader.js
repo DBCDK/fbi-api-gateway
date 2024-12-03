@@ -115,7 +115,8 @@ export default function createDataLoaders(
   uuid,
   testUser,
   accessToken,
-  tracking
+  tracking,
+  dataHub
 ) {
   const result = {};
   const stats = createTracker(uuid);
@@ -137,6 +138,7 @@ export default function createDataLoaders(
         accessToken,
         stats,
         tracking,
+        dataHub,
       })?.loader;
     }
     return result[name];

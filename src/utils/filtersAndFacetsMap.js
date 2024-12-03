@@ -62,6 +62,7 @@ const mappedFacetEnums = {
   LET: "let_range",
   GENERALAUDIENCE: "generalAudience",
   LIBRARYRECOMMENDATION: "libraryRecommendation",
+  GAMEPLATFORM: "gamePlatform",
 };
 
 /**

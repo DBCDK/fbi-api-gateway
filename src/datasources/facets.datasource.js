@@ -6,14 +6,8 @@ import config from "../config";
 import uniq from "lodash/uniq";
 import { mapFacetEnums, mapFilters } from "../utils/filtersAndFacetsMap";
 
-const {
-  url,
-  prefix,
-  ttl,
-  token,
-  firstHits,
-  disableFuzzySearch,
-} = config.datasources.facets;
+const { url, prefix, ttl, token, firstHits, disableFuzzySearch } =
+  config.datasources.facets;
 
 export async function load({ q, filters = {}, facets = [], profile }, context) {
   const { agency, name } = profile;
@@ -44,6 +38,13 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
     body: JSON.stringify(query),
     timeoutMs: 60000,
   });
+
+  // If an error is returned from simpleSearch, we return only the simpleSearch facet names to generate empty results.
+  if (result.status !== 200) {
+    return mappedFacets.map((facet) => ({
+      name: facet,
+    }));
+  }
 
   const res = result.body;
 

@@ -17,6 +17,7 @@ export default function Home() {
 
   const isTemp = theme === "temp";
   const isFuture = theme === "future";
+  const isOld = theme === "old";
 
   return (
     <>
@@ -27,7 +28,8 @@ export default function Home() {
           <Col>
             <Text className={styles.text}>Hello! You have found the</Text>
             <Title as="h1" type="title6" className={styles.title}>
-              {(isTemp || isFuture) && <strong>[Temporary]</strong>} FBI API
+              {(isTemp || isFuture) && <strong>[Temporary]</strong>}
+              {isOld && <strong>[Old]</strong>} FBI API
             </Title>
           </Col>
         </Row>
@@ -70,7 +72,7 @@ export default function Home() {
               The API is based on GraphQL, which provides benefits such as:
               <ul>
                 <li>
-                  A bult in query language - You decide what data you need, and
+                  A built in query language - You decide what data you need, and
                   you get only that
                 </li>
                 <li>Access to many resources in a single request</li>
