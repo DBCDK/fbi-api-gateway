@@ -104,6 +104,9 @@ type Query {
   culr: CulrQuery!
   debug: Debug
   series(seriesId: String!): Series
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: Marc!
   mood: MoodQueries!
   ors: OrsQuery!
   manifestation(pid: String, faust: String): Manifestation
@@ -1771,6 +1774,9 @@ type Manifestation {
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
 }
 
 type Unit {
@@ -2005,6 +2011,9 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
 }
 
 enum ReviewElementTypeEnum {
@@ -2701,6 +2710,40 @@ enum AvailabilityEnum {
   NOW
   LATER
   UNKNOWN
+}
+
+type MarcRecord {
+  \\"\\"\\"
+  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
+  \\"\\"\\"
+  id: String!
+
+  \\"\\"\\"The library agency\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
+  bibliographicRecordId: String!
+
+  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
+  content: String!
+
+  \\"\\"\\"
+  The serialization format of the MARC record content. Defaults to 'marcXchange'
+  \\"\\"\\"
+  contentSerializationFormat: String!
+
+  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
+  deleted: Boolean!
+}
+
+type Marc {
+  \\"\\"\\"
+  Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
+  \\"\\"\\"
+  getMarcByRecordId(
+    \\"\\"\\"The record identifier on the form {agencyId}:{bibliographicRecordId}\\"\\"\\"
+    recordId: String!
+  ): MarcRecord
 }
 
 \\"\\"\\"Type of moodSuggest response\\"\\"\\"
@@ -4014,6 +4057,9 @@ type Mutation {
 type Query {
   debug: Debug
   series(seriesId: String!): Series
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: Marc!
   mood: MoodQueries!
   ors: OrsQuery!
   manifestation(pid: String, faust: String): Manifestation
@@ -5057,6 +5103,9 @@ type Manifestation {
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
 }
 
 type Unit {
@@ -5287,6 +5336,9 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
 }
 
 enum ReviewElementTypeEnum {
@@ -5775,6 +5827,40 @@ type LinkCheckResponse {
 
 type LinkCheckService {
   checks(urls: [String!]): [LinkCheckResponse!]!
+}
+
+type MarcRecord {
+  \\"\\"\\"
+  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
+  \\"\\"\\"
+  id: String!
+
+  \\"\\"\\"The library agency\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
+  bibliographicRecordId: String!
+
+  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
+  content: String!
+
+  \\"\\"\\"
+  The serialization format of the MARC record content. Defaults to 'marcXchange'
+  \\"\\"\\"
+  contentSerializationFormat: String!
+
+  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
+  deleted: Boolean!
+}
+
+type Marc {
+  \\"\\"\\"
+  Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
+  \\"\\"\\"
+  getMarcByRecordId(
+    \\"\\"\\"The record identifier on the form {agencyId}:{bibliographicRecordId}\\"\\"\\"
+    recordId: String!
+  ): MarcRecord
 }
 
 \\"\\"\\"Type of moodSuggest response\\"\\"\\"
@@ -6921,6 +7007,9 @@ type Manifestation {
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
 }
 
 type Unit {
@@ -7136,6 +7225,9 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
 }
 
 enum ReviewElementTypeEnum {
@@ -7481,6 +7573,30 @@ type TvSeries {
 type TvSeriesDetails {
   display: String
   numbers: [Int!]
+}
+
+type MarcRecord {
+  \\"\\"\\"
+  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
+  \\"\\"\\"
+  id: String!
+
+  \\"\\"\\"The library agency\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
+  bibliographicRecordId: String!
+
+  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
+  content: String!
+
+  \\"\\"\\"
+  The serialization format of the MARC record content. Defaults to 'marcXchange'
+  \\"\\"\\"
+  contentSerializationFormat: String!
+
+  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
+  deleted: Boolean!
 }
 
 union UniverseContentUnion = Work | Series

@@ -277,6 +277,13 @@ export default {
       authenticationGroup: process.env.CULR_GROUP,
       authenticationPassword: process.env.CULR_PASSWORD,
     },
+    marc: {
+      url:
+        "http://marc-presentation-service.cisterne.svc.cloud.dbc.dk/api/v1" ||
+        process.env.MARC_URL,
+      prefix: process.env.MARC_PREFIX || "MARC-1",
+      ttl: process.env.MARC_TIME_TO_LIVE_SECONDS || 60 * 60,
+    },
     statsbiblioteket: {
       url:
         process.env.STATSBIBLIOTEKET_URL ||
