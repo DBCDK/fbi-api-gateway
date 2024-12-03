@@ -42,7 +42,7 @@ pipeline {
             }
         }
         stage('Push to Artifactory') {
-            when { anyOf { branch 'master'; branch 'prod' } }
+            when { anyOf { branch 'master'; branch 'prod'; branch 'future' } }
 
             steps {
                 script {
