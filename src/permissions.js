@@ -63,7 +63,7 @@ export default {
     denyTypes: [],
   },
   "fbs:system": {
-    allowRootFields: ["work", "manifestation", "culr", "vip", "marc"],
+    allowRootFields: ["culr", "vip", "marc"],
     denyTypes: [],
   },
   ddbcms: {
