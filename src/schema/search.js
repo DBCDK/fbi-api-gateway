@@ -87,6 +87,7 @@ input SearchFiltersInput {
   workTypes: [String!]
   year: [String!]
   dk5: [String!]
+  gamePlatform: [String!]
 
   branchId: [String!]
   department: [String!]
