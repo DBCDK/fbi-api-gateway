@@ -264,6 +264,8 @@ export default function Wrap(props) {
         Accept: "application/json",
         "Content-Type": "application/json",
         Authorization: `bearer ${selectedToken?.token}`,
+        "X-Tracking-Consent": "false",
+        "X-Session-Token": "test-session-id",
       },
       body: JSON.stringify({ query, variables }),
       credentials: "same-origin",

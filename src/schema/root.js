@@ -3,7 +3,6 @@
  *
  */
 
-import { log } from "dbc-node-logger";
 import { createHistogram } from "../utils/monitor";
 import {
   fetchOrderStatus,
@@ -16,7 +15,6 @@ import {
 
 import translations from "../utils/translations.json";
 import isEmpty from "lodash/isEmpty";
-import createHash from "../utils/hash";
 import { GraphQLError } from "graphql";
 
 /**
@@ -256,34 +254,77 @@ export const resolvers = {
       return "gr8";
     },
     async manifestation(parent, args, context, info) {
-      return resolveManifestation(args, context);
+      const res = await resolveManifestation(args, context);
+
+      context?.dataHub?.createManifestationEvent({
+        input: args,
+        manifestation: res,
+      });
+
+      return res;
     },
     async manifestations(parent, args, context, info) {
       if (args.faust) {
         return Promise.all(
-          args.faust.map((faust) => resolveManifestation({ faust }, context))
+          args.faust.map(async (faust) => {
+            const m = await resolveManifestation({ faust }, context);
+            if (m) {
+              context?.dataHub?.createManifestationEvent({
+                input: { faust },
+                manifestation: m,
+              });
+            }
+            return m;
+          })
         );
       } else if (args.pid) {
         return Promise.all(
-          args.pid.map((pid) => resolveManifestation({ pid }, context))
+          args.pid.map(async (pid) => {
+            const m = await resolveManifestation({ pid }, context);
+            if (m) {
+              context?.dataHub?.createManifestationEvent({
+                input: { pid },
+                manifestation: m,
+              });
+            }
+            return m;
+          })
         );
       }
       return [];
     },
     async works(parent, args, context, info) {
       if (args.id) {
-        return Promise.all(args.id.map((id) => resolveWork({ id }, context)));
+        return Promise.all(
+          args.id.map(async (id) => {
+            const work = await resolveWork({ id }, context);
+            context?.dataHub?.createWorkEvent({ input: { id }, work });
+            return work;
+          })
+        );
       } else if (args.faust) {
         return Promise.all(
-          args.faust.map((faust) => resolveWork({ faust }, context))
+          args.faust.map(async (faust) => {
+            const work = await resolveWork({ faust }, context);
+            context?.dataHub?.createWorkEvent({ input: { faust }, work });
+            return work;
+          })
         );
       } else if (args.pid) {
         return Promise.all(
-          args.pid.map((pid) => resolveWork({ pid }, context))
+          args.pid.map(async (pid) => {
+            const work = await resolveWork({ pid }, context);
+            context?.dataHub?.createWorkEvent({ input: { pid }, work });
+            return work;
+          })
         );
       } else if (args.oclc) {
         return Promise.all(
-          args.oclc.map((oclc) => resolveWork({ oclc }, context))
+          args.oclc.map(async (oclc) => {
+            const work = await resolveWork({ oclc }, context);
+            context?.dataHub?.createWorkEvent({ input: { oclc }, work });
+            return work;
+          })
         );
       }
       return [];
@@ -302,7 +343,11 @@ export const resolvers = {
     },
 
     async work(parent, args, context, info) {
-      return resolveWork(args, context);
+      const work = await resolveWork(args, context);
+
+      context?.dataHub?.createWorkEvent({ input: args, work });
+
+      return work;
     },
     async search(parent, args, context, info) {
       if (Object.keys(args.q).length === 0) {
