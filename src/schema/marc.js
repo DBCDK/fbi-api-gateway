@@ -5,7 +5,7 @@
 export const typeDef = `
 type MarcRecord {
   """
-  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
+  The marc record identifier
   """
   id: String!
 

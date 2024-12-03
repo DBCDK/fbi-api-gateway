@@ -2713,9 +2713,7 @@ enum AvailabilityEnum {
 }
 
 type MarcRecord {
-  \\"\\"\\"
-  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
-  \\"\\"\\"
+  \\"\\"\\"The marc record identifier\\"\\"\\"
   id: String!
 
   \\"\\"\\"The library agency\\"\\"\\"
@@ -5831,9 +5829,7 @@ type LinkCheckService {
 }
 
 type MarcRecord {
-  \\"\\"\\"
-  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
-  \\"\\"\\"
+  \\"\\"\\"The marc record identifier\\"\\"\\"
   id: String!
 
   \\"\\"\\"The library agency\\"\\"\\"
@@ -7578,9 +7574,7 @@ type TvSeriesDetails {
 }
 
 type MarcRecord {
-  \\"\\"\\"
-  The marc record identifier in the format {agencyId}:{bibliographicRecordId}
-  \\"\\"\\"
+  \\"\\"\\"The marc record identifier\\"\\"\\"
   id: String!
 
   \\"\\"\\"The library agency\\"\\"\\"
