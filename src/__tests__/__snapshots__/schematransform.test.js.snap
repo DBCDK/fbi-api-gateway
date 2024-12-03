@@ -2739,7 +2739,7 @@ type Marc {
   Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
   \\"\\"\\"
   getMarcByRecordId(
-    \\"\\"\\"The record identifier on the form {agencyId}:{bibliographicRecordId}\\"\\"\\"
+    \\"\\"\\"The marc record identifier\\"\\"\\"
     recordId: String!
   ): MarcRecord
 }
@@ -5855,7 +5855,7 @@ type Marc {
   Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
   \\"\\"\\"
   getMarcByRecordId(
-    \\"\\"\\"The record identifier on the form {agencyId}:{bibliographicRecordId}\\"\\"\\"
+    \\"\\"\\"The marc record identifier\\"\\"\\"
     recordId: String!
   ): MarcRecord
 }

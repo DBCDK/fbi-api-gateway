@@ -42,7 +42,7 @@ type Marc {
   """
   getMarcByRecordId(
   """
-  The record identifier on the form {agencyId}:{bibliographicRecordId}
+  The marc record identifier
   """
   recordId: String!): MarcRecord
 }
