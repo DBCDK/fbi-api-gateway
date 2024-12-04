@@ -42,7 +42,7 @@ export function mapFilters(filters) {
 
 /** FACETS **/
 
-const mappedFacetEnums = {
+const mapFromFacetEnumList = {
   WORKTYPES: "workTypes",
   MAINLANGUAGES: "mainLanguages",
   MATERIALTYPESGENERAL: "materialTypesGeneral",
@@ -65,13 +65,18 @@ const mappedFacetEnums = {
   GAMEPLATFORM: "gamePlatform",
 };
 
+// Reverse mapFromFacetEnumList
+const mapToFacetEnumList = Object.fromEntries(
+  Object.entries(mapFromFacetEnumList).map(([k, v]) => [v, k])
+);
+
 /**
- * Some facets are renamed for simplesearch facet service.
- * @param facets
+ * Some facets are renamed for simplesearch intelligent facet service.
+ * @param name
  * @returns {*}
  */
-export function mapFacetEnum(facet) {
-  return mappedFacetEnums[facet] || facet;
+export function mapToFacetEnum(name) {
+  return mapToFacetEnumList[name] || name;
 }
 
 /**
@@ -79,9 +84,18 @@ export function mapFacetEnum(facet) {
  * @param facets
  * @returns {*}
  */
-export function mapFacetEnums(facets) {
+export function mapFromFacetEnum(facet) {
+  return mapFromFacetEnumList[facet] || facet;
+}
+
+/**
+ * Some facets are renamed for simplesearch facet service.
+ * @param facets
+ * @returns {*}
+ */
+export function mapFromFacetEnums(facets) {
   const mapped = facets?.map((facet) => {
-    return mappedFacetEnums[facet] || facet;
+    return mapFromFacetEnumList[facet] || facet;
   });
   return mapped;
 }

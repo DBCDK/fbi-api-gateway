@@ -4,7 +4,7 @@
 
 import config from "../config";
 import uniq from "lodash/uniq";
-import { mapFacetEnums, mapFilters } from "../utils/filtersAndFacetsMap";
+import { mapFromFacetEnums, mapFilters } from "../utils/filtersAndFacetsMap";
 
 const { url, prefix, ttl, token, firstHits, disableFuzzySearch } =
   config.datasources.facets;
@@ -21,7 +21,7 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
     profile: name,
   };
 
-  const mappedFacets = mapFacetEnums(facets);
+  const mappedFacets = mapFromFacetEnums(facets);
   const mappedFilters = mapFilters(filters);
 
   // merge variables and statics
