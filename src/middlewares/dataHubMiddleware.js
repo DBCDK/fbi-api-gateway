@@ -202,25 +202,20 @@ export function dataHubMiddleware(req, res, next) {
 
     req.datasources.getLoader("datahub").load(event);
   }
-  async function createUniverseEvent({ input = {}, universe }) {
-    const { universeId } = input;
+  async function createUniverseEvent({ input = {} }) {
+    const { universeId, identifiers } = input;
     const context = await getContext();
 
     if (!shouldSendEvent(context)) {
       return;
     }
 
-    const variables = { universeId };
-
     const event = {
       context,
       kind: "UNIVERSE",
-      variables,
+      variables: { universeId },
       result: {
-        universe: {
-          identifier: universe?.universeId,
-          traceId: universe?.traceId,
-        },
+        identifiers: identifiers,
       },
     };
 
