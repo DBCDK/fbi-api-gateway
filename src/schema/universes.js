@@ -16,7 +16,7 @@ type Universe {
   universeId: String
 
   """
-  A unique identifier for tracking user interactions with this work.
+  A unique identifier for tracking user interactions with this universe.
   It is generated in the response and should be included in subsequent
   API calls when this work is selected.
   """
@@ -77,9 +77,6 @@ async function parseUniverseList({ args, content, context, parent }) {
   const limit = Boolean(args.limit) ? args.limit : 20;
   const offset = Boolean(args.offset) ? args.offset : 0;
   const workType = args.workType;
-  // console.log("\n\n\n\n\aAArgs", args, "\n\n\n\n");
-  // console.log("\n\n\n\nparent", parent, "\n\n\n\n");
-  // console.log("\n\n\n\ncontext", context, "\n\n\n\n");
 
   let filtered = content?.filter((entry) => {
     if (workType) {
@@ -99,13 +96,12 @@ async function parseUniverseList({ args, content, context, parent }) {
       };
     })
   );
-  //console.log("\n\n\n\nentries", entries, "\n\n\n");
+
   const identifiers = entries
     ?.map((entry) => {
       if (!entry.seriesTitle) {
         // return null;
       }
-      // console.log("\n\n\n\nentry", entry, "\n\n\n");
       return {
         traceId: entry.traceId,
         identifier: entry.workId || entry.seriesId,
@@ -120,7 +116,6 @@ async function parseUniverseList({ args, content, context, parent }) {
     },
   });
 
-  //console.log("\n\n\n\n\nidentifiers", identifiers, "\n\n\n\n");
   return {
     hitcount: filtered.length,
     entries: entries,
@@ -146,9 +141,7 @@ export const resolvers = {
           const universeById = await context.datasources
             .getLoader("universeById")
             .load({ universeId: universeId, profile: context.profile });
-          // console.log('\n\n\n\n\n\nuniverse',universe)
-          // console.log('\n\n\nuniverseById',universeById,'\n\n\n\n')
-          // console.log("\n\n\n\n\n\n context", context, "\n\n\n\n");
+
           const result = {
             ...universeById,
             universeId: universeId,
@@ -157,10 +150,6 @@ export const resolvers = {
             ),
             traceId: createTraceId(),
           };
-          // context?.dataHub?.createUniverseEvent({
-          //   input: args,
-          //   universe: result,
-          // });
 
           // return the fetched universe
           return result;
@@ -239,10 +228,6 @@ export const resolvers = {
             traceId: createTraceId(),
           };
 
-          // context?.dataHub?.createUniverseEvent({
-          //   input: args,
-          //   universe: result,
-          // });
           return result;
         })
       );
@@ -269,18 +254,6 @@ export const resolvers = {
         const universeById = await context.datasources
           .getLoader("universeById")
           .load({ universeId: args.universeId, profile: context.profile });
-
-        // const result = {
-        //   ...universeById,
-        //   universeId: args.universeId,
-        //   traceId: createTraceId(),
-        // };
-
-        // context?.dataHub?.createUniverseEvent({
-        //   input: args,
-        //   universe: result,
-        // });
-
         return {
           ...universeById,
           universeId: args.universeId,
