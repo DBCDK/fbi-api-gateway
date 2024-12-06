@@ -1,3 +1,4 @@
+import { createTraceId } from "../utils/trace";
 import { resolveWork } from "../utils/utils";
 
 export const typeDef = `
@@ -13,6 +14,13 @@ type Universe {
   An id that identifies a universe.
   """
   universeId: String
+
+  """
+  A unique identifier for tracking user interactions with this work.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  """
+  traceId: String!
 
   """
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -112,14 +120,21 @@ export const resolvers = {
             .getLoader("universeById")
             .load({ universeId: universeId, profile: context.profile });
 
-          // return the fetched universe
-          return {
+          const result = {
             ...universeById,
             universeId: universeId,
             key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
               "base64url"
             ),
+            traceId: createTraceId(),
           };
+          context?.dataHub?.createUniverseEvent({
+            input: args,
+            universe: result,
+          });
+
+          // return the fetched universe
+          return result;
         })
       );
 
@@ -171,13 +186,20 @@ export const resolvers = {
             .load({ universeId: universeId, profile: context.profile });
 
           // return the fetched universe
-          return {
+          const result = {
             ...universeById,
             universeId: universeId,
             key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
               "base64url"
             ),
+            traceId: createTraceId(),
           };
+
+          context?.dataHub?.createUniverseEvent({
+            input: args,
+            universe: result,
+          });
+          return result;
         })
       );
 
@@ -204,7 +226,18 @@ export const resolvers = {
           .getLoader("universeById")
           .load({ universeId: args.universeId, profile: context.profile });
 
-        return { ...universeById, universeId: args.universeId };
+        const result = {
+          ...universeById,
+          universeId: args.universeId,
+          traceId: createTraceId(),
+        };
+
+        context?.dataHub?.createUniverseEvent({
+          input: args,
+          universe: result,
+        });
+
+        return result;
       } else {
         return null;
       }

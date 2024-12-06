@@ -214,14 +214,20 @@ export const resolvers = {
       return res?.facets;
     },
     async works(parent, args, context) {
+      const input = setPost(parent, context, args);
+      console.log("\n\n\n\n\nworks.input", input);
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context, args));
+        .load(input);
       const expanded = await Promise.all(
         res?.works?.map(async (id) => resolveWork({ id }, context))
       );
+      const filtered = expanded.filter((work) => !!work);
 
-      return expanded.filter((work) => !!work);
+      context?.dataHub?.createSearchEvent({ input, works: filtered });
+      return filtered;
+
+      //return expanded.filter((work) => !!work);
     },
   },
 };
