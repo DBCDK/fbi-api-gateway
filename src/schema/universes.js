@@ -73,7 +73,7 @@ extend type Query {
 /**
  * Filters and slices content list
  */
-function parseUniverseList(args, content, context) {
+async function parseUniverseList(args, content, context) {
   const limit = Boolean(args.limit) ? args.limit : 20;
   const offset = Boolean(args.offset) ? args.offset : 0;
   const workType = args.workType;
@@ -86,17 +86,71 @@ function parseUniverseList(args, content, context) {
     return true;
   });
 
-  return {
-    hitcount: filtered.length,
-    entries: filtered?.slice(offset, offset + limit).map(async (entry) => {
+  //console.log("\n\n\n\nidentifiers", identifiers, "\n\n\n");
+
+  //   let result;
+  //   result = {
+  //     hitcount: filtered.length,
+  //     entries: await Promise.all(
+  //       filtered?.slice(offset, offset + limit).map(async (entry) => {
+  //         if (entry.seriesTitle) {
+  //           return { ...entry, traceId: createTraceId(), __typename: "Series" };
+  //         }
+  //         return {
+  //           ...(await resolveWork({ id: entry.persistentWorkId }, context)),
+  //           __typename: "Work",
+  //         };
+  //       })
+  //     ),
+  //   };
+  // console.log("\n\n\n\nresult", result, "RESULT::::::\n\n\n");
+  //   //we create identifiers list that we send to datahub. Contains all works in the universe and their traceId
+  //   const identifiers = result?.entries
+  //     ?.map((entry) => {
+  //       if (!entry.seriesTitle) {
+  //         return null;
+  //       }
+  //      // console.log("\n\n\n\nentry", entry, "\n\n\n");
+  //       return {
+  //         traceId: entry.traceId,
+  //         identifier: entry.workId || entry.seriesId,
+  //       };
+  //     })
+  //     .filter((entry) => !!entry);
+
+  //   console.log("\n\n\n\nidentifiers", identifiers, "\n\n\n");
+  //   //TODO: create universe event
+  //   return result;
+
+  const entries = await Promise.all(
+    filtered?.slice(offset, offset + limit).map(async (entry) => {
       if (entry.seriesTitle) {
-        return { ...entry, __typename: "Series" };
+        return { ...entry, __typename: "Series", traceId: createTraceId() };
       }
       return {
         ...(await resolveWork({ id: entry.persistentWorkId }, context)),
         __typename: "Work",
       };
-    }),
+    })
+  );
+  //console.log("\n\n\n\nentries", entries, "\n\n\n");
+  const identifiers = entries
+    ?.map((entry) => {
+      if (!entry.seriesTitle) {
+       // return null;
+      }
+      // console.log("\n\n\n\nentry", entry, "\n\n\n");
+      return {
+        traceId: entry.traceId,
+        identifier: entry.workId || entry.seriesId,
+      };
+    })
+    .filter((entry) => !!entry);
+
+  console.log("\n\n\n\n\nidentifiers", identifiers,'\n\n\n\n');
+  return {
+    hitcount: filtered.length,
+    entries: entries,
   };
 }
 export const resolvers = {
@@ -119,7 +173,9 @@ export const resolvers = {
           const universeById = await context.datasources
             .getLoader("universeById")
             .load({ universeId: universeId, profile: context.profile });
-
+          // console.log('\n\n\n\n\n\nuniverse',universe)
+          // console.log('\n\n\nuniverseById',universeById,'\n\n\n\n')
+          // console.log("\n\n\n\n\n\n context", context, "\n\n\n\n");
           const result = {
             ...universeById,
             universeId: universeId,
@@ -148,22 +204,22 @@ export const resolvers = {
     description(parent, args, context, info) {
       return parent.universeDescription;
     },
-    series(parent, args, context, info) {
+    async series(parent, args, context, info) {
       const seriesFromService = parent.content.filter((singleContent) =>
         singleContent.hasOwnProperty("seriesTitle")
       );
-
-      return parseUniverseList(args, seriesFromService, context).entries;
+      const result = await parseUniverseList(args, seriesFromService, context);
+      return result.entries;
     },
-    works(parent, args, context, info) {
+    async works(parent, args, context, info) {
       const worksFromService = parent.content.filter((singleContent) =>
         singleContent.hasOwnProperty("persistentWorkId")
       );
-
-      return parseUniverseList(args, worksFromService, context).entries;
+      const result = await parseUniverseList(args, worksFromService, context);
+      return result.entries;
     },
-    content(parent, args, context, info) {
-      return parseUniverseList(args, parent?.content, context);
+    async content(parent, args, context, info) {
+      return await parseUniverseList(args, parent?.content, context);
     },
   },
   Manifestation: {
