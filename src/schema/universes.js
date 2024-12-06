@@ -71,6 +71,25 @@ extend type Query {
 `;
 
 /**
+ * will create and send universe event
+ */
+function createUniverseEvent({ context, entries, parent }) {
+  const identifiers = entries
+    ?.map((entry) => ({
+      traceId: entry.traceId,
+      identifier: entry.workId || entry.seriesId,
+    }))
+    .filter((entry) => !!entry);
+
+  context?.dataHub?.createUniverseEvent({
+    input: {
+      identifiers,
+      universeId: parent?.universeId,
+    },
+  });
+}
+
+/**
  * Filters and slices content list
  */
 async function parseUniverseList({ args, content, context, parent }) {
@@ -85,6 +104,8 @@ async function parseUniverseList({ args, content, context, parent }) {
 
     return true;
   });
+
+  //Universe can have both series and works. We fetch work data for works and return series as it is.
   const entries = await Promise.all(
     filtered?.slice(offset, offset + limit).map(async (entry) => {
       if (entry.seriesTitle) {
@@ -97,25 +118,10 @@ async function parseUniverseList({ args, content, context, parent }) {
     })
   );
 
-  const identifiers = entries
-    ?.map((entry) => {
-      if (!entry.seriesTitle) {
-        // return null;
-      }
-      return {
-        traceId: entry.traceId,
-        identifier: entry.workId || entry.seriesId,
-      };
-    })
-    .filter((entry) => !!entry);
+  //send universe event
+  createUniverseEvent({ context, entries, parent });
 
-  context?.dataHub?.createUniverseEvent({
-    input: {
-      identifiers,
-      universeId: parent?.universeId,
-    },
-  });
-
+  //return the result
   return {
     hitcount: filtered.length,
     entries: entries,
