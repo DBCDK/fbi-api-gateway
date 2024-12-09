@@ -113,8 +113,8 @@ export function dataHubMiddleware(req, res, next) {
     }
 
     const identifiers = result?.map((identifier) => ({
-      identifier: identifier.workId,
-      traceId: identifier.traceId,
+      identifier: identifier?.work?.workId,
+      traceId: identifier?.work?.traceId,
     }));
     const variables = { seriesId };
 
