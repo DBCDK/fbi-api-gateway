@@ -112,41 +112,7 @@ export const resolvers = {
   Work: {
     // Use the new serie service v2
     async series(parent, args, context, info) {
-      // const fetchedSeries = fetchAndExpandSeries(parent, context);
-
-      //first we fetch the series ids
-      const { series } = await context.datasources
-        .getLoader("identifyWork")
-        .load({
-          workId: parent.workId,
-          profile: context.profile,
-        });
-
-      if (!series) {
-        //return empty if there is not series
-        return [];
-      }
-
-      //then we fetch series data for each series id. (usually only one series id in the list)
-      const fetchedSeriesList = await Promise.all(
-        series.map(async (item) => {
-          const fetchedSeries = await context.datasources
-            .getLoader("seriesById")
-            .load({ seriesId: item.id, profile: context.profile });
-
-          if (!fetchedSeries?.seriesTitle) {
-            log.error("Series not found with ID:" + item?.id);
-          }
-          // @TODO createSeriesEvent here
-          // @TODO .. de we really need to resolve work to get traceid here ??
-
-          // do the datahub event
-          creatSeriesDataHubEvent(fetchedSeries, context);
-
-          return { ...fetchedSeries, seriesId: item.id };
-        })
-      );
-
+      const fetchedSeriesList = await fetchAndExpandSeries(parent, context);
       return resolveSeries({ series: fetchedSeriesList }, parent);
     },
   },
@@ -212,12 +178,8 @@ export const resolvers = {
   },
   Manifestation: {
     async series(parent, args, context, info) {
-      const data = await context.datasources.getLoader("series").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
-
-      return resolveSeries(data, parent);
+      const fetchedSeriesList = await fetchAndExpandSeries(parent, context);
+      return resolveSeries({ series: fetchedSeriesList }, parent);
     },
   },
   Query: {
