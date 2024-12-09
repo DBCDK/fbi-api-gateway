@@ -105,13 +105,17 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
-  async function createSeriesEvent({ input = {}, identifiers }) {
+  async function createSeriesEvent({ input = {}, result }) {
     const { seriesId } = input;
     const context = await getContext();
     if (!shouldSendEvent(context)) {
       return;
     }
 
+    const identifiers = result?.map((identifier) => ({
+      identifier: identifier.workId,
+      traceId: identifier.traceId,
+    }));
     const variables = { seriesId };
 
     const event = {

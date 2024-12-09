@@ -129,7 +129,13 @@ export const resolvers = {
         works.map((work) => resolveWork({ id: work.persistentWorkId }, context))
       );
 
-      return works.filter((_v, index) => !!results[index]);
+      // create the datahub event
+      context?.dataHub?.createSeriesEvent({
+        input: { id: parent.seriesId },
+        result: results,
+      });
+
+      return results.filter((_v, index) => !!results[index]);
     },
     title(parent, args, context, info) {
       return parent.seriesTitle;
@@ -172,7 +178,7 @@ export const resolvers = {
   },
   SerieWork: {
     work(parent, args, context, info) {
-      return resolveWork({ id: parent.persistentWorkId }, context);
+      return parent;
     },
   },
   Manifestation: {
