@@ -251,7 +251,7 @@ export const resolvers = {
       const works = expanded.filter((work) => !!work);
       context?.dataHub?.createComplexSearchEvent({
         input: input,
-        result: {works},
+        result: { works },
       });
 
       return works;

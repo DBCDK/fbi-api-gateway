@@ -203,65 +203,31 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
-  // async function createComplexSearchEvent({ input = {}, works }) {
-  //   const context = await getContext(); 
-  //   if (!shouldSendEvent(context)) {
-  //     return; 
-  //   }
-  
-  //   const variables = {
-  //     cql: input?.cql,
-  //     filters: input?.filters,
-  //     sort: input?.sort,
-  //     offset: input?.offset || 0,
-  //     limit: input?.limit || 10,
-  //   };
-  
-  //   const identifiers = works?.map((w) => ({
-  //     identifier: w.workId,
-  //     traceId: w.traceId,
-  //   }));
-  
-  //   const event = {
-  //     context,
-  //     kind: "COMPLEX_SEARCH",
-  //     variables,
-  //     result: {
-  //       identifiers,
-  //     },
-  //   };
-  //   console.log("\n\n\n\nevent", event)
-  
-  //   req.datasources.getLoader("datahub").load(event); 
-  // }
-  
-  /**
-   * Used for sending complex search events (including facets) to DataHub
-   * @returns 
-   */
-
-  async function createComplexSearchEvent({ input = {}, result = {facets:[], works:[]} }) {
+  //also used to send facet event
+  async function createComplexSearchEvent({
+    input = {},
+    result = { facets: [], works: [] },
+  }) {
     const context = await getContext();
     if (!shouldSendEvent(context)) {
-      return; 
+      return;
     }
-  console.log("\nresultresult",result)
-  console.log("\ninputinput",input)
+    console.log("\nresultresult", result);
+    console.log("\ninputinput", input);
     const variables = {
       cql: input?.cql,
       filters: input?.filters,
-      facets: input?.facets, //todo add and check 
-      offset: input?.offset || 0,//
+      facets: input?.facets, //TODO check if data is correct
+      offset: input?.offset || 0,
       limit: input?.limit || 10,
       sort: input?.sort,
-
     };
-  
+
     const identifiers = result?.works?.map((w) => ({
       identifier: w?.workId,
       traceId: w?.traceId,
     }));
-  
+
     const facets = result?.facets?.map((facet) => ({
       name: facet?.name,
       values: facet?.values?.map((value) => ({
@@ -270,7 +236,7 @@ export function dataHubMiddleware(req, res, next) {
         traceId: value.traceId,
       })),
     }));
-  
+
     const event = {
       context,
       kind: "COMPLEX_SEARCH",
@@ -280,10 +246,10 @@ export function dataHubMiddleware(req, res, next) {
         facets,
       },
     };
-  
-    req.datasources.getLoader("datahub").load(event); // Send the event to DataHub
+
+    req.datasources.getLoader("datahub").load(event);
   }
-  
+
   req.dataHub = {
     createSearchEvent,
     createWorkEvent,
@@ -292,7 +258,6 @@ export function dataHubMiddleware(req, res, next) {
     createComplexSuggestEvent,
     createSubmitOrderEvent,
     createComplexSearchEvent,
-    //createComplexSearchFacetsEvent
   };
 
   next();
