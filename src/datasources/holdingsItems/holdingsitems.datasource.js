@@ -5,7 +5,7 @@
 
 import request from "superagent";
 import { log } from "dbc-node-logger";
-import config from "../config";
+import config from "../../config";
 
 /**
  * NOTE - get request parameters eg. ?agencyId=710100&branchId=710117&pid=870970-katalog:25912233
