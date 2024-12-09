@@ -105,6 +105,27 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
+  async function createSeriesEvent({ input = {}, identifiers }) {
+    const { seriesId } = input;
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const variables = { seriesId };
+
+    const event = {
+      context,
+      kind: "SERIES",
+      variables,
+      result: {
+        identifiers,
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
   async function createManifestationEvent({ input = {}, manifestation }) {
     const { faust, pid } = input;
     const context = await getContext();
@@ -210,6 +231,7 @@ export function dataHubMiddleware(req, res, next) {
     createSuggestEvent,
     createComplexSuggestEvent,
     createSubmitOrderEvent,
+    createSeriesEvent,
   };
 
   next();

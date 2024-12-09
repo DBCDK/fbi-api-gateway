@@ -54,6 +54,8 @@ export function matchYear(str) {
   return str.match(regex);
 }
 
+export function fetchAndExpandSeries(parent, context) {}
+
 // Extend every serie in the series array with extra fields
 // These are resolved here because of the need of the correct workId
 // resolvers include ReadThisFirst, readThisWhenever og numberInSeries
@@ -87,6 +89,26 @@ export function resolveSeries(data, parent) {
         };
       }) || []
   );
+}
+
+export async function creatSeriesDataHubEvent(serie, context) {
+  const resolvedWorks = await Promise.all(
+    serie?.works.map((work) =>
+      resolveWork({ id: work.persistentWorkId }, context)
+    )
+  );
+
+  const identifiers = resolvedWorks?.map((work) => {
+    return {
+      identifier: work?.workId,
+      traceId: work?.traceId,
+    };
+  });
+
+  context?.dataHub?.createSeriesEvent({
+    input: { seriesId: serie.id },
+    identifiers,
+  });
 }
 
 /**

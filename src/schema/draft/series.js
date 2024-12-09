@@ -1,6 +1,12 @@
 import { log } from "dbc-node-logger";
 
-import { resolveSeries, resolveWork } from "../../utils/utils";
+import {
+  creatSeriesDataHubEvent,
+  fetchAndExpandSeries,
+  resolveSeries,
+  resolveWork,
+} from "../../utils/utils";
+import { createTraceId } from "../../utils/trace";
 
 export const typeDef = `
 type SerieWork {
@@ -35,6 +41,11 @@ type Series {
   Identifier for the series
   """
   seriesId: String
+  
+  """
+  Traceid for tracking
+  """
+  traceId: String!
 
   """
   Additional information 
@@ -101,7 +112,9 @@ export const resolvers = {
   Work: {
     // Use the new serie service v2
     async series(parent, args, context, info) {
-      //first we feth the series ids
+      // const fetchedSeries = fetchAndExpandSeries(parent, context);
+
+      //first we fetch the series ids
       const { series } = await context.datasources
         .getLoader("identifyWork")
         .load({
@@ -124,6 +137,11 @@ export const resolvers = {
           if (!fetchedSeries?.seriesTitle) {
             log.error("Series not found with ID:" + item?.id);
           }
+          // @TODO createSeriesEvent here
+          // @TODO .. de we really need to resolve work to get traceid here ??
+
+          // do the datahub event
+          creatSeriesDataHubEvent(fetchedSeries, context);
 
           return { ...fetchedSeries, seriesId: item.id };
         })
@@ -208,7 +226,15 @@ export const resolvers = {
       const seriesById = await context.datasources
         .getLoader("seriesById")
         .load({ seriesId: args.seriesId, profile: context.profile });
-      return { ...seriesById, seriesId: args.seriesId };
+
+      // do the datahub event
+      creatSeriesDataHubEvent(seriesById, context);
+
+      return {
+        ...seriesById,
+        seriesId: args.seriesId,
+        traceId: createTraceId(),
+      };
     },
   },
 };
