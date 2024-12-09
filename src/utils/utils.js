@@ -114,6 +114,7 @@ export function resolveSeries(data, parent) {
         const numberInSeries = match?.numberInSeries || null;
 
         return {
+          traceId: createTraceId(),
           numberInSeries,
           readThisFirst,
           readThisWhenever,
@@ -129,6 +130,8 @@ export async function creatSeriesDataHubEvent(serie, context) {
       resolveWork({ id: work.persistentWorkId }, context)
     )
   );
+
+  createTraceId();
 
   const identifiers = resolvedWorks?.map((work) => {
     return {
