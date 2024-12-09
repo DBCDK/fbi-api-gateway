@@ -67,7 +67,7 @@ export async function fetchAndExpandSeries(parent, context) {
   }
 
   //then we fetch series data for each series id. (usually only one series id in the list)
-  const fetchedSeriesList = await Promise.all(
+  return await Promise.all(
     series.map(async (item) => {
       const fetchedSeries = await context.datasources
         .getLoader("seriesById")
@@ -76,16 +76,10 @@ export async function fetchAndExpandSeries(parent, context) {
       if (!fetchedSeries?.seriesTitle) {
         log.error("Series not found with ID:" + item?.id);
       }
-      // @TODO createSeriesEvent here
-      // @TODO .. de we really need to resolve work to get traceid here ??
-
-      // do the datahub event
-      creatSeriesDataHubEvent(fetchedSeries, context);
 
       return { ...fetchedSeries, seriesId: item.id };
     })
   );
-  return fetchedSeriesList;
 }
 
 // Extend every serie in the series array with extra fields
@@ -122,28 +116,6 @@ export function resolveSeries(data, parent) {
         };
       }) || []
   );
-}
-
-export async function creatSeriesDataHubEvent(serie, context) {
-  const resolvedWorks = await Promise.all(
-    serie?.works.map((work) =>
-      resolveWork({ id: work.persistentWorkId }, context)
-    )
-  );
-
-  createTraceId();
-
-  const identifiers = resolvedWorks?.map((work) => {
-    return {
-      identifier: work?.workId,
-      traceId: work?.traceId,
-    };
-  });
-
-  context?.dataHub?.createSeriesEvent({
-    input: { seriesId: serie.id },
-    identifiers,
-  });
 }
 
 /**

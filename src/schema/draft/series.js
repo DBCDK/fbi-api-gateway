@@ -1,7 +1,6 @@
 import { log } from "dbc-node-logger";
 
 import {
-  creatSeriesDataHubEvent,
   fetchAndExpandSeries,
   resolveSeries,
   resolveWork,
@@ -190,7 +189,7 @@ export const resolvers = {
         .load({ seriesId: args.seriesId, profile: context.profile });
 
       // do the datahub event
-      creatSeriesDataHubEvent(seriesById, context);
+      // creatSeriesDataHubEvent(seriesById, context);
 
       return {
         ...seriesById,
