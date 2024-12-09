@@ -1,7 +1,7 @@
 import translations from "../utils/translations.json";
 import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
-import { mapFacet, mapFacetEnum } from "../utils/filtersAndFacetsMap";
+import { mapFacet, mapFromFacetEnum } from "../utils/filtersAndFacetsMap";
 
 /**
  * define a searchquery
@@ -219,7 +219,7 @@ export const resolvers = {
     type(parent, args, context) {
       if (!parent.type) {
         log.error("undefined ENUM returned from FacetFieldEnum", {
-          trackingId: context?.datasources?.stats?.uuid,
+          uuid: context?.datasources?.stats?.uuid,
         });
       }
 
@@ -307,7 +307,7 @@ export const resolvers = {
         const values = parent?.filters?.[key] || [];
 
         // maps result names to enum values
-        const facet = res?.find((obj) => obj?.name === mapFacetEnum(key));
+        const facet = res?.find((obj) => obj?.name === mapFromFacetEnum(key));
         // now we find the facet
         const copy = {
           /** we need to map some facets - name has changed in response : lix -> lix_range, let->let_range **/

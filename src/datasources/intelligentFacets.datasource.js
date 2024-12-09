@@ -3,16 +3,10 @@
  */
 
 import config from "../config";
-import { mapFilters } from "../utils/filtersAndFacetsMap";
+import { mapFilters, mapToFacetEnum } from "../utils/filtersAndFacetsMap";
 
-const {
-  url,
-  prefix,
-  ttl,
-  token,
-  firstHits,
-  disableFuzzySearch,
-} = config.datasources.facets;
+const { url, prefix, ttl, token, firstHits, disableFuzzySearch } =
+  config.datasources.facets;
 
 export async function load({ q, filters = {}, profile, limit = 10 }, context) {
   const { agency, name } = profile;
@@ -45,7 +39,12 @@ export async function load({ q, filters = {}, profile, limit = 10 }, context) {
     })
   ).body;
 
-  return res;
+  return {
+    facets: res?.facets?.map((obj) => ({
+      type: mapToFacetEnum(obj.name),
+      ...obj,
+    })),
+  };
 }
 
 export const options = {

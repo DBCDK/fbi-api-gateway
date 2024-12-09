@@ -778,7 +778,55 @@ type Manifestation {
   id of the manifestaion unit
   """
   unit : Unit
-  
+
+  """
+  Identification of the local id of this manifestation
+  """
+  localId: String
+
+  """
+  Material that can be identified as sheet music
+  """
+  sheetMusicCategories: SheetMusicCategory
+}
+
+type SheetMusicCategory {
+  """
+  The types of instruments material covers
+  """
+  instruments: [String!]!
+
+  """
+  The types of choir material covers
+  """
+  choirTypes: [String!]!
+
+  """
+  Material intended to practice with
+  """
+  musicalExercises: MusicalExercise
+
+  """
+  The types of chamber music material covers
+  """
+  chamberMusicTypes: [String!]!
+
+  """
+  The types of orchestra material covers
+  """
+  orchestraTypes: [String!]!
+}
+
+type MusicalExercise {
+  """
+  Information whether material is intended for practising and in combination with an instrument
+  """
+  forExercise: Boolean!
+
+  """
+  The types of instrument 'schools' intended to practise with
+  """
+  display: [String!]!
 }
 
 type Unit {
