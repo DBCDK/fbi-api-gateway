@@ -134,7 +134,7 @@ export const resolvers = {
 
       // create the datahub event
       context?.dataHub?.createSeriesEvent({
-        input: { id: parent.seriesId },
+        input: { seriesId: parent.seriesId },
         result: results,
       });
 
