@@ -247,6 +247,51 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
+  //also used to send facet event
+  async function createComplexSearchEvent({
+    input = {},
+    result = { facets: [], works: [] },
+  }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+    const variables = {
+      cql: input?.cql,
+      filters: input?.filters,
+      facets: input?.facets,
+      offset: input?.offset || 0,
+      limit: input?.limit || 10,
+      sort: input?.sort,
+    };
+
+    const identifiers = result?.works?.map((w) => ({
+      identifier: w?.workId,
+      traceId: w?.traceId,
+    }));
+
+    const facets = result?.facets?.map((facet) => ({
+      name: facet?.name,
+      values: facet?.values?.map((value) => ({
+        key: value.key,
+        score: value.score,
+        traceId: value.traceId,
+      })),
+    }));
+
+    const event = {
+      context,
+      kind: "COMPLEX_SEARCH",
+      variables,
+      result: {
+        identifiers,
+        facets,
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
   req.dataHub = {
     createSearchEvent,
     createWorkEvent,
@@ -256,6 +301,7 @@ export function dataHubMiddleware(req, res, next) {
     createSubmitOrderEvent,
     createSeriesEvent,
     createUniverseEvent,
+    createComplexSearchEvent,
   };
 
   next();

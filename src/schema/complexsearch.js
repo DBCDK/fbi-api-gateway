@@ -1,4 +1,6 @@
+import { trace } from "superagent";
 import { resolveWork } from "../utils/utils";
+import { createTraceId } from "../utils/trace";
 
 export const typeDef = `
 """
@@ -211,6 +213,26 @@ export const resolvers = {
         .getLoader("complexsearch")
         .load(setPost(parent, context, args));
 
+      const facetsWithTraceIds = res?.facets?.map((facet) => ({
+        ...facet,
+        values: facet.values?.map((value) => {
+          return { ...value, traceId: createTraceId() };
+        }),
+      }));
+
+      if (facetsWithTraceIds?.length > 0) {
+        await context?.dataHub?.createComplexSearchEvent({
+          input: { ...parent, ...args, profile: context.profile },
+          result: {
+            works: res?.works?.map((id) => ({
+              workId: id,
+              traceId: createTraceId(),//todo move to datasource?
+            })),
+            facets: facetsWithTraceIds,
+          },
+        });
+      }
+
       return res?.facets;
     },
     async works(parent, args, context) {
@@ -221,7 +243,18 @@ export const resolvers = {
         res?.works?.map(async (id) => resolveWork({ id }, context))
       );
 
-      return expanded.filter((work) => !!work);
+      const input = {
+        ...parent,
+        ...args,
+        profile: context.profile,
+      };
+      const works = expanded.filter((work) => !!work);
+      context?.dataHub?.createComplexSearchEvent({
+        input: input,
+        result: { works },
+      });
+
+      return works;
     },
   },
 };
