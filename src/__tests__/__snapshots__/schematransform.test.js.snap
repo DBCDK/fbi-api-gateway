@@ -2105,6 +2105,9 @@ type Series {
   \\"\\"\\"Identifier for the series\\"\\"\\"
   seriesId: String
 
+  \\"\\"\\"Traceid for tracking\\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"Additional information \\"\\"\\"
   identifyingAddition: String
 
@@ -5462,6 +5465,9 @@ type Series {
   \\"\\"\\"Identifier for the series\\"\\"\\"
   seriesId: String
 
+  \\"\\"\\"Traceid for tracking\\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"Additional information \\"\\"\\"
   identifyingAddition: String
 
@@ -7382,6 +7388,9 @@ type Series {
 
   \\"\\"\\"Identifier for the series\\"\\"\\"
   seriesId: String
+
+  \\"\\"\\"Traceid for tracking\\"\\"\\"
+  traceId: String!
 
   \\"\\"\\"Additional information \\"\\"\\"
   identifyingAddition: String
