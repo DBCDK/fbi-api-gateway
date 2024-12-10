@@ -212,12 +212,10 @@ export function dataHubMiddleware(req, res, next) {
     if (!shouldSendEvent(context)) {
       return;
     }
-    console.log("\nresultresult", result);
-    console.log("\ninputinput", input);
     const variables = {
       cql: input?.cql,
       filters: input?.filters,
-      facets: input?.facets, //TODO check if data is correct
+      facets: input?.facets,
       offset: input?.offset || 0,
       limit: input?.limit || 10,
       sort: input?.sort,

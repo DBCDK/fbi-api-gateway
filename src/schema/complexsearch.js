@@ -226,7 +226,7 @@ export const resolvers = {
           result: {
             works: res?.works?.map((id) => ({
               workId: id,
-              traceId: createTraceId(),
+              traceId: createTraceId(),//todo move to datasource?
             })),
             facets: facetsWithTraceIds,
           },
