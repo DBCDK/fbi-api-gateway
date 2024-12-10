@@ -11,6 +11,7 @@ import { getExecutableSchema } from "../schemaLoader";
 import hasExternalRequest from "../utils/externalRequest";
 
 import isFastLaneQuery, { getFastLane } from "../middlewares/fastLane";
+import { log } from "dbc-node-logger";
 
 /**
  * Resolves the GraphQL query
@@ -63,6 +64,20 @@ export async function resolveGraphQLQuery(req, res, next) {
     schema,
     validationRules: [validateQueryComplexity({ query, variables })],
     context: req,
+    onOperation: (_, arg, graphQLRes) => {
+      if (Array.isArray(req.onOperationComplete)) {
+        req.onOperationComplete.forEach((func) => {
+          try {
+            func(graphQLRes?.data, variables, query);
+          } catch (error) {
+            log.error("Error calling onOperationComplete function", {
+              error: String(error),
+              stacktrace: error.stack,
+            });
+          }
+        });
+      }
+    },
     formatError: (graphQLError) => {
       if (!req.graphQLErrors) {
         req.graphQLErrors = [];

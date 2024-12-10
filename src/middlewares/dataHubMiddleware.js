@@ -1,4 +1,6 @@
 import isbot from "isbot";
+import { findAliasesAndArgs } from "../utils/graphQLQueryTools";
+import { createTraceId } from "../utils/trace";
 
 // TODO add descriptions of headers in our documentation
 export function dataHubMiddleware(req, res, next) {
@@ -57,31 +59,76 @@ export function dataHubMiddleware(req, res, next) {
     return true;
   }
 
-  async function createSearchEvent({ input, works }) {
+  async function createSearchEvent({ data, fieldInfo }) {
     const context = await getContext();
     if (!shouldSendEvent(context)) {
       return;
     }
 
-    const variables = {
-      q: input?.q,
-      offset: input?.offset,
-      limit: input?.limit,
-    };
-    const identifiers = works?.map((w) => ({
-      identifier: w.workId,
-      traceId: w.traceId,
-    }));
     const event = {
       context,
       kind: "SEARCH",
-      variables,
-      result: {
-        identifiers,
-      },
+      variables: {},
+      result: {},
     };
+    if (fieldInfo?.search?.args) {
+      event.variables = fieldInfo?.search?.args;
+    }
+    if (fieldInfo?.["search.works"]?.args?.offset) {
+      event.variables.offset = fieldInfo["search.works"].args.offset;
+    }
+    if (fieldInfo?.["search.works"]?.args?.limit) {
+      event.variables.limit = fieldInfo["search.works"].args.limit;
+    }
+    if (data?.search?.didYouMean) {
+      event.result.didYouMean = data.search.didYouMean.map((suggestion) => {
+        return {
+          query: suggestion.query,
+          score: suggestion.score,
+          traceId: suggestion.traceId || createTraceId(),
+        };
+      });
+    }
+    if (data?.search?.intelligentFacets) {
+      event.result.intelligentFacets = data?.search?.intelligentFacets?.map(
+        (facet) => {
+          return {
+            name: facet.name,
+            values: facet.values?.map((val) => ({
+              key: val.key,
+              term: val.term,
+              score: val.score,
+              traceId: val.traceId || createTraceId(),
+            })),
+          };
+        }
+      );
+    }
 
-    req.datasources.getLoader("datahub").load(event);
+    if (data?.search?.works?.[0]?.workId) {
+      event.result.identifiers = data.search.works?.map((w) => ({
+        identifier: w.workId,
+        traceId: w.traceId || createTraceId(),
+      }));
+    }
+
+    if (Array.isArray(data?.search?.facets)) {
+      event.result.facets = data.search.facets.map((facet) => {
+        return {
+          name: facet?.name,
+          values: facet?.values?.map((val) => ({
+            key: val.key,
+            term: val.term,
+            score: val.count,
+            traceId: val.traceId || createTraceId(),
+          })),
+        };
+      });
+    }
+
+    if (Object.keys(event.result).length > 0) {
+      req.datasources.getLoader("datahub").load(event);
+    }
   }
 
   async function createWorkEvent({ input = {}, work }) {
@@ -292,8 +339,32 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
+  if (!req.onOperationComplete) {
+    req.onOperationComplete = [];
+  }
+
+  const FIELD_FUNC_MAP = {
+    search: createSearchEvent,
+  };
+
+  // Observe  the actual data that is sent to client
+  req.onOperationComplete.push((data, variables, query) => {
+    // holds info about fields that recieve arguments
+    let fieldInfo;
+
+    // Check each root field, and call a corresponding function
+    // (if it is available in FIELD_FUNC_MAP)
+    Object.keys(data).forEach((field) => {
+      if (FIELD_FUNC_MAP[field]) {
+        if (!fieldInfo) {
+          fieldInfo = findAliasesAndArgs(query, variables);
+        }
+        FIELD_FUNC_MAP[field]({ data, fieldInfo });
+      }
+    });
+  });
+
   req.dataHub = {
-    createSearchEvent,
     createWorkEvent,
     createManifestationEvent,
     createSuggestEvent,
