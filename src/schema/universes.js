@@ -1,3 +1,4 @@
+import { createTraceId } from "../utils/trace";
 import { resolveWork } from "../utils/utils";
 
 export const typeDef = `
@@ -13,6 +14,13 @@ type Universe {
   An id that identifies a universe.
   """
   universeId: String
+
+  """
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  """
+  traceId: String!
 
   """
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -63,9 +71,28 @@ extend type Query {
 `;
 
 /**
+ * will create and send universe event
+ */
+function createUniverseEvent({ context, entries, parent }) {
+  const identifiers = entries
+    ?.map((entry) => ({
+      traceId: entry.traceId,
+      identifier: entry.workId || entry.seriesId,
+    }))
+    .filter((entry) => !!entry);
+
+  context?.dataHub?.createUniverseEvent({
+    input: {
+      identifiers,
+      universeId: parent?.universeId,
+    },
+  });
+}
+
+/**
  * Filters and slices content list
  */
-function parseUniverseList(args, content, context) {
+async function parseUniverseList({ args, content, context, parent }) {
   const limit = Boolean(args.limit) ? args.limit : 20;
   const offset = Boolean(args.offset) ? args.offset : 0;
   const workType = args.workType;
@@ -78,17 +105,26 @@ function parseUniverseList(args, content, context) {
     return true;
   });
 
-  return {
-    hitcount: filtered.length,
-    entries: filtered?.slice(offset, offset + limit).map(async (entry) => {
+  //Universe can have both series and works. We fetch work data for works and return series as it is.
+  const entries = await Promise.all(
+    filtered?.slice(offset, offset + limit).map(async (entry) => {
       if (entry.seriesTitle) {
-        return { ...entry, __typename: "Series" };
+        return { ...entry, __typename: "Series", traceId: createTraceId() };
       }
       return {
         ...(await resolveWork({ id: entry.persistentWorkId }, context)),
         __typename: "Work",
       };
-    }),
+    })
+  );
+
+  //send universe event
+  createUniverseEvent({ context, entries, parent });
+
+  //return the result
+  return {
+    hitcount: filtered.length,
+    entries: entries,
   };
 }
 export const resolvers = {
@@ -112,14 +148,17 @@ export const resolvers = {
             .getLoader("universeById")
             .load({ universeId: universeId, profile: context.profile });
 
-          // return the fetched universe
-          return {
+          const result = {
             ...universeById,
             universeId: universeId,
             key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
               "base64url"
             ),
+            traceId: createTraceId(),
           };
+
+          // return the fetched universe
+          return result;
         })
       );
 
@@ -133,22 +172,37 @@ export const resolvers = {
     description(parent, args, context, info) {
       return parent.universeDescription;
     },
-    series(parent, args, context, info) {
+    async series(parent, args, context, info) {
       const seriesFromService = parent.content.filter((singleContent) =>
         singleContent.hasOwnProperty("seriesTitle")
       );
-
-      return parseUniverseList(args, seriesFromService, context).entries;
+      const result = await parseUniverseList({
+        args,
+        content: seriesFromService,
+        context,
+        parent,
+      });
+      return result.entries;
     },
-    works(parent, args, context, info) {
+    async works(parent, args, context, info) {
       const worksFromService = parent.content.filter((singleContent) =>
         singleContent.hasOwnProperty("persistentWorkId")
       );
-
-      return parseUniverseList(args, worksFromService, context).entries;
+      const result = await parseUniverseList({
+        args,
+        content: worksFromService,
+        context,
+        parent,
+      });
+      return result.entries;
     },
-    content(parent, args, context, info) {
-      return parseUniverseList(args, parent?.content, context);
+    async content(parent, args, context, info) {
+      return await parseUniverseList({
+        args,
+        content: parent?.content,
+        context,
+        parent,
+      });
     },
   },
   Manifestation: {
@@ -171,13 +225,16 @@ export const resolvers = {
             .load({ universeId: universeId, profile: context.profile });
 
           // return the fetched universe
-          return {
+          const result = {
             ...universeById,
             universeId: universeId,
             key: Buffer.from(`${parent.workId}|${index}`, "utf8").toString(
               "base64url"
             ),
+            traceId: createTraceId(),
           };
+
+          return result;
         })
       );
 
@@ -203,8 +260,11 @@ export const resolvers = {
         const universeById = await context.datasources
           .getLoader("universeById")
           .load({ universeId: args.universeId, profile: context.profile });
-
-        return { ...universeById, universeId: args.universeId };
+        return {
+          ...universeById,
+          universeId: args.universeId,
+          traceId: createTraceId(),
+        };
       } else {
         return null;
       }
