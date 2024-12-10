@@ -1,6 +1,11 @@
 import { log } from "dbc-node-logger";
 
-import { resolveSeries, resolveWork } from "../../utils/utils";
+import {
+  fetchAndExpandSeries,
+  resolveSeries,
+  resolveWork,
+} from "../../utils/utils";
+import { createTraceId } from "../../utils/trace";
 
 export const typeDef = `
 type SerieWork {
@@ -35,6 +40,11 @@ type Series {
   Identifier for the series
   """
   seriesId: String
+  
+  """
+  Traceid for tracking
+  """
+  traceId: String!
 
   """
   Additional information 
@@ -101,34 +111,7 @@ export const resolvers = {
   Work: {
     // Use the new serie service v2
     async series(parent, args, context, info) {
-      //first we feth the series ids
-      const { series } = await context.datasources
-        .getLoader("identifyWork")
-        .load({
-          workId: parent.workId,
-          profile: context.profile,
-        });
-
-      if (!series) {
-        //return empty if there is not series
-        return [];
-      }
-
-      //then we fetch series data for each series id. (usually only one series id in the list)
-      const fetchedSeriesList = await Promise.all(
-        series.map(async (item) => {
-          const fetchedSeries = await context.datasources
-            .getLoader("seriesById")
-            .load({ seriesId: item.id, profile: context.profile });
-
-          if (!fetchedSeries?.seriesTitle) {
-            log.error("Series not found with ID:" + item?.id);
-          }
-
-          return { ...fetchedSeries, seriesId: item.id };
-        })
-      );
-
+      const fetchedSeriesList = await fetchAndExpandSeries(parent, context);
       return resolveSeries({ series: fetchedSeriesList }, parent);
     },
   },
@@ -143,10 +126,19 @@ export const resolvers = {
 
       // filter out persistentWorkIds that can NOT be resolved - we need to await a resolve to know :)
       const results = await Promise.all(
-        works.map((work) => resolveWork({ id: work.persistentWorkId }, context))
+        works.map(async (work) => ({
+          work: await resolveWork({ id: work.persistentWorkId }, context),
+          ...work,
+        }))
       );
 
-      return works.filter((_v, index) => !!results[index]);
+      // create the datahub event
+      context?.dataHub?.createSeriesEvent({
+        input: { seriesId: parent.seriesId },
+        result: results,
+      });
+
+      return results.filter((_v, index) => !!results[index]);
     },
     title(parent, args, context, info) {
       return parent.seriesTitle;
@@ -189,17 +181,13 @@ export const resolvers = {
   },
   SerieWork: {
     work(parent, args, context, info) {
-      return resolveWork({ id: parent.persistentWorkId }, context);
+      return parent.work;
     },
   },
   Manifestation: {
     async series(parent, args, context, info) {
-      const data = await context.datasources.getLoader("series").load({
-        workId: parent.workId,
-        profile: context.profile,
-      });
-
-      return resolveSeries(data, parent);
+      const fetchedSeriesList = await fetchAndExpandSeries(parent, context);
+      return resolveSeries({ series: fetchedSeriesList }, parent);
     },
   },
   Query: {
@@ -208,7 +196,12 @@ export const resolvers = {
       const seriesById = await context.datasources
         .getLoader("seriesById")
         .load({ seriesId: args.seriesId, profile: context.profile });
-      return { ...seriesById, seriesId: args.seriesId };
+
+      return {
+        ...seriesById,
+        seriesId: args.seriesId,
+        traceId: createTraceId(),
+      };
     },
   },
 };

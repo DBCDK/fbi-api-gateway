@@ -54,6 +54,34 @@ export function matchYear(str) {
   return str.match(regex);
 }
 
+export async function fetchAndExpandSeries(parent, context) {
+  //first we fetch the series ids
+  const { series } = await context.datasources.getLoader("identifyWork").load({
+    workId: parent.workId,
+    profile: context.profile,
+  });
+
+  if (!series) {
+    //return empty if there is not series
+    return [];
+  }
+
+  //then we fetch series data for each series id. (usually only one series id in the list)
+  return await Promise.all(
+    series.map(async (item) => {
+      const fetchedSeries = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: item.id, profile: context.profile });
+
+      if (!fetchedSeries?.seriesTitle) {
+        log.error("Series not found with ID:" + item?.id);
+      }
+
+      return { ...fetchedSeries, seriesId: item.id };
+    })
+  );
+}
+
 // Extend every serie in the series array with extra fields
 // These are resolved here because of the need of the correct workId
 // resolvers include ReadThisFirst, readThisWhenever og numberInSeries
@@ -80,6 +108,7 @@ export function resolveSeries(data, parent) {
         const numberInSeries = match?.numberInSeries || null;
 
         return {
+          traceId: createTraceId(),
           numberInSeries,
           readThisFirst,
           readThisWhenever,
