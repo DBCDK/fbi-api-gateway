@@ -202,6 +202,25 @@ export function dataHubMiddleware(req, res, next) {
 
     req.datasources.getLoader("datahub").load(event);
   }
+  async function createUniverseEvent({ input = {} }) {
+    const { universeId, identifiers } = input;
+    const context = await getContext();
+
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const event = {
+      context,
+      kind: "UNIVERSE",
+      variables: { universeId },
+      result: {
+        identifiers: identifiers,
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
 
   //also used to send facet event
   async function createComplexSearchEvent({
@@ -255,6 +274,7 @@ export function dataHubMiddleware(req, res, next) {
     createSuggestEvent,
     createComplexSuggestEvent,
     createSubmitOrderEvent,
+    createUniverseEvent,
     createComplexSearchEvent,
   };
 

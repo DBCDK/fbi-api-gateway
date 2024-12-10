@@ -31,10 +31,8 @@ const createSchemaWithResolvers = (resolver) => {
       }
     : {};
 
-  const {
-    enumFallbackDirectiveTypeDefs,
-    enumFallbackDirectiveTransformer,
-  } = enumFallbackDirective();
+  const { enumFallbackDirectiveTypeDefs, enumFallbackDirectiveTransformer } =
+    enumFallbackDirective();
 
   let schema = makeExecutableSchema({
     typeDefs: [enumFallbackDirectiveTypeDefs, typeDefs],
