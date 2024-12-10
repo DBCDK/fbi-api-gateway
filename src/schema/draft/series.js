@@ -197,9 +197,6 @@ export const resolvers = {
         .getLoader("seriesById")
         .load({ seriesId: args.seriesId, profile: context.profile });
 
-      // do the datahub event
-      // creatSeriesDataHubEvent(seriesById, context);
-
       return {
         ...seriesById,
         seriesId: args.seriesId,
