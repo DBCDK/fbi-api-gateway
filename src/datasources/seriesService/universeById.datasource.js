@@ -15,7 +15,6 @@ const WORKTYPES_QUERY = `query($id: String! ) {
       workTypes
       mainLanguages {
         display
-        isoCode
       }
     }
   }
@@ -40,7 +39,6 @@ export async function load(
     if (!universe) {
       return null;
     }
-
     // Augment works with workTypes
     const contentWithWorkTypes = (
       await Promise.all(

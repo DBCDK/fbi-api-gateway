@@ -3336,6 +3336,13 @@ type Universe {
   universeId: String
 
   \\"\\"\\"
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
   title: String!
@@ -6200,6 +6207,13 @@ type Universe {
   universeId: String
 
   \\"\\"\\"
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
   \\"\\"\\"
   title: String!
@@ -7711,6 +7725,13 @@ type Universe {
 
   \\"\\"\\"An id that identifies a universe.\\"\\"\\"
   universeId: String
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
 
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe

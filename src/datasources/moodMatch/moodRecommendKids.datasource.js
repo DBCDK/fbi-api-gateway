@@ -65,16 +65,8 @@ function parseFilters(filters) {
 }
 
 function setQuery(args) {
-  const {
-    tags,
-    work,
-    filters,
-    dislikes,
-    offset,
-    limit,
-    agency,
-    profile,
-  } = args;
+  const { tags, work, filters, dislikes, offset, limit, agency, profile } =
+    args;
 
   return {
     tags: parseTags(tags),

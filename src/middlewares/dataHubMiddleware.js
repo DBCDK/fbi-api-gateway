@@ -227,6 +227,25 @@ export function dataHubMiddleware(req, res, next) {
 
     req.datasources.getLoader("datahub").load(event);
   }
+  async function createUniverseEvent({ input = {} }) {
+    const { universeId, identifiers } = input;
+    const context = await getContext();
+
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const event = {
+      context,
+      kind: "UNIVERSE",
+      variables: { universeId },
+      result: {
+        identifiers: identifiers,
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
 
   req.dataHub = {
     createSearchEvent,
@@ -236,6 +255,7 @@ export function dataHubMiddleware(req, res, next) {
     createComplexSuggestEvent,
     createSubmitOrderEvent,
     createSeriesEvent,
+    createUniverseEvent,
   };
 
   next();
