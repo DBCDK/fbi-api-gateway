@@ -251,8 +251,6 @@ export const resolvers = {
   },
   SearchResponse: {
     async intelligentFacets(parent, args, context, info) {
-      const allArguments = extractArguments(info.fieldNodes[0], info);
-      console.log({ allArguments });
       const input = {
         ...parent,
         ...args,
