@@ -36,12 +36,16 @@ describe("resolve series", () => {
 
     const parent = { workId: "work-of:870970-basis:26521556" };
     const actual = resolveSeries(data, parent);
+    // hact - overwrite traceID - it changes all the time
+    actual[0]["traceId"] = "fisk";
+
     const expected = [
       {
         numberInSeries: "1",
         readThisFirst: true,
         readThisWhenever: null,
         seriesTitle: "De syv søstre-serien",
+        traceId: "fisk",
         seriesDescription:
           "Serie om syv adopterede søstre, der kæmper for at finde deres sande identitet efter deres elskede og excentriske fars død",
         alternativeTitles: [],
