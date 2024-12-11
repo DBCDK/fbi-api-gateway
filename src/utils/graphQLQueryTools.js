@@ -44,7 +44,6 @@ import { parse } from "graphql";
  * // }
  */
 export function findAliasesAndArgs(query, variables = {}) {
-  console.log(query, variables);
   const ast = parse(query);
   const aliasMap = {};
 
