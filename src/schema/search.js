@@ -262,12 +262,11 @@ export const resolvers = {
         .getLoader("intelligentFacets")
         .load(input);
 
-      const result =
+      return (
         (Array.isArray(res?.facets) &&
           res?.facets?.slice(0, args.limit || 10)) ||
-        [];
-
-      return result;
+        []
+      );
     },
     async didYouMean(parent, args, context) {
       const res = await context.datasources.getLoader("didYouMean").load({
@@ -341,7 +340,6 @@ export const resolvers = {
         };
 
         values.forEach((value) => {
-          console.log("whaat?");
           // get selected term props
           const selected = facet?.values.find((obj) => obj.term === value);
           // Push to copy values
