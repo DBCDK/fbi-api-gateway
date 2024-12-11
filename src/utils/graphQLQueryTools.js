@@ -46,47 +46,72 @@ import { parse } from "graphql";
 export function findAliasesAndArgs(query, variables = {}) {
   const ast = parse(query);
   const aliasMap = {};
+  const fragmentDefinitions = {};
+
+  /**
+   * Gem fragmentdefinitioner fra AST.
+   */
+  function collectFragments() {
+    if (!ast.definitions) return;
+    for (const definition of ast.definitions) {
+      if (definition.kind === "FragmentDefinition") {
+        fragmentDefinitions[definition.name.value] = definition;
+      }
+    }
+  }
 
   /**
    * Traversér AST for finding aliases and variables
    */
-  function traverse(node, parentPath = "") {
-    if (!node || node.kind !== "Field") return;
+  function traverse(node, parentPath = "", parentAlias = "") {
+    if (!node) return;
 
-    const fieldName = node.name.value;
-    const alias = node.alias ? node.alias.value : null;
-    const currentPath = parentPath
-      ? `${parentPath}.${alias || fieldName}`
-      : fieldName;
-    const actualPath = parentPath ? `${parentPath}.${fieldName}` : fieldName;
+    if (node.kind === "Field") {
+      const fieldName = node.name.value;
+      const alias = node.alias ? node.alias.value : null;
+      const currentPath = parentAlias
+        ? `${parentAlias}.${alias || fieldName}`
+        : parentPath
+          ? `${parentPath}.${alias || fieldName}`
+          : alias || fieldName;
+      const actualPath = parentPath ? `${parentPath}.${fieldName}` : fieldName;
 
-    // Fetch args for the field
-    const args = node.arguments.length
-      ? node.arguments.reduce((acc, arg) => {
-          acc[arg.name.value] = resolveValue(arg.value);
-          return acc;
-        }, {})
-      : null;
+      // Fetch args for the field
+      const args = node.arguments.length
+        ? node.arguments.reduce((acc, arg) => {
+            acc[arg.name.value] = resolveValue(arg.value);
+            return acc;
+          }, {})
+        : null;
 
-    // Only include field with alias or variables
-    const hasAlias = !!alias;
-    const hasVariables =
-      args &&
-      Object.values(args).some(
-        (value) => value === null || value !== undefined
-      );
+      // Include field with alias or variables
+      const hasAlias = !!alias;
+      const hasVariables =
+        args &&
+        Object.values(args).some(
+          (value) => value === null || value !== undefined
+        );
 
-    if (hasAlias || hasVariables) {
-      aliasMap[currentPath] = {
-        realPath: actualPath,
-        args,
-      };
-    }
+      if (hasAlias || hasVariables) {
+        aliasMap[currentPath] = {
+          realPath: actualPath,
+          args,
+        };
+      }
 
-    // Only traverse when there are subfields
-    if (node.selectionSet) {
-      for (const selection of node.selectionSet.selections) {
-        traverse(selection, actualPath);
+      // Only traverse when there are subfields
+      if (node.selectionSet) {
+        for (const selection of node.selectionSet.selections) {
+          traverse(selection, actualPath, currentPath);
+        }
+      }
+    } else if (node.kind === "FragmentSpread") {
+      const fragmentName = node.name.value;
+      const fragment = fragmentDefinitions[fragmentName];
+      if (fragment) {
+        for (const selection of fragment.selectionSet.selections) {
+          traverse(selection, parentPath, parentAlias);
+        }
       }
     }
   }
@@ -120,10 +145,16 @@ export function findAliasesAndArgs(query, variables = {}) {
     }
   }
 
+  // Collect fragment definitions
+  collectFragments();
+
   // Start traversing from root operations
   if (ast.definitions) {
     for (const definition of ast.definitions) {
-      if (definition.selectionSet) {
+      if (
+        definition.kind === "OperationDefinition" &&
+        definition.selectionSet
+      ) {
         for (const selection of definition.selectionSet.selections) {
           traverse(selection, "");
         }
