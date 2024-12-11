@@ -5,8 +5,46 @@ import { parse } from "graphql";
  * and fields with variables.
  * It traverses the GraphQL Abstract Syntax Tree (AST) and returns a map containing the alias path,
  * the corresponding real path (field name without alias), and resolved arguments.
+ *
+ * @example
+ * const query = `
+ *   query Example_IntelligentFacets($q: SearchQueryInput!, $facetsLimit: Int!, $valuesLimit: Int!) {
+ *     search(q: $q) {
+ *       hitcount
+ *       works(offset: 0, limit: 10) {
+ *         workId
+ *       }
+ *       awesomeFacets: intelligentFacets(limit: $facetsLimit) {
+ *         name
+ *         values(limit: $valuesLimit) {
+ *           key
+ *           term
+ *           score
+ *         }
+ *       }
+ *     }
+ *   }
+ * `;
+ *
+ * const variables = {
+ *   q: { all: 'harry', creator: 'rowling' },
+ *   facetsLimit: 5,
+ *   valuesLimit: 5,
+ * };
+ *
+ * const result = findAliasesAndArgs(query, variables);
+ * console.log(result);
+ *
+ * // Output:
+ * // {
+ * //   search: { realPath: 'search', args: { q: [Object] } },
+ * //   'search.works': { realPath: 'search.works', args: { offset: 0, limit: 10 } },
+ * //   'search.awesomeFacets': { realPath: 'search.intelligentFacets', args: { limit: 5 } },
+ * //   'search.intelligentFacets.values': { realPath: 'search.intelligentFacets.values', args: { limit: 5 } }
+ * // }
  */
 export function findAliasesAndArgs(query, variables = {}) {
+  console.log(query, variables);
   const ast = parse(query);
   const aliasMap = {};
 
@@ -93,5 +131,6 @@ export function findAliasesAndArgs(query, variables = {}) {
       }
     }
   }
+  console.log(aliasMap);
   return aliasMap;
 }
