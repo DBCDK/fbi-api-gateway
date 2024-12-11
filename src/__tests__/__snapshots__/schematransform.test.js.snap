@@ -2105,6 +2105,9 @@ type Series {
   \\"\\"\\"Identifier for the series\\"\\"\\"
   seriesId: String
 
+  \\"\\"\\"Traceid for tracking\\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"Additional information \\"\\"\\"
   identifyingAddition: String
 
@@ -3179,6 +3182,13 @@ type FacetValue {
 
   \\"\\"\\"A score indicating relevance\\"\\"\\"
   score: Int
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this facet value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
 }
 
 \\"\\"\\"The result for a specific facet\\"\\"\\"
@@ -3217,6 +3227,13 @@ type SearchResponse {
 }
 
 type DidYouMean {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this didYouMean value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"An alternative query\\"\\"\\"
   query: String!
 
@@ -3331,6 +3348,13 @@ type Universe {
 
   \\"\\"\\"An id that identifies a universe.\\"\\"\\"
   universeId: String
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
 
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -5462,6 +5486,9 @@ type Series {
   \\"\\"\\"Identifier for the series\\"\\"\\"
   seriesId: String
 
+  \\"\\"\\"Traceid for tracking\\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"Additional information \\"\\"\\"
   identifyingAddition: String
 
@@ -6139,6 +6166,13 @@ type FacetValue {
 
   \\"\\"\\"A score indicating relevance\\"\\"\\"
   score: Int
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this facet value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
 }
 
 \\"\\"\\"The result for a specific facet\\"\\"\\"
@@ -6177,6 +6211,13 @@ type SearchResponse {
 }
 
 type DidYouMean {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this didYouMean value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"An alternative query\\"\\"\\"
   query: String!
 
@@ -6192,6 +6233,13 @@ type Universe {
 
   \\"\\"\\"An id that identifies a universe.\\"\\"\\"
   universeId: String
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
 
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
@@ -7383,6 +7431,9 @@ type Series {
   \\"\\"\\"Identifier for the series\\"\\"\\"
   seriesId: String
 
+  \\"\\"\\"Traceid for tracking\\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"Additional information \\"\\"\\"
   identifyingAddition: String
 
@@ -7702,6 +7753,13 @@ type Universe {
 
   \\"\\"\\"An id that identifies a universe.\\"\\"\\"
   universeId: String
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
 
   \\"\\"\\"
   Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe

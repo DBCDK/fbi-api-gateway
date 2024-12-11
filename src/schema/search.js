@@ -2,6 +2,7 @@ import translations from "../utils/translations.json";
 import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 import { mapFacet, mapFromFacetEnum } from "../utils/filtersAndFacetsMap";
+import { createTraceId } from "../utils/trace";
 
 /**
  * define a searchquery
@@ -134,6 +135,13 @@ type FacetValue {
   A score indicating relevance
   """
   score: Int
+
+  """
+  A unique identifier for tracking user interactions with this facet value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  """
+  traceId: String!
 }
 
 """
@@ -189,6 +197,13 @@ type SearchResponse {
 
 type DidYouMean {
   """
+  A unique identifier for tracking user interactions with this didYouMean value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  """
+  traceId: String!
+
+  """
   An alternative query
   """
   query: String!
@@ -214,6 +229,9 @@ export const resolvers = {
     score(parent, args, context) {
       return parent?.score || parent?.count || 0;
     },
+    traceId() {
+      return createTraceId();
+    },
   },
   FacetResult: {
     type(parent, args, context) {
@@ -232,15 +250,17 @@ export const resolvers = {
     },
   },
   SearchResponse: {
-    async intelligentFacets(parent, args, context) {
+    async intelligentFacets(parent, args, context, info) {
+      const input = {
+        ...parent,
+        ...args,
+        limit: 50,
+        profile: context.profile,
+      };
+
       const res = await context.datasources
         .getLoader("intelligentFacets")
-        .load({
-          ...parent,
-          ...args,
-          limit: 50,
-          profile: context.profile,
-        });
+        .load(input);
 
       return (
         (Array.isArray(res?.facets) &&
@@ -255,7 +275,11 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return res?.map(({ query, score }) => ({ query, score }));
+      return res?.map(({ query, score }) => ({
+        query,
+        score,
+        traceId: createTraceId(),
+      }));
     },
     async hitcount(parent, args, context) {
       const res = await context.datasources.getLoader("simplesearch").load({
@@ -290,16 +314,15 @@ export const resolvers = {
       );
       const filtered = expanded.filter((work) => !!work);
 
-      context?.dataHub?.createSearchEvent({ input, works: filtered });
-
       return filtered;
     },
     async facets(parent, args, context) {
-      const res = await context.datasources.getLoader("facets").load({
+      const input = {
         ...parent,
         ...args,
         profile: context.profile,
-      });
+      };
+      const res = await context.datasources.getLoader("facets").load(input);
 
       const response = [];
 
@@ -321,7 +344,10 @@ export const resolvers = {
           const selected = facet?.values.find((obj) => obj.term === value);
           // Push to copy values
           // If the selected value is missing a count (because it does not exist in the return data (res)) count will be set to null
-          copy.values.push({ term: value, count: selected?.count || null });
+          copy.values.push({
+            term: value,
+            count: selected?.count || null,
+          });
         });
 
         // Remove values from res that has already been added in copy.values
@@ -340,10 +366,13 @@ export const resolvers = {
         });
 
         // Merge selected + new terms (selected will come first in the sorted order (null's first, then by count DESC))
-        copy.values = [...copy.values, ...trimmed];
+        copy.values = [...copy.values, ...trimmed]?.map((val) => ({
+          ...val,
+        }));
 
         response.push(copy);
       });
+
       return response;
     },
   },
