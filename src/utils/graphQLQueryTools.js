@@ -130,6 +130,5 @@ export function findAliasesAndArgs(query, variables = {}) {
       }
     }
   }
-  console.log(aliasMap);
   return aliasMap;
 }
