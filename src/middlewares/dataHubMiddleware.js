@@ -139,7 +139,7 @@ export function dataHubMiddleware(req, res, next) {
     }
 
     const variables = { id, faust, pid, oclc };
-    const identifiers = [{ identifer: work?.workId, traceId: work?.traceId }];
+    const identifiers = [{ identifier: work?.workId, traceId: work?.traceId }];
     const event = {
       context,
       kind: "WORK",
@@ -186,7 +186,7 @@ export function dataHubMiddleware(req, res, next) {
 
     const variables = { faust, pid };
     const identifiers = [
-      { identifer: manifestation?.pid, traceId: manifestation?.traceId },
+      { identifier: manifestation?.pid, traceId: manifestation?.traceId },
     ];
     const event = {
       context,
