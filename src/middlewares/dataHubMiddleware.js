@@ -340,12 +340,10 @@ export function dataHubMiddleware(req, res, next) {
   }
 
   async function createInspirationEvent({ input = {}, result = {} }) {
-    const context = await getContext();  
+    const context = await getContext();
     if (!shouldSendEvent(context)) {
       return;
     }
-    console.log("\n\n\ninput: ", input);
-    console.log("\n\n\ncontext: ", context);
 
     const variables = {
       limit: input.limit || 10,
