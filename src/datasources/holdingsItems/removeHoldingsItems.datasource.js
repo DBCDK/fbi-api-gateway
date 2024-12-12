@@ -1,6 +1,6 @@
 /**
  * @file
- * update holdingsItems
+ * Delete a bibliographicRecord and all items
  */
 
 import config from "../../config";
@@ -18,29 +18,20 @@ const url =
  * @param {object} props
  * @param {string} props.agencyId
  * @param {string} props.bibliographicRecordId
- * @param {string} props.itemId
  * @param {string} props.trackingId
  * @param {object} context
  * @returns {object}
  */
 export async function load(props, context) {
-  const { data } = props;
-
-  // build url with base service url and agencyId, bibliographicRecordId, itemId
   const path = buildPath(url, props);
-
-  console.log("######## path", path, data);
 
   const res = await context?.fetch(path, {
     headers: {
       "Content-Type": "application/json",
     },
-    method: "PUT",
-    body: JSON.stringify(data),
+    method: "DELETE",
     allowedErrorStatusCodes: [404, 400],
   });
-
-  console.log("######## res", res);
 
   return {
     ...res.body,
