@@ -640,6 +640,12 @@ export const resolvers = {
     },
   },
 
+  VipAgency: {
+    illServiceTxt(parent, args, context, info) {
+      return parent?.illServiceTxt || parent?.illServiceTekst || null;
+    },
+  },
+
   AgencyInfoResponse: {
     result(parent, args, context, info) {
       return parent;
