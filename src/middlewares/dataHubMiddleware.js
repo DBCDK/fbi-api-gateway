@@ -339,6 +339,45 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
+  async function createInspirationEvent({ input = {}, result = {} }) {
+    const context = await getContext();  
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+    console.log("\n\n\ninput: ", input);
+    console.log("\n\n\ncontext: ", context);
+
+    const variables = {
+      limit: input.limit || 10,
+      filters: input.filter?.map(({ category, subCategories }) => ({
+        category,
+        subCategories,
+      })),
+    };
+
+    const inspiration = {
+      categories: result.data.map((category) => ({
+        title: category.category,
+        subCategories: category.subCategories.map((sub) => ({
+          title: sub.title,
+          identifiers: sub.result.map((work) => ({
+            identifier: work.work,
+            traceId: work.traceId || null, // Include traceId if available
+          })),
+        })),
+      })),
+    };
+
+    const event = {
+      context,
+      kind: "INSPIRATION",
+      variables,
+      result: { inspiration },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
   if (!req.onOperationComplete) {
     req.onOperationComplete = [];
   }
@@ -373,6 +412,7 @@ export function dataHubMiddleware(req, res, next) {
     createSeriesEvent,
     createUniverseEvent,
     createComplexSearchEvent,
+    createInspirationEvent,
   };
 
   next();
