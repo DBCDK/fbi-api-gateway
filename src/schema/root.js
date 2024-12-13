@@ -268,12 +268,12 @@ export const resolvers = {
         return Promise.all(
           args.faust.map(async (faust) => {
             const m = await resolveManifestation({ faust }, context);
-            if (m) {
-              context?.dataHub?.createManifestationEvent({
-                input: { faust },
-                manifestation: m,
-              });
-            }
+
+            context?.dataHub?.createManifestationEvent({
+              input: { faust },
+              manifestation: m,
+            });
+
             return m;
           })
         );
@@ -281,12 +281,12 @@ export const resolvers = {
         return Promise.all(
           args.pid.map(async (pid) => {
             const m = await resolveManifestation({ pid }, context);
-            if (m) {
-              context?.dataHub?.createManifestationEvent({
-                input: { pid },
-                manifestation: m,
-              });
-            }
+
+            context?.dataHub?.createManifestationEvent({
+              input: { pid },
+              manifestation: m,
+            });
+
             return m;
           })
         );
