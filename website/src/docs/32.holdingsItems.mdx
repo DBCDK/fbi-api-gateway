@@ -1,0 +1,141 @@
+# HoldingsItems
+
+Mutation fields for adding, removing and updating holdings-items
+
+The `status` enum values can be one of following:
+
+<DescribeEnum name="HoldingsItemsStatusEnum" />
+
+## Update all
+
+Receives a payload of all issues/items for this bibliographic record id.
+All issues/items that are not references are removed.
+Items are moved (stolen) from other bibliographic records.
+Bibliographic record id is translated according to supersedes rules.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_UpdateAllHoldingsItems($bibliographicRecordId: String!, $input: CompleteWithIssuesInput!, $DryRun: Boolean) {
+      holdingsItems {
+        updateAllHoldingsItems(bibliographicRecordId: $bibliographicRecordId, input: $input, dryRun: $DryRun) {
+          ok
+          status
+          message
+          trackingId
+        }
+      }
+    }
+`}
+  variables={{
+    DryRun: true,
+    bibliographicRecordId: "51068432",
+    input: {
+      version: "2024-01-04T12:45:01.333Z",
+      firstAccessionDate: "2024-01-04",
+      note: "Updated holdings for record 51068432",
+      issues: [
+        {
+          issueId: "issue-123456",
+          issueText: "January Issue",
+          expectedDelivery: "2024-01-15",
+          readyForLoan: 5,
+          items: [
+            {
+              itemId: "item-123456",
+              branch: "Main Library",
+              branchId: "710104",
+              department: "Adult",
+              location: "Audio Books",
+              subLocation: "CD",
+              circulationRule: "Standard Loan",
+              accessionDate: "2024-01-04",
+              loanRestriction: "B",
+              status: "ONSHELF",
+              lastLoanDate: "2024-01-01",
+              ownerAgencyId: "756700",
+            },
+          ],
+        },
+      ],
+      online: true,
+    },
+  }}
+/>
+
+## Update single
+
+Receives a payload of an item with related issue for this bibliographic record id.
+Items are moved (stolen) from other bibliographic records.
+Bibliographic record id is translated according to supersedes rules.
+If the bibliographic record does not exist, a bad request response is given.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_UpdateSingleHoldingsItem($bibliographicRecordId: String!, $itemId: String!, $dryRun: Boolean, $input: ItemWithIssueInput!) {
+      holdingsItems {
+        updateSingleHoldingsItem(
+          bibliographicRecordId: $bibliographicRecordId
+          itemId: $itemId
+          dryRun: $dryRun
+          input: $input
+        ) {
+          ok
+          status
+          message
+          trackingId
+        }
+      }
+    }
+`}
+  variables={{
+    dryRun: true,
+    bibliographicRecordId: "51068432",
+    itemId: "3630767686",
+    input: {
+      version: "2024-01-04T12:45:01.333Z",
+      branch: "Main Library",
+      branchId: "710104",
+      department: "Adult",
+      location: "Audio Books",
+      subLocation: "CD",
+      circulationRule: "Standard Loan",
+      accessionDate: "2024-01-04",
+      loanRestriction: "A",
+      status: "ONLOAN",
+      lastLoanDate: "2024-01-01",
+      ownerAgencyId: "756700",
+      issue: {
+        issueId: "2024-January",
+        issueText: "January Issue",
+        expectedDelivery: "2024-01-15",
+        readyForLoan: 5,
+      },
+    },
+  }}
+/>
+
+## Remove all
+
+Removes all issues/items for a bibliographic record, This will also lose firstAccessionDate, for any items not resurrected.
+
+<InlineGraphiQL
+  query={`
+    mutation RemoveAllHoldingsItems($bibliographicRecordId: String!, $dryRun: Boolean) {
+      holdingsItems {
+        removeAllHoldingsItems(
+          bibliographicRecordId: $bibliographicRecordId
+          dryRun: $dryRun
+        ) {
+          ok
+          status
+          message
+          trackingId
+        }
+      }
+    }
+`}
+  variables={{
+    dryRun: true,
+    bibliographicRecordId: "51068432",
+  }}
+/>

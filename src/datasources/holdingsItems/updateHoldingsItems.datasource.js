@@ -3,13 +3,11 @@
  * update holdingsItems
  */
 
+import { log } from "dbc-node-logger";
 import config from "../../config";
 import { buildPath } from "./utils";
 
-//   const url = config.datasources.holdingsitems.url;
-
-const url =
-  "http://holdings-items-2-service.fbstest.svc.cloud.dbc.dk/api/v1/holdings";
+const url = config.datasources.holdingsitems2.url;
 
 /**
  *
@@ -26,10 +24,8 @@ const url =
 export async function load(props, context) {
   const { data } = props;
 
-  // build url with base service url and agencyId, bibliographicRecordId, itemId
+  // build underlaying service url with path and query params
   const path = buildPath(url, props);
-
-  console.log("######## path", path, data);
 
   const res = await context?.fetch(path, {
     headers: {
@@ -40,17 +36,13 @@ export async function load(props, context) {
     allowedErrorStatusCodes: [404, 400],
   });
 
-  console.log("######## res", res);
-
   return {
-    ...res.body,
+    // fallback
+    ok: false,
+    message: "unknown error occured",
+
+    // service status
     status: res.status === 200 ? "OK" : "ERROR",
+    ...res?.body,
   };
 }
-
-// export const options = {
-//   redis: {
-//     prefix: "holdingsitems-1",
-//     ttl: 60 * 15, // cache for 15 minutes
-//   },
-// };

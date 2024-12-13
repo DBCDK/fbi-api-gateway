@@ -28,11 +28,6 @@ type HoldingsItems {
     bibliographicRecordId: String!
 
     """
-    Optional tracking ID for debugging or log tracking.
-    """
-    trackingId: String
-
-    """
     The payload containing all issues/items for the bibliographic record.
     """
     input: CompleteWithIssuesInput!
@@ -41,6 +36,7 @@ type HoldingsItems {
     If dryRun is true, the actual service will never get called.
     """
     dryRun: Boolean
+
   ): HoldingsItemsStatus!
 
   """
@@ -64,11 +60,6 @@ type HoldingsItems {
     itemId: String!
 
     """
-    Optional tracking ID for debugging or log tracking.
-    """
-    trackingId: String
-
-    """
     The payload containing details for the single item and related issue.
     """
     input: ItemWithIssueInput!
@@ -77,6 +68,7 @@ type HoldingsItems {
     If dryRun is true, the actual service will never get called.
     """
     dryRun: Boolean
+
   ): HoldingsItemsStatus!
 
   """
@@ -89,18 +81,16 @@ type HoldingsItems {
     """
     agencyId: String
     """
+
     The bibliographic record ID (faust number).
     """
     bibliographicRecordId: String!
-    """
-    Optional tracking ID for debugging or log tracking.
-    """
-    trackingId: String
 
     """
     If dryRun is true, the actual service will never get called.
     """
     dryRun: Boolean
+
   ): HoldingsItemsStatus!
 
 }
@@ -140,6 +130,12 @@ input CompleteWithIssuesInput {
 Details of an issue, including its items.
 """
 input IssueWithItemsInput {
+
+  """
+  Identifier for a material, usually a barcode.
+  """
+  issueId: String!
+
   """
   Items associated with this issue.
   """
@@ -165,6 +161,11 @@ input IssueWithItemsInput {
 Details of an individual item.
 """
 input ItemInput {
+  """
+  Identifier for a material, usually a barcode.
+  """
+  itemId: String!
+
   """
   Human-readable text describing the branch.
   """
@@ -255,7 +256,6 @@ enum ItemStatusEnum {
   """
   ONSHELF
 }
-
 
 enum LoanRestrictionEnum {
   A
@@ -388,11 +388,33 @@ type HoldingsItemsStatus {
   trackingId: String
 }
 
-enum HoldingsItemsStatusEnum{
+"""
+Represents the status of an operation related to holdings items.
+"""
+enum HoldingsItemsStatusEnum {
+  """
+  The operation completed successfully.
+  """
   OK
+
+  """
+  A generic error occurred during the operation.
+  """
   ERROR
+
+  """
+  The operation failed due to an unauthenticated or invalid token.
+  """
   ERROR_UNAUTHENTICATED_TOKEN
+
+  """
+  The operation failed because the token specified agency is invalid.
+  """
   ERROR_INVALID_AGENCY
+
+  """
+  The operation failed due to lack of authorisation.
+  """
   ERROR_NO_AUTHORISATION
 }
 `;
@@ -406,66 +428,71 @@ export const resolvers = {
 
   HoldingsItems: {
     async updateAllHoldingsItems(parent, args, context, info) {
-      const { input, bibliographicRecordId, trackingId, dryRun = false } = args;
+      const { input, bibliographicRecordId, dryRun = false } = args;
+
+      // set request uuid as trackingId
+      const trackingId = context?.datasources?.stats?.uuid;
 
       // check if user attached to token has access rights
-      const status = checkUserRights(context.user);
+      const status = checkUserRights(context?.user);
       if (!status.ok) {
-        return { ...status, trackingId: args.trackingId };
+        return { ...status, trackingId };
       }
 
-      // Map from enum values
+      // Map from enum values and restructure issues and items
       const data = {
         ...input,
-        // Map issues if they exist
-        issues: input.issues?.map((issue) => ({
-          ...issue,
-          // Map items within each issue
-          items: issue.items?.map((item) => ({
-            ...item,
-            // Map status using the provided enum map
-            status: itemStatusEnumMap[item?.status],
-            // Map loanRestriction to lowercase (api enum), fallback to allowed empty string
-            loanRestriction: item?.loanRestriction?.toLowerCase() || "",
-          })),
-        })),
+        issues: (() => {
+          const issuesMap = {};
+
+          input.issues?.forEach((issue) => {
+            const itemsMap = {};
+
+            issue.items?.forEach((item) => {
+              itemsMap[item.itemId] = {
+                ...item,
+                // Map status using the provided enum map
+                status: itemStatusEnumMap[item?.status],
+                // Map loanRestriction to lowercase (api enum), fallback to allowed empty string
+                loanRestriction: item?.loanRestriction?.toLowerCase() || "",
+              };
+            });
+            issuesMap[issue.issueId] = {
+              ...issue,
+              items: itemsMap,
+            };
+          });
+          return issuesMap;
+        })(),
       };
 
+      // set users loggedInAgencyId as agencyId
       const agencyId = context.user?.loggedInAgencyId;
 
       if (dryRun) {
         return {
           ok: true,
-          message: "ost!",
-          trackingId: args?.trackingId,
+          status: "OK",
+          message: "ok",
+          trackingId,
         };
       }
 
-      const res = await context.datasources
+      return await context.datasources
         .getLoader("updateHoldingsItems")
         .load({ data, agencyId, bibliographicRecordId, trackingId });
-
-      return {
-        ok: true,
-        status: "OK",
-        message: "Great success!",
-        trackingId: args?.trackingId,
-      };
     },
 
     async updateSingleHoldingsItem(parent, args, context, info) {
-      const {
-        input,
-        bibliographicRecordId,
-        trackingId,
-        itemId,
-        dryRun = false,
-      } = args;
+      const { input, bibliographicRecordId, itemId, dryRun = false } = args;
+
+      // set request uuid as trackingId
+      const trackingId = context?.datasources?.stats?.uuid;
 
       // check if user attached to token has access rights
       const status = checkUserRights(context.user);
       if (!status.ok) {
-        return { ...status, trackingId: args.trackingId };
+        return { ...status, trackingId };
       }
 
       // map from api enum values to underlaying service enum values
@@ -481,8 +508,8 @@ export const resolvers = {
         return {
           ok: true,
           status: "OK",
-          message: "Great success!",
-          trackingId: args?.trackingId,
+          message: "ok",
+          trackingId,
         };
       }
 
@@ -492,12 +519,15 @@ export const resolvers = {
     },
 
     async removeAllHoldingsItems(parent, args, context, info) {
-      const { bibliographicRecordId, trackingId, dryRun = false } = args;
+      const { bibliographicRecordId, dryRun = false } = args;
+
+      // set request uuid as trackingId
+      const trackingId = context?.datasources?.stats?.uuid;
 
       // check if user attached to token has access rights
       const status = checkUserRights(context.user);
       if (!status.ok) {
-        return { ...status, trackingId: args.trackingId };
+        return { ...status, trackingId };
       }
 
       const agencyId = context.user?.loggedInAgencyId;
@@ -506,8 +536,8 @@ export const resolvers = {
         return {
           ok: true,
           status: "OK",
-          message: "Great success!",
-          trackingId: args?.trackingId,
+          message: "ok",
+          trackingId,
         };
       }
 

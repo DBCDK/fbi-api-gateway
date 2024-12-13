@@ -6,10 +6,7 @@
 import config from "../../config";
 import { buildPath } from "./utils";
 
-//   const url = config.datasources.holdingsitems.url;
-
-const url =
-  "http://holdings-items-2-service.fbstest.svc.cloud.dbc.dk/api/v1/holdings";
+const url = config.datasources.holdingsitems2.url;
 
 /**
  *
@@ -23,6 +20,7 @@ const url =
  * @returns {object}
  */
 export async function load(props, context) {
+  // build underlaying service url with path and query params
   const path = buildPath(url, props);
 
   const res = await context?.fetch(path, {
@@ -34,14 +32,12 @@ export async function load(props, context) {
   });
 
   return {
-    ...res.body,
+    // fallback
+    ok: false,
+    message: "unknown error occured",
+
+    // service status
     status: res.status === 200 ? "OK" : "ERROR",
+    ...res?.body,
   };
 }
-
-// export const options = {
-//   redis: {
-//     prefix: "holdingsitems-1",
-//     ttl: 60 * 15, // cache for 15 minutes
-//   },
-// };

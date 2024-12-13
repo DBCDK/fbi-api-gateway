@@ -13,7 +13,7 @@ import config from "../../config";
 export async function load({ agencyId, branchId, pids }) {
   const url = config.datasources.holdingsitems.url;
   try {
-    const response = await request.get(url).query({
+    const response = await request.get(`${url}/holdings-by-branch`).query({
       agencyId,
       branchId,
       pid: pids,
