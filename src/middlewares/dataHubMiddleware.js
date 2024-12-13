@@ -134,7 +134,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createWorkEvent({ input = {}, work }) {
     const { id, faust, pid, oclc } = input;
     const context = await getContext();
-    if (!shouldSendEvent(context)) {
+    if (!shouldSendEvent(context) || !work) {
       return;
     }
 
@@ -155,7 +155,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createSeriesEvent({ input = {}, result }) {
     const { seriesId } = input;
     const context = await getContext();
-    if (!shouldSendEvent(context)) {
+    if (!shouldSendEvent(context) || !result) {
       return;
     }
 
@@ -180,7 +180,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createManifestationEvent({ input = {}, manifestation }) {
     const { faust, pid } = input;
     const context = await getContext();
-    if (!shouldSendEvent(context)) {
+    if (!shouldSendEvent(context) || !manifestation) {
       return;
     }
 
@@ -203,7 +203,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createSuggestEvent({ input = {}, suggestions }) {
     const { q, suggestStypes } = input;
     const context = await getContext();
-    if (!shouldSendEvent(context)) {
+    if (!shouldSendEvent(context) || !suggestions) {
       return;
     }
 
@@ -228,7 +228,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createComplexSuggestEvent({ input = {}, suggestions }) {
     const { q, suggestStypes } = input;
     const context = await getContext();
-    if (!shouldSendEvent(context)) {
+    if (!shouldSendEvent(context) || !suggestions) {
       return;
     }
     const variables = { q, suggestStypes };
