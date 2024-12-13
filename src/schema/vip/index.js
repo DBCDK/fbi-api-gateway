@@ -461,6 +461,10 @@ type VipAgency {
   """
   illServiceTxt: String
   """
+  THE REAL ILL service tekst. Example: "https://bibliotek.kk.dk/help/general-info/library-regulations".
+  """
+  illServiceTekst: String  
+  """
   Opening hours URL. Link to the library’s opening hours. Example: "https://www.bibliotek.alleroed.dk/opening-hours".
   """
   openingHoursUrl: String
@@ -637,12 +641,6 @@ export const resolvers = {
         .load({ ...args, libraryType, libraryStatus });
 
       return res?.agencyInfo || [];
-    },
-  },
-
-  VipAgency: {
-    illServiceTxt(parent, args, context, info) {
-      return parent?.illServiceTxt || parent?.illServiceTekst || null;
     },
   },
 
