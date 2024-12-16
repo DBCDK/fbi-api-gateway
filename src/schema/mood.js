@@ -2,6 +2,7 @@
  * @file mood.js
  * type definitions for appeal data
  */
+import { createTraceId } from "../utils/trace";
 import { resolveManifestation, resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 
@@ -19,6 +20,14 @@ export const typeDef = `
    MoodSuggest item
    """
    type MoodSuggestItem {
+
+    """
+    A unique identifier for tracking user interactions with this suggestion. 
+    It is generated in the response and should be included in subsequent
+    API calls when this manifestation is selected.
+    """
+    traceId: String! 
+
     """
     Suggestion
     """
@@ -221,6 +230,9 @@ export const resolvers = {
     },
     type(parent, args, context, info) {
       return parent.type?.toUpperCase();
+    },
+    traceId() {
+      return createTraceId();
     },
   },
   MoodTagRecommendResponse: {
