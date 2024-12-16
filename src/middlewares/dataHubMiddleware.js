@@ -387,6 +387,29 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
+  async function createRecommendEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const variables = { ...fieldInfo?.recommend?.args };
+
+    const event = {
+      context,
+      kind: "RECOMMEND",
+      variables,
+      result: {
+        identifiers: data?.recommend?.result?.map((r) => ({
+          identifier: r?.work?.workId,
+          traceId: r?.work?.traceId || createTraceId(),
+        })),
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
   async function createComplexSuggestEvent({ input = {}, suggestions }) {
     const { q, suggestStypes } = input;
     const context = await getContext();
@@ -594,6 +617,13 @@ export function dataHubMiddleware(req, res, next) {
 
     if (data?.mood?.moodRecommendKids) {
       createMoodRecommendKidsEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
+    if (data?.recommend) {
+      createRecommendEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
