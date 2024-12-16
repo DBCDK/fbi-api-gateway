@@ -111,16 +111,14 @@ export default {
     holdingsitems: {
       url:
         process.env.HOLDINGSITEMS_URL ||
-        "http://holdings-items-content-service.cisterne.svc.cloud.dbc.dk/api/holdings-by-branch/",
+        "http://holdings-items-content-service.cisterne.svc.cloud.dbc.dk/api",
       ttl: process.env.HOLDINGSITEMS_URL_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.HOLDINGSITEMS_URL_PREFIX || "holdingsitems-1",
     },
-    holdingsitemsForAgency: {
+    holdingsitems2: {
       url:
-        process.env.HOLDINGSITEMS_FOR_AGENCY_URL ||
-        "http://holdings-items-content-service.cisterne.svc.cloud.dbc.dk/api/holdings-by-pid/",
-      ttl: process.env.HOLDINGSITEMS_URL_TIME_TO_LIVE_SECONDS || 5,
-      prefix: process.env.HOLDINGSITEMS_URL_PREFIX || "holdingsitems-1",
+        process.env.HOLDINGSITEMS_2_URL ||
+        "http://holdings-items-2-service.fbstest.svc.cloud.dbc.dk/api/v1/holdings",
     },
     moreinfo: {
       url: process.env.MOREINFO_URL,

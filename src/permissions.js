@@ -64,7 +64,7 @@ export default {
     denyTypes: [],
   },
   "fbs:system": {
-    allowRootFields: ["culr", "vip", "marc"],
+    allowRootFields: ["culr", "vip", "marc", "holdingsItems"],
     denyTypes: [],
   },
   ddbcms: {

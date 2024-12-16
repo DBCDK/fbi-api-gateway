@@ -3,17 +3,16 @@
  * Get holdingitems from http://holdings-items-content-service.cisterne.svc.cloud.dbc.dk/api/holdings-by-branch
  */
 
-import { log } from "dbc-node-logger";
-import config from "../config";
+import config from "../../config";
 
 /**
  * NOTE - get request parameters eg. ?agencyId=710100&branchId=710117&pid=870970-katalog:25912233
  */
 export async function load({ agencyId, pids }, context) {
-  const url = config.datasources.holdingsitemsForAgency.url;
+  const url = config.datasources.holdingsitems.url;
 
   const response = await context.fetch(
-    `${url}?agency=${agencyId}${pids?.map((pid) => `&pid=${pid}`).join("")}`
+    `${url}/holdings-by-pid?agency=${agencyId}${pids?.map((pid) => `&pid=${pid}`).join("")}`
   );
 
   const res = [];
