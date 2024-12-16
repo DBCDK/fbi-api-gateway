@@ -4,7 +4,12 @@ Get subjects related to the result found. This query takes an array og string an
 
 <InlineGraphiQL
   query={`query Example_RelatedSubjects ($q: [String!]!, $limit: Int) {
-relatedSubjects(q: $q, limit: $limit)
+    recommendations {
+      subjects(q: $q, limit: $limit) {
+        traceId
+        subject
+      }
+    }
 }
 `}
   variables={{
