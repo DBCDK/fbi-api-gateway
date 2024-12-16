@@ -181,7 +181,6 @@ function setPost(parent, context, args) {
   };
 }
 async function traceFacets({ response, context, parent, args }) {
-  console.log("\n\n\nresponse", response);
   const facetsWithTraceIds = response?.facets?.map((facet) => ({
     ...facet,
     values: facet?.values?.map((value) => {
@@ -218,7 +217,6 @@ export const resolvers = {
           context,
           args,
         });
-        console.log("\n\n\n\n\n\nfacetsWithTraceIds", facetsWithTraceIds);
   
         return facetsWithTraceIds;
     },
