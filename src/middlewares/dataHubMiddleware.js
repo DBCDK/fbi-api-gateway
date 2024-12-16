@@ -410,6 +410,29 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
+  async function createRelatedSubjectsEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const variables = { ...fieldInfo?.["recommendations.subjects"]?.args };
+
+    const event = {
+      context,
+      kind: "RELATED_SUBJECTS",
+      variables,
+      result: {
+        relatedSubjects: data?.recommendations?.subjects?.map((entry) => ({
+          subject: entry?.subject,
+          traceId: entry?.traceId || createTraceId(),
+        })),
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
   async function createComplexSuggestEvent({ input = {}, suggestions }) {
     const { q, suggestStypes } = input;
     const context = await getContext();
@@ -624,6 +647,13 @@ export function dataHubMiddleware(req, res, next) {
 
     if (data?.recommend) {
       createRecommendEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
+    if (data?.recommendations?.subjects) {
+      createRelatedSubjectsEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });

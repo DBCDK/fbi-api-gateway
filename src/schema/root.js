@@ -117,7 +117,7 @@ type Query {
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches:Boolean): Localizations @complexity(value: 35, multipliers: ["pids"])
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
-  relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
+  relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])  @deprecated(reason: "Use 'Recommendations.subjects' instead expires: 01/03-2025")
   inspiration(limit: Int): Inspiration! 
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
 }

@@ -13,6 +13,7 @@ const defaultSettings = {
     "complexSuggest",
     "localSuggest",
     "recommend",
+    "recommendations",
     "infomedia",
     "refWorks",
     "ris",
