@@ -360,7 +360,7 @@ export function dataHubMiddleware(req, res, next) {
           title: sub.title,
           identifiers: sub.result.map((work) => ({
             identifier: work.work,
-            traceId: work.traceId
+            traceId: work.traceId,
           })),
         })),
       })),
