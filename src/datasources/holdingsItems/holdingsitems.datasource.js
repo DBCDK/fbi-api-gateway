@@ -5,7 +5,7 @@
 
 import request from "superagent";
 import { log } from "dbc-node-logger";
-import config from "../config";
+import config from "../../config";
 
 /**
  * NOTE - get request parameters eg. ?agencyId=710100&branchId=710117&pid=870970-katalog:25912233
@@ -13,7 +13,7 @@ import config from "../config";
 export async function load({ agencyId, branchId, pids }) {
   const url = config.datasources.holdingsitems.url;
   try {
-    const response = await request.get(url).query({
+    const response = await request.get(`${url}/holdings-by-branch`).query({
       agencyId,
       branchId,
       pid: pids,
