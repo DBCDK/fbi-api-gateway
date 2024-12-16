@@ -40,7 +40,7 @@ export async function load({ q, filters = {}, profile, limit = 10 }, context) {
   ).body;
 
   return {
-    facets: res?.facets?.map((obj) => ({
+    facets: res?.facets?.map?.((obj) => ({
       type: mapToFacetEnum(obj.name),
       ...obj,
     })),
