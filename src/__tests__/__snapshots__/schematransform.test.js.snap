@@ -2789,6 +2789,13 @@ enum MoodSuggestEnum {
 
 \\"\\"\\"MoodSuggest item\\"\\"\\"
 type MoodSuggestItem {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"Suggestion\\"\\"\\"
   term: String!
 
@@ -5967,6 +5974,13 @@ enum MoodSuggestEnum {
 
 \\"\\"\\"MoodSuggest item\\"\\"\\"
 type MoodSuggestItem {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
+
   \\"\\"\\"Suggestion\\"\\"\\"
   term: String!
 

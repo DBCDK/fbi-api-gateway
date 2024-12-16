@@ -114,8 +114,6 @@ export const resolvers = {
         traceId: createTraceId(),
       }));
 
-      context?.dataHub?.createSuggestEvent({ input, suggestions });
-
       return suggestions || [];
     },
   },
@@ -151,8 +149,6 @@ export const resolvers = {
         ...entry,
         traceId: createTraceId(),
       }));
-
-      context?.dataHub?.createSuggestEvent({ input, suggestions });
 
       return suggestions || [];
     },
