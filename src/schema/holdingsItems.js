@@ -174,7 +174,7 @@ input ItemInput {
   """
   Identifying number of the branch.
   """
-  branchId: String!
+  branchId: Int!
 
   """
   Human-readable text describing the department within the branch.
@@ -219,7 +219,7 @@ input ItemInput {
   """
   Identifying the agencyId that owns this, if temporarily part of the library (ILL loan).
   """
-  ownerAgencyId: String
+  ownerAgencyId: Int
 }
 
 """
@@ -280,7 +280,7 @@ input ItemWithIssueInput {
   """
   Identifying number of the branch.
   """
-  branchId: String!
+  branchId: Int!
 
   """
   Human-readable text describing the department within the branch.
@@ -325,7 +325,7 @@ input ItemWithIssueInput {
   """
   Identifying the agencyId that owns this, if temporarily part of the library (ILL loan).
   """
-  ownerAgencyId: String
+  ownerAgencyId: Int
 
   """
   When this structure was exported in ISO-8601 format with timezone Z.

@@ -8,8 +8,6 @@ export const itemStatusEnumMap = {
 };
 
 export function checkUserRights(user) {
-  console.log("########### user", JSON.stringify(user, null, 2));
-
   const isAuthenticated = !!user?.userId;
   const loggedInAgencyId = user?.loggedInAgencyId;
   const dbcidp = user?.dbcidp;
