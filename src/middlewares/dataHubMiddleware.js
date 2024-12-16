@@ -363,24 +363,23 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
-  async function createSuggestEvent({ input = {}, suggestions }) {
-    const { q, suggestStypes } = input;
+  async function createSuggestEvent({ data, fieldInfo }) {
     const context = await getContext();
-    if (!shouldSendEvent(context) || !suggestions) {
+    if (!shouldSendEvent(context)) {
       return;
     }
 
-    const variables = { q, suggestStypes };
+    const variables = { ...fieldInfo?.suggest?.args };
 
     const event = {
       context,
       kind: "SUGGEST",
       variables,
       result: {
-        suggestions: suggestions?.map((s) => ({
+        suggestions: data?.suggest?.result?.map((s) => ({
           term: s.term,
           type: s.type,
-          traceId: s.traceId,
+          traceId: s.traceId || createTraceId(),
         })),
       },
     };
@@ -523,7 +522,7 @@ export function dataHubMiddleware(req, res, next) {
           title: sub.title,
           identifiers: sub.result.map((work) => ({
             identifier: work.work,
-            traceId: work.traceId
+            traceId: work.traceId,
           })),
         })),
       })),
@@ -551,6 +550,13 @@ export function dataHubMiddleware(req, res, next) {
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
+    if (data?.suggest) {
+      createSuggestEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
     if (data?.mood?.moodSearch) {
       createMoodSearchEvent({
         data,
@@ -597,7 +603,6 @@ export function dataHubMiddleware(req, res, next) {
   req.dataHub = {
     createWorkEvent,
     createManifestationEvent,
-    createSuggestEvent,
     createComplexSuggestEvent,
     createSubmitOrderEvent,
     createSeriesEvent,
