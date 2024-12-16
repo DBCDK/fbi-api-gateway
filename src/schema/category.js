@@ -36,7 +36,10 @@ export const resolvers = {
       const limit = args.limit || 10;
       const result = await Promise.all(
         parent.result.slice(0, limit).map(async (entry) => {
-          const work = await resolveWork({ id: entry.work }, context);
+          const work = await resolveWork(
+            { id: entry.work, traceId: entry.traceId },
+            context
+          );
           const manifestation = resolveManifestation(
             { pid: entry.pid },
             context

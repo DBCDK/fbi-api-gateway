@@ -117,7 +117,7 @@ type Query {
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches:Boolean): Localizations @complexity(value: 35, multipliers: ["pids"])
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
-  relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])
+  relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])  @deprecated(reason: "Use 'Recommendations.subjects' instead expires: 01/03-2025")
   inspiration(limit: Int): Inspiration! 
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
 }
@@ -268,12 +268,12 @@ export const resolvers = {
         return Promise.all(
           args.faust.map(async (faust) => {
             const m = await resolveManifestation({ faust }, context);
-            if (m) {
-              context?.dataHub?.createManifestationEvent({
-                input: { faust },
-                manifestation: m,
-              });
-            }
+
+            context?.dataHub?.createManifestationEvent({
+              input: { faust },
+              manifestation: m,
+            });
+
             return m;
           })
         );
@@ -281,12 +281,12 @@ export const resolvers = {
         return Promise.all(
           args.pid.map(async (pid) => {
             const m = await resolveManifestation({ pid }, context);
-            if (m) {
-              context?.dataHub?.createManifestationEvent({
-                input: { pid },
-                manifestation: m,
-              });
-            }
+
+            context?.dataHub?.createManifestationEvent({
+              input: { pid },
+              manifestation: m,
+            });
+
             return m;
           })
         );

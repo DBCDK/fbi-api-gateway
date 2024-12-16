@@ -131,10 +131,173 @@ export function dataHubMiddleware(req, res, next) {
     }
   }
 
+  async function createMoodSearchEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const event = {
+      context,
+      kind: "MOOD_DATA_SEARCH",
+      variables: {},
+      result: {},
+    };
+    if (fieldInfo["mood.moodSearch"]?.args) {
+      event.variables = { ...fieldInfo["mood.moodSearch"].args };
+    }
+    if (fieldInfo?.["mood.moodSearch.works"]?.args?.offset) {
+      event.variables.offset = fieldInfo["mood.moodSearch.works"].args.offset;
+    }
+    if (fieldInfo?.["mood.moodSearch.works"]?.args?.limit) {
+      event.variables.limit = fieldInfo["mood.moodSearch.works"].args.limit;
+    }
+
+    if (data?.mood?.moodSearch?.works?.[0]?.workId) {
+      event.result.identifiers = data.mood.moodSearch.works?.map((w) => ({
+        identifier: w.workId,
+        traceId: w.traceId || createTraceId(),
+      }));
+    }
+
+    if (Object.keys(event.result).length > 0) {
+      req.datasources.getLoader("datahub").load(event);
+    }
+  }
+
+  async function createMoodSearchKidsEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const event = {
+      context,
+      kind: "MOOD_DATA_SEARCH_KIDS",
+      variables: {},
+      result: {},
+    };
+    if (fieldInfo["mood.moodSearchKids"]?.args) {
+      event.variables = { ...fieldInfo["mood.moodSearchKids"].args };
+    }
+    if (fieldInfo?.["mood.moodSearchKids.works"]?.args?.offset) {
+      event.variables.offset =
+        fieldInfo["mood.moodSearchKids.works"].args.offset;
+    }
+    if (fieldInfo?.["mood.moodSearchKids.works"]?.args?.limit) {
+      event.variables.limit = fieldInfo["mood.moodSearchKids.works"].args.limit;
+    }
+
+    if (data?.mood?.moodSearchKids?.works?.[0]?.workId) {
+      event.result.identifiers = data.mood.moodSearchKids.works?.map((w) => ({
+        identifier: w.workId,
+        traceId: w.traceId || createTraceId(),
+      }));
+    }
+
+    if (Object.keys(event.result).length > 0) {
+      req.datasources.getLoader("datahub").load(event);
+    }
+  }
+
+  async function createMoodSuggestEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context) || !data?.mood?.moodSuggest?.response) {
+      return;
+    }
+
+    const event = {
+      context,
+      kind: "MOOD_DATA_SUGGEST",
+      variables: { q: fieldInfo["mood.moodSuggest"]?.args?.q },
+      result: {
+        suggestions: data?.mood?.moodSuggest?.response.map((s) => ({
+          term: s.term,
+          type: s.type,
+          traceId: s.traceId || createTraceId(),
+        })),
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
+  async function createMoodTagRecommendEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context) || !data?.mood?.moodTagRecommend) {
+      return;
+    }
+
+    const event = {
+      context,
+      kind: "MOOD_DATA_RECOMMEND",
+      variables: fieldInfo["mood.moodTagRecommend"]?.args,
+      result: {
+        identifiers: data?.mood?.moodTagRecommend?.map((entry) => ({
+          identifier: entry?.work?.workId,
+          traceId: entry?.work?.traceId || createTraceId(),
+        })),
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
+  async function createMoodRecommendKidsEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context) || !data?.mood?.moodRecommendKids?.works) {
+      return;
+    }
+
+    const event = {
+      context,
+      kind: "MOOD_DATA_RECOMMEND_KIDS",
+      variables: fieldInfo["mood.moodRecommendKids"]?.args,
+      result: {
+        identifiers: data?.mood?.moodRecommendKids?.works?.map((entry) => ({
+          identifier: entry?.workId,
+          traceId: entry?.traceId || createTraceId(),
+        })),
+      },
+    };
+
+    if (fieldInfo?.["mood.moodRecommendKids.works"]?.args?.offset) {
+      event.variables.offset =
+        fieldInfo["mood.moodRecommendKids.works"].args.offset;
+    }
+    if (fieldInfo?.["mood.moodRecommendKids.works"]?.args?.limit) {
+      event.variables.limit =
+        fieldInfo["mood.moodRecommendKids.works"].args.limit;
+    }
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
+  async function createMoodWorkRecommendEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context) || !data?.mood?.moodWorkRecommend) {
+      return;
+    }
+
+    const event = {
+      context,
+      kind: "MOOD_DATA_RECOMMEND",
+      variables: fieldInfo["mood.moodWorkRecommend"]?.args,
+      result: {
+        identifiers: data?.mood?.moodWorkRecommend?.map((entry) => ({
+          identifier: entry?.work?.workId,
+          traceId: entry?.work?.traceId || createTraceId(),
+        })),
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
   async function createWorkEvent({ input = {}, work }) {
     const { id, faust, pid, oclc } = input;
     const context = await getContext();
-    if (!shouldSendEvent(context)) {
+    if (!shouldSendEvent(context) || !work) {
       return;
     }
 
@@ -155,7 +318,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createSeriesEvent({ input = {}, result }) {
     const { seriesId } = input;
     const context = await getContext();
-    if (!shouldSendEvent(context)) {
+    if (!shouldSendEvent(context) || !result) {
       return;
     }
 
@@ -180,7 +343,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createManifestationEvent({ input = {}, manifestation }) {
     const { faust, pid } = input;
     const context = await getContext();
-    if (!shouldSendEvent(context)) {
+    if (!shouldSendEvent(context) || !manifestation) {
       return;
     }
 
@@ -200,24 +363,69 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
-  async function createSuggestEvent({ input = {}, suggestions }) {
-    const { q, suggestStypes } = input;
+  async function createSuggestEvent({ data, fieldInfo }) {
     const context = await getContext();
     if (!shouldSendEvent(context)) {
       return;
     }
 
-    const variables = { q, suggestStypes };
+    const variables = { ...fieldInfo?.suggest?.args };
 
     const event = {
       context,
       kind: "SUGGEST",
       variables,
       result: {
-        suggestions: suggestions?.map((s) => ({
+        suggestions: data?.suggest?.result?.map((s) => ({
           term: s.term,
           type: s.type,
-          traceId: s.traceId,
+          traceId: s.traceId || createTraceId(),
+        })),
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
+  async function createRecommendEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const variables = { ...fieldInfo?.recommend?.args };
+
+    const event = {
+      context,
+      kind: "RECOMMEND",
+      variables,
+      result: {
+        identifiers: data?.recommend?.result?.map((r) => ({
+          identifier: r?.work?.workId,
+          traceId: r?.work?.traceId || createTraceId(),
+        })),
+      },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
+  async function createRelatedSubjectsEvent({ data, fieldInfo }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const variables = { ...fieldInfo?.["recommendations.subjects"]?.args };
+
+    const event = {
+      context,
+      kind: "RELATED_SUBJECTS",
+      variables,
+      result: {
+        relatedSubjects: data?.recommendations?.subjects?.map((entry) => ({
+          subject: entry?.subject,
+          traceId: entry?.traceId || createTraceId(),
         })),
       },
     };
@@ -228,7 +436,7 @@ export function dataHubMiddleware(req, res, next) {
   async function createComplexSuggestEvent({ input = {}, suggestions }) {
     const { q, suggestStypes } = input;
     const context = await getContext();
-    if (!shouldSendEvent(context)) {
+    if (!shouldSendEvent(context) || !suggestions) {
       return;
     }
     const variables = { q, suggestStypes };
@@ -339,40 +547,128 @@ export function dataHubMiddleware(req, res, next) {
     req.datasources.getLoader("datahub").load(event);
   }
 
+  async function createInspirationEvent({ input = {}, result = {} }) {
+    const context = await getContext();
+    if (!shouldSendEvent(context)) {
+      return;
+    }
+
+    const variables = {
+      limit: input.limit || 10,
+      filters: input.filter?.map(({ category, subCategories }) => ({
+        category,
+        subCategories,
+      })),
+    };
+
+    const inspiration = {
+      categories: result.data.map((category) => ({
+        title: category.category,
+        subCategories: category.subCategories.map((sub) => ({
+          title: sub.title,
+          identifiers: sub.result.map((work) => ({
+            identifier: work.work,
+            traceId: work.traceId,
+          })),
+        })),
+      })),
+    };
+
+    const event = {
+      context,
+      kind: "INSPIRATION",
+      variables,
+      result: { inspiration },
+    };
+
+    req.datasources.getLoader("datahub").load(event);
+  }
+
   if (!req.onOperationComplete) {
     req.onOperationComplete = [];
   }
 
-  const FIELD_FUNC_MAP = {
-    search: createSearchEvent,
-  };
-
   // Observe  the actual data that is sent to client
   req.onOperationComplete.push((data, variables, query) => {
-    // holds info about fields that recieve arguments
-    let fieldInfo;
+    if (data?.search) {
+      createSearchEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+    if (data?.suggest) {
+      createSuggestEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
 
-    // Check each root field, and call a corresponding function
-    // (if it is available in FIELD_FUNC_MAP)
-    Object.keys(data).forEach((field) => {
-      if (FIELD_FUNC_MAP[field]) {
-        if (!fieldInfo) {
-          fieldInfo = findAliasesAndArgs(query, variables);
-        }
-        FIELD_FUNC_MAP[field]({ data, fieldInfo });
-      }
-    });
+    if (data?.mood?.moodSearch) {
+      createMoodSearchEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
+    if (data?.mood?.moodSuggest) {
+      createMoodSuggestEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
+    if (data?.mood?.moodTagRecommend) {
+      createMoodTagRecommendEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
+    if (data?.mood?.moodWorkRecommend) {
+      createMoodWorkRecommendEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
+    if (data?.mood?.moodSearchKids) {
+      createMoodSearchKidsEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
+    if (data?.mood?.moodRecommendKids) {
+      createMoodRecommendKidsEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
+    if (data?.recommend) {
+      createRecommendEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
+
+    if (data?.recommendations?.subjects) {
+      createRelatedSubjectsEvent({
+        data,
+        fieldInfo: findAliasesAndArgs(query, variables),
+      });
+    }
   });
 
   req.dataHub = {
     createWorkEvent,
     createManifestationEvent,
-    createSuggestEvent,
     createComplexSuggestEvent,
     createSubmitOrderEvent,
     createSeriesEvent,
     createUniverseEvent,
     createComplexSearchEvent,
+    createInspirationEvent,
   };
 
   next();

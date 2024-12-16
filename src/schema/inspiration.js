@@ -3,6 +3,8 @@
  *
  */
 
+import { createTraceId } from "../utils/trace";
+
 export const typeDef = `
   input CategoryFilterInput {
     category: CategoryFiltersEnum!
@@ -58,7 +60,7 @@ export const resolvers = {
         return [];
       }
 
-      return args?.filter?.map(({ category, subCategories }) => {
+      const result = args?.filter?.map(({ category, subCategories }) => {
         const key = mapEnums[category];
         // Some data keys differs from enum types - e.g. We do not use _ in api
         const data = res[mapKeys[key] || key];
@@ -70,7 +72,14 @@ export const resolvers = {
             type: category,
             subCategories: subCategories
               .map((sub) => data.find(({ title }) => title === sub))
-              .filter((element) => element !== undefined),
+              .filter((element) => element !== undefined)
+              .map((category) => ({
+                ...category,
+                result: category.result.map((item) => ({
+                  ...item,
+                  traceId: createTraceId(),
+                })),
+              })),
           };
         }
 
@@ -80,6 +89,11 @@ export const resolvers = {
           subCategories: data,
         };
       });
+      await context?.dataHub?.createInspirationEvent({
+        input: { ...parent, ...args, profile: context.profile },
+        result: { data: result },
+      });
+      return result;
     },
   },
 };
