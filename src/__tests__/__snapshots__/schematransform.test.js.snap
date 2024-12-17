@@ -522,6 +522,7 @@ input ComplexSearchFacetsInput {
 type ComplexSearchFacetValue {
   key: String!
   score: Int!
+  traceId: String
 }
 
 \\"\\"\\"The complete facet in response\\"\\"\\"
@@ -4569,6 +4570,7 @@ input ComplexSearchFacetsInput {
 type ComplexSearchFacetValue {
   key: String!
   score: Int!
+  traceId: String
 }
 
 \\"\\"\\"The complete facet in response\\"\\"\\"
