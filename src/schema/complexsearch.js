@@ -119,6 +119,7 @@ A Facet value in response
 type ComplexSearchFacetValue{
   key: String!
   score: Int!
+  traceId: String
 }
 
 """
@@ -180,13 +181,48 @@ function setPost(parent, context, args) {
   };
 }
 
+/**
+ * Will add traceIds to the facets and send the event to the datahub
+ */
+async function traceFacets({ response, context, parent, args }) {
+  const facetsWithTraceIds = response?.facets?.map((facet) => ({
+    ...facet,
+    values: facet?.values?.map((value) => {
+      return { ...value, traceId: createTraceId() };
+    }),
+  }));
+
+  if (facetsWithTraceIds?.length > 0) {
+    await context?.dataHub?.createComplexSearchEvent({
+      input: { ...parent, ...args, profile: context.profile },
+      result: {
+        works: response?.works?.map((id) => ({
+          workId: id,
+          // do we need this??  traceId: createTraceId(),//todo move to datasource?
+        })),
+        facets: facetsWithTraceIds,
+      },
+    });
+  }
+
+  return facetsWithTraceIds;
+}
+
 export const resolvers = {
   ComplexFacetResponse: {
     async facets(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexFacets")
         .load(setPost(parent, context, args));
-      return res?.facets;
+
+      const facetsWithTraceIds = await traceFacets({
+        response: res,
+        parent,
+        context,
+        args,
+      });
+
+      return facetsWithTraceIds;
     },
     async hitcount(parent, args, context) {
       const res = await context.datasources
@@ -213,27 +249,14 @@ export const resolvers = {
         .getLoader("complexsearch")
         .load(setPost(parent, context, args));
 
-      const facetsWithTraceIds = res?.facets?.map((facet) => ({
-        ...facet,
-        values: facet.values?.map((value) => {
-          return { ...value, traceId: createTraceId() };
-        }),
-      }));
+      const facetsWithTraceIds = await traceFacets({
+        response: res,
+        parent,
+        context,
+        args,
+      });
 
-      if (facetsWithTraceIds?.length > 0) {
-        await context?.dataHub?.createComplexSearchEvent({
-          input: { ...parent, ...args, profile: context.profile },
-          result: {
-            works: res?.works?.map((id) => ({
-              workId: id,
-              traceId: createTraceId(),//todo move to datasource?
-            })),
-            facets: facetsWithTraceIds,
-          },
-        });
-      }
-
-      return res?.facets;
+      return facetsWithTraceIds;
     },
     async works(parent, args, context) {
       const res = await context.datasources
