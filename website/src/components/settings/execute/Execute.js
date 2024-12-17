@@ -2,18 +2,16 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
-import useMode from "@/hooks/useMode";
+import useExecute from "@/hooks/useExecute";
 
-import styles from "./Mode.module.css";
+import styles from "./Execute.module.css";
 
 const modes = [
-  { label: "light", icon: "🌞" },
-  { label: "dark", icon: "🌛" },
-  { label: "system", icon: "🤖" },
-  // { label: "theme", icon: "🎨" },
+  { label: "manual", icon: "🚲" },
+  { label: "auto", icon: "🛵" },
 ];
 
-export function Mode({ mode, onClick, className = "" }) {
+export function Execute({ mode, onClick, className = "" }) {
   const isSelected =
     modes.find((t) => t.label === mode) || modes[modes.length - 1];
 
@@ -21,17 +19,21 @@ export function Mode({ mode, onClick, className = "" }) {
     <Dropdown
       className={`${styles.wrap} ${className}`}
       align="end"
-      drop="up-centered"
+      drop="down-centered"
     >
       <OverlayTrigger
-        placement="left"
+        placement="top"
         overlay={
-          <Tooltip className={styles.tooltip} id={`tooltip-mode`}>
-            {"Mode"}
+          <Tooltip
+            placement="start"
+            className={styles.tooltip}
+            id={`tooltip-execute`}
+          >
+            {"Execute"}
           </Tooltip>
         }
       >
-        <Dropdown.Toggle className={styles.toggle} id="dropdown-mode-select">
+        <Dropdown.Toggle className={styles.toggle} id="dropdown-execute-select">
           {isSelected?.icon}
         </Dropdown.Toggle>
       </OverlayTrigger>
@@ -61,8 +63,13 @@ export function Mode({ mode, onClick, className = "" }) {
 }
 
 export default function Wrap(props) {
-  const { mode, setMode } = useMode();
+  const { execute, setExecute } = useExecute();
+
   return (
-    <Mode mode={mode} onClick={(newMode) => setMode(newMode)} {...props} />
+    <Execute
+      mode={execute}
+      onClick={(newMode) => setExecute(newMode)}
+      {...props}
+    />
   );
 }

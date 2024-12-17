@@ -14,8 +14,6 @@ import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useIntersection from "@/hooks/useIntersection";
 
-import useComplexity from "@/hooks/useComplexity";
-
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 import Input from "@/components/base/input";
@@ -24,8 +22,10 @@ import ComplexityButton from "../buttons/complexity";
 
 import Overlay from "@/components/base/overlay";
 
-import styles from "./InlineGraphiQL.module.css";
 import DepthButton from "../buttons/depth/Depth";
+import useExecute from "@/hooks/useExecute";
+
+import styles from "./InlineGraphiQL.module.css";
 
 // A storage implementation that does nothing
 // Basically prevents inline graphiql to interfere with the "real" graphiql
@@ -127,6 +127,7 @@ export function InlineGraphiQL({
   variables,
   onEditQuery,
   onEditVariables,
+  settings,
   toolbar,
 }) {
   const { tabs, activeTabIndex, initialQuery } = useEditorContext({
@@ -136,6 +137,8 @@ export function InlineGraphiQL({
   const { run, isFetching } = useExecutionContext({
     nonNull: true,
   });
+
+  const { execute } = settings;
 
   const prettifyEditors = usePrettifyEditors();
 
@@ -174,12 +177,14 @@ export function InlineGraphiQL({
       }
 
       if (!tab.response && tab.query && !isFetching) {
-        try {
-          run();
-        } catch (err) {}
+        if (execute === "auto") {
+          try {
+            run();
+          } catch (err) {}
+        }
       }
     }
-  }, [initialQuery, tab, isReady]);
+  }, [initialQuery, execute, tab, isReady]);
 
   return (
     <div className={`${styles.inlinegraphiql} inlinegraphiql`}>
@@ -241,6 +246,7 @@ export function InlineGraphiQL({
 export default function Wrap(props) {
   const { selectedToken } = useStorage();
   const { schema } = useSchema(selectedToken);
+  const { execute } = useExecute();
   const url = useGraphQLUrl();
 
   const { query: initialQuery, variables: initialVariabels = "" } = props;
@@ -286,6 +292,7 @@ export default function Wrap(props) {
         variables={variables}
         onEditVariables={setVariables}
         onEditQuery={setQuery}
+        settings={{ execute }}
         toolbar={{
           additionalContent: [
             <DepthButton

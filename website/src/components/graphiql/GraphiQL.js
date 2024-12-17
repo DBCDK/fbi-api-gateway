@@ -11,6 +11,7 @@ import { GraphiQLInterface } from "graphiql";
 import Header from "@/components/header";
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
+import useExecute from "@/hooks/useExecute";
 import useQuery from "@/hooks/useQuery";
 import QueryDepthButton from "./buttons/depth";
 import ComplexityButton from "./buttons/complexity";
@@ -22,6 +23,7 @@ export function GraphiQL({
   onEditQuery,
   onEditVariables,
   onTabChange,
+  settings,
   toolbar,
 }) {
   const { tabs, activeTabIndex } = useEditorContext({ nonNull: true });
@@ -32,6 +34,8 @@ export function GraphiQL({
   const prettifyEditors = usePrettifyEditors();
   const tab = tabs[activeTabIndex];
 
+  const { execute } = settings;
+
   const [isReady, setIsReady] = useState(false);
   useEffect(() => {
     setIsReady(true);
@@ -39,12 +43,14 @@ export function GraphiQL({
 
   useEffect(() => {
     if (isReady && !tab.response && tab.query && !isFetching) {
-      try {
-        prettifyEditors();
-        run();
-      } catch (err) {}
+      if (execute === "auto") {
+        try {
+          prettifyEditors();
+          run();
+        } catch (err) {}
+      }
     }
-  }, [tab, isReady, isFetching, prettifyEditors, run]);
+  }, [tab, isReady, execute, isFetching, prettifyEditors, run]);
 
   useEffect(() => {
     onTabChange(tabs[activeTabIndex]);
@@ -67,6 +73,7 @@ export function GraphiQL({
 export default function Wrap() {
   const { selectedToken } = useStorage();
   const { schema } = useSchema(selectedToken);
+  const { execute } = useExecute();
   const url = useGraphQLUrl();
   const router = useRouter();
   const { params, initialParams } = useQuery();
@@ -161,6 +168,7 @@ export default function Wrap() {
             />,
           ],
         }}
+        settings={{ execute }}
         onEditQuery={onEditQuery}
         onEditVariables={onEditVariables}
         onTabChange={onTabChange}
