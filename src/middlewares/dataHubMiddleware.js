@@ -42,7 +42,9 @@ export function dataHubMiddleware(req, res, next) {
     if (!sessionToken && req?.accessToken) {
       // If sessionToken was not sent as a header, we use a pseudonymized accessToken
       res.sessionToken = (
-        await req.datasources.getLoader("pseudonymizer").load(req.accessToken)
+        await await req.datasources
+          .getLoader("pseudonymizer")
+          .load(req.accessToken)
       )?.token;
     }
 
@@ -127,7 +129,7 @@ export function dataHubMiddleware(req, res, next) {
     }
 
     if (Object.keys(event.result).length > 0) {
-      req.datasources.getLoader("datahub").load(event);
+      await req.datasources.getLoader("datahub").load(event);
     }
   }
 
@@ -161,7 +163,7 @@ export function dataHubMiddleware(req, res, next) {
     }
 
     if (Object.keys(event.result).length > 0) {
-      req.datasources.getLoader("datahub").load(event);
+      await req.datasources.getLoader("datahub").load(event);
     }
   }
 
@@ -196,7 +198,7 @@ export function dataHubMiddleware(req, res, next) {
     }
 
     if (Object.keys(event.result).length > 0) {
-      req.datasources.getLoader("datahub").load(event);
+      await req.datasources.getLoader("datahub").load(event);
     }
   }
 
@@ -219,7 +221,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createMoodTagRecommendEvent({ data, fieldInfo }) {
@@ -240,7 +242,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createMoodRecommendKidsEvent({ data, fieldInfo }) {
@@ -270,7 +272,7 @@ export function dataHubMiddleware(req, res, next) {
         fieldInfo["mood.moodRecommendKids.works"].args.limit;
     }
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createMoodWorkRecommendEvent({ data, fieldInfo }) {
@@ -291,7 +293,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createWorkEvent({ input = {}, work }) {
@@ -312,7 +314,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createSeriesEvent({ input = {}, result }) {
@@ -337,7 +339,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createManifestationEvent({ input = {}, manifestation }) {
@@ -360,7 +362,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createSuggestEvent({ data, fieldInfo }) {
@@ -384,7 +386,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createRecommendEvent({ data, fieldInfo }) {
@@ -407,7 +409,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createRelatedSubjectsEvent({ data, fieldInfo }) {
@@ -430,7 +432,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createComplexSuggestEvent({ input = {}, suggestions }) {
@@ -454,7 +456,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createSubmitOrderEvent({ input = {}, order }) {
@@ -480,7 +482,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
   async function createUniverseEvent({ input = {} }) {
     const { universeId, identifiers } = input;
@@ -499,7 +501,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   //also used to send facet event
@@ -544,7 +546,7 @@ export function dataHubMiddleware(req, res, next) {
       },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   async function createInspirationEvent({ input = {}, result = {} }) {
@@ -581,7 +583,7 @@ export function dataHubMiddleware(req, res, next) {
       result: { inspiration },
     };
 
-    req.datasources.getLoader("datahub").load(event);
+    await req.datasources.getLoader("datahub").load(event);
   }
 
   if (!req.onOperationComplete) {
@@ -589,71 +591,71 @@ export function dataHubMiddleware(req, res, next) {
   }
 
   // Observe  the actual data that is sent to client
-  req.onOperationComplete.push((data, variables, query) => {
+  req.onOperationComplete.push(async (data, variables, query) => {
     if (data?.search) {
-      createSearchEvent({
+      await createSearchEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
     if (data?.suggest) {
-      createSuggestEvent({
+      await createSuggestEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
 
     if (data?.mood?.moodSearch) {
-      createMoodSearchEvent({
+      await createMoodSearchEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
 
     if (data?.mood?.moodSuggest) {
-      createMoodSuggestEvent({
+      await createMoodSuggestEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
 
     if (data?.mood?.moodTagRecommend) {
-      createMoodTagRecommendEvent({
+      await createMoodTagRecommendEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
 
     if (data?.mood?.moodWorkRecommend) {
-      createMoodWorkRecommendEvent({
+      await createMoodWorkRecommendEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
 
     if (data?.mood?.moodSearchKids) {
-      createMoodSearchKidsEvent({
+      await createMoodSearchKidsEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
 
     if (data?.mood?.moodRecommendKids) {
-      createMoodRecommendKidsEvent({
+      await createMoodRecommendKidsEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
 
     if (data?.recommend) {
-      createRecommendEvent({
+      await createRecommendEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });
     }
 
     if (data?.recommendations?.subjects) {
-      createRelatedSubjectsEvent({
+      await createRelatedSubjectsEvent({
         data,
         fieldInfo: findAliasesAndArgs(query, variables),
       });

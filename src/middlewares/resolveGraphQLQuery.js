@@ -64,19 +64,22 @@ export async function resolveGraphQLQuery(req, res, next) {
     schema,
     validationRules: [validateQueryComplexity({ query, variables })],
     context: req,
-    onOperation: (_, arg, graphQLRes) => {
+    onOperation: async (_, arg, graphQLRes) => {
+      const now = performance.now();
       if (Array.isArray(req.onOperationComplete)) {
-        req.onOperationComplete.forEach((func) => {
+        for (let i = 0; i < req.onOperationComplete.length; i++) {
+          const func = req.onOperationComplete[i];
           try {
-            func(graphQLRes?.data, variables, query);
+            await func(graphQLRes?.data, variables, query);
           } catch (error) {
             log.error("Error calling onOperationComplete function", {
               error: String(error),
               stacktrace: error.stack,
             });
           }
-        });
+        }
       }
+      req.onOperationCompleteDuration = performance.now() - now;
     },
     formatError: (graphQLError) => {
       if (!req.graphQLErrors) {
