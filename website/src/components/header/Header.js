@@ -14,11 +14,11 @@ import Link from "@/components/base/link";
 import History from "@/components/history";
 import Token from "@/components/token";
 import Profile from "@/components/profile";
-import Mode from "@/components/mode";
 
 import Modal, { Pages } from "@/components/modal";
 
 import styles from "./Header.module.css";
+import Settings from "@/components/settings";
 
 export default function Header() {
   const router = useRouter();
@@ -115,7 +115,7 @@ export default function Header() {
             <History className={styles.history} />
           </Col>
         </Row>
-        <Mode className={styles.darkmode} />
+        <Settings className={styles.settings} />
       </Container>
 
       <div className={styles.border} />

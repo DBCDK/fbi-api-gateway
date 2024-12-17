@@ -152,18 +152,18 @@
   width: 100%;
 }
 
-.darkmode {
+.settings {
   display: flex;
 
   position: fixed;
   right: 0;
-  bottom: 0;
+  bottom: 15vh;
   padding: var(--pt2);
   z-index: 1;
 }
 
 @media (min-width: 1200px) {
-  .darkmode {
+  .settings {
     top: 65vh;
     bottom: unset;
   }

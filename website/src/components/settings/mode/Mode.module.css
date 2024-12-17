@@ -4,6 +4,8 @@
   border-radius: 50%;
   cursor: pointer;
 
+  font-size: var(--pt2);
+
   background-color: var(--white);
   border: 2px solid var(--primary-dark);
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
@@ -24,6 +26,7 @@
 .menu {
   min-width: auto;
   background-color: transparent;
+  padding: 0;
 }
 
 .item {
@@ -36,12 +39,14 @@
   align-items: center;
   justify-content: center;
 
-  margin-top: var(--pt05);
+  margin-bottom: var(--pt05);
+
+  font-size: var(--pt2);
 
   border: 1px solid var(--text-dark);
   background-color: var(--white);
   transform: scale(0);
-  animation: scale 0.3s forwards;
+  animation: scale 0.3s forwards 0.2s;
 }
 
 .item:nth-child(2) {
@@ -49,7 +54,7 @@
 }
 
 .item:last-child {
-  animation: scale 0.3s forwards 0.2s;
+  animation: scale 0.3s forwards 0s;
 }
 
 @keyframes scale {
@@ -65,6 +70,10 @@
 .item:hover {
   border: 2px solid var(--primary-dark);
   background-color: var(--white);
+}
+
+.tooltip {
+  font-size: 12px;
 }
 
 .tooltip > div {
