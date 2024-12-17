@@ -4,6 +4,8 @@
   border-radius: 50%;
   cursor: pointer;
 
+  font-size: var(--pt2);
+
   background-color: var(--white);
   border: 2px solid var(--primary-dark);
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
@@ -22,23 +24,23 @@
 }
 
 .menu {
-  min-width: auto;
+  min-width: max-content;
+  height: var(--pt5);
   background-color: transparent;
+  --bs-dropdown-padding-y: 0 !important;
 }
 
 .item {
-  width: var(--pt5);
-  height: var(--pt5);
   border-radius: 50%;
   padding: 0;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
 
-  margin-top: var(--pt05);
+  font-size: var(--pt2);
 
-  border: 1px solid var(--text-dark);
+  /* space between items */
+  margin-right: var(--pt1);
+
   background-color: var(--white);
   transform: scale(0);
   animation: scale 0.3s forwards;
@@ -62,9 +64,8 @@
   }
 }
 
-.item:hover {
-  border: 2px solid var(--primary-dark);
-  background-color: var(--white);
+.tooltip {
+  font-size: 12px;
 }
 
 .tooltip > div {
