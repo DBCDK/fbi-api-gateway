@@ -43,7 +43,7 @@
 
   background-color: var(--white);
   transform: scale(0);
-  animation: scale 0.3s forwards;
+  animation: scale 0.3s forwards 0.2s;
 }
 
 .item:nth-child(2) {
@@ -51,7 +51,7 @@
 }
 
 .item:last-child {
-  animation: scale 0.3s forwards 0.2s;
+  animation: scale 0.3s forwards 0s;
 }
 
 @keyframes scale {
@@ -81,16 +81,18 @@
 * Dark mode
 */
 
+:global(body.dark) .toggle {
+  border: 2px solid var(--text-light);
+}
+
 :global(body.dark) .toggle,
 :global(body.dark) .item {
   background-color: var(--dark-light);
-  border: 2px solid var(--text-light);
 }
 
 :global(body.dark) .toggle:is(:hover, :focus-visible),
 :global(body.dark) .item:is(:hover, :focus-visible) {
   background-color: var(--text-light);
-  border: 2px solid var(--text-light);
 }
 
 :global(body.dark) .item {
