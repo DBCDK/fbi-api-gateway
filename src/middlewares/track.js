@@ -9,10 +9,9 @@ import { observeDuration } from "../utils/monitor";
  * which specify a monitor name.
  */
 export async function performanceTracker(req, res, next) {
-  const start = process.hrtime();
   res.once("finish", () => {
-    const elapsed = process.hrtime(start);
-    const seconds = elapsed[0] + elapsed[1] / 1e9;
+    const elapsed = performance.now() - req.requestStart;
+    const seconds = elapsed / 1000;
 
     // Convert variables to strings, to make sure there are no type conflicts,
     // when log is indexed
@@ -40,7 +39,7 @@ export async function performanceTracker(req, res, next) {
       queryVariables,
       datasources: req.datasources.stats.summary(),
       profile: req.profile,
-      total_ms: Math.round(seconds * 1000),
+      total_ms: Math.round(elapsed),
       queryDepth: req.queryDepth,
       queryComplexity: req.queryComplexity,
       queryComplexityClass: complexityClass,

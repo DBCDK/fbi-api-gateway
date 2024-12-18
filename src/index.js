@@ -15,7 +15,6 @@ import {
   getQueryComplexity,
   getQueryComplexityClass,
 } from "./utils/complexity";
-import { fastLaneMiddleware } from "./middlewares/fastLane";
 import { performanceTracker } from "./middlewares/track";
 import { start as startResourceMonitor } from "./utils/resourceMonitor";
 import { dataCollectMiddleware } from "./utils/dataCollect";
@@ -27,8 +26,6 @@ import { validateDepth } from "./middlewares/validateQueryDepth";
 import { resolveGraphQLQuery } from "./middlewares/resolveGraphQLQuery";
 import { validateAgencyId } from "./middlewares/validateAgencyId";
 import { dataHubMiddleware } from "./middlewares/dataHubMiddleware";
-
-startResourceMonitor();
 
 // this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
@@ -84,7 +81,6 @@ promExporterApp.listen(9599, () => {
   });
 
   app.post("/:profile/graphql", [
-    fastLaneMiddleware,
     performanceTracker,
     parseToken,
     dataCollectMiddleware,
@@ -98,7 +94,6 @@ promExporterApp.listen(9599, () => {
   ]);
 
   app.post("/:agencyId/:profile/graphql", [
-    fastLaneMiddleware,
     performanceTracker,
     parseToken,
     dataCollectMiddleware,
@@ -183,6 +178,12 @@ promExporterApp.listen(9599, () => {
   server = app.listen(config.port, () => {
     log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);
   });
+
+  server.on("request", (req, res) => {
+    req.requestStart = performance.now();
+  });
+
+  startResourceMonitor(server);
 })();
 
 const signals = {
