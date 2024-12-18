@@ -55,6 +55,7 @@ export async function performanceTracker(req, res, next) {
       fastLane: req.fastLane,
       operationName: req.operationName,
       onOperationCompleteDuration: req.onOperationCompleteDuration,
+      keepAliveReqCount: req.socket.count,
     });
     // monitorName is added to context/req in the monitor resolver
     if (req.monitorName) {
