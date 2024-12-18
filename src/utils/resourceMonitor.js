@@ -3,17 +3,41 @@
  */
 import { log } from "dbc-node-logger";
 import { cpuUsage, memoryUsage } from "process";
+import { PerformanceObserver } from "perf_hooks";
 
 const INTERVAL_MS = 10000;
 
 let previousCpuUsage = cpuUsage();
 let previousTime = performance.now();
+let gc = {
+  count: 0,
+  totalDuration: 0,
+};
+let activeConnections = 0;
+
+const obs = new PerformanceObserver((list) => {
+  list.getEntries().forEach((entry) => {
+    gc.count += 1;
+    gc.totalDuration += entry.duration;
+  });
+});
+
+obs.observe({ entryTypes: ["gc"] });
 
 /**
  * Will start resource monitoring
  */
-export function start() {
-  setInterval(() => {
+export function start(server) {
+  server.on("connection", (socket) => {
+    activeConnections += 1;
+
+    // Decrement on socket close
+    socket.on("close", () => {
+      activeConnections -= 1;
+    });
+  });
+
+  setInterval(async () => {
     const currentTime = performance.now();
     let duration = currentTime - previousTime;
 
@@ -33,7 +57,16 @@ export function start() {
       diagnostics: {
         cpuUsage: { user, system },
         memoryUsage: memoryUsage(),
+        network: {
+          activeConnections,
+        },
+        gc: {
+          count: gc.count,
+          totalDurationMs: Math.round(gc.totalDuration),
+        },
       },
     });
+    gc.count = 0;
+    gc.totalDuration = 0;
   }, INTERVAL_MS);
 }
