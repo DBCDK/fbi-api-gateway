@@ -179,8 +179,17 @@ promExporterApp.listen(9599, () => {
     log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);
   });
 
+  server.on("connection", (socket) => {
+    socket.socketInit = performance.now();
+  });
+
   server.on("request", (req, res) => {
-    req.requestStart = performance.now();
+    if (typeof req.socket.count !== "number") {
+      req.socket.count = 0;
+    }
+    req.socket.count++;
+    req.requestStart =
+      req.socket.count === 1 ? req.socket.socketInit : performance.now();
   });
 
   startResourceMonitor(server);
