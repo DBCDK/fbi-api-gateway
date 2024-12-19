@@ -126,10 +126,12 @@ export const resolvers = {
 
       // filter out persistentWorkIds that can NOT be resolved - we need to await a resolve to know :)
       const results = await Promise.all(
-        works.map(async (work) => ({
-          work: await resolveWork({ id: work.persistentWorkId }, context),
-          ...work,
-        }))
+        works
+          .map(async (work) => ({
+            work: await resolveWork({ id: work.persistentWorkId }, context),
+            ...work,
+          }))
+          .filter((_v, index) => !!results[index])
       );
 
       // create the datahub event
@@ -138,7 +140,7 @@ export const resolvers = {
         result: results,
       });
 
-      return results.filter((_v, index) => !!results[index]);
+      return results;
     },
     title(parent, args, context, info) {
       return parent.seriesTitle;
