@@ -69,6 +69,7 @@ export function start(server) {
         },
         eventLoopDelay: {
           mean: Math.round(eventLoopDelay.mean / 1e6),
+          max: Math.round(eventLoopDelay.max / 1e6),
         },
       },
     });
