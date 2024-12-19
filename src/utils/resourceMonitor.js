@@ -3,7 +3,10 @@
  */
 import { log } from "dbc-node-logger";
 import { cpuUsage, memoryUsage } from "process";
-import { PerformanceObserver } from "perf_hooks";
+import { PerformanceObserver, monitorEventLoopDelay } from "perf_hooks";
+
+const eventLoopDelay = monitorEventLoopDelay();
+eventLoopDelay.enable();
 
 const INTERVAL_MS = 10000;
 
@@ -64,9 +67,13 @@ export function start(server) {
           count: gc.count,
           totalDurationMs: Math.round(gc.totalDuration),
         },
+        eventLoopDelay: {
+          mean: Math.round(eventLoopDelay.mean / 1e6),
+        },
       },
     });
     gc.count = 0;
     gc.totalDuration = 0;
+    eventLoopDelay.reset();
   }, INTERVAL_MS);
 }
