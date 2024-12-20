@@ -505,7 +505,12 @@ export async function resolveAccess(manifestation, context) {
   const res = [];
 
   // use linkchecker to check status of a single accessUrl
+  // linkchecker does NOT handle proxy urls, so we skip ebookcentral and ebsco urls
   const linkStatus = async (url) => {
+    if (url?.includes("ebookcentral") || url?.includes("ebscohost")) {
+      return "OK";
+    }
+
     const linkcheck = await context.datasources
       .getLoader("linkcheck")
       .load({ urls: [url] });
