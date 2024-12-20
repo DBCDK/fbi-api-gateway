@@ -9,6 +9,9 @@ import { observeDuration } from "../utils/monitor";
  * which specify a monitor name.
  */
 export async function performanceTracker(req, res, next) {
+  // Delay from request reaching the internal proxy until it is being processed
+  const delay = Date.now() - parseInt(req.headers["x-timestamp"], 10);
+
   res.once("finish", () => {
     const elapsed = performance.now() - req.requestStart;
     const seconds = elapsed / 1000;
@@ -39,7 +42,8 @@ export async function performanceTracker(req, res, next) {
       queryVariables,
       datasources: req.datasources.stats.summary(),
       profile: req.profile,
-      total_ms: Math.round(elapsed),
+      proxyDelayMs: delay,
+      total_ms: Math.round(delay + elapsed),
       queryDepth: req.queryDepth,
       queryComplexity: req.queryComplexity,
       queryComplexityClass: complexityClass,

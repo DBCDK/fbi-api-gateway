@@ -2,12 +2,11 @@
  * @file Setting up a GraphQL server using Express
  *
  */
+import fs from "fs";
 import { log } from "dbc-node-logger";
 import { getExecutableSchema } from "./schemaLoader";
 import express from "express";
 import request from "superagent";
-import { createProxyMiddleware } from "http-proxy-middleware";
-import cors from "cors";
 import config from "./config";
 import howruHandler from "./howru";
 import { metrics } from "./utils/monitor";
@@ -40,18 +39,6 @@ process.stdout.on("error", function (err) {
 const app = express();
 let server;
 
-const proxy = createProxyMiddleware("http://127.0.0.1:3001", {
-  changeOrigin: true,
-  ws: true,
-  logLevel: "silent",
-});
-
-const testUserLoginProxy = createProxyMiddleware("http://127.0.0.1:3002", {
-  changeOrigin: true,
-  ws: true,
-  logLevel: "silent",
-});
-
 const promExporterApp = express();
 // Setup route handler for metrics
 promExporterApp.get("/metrics", metrics);
@@ -60,7 +47,6 @@ promExporterApp.listen(9599, () => {
 });
 
 (async () => {
-  app.use(cors());
   // Set limit on body size
   app.use(express.json({ limit: 10000 }));
 
@@ -156,12 +142,6 @@ promExporterApp.listen(9599, () => {
     res.send({ complexity: queryComplexity, complexityClass });
   });
 
-  // Proxy to test user login website
-  app.use("/test", testUserLoginProxy);
-
-  // Proxy to docs website
-  app.use(proxy);
-
   // Default error handler
   app.use((error, request, response, next) => {
     if (error) {
@@ -175,10 +155,14 @@ promExporterApp.listen(9599, () => {
     }
   });
 
-  server = app.listen(config.port, () => {
+  const SOCKET_PATH = "/tmp/child.sock";
+
+  if (fs.existsSync(SOCKET_PATH)) {
+    fs.unlinkSync(SOCKET_PATH);
+  }
+  server = app.listen(SOCKET_PATH, () => {
     log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);
   });
-
   server.on("connection", (socket) => {
     socket.socketInit = performance.now();
   });
