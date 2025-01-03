@@ -102,7 +102,10 @@ enum ComplexSearchFacetsEnum {
   LIX,
   LET,
   PUBLICATIONYEAR,
-  SOURCE
+  SOURCE,
+  INSTRUMENT,
+  CHOIRTYPE,
+  CHAMBERMUSICTYPE
   }
 
 """
