@@ -510,6 +510,9 @@ enum ComplexSearchFacetsEnum {
   LET
   PUBLICATIONYEAR
   SOURCE
+  INSTRUMENT
+  CHOIRTYPE
+  CHAMBERMUSICTYPE
 }
 
 \\"\\"\\"The facets to ask for\\"\\"\\"
@@ -4558,6 +4561,9 @@ enum ComplexSearchFacetsEnum {
   LET
   PUBLICATIONYEAR
   SOURCE
+  INSTRUMENT
+  CHOIRTYPE
+  CHAMBERMUSICTYPE
 }
 
 \\"\\"\\"The facets to ask for\\"\\"\\"
