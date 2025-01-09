@@ -2,6 +2,15 @@ import isbot from "isbot";
 import { findAliasesAndArgs } from "../utils/graphQLQueryTools";
 import { createTraceId } from "../utils/trace";
 
+function getDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 // TODO add descriptions of headers in our documentation
 export function dataHubMiddleware(req, res, next) {
   const userAgent = req?.get?.("User-Agent");
@@ -43,13 +52,9 @@ export function dataHubMiddleware(req, res, next) {
       )?.token;
     }
 
-    if (!sessionToken && req?.accessToken) {
-      // If sessionToken was not sent as a header, we use a pseudonymized accessToken
-      res.sessionToken = (
-        await await req.datasources
-          .getLoader("pseudonymizer")
-          .load(req.accessToken)
-      )?.token;
+    if (!sessionToken) {
+      // If sessionToken was not sent as a header, we use todays date
+      res.sessionToken = `unknown-${getDate()}`;
     }
 
     return res;
