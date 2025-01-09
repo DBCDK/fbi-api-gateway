@@ -8,6 +8,10 @@ export function dataHubMiddleware(req, res, next) {
   const isBot = isbot(userAgent);
 
   async function getContext() {
+    if (isBot) {
+      return null;
+    }
+
     // The ID identifying the calling system (a smaug client id)
     const systemId = req?.smaug?.app?.clientId;
 
@@ -52,7 +56,7 @@ export function dataHubMiddleware(req, res, next) {
   }
 
   function shouldSendEvent(eventContext) {
-    if (!eventContext.sessionToken) {
+    if (!eventContext?.sessionToken) {
       return false;
     }
     if (isBot) {
