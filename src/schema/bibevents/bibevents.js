@@ -7,7 +7,7 @@ type BibEventFacet {
 }
 type BibEventTicketCategory {
   uuid: String
-  title: String,
+  title: String
   price: Float
   currency: String
 }
