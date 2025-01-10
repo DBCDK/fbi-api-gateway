@@ -65,6 +65,7 @@ type Bibevents {
 input BibEventsQueryInput {
   offset: Int
   limit: Int
+  q: String
   occurs: [String!] 
   state: [String!]
   branches: [String!]
