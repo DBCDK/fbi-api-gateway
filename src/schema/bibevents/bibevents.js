@@ -79,7 +79,7 @@ export const resolvers = {
     async bibevents(parent, args, context, info) {
       const res = await context.datasources
         .getLoader("bibevents")
-        .load(args?.input);
+        .load(args?.input || {});
 
       return res.body;
     },
