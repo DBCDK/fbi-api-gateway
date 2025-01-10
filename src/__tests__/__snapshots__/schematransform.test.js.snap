@@ -353,6 +353,18 @@ type BibEventFacet {
   count: Int
 }
 
+type BibEventTicketCategory {
+  uuid: String
+  title: String
+  price: Float
+  currency: String
+}
+
+type BibEventTickets {
+  url: String
+  categories: [BibEventTicketCategory!]
+}
+
 type BibEventImage {
   url: String
   darkMuted: String
@@ -389,6 +401,7 @@ type BibEvent {
   occurs: [String!]
   dateTime: BibeventDateTime
   image: BibEventImage
+  ticket: BibEventTickets
 }
 
 type BibeventFacets {
