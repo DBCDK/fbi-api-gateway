@@ -7,6 +7,14 @@ All events from every folkebibliotek
   bibevents(input: $input) {
     hitcount
     facets {
+      generatedSubCategories {
+        value
+        count
+      }
+      occurs {
+        value
+        count
+      }
       state {
         value
         count
@@ -42,6 +50,17 @@ All events from every folkebibliotek
       tags
       body
       branchId
+      generatedAudience
+      generatedCategory
+      generatedSubCategories
+      occurs
+      dateTime {
+        start
+        end
+      }
+      image {
+        url
+      }
     }
   }
 }
@@ -50,7 +69,8 @@ All events from every folkebibliotek
     input: {
       offset: 0,
       limit: 20,
-      tags: ["musik"],
+      occurs: ["Kommende weekend"],
+      generatedSubCategories: ["Koncerter & livemusik"],
     },
   }}
 />
