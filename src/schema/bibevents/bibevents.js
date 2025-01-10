@@ -5,6 +5,16 @@ type BibEventFacet {
   value: String
   count: Int
 }
+type BibEventTicketCategory {
+  uuid: String
+  title: String,
+  price: Float
+  currency: String
+}
+type BibEventTickets {
+  url: String
+  categories: [BibEventTicketCategory!]
+}
 
 type BibEventImage {
   url: String
@@ -42,6 +52,7 @@ type BibEvent {
   occurs: [String!]
   dateTime: BibeventDateTime
   image: BibEventImage
+  ticket: BibEventTickets
 }
 
 type BibeventFacets {
@@ -90,6 +101,21 @@ export const resolvers = {
         .load(args?.input || {});
 
       return res.body;
+    },
+  },
+  BibEvent: {
+    ticket(parent) {
+      return {
+        url: parent?.externalData?.url,
+        categories: parent?.ticketCategories?.map((cat) => {
+          return {
+            uuid: cat?.uuid,
+            title: cat?.title,
+            price: cat?.price?.value,
+            currency: cat?.price?.currency,
+          };
+        }),
+      };
     },
   },
 };
