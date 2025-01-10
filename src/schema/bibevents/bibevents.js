@@ -8,6 +8,13 @@ type BibEventFacet {
 
 type BibEventImage {
   url: String
+  darkMuted: String
+  darkVibrant: String
+  lightMuted: String
+  lightVibrant: String
+  muted: String
+  vibrant: String
+  blurHash: String
 }
 
 type BibeventDateTime {
