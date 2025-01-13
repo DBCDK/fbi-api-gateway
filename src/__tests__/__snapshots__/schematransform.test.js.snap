@@ -3830,7 +3830,7 @@ type BibliotekDkOrders {
 
 type BibliotekDkOrder {
   \\"\\"\\"Unique id for the order\\"\\"\\"
-  orderId: String!
+  orderId: String
 
   \\"\\"\\"Work data for the given order\\"\\"\\"
   work: Work
