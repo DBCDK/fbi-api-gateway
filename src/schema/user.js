@@ -395,18 +395,8 @@ export const resolvers = {
       const digitalAccessSubscriptions = await context.datasources
         .getLoader("statsbiblioteketSubscribers")
         .load("");
-      console.log(
-        "\n\n\n\ndigitalAccessSubscriptions",
-        digitalAccessSubscriptions
-      );
+
       // check with municipality agency
-      //  console.log('digitalAccessSubscriptions[municipalityAgencyId]',digitalAccessSubscriptions[municipalityAgencyId])
-      console.log("account", account);
-
-      console.log("user.agencies", user.agencies);
-      console.log("municipalityAgencyId", municipalityAgencyId);
-      console.log("!!account", !!account, "\n\n\n\n");
-
       if (digitalAccessSubscriptions[municipalityAgencyId]) {
         // User is loaner at municipalityAgencyId
         subscriptions.digitalArticleService = !!account;
