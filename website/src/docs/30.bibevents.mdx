@@ -85,3 +85,39 @@ All events from every folkebibliotek
     },
   }}
 />
+
+Search by query for specific events
+
+<InlineGraphiQL
+  query={`query bibevents($input: BibEventsQueryInput) {
+  bibevents(input: $input) {
+    hitcount
+    events {
+      title
+      description
+      dateTime {
+        start
+      }
+    }
+    facets {
+      generatedSubCategories {
+        value
+        count
+      }
+    }
+  }
+}
+`}
+  variables={{
+    input: {
+      offset: 0,
+      limit: 20,
+      q: "rådgivning",
+      occurs: ["Kommende"],
+      sort: {
+        field: "STARTTIME",
+        direction: "ASC",
+      },
+    },
+  }}
+/>

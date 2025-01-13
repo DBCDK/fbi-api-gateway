@@ -31,6 +31,20 @@ type BibeventDateTime {
   start: String
   end: String
 }
+enum BibEventSortDirectionEnum {
+  ASC
+  DESC
+}
+enum BibEventSortFieldEnum {
+  TITLE
+  CREATED_AT
+  UPDATED_AT
+  STARTTIME
+}
+input BibEventSortInput {
+  field: BibEventSortFieldEnum!
+  direction: BibEventSortDirectionEnum
+}
 
 type BibEvent {
   uuid: String
@@ -86,6 +100,7 @@ input BibEventsQueryInput {
   generatedAudience: [String!]
   generatedCategory: [String!]
   generatedSubCategories: [String!]
+  sort: BibEventSortInput
 }
 
 extend type Query {

@@ -2,6 +2,13 @@ import config from "../../config";
 
 const { url, prefix } = config.datasources.bibevents;
 
+const fieldMap = {
+  TITLE: "title",
+  CREATED_AT: "createdAt",
+  UPDATED_AT: "updatedAt",
+  STARTTIME: "startTime",
+};
+
 export async function load(args, context) {
   let argsCopy = { ...args };
   argsCopy.offset = argsCopy.offset || 0;
@@ -15,7 +22,14 @@ export async function load(args, context) {
         queryParams += delimiter + key + "=" + encodeURIComponent(v);
       });
     } else {
-      queryParams += delimiter + key + "=" + encodeURIComponent(valArr);
+      if (key === "sort") {
+        queryParams += delimiter + key + "=" + fieldMap[valArr.field];
+        if (valArr.direction) {
+          queryParams += ":" + valArr.direction;
+        }
+      } else {
+        queryParams += delimiter + key + "=" + encodeURIComponent(valArr);
+      }
     }
   });
   const res = await context.fetch(`${url}/api/events${queryParams}`);
