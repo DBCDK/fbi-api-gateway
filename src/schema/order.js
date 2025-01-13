@@ -338,9 +338,6 @@ const saveOrderToUserdata = async ({ context, submitOrderRes, pid, user }) => {
       if (!uniqueId) {
         throw new Error("Not authorized");
       }
-      if (!orderId) {
-        throw new Error("Undefined orderId");
-      }
       if (!pid) {
         throw new Error("Undefined pid");
       }
@@ -660,8 +657,12 @@ export const resolvers = {
             }
             successfullyCreated.push(material.key);
 
-            //TODO  - we dont save single periodica orders to userData, therefor i dont save multi-periodica either
-            //await saveOrderToUserdata(user, submitOrderRes, context);
+            await saveOrderToUserdata({
+              context,
+              submitOrderRes,
+              pid: placeCopyArgs.pid,
+              user,
+            });
           })
         );
       }
