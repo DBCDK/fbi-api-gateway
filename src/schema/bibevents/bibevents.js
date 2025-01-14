@@ -83,7 +83,7 @@ type BibeventFacets {
 
 type Bibevents {
   hitcount: Int!
-  events: [BibEvent!]!
+  events: [BibEvent]!
   facets: BibeventFacets!
 }
 
@@ -101,6 +101,7 @@ input BibEventsQueryInput {
   generatedCategory: [String!]
   generatedSubCategories: [String!]
   sort: BibEventSortInput
+  uuids: [String!]
 }
 
 extend type Query {

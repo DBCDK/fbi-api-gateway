@@ -126,7 +126,7 @@ type BibliotekDkOrder  {
   """
   Unique id for the order
   """
-  orderId: String!
+  orderId: String
 
   """
   Work data for the given order
@@ -386,7 +386,6 @@ export const resolvers = {
       }
 
       const municipalityAgencyId = user?.municipalityAgencyId;
-
       // Verify that the user has an account at the municiaplityAgencyId (created as loaner)
       const account = filterAgenciesByProps(user.agencies, {
         agency: municipalityAgencyId,
@@ -511,40 +510,39 @@ export const resolvers = {
           offset,
         });
 
-      const orderIds = res?.result?.map((order) => order.orderId);
-      const pids = res?.result?.map((order) => order.pid);
-
-      if (orderIds?.length > 0) {
-        const workresult = await Promise.all(
-          res?.result?.map(async (order) => {
+      const workresult = await Promise.all(
+        res?.result?.map(async (order) => {
+          let orsResult = {};
+          if (order.orderId) {
             //TODO: remove fetchOrderStatus call once frontend is updated to use titles and creators instead of titile and author.
             const orsResponse = await fetchOrderStatus(
               { orderIds: [order.orderId] },
               context
             );
-            const orsResult = orsResponse?.[0];
-            const workData = await resolveWork({ pid: order.pid }, context);
-            const creators = [
-              ...workData?.creators?.persons?.map((person) => ({
-                ...person,
-                __typename: "Person",
-              })),
-              ...workData?.creators?.corporations?.map((person) => ({
-                ...person,
-                __typename: "Corporation",
-              })),
-            ];
-            const work = { ...workData, creators };
-            return {
-              work,
-              ...orsResult,
-            };
-          })
-        );
+            orsResult = orsResponse?.[0];
+          }
 
-        return { result: workresult, hitcount: res?.hitcount || 0 };
-      }
-      return { result: [], hitcount: 0 };
+          const workData = await resolveWork({ pid: order.pid }, context);
+          const creators = [
+            ...workData?.creators?.persons?.map((person) => ({
+              ...person,
+              __typename: "Person",
+            })),
+            ...workData?.creators?.corporations?.map((person) => ({
+              ...person,
+              __typename: "Corporation",
+            })),
+          ];
+          const work = { ...workData, creators };
+          return {
+            work,
+            creationDate: order.createdAt,
+            ...orsResult,
+          };
+        })
+      );
+
+      return { result: workresult, hitcount: res?.hitcount || 0 };
     },
     async address(parent, args, context, info) {
       const user = context?.user;
