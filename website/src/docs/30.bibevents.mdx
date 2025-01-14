@@ -121,3 +121,32 @@ Search by query for specific events
     },
   }}
 />
+
+Fetch by uuids
+
+<InlineGraphiQL
+  query={`query bibevents($input: BibEventsQueryInput) {
+  bibevents(input: $input) {
+    hitcount
+    events {
+      title
+      description
+      dateTime {
+        start
+      }
+    }
+    facets {
+      generatedSubCategories {
+        value
+        count
+      }
+    }
+  }
+}
+`}
+  variables={{
+    input: {
+      uuids: ["non-existing", "47113c6e-0c2b-4e85-9058-c3564d99159d"],
+    },
+  }}
+/>

@@ -16,19 +16,21 @@ export async function load(args, context) {
     argsCopy.limit < 0 || argsCopy.limit > 100 ? 10 : argsCopy.limit;
   let queryParams = "";
   Object.entries(args || {}).forEach(([key, valArr]) => {
-    const delimiter = queryParams.length > 0 ? "&" : "?";
+    function getDelimiter() {
+      return queryParams.length > 0 ? "&" : "?";
+    }
     if (Array.isArray(valArr)) {
       valArr.forEach((v) => {
-        queryParams += delimiter + key + "=" + encodeURIComponent(v);
+        queryParams += getDelimiter() + key + "=" + encodeURIComponent(v);
       });
     } else {
       if (key === "sort") {
-        queryParams += delimiter + key + "=" + fieldMap[valArr.field];
+        queryParams += getDelimiter() + key + "=" + fieldMap[valArr.field];
         if (valArr.direction) {
           queryParams += ":" + valArr.direction;
         }
       } else {
-        queryParams += delimiter + key + "=" + encodeURIComponent(valArr);
+        queryParams += getDelimiter() + key + "=" + encodeURIComponent(valArr);
       }
     }
   });
