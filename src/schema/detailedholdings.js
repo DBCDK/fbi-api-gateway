@@ -58,8 +58,6 @@ type HoldingsResponse {
 
   """
   Expected return date for the material at branch level
-
-  Is only set if the branch is behaving like an independent agency (KB's branches)
   """
   expectedBranchReturnDate: String
 
@@ -299,6 +297,7 @@ export const resolvers = {
             (localIdentifier) => localIdentifier.localizationPid
           ),
         });
+
       const ownedByAgency =
         holdingsItemsForAgency?.filter(
           (item) => item.status !== "Discarded" && item.status !== "Lost"
@@ -326,14 +325,11 @@ export const resolvers = {
       );
 
       // Fetch detailed holdings (this will make a call to a local agency system)
-      // Only fetch if we do not have holdings items on shelf (performance optimization)
-      let detailedHoldings =
-        !holdingsItemsForBranch?.length &&
-        (
-          await context.datasources.getLoader("detailedholdings").load({
-            localIds: localIdentifiers,
-          })
-        )?.holdingstatus;
+      let detailedHoldings = (
+        await context.datasources.getLoader("detailedholdings").load({
+          localIds: localIdentifiers,
+        })
+      )?.holdingstatus;
 
       detailedHoldings = await filterHoldings(detailedHoldings, context);
 
@@ -419,10 +415,8 @@ export const resolvers = {
           ? expectedReturnDateInAgency?.[0]?.expectedDelivery
           : null;
 
-      // We set expectedBranchReturnDate only if this is a special independent branch (KB's)
-      const expectedBranchReturnDate = branchIsIndependent
-        ? expectedReturnDateInBranch?.[0]?.expectedDelivery
-        : null;
+      const expectedBranchReturnDate =
+        expectedReturnDateInBranch?.[0]?.expectedDelivery;
 
       // For independent branches, the material may be NOT_ON_SHELF or NOT_OWNED
       // But for normal branches, the state can only be NOT_ON_SHELF at this point
