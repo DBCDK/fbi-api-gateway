@@ -1,0 +1,27 @@
+# Netpunkt
+
+## Submit Order
+
+Submit order on behalf of another user
+
+<InlineGraphiQL
+  query={`mutation example_submitorder($input: SubmitOrderInput!) {
+            submitOrder(input: $input, dryRun: true) {
+              status
+              message
+              orderId
+            }
+          }`}
+  variables={{
+    input: {
+      pids: ["870970-basis:25574486"],
+      pickUpBranch: "790900",
+      userParameters: {
+        userId: "0102033690",
+        userAddress: "test",
+        userName: "Flemming test",
+        userMail: "flemminghoimark@gmail.com",
+      },
+    },
+  }}
+/>
