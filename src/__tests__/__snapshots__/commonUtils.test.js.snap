@@ -28,7 +28,6 @@ Object {
     "mood",
     "ors",
     "marc",
-    "netpunkt",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -74,7 +73,6 @@ Object {
     "mood",
     "ors",
     "marc",
-    "netpunkt",
     "submitOrder",
   ],
   "denyTypes": Array [
@@ -114,7 +112,6 @@ Object {
     "mood",
     "ors",
     "marc",
-    "netpunkt",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -158,7 +155,6 @@ Object {
     "mood",
     "ors",
     "marc",
-    "netpunkt",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",

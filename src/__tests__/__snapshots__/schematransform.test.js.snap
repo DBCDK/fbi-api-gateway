@@ -4480,9 +4480,6 @@ scalar DateTime
 
 type Mutation {
   elba: ElbaServices!
-
-  \\"\\"\\"Netpunkt related mutations\\"\\"\\"
-  netpunkt: Netpunkt!
 }
 
 type Query {
@@ -6420,124 +6417,6 @@ type MoodQueries {
   moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
   moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
   moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
-}
-
-type Netpunkt {
-  \\"\\"\\"Submits an order from Netpunkt to OpenOrder on behalf of an end user\\"\\"\\"
-  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
-}
-
-enum SubmitOrderStatusEnum {
-  \\"\\"\\"Borchk: User is blocked by agency\\"\\"\\"
-  BORCHK_USER_BLOCKED_BY_AGENCY
-
-  \\"\\"\\"Borchk: User is no longer loaner at the provided pickupbranch\\"\\"\\"
-  BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
-
-  \\"\\"\\"Borchk: User could not be verified\\"\\"\\"
-  BORCHK_USER_NOT_VERIFIED
-
-  \\"\\"\\"Item available at pickupAgency, order accepted\\"\\"\\"
-  OWNED_ACCEPTED
-
-  \\"\\"\\"Item not available at pickupAgency, item localised for ILL\\"\\"\\"
-  NOT_OWNED_ILL_LOC
-
-  \\"\\"\\"Item available at pickupAgency, order of mediumType not accepted\\"\\"\\"
-  OWNED_WRONG_MEDIUMTYPE
-
-  \\"\\"\\"Item not available at pickupAgency, ILL of mediumType not accepted\\"\\"\\"
-  NOT_OWNED_WRONG_ILL_MEDIUMTYPE
-
-  \\"\\"\\"Item not available at pickupAgency, item not localised for ILL\\"\\"\\"
-  NOT_OWNED_NO_ILL_LOC
-
-  \\"\\"\\"
-  Item available at pickupAgency, item may be ordered through the library's catalogue
-  \\"\\"\\"
-  OWNED_OWN_CATALOGUE
-
-  \\"\\"\\"Service unavailable\\"\\"\\"
-  SERVICE_UNAVAILABLE
-
-  \\"\\"\\"PickupAgency not found\\"\\"\\"
-  UNKNOWN_PICKUPAGENCY
-
-  \\"\\"\\"User not found\\"\\"\\"
-  UNKNOWN_USER
-
-  \\"\\"\\"Order does not validate\\"\\"\\"
-  INVALID_ORDER
-
-  \\"\\"\\"Error sending order to ORS\\"\\"\\"
-  ORS_ERROR
-
-  \\"\\"\\"ServiceRequester is obligatory\\"\\"\\"
-  NO_SERVICEREQUESTER
-
-  \\"\\"\\"Authentication error\\"\\"\\"
-  AUTHENTICATION_ERROR
-
-  \\"\\"\\"Unknown error occured, status is unknown\\"\\"\\"
-  UNKNOWN_ERROR
-
-  \\"\\"\\"Pincode was not found in arguments\\"\\"\\"
-  ERROR_MISSING_PINCODE
-}
-
-type SubmitOrder {
-  \\"\\"\\"if order was submitted successfully\\"\\"\\"
-  ok: Boolean
-  status: SubmitOrderStatusEnum!
-  message: String
-  orderId: String
-  deleted: Boolean
-  orsId: String
-}
-
-enum OrderTypeEnum {
-  ESTIMATE
-  HOLD
-  LOAN
-  NON_RETURNABLE_COPY
-  NORMAL
-  STACK_RETRIEVAL
-}
-
-input SubmitOrderUserParametersInput {
-  cpr: String
-  userId: String
-  barcode: String
-  cardno: String
-  customId: String
-  pincode: String
-  userDateOfBirth: String
-  userName: String
-  userAddress: String
-  userMail: String
-  userTelephone: String
-}
-
-input SubmitOrderInput {
-  orderType: OrderTypeEnum
-  pids: [String!]!
-  pickUpBranch: String!
-  key: String
-  exactEdition: Boolean
-
-  \\"\\"\\"
-  expires is required to be iso 8601 dateTime eg. \\"2024-03-15T12:24:32Z\\"
-  \\"\\"\\"
-  expires: String
-  userParameters: SubmitOrderUserParametersInput!
-  author: String
-  authorOfComponent: String
-  pagination: String
-  publicationDate: String
-  publicationDateOfComponent: String
-  title: String
-  titleOfComponent: String
-  volume: String
 }
 
 type ItemIdResponse {
