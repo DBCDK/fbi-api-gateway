@@ -66,6 +66,9 @@ type Mutation {
   ): DigitalArticleServiceResponse!
   elba: ElbaServices!
   holdingsItems: HoldingsItems!
+
+  \\"\\"\\"Netpunkt related mutations\\"\\"\\"
+  netpunkt: Netpunkt!
   submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
   data_collect(input: DataCollectInput!): String!
@@ -884,11 +887,7 @@ type HoldingsResponse {
   \\"\\"\\"
   expectedAgencyReturnDate: String
 
-  \\"\\"\\"
-  Expected return date for the material at branch level
-  
-  Is only set if the branch is behaving like an independent agency (KB's branches)
-  \\"\\"\\"
+  \\"\\"\\"Expected return date for the material at branch level\\"\\"\\"
   expectedBranchReturnDate: String
 
   \\"\\"\\"Items on the shelf at the branch (actual copies)\\"\\"\\"
@@ -3198,6 +3197,11 @@ type MoodQueries {
   moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
   moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
   moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
+}
+
+type Netpunkt {
+  \\"\\"\\"Submits an order from Netpunkt to OpenOrder on behalf of an end user\\"\\"\\"
+  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
 }
 
 enum SubmitOrderStatusEnum {
