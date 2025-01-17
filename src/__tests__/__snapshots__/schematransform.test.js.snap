@@ -871,10 +871,19 @@ enum HoldingsResponseStatusEnum {
   UNKNOWN_STATUS
 }
 
+\\"\\"\\"Represents loan restrictions for an item\\"\\"\\"
+enum HoldingsItemLoanRestrictionEnum {
+  \\"\\"\\"
+  Indicates that the material can only be loaned to the library's own users and is not available for interlibrary loan
+  \\"\\"\\"
+  G
+}
+
 type HoldingsItem {
   department: String
   location: String
   subLocation: String
+  loanRestriction: HoldingsItemLoanRestrictionEnum
 }
 
 type HoldingsResponse {

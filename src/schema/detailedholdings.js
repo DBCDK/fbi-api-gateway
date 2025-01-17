@@ -38,10 +38,21 @@ enum HoldingsResponseStatusEnum {
   UNKNOWN_STATUS  @fallback
 }
 
+"""
+Represents loan restrictions for an item
+"""
+enum HoldingsItemLoanRestrictionEnum {
+  """
+  Indicates that the material can only be loaned to the library's own users and is not available for interlibrary loan
+  """
+  G
+}
+
 type HoldingsItem {
   department: String
   location: String
   subLocation: String
+  loanRestriction: HoldingsItemLoanRestrictionEnum
 }
 
 
@@ -541,6 +552,11 @@ export const resolvers = {
     },
     subLocation(parent, args, context, info) {
       return parent.subLocation;
+    },
+  },
+  HoldingsItem: {
+    loanRestriction(parent) {
+      return parent?.loanRestriction?.toUpperCase?.() || null;
     },
   },
 };
