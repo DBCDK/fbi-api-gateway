@@ -7,11 +7,33 @@
  */
 
 export const typeDef = `
+
+  input NetpunktSubmitOrderInput {
+    orderType: OrderTypeEnum,
+    pids: [String!]!,
+    pickUpBranch: String!,
+    key: String,
+    exactEdition: Boolean
+    """
+    expires is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
+    """
+    expires: String
+    userParameters: SubmitOrderUserParametersInput!
+    author: String
+    authorOfComponent: String
+    pagination: String
+    publicationDate: String
+    publicationDateOfComponent: String
+    title: String
+    titleOfComponent: String
+    volume: String
+    requesterInitials: String
+  }
   type Netpunkt {
     """
     Submits an order from Netpunkt to OpenOrder on behalf of an end user
     """
-    submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+    submitOrder(input: NetpunktSubmitOrderInput!, dryRun: Boolean): SubmitOrder
   }
   extend type Mutation {
     """
@@ -34,9 +56,10 @@ export const resolvers = {
       }
 
       // The userId of the Netpunkt user (not the end user)
-      const authUserId = context?.user?.userId;
+      const authUserId =
+        context?.user?.userId || args?.input?.requesterInitials;
 
-      const pickupBranch = args.input.pickUpBranch;
+      const pickupBranch = args?.input?.pickUpBranch;
 
       const branch = (
         await context.datasources.getLoader("library").load({
