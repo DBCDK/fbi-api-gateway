@@ -4207,6 +4207,18 @@ type VipResponse {
   ): AgencyInfoResponse!
   opensearchProfiles(agencyId: String!, profileName: String): OpensearchProfilesResponse!
   autoIll(agencyId: String): AutoIllParamsResponse!
+
+  \\"\\"\\"
+  Returns a prioritized list of library numbers that the given library should order from.
+  \\"\\"\\"
+  requestOrder(agencyId: String!): RequestOrderResponse!
+}
+
+type RequestOrderResponse {
+  \\"\\"\\"
+  Prioritized list of library numbers that the given library should order from
+  \\"\\"\\"
+  agencyIds: [String!]!
 }
 
 type VipAgencyInfo {

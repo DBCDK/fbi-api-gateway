@@ -219,9 +219,22 @@ type VipResponse {
     Pickup allowed. Search for libraries that allow pickup. Can be "true" or "false".
     """
     pickupAllowed: Boolean
-  ): AgencyInfoResponse! 
+  ): AgencyInfoResponse!
+
   opensearchProfiles(agencyId: String!, profileName: String): OpensearchProfilesResponse! 
+
   autoIll(agencyId: String): AutoIllParamsResponse!
+  """
+  Returns a prioritized list of library numbers that the given library should order from.
+  """
+  requestOrder(agencyId: String!): RequestOrderResponse!
+}
+
+type RequestOrderResponse {
+  """
+  Prioritized list of library numbers that the given library should order from
+  """
+  agencyIds: [String!]!
 }
 
 type VipAgencyInfo {
@@ -641,6 +654,16 @@ export const resolvers = {
         .load({ ...args, libraryType, libraryStatus });
 
       return res?.agencyInfo || [];
+    },
+
+    async requestOrder(parent, args, context, info) {
+      const agencyId = args.agencyId;
+
+      const res = await context.datasources
+        .getLoader("viprequestorder")
+        .load(agencyId);
+
+      return { agencyIds: res?.agencyId || [] };
     },
   },
 

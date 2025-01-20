@@ -77,7 +77,7 @@ VIP allows you to fetch Ill parameters defining what type of materials to be han
 ### Example: Fetching ill parameters by AgencyId
 
 <InlineGraphiQL
-	query={`query ExampleVipAutomationParameters($agencyId: String!) {
+  query={`query ExampleVipAutomationParameters($agencyId: String!) {
     vip {
     autoIll(agencyId: $agencyId) {
       automationParams {
@@ -90,7 +90,26 @@ VIP allows you to fetch Ill parameters defining what type of materials to be han
     }
   }
 }`}
-	variables={{
-		agencyId: "710100",
-	}}
+  variables={{
+    agencyId: "710100",
+  }}
+/>
+
+## Request Order
+
+Returns a prioritized list of library numbers that the given library should order from.
+
+### Example: Fetching requestOrder list by AgencyId
+
+<InlineGraphiQL
+  query={`query ExampleVipRequestOrder($agencyId: String!) {
+    vip {
+    requestOrder(agencyId: $agencyId){
+      agencyIds
+    }
+  }
+}`}
+  variables={{
+    agencyId: "710100",
+  }}
 />
