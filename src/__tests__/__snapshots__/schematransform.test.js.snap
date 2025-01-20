@@ -3208,9 +3208,32 @@ type MoodQueries {
   moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
 }
 
+input NetpunktSubmitOrderInput {
+  orderType: OrderTypeEnum
+  pids: [String!]!
+  pickUpBranch: String!
+  key: String
+  exactEdition: Boolean
+
+  \\"\\"\\"
+  expires is required to be iso 8601 dateTime eg. \\"2024-03-15T12:24:32Z\\"
+  \\"\\"\\"
+  expires: String
+  userParameters: SubmitOrderUserParametersInput!
+  author: String
+  authorOfComponent: String
+  pagination: String
+  publicationDate: String
+  publicationDateOfComponent: String
+  title: String
+  titleOfComponent: String
+  volume: String
+  requesterInitials: String
+}
+
 type Netpunkt {
   \\"\\"\\"Submits an order from Netpunkt to OpenOrder on behalf of an end user\\"\\"\\"
-  submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
+  submitOrder(input: NetpunktSubmitOrderInput!, dryRun: Boolean): SubmitOrder
 }
 
 enum SubmitOrderStatusEnum {

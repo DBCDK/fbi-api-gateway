@@ -5,7 +5,7 @@
 Submit order on behalf of another user
 
 <InlineGraphiQL
-  query={`mutation example_submitorder($input: SubmitOrderInput!) {
+  query={`mutation example_submitorder($input: NetpunktSubmitOrderInput!) {
     netpunkt {
       submitOrder(input: $input, dryRun: true) {
         status
