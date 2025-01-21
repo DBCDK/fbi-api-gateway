@@ -276,7 +276,7 @@ export const resolvers = {
       const detailedHoldingsAddress = await context.datasources
         .getLoader("detailedHoldingsSupported")
         .load({
-          branchId: parent?.branchId,
+          branchId: branchIsIndependent ? parent?.branchId : parent?.agencyId,
         });
 
       const supportDetailedHoldings = !!detailedHoldingsAddress;
