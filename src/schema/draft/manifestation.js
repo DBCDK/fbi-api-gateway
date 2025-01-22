@@ -574,6 +574,10 @@ type Manifestations {
   all: [Manifestation!]! @complexity(value: 50)
   bestRepresentation: Manifestation! 
   mostRelevant: [Manifestation!]! @complexity(value: 25)
+  """
+  Complex search only !!! - manifestations with search hits
+  """
+  searchHits: [Manifestation]
 }
 
 type Manifestation {
