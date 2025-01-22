@@ -312,6 +312,7 @@ export const resolvers = {
       const bestRepresentation =
         manifestations?.bestRepresentations?.[0] || manifestations?.all?.[0];
       const mostRelevant = manifestations?.mostRelevant || manifestations?.all;
+      const searchHits = manifestations?.searchHits || null;
 
       return {
         first,
@@ -319,6 +320,7 @@ export const resolvers = {
         all,
         bestRepresentation,
         mostRelevant,
+        searchHits,
       };
     },
   },

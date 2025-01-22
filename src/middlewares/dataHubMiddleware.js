@@ -529,6 +529,7 @@ export function dataHubMiddleware(req, res, next) {
       offset: input?.offset || 0,
       limit: input?.limit || 10,
       sort: input?.sort,
+      includeFilteredPids: input?.includeFilteredPids || false,
     };
 
     const identifiers = result?.works?.map((w) => ({
