@@ -19,7 +19,7 @@
     "postinstall": "(cd testuser-website && npm i); (cd website && npm i);",
     "build": "eslint . && (cd testuser-website && npm run build && npm prune --production) && (cd website && npm run build && npm prune --production);",
     "lint": "eslint ."
-  },
+    },
   "author": "Frontend @ DBC",
   "license": "GNU",
   "dependencies": {

@@ -7,24 +7,22 @@ import { inspect } from "@graphql-tools/utils";
 import { invariant } from "graphql/jsutils/invariant";
 
 import { isPrintableAsBlockString } from "graphql/language/blockString";
-import { Kind } from "graphql/language/kinds";
-import { print } from "graphql/language/printer";
 
 import {
+  print,
+  Kind,
   isEnumType,
   isInputObjectType,
   isInterfaceType,
   isObjectType,
   isScalarType,
   isUnionType,
-} from "graphql/type/definition";
-import {
+  isSpecifiedScalarType,
+  astFromValue,
+  isIntrospectionType,
   DEFAULT_DEPRECATION_REASON,
   isSpecifiedDirective,
-} from "graphql/type/directives";
-import { isIntrospectionType } from "graphql/type/introspection";
-import { isSpecifiedScalarType } from "graphql/type/scalars";
-import { astFromValue } from "graphql/utilities/astFromValue";
+} from "graphql";
 
 export function printSchema(schema) {
   return printFilteredSchema(

@@ -4426,6 +4426,11 @@ type VipAgency {
   \\"\\"\\"Localisation name. The name used in Netpunkt. Example: \\"KKB\\".\\"\\"\\"
   localisationName: String
 
+  \\"\\"\\"
+  Information regarding temporary restrictions or special conditions for interlibrary loans
+  \\"\\"\\"
+  interLibraryLoanText: String
+
   \\"\\"\\"Route number.\\"\\"\\"
   routeNumber: String
 
