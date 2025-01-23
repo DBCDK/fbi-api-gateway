@@ -466,6 +466,10 @@ type VipAgency {
   """
   localisationName: String
   """
+  Information regarding temporary restrictions or special conditions for interlibrary loans
+  """
+  interLibraryLoanText: String
+  """
   Route number.
   """
   routeNumber: String
