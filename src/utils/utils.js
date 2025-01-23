@@ -366,14 +366,6 @@ export async function resolveWork(args, context) {
     profile: context.profile,
   });
 
-  const resolvedSearchHits = args?.searchHits
-    ? await Promise.all(
-        args?.searchHits[id]?.map(async (exp) =>
-          resolveManifestation({ pid: exp }, context)
-        )
-      )
-    : null;
-
   if (w) {
     const withTraceId = { ...w, traceId: args.traceId || createTraceId() };
     withTraceId.manifestations = {
@@ -395,13 +387,14 @@ export async function resolveWork(args, context) {
         ...m,
         traceId: createTraceId(),
       })),
-
-      searchHits: resolvedSearchHits?.map((m) => {
-        return {
-          ...m,
-          traceId: createTraceId(),
-        };
-      }),
+      searchHits: args?.searchHits
+        ? w?.manifestations?.all
+            ?.filter((m) => args?.searchHits?.[w.workId]?.includes(m.pid))
+            .map((m) => ({
+              ...m,
+              traceId: createTraceId(),
+            }))
+        : null,
     };
 
     return withTraceId;
