@@ -565,7 +565,16 @@ type LevelForAudience {
   Level expressed as integer on a scale from 1 to 5
   """
   realisticVsFictional: Int
+}
 
+type HighLightType {
+  hit: String
+  field: [String!]
+}
+
+type SearchHitsType {
+  match: Manifestation
+  highlights: [HighLightType]
 }
 
 type Manifestations {
@@ -577,7 +586,7 @@ type Manifestations {
   """
   Complex search only !!! - manifestations with search hits
   """
-  searchHits: [Manifestation]
+  searchHits: [SearchHitsType]
 }
 
 type Manifestation {
