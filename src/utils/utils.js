@@ -387,14 +387,18 @@ export async function resolveWork(args, context) {
         ...m,
         traceId: createTraceId(),
       })),
-      searchHits: args?.searchHits
-        ? w?.manifestations?.all
-            ?.filter((m) => args?.searchHits?.[w.workId]?.includes(m.pid))
-            .map((m) => ({
-              ...m,
-              traceId: createTraceId(),
-            }))
-        : null,
+      searchHits: () => {
+        return args?.searchHits
+          ? w?.manifestations?.all
+              ?.filter((m) => args?.searchHits?.[w.workId]?.includes(m.pid))
+              .map((m) => ({
+                match: { ...m, traceId: createTraceId() },
+                // highlights is an empty array for now
+                // @TODO find the highlights in matches array from search query (cql)
+                highlights: [],
+              }))
+          : null;
+      },
     };
 
     return withTraceId;
