@@ -67,6 +67,7 @@ type BibEvent {
   dateTime: BibeventDateTime
   image: BibEventImage
   ticket: BibEventTickets
+  price: String
 }
 
 type BibeventFacets {
@@ -79,6 +80,7 @@ type BibeventFacets {
   generatedAudience: [BibEventFacet!]
   generatedCategory: [BibEventFacet!]
   generatedSubCategories: [BibEventFacet!]
+  price: [BibEventFacet!]
 }
 
 type Bibevents {
@@ -102,6 +104,7 @@ input BibEventsQueryInput {
   generatedSubCategories: [String!]
   sort: BibEventSortInput
   uuids: [String!]
+  price: [String!]
 }
 
 extend type Query {
