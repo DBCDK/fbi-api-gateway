@@ -693,7 +693,7 @@ export const resolvers = {
           const submitOrderRes = await context.datasources
             .getLoader("submitOrder")
             .load({
-              userId: userId || user?.userId || userIds.userId,
+              userId: userId || user?.userId || getUserIds(userIds),
               branch,
               input: { ...args.input, ...material, key: null },
               accessToken: context.accessToken,
