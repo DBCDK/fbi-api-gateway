@@ -426,8 +426,14 @@ export const resolvers = {
           ? expectedReturnDateInAgency?.[0]?.expectedDelivery
           : null;
 
-      const expectedBranchReturnDate =
+      let expectedBranchReturnDate =
         expectedReturnDateInBranch?.[0]?.expectedDelivery;
+
+      // If the branch usually holds the material (but it's on loan)
+      // and no return date is set, use the agency’s expected return date as fallback.
+      if (!expectedBranchReturnDate && holdingsItemsForBranch?.length > 0) {
+        expectedBranchReturnDate = expectedAgencyReturnDate;
+      }
 
       // For independent branches, the material may be NOT_ON_SHELF or NOT_OWNED
       // But for normal branches, the state can only be NOT_ON_SHELF at this point
