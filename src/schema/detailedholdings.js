@@ -398,7 +398,7 @@ export const resolvers = {
       ) {
         return {
           status: "ON_SHELF",
-          items: holdingsItemsForBranchOnShelf,
+          items: holdingsItemsForBranch,
           lookupUrl,
           lookupUrls,
           ownedByAgency,
@@ -413,7 +413,7 @@ export const resolvers = {
       ) {
         return {
           status: "ON_SHELF_NOT_FOR_LOAN",
-          items: holdingsItemsForBranchOnShelf,
+          items: holdingsItemsForBranch,
           lookupUrl,
           lookupUrls,
           ownedByAgency,
@@ -445,7 +445,7 @@ export const resolvers = {
         status,
         expectedAgencyReturnDate,
         expectedBranchReturnDate,
-        items: holdingsItemsForBranchOnShelf,
+        items: holdingsItemsForBranch,
         lookupUrl,
         lookupUrls,
         ownedByAgency,
