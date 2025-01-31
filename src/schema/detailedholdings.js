@@ -398,11 +398,25 @@ export const resolvers = {
       ) {
         return {
           status: "ON_SHELF",
-          items: holdingsItemsForBranch,
+          items: holdingsItemsForBranchOnShelf,
           lookupUrl,
           lookupUrls,
           ownedByAgency,
         };
+      }
+
+      // We set expectedAgencyReturnDate only if no branch in agency has the material on the shelf
+      const expectedAgencyReturnDate = !onShelfInAgency?.length
+        ? expectedReturnDateInAgency?.[0]?.expectedDelivery
+        : null;
+
+      let expectedBranchReturnDate =
+        expectedReturnDateInBranch?.[0]?.expectedDelivery;
+
+      // If the branch usually holds the material (but it's on loan)
+      // and no return date is set, use the agency’s expected return date as fallback.
+      if (!expectedBranchReturnDate && holdingsItemsForBranch?.length > 0) {
+        expectedBranchReturnDate = expectedAgencyReturnDate;
       }
 
       // Check if material is on shelf but not for loan at current branch
@@ -413,26 +427,12 @@ export const resolvers = {
       ) {
         return {
           status: "ON_SHELF_NOT_FOR_LOAN",
-          items: holdingsItemsForBranch,
+          expectedAgencyReturnDate,
+          items: holdingsItemsForBranchOnShelf,
           lookupUrl,
           lookupUrls,
           ownedByAgency,
         };
-      }
-
-      // We set expectedAgencyReturnDate only if no branch in agency has the material on the shelf
-      const expectedAgencyReturnDate =
-        !onShelfInAgency?.length && !onShelfNotForLoanInAgency?.length
-          ? expectedReturnDateInAgency?.[0]?.expectedDelivery
-          : null;
-
-      let expectedBranchReturnDate =
-        expectedReturnDateInBranch?.[0]?.expectedDelivery;
-
-      // If the branch usually holds the material (but it's on loan)
-      // and no return date is set, use the agency’s expected return date as fallback.
-      if (!expectedBranchReturnDate && holdingsItemsForBranch?.length > 0) {
-        expectedBranchReturnDate = expectedAgencyReturnDate;
       }
 
       // For independent branches, the material may be NOT_ON_SHELF or NOT_OWNED
@@ -451,7 +451,7 @@ export const resolvers = {
         status,
         expectedAgencyReturnDate,
         expectedBranchReturnDate,
-        items: holdingsItemsForBranch,
+        items: [],
         lookupUrl,
         lookupUrls,
         ownedByAgency,
