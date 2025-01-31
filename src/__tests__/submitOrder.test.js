@@ -166,3 +166,36 @@ test("submitorder succedes when user is not authenticated, but userId provided",
   });
   expect(result).toMatchSnapshot();
 });
+
+test("submitorder fails if a user is not authenticated, and a incorrect/wrong userId is provided", async () => {
+  const result = await performTestQuery({
+    query: `
+          mutation{
+            submitOrder(
+              input: {
+                pids: ["870970-basis:25574486"],
+                pickUpBranch: "790900",
+                userParameters: {
+                  userId: "incorrect-userid",
+                  userAddress: "test",
+                  userName: "Test Testesen",
+                  userMail: "test@test.dk"
+                }
+              }) {
+              status
+              orderId
+            }
+          }`,
+    variables: {},
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "ANONYMOUS_TOKEN",
+      user: null,
+      smaug: {
+        app: { id: "app-name", ips: ["1.1.1.1"] },
+        orderSystem: "bibliotekdk_21",
+      },
+    },
+  });
+  expect(result).toMatchSnapshot();
+});

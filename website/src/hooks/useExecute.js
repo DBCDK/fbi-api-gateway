@@ -29,8 +29,6 @@ export default function useExecute() {
     }
   }
 
-  console.log("execute", execute);
-
   return {
     execute,
     setExecute,

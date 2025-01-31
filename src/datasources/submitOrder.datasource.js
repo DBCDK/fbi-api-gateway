@@ -1,6 +1,7 @@
 import config from "../config";
 import { ACTIONS, auditTrace } from "@dbcdk/dbc-audittrail-logger";
 import { log } from "dbc-node-logger";
+import { getUserIdTypeValuePair } from "../utils/getUserBorrowerStatus";
 
 const { serviceRequester, url } = config.datasources.openorder;
 
@@ -33,6 +34,10 @@ function createTrackingId() {
  * @returns {Promise<*|null>}
  */
 export function buildParameters({ userId, input, orderSystem }) {
+  /* If user credentials are available in userParameters, we select an ID type and value from the parameters. 
+    If multiple ID types are present, we choose only one based on a prioritized list. */
+  const id = getUserIdTypeValuePair(input?.userParameters);
+
   // Set order parameters
   const params = {
     copy: false,
@@ -53,7 +58,8 @@ export function buildParameters({ userId, input, orderSystem }) {
     serviceRequester: serviceRequester,
     trackingId: createTrackingId(),
     ...input.userParameters,
-    userId: userId || input.userParameters.userId,
+    userId: id?.value || userId,
+    userIdType: id?.type || (userId && "userId"),
     verificationReferenceSource: "DBCDATAWELL",
     requesterInitials: input.requesterInitials,
   };

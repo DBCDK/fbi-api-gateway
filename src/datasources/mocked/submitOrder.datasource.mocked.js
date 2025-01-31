@@ -31,7 +31,11 @@ export async function load({ userId, input }) {
     });
   }
 
-  if (params.userId === "123" || userId === "some-id") {
+  if (
+    params.userId === "123" ||
+    params.userId === "some-id" ||
+    userId === "some-id"
+  ) {
     return parseOrder({
       status: 200,
       body: {

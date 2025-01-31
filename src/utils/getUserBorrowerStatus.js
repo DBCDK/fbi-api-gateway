@@ -12,7 +12,7 @@ import { log } from "dbc-node-logger";
 import { resolveBorrowerCheck } from "./utils";
 
 // all possible id field types
-const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
+export const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
 
 /**
  * Verify if user is allowed to place an digital or physical order
@@ -49,7 +49,7 @@ export default async function getUserBorrowerStatus(props, context) {
   const result = await userBorrowerStatus(props, context);
 
   // uncomment to debug
-  // console.debug("BorrowerStatus", result);
+  console.debug("....... BorrowerStatus", result);
 
   const status = result?.status;
   const message = status ? "allowed" : "NOT allowed";
@@ -104,6 +104,7 @@ async function userBorrowerStatus(
     // Agency does not support borrowercheck - return status ok
     return {
       status,
+      summary,
       statusCode: status ? "OK" : "UNKNOWN_USER",
     };
   }
@@ -355,4 +356,33 @@ export function getUserIds(userParams) {
     }
   });
   return res;
+}
+
+/**
+ * function to return a type value pair of userParam credentils
+ * credentials are selected from a prioritized list (USER_ID_TYPES)
+ *
+ * @param {*} userParams
+ * @returns {object}
+ */
+export function getUserIdTypeValuePair(userParams) {
+  const ids = getUserIds(userParams);
+  const arr = Object.entries(ids);
+
+  if (arr.length) {
+    return (
+      arr
+        // Konverterer entries til objekter
+        .map(([type, value]) => ({ type, value }))
+        // Sortér efter prioritetsrækkefølgen
+        .sort(
+          (a, b) =>
+            USER_ID_TYPES.indexOf(a.type) - USER_ID_TYPES.indexOf(b.type)
+        )
+        // Send kun det første objekt i rækken
+        .slice(0, 1)?.[0]
+    );
+  }
+
+  return null;
 }
