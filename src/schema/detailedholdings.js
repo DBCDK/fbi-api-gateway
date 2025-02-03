@@ -437,7 +437,9 @@ export const resolvers = {
         )
       ) {
         return {
-          status: "ON_SHELF_NOT_FOR_LOAN",
+          status: expectedBranchReturnDate
+            ? "NOT_ON_SHELF"
+            : "ON_SHELF_NOT_FOR_LOAN",
           expectedAgencyReturnDate,
           items: holdingsItemsForBranch,
           unlistedBranchItems: filteredHoldingsItems.unlistedBranchItems,
