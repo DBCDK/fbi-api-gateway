@@ -445,6 +445,7 @@ export const resolvers = {
             ? "NOT_ON_SHELF"
             : "ON_SHELF_NOT_FOR_LOAN",
           expectedAgencyReturnDate,
+          expectedBranchReturnDate,
           items: holdingsItemsForBranch,
           unlistedBranchItems: filteredHoldingsItems.unlistedBranchItems,
           lookupUrl,
