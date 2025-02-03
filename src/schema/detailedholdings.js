@@ -49,6 +49,8 @@ enum HoldingsItemLoanRestrictionEnum {
 }
 
 type HoldingsItem {
+  branchName: String
+  status: ItemStatusEnum
   department: String
   location: String
   subLocation: String
@@ -76,6 +78,13 @@ type HoldingsResponse {
   Items on the shelf at the branch (actual copies)
   """
   items: [HoldingsItem!]
+
+  """
+  A list of items that belong to branches that are not visible or accessible in the system.
+  These branches, such as book storage facilities or off-site repositories, are not listed
+  for end-users, but their items can still be requested or accessed.
+  """
+  unlistedBranchItems: [HoldingsItem!]
 
   """
   Url to local site, where holding details may be found
@@ -209,26 +218,24 @@ async function filterHoldings(holdings, context) {
   if (!holdings?.length) {
     return holdings;
   }
-  return (
-    await Promise.all(
-      holdings.map(async (holding) => {
-        const res = await context.datasources.getLoader("library").load({
-          branchId: holding.branchId,
-          limit: 1,
-          status: "AKTIVE",
-          bibdkExcludeBranches: false,
-        });
-        if (!res?.result?.length) {
-          return null;
-        }
-        if (holding?.branchType === "servicepunkt") {
-          return null;
-        }
+  const filterRes = { holdings: [], unlistedBranchItems: [] };
 
-        return holding;
-      })
-    )
-  )?.filter((holding) => !!holding);
+  await Promise.all(
+    holdings.map(async (holding) => {
+      const res = await context.datasources.getLoader("library").load({
+        branchId: holding.branchId,
+        limit: 1,
+        status: "AKTIVE",
+        bibdkExcludeBranches: false,
+      });
+      if (!res?.result?.length || holding?.branchType === "servicepunkt") {
+        filterRes.unlistedBranchItems.push(holding);
+      }
+
+      filterRes.holdings.push(holding);
+    })
+  );
+  return filterRes;
 }
 
 function getLookupUrl(branch, localIdentifiers) {
@@ -320,19 +327,18 @@ export const resolvers = {
         notOnSHelf: !(
           item.status === "OnShelf" || item.status === "NotForLoan"
         ),
+        status: item?.status?.toUpperCase?.(),
+        branchName: item?.branch,
       }));
 
-      holdingsItemsForAgency = await filterHoldings(
+      const filteredHoldingsItems = await filterHoldings(
         holdingsItemsForAgency,
         context
       );
+      holdingsItemsForAgency = filteredHoldingsItems.holdings;
 
       const holdingsItemsForBranch = holdingsItemsForAgency?.filter(
         (item) => item?.branchId === parent.branchId
-      );
-
-      const holdingsItemsForBranchOnShelf = holdingsItemsForBranch?.filter(
-        (item) => item.notOnSHelf === false
       );
 
       // Fetch detailed holdings (this will make a call to a local agency system)
@@ -342,7 +348,11 @@ export const resolvers = {
         })
       )?.holdingstatus;
 
-      detailedHoldings = await filterHoldings(detailedHoldings, context);
+      const filteredDetailedholdings = await filterHoldings(
+        detailedHoldings,
+        context
+      );
+      detailedHoldings = filteredDetailedholdings.holdings;
 
       // Prefer holdings from holdings items
       let holdings =
@@ -398,7 +408,8 @@ export const resolvers = {
       ) {
         return {
           status: "ON_SHELF",
-          items: holdingsItemsForBranchOnShelf,
+          items: holdingsItemsForBranch,
+          unlistedBranchItems: filteredHoldingsItems.unlistedBranchItems,
           lookupUrl,
           lookupUrls,
           ownedByAgency,
@@ -428,7 +439,8 @@ export const resolvers = {
         return {
           status: "ON_SHELF_NOT_FOR_LOAN",
           expectedAgencyReturnDate,
-          items: holdingsItemsForBranchOnShelf,
+          items: holdingsItemsForBranch,
+          unlistedBranchItems: filteredHoldingsItems.unlistedBranchItems,
           lookupUrl,
           lookupUrls,
           ownedByAgency,
@@ -451,7 +463,8 @@ export const resolvers = {
         status,
         expectedAgencyReturnDate,
         expectedBranchReturnDate,
-        items: [],
+        items: holdingsItemsForBranch,
+        unlistedBranchItems: filteredHoldingsItems.unlistedBranchItems,
         lookupUrl,
         lookupUrls,
         ownedByAgency,

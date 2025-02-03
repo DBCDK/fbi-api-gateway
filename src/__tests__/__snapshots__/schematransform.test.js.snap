@@ -883,6 +883,8 @@ enum HoldingsItemLoanRestrictionEnum {
 }
 
 type HoldingsItem {
+  branchName: String
+  status: ItemStatusEnum
   department: String
   location: String
   subLocation: String
@@ -904,6 +906,13 @@ type HoldingsResponse {
 
   \\"\\"\\"Items on the shelf at the branch (actual copies)\\"\\"\\"
   items: [HoldingsItem!]
+
+  \\"\\"\\"
+  A list of items that belong to branches that are not visible or accessible in the system.
+  These branches, such as book storage facilities or off-site repositories, are not listed
+  for end-users, but their items can still be requested or accessed.
+  \\"\\"\\"
+  unlistedBranchItems: [HoldingsItem!]
 
   \\"\\"\\"Url to local site, where holding details may be found\\"\\"\\"
   lookupUrl: String
