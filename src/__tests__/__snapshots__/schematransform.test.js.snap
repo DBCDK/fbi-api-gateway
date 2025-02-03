@@ -2181,6 +2181,9 @@ type SerieWork {
 }
 
 type Series {
+  \\"\\"\\"The number of members in the series\\"\\"\\"
+  hitcount: Int!
+
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 
@@ -5911,6 +5914,9 @@ type SerieWork {
 }
 
 type Series {
+  \\"\\"\\"The number of members in the series\\"\\"\\"
+  hitcount: Int!
+
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 
@@ -7886,6 +7892,9 @@ type SerieWork {
 }
 
 type Series {
+  \\"\\"\\"The number of members in the series\\"\\"\\"
+  hitcount: Int!
+
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 

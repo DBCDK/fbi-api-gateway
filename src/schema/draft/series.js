@@ -32,6 +32,11 @@ type SerieWork {
 
 type Series {
   """
+  The number of members in the series
+  """
+  hitcount: Int!
+
+  """
   The title of the series
   """
   title: String!
@@ -118,6 +123,9 @@ export const resolvers = {
 
   // We need to resolve for backward compatibility
   Series: {
+    hitcount(parent) {
+      return parent?.works?.length || 0;
+    },
     async members(parent, args, context, info) {
       const limit = Boolean(args.limit) ? args.limit : 50;
       const offset = Boolean(args.offset) ? args.offset : 0;
