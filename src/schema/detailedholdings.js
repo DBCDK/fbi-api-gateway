@@ -316,20 +316,21 @@ export const resolvers = {
           ),
         });
 
-      const ownedByAgency =
-        holdingsItemsForAgency?.filter(
-          (item) => item.status !== "Discarded" && item.status !== "Lost"
-        )?.length || null;
+      holdingsItemsForAgency = holdingsItemsForAgency
+        ?.map((item) => ({
+          ...item,
+          expectedDelivery: item.status === "OnShelf" ? today : null,
+          notOnSHelf: !(
+            item.status === "OnShelf" || item.status === "NotForLoan"
+          ),
+          status: item?.status?.toUpperCase?.(),
+          branchName: item?.branch,
+        }))
+        .filter?.(
+          (item) => item.status !== "DISCARDED" && item.status !== "LOST"
+        );
 
-      holdingsItemsForAgency = holdingsItemsForAgency?.map((item) => ({
-        ...item,
-        expectedDelivery: item.status === "OnShelf" ? today : null,
-        notOnSHelf: !(
-          item.status === "OnShelf" || item.status === "NotForLoan"
-        ),
-        status: item?.status?.toUpperCase?.(),
-        branchName: item?.branch,
-      }));
+      const ownedByAgency = holdingsItemsForAgency?.length || null;
 
       const filteredHoldingsItems = await filterHoldings(
         holdingsItemsForAgency,
