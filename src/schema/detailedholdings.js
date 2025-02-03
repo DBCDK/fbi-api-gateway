@@ -426,7 +426,11 @@ export const resolvers = {
 
       // If the branch usually holds the material (but it's on loan)
       // and no return date is set, use the agency’s expected return date as fallback.
-      if (!expectedBranchReturnDate && holdingsItemsForBranch?.length > 0) {
+      if (
+        !expectedBranchReturnDate &&
+        holdingsItemsForBranch?.filter?.((item) => item?.status === "ONLOAN")
+          ?.length > 0
+      ) {
         expectedBranchReturnDate = expectedAgencyReturnDate;
       }
 
