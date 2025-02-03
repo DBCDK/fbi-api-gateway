@@ -5,7 +5,8 @@
     "dev": ". ../env.env && PORT=3001 next-remote-watch ./src/docs",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npx --yes @dbcdk/npm-tools@latest verify latest"
   },
   "dependencies": {
     "@mdx-js/react": "^2.3.0",

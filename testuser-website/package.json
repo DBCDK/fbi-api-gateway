@@ -6,7 +6,8 @@
     "dev": "PORT=3002 next dev",
     "build": "next build",
     "start": "PORT=3002 next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npx --yes @dbcdk/npm-tools@latest verify latest"
   },
   "dependencies": {
     "next": "^14.2.23",
