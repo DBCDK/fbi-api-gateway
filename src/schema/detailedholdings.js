@@ -424,12 +424,15 @@ export const resolvers = {
       let expectedBranchReturnDate =
         expectedReturnDateInBranch?.[0]?.expectedDelivery;
 
+      const holdingsItemsForBranchOnLoan = holdingsItemsForBranch?.filter?.(
+        (item) => item?.status === "ONLOAN"
+      );
+
       // If the branch usually holds the material (but it's on loan)
       // and no return date is set, use the agency’s expected return date as fallback.
       if (
         !expectedBranchReturnDate &&
-        holdingsItemsForBranch?.filter?.((item) => item?.status === "ONLOAN")
-          ?.length > 0
+        holdingsItemsForBranchOnLoan?.length > 0
       ) {
         expectedBranchReturnDate = expectedAgencyReturnDate;
       }
@@ -441,9 +444,10 @@ export const resolvers = {
         )
       ) {
         return {
-          status: expectedBranchReturnDate
-            ? "NOT_ON_SHELF"
-            : "ON_SHELF_NOT_FOR_LOAN",
+          status:
+            expectedBranchReturnDate || holdingsItemsForBranchOnLoan?.length > 0
+              ? "NOT_ON_SHELF"
+              : "ON_SHELF_NOT_FOR_LOAN",
           expectedAgencyReturnDate,
           expectedBranchReturnDate,
           items: holdingsItemsForBranch,
