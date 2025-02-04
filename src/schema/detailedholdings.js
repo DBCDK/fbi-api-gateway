@@ -371,7 +371,8 @@ export const resolvers = {
 
       // Prefer holdings from holdings items
       let holdings =
-        holdingsItemsForAgency?.length > 0
+        holdingsItemsForAgency?.length > 0 ||
+        filteredHoldingsItems?.unlistedBranchItems?.length > 0
           ? holdingsItemsForAgency
           : detailedHoldings || [];
 
