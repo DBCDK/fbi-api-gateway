@@ -35,15 +35,42 @@ function jsonToPrometheus(data) {
   });
 
   data.httpStats.forEach((service) => {
-    Object.entries(service.status).forEach(([statusCode, count]) => {
-      output.push(
-        `service_http_requests_total{service="${service.service}",status="${statusCode}"} ${count}`
-      );
-    });
+    const team = service.teamLabel || "febib";
 
     output.push(
-      `service_errors_total{service="${service.service}"} ${service.errors}`
+      `service_ok_status{service="${service.service}", team="${team}"} ${service.ok ? 1 : 0}`
     );
+
+    //We only send alarms service_errors.
+    //service_prev_errors can maybe be used in grafana for graphs
+    output.push(
+      `service_errors{service="${service.service}", team="${team}"} ${service.errors}`
+    );
+    output.push(
+      `service_prev_errors{service="${service.service}", team="${team}"} ${service.prevErrors}`
+    );
+
+    //TODO: Maybe we need this later
+    // let errorCount = 0;
+    // Object.entries(service.status).forEach(([statusCode, count]) => {
+    //   if (!service.allowedErrorStatusCodes.includes(Number(statusCode))) {
+    //     output.push(
+    //       `service_http_requests_total{service="${service.service}",code="${statusCode}"} ${count}`
+    //     );
+    //   }
+
+    //   // Count errors only if the status code is not allowed
+    //   if (
+    //     !service.allowedErrorStatusCodes.includes(statusCode) &&
+    //     statusCode !== 200
+    //   ) {
+    //     errorCount += count;
+    //   }
+    // });
+
+    // output.push(
+    //   `service_errors_total{service="${service.service}"} ${errorCount}`
+    // );
   });
 
   return output.join("\n");
@@ -111,6 +138,7 @@ async function metrics(req, res) {
     services: results,
     httpStats,
   };
+  res.setHeader("Content-Type", "text/plain; version=0.0.4");
 
   res.send(jsonToPrometheus(body));
 }
