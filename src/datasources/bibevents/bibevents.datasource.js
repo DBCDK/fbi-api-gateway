@@ -1,6 +1,6 @@
 import config from "../../config";
 
-const { url, prefix } = config.datasources.bibevents;
+const { url, prefix, teamLabel } = config.datasources.bibevents;
 
 const fieldMap = {
   TITLE: "title",
@@ -44,3 +44,5 @@ export const options = {
     ttl: 60 * 5,
   },
 };
+
+export { teamLabel };

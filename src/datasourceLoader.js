@@ -13,7 +13,9 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
     if (!file.path.endsWith(".datasource.js")) {
       return;
     }
-    const { load, options, batchLoader, status, testLoad } = require(file.path);
+    const { load, options, batchLoader, status, testLoad, teamLabel } = require(
+      file.path
+    );
     if (!load && !batchLoader) {
       return;
     }
@@ -28,6 +30,7 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
       name,
       options,
       statusChecker: status ? () => status(load) : null,
+      teamLabel,
     };
   })
   .filter((func) => !!func);
