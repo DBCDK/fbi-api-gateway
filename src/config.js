@@ -24,7 +24,7 @@ export default {
         process.env.BIBEVENTS_URL ||
         "http://bibevents-api.febib-prod.svc.cloud.dbc.dk",
       prefix: process.env.BIBEVENTS_PREFIX || "bibevents-1",
-      teamLabel: "febib"
+      teamLabel: "febib",
     },
     ocn2pid: {
       url:

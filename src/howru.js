@@ -15,7 +15,7 @@ const services = [
     .map((datasource) => ({
       name: datasource.name,
       status: datasource.statusChecker,
-      teamLabel: datasource.teamLabel
+      teamLabel: datasource.teamLabel,
     })),
   { name: "redis", status: redisStatus },
 ];
@@ -36,25 +36,25 @@ const omitKeys = [
  */
 export async function checkServicesStatus() {
   return await Promise.all(
-      services.map(async (service) => {
-        let ok = false;
-        let message;
-        try {
-          await service.status();
-          ok = true;
-        } catch (e) {
-          message = (e.response && e.response.text) || e.message;
-        }
-  
-        // Return result for the service
-        return {
-          service: service.name,
-          ok,
-          message,
-          teamLabel: service?.teamLabel
-        };
-      })
-    );
+    services.map(async (service) => {
+      let ok = false;
+      let message;
+      try {
+        await service.status();
+        ok = true;
+      } catch (e) {
+        message = (e.response && e.response.text) || e.message;
+      }
+
+      // Return result for the service
+      return {
+        service: service.name,
+        ok,
+        message,
+        teamLabel: service?.teamLabel,
+      };
+    })
+  );
 }
 
 /**
