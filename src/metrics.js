@@ -1,7 +1,28 @@
+import { log } from "dbc-node-logger";
 import _ from "lodash";
+import config from "./config";
+import { datasources } from "./datasourceLoader";
+import { status as redisStatus } from "./datasources/redis.datasource";
 import { getStats } from "./utils/fetchWithLimit";
-import { checkServicesStatus } from "./howru";
 
+// Create upSince timestamp
+let upSince = new Date();
+
+// Array of services to check
+const services = [
+  ...datasources
+    .filter((datasource) => datasource.statusChecker)
+    .map((datasource) => ({
+      name: datasource.name,
+      status: datasource.statusChecker,
+      teamLabel: datasource.teamLabel,
+    })),
+  { name: "redis", status: redisStatus },
+];
+
+/**
+ * Convert JSON to Prometheus format
+ */
 function jsonToPrometheus(data) {
   let output = [];
   output.push(`system_ok ${data.ok ? 1 : 0}`);
@@ -28,8 +49,31 @@ function jsonToPrometheus(data) {
   return output.join("\n");
 }
 
-// Create upSince timestamp
-let upSince = new Date();
+/**
+ * Returns a list of services and their status
+ */
+export async function checkServicesStatus() {
+  return await Promise.all(
+    services.map(async (service) => {
+      let ok = false;
+      let message;
+      try {
+        await service.status();
+        ok = true;
+      } catch (e) {
+        message = (e.response && e.response.text) || e.message;
+      }
+
+      // Return result for the service
+      return {
+        service: service.name,
+        ok,
+        message,
+        teamLabel: service?.teamLabel,
+      };
+    })
+  );
+}
 
 /**
  * Route handler for the howru endpoint

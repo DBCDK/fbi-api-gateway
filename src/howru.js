@@ -15,7 +15,6 @@ const services = [
     .map((datasource) => ({
       name: datasource.name,
       status: datasource.statusChecker,
-      teamLabel: datasource.teamLabel,
     })),
   { name: "redis", status: redisStatus },
 ];
@@ -32,10 +31,12 @@ const omitKeys = [
 ];
 
 /**
- * Returns a list of services and their status
+ * Route handler for the howru endpoint
+ *
  */
-export async function checkServicesStatus() {
-  return await Promise.all(
+async function howru(req, res) {
+  // Call status function of every service
+  const results = await Promise.all(
     services.map(async (service) => {
       let ok = false;
       let message;
@@ -51,19 +52,9 @@ export async function checkServicesStatus() {
         service: service.name,
         ok,
         message,
-        teamLabel: service?.teamLabel,
       };
     })
   );
-}
-
-/**
- * Route handler for the howru endpoint
- *
- */
-async function howru(req, res) {
-  // Call status function of every service
-  const results = checkServicesStatus();
 
   // Loop through service status check results, to determine if all is ok
   let ok = true;
