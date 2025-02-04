@@ -22,6 +22,17 @@ Object {
 }
 `;
 
+exports[`submitorder fails if a user is not authenticated, and a incorrect/wrong userId is provided 1`] = `
+Object {
+  "data": Object {
+    "submitOrder": Object {
+      "orderId": null,
+      "status": "UNKNOWN_USER",
+    },
+  },
+}
+`;
+
 exports[`submitorder fails when user is not authenticated, and no userId provided 1`] = `
 Object {
   "data": Object {
