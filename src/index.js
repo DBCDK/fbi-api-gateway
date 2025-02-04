@@ -98,7 +98,7 @@ promExporterApp.listen(9599, () => {
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
 
-  // Setup route handler for howru - triggers an alert in prod
+  // Setup route handler for metrics - triggers an alert in prod 
   app.get("/metrics", metricsHandler);
   /**
    * Query complexity endpoint

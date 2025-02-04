@@ -22,10 +22,13 @@ function jsonToPrometheus(data) {
   // Services status
 //   output.push(`# HELP service_ok Indicates if a service is operational`);
 //   output.push(`# TYPE service_ok gauge`);
-  data.services.forEach((service) => {
+  data.services.forEach((service, index) => {
     //TODO: add a label for the service team? 
+
+    index<1&&console.log('jsonToPrometheus.data.services.service',service.teamLabel);
     output.push(
-      `service_ok{service="${service.service}"} ${service.ok ? 1 : 0}`
+      `service_ok{service="${service.service}", team="${service.teamLabel}"} ${service.ok ? 1 : 0}`
+
     );
   });
 
@@ -63,7 +66,6 @@ async function metrics(req, res) {
   // Call status function of every service
   const results = await checkServicesStatus();
 
-
   // Loop through service status check results, to determine if all is ok
   let ok = true;
   results.forEach((service) => {
@@ -85,9 +87,6 @@ async function metrics(req, res) {
       res.status(500);
     }
   });
-
- console.log('httpStats', httpStats);
-
 
   const body = {
     ok,
