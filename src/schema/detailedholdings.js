@@ -214,27 +214,39 @@ async function resolveLocalIdentifiers(pids, agencyId, context) {
  * - branch is deleted
  * - branch is a service-punkt
  */
-async function filterHoldings(holdings, context) {
+async function filterHoldings(holdings, context, agencyId) {
   if (!holdings?.length) {
     return holdings;
   }
+
+  const branches = await context.datasources.getLoader("library").load({
+    agencyid: agencyId,
+    limit: 500,
+    status: "AKTIVE",
+    bibdkExcludeBranches: false,
+  });
+
+  const nameToBranch = {};
+  const branchIdToBranch = {};
+  branches?.result?.forEach((branch) => {
+    nameToBranch[branch?.name?.toUpperCase?.()] = branch;
+    branchIdToBranch[branch?.branchId] = branch;
+  });
+
   const filterRes = { holdings: [], unlistedBranchItems: [] };
 
-  await Promise.all(
-    holdings.map(async (holding) => {
-      const res = await context.datasources.getLoader("library").load({
-        branchId: holding.branchId,
-        limit: 1,
-        status: "AKTIVE",
-        bibdkExcludeBranches: false,
-      });
-      if (!res?.result?.length || holding?.branchType === "servicepunkt") {
-        filterRes.unlistedBranchItems.push(holding);
-      }
+  holdings.forEach((holding) => {
+    const branch =
+      branchIdToBranch[holding?.branchId] ||
+      nameToBranch[holding?.branch?.toUpperCase?.()];
 
-      filterRes.holdings.push(holding);
-    })
-  );
+    if (!branch || branch?.branchType === "servicepunkt") {
+      filterRes.unlistedBranchItems.push(holding);
+    } else {
+      filterRes.holdings.push({ ...holding, branchId: branch?.branchId });
+    }
+  });
+
   return filterRes;
 }
 
@@ -334,7 +346,8 @@ export const resolvers = {
 
       const filteredHoldingsItems = await filterHoldings(
         holdingsItemsForAgency,
-        context
+        context,
+        parent?.agencyId
       );
       holdingsItemsForAgency = filteredHoldingsItems.holdings;
 
@@ -351,7 +364,8 @@ export const resolvers = {
 
       const filteredDetailedholdings = await filterHoldings(
         detailedHoldings,
-        context
+        context,
+        parent?.agencyId
       );
       detailedHoldings = filteredDetailedholdings.holdings;
 
