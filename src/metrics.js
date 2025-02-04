@@ -10,8 +10,9 @@ function jsonToPrometheus(data) {
   output.push(`system_ok ${data.ok ? 1 : 0}`);
   output.push(`system_up_since ${new Date(data.upSince).getTime() / 1000}`);
   data.services.forEach((service) => {
+    const team = service.teamLabel || "febib";
     output.push(
-      `service_ok{service="${service.service}", team="${service.teamLabel}"} ${service.ok ? 1 : 0}`
+      `service_ok{service="${service.service}", team="${team}"} ${service.ok ? 1 : 0}`
     );
   });
 
