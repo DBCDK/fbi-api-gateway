@@ -76,7 +76,7 @@ export async function checkServicesStatus() {
 }
 
 /**
- * Route handler for the howru endpoint
+ * Route handler for the metrics endpoint
  *
  */
 async function metrics(req, res) {
