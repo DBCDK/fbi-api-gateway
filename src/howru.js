@@ -11,7 +11,7 @@ let upSince = new Date();
 // Array of services to check
 const services = [
   ...datasources
-    .filter((datasource) => datasource.statusChecker)
+   // .filter((datasource) => datasource.statusChecker)
     .map((datasource) => ({
       name: datasource.name,
       status: datasource.statusChecker,
@@ -31,30 +31,37 @@ const omitKeys = [
 ];
 
 /**
+ * Returns a list of services and their status
+ */
+export async function checkServicesStatus() {
+  return await Promise.all(
+      services.map(async (service) => {
+        let ok = false;
+        let message;
+        try {
+          await service.status();
+          ok = true;
+        } catch (e) {
+          message = (e.response && e.response.text) || e.message;
+        }
+  
+        // Return result for the service
+        return {
+          service: service.name,
+          ok,
+          message,
+        };
+      })
+    );
+}
+
+/**
  * Route handler for the howru endpoint
  *
  */
 async function howru(req, res) {
   // Call status function of every service
-  const results = await Promise.all(
-    services.map(async (service) => {
-      let ok = false;
-      let message;
-      try {
-        await service.status();
-        ok = true;
-      } catch (e) {
-        message = (e.response && e.response.text) || e.message;
-      }
-
-      // Return result for the service
-      return {
-        service: service.name,
-        ok,
-        message,
-      };
-    })
-  );
+  const results = checkServicesStatus();
 
   // Loop through service status check results, to determine if all is ok
   let ok = true;
