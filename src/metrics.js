@@ -40,9 +40,7 @@ function jsonToPrometheus(data) {
     output.push(
       `service_ok_status{service="${service.service}", team="${team}"} ${service.ok ? 1 : 0}`
     );
-
-    //We only send alarms service_errors.
-    //service_prev_errors can maybe be used in grafana for graphs
+    
     output.push(
       `service_errors{service="${service.service}", team="${team}"} ${service.errors}`
     );
