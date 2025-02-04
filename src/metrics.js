@@ -7,38 +7,13 @@ import { getStats } from "./utils/fetchWithLimit";
 import { checkServicesStatus } from "./howru";
 function jsonToPrometheus(data) {
   let output = [];
-
-  // Global metrics
-//   output.push(`# HELP system_ok Indicates if the system is operational`);
-//   output.push(`# TYPE system_ok gauge`);
   output.push(`system_ok ${data.ok ? 1 : 0}`);
-
-//   output.push(
-//     `# HELP system_up_since The timestamp when the system was last started`
-//   );
-  //output.push(`# TYPE system_up_since gauge`);
   output.push(`system_up_since ${new Date(data.upSince).getTime() / 1000}`);
-
-  // Services status
-//   output.push(`# HELP service_ok Indicates if a service is operational`);
-//   output.push(`# TYPE service_ok gauge`);
-  data.services.forEach((service, index) => {
-    //TODO: add a label for the service team? 
-
-    index<1&&console.log('jsonToPrometheus.data.services.service',service.teamLabel);
+  data.services.forEach((service) => {
     output.push(
       `service_ok{service="${service.service}", team="${service.teamLabel}"} ${service.ok ? 1 : 0}`
-
     );
   });
-
-  // HTTP statistics
-//   output.push(
-//     `# HELP service_http_requests_total Total number of HTTP requests per service and status code`
-//   );
-//   output.push(`# TYPE service_http_requests_total counter`);
-//   output.push(`# HELP service_errors_total Total number of errors per service`);
-//   output.push(`# TYPE service_errors_total counter`);
 
   data.httpStats.forEach((service) => {
     Object.entries(service.status).forEach(([statusCode, count]) => {
@@ -99,4 +74,3 @@ async function metrics(req, res) {
 }
 
 export default metrics;
-

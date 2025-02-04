@@ -11,7 +11,7 @@ let upSince = new Date();
 // Array of services to check
 const services = [
   ...datasources
-   // .filter((datasource) => datasource.statusChecker)
+    .filter((datasource) => datasource.statusChecker)
     .map((datasource) => ({
       name: datasource.name,
       status: datasource.statusChecker,
