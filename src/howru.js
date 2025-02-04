@@ -37,7 +37,6 @@ const omitKeys = [
 export async function checkServicesStatus() {
   return await Promise.all(
       services.map(async (service) => {
-        console.log('service',service)
         let ok = false;
         let message;
         try {
