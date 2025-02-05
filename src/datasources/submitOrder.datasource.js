@@ -37,6 +37,14 @@ export function buildParameters({ userId, input, orderSystem }) {
   /* If user credentials are available in userParameters, we select an ID type and value from the parameters. 
     If multiple ID types are present, we choose only one based on a prioritized list. */
   const id = getUserIdTypeValuePair(input?.userParameters);
+  let userIdType = id?.type;
+
+  // TODO how do we fix this the right way? "userId" should probably not be part of the schema
+  // Openorder doesn't accept userIdType="userId"
+  // We fall back on "cardno"
+  if (userIdType === "userId" || (!userIdType && userId)) {
+    userIdType = "cardno";
+  }
 
   // Set order parameters
   const params = {
@@ -59,7 +67,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     trackingId: createTrackingId(),
     ...input.userParameters,
     userId: id?.value || userId,
-    userIdType: id?.type || (userId && "userId"),
+    userIdType,
     verificationReferenceSource: "DBCDATAWELL",
     requesterInitials: input.requesterInitials,
   };
