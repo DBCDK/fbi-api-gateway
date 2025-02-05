@@ -463,7 +463,7 @@ export const resolvers = {
       const submitOrderRes = await context.datasources
         .getLoader("submitOrder")
         .load({
-          userId: userId || authUserId || userIds.userId,
+          userId: userId || authUserId,
           branch,
           input: args.input,
           accessToken: context.accessToken,
@@ -689,11 +689,12 @@ export const resolvers = {
             successfullyCreated.push(material.key);
             return;
           }
+
           // Place order
           const submitOrderRes = await context.datasources
             .getLoader("submitOrder")
             .load({
-              userId: userId || user?.userId || userIds.userId,
+              userId: userId || user?.userId,
               branch,
               input: { ...args.input, ...material, key: null },
               accessToken: context.accessToken,

@@ -1,6 +1,7 @@
 import config from "../config";
 import { ACTIONS, auditTrace } from "@dbcdk/dbc-audittrail-logger";
 import { log } from "dbc-node-logger";
+import { getUserIdTypeValuePair } from "../utils/getUserBorrowerStatus";
 
 const { serviceRequester, url } = config.datasources.openorder;
 
@@ -33,6 +34,21 @@ function createTrackingId() {
  * @returns {Promise<*|null>}
  */
 export function buildParameters({ userId, input, orderSystem }) {
+  /* If user credentials are available in userParameters, we select an ID type and value from the parameters. 
+    If multiple ID types are present, we choose only one based on a prioritized list. */
+  const id = getUserIdTypeValuePair(input?.userParameters);
+  let userIdType = id?.type;
+
+  // Valid userId types https://openorder.addi.dk/3.0?xsd=1
+  const validUserIdTypes = ["cpr", "common", "barcode", "cardno", "optional"];
+
+  // TODO how do we fix this the right way? "userId" should probably not be part of the schema
+  // Openorder doesn't accept userIdType="userId"
+  // We set userIdType to null, when  given type is invalid
+  if (!validUserIdTypes.includes(userIdType)) {
+    userIdType = null;
+  }
+
   // Set order parameters
   const params = {
     copy: false,
@@ -53,7 +69,8 @@ export function buildParameters({ userId, input, orderSystem }) {
     serviceRequester: serviceRequester,
     trackingId: createTrackingId(),
     ...input.userParameters,
-    userId: userId || input.userParameters.userId,
+    userId: id?.value || userId,
+    userIdType,
     verificationReferenceSource: "DBCDATAWELL",
     requesterInitials: input.requesterInitials,
   };

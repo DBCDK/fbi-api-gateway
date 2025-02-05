@@ -42,6 +42,13 @@ enum HoldingsResponseStatusEnum {
 Represents loan restrictions for an item
 """
 enum HoldingsItemLoanRestrictionEnum {
+  A
+  B
+  C
+  D
+  E
+  F
+  
   """
   Indicates that the material can only be loaned to the library's own users and is not available for interlibrary loan
   """
@@ -49,6 +56,8 @@ enum HoldingsItemLoanRestrictionEnum {
 }
 
 type HoldingsItem {
+  branchName: String
+  status: ItemStatusEnum
   department: String
   location: String
   subLocation: String
@@ -76,6 +85,13 @@ type HoldingsResponse {
   Items on the shelf at the branch (actual copies)
   """
   items: [HoldingsItem!]
+
+  """
+  A list of items that belong to branches that are not visible or accessible in the system.
+  These branches, such as book storage facilities or off-site repositories, are not listed
+  for end-users, but their items can still be requested or accessed.
+  """
+  unlistedBranchItems: [HoldingsItem!]
 
   """
   Url to local site, where holding details may be found
@@ -205,30 +221,40 @@ async function resolveLocalIdentifiers(pids, agencyId, context) {
  * - branch is deleted
  * - branch is a service-punkt
  */
-async function filterHoldings(holdings, context) {
+async function filterHoldings(holdings, context, agencyId) {
   if (!holdings?.length) {
     return holdings;
   }
-  return (
-    await Promise.all(
-      holdings.map(async (holding) => {
-        const res = await context.datasources.getLoader("library").load({
-          branchId: holding.branchId,
-          limit: 1,
-          status: "AKTIVE",
-          bibdkExcludeBranches: false,
-        });
-        if (!res?.result?.length) {
-          return null;
-        }
-        if (holding?.branchType === "servicepunkt") {
-          return null;
-        }
 
-        return holding;
-      })
-    )
-  )?.filter((holding) => !!holding);
+  const branches = await context.datasources.getLoader("library").load({
+    agencyid: agencyId,
+    limit: 500,
+    status: "AKTIVE",
+    bibdkExcludeBranches: false,
+  });
+
+  const nameToBranch = {};
+  const branchIdToBranch = {};
+  branches?.result?.forEach((branch) => {
+    nameToBranch[branch?.name?.toUpperCase?.()] = branch;
+    branchIdToBranch[branch?.branchId] = branch;
+  });
+
+  const filterRes = { holdings: [], unlistedBranchItems: [] };
+
+  holdings.forEach((holding) => {
+    const branch =
+      branchIdToBranch[holding?.branchId] ||
+      nameToBranch[holding?.branch?.toUpperCase?.()];
+
+    if (!branch || branch?.branchType === "servicepunkt") {
+      filterRes.unlistedBranchItems.push(holding);
+    } else {
+      filterRes.holdings.push({ ...holding, branchId: branch?.branchId });
+    }
+  });
+
+  return filterRes;
 }
 
 function getLookupUrl(branch, localIdentifiers) {
@@ -309,30 +335,31 @@ export const resolvers = {
           ),
         });
 
-      const ownedByAgency =
-        holdingsItemsForAgency?.filter(
-          (item) => item.status !== "Discarded" && item.status !== "Lost"
-        )?.length || null;
+      holdingsItemsForAgency = holdingsItemsForAgency
+        ?.map((item) => ({
+          ...item,
+          expectedDelivery: item.status === "OnShelf" ? today : null,
+          notOnSHelf: !(
+            item.status === "OnShelf" || item.status === "NotForLoan"
+          ),
+          status: item?.status?.toUpperCase?.(),
+          branchName: item?.branch,
+        }))
+        .filter?.(
+          (item) => item.status !== "DISCARDED" && item.status !== "LOST"
+        );
 
-      holdingsItemsForAgency = holdingsItemsForAgency?.map((item) => ({
-        ...item,
-        expectedDelivery: item.status === "OnShelf" ? today : null,
-        notOnSHelf: !(
-          item.status === "OnShelf" || item.status === "NotForLoan"
-        ),
-      }));
+      const ownedByAgency = holdingsItemsForAgency?.length || null;
 
-      holdingsItemsForAgency = await filterHoldings(
+      const filteredHoldingsItems = await filterHoldings(
         holdingsItemsForAgency,
-        context
+        context,
+        parent?.agencyId
       );
+      holdingsItemsForAgency = filteredHoldingsItems.holdings;
 
       const holdingsItemsForBranch = holdingsItemsForAgency?.filter(
         (item) => item?.branchId === parent.branchId
-      );
-
-      const holdingsItemsForBranchOnShelf = holdingsItemsForBranch?.filter(
-        (item) => item.notOnSHelf === false
       );
 
       // Fetch detailed holdings (this will make a call to a local agency system)
@@ -342,11 +369,17 @@ export const resolvers = {
         })
       )?.holdingstatus;
 
-      detailedHoldings = await filterHoldings(detailedHoldings, context);
+      const filteredDetailedholdings = await filterHoldings(
+        detailedHoldings,
+        context,
+        parent?.agencyId
+      );
+      detailedHoldings = filteredDetailedholdings.holdings;
 
       // Prefer holdings from holdings items
       let holdings =
-        holdingsItemsForAgency?.length > 0
+        holdingsItemsForAgency?.length > 0 ||
+        filteredHoldingsItems?.unlistedBranchItems?.length > 0
           ? holdingsItemsForAgency
           : detailedHoldings || [];
 
@@ -398,7 +431,8 @@ export const resolvers = {
       ) {
         return {
           status: "ON_SHELF",
-          items: holdingsItemsForBranchOnShelf,
+          items: holdingsItemsForBranch,
+          unlistedBranchItems: filteredHoldingsItems.unlistedBranchItems,
           lookupUrl,
           lookupUrls,
           ownedByAgency,
@@ -413,9 +447,16 @@ export const resolvers = {
       let expectedBranchReturnDate =
         expectedReturnDateInBranch?.[0]?.expectedDelivery;
 
+      const holdingsItemsForBranchOnLoan = holdingsItemsForBranch?.filter?.(
+        (item) => item?.status === "ONLOAN"
+      );
+
       // If the branch usually holds the material (but it's on loan)
       // and no return date is set, use the agency’s expected return date as fallback.
-      if (!expectedBranchReturnDate && holdingsItemsForBranch?.length > 0) {
+      if (
+        !expectedBranchReturnDate &&
+        holdingsItemsForBranchOnLoan?.length > 0
+      ) {
         expectedBranchReturnDate = expectedAgencyReturnDate;
       }
 
@@ -426,9 +467,14 @@ export const resolvers = {
         )
       ) {
         return {
-          status: "ON_SHELF_NOT_FOR_LOAN",
+          status:
+            expectedBranchReturnDate || holdingsItemsForBranchOnLoan?.length > 0
+              ? "NOT_ON_SHELF"
+              : "ON_SHELF_NOT_FOR_LOAN",
           expectedAgencyReturnDate,
-          items: holdingsItemsForBranchOnShelf,
+          expectedBranchReturnDate,
+          items: holdingsItemsForBranch,
+          unlistedBranchItems: filteredHoldingsItems.unlistedBranchItems,
           lookupUrl,
           lookupUrls,
           ownedByAgency,
@@ -451,7 +497,8 @@ export const resolvers = {
         status,
         expectedAgencyReturnDate,
         expectedBranchReturnDate,
-        items: [],
+        items: holdingsItemsForBranch,
+        unlistedBranchItems: filteredHoldingsItems.unlistedBranchItems,
         lookupUrl,
         lookupUrls,
         ownedByAgency,

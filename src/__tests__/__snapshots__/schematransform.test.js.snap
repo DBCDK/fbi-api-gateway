@@ -876,6 +876,13 @@ enum HoldingsResponseStatusEnum {
 
 \\"\\"\\"Represents loan restrictions for an item\\"\\"\\"
 enum HoldingsItemLoanRestrictionEnum {
+  A
+  B
+  C
+  D
+  E
+  F
+
   \\"\\"\\"
   Indicates that the material can only be loaned to the library's own users and is not available for interlibrary loan
   \\"\\"\\"
@@ -883,6 +890,8 @@ enum HoldingsItemLoanRestrictionEnum {
 }
 
 type HoldingsItem {
+  branchName: String
+  status: ItemStatusEnum
   department: String
   location: String
   subLocation: String
@@ -904,6 +913,13 @@ type HoldingsResponse {
 
   \\"\\"\\"Items on the shelf at the branch (actual copies)\\"\\"\\"
   items: [HoldingsItem!]
+
+  \\"\\"\\"
+  A list of items that belong to branches that are not visible or accessible in the system.
+  These branches, such as book storage facilities or off-site repositories, are not listed
+  for end-users, but their items can still be requested or accessed.
+  \\"\\"\\"
+  unlistedBranchItems: [HoldingsItem!]
 
   \\"\\"\\"Url to local site, where holding details may be found\\"\\"\\"
   lookupUrl: String
@@ -2181,6 +2197,9 @@ type SerieWork {
 }
 
 type Series {
+  \\"\\"\\"The number of members in the series\\"\\"\\"
+  hitcount: Int!
+
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 
@@ -5911,6 +5930,9 @@ type SerieWork {
 }
 
 type Series {
+  \\"\\"\\"The number of members in the series\\"\\"\\"
+  hitcount: Int!
+
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 
@@ -7886,6 +7908,9 @@ type SerieWork {
 }
 
 type Series {
+  \\"\\"\\"The number of members in the series\\"\\"\\"
+  hitcount: Int!
+
   \\"\\"\\"The title of the series\\"\\"\\"
   title: String!
 
