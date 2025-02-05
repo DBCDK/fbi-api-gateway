@@ -40,12 +40,9 @@ function jsonToPrometheus(data) {
     output.push(
       `service_ok_status{service="${service.service}", team="${team}"} ${service.ok ? 1 : 0}`
     );
-    
+
     output.push(
       `service_errors{service="${service.service}", team="${team}"} ${service.errors}`
-    );
-    output.push(
-      `service_prev_errors{service="${service.service}", team="${team}"} ${service.prevErrors}`
     );
 
     //TODO: Maybe we need this later
