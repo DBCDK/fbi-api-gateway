@@ -39,11 +39,14 @@ export function buildParameters({ userId, input, orderSystem }) {
   const id = getUserIdTypeValuePair(input?.userParameters);
   let userIdType = id?.type;
 
+  // Valid userId types https://openorder.addi.dk/3.0?xsd=1
+  const validUserIdTypes = ["cpr", "common", "barcode", "cardno", "optional"];
+
   // TODO how do we fix this the right way? "userId" should probably not be part of the schema
   // Openorder doesn't accept userIdType="userId"
-  // We fall back on "cardno"
-  if (userIdType === "userId" || (!userIdType && userId)) {
-    userIdType = "cardno";
+  // We set userIdType to null, when  given type is invalid
+  if (!validUserIdTypes.includes(userIdType)) {
+    userIdType = null;
   }
 
   // Set order parameters
