@@ -876,6 +876,13 @@ enum HoldingsResponseStatusEnum {
 
 \\"\\"\\"Represents loan restrictions for an item\\"\\"\\"
 enum HoldingsItemLoanRestrictionEnum {
+  A
+  B
+  C
+  D
+  E
+  F
+
   \\"\\"\\"
   Indicates that the material can only be loaned to the library's own users and is not available for interlibrary loan
   \\"\\"\\"
