@@ -44,17 +44,17 @@ let server;
 //prometheus endpoint for monitoring
 const prometheusApp = express();
 prometheusApp.get("/metrics", metricsHandler);
-prometheusApp.listen(9598, () => {
+prometheusApp.listen(9599, () => {
   log.info(`Running metrics endpoint at http://localhost:9598/metrics`);
 });
 
-//old endpoint. 
-const promExporterApp = express();
-// Setup route handler for metrics
-promExporterApp.get("/metrics", metrics);
-promExporterApp.listen(9599, () => {
-  log.info(`Running metrics endpoint at http://localhost:9599/metrics`);
-});
+// //old endpoint. 
+// const promExporterApp = express();
+// // Setup route handler for metrics
+// promExporterApp.get("/metrics", metrics);
+// promExporterApp.listen(9599, () => {
+//   log.info(`Running metrics endpoint at http://localhost:9599/metrics`);
+// });
 
 (async () => {
   // Set limit on body size

@@ -133,7 +133,7 @@ async function metrics(req, res) {
     services: results,
     httpStats,
   };
-  //res.setHeader("Content-Type", "text/plain; version=0.0.4");
+  res.setHeader("Content-Type", "text/plain; version=0.0.4");
 
   res.send(jsonToPrometheus(body));
 }
