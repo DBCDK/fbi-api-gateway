@@ -41,6 +41,14 @@ process.stdout.on("error", function (err) {
 const app = express();
 let server;
 
+//prometheus endpoint for monitoring
+const prometheusApp = express();
+prometheusApp.get("/metrics", metricsHandler);
+prometheusApp.listen(9598, () => {
+  log.info(`Running metrics endpoint at http://localhost:9598/metrics`);
+});
+
+//old endpoint. 
 const promExporterApp = express();
 // Setup route handler for metrics
 promExporterApp.get("/metrics", metrics);
@@ -97,8 +105,6 @@ promExporterApp.listen(9599, () => {
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
 
-  // Setup route handler for metrics - triggers an alert in prod
-  app.get("/metrics", metricsHandler);
   /**
    * Query complexity endpoint
    * POST request
