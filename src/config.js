@@ -30,11 +30,13 @@ export default {
       url:
         process.env.OCN_TO_PID_URL ||
         "http://ocn2pid.addi.dk/ocn2pid/ocn-collection/",
+      teamLabel: "de-team",
     },
     didyoumean: {
       url:
         process.env.DID_YOU_MEAN_URL ||
         "http://did-you-mean-1-0.mi-prod.svc.cloud.dbc.dk",
+      teamLabel: "ai",
     },
     catInspire: {
       url:
@@ -42,6 +44,7 @@ export default {
         "http://cat-inspire-1-0.mi-prod.svc.cloud.dbc.dk",
       ttl: process.env.CAT_INSPIRE_TIME_TO_LIVE_SECONDS || 60,
       prefix: process.env.CAT_INSPIRE_PREFIX || "cat-inspire-1",
+      teamLabel: "ai",
     },
     complexsearch: {
       url:
@@ -49,6 +52,7 @@ export default {
         "http://cql-parser.complex-search-prod.svc.cloud.dbc.dk/api/v1",
       ttl: process.env.COMPLEX_SEARCH_TIME_TO_LIVE_SECONDS || 60,
       prefix: process.env.COMPLEX_SEARCH_PREFIX || "complexsearch-1",
+      teamLabel: "fbiscrum",
     },
     complexFacets: {
       url:
@@ -56,6 +60,7 @@ export default {
         "http://cql-parser.complex-search-prod.svc.cloud.dbc.dk/api/v1/variants",
       ttl: process.env.COMPLEX_FACETS_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.COMPLEX_FACETS_PREFIX || "complexsearch-1",
+      teamLabel: "fbiscrum",
     },
     defaultforsider: {
       url:
@@ -64,16 +69,19 @@ export default {
       ttl: process.env.DEFAULTFORSIDER_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.DEFAULTFORSIDER_PREFIX || "defaultforsider-2",
       secret: process.env.DEFAULTFORSIDER_KEY || "somesecret",
+      teamLabel: "febib",
     },
     relatedsubjects: {
       url:
         process.env.RELATED_SUBJECTS ||
         "http://query-related-subject-1-0.mi-prod.svc.cloud.dbc.dk/",
+      teamLabel: "ai",
     },
     faustService: {
       url:
         process.env.FAUST_SERVICE_URL ||
         "http://faust-resolver-service.cisterne.svc.cloud.dbc.dk",
+        teamLabel: "de-team",
     },
     jed: {
       url:
@@ -81,6 +89,7 @@ export default {
         "http://jed-presentation-1-2-service.cisterne.svc.cloud.dbc.dk",
       ttl: process.env.JED_TIME_TO_LIVE_SECONDS || 60 * 10,
       prefix: process.env.JED_PREFIX || "jed-2",
+      teamLabel: "DAM",
     },
     openformat: {
       url:
@@ -88,6 +97,7 @@ export default {
         "http://open-format-broker.cisterne.svc.cloud.dbc.dk/api/v2/format",
       ttl: process.env.OPENFORMAT_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.OPENFORMAT_PREFIX || "openformat-1",
+      teamLabel: "fbiscrum/de-team",
     },
     backend: {
       url:
@@ -95,12 +105,14 @@ export default {
         "http://bibdk-backend-www-master.febib-prod.svc.cloud.dbc.dk/graphql",
       ttl: process.env.BACKEND_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.BACKEND_PREFIX || "backend-1",
+      teamLabel: "febib",
     },
     borchk: {
       url: process.env.BORCHK_URL || "https://borchk.addi.dk/3.1/",
       prefix: process.env.BORCHK_PREFIX || "borchk-1",
       ttl: process.env.BORCHK_TIME_TO_LIVE_SECONDS || 60 * 5,
       ffuIsBlocked: process.env.BORCHK_FFU_BLOCKED || false,
+      teamLabel: "fbiscrum",
     },
     holdingsservice: {
       url:
@@ -108,6 +120,7 @@ export default {
         "http://holdings-service.cisterne.svc.cloud.dbc.dk/api/v1/holdings-status/",
       ttl: process.env.HOLDINGSSERVICE_URL_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.HOLDINGSITEMS_URL_PREFIX || "holdingsservice-1",
+      teamLabel: "de-team",
     },
     holdingsitems: {
       url:
@@ -115,11 +128,14 @@ export default {
         "http://holdings-items-content-service.cisterne.svc.cloud.dbc.dk/api",
       ttl: process.env.HOLDINGSITEMS_URL_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.HOLDINGSITEMS_URL_PREFIX || "holdingsitems-1",
+      teamLabel: "de-team",
     },
     holdingsitems2: {
       url:
         process.env.HOLDINGSITEMS_2_URL ||
         "http://holdings-items-2-service.fbstest.svc.cloud.dbc.dk/api/v1/holdings",
+        teamLabel: "de-team",
+
     },
     moreinfo: {
       url: process.env.MOREINFO_URL,
@@ -128,10 +144,13 @@ export default {
       authenticationPassword: process.env.MOREINFO_PASSWORD,
       ttl: process.env.MOREINFO_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
       prefix: process.env.MOREINFO_PREFIX || "moreinfo-2",
+      teamLabel: "febib",
     },
     openuserstatus: {
       url:
         process.env.OPENUSERSTATUS_URL || "https://openuserstatus.addi.dk/2.0/",
+        teamLabel: "febib",
+
     },
     openorder: {
       url:
@@ -143,6 +162,7 @@ export default {
       serviceRequester: process.env.OPENORDER_SERVICEREQUESTER,
       ttl: process.env.OPENORDER_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.OPENORDER_PREFIX || "openorder-1",
+      teamLabel: "fbiscrum",
     },
     series: {
       url:
@@ -150,6 +170,7 @@ export default {
         "http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/series-members",
       ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.SERIES_PREFIX || "seriesservice-2",
+      teamLabel: "de-team",
     },
     universe: {
       url:
@@ -157,6 +178,7 @@ export default {
         "http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/universe-members",
       ttl: process.env.UNIVERSES_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.UNIVERSES_PREFIX || "seriesservice-universes-2",
+      teamLabel: "de-team",
     },
     seriesService: {
       url:
@@ -164,12 +186,14 @@ export default {
         "http://series-service.cisterne.svc.cloud.dbc.dk/api/v2/",
       ttl: process.env.SERIES_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.SERIES_PREFIX || "seriesservice-2",
+      teamLabel: "de-team",
     },
     redis: {
       host: process.env.REDIS_HOST || "127.0.0.1",
       port: process.env.REDIS_PORT || "6379",
       prefix: process.env.REDIS_PREFIX || "bibdk-api-4",
       enabled: process.env.REDIS_ENABLED || true,
+      teamLabel: "febib",
     },
     simplesearch: {
       url:
@@ -178,6 +202,7 @@ export default {
       prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-6",
       token: process.env.SIMPLESEARCH_TOKEN,
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
+      teamLabel: "ai",
     },
     prosper: {
       url:
@@ -186,6 +211,7 @@ export default {
       prefix: process.env.PROSPER_PREFIX || "prosper-1",
       token: process.env.SUGGESTER_TOKEN,
       ttl: process.env.PROSPER_TIME_TO_LIVE_SECONDS || 10,
+      teamLabel: "ai",
     },
     complexsearchsuggest: {
       url:
@@ -193,6 +219,7 @@ export default {
         "http://cs-suggest.cisterne.svc.cloud.dbc.dk/api/v1/suggestions",
       prefix: process.env.CS_SUGGEST_PREFIX || "complexsearch-1",
       ttl: process.env.CS_SUGGEST_TIME_TO_LIVE_SECONDS || 10,
+      teamLabel: "fbiscrum",
     },
     suggester: {
       url:
@@ -201,6 +228,7 @@ export default {
       prefix: process.env.SUGGESTER_PREFIX || "suggester-1",
       token: process.env.SUGGESTER_TOKEN,
       ttl: process.env.SUGGESTER_TIME_TO_LIVE_SECONDS || 10,
+      teamLabel: "ai",
     },
     moodmatchkids: {
       url:
@@ -209,6 +237,7 @@ export default {
       prefix: process.env.MOODMATCH_KIDS_PREFIX || "moodmatchkids-1",
       token: process.env.MOODMATCH_KIDS_TOKEN,
       ttl: process.env.MOODMATCH_KIDS_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+      teamLabel: "ai",
     },
     moodmatch: {
       url:
@@ -217,6 +246,7 @@ export default {
       prefix: process.env.MOODMATCH_PREFIX || "moodmatch-1",
       token: process.env.MOODMATCH_TOKEN,
       ttl: process.env.MOODMATCH_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+      teamLabel: "ai",
     },
     moodrecommend: {
       url:
@@ -225,6 +255,7 @@ export default {
       prefix: process.env.MOODRECOMMEND_PREFIX || "moodrecommend-1",
       token: process.env.MOODRECOMMEND_TOKEN,
       ttl: process.env.MOODRECOMMEND_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+      teamLabel: "ai",
     },
     moodkidsrecommend: {
       url:
@@ -233,6 +264,7 @@ export default {
       prefix: process.env.MOODKIDSRECOMMEND_PREFIX || "moodkidsrecommend-1",
       token: process.env.MOODKIDSRECOMMEND_TOKEN,
       ttl: process.env.MOODKIDSRECOMMEND_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+      teamLabel: "ai",
     },
     facets: {
       url:
@@ -244,6 +276,7 @@ export default {
       firstHits: process.env.FACETS_FIRST_HITS || 500,
       disableFuzzySearch:
         process.env.FACETS_DISABLE_FUZZY_SEARCH === "false" ? false : true,
+      teamLabel: "ai",
     },
     vipcore: {
       excludeBranches:
@@ -254,6 +287,7 @@ export default {
         "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api",
       prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
+      teamLabel: "fbiscrum",
     },
     idp: {
       url:
@@ -261,9 +295,11 @@ export default {
         "http://idpservice.fbiscrum-prod.svc.cloud.dbc.dk/api/v1",
       prefix: process.env.IDP_PREFIX || "IDP-2",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 10,
+      teamLabel: "fbiscrum",
     },
     smaug: {
       url: process.env.SMAUG_URL || "https://auth-config.dbc.dk",
+      teamLabel: "febib",
     },
     culr: {
       url:
@@ -275,6 +311,7 @@ export default {
       authenticationUser: process.env.CULR_USER,
       authenticationGroup: process.env.CULR_GROUP,
       authenticationPassword: process.env.CULR_PASSWORD,
+      teamLabel: "fbiscrum",
     },
     marc: {
       url:
@@ -282,6 +319,8 @@ export default {
         process.env.MARC_URL,
       prefix: process.env.MARC_PREFIX || "MARC-1",
       ttl: process.env.MARC_TIME_TO_LIVE_SECONDS || 60 * 60,
+      teamLabel: "de-team",//todo: double check if correct
+
     },
     statsbiblioteket: {
       url:
@@ -290,6 +329,7 @@ export default {
       user: process.env.STATSBIBLIOTEKET_USER,
       password: process.env.STATSBIBLIOTEKET_PASSWORD,
       enabled: process.env.STATSBIBLIOTEKET_ENABLED || false,
+      teamLabel: "febib",
     },
     recommendations: {
       url:
@@ -297,6 +337,7 @@ export default {
         "http://booklens-1-1.mi-prod.svc.cloud.dbc.dk",
       ttl: process.env.RECOMMENDATIONS_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.RECOMMENDATIONS_PREFIX || "recommendations-1",
+      teamLabel: "ai",
     },
     elk: {
       url:
@@ -305,6 +346,7 @@ export default {
       user: process.env.ELK_USER,
       password: process.env.ELK_PASSWORD,
       prefix: process.env.ELK_PREFIX || "elk-1",
+      teamLabel: "platform",//todo: double check if correct
     },
     infomedia: {
       url:
@@ -313,6 +355,7 @@ export default {
       id: process.env.INFOMEDIA_ID,
       ttl: process.env.INFOMEDIA_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.INFOMEDIA_PREFIX || "infomedia-1",
+      teamLabel: "febib",
     },
     linkcheck: {
       url:
@@ -320,11 +363,13 @@ export default {
         "http://link-check-service.de-prod.svc.cloud.dbc.dk/api/v1",
       prefix: process.env.LINKCHECK_PREFIX || "linkcheck-1",
       ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
+      teamLabel: "de-team",
     },
     userInfo: {
       url: process.env.USER_INFO_URL || "https://stg.login.bib.dk/userinfo",
       prefix: "userinfo",
       ttl: 60 * 5,
+      teamLabel: "febib",
     },
     userdata: {
       url:
@@ -332,6 +377,7 @@ export default {
         "http://bibliotekdk-next-userdata-stg.febib-staging.svc.cloud.dbc.dk/",
       ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 0,
       prefix: "userdata",
+      teamLabel: "febib",
     },
     orderStatus: {
       url:
@@ -339,16 +385,19 @@ export default {
         "http://ors-maintenance.iscrum-ors-prod.svc.cloud.dbc.dk:8080/",
       ttl: process.env.ORDERSTATUS_TIME_TO_LIVE_SECONDS || 60 * 5,
       prefix: "orderstatus",
+      teamLabel: "fbiscrum",
     },
     datahub: {
       url:
         process.env.DATAHUB_URL ||
         "http://apievent-collector.de-staging.svc.cloud.dbc.dk",
+        teamLabel: "de-team",
     },
     pseudonymizer: {
       url:
         process.env.PSEUDONYMIZER_URL ||
         "https://pseudonymizer-service.de-pseudonymizer-staging.svc.cloud.dbc.dk",
+        teamLabel: "fbiscrum",
     },
   },
 };
