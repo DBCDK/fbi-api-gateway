@@ -1,6 +1,6 @@
 import config from "../../config";
 
-const { url, ttl, prefix } = config.datasources.vipcore;
+const { url, ttl, prefix , teamLabel } = config.datasources.vipcore;
 
 /**
  * Search for vip agencies using vip-core->agencyinfo

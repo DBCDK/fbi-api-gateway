@@ -17,7 +17,7 @@ import config from "../config";
 
 import { createSigner } from "fast-jwt";
 
-const { url, secret } = config.datasources.defaultforsider;
+const { url, secret , teamLabel } = config.datasources.defaultforsider;
 
 const signSync = createSigner({ key: secret });
 

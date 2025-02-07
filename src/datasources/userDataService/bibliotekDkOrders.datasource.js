@@ -1,5 +1,5 @@
 import config from "../../config";
-const { url, ttl, prefix } = config.datasources.userdata;
+const { url, ttl, prefix , teamLabel } = config.datasources.userdata;
 
 /**
  * Fetch orders for a user from userdata service

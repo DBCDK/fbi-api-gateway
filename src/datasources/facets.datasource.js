@@ -6,7 +6,7 @@ import config from "../config";
 import uniq from "lodash/uniq";
 import { mapFromFacetEnums, mapFilters } from "../utils/filtersAndFacetsMap";
 
-const { url, prefix, ttl, token, firstHits, disableFuzzySearch } =
+const { url, prefix, ttl, token, firstHits, disableFuzzySearch, teamLabel } =
   config.datasources.facets;
 
 export async function load({ q, filters = {}, facets = [], profile }, context) {

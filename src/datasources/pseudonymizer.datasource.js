@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url } = config.datasources.pseudonymizer;
+const { url , teamLabel } = config.datasources.pseudonymizer;
 /**
  * Pseudonymize an ID
  */

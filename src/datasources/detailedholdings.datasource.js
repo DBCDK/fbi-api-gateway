@@ -1,7 +1,7 @@
 import config from "../config";
 import { log } from "dbc-node-logger";
 
-const { url, prefix } = config.datasources.holdingsservice;
+const { url, prefix , teamLabel } = config.datasources.holdingsservice;
 
 function parseResponse(details, agencyId) {
   const localholdings = [];

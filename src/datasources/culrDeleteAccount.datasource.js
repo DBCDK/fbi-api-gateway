@@ -13,6 +13,7 @@ const {
   authenticationUser,
   authenticationGroup,
   authenticationPassword,
+  teamLabel,
 } = config.datasources.culr;
 
 /**

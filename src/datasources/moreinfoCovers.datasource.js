@@ -8,7 +8,7 @@ const {
   url,
   ttl,
   prefix,
-} = config.datasources.moreinfo;
+   teamLabel } = config.datasources.moreinfo;
 
 function createRequest(pid) {
   return `<mi:moreInfoRequest xmlns:mi="http://oss.dbc.dk/ns/moreinfo">

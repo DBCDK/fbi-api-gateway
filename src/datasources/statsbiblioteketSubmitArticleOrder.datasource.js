@@ -11,7 +11,7 @@ eg. <xsd:element name="originRequester" type="xsd:string" minOccurs="1" maxOccur
 import { log } from "dbc-node-logger";
 import config from "../config";
 
-const { url, user, password } = config.datasources.statsbiblioteket;
+const { url, user, password , teamLabel } = config.datasources.statsbiblioteket;
 
 // map fbi-api key-names to elba-service keys
 const map = {

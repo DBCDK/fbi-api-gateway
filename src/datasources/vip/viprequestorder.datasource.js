@@ -1,6 +1,6 @@
 import config from "../../config";
 
-const { url, ttl, prefix } = config.datasources.vipcore;
+const { url, ttl, prefix , teamLabel } = config.datasources.vipcore;
 
 export async function load(agencyId, context) {
   const res = await context?.fetch(`${url}/requestorder/${agencyId}/`, {

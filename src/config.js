@@ -89,7 +89,7 @@ export default {
         "http://jed-presentation-1-2-service.cisterne.svc.cloud.dbc.dk",
       ttl: process.env.JED_TIME_TO_LIVE_SECONDS || 60 * 10,
       prefix: process.env.JED_PREFIX || "jed-2",
-      teamLabel: "DAM",
+      teamLabel: "de-team",
     },
     openformat: {
       url:

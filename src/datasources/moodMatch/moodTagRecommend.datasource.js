@@ -16,7 +16,7 @@ has_cover: Has-Cover filter: only returns works with an associated cover if set 
 
 import config from "../../config";
 
-const { url, prefix, ttl, token } = config.datasources.moodrecommend;
+const { url, prefix, ttl, token , teamLabel } = config.datasources.moodrecommend;
 
 function setQuery(args) {
   const { tags, limit, plus, minus, agency, profile, hasCover } = args;

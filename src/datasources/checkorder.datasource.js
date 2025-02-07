@@ -1,7 +1,7 @@
 import config from "../config";
 import { log } from "dbc-node-logger";
 
-const { serviceRequester, url, ttl, prefix } = config.datasources.openorder;
+const { serviceRequester, url, ttl, prefix , teamLabel } = config.datasources.openorder;
 
 export async function load({ pids, pickupBranch, accessToken }, context) {
   const post = {

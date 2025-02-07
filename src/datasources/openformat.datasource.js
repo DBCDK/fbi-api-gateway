@@ -2,7 +2,7 @@ import config from "../config";
 import displayFormat from "./openformat.displayformat.json";
 import { fetch } from "undici";
 
-const { url, ttl, prefix } = config.datasources.openformat;
+const { url, ttl, prefix , teamLabel } = config.datasources.openformat;
 
 function createRequest(pid) {
   return `<?xml version="1.0" encoding="UTF-8"?>

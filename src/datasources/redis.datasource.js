@@ -4,6 +4,7 @@ import config from "../config";
 import { parseJSON, stringifyJSON } from "../utils/json";
 import monitor from "../utils/monitor";
 
+const { teamLabel } = config.datasources.redis;
 // Redis client
 let redis;
 

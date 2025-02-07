@@ -5,7 +5,7 @@
 
 import config from "../config";
 
-const { url, prefix, ttl } = config.datasources.complexsearchsuggest;
+const { url, prefix, ttl , teamLabel } = config.datasources.complexsearchsuggest;
 
 export async function load({ q, type }, context) {
   const res = await context.fetch(

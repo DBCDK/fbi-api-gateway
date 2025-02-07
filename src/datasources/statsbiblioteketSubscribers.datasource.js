@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { enabled } = config.datasources.statsbiblioteket;
+const { enabled , teamLabel } = config.datasources.statsbiblioteket;
 
 export async function load(_key, context) {
   if (!enabled) {

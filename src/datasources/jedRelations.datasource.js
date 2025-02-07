@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url, prefix, ttl } = config.datasources.jed;
+const { url, prefix, ttl , teamLabel } = config.datasources.jed;
 
 export async function batchLoader(keys, context) {
   const res = await context.fetch(`${url}/api/v1/fbi-api/multiple`, {

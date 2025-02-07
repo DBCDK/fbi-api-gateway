@@ -1,7 +1,7 @@
 import config from "../config";
 import { generateName } from "../utils/nameGenerator";
 
-const { url } = config.datasources.openuserstatus;
+const { url , teamLabel } = config.datasources.openuserstatus;
 const { authenticationUser, authenticationGroup, authenticationPassword } =
   config.datasources.openorder;
 

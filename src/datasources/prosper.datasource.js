@@ -7,7 +7,7 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, prefix, ttl, token } = config.datasources.prosper;
+const { url, prefix, ttl, token , teamLabel } = config.datasources.prosper;
 export async function load(
   {
     q,

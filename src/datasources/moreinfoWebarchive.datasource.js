@@ -9,6 +9,7 @@ const {
   url,
   ttl,
   prefix,
+  teamLabel,
 } = config.datasources.moreinfo;
 
 function createRequest(pid) {

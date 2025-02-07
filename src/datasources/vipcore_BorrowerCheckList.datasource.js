@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url, ttl } = config.datasources.vipcore;
+const { url, ttl , teamLabel } = config.datasources.vipcore;
 
 function listMap(list) {
   const map = {};

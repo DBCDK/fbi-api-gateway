@@ -1,6 +1,6 @@
 import config from "../../config";
 
-const { url, ttl, prefix } = config.datasources.vipcore;
+const { url, ttl, prefix , teamLabel } = config.datasources.vipcore;
 
 /**
  * Search for vip opensearch profiles using vip-core->opensearchprofile

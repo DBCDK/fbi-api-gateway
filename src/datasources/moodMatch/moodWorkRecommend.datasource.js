@@ -16,7 +16,7 @@ At least one workid must be provided to create recommendations.
 
 import config from "../../config";
 
-const { url, prefix, ttl, token } = config.datasources.moodrecommend;
+const { url, prefix, ttl, token , teamLabel } = config.datasources.moodrecommend;
 
 function setQuery(args) {
   const {

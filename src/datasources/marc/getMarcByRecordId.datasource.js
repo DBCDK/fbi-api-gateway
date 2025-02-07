@@ -4,7 +4,7 @@
 
 import config from "../../config";
 
-const { url, ttl, prefix } = config.datasources.marc;
+const { url, ttl, prefix , teamLabel } = config.datasources.marc;
 
 /**
  * Gets the MARC record by the gievn id

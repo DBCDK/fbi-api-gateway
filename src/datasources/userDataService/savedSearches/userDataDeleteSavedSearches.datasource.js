@@ -1,5 +1,5 @@
 import config from "../../../config";
-const { url } = config.datasources.userdata;
+const { url , teamLabel } = config.datasources.userdata;
 
 /**
  * Delete multiple advanced searches

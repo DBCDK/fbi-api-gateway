@@ -2,7 +2,7 @@
 
 import config from "../../config";
 
-const { url, ttl, prefix } = config.datasources.seriesService;
+const { url, ttl, prefix , teamLabel } = config.datasources.seriesService;
 export async function load({ workId, profile }, context) {
   const { agency, name } = profile;
   const params = `${agency}/${name}/${workId}`;

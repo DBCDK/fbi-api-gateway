@@ -15,7 +15,7 @@ const {
   authenticationUser,
   authenticationGroup,
   authenticationPassword,
-} = config.datasources.culr;
+ teamLabel } = config.datasources.culr;
 
 /**
  * Constructs soap request to perform request

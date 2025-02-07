@@ -2,7 +2,7 @@ import { log } from "dbc-node-logger";
 import request from "superagent";
 import config from "../config";
 
-const { user, password, url, prefix } = config.datasources.elk;
+const { user, password, url, prefix , teamLabel } = config.datasources.elk;
 
 /**
  * Fetches stats from elastic search

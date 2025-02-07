@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url, ttl, prefix } = config.datasources.catInspire;
+const { url, ttl, prefix , teamLabel } = config.datasources.catInspire;
 
 export function restructureCategories(data) {
   const categories = {};

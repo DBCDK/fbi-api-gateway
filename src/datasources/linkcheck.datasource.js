@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url, ttl, prefix } = config.datasources.linkcheck;
+const { url, ttl, prefix , teamLabel } = config.datasources.linkcheck;
 
 /**
  * Function to Restruture data from map to list

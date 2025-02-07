@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url } = config.datasources.datahub;
+const { url , teamLabel } = config.datasources.datahub;
 /**
  * Store an event in datahub
  */

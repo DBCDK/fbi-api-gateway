@@ -5,7 +5,7 @@
 // import request from "superagent";
 // import config from "../config";
 
-// const { url, prefix, ttl, token } = config.datasources.faustservice;
+// const { url, prefix, ttl, token , teamLabel } = config.datasources.faustservice;
 
 export async function load(faust) {
   // Until we have a service for mapping faust to work id

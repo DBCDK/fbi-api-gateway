@@ -17,7 +17,7 @@ debug: if true debug information is present in response. Otherwise, only persist
 import config from "../../config";
 import { all } from "express/lib/application";
 
-const { url, prefix, ttl, token } = config.datasources.moodmatchkids;
+const { url, prefix, ttl, token , teamLabel } = config.datasources.moodmatchkids;
 
 function setQuery(args) {
   const { q, field, offset, limit, agency, profile, debug } = args;
