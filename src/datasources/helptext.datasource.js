@@ -150,3 +150,5 @@ export async function load({ q, language = "da" }) {
   }));
   return result;
 }
+
+export { teamLabel };

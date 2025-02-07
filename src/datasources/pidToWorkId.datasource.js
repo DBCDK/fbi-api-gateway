@@ -1,7 +1,7 @@
 import config from "../config";
 import { log } from "dbc-node-logger";
 
-const { url, prefix, ttl , teamLabel } = config.datasources.jed;
+const { url, prefix, ttl, teamLabel } = config.datasources.jed;
 
 /**
  * Fetches a work id, based on a pid
@@ -42,6 +42,4 @@ export const options = {
   },
 };
 
-export {
-  teamLabel
-}
+export { teamLabel };

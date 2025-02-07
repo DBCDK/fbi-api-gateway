@@ -44,3 +44,5 @@ export function load({ userId, agencyId }) {
 
   return DEFAULT;
 }
+
+export { teamLabel };

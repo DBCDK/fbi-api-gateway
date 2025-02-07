@@ -1,5 +1,5 @@
 import config from "../../../config";
-const { url, ttl, prefix , teamLabel } = config.datasources.userdata;
+const { url, ttl, prefix, teamLabel } = config.datasources.userdata;
 
 /**
  * Fetch saved search by cql
@@ -24,3 +24,5 @@ export const options = {
     prefix,
   },
 };
+
+export { teamLabel };

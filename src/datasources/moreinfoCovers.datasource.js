@@ -8,7 +8,8 @@ const {
   url,
   ttl,
   prefix,
-   teamLabel } = config.datasources.moreinfo;
+  teamLabel,
+} = config.datasources.moreinfo;
 
 function createRequest(pid) {
   return `<mi:moreInfoRequest xmlns:mi="http://oss.dbc.dk/ns/moreinfo">
@@ -93,3 +94,5 @@ export const options = {
     staleWhileRevalidate: 60 * 60 * 24 * 90, // 90 days
   },
 };
+
+export { teamLabel };

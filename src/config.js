@@ -81,7 +81,7 @@ export default {
       url:
         process.env.FAUST_SERVICE_URL ||
         "http://faust-resolver-service.cisterne.svc.cloud.dbc.dk",
-        teamLabel: "de-team",
+      teamLabel: "de-team",
     },
     jed: {
       url:
@@ -134,8 +134,7 @@ export default {
       url:
         process.env.HOLDINGSITEMS_2_URL ||
         "http://holdings-items-2-service.fbstest.svc.cloud.dbc.dk/api/v1/holdings",
-        teamLabel: "de-team",
-
+      teamLabel: "de-team",
     },
     moreinfo: {
       url: process.env.MOREINFO_URL,
@@ -149,8 +148,7 @@ export default {
     openuserstatus: {
       url:
         process.env.OPENUSERSTATUS_URL || "https://openuserstatus.addi.dk/2.0/",
-        teamLabel: "febib",
-
+      teamLabel: "febib",
     },
     openorder: {
       url:
@@ -319,8 +317,7 @@ export default {
         process.env.MARC_URL,
       prefix: process.env.MARC_PREFIX || "MARC-1",
       ttl: process.env.MARC_TIME_TO_LIVE_SECONDS || 60 * 60,
-      teamLabel: "de-team",//todo: double check if correct
-
+      teamLabel: "de-team", //todo: double check if correct
     },
     statsbiblioteket: {
       url:
@@ -346,7 +343,7 @@ export default {
       user: process.env.ELK_USER,
       password: process.env.ELK_PASSWORD,
       prefix: process.env.ELK_PREFIX || "elk-1",
-      teamLabel: "platform",//todo: double check if correct
+      teamLabel: "platform", //todo: double check if correct
     },
     infomedia: {
       url:
@@ -391,13 +388,13 @@ export default {
       url:
         process.env.DATAHUB_URL ||
         "http://apievent-collector.de-staging.svc.cloud.dbc.dk",
-        teamLabel: "de-team",
+      teamLabel: "de-team",
     },
     pseudonymizer: {
       url:
         process.env.PSEUDONYMIZER_URL ||
         "https://pseudonymizer-service.de-pseudonymizer-staging.svc.cloud.dbc.dk",
-        teamLabel: "fbiscrum",
+      teamLabel: "fbiscrum",
     },
   },
 };

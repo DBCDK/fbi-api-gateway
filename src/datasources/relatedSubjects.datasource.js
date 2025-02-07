@@ -1,7 +1,6 @@
 import config from "../config";
 
-const {teamLabel} =config.datasources.relatedsubjects;
-
+const { teamLabel } = config.datasources.relatedsubjects;
 
 export async function load({ q, limit }, context) {
   const url = config.datasources.relatedsubjects.url;
@@ -14,3 +13,5 @@ export async function load({ q, limit }, context) {
   const result = await context.fetch(`${url}${query}`);
   return result.body;
 }
+
+export { teamLabel };

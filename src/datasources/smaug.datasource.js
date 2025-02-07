@@ -1,7 +1,6 @@
 import config from "../config";
 import { getTestUser, parseTestToken } from "../utils/testUserStore";
 
-
 const { teamLabel } = config.datasources.smaug;
 
 /**
@@ -49,3 +48,5 @@ export const options = {
     ttl: 10, // 10 seconds
   },
 };
+
+export { teamLabel };

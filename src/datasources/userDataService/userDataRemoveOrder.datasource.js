@@ -1,5 +1,5 @@
 import config from "../../config";
-const { url, ttl, prefix , teamLabel } = config.datasources.userdata;
+const { url, ttl, prefix, teamLabel } = config.datasources.userdata;
 
 /**
  * remove order in userdata service
@@ -26,3 +26,5 @@ export const options = {
     prefix,
   },
 };
+
+export { teamLabel };

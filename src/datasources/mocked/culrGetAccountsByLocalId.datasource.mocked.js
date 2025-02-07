@@ -86,3 +86,5 @@ export async function load({ agencyId, userId }, context) {
     parseString(response.body, (err, result) => resolve(parseResponse(result)))
   );
 }
+
+export { teamLabel };

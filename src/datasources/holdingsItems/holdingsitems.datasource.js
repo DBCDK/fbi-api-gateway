@@ -34,3 +34,5 @@ export const options = {
     ttl: 60 * 15, // cache for 15 minutes
   },
 };
+
+export { teamLabel };

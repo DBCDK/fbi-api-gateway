@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url , teamLabel } = config.datasources.pseudonymizer;
+const { url, teamLabel } = config.datasources.pseudonymizer;
 /**
  * Pseudonymize an ID
  */
@@ -11,3 +11,5 @@ export async function load(id, context) {
     })
   )?.body;
 }
+
+export { teamLabel };

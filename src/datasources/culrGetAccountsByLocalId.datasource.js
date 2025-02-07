@@ -15,7 +15,8 @@ const {
   authenticationUser,
   authenticationGroup,
   authenticationPassword,
- teamLabel } = config.datasources.culr;
+  teamLabel,
+} = config.datasources.culr;
 
 /**
  * Constructs soap request to perform request
@@ -153,3 +154,5 @@ export async function testLoad({ agencyId, userId }, context) {
 
   return data;
 }
+
+export { teamLabel };

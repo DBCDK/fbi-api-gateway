@@ -176,3 +176,5 @@ describe("Testing the withRedis higher order function", () => {
     });
   });
 });
+
+export { teamLabel };

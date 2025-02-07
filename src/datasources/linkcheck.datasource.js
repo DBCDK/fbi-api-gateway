@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url, ttl, prefix , teamLabel } = config.datasources.linkcheck;
+const { url, ttl, prefix, teamLabel } = config.datasources.linkcheck;
 
 /**
  * Function to Restruture data from map to list
@@ -36,3 +36,5 @@ export const options = {
     staleWhileRevalidate: 60 * 60 * 24,
   },
 };
+
+export { teamLabel };

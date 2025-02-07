@@ -49,3 +49,5 @@ export async function load({ workId }) {
 
   return mock;
 }
+
+export { teamLabel };

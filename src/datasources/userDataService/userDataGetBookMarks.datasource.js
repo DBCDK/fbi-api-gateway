@@ -1,5 +1,5 @@
 import config from "../../config";
-const { url , teamLabel } = config.datasources.userdata;
+const { url, teamLabel } = config.datasources.userdata;
 
 // Map OrderBy from ENUM to service field name
 const mapOrderBy = { CREATEDAT: "createdAt", TITLE: "title" };
@@ -27,3 +27,5 @@ export async function load({ uniqueId, orderBy, agencyId }, context) {
     return [];
   }
 }
+
+export { teamLabel };

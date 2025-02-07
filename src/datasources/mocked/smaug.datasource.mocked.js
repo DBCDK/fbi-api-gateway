@@ -28,3 +28,5 @@ export async function load({ accessToken }) {
 
   return config;
 }
+
+export { teamLabel };

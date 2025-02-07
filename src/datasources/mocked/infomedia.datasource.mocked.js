@@ -12,3 +12,5 @@ export async function load({ articleId, accessToken }) {
 
   return mock[articleId].body;
 }
+
+export { teamLabel };

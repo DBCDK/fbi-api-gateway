@@ -1,6 +1,6 @@
 import config from "../../config";
 
-const { url, prefix, teamLabel  } = config.datasources.bibevents;
+const { url, prefix, teamLabel } = config.datasources.bibevents;
 
 const fieldMap = {
   TITLE: "title",

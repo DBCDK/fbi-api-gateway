@@ -1,5 +1,5 @@
 import config from "../../config";
-const { url, ttl, prefix , teamLabel } = config.datasources.userdata;
+const { url, ttl, prefix, teamLabel } = config.datasources.userdata;
 
 /**
  * delete a bookmark for logged in user
@@ -20,3 +20,5 @@ export async function load({ uniqueId, bookmarkIds }, context) {
     return [];
   }
 }
+
+export { teamLabel };

@@ -16,7 +16,7 @@ At least one workid must be provided to create recommendations.
 
 import config from "../../config";
 
-const { url, prefix, ttl, token , teamLabel } = config.datasources.moodrecommend;
+const { url, prefix, ttl, token, teamLabel } = config.datasources.moodrecommend;
 
 function setQuery(args) {
   const {
@@ -68,3 +68,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

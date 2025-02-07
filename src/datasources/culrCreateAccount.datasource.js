@@ -119,3 +119,5 @@ export async function testLoad({ agencyId, cpr, localId }, context) {
 
   return { code: "OK200" };
 }
+
+export { teamLabel };

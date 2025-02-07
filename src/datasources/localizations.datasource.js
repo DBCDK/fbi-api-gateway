@@ -1,7 +1,7 @@
 import config from "../config";
 import { log } from "dbc-node-logger";
 
-const { url, prefix , teamLabel } = config.datasources.holdingsservice;
+const { url, prefix, teamLabel } = config.datasources.holdingsservice;
 
 /*
 .. This one was used for old datasource ... it prepends a pid with 870970-basis .. but why oh why ..
@@ -96,3 +96,5 @@ export const options = {
     ttl: 60 * 15, // cache for 15 minutes
   },
 };
+
+export { teamLabel };

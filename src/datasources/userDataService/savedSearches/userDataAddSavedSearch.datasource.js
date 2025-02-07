@@ -1,5 +1,5 @@
 import config from "../../../config";
-const { url , teamLabel } = config.datasources.userdata;
+const { url, teamLabel } = config.datasources.userdata;
 
 /**
  * Adds a saved search to user
@@ -22,3 +22,5 @@ export async function load({ uniqueId, searchObject }, context) {
     console.error(e, "ERROR");
   }
 }
+
+export { teamLabel };

@@ -1,7 +1,7 @@
 import request from "superagent";
 import config from "../config";
 
-const { url, ttl , teamLabel } = config.datasources.vipcore;
+const { url, ttl, teamLabel } = config.datasources.vipcore;
 
 export async function load(agencyId, context) {
   const res = await context?.fetch(
@@ -19,3 +19,5 @@ export const options = {
     staleWhileRevalidate: 60 * 60 * 24, // 1 day
   },
 };
+
+export { teamLabel };

@@ -4,7 +4,7 @@ import { setMunicipalityAgencyId } from "../utils/municipalityAgencyId";
 import { omitUserinfoCulrData } from "../utils/omitCulrData";
 import { accountsToCulr, getTestUser } from "../utils/testUserStore";
 
-const { url, ttl, prefix , teamLabel } = config.datasources.userInfo;
+const { url, ttl, prefix, teamLabel } = config.datasources.userInfo;
 /**
  * Fetch user info
  *
@@ -156,3 +156,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

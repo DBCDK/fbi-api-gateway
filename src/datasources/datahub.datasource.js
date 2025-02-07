@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url , teamLabel } = config.datasources.datahub;
+const { url, teamLabel } = config.datasources.datahub;
 /**
  * Store an event in datahub
  */
@@ -22,3 +22,5 @@ export async function load(event, context) {
     console.log("");
   }
 }
+
+export { teamLabel };

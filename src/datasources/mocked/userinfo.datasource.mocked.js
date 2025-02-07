@@ -112,3 +112,5 @@ const data = {
 export function load({ accessToken }) {
   return data[accessToken];
 }
+
+export { teamLabel };

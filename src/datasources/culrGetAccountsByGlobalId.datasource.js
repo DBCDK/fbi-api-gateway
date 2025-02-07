@@ -126,3 +126,5 @@ export async function testLoad({ userId }, context) {
     })),
   };
 }
+
+export { teamLabel };

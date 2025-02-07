@@ -1,5 +1,5 @@
 import config from "../config";
-const { url, ttl, prefix , teamLabel } = config.datasources.series;
+const { url, ttl, prefix, teamLabel } = config.datasources.series;
 
 export async function load({ workId, trackingId = null, profile }, context) {
   const { agency, name } = profile;
@@ -24,3 +24,5 @@ export const options = {
     staleWhileRevalidate: 60 * 60 * 48, // 48 hours
   },
 };
+
+export { teamLabel };

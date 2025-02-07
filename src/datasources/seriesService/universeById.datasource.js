@@ -2,8 +2,8 @@
 
 import config from "../../config";
 
-const { url, ttl, prefix , teamLabel } = config.datasources.seriesService;
-const { url: jedUrl  } = config.datasources.jed;
+const { url, ttl, prefix, teamLabel } = config.datasources.seriesService;
+const { url: jedUrl } = config.datasources.jed;
 const allowedLanguages = new Set([
   "dansk",
   "engelsk",
@@ -109,3 +109,5 @@ export const options = {
     staleWhileRevalidate: 60 * 60 * 48, // 48 hours
   },
 };
+
+export { teamLabel };

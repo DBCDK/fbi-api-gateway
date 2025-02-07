@@ -64,3 +64,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

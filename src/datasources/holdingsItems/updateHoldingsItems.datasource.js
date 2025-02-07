@@ -47,3 +47,5 @@ export async function load(props, context) {
     ...res?.body,
   };
 }
+
+export { teamLabel };

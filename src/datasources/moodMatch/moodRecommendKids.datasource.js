@@ -20,7 +20,8 @@ debug: if true debug information is present in response. Otherwise, only persist
 
 import config from "../../config";
 
-const { url, prefix, ttl, token , teamLabel } = config.datasources.moodkidsrecommend;
+const { url, prefix, ttl, token, teamLabel } =
+  config.datasources.moodkidsrecommend;
 
 /**
  * parse tags into objects fit for datasource.
@@ -107,3 +108,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

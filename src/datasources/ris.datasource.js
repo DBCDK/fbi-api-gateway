@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url, ttl , teamLabel } = config.datasources.openformat;
+const { url, ttl, teamLabel } = config.datasources.openformat;
 
 function parseResponse(response) {
   const risArray = response?.body?.objects?.map(
@@ -244,3 +244,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

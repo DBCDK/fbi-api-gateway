@@ -14,7 +14,7 @@ profile: the vip profile used by the requesting library
 
 import config from "../../config";
 
-const { url, prefix, ttl, token , teamLabel } = config.datasources.moodmatch;
+const { url, prefix, ttl, token, teamLabel } = config.datasources.moodmatch;
 
 function setQuery(params) {
   const { q, limit, agency, profile, debug } = params;
@@ -42,3 +42,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

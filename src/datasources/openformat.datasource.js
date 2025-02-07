@@ -2,7 +2,7 @@ import config from "../config";
 import displayFormat from "./openformat.displayformat.json";
 import { fetch } from "undici";
 
-const { url, ttl, prefix , teamLabel } = config.datasources.openformat;
+const { url, ttl, prefix, teamLabel } = config.datasources.openformat;
 
 function createRequest(pid) {
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -41,3 +41,5 @@ export const options = {
     staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
   },
 };
+
+export { teamLabel };

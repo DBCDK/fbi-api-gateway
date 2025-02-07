@@ -17,7 +17,7 @@ import config from "../config";
 
 import { createSigner } from "fast-jwt";
 
-const { url, secret , teamLabel } = config.datasources.defaultforsider;
+const { url, secret, teamLabel } = config.datasources.defaultforsider;
 
 const signSync = createSigner({ key: secret });
 
@@ -37,3 +37,5 @@ function parseResponse(key) {
 export async function batchLoader(keys, context) {
   return keys.map((key) => parseResponse(key));
 }
+
+export { teamLabel };

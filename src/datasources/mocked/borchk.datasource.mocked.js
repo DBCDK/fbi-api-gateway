@@ -71,3 +71,5 @@ export async function load(
 
   return constructResponse(props, "borrower_not_found");
 }
+
+export { teamLabel };

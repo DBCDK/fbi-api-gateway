@@ -5,7 +5,7 @@
 import config from "../config";
 import { auditTrace, ACTIONS } from "@dbcdk/dbc-audittrail-logger";
 
-const { url , teamLabel } = config.datasources.openuserstatus;
+const { url, teamLabel } = config.datasources.openuserstatus;
 const { authenticationUser, authenticationGroup, authenticationPassword } =
   config.datasources.openorder;
 
@@ -81,3 +81,5 @@ export async function testLoad() {
     dueDate: "2023-12-12",
   };
 }
+
+export { teamLabel };

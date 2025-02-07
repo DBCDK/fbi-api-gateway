@@ -340,3 +340,5 @@ if (
     prefix: config.datasources.redis.prefix,
   });
 }
+
+export { teamLabel };

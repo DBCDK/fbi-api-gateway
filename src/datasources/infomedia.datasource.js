@@ -2,7 +2,7 @@ import request from "superagent";
 import config from "../config";
 import { getInfomediaDetails } from "../utils/utils";
 
-const { id, url, ttl, prefix , teamLabel } = config.datasources.infomedia;
+const { id, url, ttl, prefix, teamLabel } = config.datasources.infomedia;
 
 function createSoap({ articleId, userId, agencyId }) {
   return `
@@ -63,3 +63,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

@@ -9,7 +9,7 @@
 import config from "../config";
 import { log } from "dbc-node-logger";
 
-const { url, ttl, prefix , teamLabel } = config.datasources.complexFacets;
+const { url, ttl, prefix, teamLabel } = config.datasources.complexFacets;
 
 /**
  * Prefix facets - the enum holds name af the index - here we prefix
@@ -79,3 +79,5 @@ export const options = {
     staleWhileRevalidate: 24 * 60 * 60,
   },
 };
+
+export { teamLabel };

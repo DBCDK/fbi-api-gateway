@@ -5,7 +5,7 @@
 import config from "../config";
 import { mapFilters } from "../utils/filtersAndFacetsMap";
 
-const { url, prefix, ttl, token , teamLabel } = config.datasources.simplesearch;
+const { url, prefix, ttl, token, teamLabel } = config.datasources.simplesearch;
 
 export async function load(
   { q, filters = {}, limit = 10, offset = 0, profile, search_exact = false },
@@ -56,3 +56,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

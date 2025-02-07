@@ -1,7 +1,7 @@
 import { log } from "dbc-node-logger";
 import config from "../config";
 
-const { url, prefix, ttl , teamLabel } = config.datasources.jed;
+const { url, prefix, ttl, teamLabel } = config.datasources.jed;
 
 export async function batchLoader(keys, context) {
   const res = await context.fetch(`${url}/api/v1/fbi-api/multiple`, {
@@ -29,3 +29,5 @@ export async function batchLoader(keys, context) {
 //     ttl,
 //   },
 // };
+
+export { teamLabel };
