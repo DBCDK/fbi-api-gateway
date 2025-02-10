@@ -1,5 +1,5 @@
 import config from "../../../config";
-const { url } = config.datasources.userdata;
+const { url, teamLabel } = config.datasources.userdata;
 
 /**
  * Delete multiple advanced searches
@@ -22,3 +22,5 @@ export async function load({ uniqueId, savedSearchIds }, context) {
     console.error(e, "ERROR");
   }
 }
+
+export { teamLabel };

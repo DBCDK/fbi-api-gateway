@@ -1,5 +1,5 @@
 import config from "../config";
-const { url } = config.datasources.openuserstatus;
+const { url, teamLabel } = config.datasources.openuserstatus;
 const { authenticationUser, authenticationGroup, authenticationPassword } =
   config.datasources.openorder;
 
@@ -88,3 +88,5 @@ export async function load({ userInfoAccounts }, context) {
 export const options = {
   external: true,
 };
+
+export { teamLabel };

@@ -5,7 +5,7 @@
 import config from "../config";
 import { mapFilters, mapToFacetEnum } from "../utils/filtersAndFacetsMap";
 
-const { url, prefix, ttl, token, firstHits, disableFuzzySearch } =
+const { url, prefix, ttl, token, firstHits, disableFuzzySearch, teamLabel } =
   config.datasources.facets;
 
 export async function load({ q, filters = {}, profile, limit = 10 }, context) {
@@ -53,3 +53,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

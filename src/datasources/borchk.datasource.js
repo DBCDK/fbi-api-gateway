@@ -11,7 +11,7 @@ import config from "../config";
 import { parseString } from "xml2js";
 import { getTestUser } from "../utils/testUserStore";
 
-const { url, ttl, prefix } = config.datasources.borchk;
+const { url, ttl, prefix, teamLabel } = config.datasources.borchk;
 
 /**
  * Construct BorrowerCheckComplex SOAP request (Complex)
@@ -127,3 +127,5 @@ export const options = {
     ttl: ttl,
   },
 };
+
+export { teamLabel };

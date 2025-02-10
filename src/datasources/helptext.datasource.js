@@ -16,6 +16,9 @@ const toDrupalEnum = {
   DA: "EN",
   EN: "EN_GB",
 };
+
+const { teamLabel } = config.datasources.backend;
+
 /**
  * Fetch all help texts from the Drupal backend
  * for all languages
@@ -147,3 +150,5 @@ export async function load({ q, language = "da" }) {
   }));
   return result;
 }
+
+export { teamLabel };

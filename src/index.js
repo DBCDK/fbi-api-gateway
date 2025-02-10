@@ -45,10 +45,10 @@ let server;
 const prometheusApp = express();
 prometheusApp.get("/metrics", metricsHandler);
 prometheusApp.listen(9599, () => {
-  log.info(`Running metrics endpoint at http://localhost:9598/metrics`);
+  log.info(`Running metrics endpoint at http://localhost:9599/metrics`);
 });
 
-// //old endpoint. 
+// //old endpoint.TODO: expose this in the new port
 // const promExporterApp = express();
 // // Setup route handler for metrics
 // promExporterApp.get("/metrics", metrics);

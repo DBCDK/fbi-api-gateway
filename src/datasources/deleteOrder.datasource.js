@@ -5,7 +5,7 @@
 import config from "../config";
 import { auditTrace, ACTIONS } from "@dbcdk/dbc-audittrail-logger";
 
-const { url } = config.datasources.openuserstatus;
+const { url, teamLabel } = config.datasources.openuserstatus;
 const { authenticationUser, authenticationGroup, authenticationPassword } =
   config.datasources.openorder;
 
@@ -77,3 +77,5 @@ export async function testLoad() {
     error: null,
   };
 }
+
+export { teamLabel };

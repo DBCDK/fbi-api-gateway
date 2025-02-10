@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url } = config.datasources.vipcore;
+const { url, teamLabel } = config.datasources.vipcore;
 
 export async function load({ branchId }, context) {
   const res = await context?.fetch(`${url}/service`, {
@@ -20,3 +20,5 @@ export const options = {
     ttl: 60 * 15, // cache for 15 minutes
   },
 };
+
+export { teamLabel };

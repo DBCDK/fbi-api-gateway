@@ -4,7 +4,7 @@
 
 import config from "../config";
 
-const { url, prefix, ttl } = config.datasources.recommendations;
+const { url, prefix, ttl, teamLabel } = config.datasources.recommendations;
 
 export async function load({ pid, limit = 10, profile, branchId }, context) {
   const body = {
@@ -33,3 +33,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

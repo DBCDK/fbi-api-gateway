@@ -4,6 +4,7 @@
  */
 
 import config from "../../config";
+const { teamLabel } = config.datasources.holdingsitems;
 
 /**
  * NOTE - get request parameters eg. ?agencyId=710100&branchId=710117&pid=870970-katalog:25912233
@@ -28,3 +29,5 @@ export const options = {
     ttl: 60 * 1, // cache for 1 minute
   },
 };
+
+export { teamLabel };

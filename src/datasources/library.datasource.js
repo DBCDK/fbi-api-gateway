@@ -12,6 +12,8 @@ import config from "../config";
 import { createIndexer } from "../utils/searcher";
 import { checkLoginIndependence } from "../utils/agency";
 
+const { teamLabel } = config.datasources.vipcore;
+
 const fields = [
   "name",
   "agencyName",
@@ -345,3 +347,5 @@ export async function load(props, { getLoader }) {
 
   return res;
 }
+
+export { teamLabel };

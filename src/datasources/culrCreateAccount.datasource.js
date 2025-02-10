@@ -13,6 +13,7 @@ const {
   authenticationUser,
   authenticationGroup,
   authenticationPassword,
+  teamLabel,
 } = config.datasources.culr;
 
 /**
@@ -118,3 +119,5 @@ export async function testLoad({ agencyId, cpr, localId }, context) {
 
   return { code: "OK200" };
 }
+
+export { teamLabel };

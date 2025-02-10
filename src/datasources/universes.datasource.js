@@ -1,7 +1,7 @@
 import config from "../config";
-const { url, ttl, prefix } = config.datasources.universe;
+const { url, ttl, prefix, teamLabel } = config.datasources.universe;
 
-const { url: jedUrl } = config.datasources.jed;
+const { url: jedUrl } = config.datasources.jed; // todo what to do here
 // These are hardcoded for now
 const allowedLanguages = new Set([
   "dansk",
@@ -108,3 +108,5 @@ export const options = {
     staleWhileRevalidate: 60 * 60 * 48, // 48 hours
   },
 };
+
+export { teamLabel };
