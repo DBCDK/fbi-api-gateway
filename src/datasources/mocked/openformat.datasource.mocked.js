@@ -1539,5 +1539,3 @@ export function load(pid) {
   };
   return data[pid];
 }
-
-export { teamLabel };

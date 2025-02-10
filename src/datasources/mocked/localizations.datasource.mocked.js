@@ -297,5 +297,3 @@ export async function load({ pids }) {
   };
   return parseResponse(response.localizations);
 }
-
-export { teamLabel };

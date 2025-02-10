@@ -102,5 +102,3 @@ export function load({ id }) {
     );
   }
 }
-
-export { teamLabel };

@@ -48,5 +48,3 @@ export async function load({ limit = 5 }) {
 
   return data.response.slice(0, limit);
 }
-
-export { teamLabel };

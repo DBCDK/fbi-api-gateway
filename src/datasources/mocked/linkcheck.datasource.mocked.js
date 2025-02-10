@@ -20,5 +20,3 @@ export async function load() {
 
   return restructureLinkStates(response.body?.linkStates);
 }
-
-export { teamLabel };

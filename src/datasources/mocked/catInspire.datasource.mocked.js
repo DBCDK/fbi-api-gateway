@@ -53,5 +53,3 @@ export async function load() {
 
   return restructureCategories(repsonse.categories);
 }
-
-export { teamLabel };

@@ -51,5 +51,3 @@ export async function load({ userId, input }) {
     return null;
   }
 }
-
-export { teamLabel };

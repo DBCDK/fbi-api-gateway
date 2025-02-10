@@ -139,5 +139,3 @@ const testan = {
     },
   ],
 };
-
-export { teamLabel };

@@ -17,5 +17,3 @@ export async function load({ pid, title, materialType, colors }) {
     }[title] || {}
   );
 }
-
-export { teamLabel };

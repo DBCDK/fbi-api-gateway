@@ -24,5 +24,3 @@ export function load({ pid, accessToken }) {
 
   return data[accessToken][pid];
 }
-
-export { teamLabel };

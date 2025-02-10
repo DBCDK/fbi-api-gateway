@@ -37,5 +37,3 @@ export async function load(pid) {
     }[pid] || {}
   );
 }
-
-export { teamLabel };

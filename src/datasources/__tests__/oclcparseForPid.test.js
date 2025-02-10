@@ -115,5 +115,3 @@ test("Parse xml from ocn2Pid webservice", async () => {
   expected = null;
   expect(actual).toEqual(expected);
 });
-
-export { teamLabel };

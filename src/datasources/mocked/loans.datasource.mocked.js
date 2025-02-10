@@ -62,5 +62,3 @@ const data = {
 export async function load({ accessToken }) {
   return data[accessToken];
 }
-
-export { teamLabel };
