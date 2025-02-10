@@ -62,3 +62,12 @@ The prefix to be used for entire application. Change this and all entries are in
 Default is true.
 
 testin  1 2 3
+
+
+## Monitoring with Prometheus
+
+We use Prometheus to monitor the health of services in fbi-api. Prometheus scrapes metrics from the /metrics endpoint on port 9599. Each service's status is checked, and relevant data is exposed for alerting and observability. If a service is down, Prometheus will trigger an alert that has the relevant team. 
+
+### ```Important```
+When adding a new service in the configuration, always include a teamLabel. This ensures that alerts are sent to the correct team. 
+
