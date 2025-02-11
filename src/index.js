@@ -104,6 +104,8 @@ prometheusApp.listen(9599, () => {
 
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
+  //for debugging purposes
+  app.get("/metrics", metricsHandler);
 
   /**
    * Query complexity endpoint
