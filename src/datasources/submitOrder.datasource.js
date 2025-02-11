@@ -3,7 +3,7 @@ import { ACTIONS, auditTrace } from "@dbcdk/dbc-audittrail-logger";
 import { log } from "dbc-node-logger";
 import { getUserIdTypeValuePair } from "../utils/getUserBorrowerStatus";
 
-const { serviceRequester, url } = config.datasources.openorder;
+const { serviceRequester, url, teamLabel } = config.datasources.openorder;
 
 /**
  * Creates date three months in the future. Used if a date is not provided
@@ -69,7 +69,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     serviceRequester: serviceRequester,
     trackingId: createTrackingId(),
     ...input.userParameters,
-    userId: id?.value || userId,
+    userId: userId || id?.value,
     userIdType,
     verificationReferenceSource: "DBCDATAWELL",
     requesterInitials: input.requesterInitials,
@@ -174,3 +174,5 @@ export async function testLoad({ input }, context) {
     orderId: JSON.stringify(input),
   };
 }
+
+export { teamLabel };

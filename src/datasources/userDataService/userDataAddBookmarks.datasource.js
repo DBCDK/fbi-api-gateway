@@ -1,5 +1,5 @@
 import config from "../../config";
-const { url } = config.datasources.userdata;
+const { url, teamLabel } = config.datasources.userdata;
 
 /**
  * Add a bookmark to logged in user - return the Id
@@ -22,3 +22,5 @@ export async function load({ uniqueId, bookmarks, agencyId }, context) {
     console.error(e, "ERROR");
   }
 }
+
+export { teamLabel };

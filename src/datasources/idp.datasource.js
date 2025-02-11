@@ -6,7 +6,7 @@ import request from "superagent";
 import { log } from "dbc-node-logger";
 import config from "../config";
 
-const { url, ttl, prefix } = config.datasources.idp;
+const { url, ttl, prefix, teamLabel } = config.datasources.idp;
 
 export async function load() {
   try {
@@ -34,3 +34,5 @@ export async function load() {
     inMemory: true,
   },
 };*/
+
+export { teamLabel };

@@ -1,5 +1,5 @@
 import config from "../config";
-const { url, ttl, prefix } = config.datasources.orderStatus;
+const { url, ttl, prefix, teamLabel } = config.datasources.orderStatus;
 
 /**
  * Fetch order status from ors-maintenance.
@@ -23,3 +23,5 @@ export const options = {
     prefix,
   },
 };
+
+export { teamLabel };

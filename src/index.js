@@ -41,12 +41,20 @@ process.stdout.on("error", function (err) {
 const app = express();
 let server;
 
-const promExporterApp = express();
-// Setup route handler for metrics
-promExporterApp.get("/metrics", metrics);
-promExporterApp.listen(9599, () => {
+//prometheus endpoint for monitoring
+const prometheusApp = express();
+prometheusApp.get("/metrics", metricsHandler);
+prometheusApp.listen(9599, () => {
   log.info(`Running metrics endpoint at http://localhost:9599/metrics`);
 });
+
+// //old endpoint.TODO: expose this in the new port
+// const promExporterApp = express();
+// // Setup route handler for metrics
+// promExporterApp.get("/metrics", metrics);
+// promExporterApp.listen(9599, () => {
+//   log.info(`Running metrics endpoint at http://localhost:9599/metrics`);
+// });
 
 (async () => {
   // Set limit on body size
@@ -97,8 +105,6 @@ promExporterApp.listen(9599, () => {
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
 
-  // Setup route handler for metrics - triggers an alert in prod
-  app.get("/metrics", metricsHandler);
   /**
    * Query complexity endpoint
    * POST request

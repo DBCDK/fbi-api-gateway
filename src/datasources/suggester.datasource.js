@@ -5,7 +5,7 @@
 
 import config from "../config";
 
-const { url, prefix, ttl, token } = config.datasources.suggester;
+const { url, prefix, ttl, token, teamLabel } = config.datasources.suggester;
 
 export async function load(
   {
@@ -49,3 +49,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

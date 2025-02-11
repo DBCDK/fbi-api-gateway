@@ -7,14 +7,12 @@ import { search } from "../../../../src/datasources/library.datasource";
 import { load as getAccountsByLocalId } from "../../../../src/datasources/culrGetAccountsByLocalId.datasource";
 import {
   _isFFUAgency,
+  _hasCulrDataSync,
   getAgencyIdByBranchId,
 } from "../../../../src/utils/agency";
 
-const {
-  authenticationUser,
-  authenticationGroup,
-  authenticationPassword,
-} = config.datasources.openorder;
+const { authenticationUser, authenticationGroup, authenticationPassword } =
+  config.datasources.openorder;
 
 const constructSoap = ({ agencyId, userId }) => {
   let soap = `
@@ -100,7 +98,9 @@ export default async function handler(req, res) {
   if (smaug_response.status === 200) {
     const smaug_data = await smaug_response.json();
 
-    const isFFULogin = _isFFUAgency(smaug_data?.user?.agency);
+    const isFFULogin =
+      _isFFUAgency(smaug_data?.user?.agency) &&
+      !_hasCulrDataSync(smaug_data?.user?.agency);
 
     // add to result
     user.loggedInAgencyId = smaug_data?.user?.agency || null;

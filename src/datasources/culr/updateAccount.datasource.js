@@ -4,7 +4,7 @@
 
 import config from "../../config";
 
-const { url } = config.datasources.culr;
+const { url, teamLabel } = config.datasources.culr;
 
 /**
  * Gets the CULR account information
@@ -29,3 +29,5 @@ export async function load(props, context) {
 
   return res.body;
 }
+
+export { teamLabel };

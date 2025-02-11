@@ -13,6 +13,7 @@ const {
   authenticationUser,
   authenticationGroup,
   authenticationPassword,
+  teamLabel,
 } = config.datasources.culr;
 
 /**
@@ -125,3 +126,5 @@ export async function testLoad({ userId }, context) {
     })),
   };
 }
+
+export { teamLabel };

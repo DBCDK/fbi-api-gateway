@@ -12,6 +12,38 @@ export function _isFFUAgency(branchId) {
   return branchId.length === LENGTH && list.includes(branchId.charAt(0));
 }
 
+export function _hasCulrDataSync(branchId) {
+  /**
+   * Odense Katedralskole, 872960,
+   * Roskilde Gymnasium, 872600
+   * Sorø Akademis Skole, 861640
+   * Slagelse Gymnasium, biblioteket 872320
+   * Greve Gymnasium, Biblioteket 874260
+   * Stenhus Gymnasium, 875140
+   * Sct. Knuds Gymnasium, 871890
+   */
+
+  const whitelist = [
+    // Gymnasier
+    "872960",
+    "872600",
+    "861640",
+    "872320",
+    "874260",
+    "875140",
+    "871890",
+
+    // Login with mitId, when no library accounts
+    "190101",
+  ];
+
+  if (whitelist.includes(branchId)) {
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * Function to check if an agencyId is a FFU library
  *

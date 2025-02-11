@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url, ttl } = config.datasources.openformat;
+const { url, ttl, teamLabel } = config.datasources.openformat;
 
 async function postObject(pids, uuid) {
   const repositoryIds = pids.map((pid) => ({
@@ -46,3 +46,5 @@ export const options = {
     ttl,
   },
 };
+
+export { teamLabel };

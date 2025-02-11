@@ -1,5 +1,5 @@
 import config from "../../../config";
-const { url, ttl, prefix } = config.datasources.userdata;
+const { url, ttl, prefix, teamLabel } = config.datasources.userdata;
 
 /**
  * Update a savedSearch by savedSearch id.
@@ -23,3 +23,5 @@ export const options = {
     prefix,
   },
 };
+
+export { teamLabel };

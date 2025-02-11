@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url } = config.datasources.faustService;
+const { url, teamLabel } = config.datasources.faustService;
 
 export async function load({ faust, profile }, context) {
   const res = await context?.fetch(
@@ -10,3 +10,5 @@ export async function load({ faust, profile }, context) {
 
   return res?.body?.manifestationsId;
 }
+
+export { teamLabel };

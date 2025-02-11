@@ -7,6 +7,7 @@ import config from "../../config";
 import { buildPath } from "./utils";
 
 const url = config.datasources.holdingsitems2.url;
+const { teamLabel } = config.datasources.holdingsitems2;
 
 /**
  *
@@ -41,3 +42,5 @@ export async function load(props, context) {
     ...res?.body,
   };
 }
+
+export { teamLabel };

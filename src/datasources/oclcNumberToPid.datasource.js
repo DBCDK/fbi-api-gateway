@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url } = config.datasources.ocn2pid;
+const { url, teamLabel } = config.datasources.ocn2pid;
 
 /**
  * Find the pid in given xml
@@ -28,3 +28,5 @@ export async function load({ oclc }, context) {
   });
   return parseForPid(res?.body);
 }
+
+export { teamLabel };
