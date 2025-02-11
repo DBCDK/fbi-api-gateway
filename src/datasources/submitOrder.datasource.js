@@ -69,7 +69,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     serviceRequester: serviceRequester,
     trackingId: createTrackingId(),
     ...input.userParameters,
-    userId: id?.value || userId,
+    userId: userId || id?.value,
     userIdType,
     verificationReferenceSource: "DBCDATAWELL",
     requesterInitials: input.requesterInitials,
