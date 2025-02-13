@@ -2,6 +2,7 @@ import isbot from "isbot";
 import { findAliasesAndArgs } from "../utils/graphQLQueryTools";
 import { createTraceId } from "../utils/trace";
 import Md5 from "uuid/dist/esm-node/md5";
+import createHash from "../utils/hash";
 
 function getDate() {
   const today = new Date();
@@ -37,8 +38,7 @@ export function dataHubMiddleware(req, res, next) {
     // Fingerprinting may cause collisions (same Visitor ID) - with visitor ip we reduce the risk.
     // We forward the ip from proxy (@see proxy.js)
     const ip = req.headers["x-forwarded-for"];
-    // we use MD5 for fast hashing - @TODO maybe we should use pseudonymizer??
-    const machineCode = ip ? Md5(ip) : "";
+    const machineName = createHash(ip);
 
     // User ID (only used if user is logged in and tracking consent is given):
     // - Uses the uniqueId from culr if available.
@@ -54,7 +54,7 @@ export function dataHubMiddleware(req, res, next) {
       systemId,
       sessionToken,
       causedBy: causedBy ? [causedBy] : [],
-      machineCode: machineCode,
+      machineName: machineName,
     };
 
     if (userTokenBeforePseudo) {
