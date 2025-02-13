@@ -1,6 +1,8 @@
 import isbot from "isbot";
 import { findAliasesAndArgs } from "../utils/graphQLQueryTools";
 import { createTraceId } from "../utils/trace";
+import Md5 from "uuid/dist/esm-node/md5";
+import createHash from "../utils/hash";
 
 function getDate() {
   const today = new Date();
@@ -32,6 +34,12 @@ export function dataHubMiddleware(req, res, next) {
     // - With tracking consent, the client app should use a long lived cookie.
     const sessionToken = req.headers["x-session-token"];
 
+    // Visitor ip:
+    // Fingerprinting may cause collisions (same Visitor ID) - with visitor ip we reduce the risk.
+    // We forward the ip from proxy (@see proxy.js)
+    const ip = req.headers["x-forwarded-for"];
+    const machineAddress = createHash(ip);
+
     // User ID (only used if user is logged in and tracking consent is given):
     // - Uses the uniqueId from culr if available.
     // - Otherwise, a hashed userId (if userId exists).
@@ -42,7 +50,12 @@ export function dataHubMiddleware(req, res, next) {
     // Trace ID passed from a previous FBI-API response.
     const causedBy = req.headers["x-caused-by"];
 
-    let res = { systemId, sessionToken, causedBy: causedBy ? [causedBy] : [] };
+    let res = {
+      systemId,
+      sessionToken,
+      causedBy: causedBy ? [causedBy] : [],
+      machineAddress: machineAddress,
+    };
 
     if (userTokenBeforePseudo) {
       res.userToken = (
