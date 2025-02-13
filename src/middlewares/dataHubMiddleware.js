@@ -38,7 +38,7 @@ export function dataHubMiddleware(req, res, next) {
     // Fingerprinting may cause collisions (same Visitor ID) - with visitor ip we reduce the risk.
     // We forward the ip from proxy (@see proxy.js)
     const ip = req.headers["x-forwarded-for"];
-    const machineName = createHash(ip);
+    const machineAddress = createHash(ip);
 
     // User ID (only used if user is logged in and tracking consent is given):
     // - Uses the uniqueId from culr if available.
@@ -54,7 +54,7 @@ export function dataHubMiddleware(req, res, next) {
       systemId,
       sessionToken,
       causedBy: causedBy ? [causedBy] : [],
-      machineName: machineName,
+      machineAddress: machineAddress,
     };
 
     if (userTokenBeforePseudo) {
