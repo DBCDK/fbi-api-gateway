@@ -73,6 +73,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     userIdType,
     verificationReferenceSource: "DBCDATAWELL",
     requesterInitials: input.requesterInitials,
+    responderId: input.responderId
   };
 
   // delete empty params
