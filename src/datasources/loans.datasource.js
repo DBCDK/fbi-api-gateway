@@ -65,7 +65,7 @@ const callService = async ({ agencyId, userId }, context) => {
     timeoutMs: 240000,
   });
 
-  return reduceBody(res?.body, agencyId);
+  return res;
 };
 
 /**
@@ -73,14 +73,26 @@ const callService = async ({ agencyId, userId }, context) => {
  * @param userInfoAccounts: [{agencyId: String, userId: String, userIdType: String}]
  */
 export async function load({ userInfoAccounts }, context) {
+  let errormessage = "OK";
+  let status = true;
   const collectedLoans = await Promise.all(
     userInfoAccounts.map(async (account) => {
-      return await callService(account, context);
+      const res = await callService(account, context);
+      // only set errormessage if something went wrong
+      if (!res?.ok) {
+        errormessage = res?.status;
+      }
+      status = !!res?.ok;
+      return reduceBody(res?.body, account?.agencyId);
     })
   );
 
-  // Flatten the array
-  return collectedLoans.flat().filter((loan) => !!loan);
+  return {
+    status: status,
+    statusCode: errormessage,
+    // Flatten the loan array
+    Loans: collectedLoans.flat().filter((loan) => !!loan),
+  };
 }
 
 /*

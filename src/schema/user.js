@@ -66,7 +66,7 @@ type User {
   culrMail: String
   country: String
   orders: [Order!]! @complexity(value: 5)
-  loans: [Loan!]! @complexity(value: 5)
+  loans: BibdkLoans @complexity(value: 5)
   debt: [Debt!]! @complexity(value: 3)
   bookmarks(orderBy:BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
@@ -138,6 +138,18 @@ type BibliotekDkOrder  {
   """
   creationDate: String
 }
+
+enum RequestStatusEnum {
+  UND_ERR_HEADERS_TIMEOUT
+  OK
+}
+
+type BibdkLoans {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  Loans: [Loan!]!
+}
+
 type Loan {
   dueDate:	DateTimeScalar!
   loanId:	String!
