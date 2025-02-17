@@ -56,7 +56,7 @@ const reduceBody = (body, agencyId) =>
  */
 const callService = async ({ agencyId, userId }, context) => {
   const soap = constructSoap({ agencyId: agencyId, userId: userId });
-  const res = await context?.fetch(url, {
+  return await context?.fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "text/xml",
@@ -64,13 +64,12 @@ const callService = async ({ agencyId, userId }, context) => {
     body: soap,
     timeoutMs: 240000,
   });
-
-  return res;
 };
 
 /**
  * Fetch user loans
  * @param userInfoAccounts: [{agencyId: String, userId: String, userIdType: String}]
+ * @påram context: dataloaders and outher good stuff
  */
 export async function load({ userInfoAccounts }, context) {
   let errormessage = "OK";
@@ -80,7 +79,11 @@ export async function load({ userInfoAccounts }, context) {
       const res = await callService(account, context);
       // only set errormessage if something went wrong
       if (!res?.ok) {
-        errormessage = res?.status;
+        if (res?.status === "UND_ERR_HEADERS_TIMEOUT") {
+          errormessage = res?.status;
+        } else {
+          errormessage = "UNKNOWN_ERROR";
+        }
       }
       status = !!res?.ok;
       return reduceBody(res?.body, account?.agencyId);
@@ -91,7 +94,7 @@ export async function load({ userInfoAccounts }, context) {
     status: status,
     statusCode: errormessage,
     // Flatten the loan array
-    Loans: collectedLoans.flat().filter((loan) => !!loan),
+    result: collectedLoans.flat().filter((loan) => !!loan),
   };
 }
 
