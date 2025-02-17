@@ -80,7 +80,8 @@ function fieldNameValidatorEnv(props, errorType = "THROW") {
  *
  * Function is testing for:
  *
- * ObjectTypes i written in PascalCase (starting with a Capital letter)
+ * Type field names must begin with a lowercase letter.
+ * ObjectTypes is written in PascalCase (starting with a Capital letter)
  * Unique Type subfield names (regardless of UPPER/lower case)
  * EnumType values is written in all UPPERCASE
  * Types written in PascalCase
@@ -206,6 +207,15 @@ export function fieldNameValidator(props, errorType = "THROW") {
               if (subfield !== subfield?.toUpperCase()) {
                 handleError(
                   `Field '${subfield}' in type '${field}' (${obj?.kind}) is an enum and should be written all UPPERCASE`
+                );
+              }
+            }
+
+            if (kind === "FieldDefinition") {
+              // Ensure the first letter of a field name is lowercase (fields starting with an underscore (_) are excluded)
+              if (!/^[_a-z]/.test(subfield)) {
+                handleError(
+                  `Field name '${subfield}' in '${field}' is a type field name and should begin with a lowercase letter`
                 );
               }
             }

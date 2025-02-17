@@ -536,7 +536,12 @@ type Audience {
   """
   PEGI age rating for games 
   """
-  PEGI: PEGI
+  PEGI: PEGI @deprecated(reason: "Use 'Audience.pegi' instead expires: 01/06-2025")
+
+  """
+  PEGI age rating for games 
+  """
+  pegi: PEGI
 
   """
   Media council age recommendation
@@ -906,6 +911,9 @@ export const resolvers = {
     },
     let(parent) {
       return parent?.let?.display;
+    },
+    pegi(parent) {
+      return parent?.PEGI;
     },
   },
   Identifier: {
