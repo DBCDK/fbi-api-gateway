@@ -1684,7 +1684,10 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI
+  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
+
+  \\"\\"\\"PEGI age rating for games \\"\\"\\"
+  pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
   mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
@@ -3988,7 +3991,8 @@ input BookMarkInput {
 }
 
 type BookMarkDeleteResponse {
-  IdsDeletedCount: Int!
+  IdsDeletedCount: Int! @deprecated(reason: \\"Use 'BookMarkDeleteResponse.idsDeletedCount' instead expires: 01/06-2025\\")
+  idsDeletedCount: Int!
 }
 
 type SavedSearchDeleteResponse {
@@ -5421,7 +5425,10 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI
+  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
+
+  \\"\\"\\"PEGI age rating for games \\"\\"\\"
+  pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
   mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
@@ -7417,7 +7424,10 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI
+  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
+
+  \\"\\"\\"PEGI age rating for games \\"\\"\\"
+  pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
   mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
