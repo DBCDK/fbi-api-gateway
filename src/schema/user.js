@@ -227,7 +227,8 @@ input BookMarkInput {
 }
 
 type BookMarkDeleteResponse {
-  IdsDeletedCount: Int!
+  IdsDeletedCount: Int! @deprecated(reason: "Use 'BookMarkDeleteResponse.idsDeletedCount' instead expires: 01/06-2025")
+  idsDeletedCount: Int!
 }
 
 type SavedSearchDeleteResponse {
@@ -1116,6 +1117,11 @@ export const resolvers = {
       } catch (error) {
         return { message: "Error. Could not delete saved searches" };
       }
+    },
+  },
+  BookMarkDeleteResponse: {
+    async idsDeletedCount(parent, args, context, info) {
+      return parent?.IdsDeletedCount;
     },
   },
 };

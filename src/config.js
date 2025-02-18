@@ -41,7 +41,7 @@ export default {
     catInspire: {
       url:
         process.env.CAT_INSPIRE_URL ||
-        "http://cat-inspire-1-0.mi-prod.svc.cloud.dbc.dk",
+        "http://cat-inspire-1-0.ai-prod.svc.cloud.dbc.dk",
       ttl: process.env.CAT_INSPIRE_TIME_TO_LIVE_SECONDS || 60,
       prefix: process.env.CAT_INSPIRE_PREFIX || "cat-inspire-1",
       teamLabel: "ai",
@@ -205,7 +205,7 @@ export default {
     prosper: {
       url:
         process.env.PROSPER_URL ||
-        "http://prosper-1-0.mi-prod.svc.cloud.dbc.dk/suggest",
+        "http://prosper-1-0.ai-prod.svc.cloud.dbc.dk/suggest",
       prefix: process.env.PROSPER_PREFIX || "prosper-1",
       token: process.env.SUGGESTER_TOKEN,
       ttl: process.env.PROSPER_TIME_TO_LIVE_SECONDS || 10,
@@ -222,7 +222,7 @@ export default {
     suggester: {
       url:
         process.env.SUGGESTER_URL ||
-        "http://simple-suggest-1-1.mi-prod.svc.cloud.dbc.dk/suggest",
+        "http://simple-suggest-1-1.ai-prod.svc.cloud.dbc.dk/suggest",
       prefix: process.env.SUGGESTER_PREFIX || "suggester-1",
       token: process.env.SUGGESTER_TOKEN,
       ttl: process.env.SUGGESTER_TIME_TO_LIVE_SECONDS || 10,
@@ -231,7 +231,7 @@ export default {
     moodmatchkids: {
       url:
         process.env.MOODMATCH_KIDS_URL ||
-        "http://mood-match-kids-search-1-0.mi-prod.svc.cloud.dbc.dk/",
+        "http://mood-match-kids-search-1-0.ai-prod.svc.cloud.dbc.dk/",
       prefix: process.env.MOODMATCH_KIDS_PREFIX || "moodmatchkids-1",
       token: process.env.MOODMATCH_KIDS_TOKEN,
       ttl: process.env.MOODMATCH_KIDS_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
@@ -240,7 +240,7 @@ export default {
     moodmatch: {
       url:
         process.env.MOODMATCH_URL ||
-        "http://mood-match-search-1-0.mi-prod.svc.cloud.dbc.dk/",
+        "http://mood-match-search-1-0.ai-prod.svc.cloud.dbc.dk/",
       prefix: process.env.MOODMATCH_PREFIX || "moodmatch-1",
       token: process.env.MOODMATCH_TOKEN,
       ttl: process.env.MOODMATCH_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
@@ -249,7 +249,7 @@ export default {
     moodrecommend: {
       url:
         process.env.MOODRECOMMEND_URL ||
-        "http://mood-match-recommender-1-0.mi-prod.svc.cloud.dbc.dk/",
+        "http://mood-match-recommender-1-0.ai-prod.svc.cloud.dbc.dk/",
       prefix: process.env.MOODRECOMMEND_PREFIX || "moodrecommend-1",
       token: process.env.MOODRECOMMEND_TOKEN,
       ttl: process.env.MOODRECOMMEND_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
@@ -258,7 +258,7 @@ export default {
     moodkidsrecommend: {
       url:
         process.env.MOODKIDSRECOMMEND_URL ||
-        "http://mood-match-kids-recommender-1-0.mi-prod.svc.cloud.dbc.dk/",
+        "http://mood-match-kids-recommender-1-0.ai-prod.svc.cloud.dbc.dk/",
       prefix: process.env.MOODKIDSRECOMMEND_PREFIX || "moodkidsrecommend-1",
       token: process.env.MOODKIDSRECOMMEND_TOKEN,
       ttl: process.env.MOODKIDSRECOMMEND_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
@@ -331,7 +331,7 @@ export default {
     recommendations: {
       url:
         process.env.RECOMMENDATIONS_URL ||
-        "http://booklens-1-1.mi-prod.svc.cloud.dbc.dk",
+        "http://booklens-1-1.ai-prod.svc.cloud.dbc.dk",
       ttl: process.env.RECOMMENDATIONS_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.RECOMMENDATIONS_PREFIX || "recommendations-1",
       teamLabel: "ai",
@@ -361,6 +361,9 @@ export default {
       prefix: process.env.LINKCHECK_PREFIX || "linkcheck-1",
       ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
       teamLabel: "de-team",
+      disabled: ["1", "true", "yes"].includes(
+        String(process.env.LINKCHECK_DISABLED).toLowerCase()
+      ),
     },
     userInfo: {
       url: process.env.USER_INFO_URL || "https://stg.login.bib.dk/userinfo",
