@@ -21,7 +21,9 @@ export function restructureLinkStates(data) {
  */
 export async function load({ urls }, context) {
   if (disabled) {
-    return "OK";
+    // Linkcheck is disabled for some reason - see environment - fake the data with status OK
+    const data = urls.map((url) => ({ url: url, status: "OK" }));
+    return restructureLinkStates(data);
   }
   const res = await context.fetch(`${url}/checks`, {
     method: "POST",
