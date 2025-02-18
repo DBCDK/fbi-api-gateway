@@ -1,6 +1,6 @@
 import config from "../config";
 
-const { url, ttl, prefix, teamLabel } = config.datasources.linkcheck;
+const { url, ttl, prefix, teamLabel, disabled } = config.datasources.linkcheck;
 
 /**
  * Function to Restruture data from map to list
@@ -20,6 +20,9 @@ export function restructureLinkStates(data) {
  * Fetch url state from service
  */
 export async function load({ urls }, context) {
+  if (disabled) {
+    return "OK";
+  }
   const res = await context.fetch(`${url}/checks`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
