@@ -58,7 +58,7 @@ const reduceBody = (body, agencyId) =>
  */
 const callService = async ({ agencyId, userId }, context) => {
   const soap = constructSoap({ agencyId: agencyId, userId: userId });
-  const res = await context?.fetch(url, {
+  return await context?.fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "text/xml",
@@ -66,8 +66,6 @@ const callService = async ({ agencyId, userId }, context) => {
     body: soap,
     timeoutMs: 240000,
   });
-
-  return reduceBody(res?.body, agencyId);
 };
 
 /**
@@ -75,14 +73,31 @@ const callService = async ({ agencyId, userId }, context) => {
  * @param userInfoAccounts: [{agencyId: String, userId: String, userIdType: String}]
  */
 export async function load({ userInfoAccounts }, context) {
+  let errormessage = "OK";
+  let status = true;
   const collectedOrders = await Promise.all(
     userInfoAccounts.map(async (account) => {
-      return await callService(account, context);
+      const res = await callService(account, context);
+      // only set errormessage if something went wrong
+      if (!res?.ok) {
+        if (res?.status === "UND_ERR_HEADERS_TIMEOUT") {
+          errormessage = res?.status;
+        } else {
+          // @TODO we need to find out what errormessages to handle - for now return UNKNOWN
+          errormessage = "UNKNOWN_ERROR";
+        }
+      }
+      status = !!res?.ok;
+      return reduceBody(res?.body, account?.agencyId);
     })
   );
 
-  // Flatten the array
-  return collectedOrders.flat().filter((order) => !!order);
+  return {
+    status: status,
+    statusCode: errormessage,
+    // Flatten order array
+    result: collectedOrders.flat().filter((order) => !!order),
+  };
 }
 
 export const options = {

@@ -65,9 +65,9 @@ type User {
   mail: String
   culrMail: String
   country: String
-  orders: [Order!]! @complexity(value: 5)
-  loans: [Loan!]! @complexity(value: 5)
-  debt: [Debt!]! @complexity(value: 3)
+  orders: UserStatusOrders @complexity(value: 5)
+  loans: UserStatusLoans @complexity(value: 5)
+  debt: UserStatusDebt @complexity(value: 3)
   bookmarks(orderBy:BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
@@ -138,6 +138,43 @@ type BibliotekDkOrder  {
   """
   creationDate: String
 }
+
+"""
+Enum holding potential errors from undici fetch
+"""
+enum RequestStatusEnum {
+  UND_ERR_HEADERS_TIMEOUT
+  UNKNOWN_ERROR
+  OK
+}
+
+"""
+User orders
+"""
+type UserStatusOrders {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  result: [Order!]!
+}
+
+"""
+User debt
+"""
+type UserStatusDebt {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  result: [Debt!]!
+}
+
+"""
+User loans
+"""
+type UserStatusLoans {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  result: [Loan!]!
+}
+
 type Loan {
   dueDate:	DateTimeScalar!
   loanId:	String!
