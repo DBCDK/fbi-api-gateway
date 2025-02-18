@@ -361,6 +361,9 @@ export default {
       prefix: process.env.LINKCHECK_PREFIX || "linkcheck-1",
       ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
       teamLabel: "de-team",
+      disabled: ["1", "true", "yes"].includes(
+        String(process.env.LINKCHECK_DISABLED).toLowerCase()
+      ),
     },
     userInfo: {
       url: process.env.USER_INFO_URL || "https://stg.login.bib.dk/userinfo",
