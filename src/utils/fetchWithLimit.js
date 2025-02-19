@@ -19,7 +19,8 @@ function createHTTPStats() {
    * if it does not already exist
    */
   function createStatsEntry(name, status) {
-    if (!stats[name]) {//TODO file names are not the same as name in config
+    if (!stats[name]) {
+      //file names are not the same as names in config. Therefore, we use nameToDatasource to map.
       const teamLabel = nameToDatasource[name]?.teamLabel;
       stats[name] = { service: name, status: {}, errors: 0,teamLabel: teamLabel };
     }

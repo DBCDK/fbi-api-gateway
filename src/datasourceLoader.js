@@ -37,7 +37,7 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
 
 const nameToDatasource = {};
 datasources.forEach((ds) => (nameToDatasource[ds.name] = ds));
-export { nameToDatasource };// TODO: ask KFU if this is ok?
+export { nameToDatasource };
 log.debug(
   `found ${datasources.length} datasources, ${datasources
     .map((datasource) => datasource.name)
