@@ -3,6 +3,8 @@ import promiseLimit from "promise-limit";
 import { log } from "dbc-node-logger";
 import { parseJSON } from "./json";
 import { fetch } from "./fetchWorker";
+import config from "../config";
+import { nameToDatasource } from "../datasourceLoader";
 
 /**
  * Factory function that creates object for collecting
@@ -17,8 +19,9 @@ function createHTTPStats() {
    * if it does not already exist
    */
   function createStatsEntry(name, status) {
-    if (!stats[name]) {
-      stats[name] = { service: name, status: {}, errors: 0 };
+    if (!stats[name]) {//TODO file names are not the same as name in config
+      const teamLabel = nameToDatasource[name]?.teamLabel;
+      stats[name] = { service: name, status: {}, errors: 0,teamLabel: teamLabel };
     }
     if (status && !stats[name].status[status]) {
       stats[name].status[status] = 0;
