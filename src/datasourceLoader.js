@@ -37,7 +37,7 @@ export const datasources = getFilesRecursive(`${__dirname}/datasources`)
 
 const nameToDatasource = {};
 datasources.forEach((ds) => (nameToDatasource[ds.name] = ds));
-//export { nameToDatasource };
+
 log.debug(
   `found ${datasources.length} datasources, ${datasources
     .map((datasource) => datasource.name)
@@ -133,11 +133,12 @@ export default function createDataLoaders(
   // A loader will be initialized first time it is called
   function getLoader(name) {
     const teamLabel = nameToDatasource[name]?.teamLabel;
-    console.log("\n\n\ngetLoader", name, teamLabel,'\n\n\n');
+
     if (!result[name]) {
       result[name] = setupDataloader(nameToDatasource[name], {
         getLoader,
-        fetch: (url, options) => fetchWithConcurrencyLimit(url, options, name,teamLabel),
+        fetch: (url, options) =>
+          fetchWithConcurrencyLimit(url, options, name, teamLabel),
         trackingId: uuid,
         testUser,
         accessToken,

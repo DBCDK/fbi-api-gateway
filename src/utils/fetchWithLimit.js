@@ -4,7 +4,6 @@ import { log } from "dbc-node-logger";
 import { parseJSON } from "./json";
 import { fetch } from "./fetchWorker";
 import config from "../config";
-//import { nameToDatasource } from "../datasourceLoader";
 
 /**
  * Factory function that creates object for collecting
@@ -19,12 +18,8 @@ function createHTTPStats() {
    * if it does not already exist
    */
   function createStatsEntry(name, status, teamLabel) {
-    console.log("\n\n\n\n\ncreateStatsEntry", name, teamLabel,'\n\n\n');
     if (!stats[name]) {
-      //file names are not the same as names in config. Therefore, we use nameToDatasource to map.
-     // const teamLabel = nameToDatasource[name]?.teamLabel;
-      stats[name] = { service: name, status: {}, errors: 0,teamLabel };
-      console.log("\n\n\n\n\ncreateStatsEntry. stats[name] ", stats[name] ,'\n\n\n');
+      stats[name] = { service: name, status: {}, errors: 0, teamLabel };
     }
     if (status && !stats[name].status[status]) {
       stats[name].status[status] = 0;
@@ -32,10 +27,10 @@ function createHTTPStats() {
   }
 
   return {
-    insertStats(name, res,teamLabel) {
+    insertStats(name, res, teamLabel) {
       const { ok, status } = res;
-      console.log("\n\n\n\n\ninsertStats", name, teamLabel,'\n\n\n');
-      createStatsEntry(name, status,teamLabel);
+
+      createStatsEntry(name, status, teamLabel);
 
       stats[name].status[status]++;
 
@@ -51,7 +46,7 @@ function createHTTPStats() {
       }
     },
     setAllowedErrorStatusCodes(name, codes, teamLabel) {
-      createStatsEntry(name,null,teamLabel);
+      createStatsEntry(name, null, teamLabel);
       stats[name].allowedErrorStatusCodes = codes;
     },
     getStats() {
@@ -91,20 +86,23 @@ export function createFetchWithConcurrencyLimit(concurrency, stats) {
 
   // The actual fetch function, that handles errors
   return function fetchWithLimit(url, options, name, teamLabel) {
-    console.log("\n\n\n\n\nfetchWithLimit", name, teamLabel);
     return limit(async () => {
       // Retrieve the options for this request
       const fetchOptions = { ...options };
       const allowedErrorStatusCodes = options?.allowedErrorStatusCodes || [];
       delete fetchOptions.allowedErrorStatusCodes;
 
-      httpStats.setAllowedErrorStatusCodes(name, allowedErrorStatusCodes, teamLabel);
+      httpStats.setAllowedErrorStatusCodes(
+        name,
+        allowedErrorStatusCodes,
+        teamLabel
+      );
 
       // Perform the request in the fetch thread
       const res = await fetch(url, fetchOptions);
 
       // Collect HTTP metric
-      httpStats.insertStats(name, res,teamLabel);
+      httpStats.insertStats(name, res, teamLabel);
 
       let text;
       try {
