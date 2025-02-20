@@ -93,12 +93,26 @@ Object {
         "Dummy på dansk ved Vivi Berendt",
       ],
       "cover": Object {
-        "detail": "link-to-detail",
-        "detail_117": "link-to-detail_117",
-        "detail_207": "link-to-detail_207",
-        "detail_42": "link-to-detail_42",
-        "detail_500": "link-to-detail_500",
-        "thumbnail": "link-to-thumbnail",
+        "detail": "link-to-960px",
+        "detail_117": "link-to-120px",
+        "detail_207": "link-to-240px",
+        "detail_42": "link-to-120px",
+        "detail_500": "link-to-480px",
+        "large": Object {
+          "height": 800,
+          "url": "link-to-960px",
+          "width": 960,
+        },
+        "medium": Object {
+          "url": "link-to-480px",
+        },
+        "small": Object {
+          "url": "link-to-240px",
+        },
+        "thumbnail": "link-to-120px",
+        "xSmall": Object {
+          "url": "link-to-120px",
+        },
       },
       "creators": Array [
         Object {

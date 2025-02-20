@@ -8,6 +8,11 @@
  * The Cover type definition
  */
 export const typeDef = `
+type CoverDetails {
+  url: String
+  width: Int
+  height: Int
+}
 type Cover {
   detail_117: String
   detail_207: String
@@ -16,6 +21,11 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
+
+  xSmall: CoverDetails
+  small: CoverDetails
+  medium: CoverDetails
+  large: CoverDetails
 }
 `;
 

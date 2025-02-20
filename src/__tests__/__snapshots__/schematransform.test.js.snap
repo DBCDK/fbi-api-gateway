@@ -625,6 +625,12 @@ type ComplexSearchResponse {
   errorMessage: String
 }
 
+type CoverDetails {
+  url: String
+  width: Int
+  height: Int
+}
+
 type Cover {
   detail_117: String
   detail_207: String
@@ -633,6 +639,10 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
+  xSmall: CoverDetails
+  small: CoverDetails
+  medium: CoverDetails
+  large: CoverDetails
 }
 
 enum CulrResponseCodesEnum {
@@ -4743,6 +4753,12 @@ type ComplexSearchResponse {
   errorMessage: String
 }
 
+type CoverDetails {
+  url: String
+  width: Int
+  height: Int
+}
+
 type Cover {
   detail_117: String
   detail_207: String
@@ -4751,6 +4767,10 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
+  xSmall: CoverDetails
+  small: CoverDetails
+  medium: CoverDetails
+  large: CoverDetails
 }
 
 type Complexity {

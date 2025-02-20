@@ -153,6 +153,20 @@ describe("Manifestation", () => {
             detail_42
             detail_500
             detail
+            xSmall {
+              url
+            }
+            small {
+              url
+            }
+            medium {
+              url
+            }
+            large {
+              url
+              width
+              height
+            }
           }
           titles {
             main

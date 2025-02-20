@@ -1031,12 +1031,25 @@ export const resolvers = {
           return true;
         }
 
-        const moreinfoCoverImage = await context.datasources
-          .getLoader("moreinfoCovers")
+        const fbiinfoCoverImage = await context.datasources
+          .getLoader("fbiinfoCovers")
           .load(parent.pid);
 
-        if (checkCoverImage(moreinfoCoverImage, "moreinfo")) {
-          return moreinfoCoverImage;
+        if (fbiinfoCoverImage?.resources?.["480px"]) {
+          return {
+            origin: "fbiinfo",
+            detail_42: fbiinfoCoverImage?.resources?.["120px"]?.url,
+            detail_117: fbiinfoCoverImage?.resources?.["120px"]?.url,
+            detail_207: fbiinfoCoverImage?.resources?.["240px"]?.url,
+            detail_500: fbiinfoCoverImage?.resources?.["480px"]?.url,
+            detail: fbiinfoCoverImage?.resources?.["960px"]?.url,
+            thumbnail: fbiinfoCoverImage?.resources?.["120px"]?.url,
+
+            xSmall: fbiinfoCoverImage?.resources?.["120px"],
+            small: fbiinfoCoverImage?.resources?.["240px"],
+            medium: fbiinfoCoverImage?.resources?.["480px"],
+            large: fbiinfoCoverImage?.resources?.["960px"],
+          };
         }
 
         // Maybe the smaug client has a custom color palette
