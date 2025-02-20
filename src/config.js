@@ -145,6 +145,13 @@ export default {
       prefix: process.env.MOREINFO_PREFIX || "moreinfo-2",
       teamLabel: "febib",
     },
+    fbiinfo: {
+      url:
+        process.env.FBIINFO_URL ||
+        "http://fbiinfo-service.cisterne.svc.cloud.dbc.dk/api/v1",
+      prefix: process.env.FBIINFO_PREFIX || "fbiinfo-1",
+      teamLabel: "de-team",
+    },
     openuserstatus: {
       url:
         process.env.OPENUSERSTATUS_URL || "https://openuserstatus.addi.dk/2.0/",
