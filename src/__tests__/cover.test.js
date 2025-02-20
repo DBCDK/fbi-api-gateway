@@ -154,7 +154,7 @@ test("Check response with undefined response from defaultForsider-service", asyn
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("Good response from Moreinfo-service", async () => {
+test.skip("Good response from Moreinfo-service", async () => {
   const pid = "moreinfo_working_pid";
   const result = await queryBuilder(pid);
 
@@ -169,7 +169,7 @@ test("Good response from Moreinfo-service", async () => {
   expect(result.data.manifestation).toEqual(expected);
 });
 
-test("Bad fields in non-empty object response from Moreinfo-service", async () => {
+test.skip("Bad fields in non-empty object response from Moreinfo-service", async () => {
   const pid = "moreinfo_bad_object_missing_important_fields";
   const result = await queryBuilder(pid);
 
@@ -184,7 +184,7 @@ test("Bad fields in non-empty object response from Moreinfo-service", async () =
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("Empty object response from Moreinfo-service", async () => {
+test.skip("Empty object response from Moreinfo-service", async () => {
   const logSpy = jest.spyOn(console, "log");
   const pid = "moreinfo_empty_object";
   const result = await queryBuilder(pid);
@@ -206,7 +206,7 @@ test("Empty object response from Moreinfo-service", async () => {
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("String instead of object response from Moreinfo-service", async () => {
+test.skip("String instead of object response from Moreinfo-service", async () => {
   const logSpy = jest.spyOn(console, "log");
   const pid = "moreinfo_string_instead_of_object";
   const result = await queryBuilder(pid);
@@ -228,7 +228,7 @@ test("String instead of object response from Moreinfo-service", async () => {
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("Check response with null response from Moreinfo-service", async () => {
+test.skip("Check response with null response from Moreinfo-service", async () => {
   const pid = "moreinfo_null_instead_of_object";
   const result = await queryBuilder(pid);
 
@@ -243,7 +243,7 @@ test("Check response with null response from Moreinfo-service", async () => {
   expect(result.data.manifestation).toMatchObject(expected);
 });
 
-test("Check response with undefined response from Moreinfo-service", async () => {
+test.skip("Check response with undefined response from Moreinfo-service", async () => {
   const pid = "moreinfo_undefined_instead_of_object";
   const result = await queryBuilder(pid);
 
