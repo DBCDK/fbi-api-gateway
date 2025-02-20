@@ -7,7 +7,7 @@ export async function load(pid, context) {
     allowedErrorStatusCodes: [404],
   });
 
-  return res;
+  return res?.body;
 }
 
 export const options = {

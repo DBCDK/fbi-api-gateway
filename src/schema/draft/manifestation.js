@@ -1027,20 +1027,20 @@ export const resolvers = {
           .getLoader("fbiinfoCovers")
           .load(parent.pid);
 
-        if (fbiinfoCoverImage?.body?.resources?.["480px"]) {
+        if (fbiinfoCoverImage?.resources?.["480px"]) {
           return {
             origin: "fbiinfo",
-            detail_42: fbiinfoCoverImage?.body?.resources?.["120px"]?.url,
-            detail_117: fbiinfoCoverImage?.body?.resources?.["120px"]?.url,
-            detail_207: fbiinfoCoverImage?.body?.resources?.["240px"]?.url,
-            detail_500: fbiinfoCoverImage?.body?.resources?.["480px"]?.url,
-            detail: fbiinfoCoverImage?.body?.resources?.["960px"]?.url,
-            thumbnail: fbiinfoCoverImage?.body?.resources?.["120px"]?.url,
+            detail_42: fbiinfoCoverImage?.resources?.["120px"]?.url,
+            detail_117: fbiinfoCoverImage?.resources?.["120px"]?.url,
+            detail_207: fbiinfoCoverImage?.resources?.["240px"]?.url,
+            detail_500: fbiinfoCoverImage?.resources?.["480px"]?.url,
+            detail: fbiinfoCoverImage?.resources?.["960px"]?.url,
+            thumbnail: fbiinfoCoverImage?.resources?.["120px"]?.url,
 
-            xSmall: fbiinfoCoverImage?.body?.resources?.["120px"],
-            small: fbiinfoCoverImage?.body?.resources?.["240px"],
-            medium: fbiinfoCoverImage?.body?.resources?.["480px"],
-            large: fbiinfoCoverImage?.body?.resources?.["960px"],
+            xSmall: fbiinfoCoverImage?.resources?.["120px"],
+            small: fbiinfoCoverImage?.resources?.["240px"],
+            medium: fbiinfoCoverImage?.resources?.["480px"],
+            large: fbiinfoCoverImage?.resources?.["960px"],
           };
         }
 
