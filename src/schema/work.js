@@ -1,4 +1,4 @@
-import { parseJedSubjects } from "../../utils/utils";
+import { parseJedSubjects } from "../utils/utils";
 
 export const typeDef = `
 type Language {

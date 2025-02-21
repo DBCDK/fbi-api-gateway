@@ -1,4 +1,4 @@
-import { resolveAccess } from "./draft/draft_utils_manifestations";
+import { resolveAccess } from "../utils/access";
 import { filterAgenciesByProps } from "../utils/accounts";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 
