@@ -145,6 +145,13 @@ export default {
       prefix: process.env.MOREINFO_PREFIX || "moreinfo-2",
       teamLabel: "febib",
     },
+    fbiinfo: {
+      url:
+        process.env.FBIINFO_URL ||
+        "http://fbiinfo-service.cisterne.svc.cloud.dbc.dk/api/v1",
+      prefix: process.env.FBIINFO_PREFIX || "fbiinfo-1",
+      teamLabel: "de-team",
+    },
     openuserstatus: {
       url:
         process.env.OPENUSERSTATUS_URL || "https://openuserstatus.addi.dk/2.0/",
@@ -361,6 +368,9 @@ export default {
       prefix: process.env.LINKCHECK_PREFIX || "linkcheck-1",
       ttl: process.env.LINKCHECK_TIME_TO_LIVE_SECONDS || 60 * 60,
       teamLabel: "de-team",
+      disabled: ["1", "true", "yes"].includes(
+        String(process.env.LINKCHECK_DISABLED).toLowerCase()
+      ),
     },
     userInfo: {
       url: process.env.USER_INFO_URL || "https://stg.login.bib.dk/userinfo",

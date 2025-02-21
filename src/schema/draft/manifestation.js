@@ -152,6 +152,8 @@ enum NoteTypeEnum {
   TECHNICAL_REQUIREMENTS
   ESTIMATED_PLAYING_TIME_FOR_GAMES
   EXPECTED_PUBLICATION_DATE
+  WITHDRAWN_PUBLICATION
+  CONTAINS_AI_GENERATED_CONTENT
 }
 enum ChildOrAdultCodeEnum {
   FOR_CHILDREN
@@ -536,7 +538,12 @@ type Audience {
   """
   PEGI age rating for games 
   """
-  PEGI: PEGI
+  PEGI: PEGI @deprecated(reason: "Use 'Audience.pegi' instead expires: 01/06-2025")
+
+  """
+  PEGI age rating for games 
+  """
+  pegi: PEGI
 
   """
   Media council age recommendation
@@ -907,6 +914,9 @@ export const resolvers = {
     let(parent) {
       return parent?.let?.display;
     },
+    pegi(parent) {
+      return parent?.PEGI;
+    },
   },
   Identifier: {
     type(parent) {
@@ -1023,12 +1033,25 @@ export const resolvers = {
           return true;
         }
 
-        const moreinfoCoverImage = await context.datasources
-          .getLoader("moreinfoCovers")
+        const fbiinfoCoverImage = await context.datasources
+          .getLoader("fbiinfoCovers")
           .load(parent.pid);
 
-        if (checkCoverImage(moreinfoCoverImage, "moreinfo")) {
-          return moreinfoCoverImage;
+        if (fbiinfoCoverImage?.resources?.["480px"]) {
+          return {
+            origin: "fbiinfo",
+            detail_42: fbiinfoCoverImage?.resources?.["120px"]?.url,
+            detail_117: fbiinfoCoverImage?.resources?.["120px"]?.url,
+            detail_207: fbiinfoCoverImage?.resources?.["240px"]?.url,
+            detail_500: fbiinfoCoverImage?.resources?.["480px"]?.url,
+            detail: fbiinfoCoverImage?.resources?.["960px"]?.url,
+            thumbnail: fbiinfoCoverImage?.resources?.["120px"]?.url,
+
+            xSmall: fbiinfoCoverImage?.resources?.["120px"],
+            small: fbiinfoCoverImage?.resources?.["240px"],
+            medium: fbiinfoCoverImage?.resources?.["480px"],
+            large: fbiinfoCoverImage?.resources?.["960px"],
+          };
         }
 
         // Maybe the smaug client has a custom color palette

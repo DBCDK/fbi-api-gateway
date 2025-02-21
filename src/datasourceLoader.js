@@ -132,10 +132,13 @@ export default function createDataLoaders(
   // Gets a loader by name.
   // A loader will be initialized first time it is called
   function getLoader(name) {
+    const teamLabel = nameToDatasource[name]?.teamLabel;
+
     if (!result[name]) {
       result[name] = setupDataloader(nameToDatasource[name], {
         getLoader,
-        fetch: (url, options) => fetchWithConcurrencyLimit(url, options, name),
+        fetch: (url, options) =>
+          fetchWithConcurrencyLimit(url, options, name, teamLabel),
         trackingId: uuid,
         testUser,
         accessToken,

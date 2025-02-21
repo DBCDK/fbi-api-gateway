@@ -625,6 +625,12 @@ type ComplexSearchResponse {
   errorMessage: String
 }
 
+type CoverDetails {
+  url: String
+  width: Int
+  height: Int
+}
+
 type Cover {
   detail_117: String
   detail_207: String
@@ -633,6 +639,10 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
+  xSmall: CoverDetails
+  small: CoverDetails
+  medium: CoverDetails
+  large: CoverDetails
 }
 
 enum CulrResponseCodesEnum {
@@ -1369,6 +1379,8 @@ enum NoteTypeEnum {
   TECHNICAL_REQUIREMENTS
   ESTIMATED_PLAYING_TIME_FOR_GAMES
   EXPECTED_PUBLICATION_DATE
+  WITHDRAWN_PUBLICATION
+  CONTAINS_AI_GENERATED_CONTENT
 }
 
 enum ChildOrAdultCodeEnum {
@@ -1684,7 +1696,10 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI
+  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
+
+  \\"\\"\\"PEGI age rating for games \\"\\"\\"
+  pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
   mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
@@ -3988,7 +4003,8 @@ input BookMarkInput {
 }
 
 type BookMarkDeleteResponse {
-  IdsDeletedCount: Int!
+  IdsDeletedCount: Int! @deprecated(reason: \\"Use 'BookMarkDeleteResponse.idsDeletedCount' instead expires: 01/06-2025\\")
+  idsDeletedCount: Int!
 }
 
 type SavedSearchDeleteResponse {
@@ -4556,11 +4572,7 @@ type Mutation {
 type Query {
   debug: Debug
   series(seriesId: String!): Series
-
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: Marc!
   mood: MoodQueries!
-  ors: OrsQuery!
 
   \\"\\"\\"Access to various types of recommendations.\\"\\"\\"
   recommendations: Recommendations!
@@ -4740,6 +4752,12 @@ type ComplexSearchResponse {
   errorMessage: String
 }
 
+type CoverDetails {
+  url: String
+  width: Int
+  height: Int
+}
+
 type Cover {
   detail_117: String
   detail_207: String
@@ -4748,6 +4766,10 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
+  xSmall: CoverDetails
+  small: CoverDetails
+  medium: CoverDetails
+  large: CoverDetails
 }
 
 type Complexity {
@@ -5106,6 +5128,8 @@ enum NoteTypeEnum {
   TECHNICAL_REQUIREMENTS
   ESTIMATED_PLAYING_TIME_FOR_GAMES
   EXPECTED_PUBLICATION_DATE
+  WITHDRAWN_PUBLICATION
+  CONTAINS_AI_GENERATED_CONTENT
 }
 
 enum ChildOrAdultCodeEnum {
@@ -5421,7 +5445,10 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI
+  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
+
+  \\"\\"\\"PEGI age rating for games \\"\\"\\"
+  pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
   mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
@@ -6396,16 +6423,6 @@ type MarcRecord {
   deleted: Boolean!
 }
 
-type Marc {
-  \\"\\"\\"
-  Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
-  \\"\\"\\"
-  getMarcByRecordId(
-    \\"\\"\\"The marc record identifier\\"\\"\\"
-    recordId: String!
-  ): MarcRecord
-}
-
 \\"\\"\\"Type of moodSuggest response\\"\\"\\"
 enum MoodSuggestEnum {
   TITLE
@@ -6491,46 +6508,6 @@ type MoodQueries {
   moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
   moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
   moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
-}
-
-type ItemIdResponse {
-  \\"\\"\\"Message field in case of an error.\\"\\"\\"
-  message: String
-
-  \\"\\"\\"ItemId response object.\\"\\"\\"
-  itemOrderEntity: ItemOrderEntity
-}
-
-type ItemOrderEntity {
-  \\"\\"\\"
-  Key for the row in the database, can be ignored as it's only relevant for ORS.
-  \\"\\"\\"
-  itemOrderKey: Int!
-
-  \\"\\"\\"Order ID associated with the item ID.\\"\\"\\"
-  orderId: String!
-
-  \\"\\"\\"Item ID, the same value that was queried.\\"\\"\\"
-  itemId: String!
-
-  \\"\\"\\"Agency ID of the lender of the material.\\"\\"\\"
-  responderId: String!
-
-  \\"\\"\\"Agency ID of the borrower of the material.\\"\\"\\"
-  requesterId: String!
-
-  \\"\\"\\"
-  Timestamp of when the row was created in the database.
-  Example: \\"2024-09-09T07:32:24.081+00:00\\"
-  \\"\\"\\"
-  timestamp: String!
-}
-
-type OrsQuery {
-  \\"\\"\\"
-  Method to retrieve sender and receiver information from ORS based on an itemId.
-  \\"\\"\\"
-  itemOrder(itemId: String!): ItemIdResponse!
 }
 
 \\"\\"\\"Get different kinds of recommendations\\"\\"\\"
@@ -7102,6 +7079,8 @@ enum NoteTypeEnum {
   TECHNICAL_REQUIREMENTS
   ESTIMATED_PLAYING_TIME_FOR_GAMES
   EXPECTED_PUBLICATION_DATE
+  WITHDRAWN_PUBLICATION
+  CONTAINS_AI_GENERATED_CONTENT
 }
 
 enum ChildOrAdultCodeEnum {
@@ -7417,7 +7396,10 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI
+  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
+
+  \\"\\"\\"PEGI age rating for games \\"\\"\\"
+  pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
   mediaCouncilAgeRestriction: MediaCouncilAgeRestriction

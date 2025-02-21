@@ -42,7 +42,7 @@ function jsonToPrometheus(data) {
     );
 
     output.push(
-      `service_errors{service="${service.service}", team="${team}"} ${service.errors}`
+      `service_errors_total{service="${service.service}", team="${team}"} ${service.errors}`
     );
 
     //TODO: Maybe we need this later
