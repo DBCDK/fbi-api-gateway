@@ -4570,9 +4570,6 @@ type Mutation {
 type Query {
   debug: Debug
   series(seriesId: String!): Series
-
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: Marc!
   mood: MoodQueries!
 
   \\"\\"\\"Access to various types of recommendations.\\"\\"\\"
@@ -6420,16 +6417,6 @@ type MarcRecord {
 
   \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
   deleted: Boolean!
-}
-
-type Marc {
-  \\"\\"\\"
-  Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
-  \\"\\"\\"
-  getMarcByRecordId(
-    \\"\\"\\"The marc record identifier\\"\\"\\"
-    recordId: String!
-  ): MarcRecord
 }
 
 \\"\\"\\"Type of moodSuggest response\\"\\"\\"

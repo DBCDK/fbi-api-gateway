@@ -24,7 +24,6 @@ const defaultSettings = {
     "series",
     "universe",
     "mood",
-    "marc",
   ],
   denyTypes: ["CheckOrderPolicy", "Availability", "SEO"],
 };
