@@ -1,4 +1,4 @@
-import { resolveAccess } from "./draft_utils_manifestations";
+import { resolveAccess } from "../utils/access";
 
 export const typeDef = `
 enum AccessTypeCodeEnum {

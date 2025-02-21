@@ -1,4 +1,4 @@
-import * as consts from "../../schema/draft/FAKE";
+import * as consts from "../../schema/FAKE";
 
 export function load({ id }) {
   if (id.startsWith("default_forsider_") || id.startsWith("moreinfo_")) {

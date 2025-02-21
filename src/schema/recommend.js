@@ -1,4 +1,4 @@
-import { resolveWork, resolveManifestation } from "../../utils/utils";
+import { resolveWork, resolveManifestation } from "../utils/utils";
 import { log } from "dbc-node-logger";
 
 export function tuneLimit(limit) {

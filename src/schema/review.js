@@ -1,4 +1,4 @@
-import { resolveManifestation } from "../../utils/utils";
+import { resolveManifestation } from "../utils/utils";
 
 export const typeDef = `
 enum ReviewElementTypeEnum {
