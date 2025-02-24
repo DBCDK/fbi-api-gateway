@@ -1068,7 +1068,36 @@ export const resolvers = {
           .load(params);
 
         if (checkCoverImage(defaultForsiderCoverImage, "defaultForsider")) {
-          return defaultForsiderCoverImage;
+          return {
+            origin: "default",
+            detail_42: defaultForsiderCoverImage.thumbnail,
+            detail_117: defaultForsiderCoverImage.detail,
+            detail_207: defaultForsiderCoverImage.detail,
+            detail_500: defaultForsiderCoverImage.detail,
+            detail: defaultForsiderCoverImage.detail,
+            thumbnail: defaultForsiderCoverImage.thumbnail,
+
+            xSmall: {
+              url: defaultForsiderCoverImage.thumbnail,
+              width: 75,
+              height: 115,
+            },
+            small: {
+              url: defaultForsiderCoverImage.detail,
+              width: 300,
+              height: 460,
+            },
+            medium: {
+              url: defaultForsiderCoverImage.detail,
+              width: 300,
+              height: 460,
+            },
+            large: {
+              url: defaultForsiderCoverImage.detail,
+              width: 300,
+              height: 460,
+            },
+          };
         }
       }
       // no coverImage
