@@ -196,6 +196,9 @@ type Mutation {
 type Query {
   bibdk: BibdkQuery!
   bibevents(input: BibEventsQueryInput): Bibevents!
+
+  \\"\\"\\"All indexes in complex search\\"\\"\\"
+  complexSearchIndexes: [ComplexSearchIndex!]
   culr: CulrQuery!
   debug: Debug
 
@@ -585,6 +588,20 @@ type CheckOrderPolicy {
   lookUpUrl: String
   orderPossible: Boolean
   orderPossibleReason: OrderPossibleReasonEnum
+}
+
+type ComplexSearchIndex {
+  \\"\\"\\"The name of a Complex Search index\\"\\"\\"
+  index: String!
+
+  \\"\\"\\"Can be used for searching\\"\\"\\"
+  search: Boolean!
+
+  \\"\\"\\"Can be used for faceting\\"\\"\\"
+  facet: Boolean!
+
+  \\"\\"\\"Can be used for sorting\\"\\"\\"
+  sort: Boolean!
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -4662,6 +4679,8 @@ type Mutation {
 }
 
 type Query {
+  \\"\\"\\"All indexes in complex search\\"\\"\\"
+  complexSearchIndexes: [ComplexSearchIndex!]
   debug: Debug
   mood: MoodQueries!
 
@@ -4718,6 +4737,20 @@ type Query {
   relatedSubjects(q: [String!]!, limit: Int): [String!] @deprecated(reason: \\"Use 'Recommendations.subjects' instead expires: 01/03-2025\\")
   series(seriesId: String!): Series
   universe(key: String, universeId: String): Universe
+}
+
+type ComplexSearchIndex {
+  \\"\\"\\"The name of a Complex Search index\\"\\"\\"
+  index: String!
+
+  \\"\\"\\"Can be used for searching\\"\\"\\"
+  search: Boolean!
+
+  \\"\\"\\"Can be used for faceting\\"\\"\\"
+  facet: Boolean!
+
+  \\"\\"\\"Can be used for sorting\\"\\"\\"
+  sort: Boolean!
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"

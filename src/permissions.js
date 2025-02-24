@@ -10,6 +10,7 @@ const defaultSettings = {
     "works",
     "suggest",
     "complexSearch",
+    "complexSearchIndexes",
     "complexSuggest",
     "localSuggest",
     "recommend",
