@@ -3727,9 +3727,9 @@ type User {
   mail: String
   culrMail: String
   country: String
-  orders: [Order!]!
-  loans: [Loan!]!
-  debt: [Debt!]!
+  orders: UserStatusOrders
+  loans: UserStatusLoans
+  debt: UserStatusDebt
   bookmarks(orderBy: BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
@@ -3784,6 +3784,34 @@ type BibliotekDkOrder {
 
   \\"\\"\\"Date and time when the order was created\\"\\"\\"
   creationDate: String
+}
+
+\\"\\"\\"Enum holding potential errors from undici fetch\\"\\"\\"
+enum RequestStatusEnum {
+  UND_ERR_HEADERS_TIMEOUT
+  UNKNOWN_ERROR
+  OK
+}
+
+\\"\\"\\"User orders\\"\\"\\"
+type UserStatusOrders {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  result: [Order!]!
+}
+
+\\"\\"\\"User debt\\"\\"\\"
+type UserStatusDebt {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  result: [Debt!]!
+}
+
+\\"\\"\\"User loans\\"\\"\\"
+type UserStatusLoans {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  result: [Loan!]!
 }
 
 type Loan {
