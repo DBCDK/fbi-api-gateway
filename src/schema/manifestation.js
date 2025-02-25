@@ -1033,25 +1033,45 @@ export const resolvers = {
           return true;
         }
 
-        const fbiinfoCoverImage = await context.datasources
-          .getLoader("fbiinfoCovers")
-          .load(parent.pid);
+        if (process.env.NODE_ENV === "production") {
+          // TODO this should be removed when fbiinfo is ready
+          const moreInfoCoverImage = await context.datasources
+            .getLoader("moreinfoCovers")
+            .load(parent.pid);
 
-        if (fbiinfoCoverImage?.resources?.["480px"]) {
-          return {
-            origin: "fbiinfo",
-            detail_42: fbiinfoCoverImage?.resources?.["120px"]?.url,
-            detail_117: fbiinfoCoverImage?.resources?.["120px"]?.url,
-            detail_207: fbiinfoCoverImage?.resources?.["240px"]?.url,
-            detail_500: fbiinfoCoverImage?.resources?.["480px"]?.url,
-            detail: fbiinfoCoverImage?.resources?.["960px"]?.url,
-            thumbnail: fbiinfoCoverImage?.resources?.["120px"]?.url,
+          if (moreInfoCoverImage?.detail) {
+            return {
+              ...moreInfoCoverImage,
+              origin: "fbiinfo",
+              xSmall: { url: moreInfoCoverImage?.detail_117 },
+              small: { url: moreInfoCoverImage?.detail_207 },
+              medium: { url: moreInfoCoverImage?.detail },
+              large: { url: moreInfoCoverImage?.detail },
+            };
+          }
+        } else {
+          // This will be run in tests
+          // TODO reenable this when fbiinfo is ready
+          const fbiinfoCoverImage = await context.datasources
+            .getLoader("fbiinfoCovers")
+            .load(parent.pid);
 
-            xSmall: fbiinfoCoverImage?.resources?.["120px"],
-            small: fbiinfoCoverImage?.resources?.["240px"],
-            medium: fbiinfoCoverImage?.resources?.["480px"],
-            large: fbiinfoCoverImage?.resources?.["960px"],
-          };
+          if (fbiinfoCoverImage?.resources?.["480px"]) {
+            return {
+              origin: "fbiinfo",
+              detail_42: fbiinfoCoverImage?.resources?.["120px"]?.url,
+              detail_117: fbiinfoCoverImage?.resources?.["120px"]?.url,
+              detail_207: fbiinfoCoverImage?.resources?.["240px"]?.url,
+              detail_500: fbiinfoCoverImage?.resources?.["480px"]?.url,
+              detail: fbiinfoCoverImage?.resources?.["960px"]?.url,
+              thumbnail: fbiinfoCoverImage?.resources?.["120px"]?.url,
+
+              xSmall: fbiinfoCoverImage?.resources?.["120px"],
+              small: fbiinfoCoverImage?.resources?.["240px"],
+              medium: fbiinfoCoverImage?.resources?.["480px"],
+              large: fbiinfoCoverImage?.resources?.["960px"],
+            };
+          }
         }
 
         // Maybe the smaug client has a custom color palette
@@ -1063,6 +1083,7 @@ export const resolvers = {
           materialType: parent?.materialTypes?.[0]?.general?.code,
           colors,
         };
+
         const defaultForsiderCoverImage = await context.datasources
           .getLoader("defaultForsider")
           .load(params);
