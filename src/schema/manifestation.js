@@ -1041,7 +1041,12 @@ export const resolvers = {
 
           if (moreInfoCoverImage?.detail) {
             return {
-              ...moreInfoCoverImage,
+              thumbnail: moreInfoCoverImage?.detail,
+              detail_42: moreInfoCoverImage?.detail,
+              detail_117: moreInfoCoverImage?.detail,
+              detail_207: moreInfoCoverImage?.detail,
+              detail_500: moreInfoCoverImage?.detail,
+              detail: moreInfoCoverImage?.detail,
               origin: "fbiinfo",
               xSmall: { url: moreInfoCoverImage?.detail_117 },
               small: { url: moreInfoCoverImage?.detail_207 },
