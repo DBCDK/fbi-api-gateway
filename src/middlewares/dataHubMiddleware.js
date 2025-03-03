@@ -43,7 +43,7 @@ export function dataHubMiddleware(req, res, next) {
     // Trace ID passed from a previous FBI-API response.
     const causedBy = req.headers["x-caused-by"];
 
-    const uniqueKey = createHash(req.accessToke);
+    const uniqueKey = createHash(req.accessToken);
 
     let res = {
       systemId,
