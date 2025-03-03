@@ -572,7 +572,16 @@ type LevelForAudience {
   Level expressed as integer on a scale from 1 to 5
   """
   realisticVsFictional: Int
+}
 
+"""
+A search hit that encapsulates a matched manifestation from a search query.
+"""
+type SearchHit {
+  """
+  The manifestation that was matched during the search.
+  """
+  match: Manifestation
 }
 
 type Manifestations {
@@ -580,7 +589,17 @@ type Manifestations {
   latest: Manifestation!
   all: [Manifestation!]! @complexity(value: 50)
   bestRepresentation: Manifestation! 
+  bestRepresentations: [Manifestation!]! 
   mostRelevant: [Manifestation!]! @complexity(value: 25)
+
+  """
+  A list of manifestations that matched the search query.
+
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
+  """
+  searchHits: [SearchHit!]
 }
 
 type Manifestation {

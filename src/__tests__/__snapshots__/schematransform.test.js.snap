@@ -2279,12 +2279,30 @@ type LevelForAudience {
   realisticVsFictional: Int
 }
 
+\\"\\"\\"
+A search hit that encapsulates a matched manifestation from a search query.
+\\"\\"\\"
+type SearchHit {
+  \\"\\"\\"The manifestation that was matched during the search.\\"\\"\\"
+  match: Manifestation
+}
+
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
   all: [Manifestation!]!
   bestRepresentation: Manifestation!
+  bestRepresentations: [Manifestation!]!
   mostRelevant: [Manifestation!]!
+
+  \\"\\"\\"
+  A list of manifestations that matched the search query.
+  
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
+  \\"\\"\\"
+  searchHits: [SearchHit!]
 }
 
 type Manifestation {
@@ -5603,12 +5621,30 @@ type LevelForAudience {
   realisticVsFictional: Int
 }
 
+\\"\\"\\"
+A search hit that encapsulates a matched manifestation from a search query.
+\\"\\"\\"
+type SearchHit {
+  \\"\\"\\"The manifestation that was matched during the search.\\"\\"\\"
+  match: Manifestation
+}
+
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
   all: [Manifestation!]!
   bestRepresentation: Manifestation!
+  bestRepresentations: [Manifestation!]!
   mostRelevant: [Manifestation!]!
+
+  \\"\\"\\"
+  A list of manifestations that matched the search query.
+  
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
+  \\"\\"\\"
+  searchHits: [SearchHit!]
 }
 
 type Manifestation {
@@ -7481,12 +7517,30 @@ type LevelForAudience {
   realisticVsFictional: Int
 }
 
+\\"\\"\\"
+A search hit that encapsulates a matched manifestation from a search query.
+\\"\\"\\"
+type SearchHit {
+  \\"\\"\\"The manifestation that was matched during the search.\\"\\"\\"
+  match: Manifestation
+}
+
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
   all: [Manifestation!]!
   bestRepresentation: Manifestation!
+  bestRepresentations: [Manifestation!]!
   mostRelevant: [Manifestation!]!
+
+  \\"\\"\\"
+  A list of manifestations that matched the search query.
+  
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
+  \\"\\"\\"
+  searchHits: [SearchHit!]
 }
 
 type Manifestation {

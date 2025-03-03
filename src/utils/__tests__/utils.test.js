@@ -2,6 +2,7 @@ import {
   getPageDescription,
   getUserInfoAccountFromAgencyAttributes,
   resolveBorrowerCheck,
+  resolveSearchHits,
 } from "../utils";
 
 describe("Utils", () => {
@@ -103,4 +104,62 @@ test("Return null, when there is neither cpr or local id", () => {
 test("Return null, when there are no agencies", () => {
   const actual = getUserInfoAccountFromAgencyAttributes()?.userId;
   expect(actual).toEqual(undefined);
+});
+
+describe("resolveSearchHits", () => {
+  it("returns null if searchHits is missing", () => {
+    const parent = {
+      bestRepresentations: [{ pid: "a", unitId: "1" }],
+    };
+    expect(resolveSearchHits(parent)).toBeNull();
+  });
+
+  it("returns null if bestRepresentations is missing", () => {
+    const parent = {
+      searchHits: ["a"],
+    };
+    expect(resolveSearchHits(parent)).toBeNull();
+  });
+
+  it("returns an empty array if searchHits is empty", () => {
+    const parent = {
+      searchHits: [],
+      bestRepresentations: [{ pid: "a", unitId: "1" }],
+    };
+    expect(resolveSearchHits(parent)).toEqual([]);
+  });
+
+  it("maps, sorts, and filters duplicates correctly", () => {
+    const parent = {
+      // searchHits contains pids in arbitrary order
+      searchHits: ["c", "a", "d", "b"],
+      // bestRepresentations is already sorted by the best representation order
+      bestRepresentations: [
+        { pid: "a", unitId: "1" },
+        { pid: "b", unitId: "2" },
+        { pid: "c", unitId: "1" },
+        { pid: "d", unitId: "3" },
+      ],
+    };
+
+    // For unitId "1", only the first occurrence (lowest index) should be kept (i.e., { pid: 'a', ... })
+    const expected = [
+      { match: { pid: "a", unitId: "1", index: 0 } },
+      { match: { pid: "b", unitId: "2", index: 1 } },
+      { match: { pid: "d", unitId: "3", index: 3 } },
+    ];
+
+    expect(resolveSearchHits(parent)).toEqual(expected);
+  });
+
+  it("filters out searchHits pids not found in bestRepresentations", () => {
+    const parent = {
+      searchHits: ["a", "x"], // 'x' is not present in bestRepresentations
+      bestRepresentations: [{ pid: "a", unitId: "1" }],
+    };
+
+    const expected = [{ match: { pid: "a", unitId: "1", index: 0 } }];
+
+    expect(resolveSearchHits(parent)).toEqual(expected);
+  });
 });

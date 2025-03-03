@@ -1,4 +1,4 @@
-import { parseJedSubjects } from "../utils/utils";
+import { parseJedSubjects, resolveSearchHits } from "../utils/utils";
 
 export const typeDef = `
 type Language {
@@ -311,16 +311,23 @@ export const resolvers = {
       const all = manifestations?.all || [];
       const bestRepresentation =
         manifestations?.bestRepresentations?.[0] || manifestations?.all?.[0];
+      const bestRepresentations = manifestations?.bestRepresentations;
       const mostRelevant = manifestations?.mostRelevant || manifestations?.all;
+      const searchHits = manifestations?.searchHits || null;
 
       return {
         first,
         latest,
         all,
         bestRepresentation,
+        bestRepresentations,
         mostRelevant,
+        searchHits,
       };
     },
+  },
+  Manifestations: {
+    searchHits: resolveSearchHits,
   },
   MaterialType: {
     materialTypeGeneral(parent, args, context, info) {
