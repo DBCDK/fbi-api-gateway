@@ -593,7 +593,7 @@ type Manifestations {
   mostRelevant: [Manifestation!]! @complexity(value: 25)
 
   """
-  List of manifestations returned as search hits.
+  A list of manifestations that matched the search query.
 
   This field is populated only when a work is retrieved within a search context.
   Each entry is a SearchHit object representing a manifestation that matched the search criteria.
