@@ -45,7 +45,7 @@ export async function load(
     facets: prefixFacets(facets || []),
     facetLimit: facetLimit,
     trackingId: context?.trackingId,
-    includeFilteredPids: includeFilteredPids || false,
+    includeFilteredPids: true,
     ...(sort && { sort: sort }),
   };
 

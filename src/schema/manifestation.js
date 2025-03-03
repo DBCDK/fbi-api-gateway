@@ -574,14 +574,14 @@ type LevelForAudience {
   realisticVsFictional: Int
 }
 
-type HighLightType {
-  hit: String
-  field: [String!]
-}
-
-type SearchHitsType {
+"""
+A search hit that encapsulates a matched manifestation from a search query.
+"""
+type SearchHit {
+  """
+  The manifestation that was matched during the search.
+  """
   match: Manifestation
-  highlights: [HighLightType]
 }
 
 type Manifestations {
@@ -589,11 +589,17 @@ type Manifestations {
   latest: Manifestation!
   all: [Manifestation!]! @complexity(value: 50)
   bestRepresentation: Manifestation! 
+  bestRepresentations: [Manifestation!]! 
   mostRelevant: [Manifestation!]! @complexity(value: 25)
+
   """
-  Complex search only !!! - manifestations with search hits
+  List of manifestations returned as search hits.
+
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
   """
-  searchHits: [SearchHitsType]
+  searchHits: [SearchHit!]
 }
 
 type Manifestation {
