@@ -29,6 +29,7 @@ function graphQLProxy(req, res) {
     headers: {
       ...req.headers,
       "x-timestamp": Date.now(),
+      "x-forwarded-for": req.ip,
     },
   };
 
