@@ -1,7 +1,7 @@
 import isbot from "isbot";
 import { findAliasesAndArgs } from "../utils/graphQLQueryTools";
 import { createTraceId } from "../utils/trace";
-import createHash from "../utils/hash";
+// import createHash from "../utils/hash";
 
 function getDate() {
   const today = new Date();
@@ -43,13 +43,13 @@ export function dataHubMiddleware(req, res, next) {
     // Trace ID passed from a previous FBI-API response.
     const causedBy = req.headers["x-caused-by"];
 
-    const uniqueKey = createHash(req.accessToken);
+    // const uniqueKey = createHash(req.accessToken);
 
     let res = {
       systemId,
       sessionToken,
       causedBy: causedBy ? [causedBy] : [],
-      uniqueKey: uniqueKey,
+      // uniqueKey: uniqueKey,
     };
 
     if (userTokenBeforePseudo) {
