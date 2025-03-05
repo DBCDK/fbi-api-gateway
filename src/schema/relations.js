@@ -1,4 +1,4 @@
-import { resolveManifestation, resolveWork } from "../../utils/utils";
+import { resolveManifestation, resolveWork } from "../utils/utils";
 
 export const typeDef = `
 type Relations {

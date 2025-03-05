@@ -21,7 +21,17 @@ function prefixFacets(facets) {
  * Search via complex search
  */
 export async function load(
-  { cql, offset, limit, profile, filters, sort, facets, facetLimit },
+  {
+    cql,
+    offset,
+    limit,
+    profile,
+    filters,
+    sort,
+    facets,
+    facetLimit,
+    includeFilteredPids,
+  },
   context
 ) {
   const body = {
@@ -35,6 +45,7 @@ export async function load(
     facets: prefixFacets(facets || []),
     facetLimit: facetLimit,
     trackingId: context?.trackingId,
+    includeFilteredPids: true,
     ...(sort && { sort: sort }),
   };
 
@@ -67,6 +78,7 @@ export async function load(
     tokenizerDurationInMs: json?.tokenizerDurationInMs || 0,
     solrExecutionDurationInMs: json?.solrExecutionDurationInMs || 0,
     solrFilter: json?.solrFilter || "",
+    searchHits: json.expanded || null,
   };
 }
 

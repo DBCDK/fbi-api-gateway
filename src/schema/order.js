@@ -9,11 +9,11 @@ import { placeCopyRequest } from "./elba";
 import { filterAgenciesByProps } from "../utils/accounts";
 import { resolveBorrowerCheck } from "../utils/utils";
 import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
+import { resolveAccess } from "../utils/access";
 
 import getUserBorrowerStatus, {
   getUserIds,
 } from "../utils/getUserBorrowerStatus";
-import { resolveAccess } from "./draft/draft_utils_manifestations";
 
 const orderStatusmessageMap = {
   OWNED_ACCEPTED: "Item available at pickupAgency, order accepted",

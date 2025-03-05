@@ -1,5 +1,5 @@
-import { createTraceId } from "../../utils/trace";
-import { resolveWork } from "../../utils/utils";
+import { createTraceId } from "../utils/trace";
+import { resolveWork } from "../utils/utils";
 
 export const typeDef = `
 enum SuggestionTypeEnum {

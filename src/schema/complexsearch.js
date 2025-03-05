@@ -180,6 +180,7 @@ function setPost(parent, context, args) {
     filters: parent.filters,
     facets: parent?.facets?.facets,
     facetLimit: parent?.facets?.facetLimit,
+    includeFilteredPids: parent?.includeFilteredPids || false,
     ...(args && args),
   };
 }
@@ -265,8 +266,11 @@ export const resolvers = {
       const res = await context.datasources
         .getLoader("complexsearch")
         .load(setPost(parent, context, args));
-      const expanded = await Promise.all(
-        res?.works?.map(async (id) => resolveWork({ id }, context))
+
+      const resolvedWorks = await Promise.all(
+        res?.works?.map(async (id) =>
+          resolveWork({ id, searchHits: res?.searchHits }, context)
+        )
       );
 
       const input = {
@@ -274,7 +278,8 @@ export const resolvers = {
         ...args,
         profile: context.profile,
       };
-      const works = expanded.filter((work) => !!work);
+
+      const works = resolvedWorks.filter((work) => !!work);
       context?.dataHub?.createComplexSearchEvent({
         input: input,
         result: { works },

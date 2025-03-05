@@ -56,7 +56,7 @@ const reduceBody = (body, agencyId) =>
  */
 const callService = async ({ agencyId, userId }, context) => {
   const soap = constructSoap({ agencyId: agencyId, userId: userId });
-  const res = await context?.fetch(url, {
+  return await context?.fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "text/xml",
@@ -64,23 +64,38 @@ const callService = async ({ agencyId, userId }, context) => {
     body: soap,
     timeoutMs: 240000,
   });
-
-  return reduceBody(res?.body, agencyId);
 };
 
 /**
  * Fetch user loans
  * @param userInfoAccounts: [{agencyId: String, userId: String, userIdType: String}]
+ * @påram context: dataloaders and outher good stuff
  */
 export async function load({ userInfoAccounts }, context) {
+  let errormessage = "OK";
+  let status = true;
   const collectedLoans = await Promise.all(
     userInfoAccounts.map(async (account) => {
-      return await callService(account, context);
+      const res = await callService(account, context);
+      // only set errormessage if something went wrong
+      if (!res?.ok) {
+        if (res?.status === "UND_ERR_HEADERS_TIMEOUT") {
+          errormessage = res?.status;
+        } else {
+          errormessage = "UNKNOWN_ERROR";
+        }
+      }
+      status = !!res?.ok;
+      return reduceBody(res?.body, account?.agencyId);
     })
   );
 
-  // Flatten the array
-  return collectedLoans.flat().filter((loan) => !!loan);
+  return {
+    status: status,
+    statusCode: errormessage,
+    // Flatten the loan array
+    result: collectedLoans.flat().filter((loan) => !!loan),
+  };
 }
 
 /*

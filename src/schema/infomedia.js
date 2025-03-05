@@ -1,4 +1,4 @@
-import { getInfomediaAgencyId } from "../../utils/access";
+import { getInfomediaAgencyId } from "../utils/access";
 
 const errors = [
   "SERVICE_NOT_LICENSED",

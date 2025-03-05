@@ -12,6 +12,7 @@ Object {
     "works",
     "suggest",
     "complexSearch",
+    "complexSearchIndexes",
     "complexSuggest",
     "localSuggest",
     "recommend",
@@ -26,7 +27,6 @@ Object {
     "series",
     "universe",
     "mood",
-    "marc",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -56,6 +56,7 @@ Object {
     "works",
     "suggest",
     "complexSearch",
+    "complexSearchIndexes",
     "complexSuggest",
     "localSuggest",
     "recommend",
@@ -70,7 +71,6 @@ Object {
     "series",
     "universe",
     "mood",
-    "marc",
     "submitOrder",
   ],
   "denyTypes": Array [
@@ -94,6 +94,7 @@ Object {
     "works",
     "suggest",
     "complexSearch",
+    "complexSearchIndexes",
     "complexSuggest",
     "localSuggest",
     "recommend",
@@ -108,7 +109,6 @@ Object {
     "series",
     "universe",
     "mood",
-    "marc",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -136,6 +136,7 @@ Object {
     "works",
     "suggest",
     "complexSearch",
+    "complexSearchIndexes",
     "complexSuggest",
     "localSuggest",
     "recommend",
@@ -150,7 +151,6 @@ Object {
     "series",
     "universe",
     "mood",
-    "marc",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",

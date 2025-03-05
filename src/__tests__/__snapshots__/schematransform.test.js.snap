@@ -11,6 +11,97 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the \`da
 \\"\\"\\"
 scalar DateTime
 
+enum AccessTypeCodeEnum {
+  PHYSICAL
+  ONLINE
+  UNKNOWN
+}
+
+enum AccessUrlTypeEnum {
+  IMAGE
+  OTHER
+  RESOURCE
+  SAMPLE
+  TABLE_OF_CONTENTS
+  THUMBNAIL
+}
+
+enum LinkStatusEnum {
+  BROKEN
+  GONE
+  INVALID
+  OK
+}
+
+type AccessType {
+  display: String!
+  code: AccessTypeCodeEnum!
+}
+
+type Ereol {
+  \\"\\"\\"
+  The origin, e.g. \\"Ereolen\\" or \\"Ereolen Go\\"
+  \\"\\"\\"
+  origin: String!
+
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
+  url: String!
+
+  \\"\\"\\"
+  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
+  \\"\\"\\"
+  canAlwaysBeLoaned: Boolean!
+
+  \\"\\"\\"Notes for the resource\\"\\"\\"
+  note: String
+}
+
+type AccessUrl {
+  \\"\\"\\"
+  The origin, e.g. \\"DBC Webarkiv\\"
+  \\"\\"\\"
+  origin: String!
+
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
+  url: String!
+
+  \\"\\"\\"Notes for the resource\\"\\"\\"
+  note: String
+
+  \\"\\"\\"If the resource requires login\\"\\"\\"
+  loginRequired: Boolean!
+
+  \\"\\"\\"The type of content that can be found at this URL\\"\\"\\"
+  type: AccessUrlTypeEnum
+
+  \\"\\"\\"Status from linkcheck\\"\\"\\"
+  status: LinkStatusEnum!
+}
+
+type InterLibraryLoan {
+  \\"\\"\\"Is true when manifestation can be borrowed via ill\\"\\"\\"
+  loanIsPossible: Boolean!
+
+  \\"\\"\\"Is newly added - nice to know if there are no localizations\\"\\"\\"
+  accessNew: Boolean!
+}
+
+type InfomediaService {
+  \\"\\"\\"
+  Infomedia ID which can be used to fetch article through Infomedia Service
+  \\"\\"\\"
+  id: String!
+}
+
+type DigitalArticleService {
+  \\"\\"\\"
+  Issn which can be used to order article through Digital Article Service
+  \\"\\"\\"
+  issn: String!
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+
 type AdminData {
   creationDate: String
   requestButton: Boolean
@@ -50,6 +141,8 @@ type BibdkQuery {
 type Mutation {
   bibdk: BibdkMutate!
   culr: CulrMutate!
+  elba: ElbaServices!
+  holdingsItems: HoldingsItems!
 
   \\"\\"\\"
   Order digital article through Digital Article Service
@@ -64,8 +157,6 @@ type Mutation {
     titleOfComponent: String
     pagination: String
   ): DigitalArticleServiceResponse!
-  elba: ElbaServices!
-  holdingsItems: HoldingsItems!
 
   \\"\\"\\"Netpunkt related mutations\\"\\"\\"
   netpunkt: Netpunkt!
@@ -105,9 +196,11 @@ type Mutation {
 type Query {
   bibdk: BibdkQuery!
   bibevents(input: BibEventsQueryInput): Bibevents!
+
+  \\"\\"\\"All indexes in complex search\\"\\"\\"
+  complexSearchIndexes: [ComplexSearchIndex!]
   culr: CulrQuery!
   debug: Debug
-  series(seriesId: String!): Series
 
   \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
   marc: Marc!
@@ -184,6 +277,7 @@ type Query {
   relatedSubjects(q: [String!]!, limit: Int): [String!] @deprecated(reason: \\"Use 'Recommendations.subjects' instead expires: 01/03-2025\\")
   inspiration(limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
+  series(seriesId: String!): Series
   stats: Stats
   test: Test
   universe(key: String, universeId: String): Universe
@@ -496,6 +590,20 @@ type CheckOrderPolicy {
   orderPossibleReason: OrderPossibleReasonEnum
 }
 
+type ComplexSearchIndex {
+  \\"\\"\\"The name of a Complex Search index\\"\\"\\"
+  index: String!
+
+  \\"\\"\\"Can be used for searching\\"\\"\\"
+  search: Boolean!
+
+  \\"\\"\\"Can be used for faceting\\"\\"\\"
+  facet: Boolean!
+
+  \\"\\"\\"Can be used for sorting\\"\\"\\"
+  sort: Boolean!
+}
+
 \\"\\"\\"Search Filters\\"\\"\\"
 input ComplexSearchFiltersInput {
   \\"\\"\\"BranchId. \\"\\"\\"
@@ -625,6 +733,12 @@ type ComplexSearchResponse {
   errorMessage: String
 }
 
+type CoverDetails {
+  url: String
+  width: Int
+  height: Int
+}
+
 type Cover {
   detail_117: String
   detail_207: String
@@ -633,6 +747,117 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
+  xSmall: CoverDetails
+  small: CoverDetails
+  medium: CoverDetails
+  large: CoverDetails
+}
+
+type Translation {
+  \\"\\"\\"
+  Translation in plural form, e.g. forfattere, komponister, instruktører etc.
+  \\"\\"\\"
+  plural: String!
+
+  \\"\\"\\"Translation in singular form, e.g. forfatter, komponist, instruktør\\"\\"\\"
+  singular: String!
+}
+
+type Role {
+  \\"\\"\\"
+  The code for the type of creator or contributor, e.g. 'aut' for author, 'ill' for illustrator etc
+  \\"\\"\\"
+  functionCode: String!
+
+  \\"\\"\\"
+  The type of creator/contributor as text in singular and plural in Danish, e.g. forfatter/forfattere, komponist/komponister etc
+  \\"\\"\\"
+  function: Translation!
+}
+
+type Person implements SubjectInterface & CreatorInterface {
+  \\"\\"\\"The person's whole name in normal order\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"The person's full name inverted\\"\\"\\"
+  nameSort: String!
+
+  \\"\\"\\"First name of the person\\"\\"\\"
+  firstName: String
+
+  \\"\\"\\"Last name of the person\\"\\"\\"
+  lastName: String
+
+  \\"\\"\\"Birth year of the person\\"\\"\\"
+  birthYear: String
+
+  \\"\\"\\"A roman numeral added to the person, like Christian IV\\"\\"\\"
+  romanNumeral: String
+
+  \\"\\"\\"Added information about the person, like Henri, konge af Frankrig\\"\\"\\"
+  attributeToName: String
+
+  \\"\\"\\"Creator aliases, creators behind used pseudonym\\"\\"\\"
+  aliases: [Person!]!
+
+  \\"\\"\\"
+  A list of which kinds of contributions this person made to this creation
+  \\"\\"\\"
+  roles: [Role!]!
+  type: SubjectTypeEnum!
+  language: Language
+  local: Boolean
+}
+
+type Corporation implements SubjectInterface & CreatorInterface {
+  \\"\\"\\"The full corporation or conference name\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"The full corporation or conference name to sort after\\"\\"\\"
+  nameSort: String!
+
+  \\"\\"\\"Main corporation or conference\\"\\"\\"
+  main: String
+
+  \\"\\"\\"Sub corporation or conference/meeting\\"\\"\\"
+  sub: String
+
+  \\"\\"\\"
+  Location or jurisdiction of the corporation or conference, like Københavns Kommune, Statistisk Kontor
+  \\"\\"\\"
+  location: String
+
+  \\"\\"\\"Year of the conference\\"\\"\\"
+  year: String
+
+  \\"\\"\\"Number of the conference\\"\\"\\"
+  number: String
+
+  \\"\\"\\"
+  Added information about the corporation, like M. Folmer Andersen (firma)
+  \\"\\"\\"
+  attributeToName: String
+
+  \\"\\"\\"
+  A list of which kinds of contributions this corporation made to this creation
+  \\"\\"\\"
+  roles: [Role!]!
+  type: SubjectTypeEnum!
+  language: Language
+  local: Boolean
+}
+
+interface CreatorInterface {
+  \\"\\"\\"Name of the creator\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Name of the creator which can be used to sort after \\"\\"\\"
+  nameSort: String!
+
+  \\"\\"\\"
+  A list of which kinds of contributions this creator made to this creation
+  \\"\\"\\"
+  roles: [Role!]!
 }
 
 enum CulrResponseCodesEnum {
@@ -1029,202 +1254,328 @@ type DK5 {
   value: String!
 }
 
-enum AccessTypeCodeEnum {
-  PHYSICAL
-  ONLINE
-  UNKNOWN
-}
-
-enum AccessUrlTypeEnum {
-  IMAGE
-  OTHER
-  RESOURCE
-  SAMPLE
-  TABLE_OF_CONTENTS
-  THUMBNAIL
-}
-
-enum LinkStatusEnum {
-  BROKEN
-  GONE
-  INVALID
+enum CopyRequestStatusEnum {
   OK
+  ERROR_UNAUTHENTICATED_USER
+  ERROR_AGENCY_NOT_SUBSCRIBED
+  ERROR_INVALID_PICKUP_BRANCH
+  ERROR_PID_NOT_RESERVABLE
+  ERROR_MISSING_CLIENT_CONFIGURATION
+  ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  ERROR_MISSING_MUNICIPALITYAGENCYID
+  UNKNOWN_USER
+  BORCHK_USER_BLOCKED_BY_AGENCY
+  BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
+  BORCHK_USER_NOT_VERIFIED
+  INTERNAL_ERROR
 }
 
-type AccessType {
-  display: String!
-  code: AccessTypeCodeEnum!
+type CopyRequestResponse {
+  status: CopyRequestStatusEnum!
 }
 
-type Ereol {
-  \\"\\"\\"
-  The origin, e.g. \\"Ereolen\\" or \\"Ereolen Go\\"
-  \\"\\"\\"
-  origin: String!
+type ElbaServices {
+  placeCopyRequest(
+    input: CopyRequestInput!
 
-  \\"\\"\\"The url where manifestation is located\\"\\"\\"
-  url: String!
+    \\"\\"\\"
+    If this is true, the copy request will not be send to the elba service
+    Use it for testing
+    \\"\\"\\"
+    dryRun: Boolean
+  ): CopyRequestResponse!
+}
+
+input CopyRequestInput {
+  \\"\\"\\"The pid of an article or periodica\\"\\"\\"
+  pid: String!
+  userName: String
+  userMail: String
+  publicationTitle: String
+  publicationDateOfComponent: String
+  publicationYearOfComponent: String
+  volumeOfComponent: String
+  authorOfComponent: String
+  titleOfComponent: String
+  pagesOfComponent: String
+  userInterestDate: String
+  pickUpAgencySubdivision: String
+  issueOfComponent: String
+  openURL: String
+}
+
+type HelpRow {
+  nid: Int!
+  group: String!
+  orgTitle: String!
+  title: String!
+  body: String!
+}
+
+type HelpResponse {
+  result: [HelpRow!]!
+}
+
+type HoldingsItems {
+  \\"\\"\\"
+  Updates all holdings for a given bibliographic record.
+  Non-referenced issues/items are removed, and items may be moved between records.
+  \\"\\"\\"
+  updateAllHoldingsItems(
+    \\"\\"\\"Library number identifying the agency.\\"\\"\\"
+    agencyId: String
+
+    \\"\\"\\"Bibliographic record ID (faust number).\\"\\"\\"
+    bibliographicRecordId: String!
+
+    \\"\\"\\"The payload containing all issues/items for the bibliographic record.\\"\\"\\"
+    input: CompleteWithIssuesInput!
+
+    \\"\\"\\"If dryRun is true, the actual service will never get called.\\"\\"\\"
+    dryRun: Boolean
+  ): HoldingsItemsStatus!
 
   \\"\\"\\"
-  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
+  Updates a single holding for a bibliographic record.
+  If the record does not exist, a bad request is returned.
   \\"\\"\\"
-  canAlwaysBeLoaned: Boolean!
+  updateSingleHoldingsItem(
+    \\"\\"\\"Library number identifying the agency.\\"\\"\\"
+    agencyId: String
 
-  \\"\\"\\"Notes for the resource\\"\\"\\"
+    \\"\\"\\"Bibliographic record ID (faust number).\\"\\"\\"
+    bibliographicRecordId: String!
+
+    \\"\\"\\"Identifier for a material, usually a barcode.\\"\\"\\"
+    itemId: String!
+
+    \\"\\"\\"The payload containing details for the single item and related issue.\\"\\"\\"
+    input: ItemWithIssueInput!
+
+    \\"\\"\\"If dryRun is true, the actual service will never get called.\\"\\"\\"
+    dryRun: Boolean
+  ): HoldingsItemsStatus!
+
+  \\"\\"\\"
+  Removes all issues/items for a bibliographic record.
+  This operation will also remove the 'firstAccessionDate' for any items not resurrected.
+  \\"\\"\\"
+  removeAllHoldingsItems(
+    \\"\\"\\"The agency ID identifying the library.\\"\\"\\"
+    agencyId: String
+
+    \\"\\"\\"The bibliographic record ID (faust number).\\"\\"\\"
+    bibliographicRecordId: String!
+
+    \\"\\"\\"If dryRun is true, the actual service will never get called.\\"\\"\\"
+    dryRun: Boolean
+  ): HoldingsItemsStatus!
+}
+
+\\"\\"\\"The payload for updating all issues/items for a bibliographic record.\\"\\"\\"
+input CompleteWithIssuesInput {
+  \\"\\"\\"When this structure was exported in ISO-8601 format with timezone Z.\\"\\"\\"
+  version: String!
+
+  \\"\\"\\"
+  When the first item for this material was acquired, in ISO-8601 format.
+  \\"\\"\\"
+  firstAccessionDate: String
+
+  \\"\\"\\"Notes about the bibliographic item.\\"\\"\\"
   note: String
+
+  \\"\\"\\"Issues associated with the bibliographic record.\\"\\"\\"
+  issues: [IssueWithItemsInput]
+
+  \\"\\"\\"Whether online access for this bibliographic item is available.\\"\\"\\"
+  online: Boolean
 }
 
-type AccessUrl {
+\\"\\"\\"Details of an issue, including its items.\\"\\"\\"
+input IssueWithItemsInput {
+  \\"\\"\\"Identifier for a material, usually a barcode.\\"\\"\\"
+  issueId: String!
+
+  \\"\\"\\"Items associated with this issue.\\"\\"\\"
+  items: [ItemInput!]
+
+  \\"\\"\\"The text describing the issue.\\"\\"\\"
+  issueText: String!
+
+  \\"\\"\\"When an item is expected to be available for loan, in ISO-8601 format.\\"\\"\\"
+  expectedDelivery: String
+
   \\"\\"\\"
-  The origin, e.g. \\"DBC Webarkiv\\"
+  Number of items ready to be lent out. If 0, expectedDelivery must be set.
   \\"\\"\\"
-  origin: String!
-
-  \\"\\"\\"The url where manifestation is located\\"\\"\\"
-  url: String!
-
-  \\"\\"\\"Notes for the resource\\"\\"\\"
-  note: String
-
-  \\"\\"\\"If the resource requires login\\"\\"\\"
-  loginRequired: Boolean!
-
-  \\"\\"\\"The type of content that can be found at this URL\\"\\"\\"
-  type: AccessUrlTypeEnum
-
-  \\"\\"\\"Status from linkcheck\\"\\"\\"
-  status: LinkStatusEnum!
+  readyForLoan: Int
 }
 
-type InterLibraryLoan {
-  \\"\\"\\"Is true when manifestation can be borrowed via ill\\"\\"\\"
-  loanIsPossible: Boolean!
+\\"\\"\\"Details of an individual item.\\"\\"\\"
+input ItemInput {
+  \\"\\"\\"Identifier for a material, usually a barcode.\\"\\"\\"
+  itemId: String!
 
-  \\"\\"\\"Is newly added - nice to know if there are no localizations\\"\\"\\"
-  accessNew: Boolean!
+  \\"\\"\\"Human-readable text describing the branch.\\"\\"\\"
+  branch: String!
+
+  \\"\\"\\"Identifying number of the branch.\\"\\"\\"
+  branchId: Int!
+
+  \\"\\"\\"Human-readable text describing the department within the branch.\\"\\"\\"
+  department: String!
+
+  \\"\\"\\"Human-readable text describing the location within the department.\\"\\"\\"
+  location: String!
+
+  \\"\\"\\"Human-readable text describing the sub-location within the location.\\"\\"\\"
+  subLocation: String!
+
+  \\"\\"\\"Human-readable text describing the rules for lending.\\"\\"\\"
+  circulationRule: String!
+
+  \\"\\"\\"When the item was acquired, in ISO-8601 format.\\"\\"\\"
+  accessionDate: String!
+
+  \\"\\"\\"Rule for lending according to DanMarc 096r.\\"\\"\\"
+  loanRestriction: LoanRestrictionEnum
+
+  \\"\\"\\"The status of the item (e.g., OnShelf, OnLoan, etc.).\\"\\"\\"
+  status: ItemStatusEnum
+
+  \\"\\"\\"When this item was last lent, in ISO-8601 format.\\"\\"\\"
+  lastLoanDate: String
+
+  \\"\\"\\"
+  Identifying the agencyId that owns this, if temporarily part of the library (ILL loan).
+  \\"\\"\\"
+  ownerAgencyId: Int
 }
 
-type InfomediaService {
-  \\"\\"\\"
-  Infomedia ID which can be used to fetch article through Infomedia Service
-  \\"\\"\\"
-  id: String!
+\\"\\"\\"Represents the status of an item.\\"\\"\\"
+enum ItemStatusEnum {
+  \\"\\"\\"The item has been discarded and is no longer available.\\"\\"\\"
+  DISCARDED
+
+  \\"\\"\\"The item is marked as lost.\\"\\"\\"
+  LOST
+
+  \\"\\"\\"The item is not available for loan.\\"\\"\\"
+  NOTFORLOAN
+
+  \\"\\"\\"The item is currently on loan.\\"\\"\\"
+  ONLOAN
+
+  \\"\\"\\"The item is on order but not yet available.\\"\\"\\"
+  ONORDER
+
+  \\"\\"\\"The item is available on the shelf.\\"\\"\\"
+  ONSHELF
 }
 
-type DigitalArticleService {
-  \\"\\"\\"
-  Issn which can be used to order article through Digital Article Service
-  \\"\\"\\"
-  issn: String!
+enum LoanRestrictionEnum {
+  A
+  B
+  C
+  D
+  E
+  F
+  G
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+\\"\\"\\"Payload for updating an item, including related issue details.\\"\\"\\"
+input ItemWithIssueInput {
+  \\"\\"\\"Human-readable text describing the branch.\\"\\"\\"
+  branch: String!
 
-type Translation {
-  \\"\\"\\"
-  Translation in plural form, e.g. forfattere, komponister, instruktører etc.
-  \\"\\"\\"
-  plural: String!
+  \\"\\"\\"Identifying number of the branch.\\"\\"\\"
+  branchId: Int!
 
-  \\"\\"\\"Translation in singular form, e.g. forfatter, komponist, instruktør\\"\\"\\"
-  singular: String!
+  \\"\\"\\"Human-readable text describing the department within the branch.\\"\\"\\"
+  department: String!
+
+  \\"\\"\\"Human-readable text describing the location within the department.\\"\\"\\"
+  location: String!
+
+  \\"\\"\\"Human-readable text describing the sub-location within the location.\\"\\"\\"
+  subLocation: String!
+
+  \\"\\"\\"Human-readable text describing the rules for lending.\\"\\"\\"
+  circulationRule: String!
+
+  \\"\\"\\"When the item was acquired, in ISO-8601 format.\\"\\"\\"
+  accessionDate: String!
+
+  \\"\\"\\"Rule for lending according to DanMarc 096r.\\"\\"\\"
+  loanRestriction: LoanRestrictionEnum
+
+  \\"\\"\\"The status of the item (e.g., OnShelf, OnLoan, etc.).\\"\\"\\"
+  status: ItemStatusEnum
+
+  \\"\\"\\"When this item was last lent, in ISO-8601 format.\\"\\"\\"
+  lastLoanDate: String
+
+  \\"\\"\\"
+  Identifying the agencyId that owns this, if temporarily part of the library (ILL loan).
+  \\"\\"\\"
+  ownerAgencyId: Int
+
+  \\"\\"\\"When this structure was exported in ISO-8601 format with timezone Z.\\"\\"\\"
+  version: String!
+
+  \\"\\"\\"Details of the issue, including its ID.\\"\\"\\"
+  issue: IssueInputWithIdInput!
 }
 
-type Role {
-  \\"\\"\\"
-  The code for the type of creator or contributor, e.g. 'aut' for author, 'ill' for illustrator etc
-  \\"\\"\\"
-  functionCode: String!
+\\"\\"\\"Details of an issue, including its ID.\\"\\"\\"
+input IssueInputWithIdInput {
+  \\"\\"\\"The ID of the issue.\\"\\"\\"
+  issueId: String!
+
+  \\"\\"\\"The text describing the issue.\\"\\"\\"
+  issueText: String!
+
+  \\"\\"\\"When an item is expected to be available for loan, in ISO-8601 format.\\"\\"\\"
+  expectedDelivery: String
 
   \\"\\"\\"
-  The type of creator/contributor as text in singular and plural in Danish, e.g. forfatter/forfattere, komponist/komponister etc
+  Number of items ready to be lent out. If 0, expectedDelivery must be set.
   \\"\\"\\"
-  function: Translation!
+  readyForLoan: Int
 }
 
-type Person implements SubjectInterface & CreatorInterface {
-  \\"\\"\\"The person's whole name in normal order\\"\\"\\"
-  display: String!
+\\"\\"\\"Represents the status of an operation.\\"\\"\\"
+type HoldingsItemsStatus {
+  \\"\\"\\"Indicates if the operation was successful.\\"\\"\\"
+  ok: Boolean!
 
-  \\"\\"\\"The person's full name inverted\\"\\"\\"
-  nameSort: String!
+  \\"\\"\\"Status code, represented as an ENUM value\\"\\"\\"
+  status: HoldingsItemsStatusEnum!
 
-  \\"\\"\\"First name of the person\\"\\"\\"
-  firstName: String
+  \\"\\"\\"Human-readable message about the reason for the status.\\"\\"\\"
+  message: String!
 
-  \\"\\"\\"Last name of the person\\"\\"\\"
-  lastName: String
-
-  \\"\\"\\"Birth year of the person\\"\\"\\"
-  birthYear: String
-
-  \\"\\"\\"A roman numeral added to the person, like Christian IV\\"\\"\\"
-  romanNumeral: String
-
-  \\"\\"\\"Added information about the person, like Henri, konge af Frankrig\\"\\"\\"
-  attributeToName: String
-
-  \\"\\"\\"Creator aliases, creators behind used pseudonym\\"\\"\\"
-  aliases: [Person!]!
-
-  \\"\\"\\"
-  A list of which kinds of contributions this person made to this creation
-  \\"\\"\\"
-  roles: [Role!]!
-  type: SubjectTypeEnum!
-  language: Language
-  local: Boolean
+  \\"\\"\\"Optional tracking ID for debugging or log tracking.\\"\\"\\"
+  trackingId: String
 }
 
-type Corporation implements SubjectInterface & CreatorInterface {
-  \\"\\"\\"The full corporation or conference name\\"\\"\\"
-  display: String!
+\\"\\"\\"Represents the status of an operation related to holdings items.\\"\\"\\"
+enum HoldingsItemsStatusEnum {
+  \\"\\"\\"The operation completed successfully.\\"\\"\\"
+  OK
 
-  \\"\\"\\"The full corporation or conference name to sort after\\"\\"\\"
-  nameSort: String!
+  \\"\\"\\"A generic error occurred during the operation.\\"\\"\\"
+  ERROR
 
-  \\"\\"\\"Main corporation or conference\\"\\"\\"
-  main: String
+  \\"\\"\\"The operation failed due to an unauthenticated or invalid token.\\"\\"\\"
+  ERROR_UNAUTHENTICATED_TOKEN
 
-  \\"\\"\\"Sub corporation or conference/meeting\\"\\"\\"
-  sub: String
+  \\"\\"\\"The operation failed because the token specified agency is invalid.\\"\\"\\"
+  ERROR_INVALID_AGENCY
 
-  \\"\\"\\"
-  Location or jurisdiction of the corporation or conference, like Københavns Kommune, Statistisk Kontor
-  \\"\\"\\"
-  location: String
-
-  \\"\\"\\"Year of the conference\\"\\"\\"
-  year: String
-
-  \\"\\"\\"Number of the conference\\"\\"\\"
-  number: String
-
-  \\"\\"\\"
-  Added information about the corporation, like M. Folmer Andersen (firma)
-  \\"\\"\\"
-  attributeToName: String
-
-  \\"\\"\\"
-  A list of which kinds of contributions this corporation made to this creation
-  \\"\\"\\"
-  roles: [Role!]!
-  type: SubjectTypeEnum!
-  language: Language
-  local: Boolean
-}
-
-interface CreatorInterface {
-  \\"\\"\\"Name of the creator\\"\\"\\"
-  display: String!
-
-  \\"\\"\\"Name of the creator which can be used to sort after \\"\\"\\"
-  nameSort: String!
-
-  \\"\\"\\"
-  A list of which kinds of contributions this creator made to this creation
-  \\"\\"\\"
-  roles: [Role!]!
+  \\"\\"\\"The operation failed due to lack of authorisation.\\"\\"\\"
+  ERROR_NO_AUTHORISATION
 }
 
 enum InfomediaErrorEnum {
@@ -1257,6 +1608,225 @@ type InfomediaArticle {
   hedLine: String
   logo: String
   html: String
+}
+
+input DataCollectSearchRequestInput {
+  q: SearchQueryInput!
+  filters: SearchFiltersInput
+}
+
+input DataCollectSearchWorkInput {
+  search_query_hit: Int!
+  search_query_work: String!
+  search_request: DataCollectSearchRequestInput!
+  session_id: String!
+}
+
+input DataCollectSearchInput {
+  search_request: DataCollectSearchRequestInput!
+  search_response_works: [String!]!
+  search_offset: Int!
+  session_id: String!
+}
+
+input DataCollectExampleInput {
+  example: String!
+  session_id: String!
+}
+
+input DataCollectRecommenderClickInput {
+  recommender_based_on: String!
+  recommender_click_hit: Int!
+  recommender_click_work: String!
+  recommender_click_reader: String!
+  recommender_shown_recommendations: [String!]!
+  session_id: String!
+}
+
+input DataCollectSuggestionInput {
+  type: String!
+  value: String!
+}
+
+input DataCollectSuggestClickInput {
+  suggest_query: String!
+  suggest_query_hit: Int!
+  suggest_query_request_types: [String!]!
+  suggest_query_result: DataCollectSuggestionInput!
+  session_id: String!
+}
+
+input DataCollectSuggestPresentedInput {
+  suggest_query: String!
+  suggest_query_request_types: [String!]!
+  suggest_query_results: [DataCollectSuggestionInput!]!
+  session_id: String!
+}
+
+enum FeedbackThumbEnum {
+  UP
+  DOWN
+}
+
+input DataCollectSearchFeedbackInput {
+  thumbs: FeedbackThumbEnum!
+  query: String!
+  reason: String!
+}
+
+input DataCollectInput {
+  recommender_click: DataCollectRecommenderClickInput
+  search: DataCollectSearchInput
+  search_work: DataCollectSearchWorkInput
+  suggest_presented: DataCollectSuggestPresentedInput
+  suggest_click: DataCollectSuggestClickInput
+  search_feedback: DataCollectSearchFeedbackInput
+  example: DataCollectExampleInput
+}
+
+input CategoryFilterInput {
+  category: CategoryFiltersEnum!
+  subCategories: [String!]
+}
+
+enum CategoryFiltersEnum {
+  CHILDRENBOOKSNONFICTION
+  CHILDRENBOOKSFICTION
+  FICTION
+  NONFICTION
+  EBOOKS
+  ARTICLES
+  MOVIES
+  GAMES
+  MUSIC
+  SHEETMUSIC
+}
+
+type Inspiration {
+  categories(filter: [CategoryFilterInput!]): [Categories]!
+}
+
+enum LanguageCodeEnum {
+  DA
+  EN
+}
+
+enum LibraryStatusEnum {
+  SLETTET
+  AKTIVE
+  ALLE
+  USYNLIG
+}
+
+enum VipUserParameterEnum {
+  CPR
+  USERID
+  BARCODE
+  CARDNO
+  CUSTOMID
+  USERDATEOFBIRTH
+  USERNAME
+  USERADDRESS
+  USERMAIL
+  USERTELEPHONE
+}
+
+enum AgencyTypeEnum {
+  ALLE
+  SKOLEBIBLIOTEK
+  FOLKEBIBLIOTEK
+  FORSKNINGSBIBLIOTEK
+  ANDRE
+}
+
+type UserParameter {
+  userParameterType: VipUserParameterEnum!
+  userParameterName: String!
+  parameterRequired: Boolean!
+  description: String
+}
+
+type BranchResult {
+  hitcount: Int!
+  borrowerStatus: BorrowerStatus
+  result: [Branch!]!
+  agencyUrl: String
+}
+
+\\"\\"\\"
+Indicates if user is blocked for a given agency or 
+if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
+\\"\\"\\"
+type BorrowerStatus {
+  allowed: Boolean!
+  statusCode: String!
+}
+
+type Highlight {
+  key: String!
+  value: String!
+}
+
+type MinisearchDebug {
+  score: String
+  terms: [String!]
+  match: [Match!]
+}
+
+type Match {
+  term: String
+  fields: [String!]
+}
+
+enum LinkCheckStatusEnum {
+  OK
+  BROKEN
+  INVALID
+  GONE
+}
+
+type LinkCheckResponse {
+  url: String!
+  status: LinkCheckStatusEnum!
+  lastCheckedAt: DateTime
+  brokenSince: DateTime
+}
+
+type LinkCheckService {
+  checks(urls: [String!]): [LinkCheckResponse!]!
+}
+
+type RenewLoanResponse {
+  \\"\\"\\"Whether the loan was renewed or not.\\"\\"\\"
+  renewed: Boolean!
+
+  \\"\\"\\"Returns error message, if the renewal failed.\\"\\"\\"
+  error: String
+
+  \\"\\"\\"Returns due date of the loan, if renewal was successful.\\"\\"\\"
+  dueDate: String
+}
+
+type Localizations {
+  count: Int
+  agencies: [HoldingAgency]
+}
+
+type HoldingAgency {
+  agencyId: String
+  holdingItems: [LocalizationsHoldingsItem]
+}
+
+type LocalizationsHoldingsItem {
+  localizationPid: String
+  codes: String
+  localIdentifier: String
+}
+
+enum AvailabilityEnum {
+  NOW
+  LATER
+  UNKNOWN
 }
 
 type CatalogueCodes {
@@ -1369,6 +1939,8 @@ enum NoteTypeEnum {
   TECHNICAL_REQUIREMENTS
   ESTIMATED_PLAYING_TIME_FOR_GAMES
   EXPECTED_PUBLICATION_DATE
+  WITHDRAWN_PUBLICATION
+  CONTAINS_AI_GENERATED_CONTENT
 }
 
 enum ChildOrAdultCodeEnum {
@@ -1707,12 +2279,30 @@ type LevelForAudience {
   realisticVsFictional: Int
 }
 
+\\"\\"\\"
+A search hit that encapsulates a matched manifestation from a search query.
+\\"\\"\\"
+type SearchHit {
+  \\"\\"\\"The manifestation that was matched during the search.\\"\\"\\"
+  match: Manifestation
+}
+
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
   all: [Manifestation!]!
   bestRepresentation: Manifestation!
+  bestRepresentations: [Manifestation!]!
   mostRelevant: [Manifestation!]!
+
+  \\"\\"\\"
+  A list of manifestations that matched the search query.
+  
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
+  \\"\\"\\"
+  searchHits: [SearchHit!]
 }
 
 type Manifestation {
@@ -1876,14 +2466,14 @@ type Manifestation {
   \\"\\"\\"Material that can be identified as sheet music\\"\\"\\"
   sheetMusicCategories: SheetMusicCategory
 
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
-
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
 }
 
 type SheetMusicCategory {
@@ -1963,127 +2553,42 @@ type ManifestationTitles {
   tvSeries: TvSeries
 }
 
-enum GeneralMaterialTypeCodeEnum {
-  ARTICLES
-  AUDIO_BOOKS
-  BOARD_GAMES
-  BOOKS
-  COMICS
-  COMPUTER_GAMES
-  EBOOKS
-  FILMS
-  IMAGE_MATERIALS
-  MUSIC
-  NEWSPAPER_JOURNALS
-  OTHER
-  PODCASTS
-  SHEET_MUSIC
-  TV_SERIES
+type MarcRecord {
+  \\"\\"\\"The marc record identifier\\"\\"\\"
+  id: String!
+
+  \\"\\"\\"The library agency\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
+  bibliographicRecordId: String!
+
+  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
+  content: String!
+
+  \\"\\"\\"
+  The serialization format of the MARC record content. Defaults to 'marcXchange'
+  \\"\\"\\"
+  contentSerializationFormat: String!
+
+  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
+  deleted: Boolean!
 }
 
-type DigitalArticleServiceResponse {
-  msg: String!
-}
-
-type Recommendation {
-  \\"\\"\\"The recommended work\\"\\"\\"
-  work: Work!
-
-  \\"\\"\\"The recommended manifestation\\"\\"\\"
-  manifestation: Manifestation!
-
-  \\"\\"\\"Info on how this recommendation was generated\\"\\"\\"
-  reader: [String!]!
-}
-
-type RecommendationResponse {
-  result: [Recommendation!]!
-}
-
-type Relations {
+type Marc {
   \\"\\"\\"
-  The story of this article is continued in this or these other article(s)
+  Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
   \\"\\"\\"
-  continuedIn: [Manifestation!]!
-
-  \\"\\"\\"
-  This story of this article actually started in this or these other article(s)
-  \\"\\"\\"
-  continues: [Manifestation!]!
-
-  \\"\\"\\"The contents of this articles is also discussed in these articles\\"\\"\\"
-  discussedIn: [Manifestation!]!
-
-  \\"\\"\\"The article discusses the content of these articles\\"\\"\\"
-  discusses: [Manifestation!]!
-
-  \\"\\"\\"This story is adapted in this or these movie(s)\\"\\"\\"
-  hasAdaptation: [Manifestation!]!
-
-  \\"\\"\\"The contents of this manifestation is analysed in these manifestations\\"\\"\\"
-  hasAnalysis: [Manifestation!]!
-
-  \\"\\"\\"The creator of this manifestation is portrayed in these manifestations\\"\\"\\"
-  hasCreatorDescription: [Manifestation!]!
-
-  \\"\\"\\"
-  The publisher of this manifestation has made a description of the content
-  \\"\\"\\"
-  hasDescriptionFromPublisher: [Manifestation!]!
-
-  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
-  hasManuscript: [Manifestation!]!
-
-  \\"\\"\\"
-  This manifestation has a 'materialevurdering' that was originally made for another manifestation, but it is still relevant (e.g. book/ebook)
-  \\"\\"\\"
-  hasReusedReview: [Manifestation!]!
-
-  \\"\\"\\"This manifestation has these reviews\\"\\"\\"
-  hasReview: [Manifestation!]!
-
-  \\"\\"\\"This movie or game has this sound track\\"\\"\\"
-  hasSoundtrack: [Manifestation!]!
-
-  \\"\\"\\"This movie is based on this or these books\\"\\"\\"
-  isAdaptationOf: [Manifestation!]!
-
-  \\"\\"\\"This manifestation is an analysis of these manifestations\\"\\"\\"
-  isAnalysisOf: [Manifestation!]!
-
-  \\"\\"\\"
-  This is a description from the original publisher of these manifestations
-  \\"\\"\\"
-  isDescriptionFromPublisherOf: [Manifestation!]!
-
-  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
-  isManuscriptOf: [Manifestation!]!
-
-  \\"\\"\\"
-  This 'materialevurdering' can also be used to review these relevant manifestations, even though it was originally made for another publication
-  \\"\\"\\"
-  isReusedReviewOf: [Manifestation!]!
-
-  \\"\\"\\"This manifestation is a review of these manifestations\\"\\"\\"
-  isReviewOf: [Manifestation!]!
-
-  \\"\\"\\"This sound track for a game is related to these games\\"\\"\\"
-  isSoundtrackOfGame: [Manifestation!]!
-
-  \\"\\"\\"This sound track for a movie is related to these movies\\"\\"\\"
-  isSoundtrackOfMovie: [Manifestation!]!
-
-  \\"\\"\\"This album has these tracks\\"\\"\\"
-  hasTrack: [Manifestation!]!
-
-  \\"\\"\\"This music track is part of these albums\\"\\"\\"
-  isPartOfAlbum: [Manifestation!]!
-
-  \\"\\"\\"This article or book part can be found in these manifestations\\"\\"\\"
-  isPartOfManifestation: [Manifestation!]!
+  getMarcByRecordId(
+    \\"\\"\\"The marc record identifier\\"\\"\\"
+    recordId: String!
+  ): MarcRecord
 }
 
 type Work {
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
@@ -2145,1005 +2650,24 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
-
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
 }
 
-enum ReviewElementTypeEnum {
-  ABSTRACT
-  ACQUISITION_RECOMMENDATIONS
-  AUDIENCE
-  CONCLUSION
-  DESCRIPTION
-  EVALUATION
-  SIMILAR_MATERIALS
-}
-
-type ReviewElement {
-  content: String
-
-  \\"\\"\\"
-  This is a paragraph containing markup where links to manifestations
-  can be inserted. For instance '\\"Axel Steens nye job minder om [870970-basis:20307021] fra ...'.
-  Relevant manifestations are located in the manifestations field. 
-  \\"\\"\\"
-  contentSubstitute: String
-  heading: String
-
-  \\"\\"\\"
-  Manifestations that can be used to generate and insert links into 'contentSubsitute'.
-  \\"\\"\\"
-  manifestations: [Manifestation]
-  type: ReviewElementTypeEnum
-}
-
-type ManifestationReview {
-  rating: String
-  reviewByLibrarians: [ReviewElement]
-}
-
-type SerieWork {
-  \\"\\"\\"The number of work in the series as a number (as text)\\"\\"\\"
-  numberInSeries: String
-
-  \\"\\"\\"Work of a serieWork\\"\\"\\"
-  work: Work!
-
-  \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
-  readThisFirst: Boolean
-
-  \\"\\"\\"
-  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
-  \\"\\"\\"
-  readThisWhenever: Boolean
-}
-
-type Series {
-  \\"\\"\\"The number of members in the series\\"\\"\\"
-  hitcount: Int!
-
-  \\"\\"\\"The title of the series\\"\\"\\"
-  title: String!
-
-  \\"\\"\\"Identifier for the series\\"\\"\\"
-  seriesId: String
-
-  \\"\\"\\"Traceid for tracking\\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"Additional information \\"\\"\\"
-  identifyingAddition: String
-
-  \\"\\"\\"Description of the series\\"\\"\\"
-  description: String
-
-  \\"\\"\\"A alternative title to the main 'title' of the series\\"\\"\\"
-  alternativeTitles: [String!]!
-
-  \\"\\"\\"
-  A parallel title to the main 'title' of the series, in a different language
-  \\"\\"\\"
-  parallelTitles: [String!]!
-
-  \\"\\"\\"The number in the series as text qoutation\\"\\"\\"
-  numberInSeries: String
-
-  \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
-  readThisFirst: Boolean
-
-  \\"\\"\\"
-  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
-  \\"\\"\\"
-  readThisWhenever: Boolean
-
-  \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
-  isPopular: Boolean
-
-  \\"\\"\\"WorkTypes for the series\\"\\"\\"
-  workTypes: [String!]!
-
-  \\"\\"\\"MainLanguages of the series\\"\\"\\"
-  mainLanguages: [String!]!
-
-  \\"\\"\\"Members of this serie. \\"\\"\\"
-  members(limit: Int, offset: Int): [SerieWork!]!
-}
-
-interface SubjectInterface {
-  display: String!
-
-  \\"\\"\\"
-  The type of subject - 'location', 'time period' etc., 'topic' if not specific kind of subject term
-  \\"\\"\\"
-  type: SubjectTypeEnum!
-
-  \\"\\"\\"Language of the subject - contains display and isoCode \\"\\"\\"
-  language: Language
-  local: Boolean
-}
-
-type SubjectText implements SubjectInterface {
-  type: SubjectTypeEnum!
-  display: String!
-  language: Language
-  local: Boolean
-}
-
-type TimePeriod implements SubjectInterface {
-  type: SubjectTypeEnum!
-  period: Range!
-  display: String!
-  language: Language
-  local: Boolean
-}
-
-type Mood implements SubjectInterface {
-  type: SubjectTypeEnum!
-  display: String!
-  language: Language
-  local: Boolean
-}
-
-type NarrativeTechnique implements SubjectInterface {
-  type: SubjectTypeEnum!
-  display: String!
-  language: Language
-  local: Boolean
-}
-
-type Setting implements SubjectInterface {
-  type: SubjectTypeEnum!
-  display: String!
-  language: Language
-  local: Boolean
-}
-
-type SubjectWithRating implements SubjectInterface {
-  type: SubjectTypeEnum!
-  display: String!
-  language: Language
-  local: Boolean
-
-  \\"\\"\\"Expressed as integer on a scale from 1 to 5\\"\\"\\"
-  rating: Int
-}
-
-enum SubjectTypeEnum {
-  TOPIC
-  LOCATION
-  FICTIONAL_CHARACTER
-  LAESEKOMPASSET
-  MEDICAL_SUBJECT_HEADING
-  MUSIC_COUNTRY_OF_ORIGIN
-  MUSIC_TIME_PERIOD
-  MUSICAL_INSTRUMENTATION
-  NATIONAL_AGRICULTURAL_LIBRARY
-  TIME_PERIOD
-  TITLE
-  FILM_NATIONALITY
-  LIBRARY_OF_CONGRESS_SUBJECT_HEADING
-  FICTIONAL_LOCATION
-
-  \\"\\"\\"
-  added for manifestation.parts.creators/person - they get a type from small-rye
-  \\"\\"\\"
-  PERSON
-  CORPORATION
-  MOOD
-  MOOD_CHILDREN
-
-  \\"\\"\\"Subject describing selected topics for children, and a rating.\\"\\"\\"
-  TOPIC_CHILDREN
-  PERSPECTIVE
-  STYLE
-  TEMPO
-  REALITY
-  ENVIRONMENT
-}
-
-type Range {
-  begin: Int
-  end: Int
-  display: String!
-}
-
-type SubjectContainer {
-  \\"\\"\\"All subjects\\"\\"\\"
-  all: [SubjectInterface!]!
-
-  \\"\\"\\"Only DBC verified subjects\\"\\"\\"
-  dbcVerified: [SubjectInterface!]!
-}
-
-enum SuggestionTypeEnum {
-  SUBJECT
-  TITLE
-  CREATOR
-  COMPOSIT
-}
-
-enum ComplexSuggestionTypeEnum {
-  HOSTPUBLICATION
-  CONTRIBUTORFUNCTION
-  CREATOR
-  DEFAULT
-  CREATORCONTRIBUTORFUNCTION
-  CREATORFUNCTION
-  SUBJECT
-  FICTIONALCHARACTER
-  TITLE
-  CREATORCONTRIBUTOR
-  SERIES
-  PUBLISHER
-}
-
-type ComplexSearchSuggestion {
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this suggestion. 
-  It is generated in the response and should be included in subsequent
-  API calls when this suggestion is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"The type of suggestion\\"\\"\\"
-  type: String!
-
-  \\"\\"\\"The suggested term which can be searched for\\"\\"\\"
-  term: String!
-
-  \\"\\"\\"A work related to the term\\"\\"\\"
-  work: Work
-}
-
-type Suggestion {
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this suggestion. 
-  It is generated in the response and should be included in subsequent
-  API calls when this suggestion is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"The type of suggestion: creator, subject or title\\"\\"\\"
-  type: SuggestionTypeEnum!
-
-  \\"\\"\\"The suggested term which can be searched for\\"\\"\\"
-  term: String!
-
-  \\"\\"\\"A work related to the term\\"\\"\\"
-  work: Work
-}
-
-type ComplexSuggestResponse {
-  result: [ComplexSearchSuggestion!]!
-}
-
-type SuggestResponse {
-  result: [Suggestion!]!
-}
-
-type LocalSuggestResponse {
-  result: [Suggestion!]!
-}
-
-type Language {
-  \\"\\"\\"Language as displayable text\\"\\"\\"
-  display: String!
-
-  \\"\\"\\"ISO639-2 language code\\"\\"\\"
-  isoCode: String!
-
-  \\"\\"\\"ISO639-1 language code (2 letters)\\"\\"\\"
-  iso639Set1: String!
-
-  \\"\\"\\"ISO639-2 language code (3 letters)\\"\\"\\"
-  iso639Set2: String!
-}
-
-type GeneralMaterialType {
-  \\"\\"\\"
-  code for materialType # @TODO - is this a finite list ?? - and where to get it
-  \\"\\"\\"
-  code: GeneralMaterialTypeCodeEnum!
-
-  \\"\\"\\"Ths string to display\\"\\"\\"
-  display: String!
-}
-
-type SpecificMaterialType {
-  \\"\\"\\"code for materialType\\"\\"\\"
-  code: String!
-
-  \\"\\"\\"Ths string to display\\"\\"\\"
-  display: String!
-}
-
-type MaterialType {
-  \\"\\"\\"jed 1.1 - the general materialtype\\"\\"\\"
-  materialTypeGeneral: GeneralMaterialType!
-
-  \\"\\"\\"jed 1.1 - the specific materialtType\\"\\"\\"
-  materialTypeSpecific: SpecificMaterialType!
-}
-
-enum FictionNonfictionCodeEnum {
-  FICTION
-  NONFICTION
-  NOT_SPECIFIED
-}
-
-type FictionNonfiction {
-  \\"\\"\\"
-  Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  \\"\\"\\"
-  display: String!
-
-  \\"\\"\\"Binary code fiction/nonfiction used for filtering\\"\\"\\"
-  code: FictionNonfictionCodeEnum!
-}
-
-type DK5MainEntry {
-  \\"\\"\\"Displayable main DK5 classification\\"\\"\\"
-  display: String!
-
-  \\"\\"\\"Main DK5 classification code\\"\\"\\"
-  code: String!
-
-  \\"\\"\\"The dk5Heading for the classification\\"\\"\\"
-  dk5Heading: String!
-}
-
-enum WorkTypeEnum {
-  ANALYSIS
-  ARTICLE
-  BOOKDESCRIPTION
-  GAME
-  LITERATURE
-  MAP
-  MOVIE
-  MUSIC
-  OTHER
-  PERIODICA
-  PORTRAIT
-  REVIEW
-  SHEETMUSIC
-  TRACK
-}
-
-type WorkTitles {
-  \\"\\"\\"The main title(s) of the work\\"\\"\\"
-  main: [String!]!
-
-  \\"\\"\\"The full title(s) of the work including subtitles etc\\"\\"\\"
-  full: [String!]!
-
-  \\"\\"\\"Titles (in other languages) parallel to the main 'title' of the work\\"\\"\\"
-  parallel: [String!]!
-
-  \\"\\"\\"The sorted title of the entity\\"\\"\\"
-  sort: String!
-
-  \\"\\"\\"
-  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
-  \\"\\"\\"
-  original: [String!]
-
-  \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
-  standard: String
-
-  \\"\\"\\"
-  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
-  \\"\\"\\"
-  titlePlusLanguage: String
-
-  \\"\\"\\"Danish translation of the main title\\"\\"\\"
-  translated: [String!]
-
-  \\"\\"\\"detailed title for tv series \\"\\"\\"
-  tvSeries: TvSeries
-}
-
-type TvSeries {
-  \\"\\"\\"Title of the tv serie\\"\\"\\"
-  title: String
-
-  \\"\\"\\"Dansih translated title of the tv serie\\"\\"\\"
-  danishLaunchTitle: String
-
-  \\"\\"\\"Detailed information about the episode\\"\\"\\"
-  episode: TvSeriesDetails
-
-  \\"\\"\\"Episode titles\\"\\"\\"
-  episodeTitles: [String!]
-
-  \\"\\"\\"Detailed information about the disc\\"\\"\\"
-  disc: TvSeriesDetails
-
-  \\"\\"\\"Detailed information about the season\\"\\"\\"
-  season: TvSeriesDetails
-
-  \\"\\"\\"Detailed information about the volume\\"\\"\\"
-  volume: TvSeriesDetails
-}
-
-type TvSeriesDetails {
-  display: String
-  numbers: [Int!]
-}
-
-enum CopyRequestStatusEnum {
-  OK
-  ERROR_UNAUTHENTICATED_USER
-  ERROR_AGENCY_NOT_SUBSCRIBED
-  ERROR_INVALID_PICKUP_BRANCH
-  ERROR_PID_NOT_RESERVABLE
-  ERROR_MISSING_CLIENT_CONFIGURATION
-  ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
-  ERROR_MISSING_MUNICIPALITYAGENCYID
-  UNKNOWN_USER
-  BORCHK_USER_BLOCKED_BY_AGENCY
-  BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
-  BORCHK_USER_NOT_VERIFIED
-  INTERNAL_ERROR
-}
-
-type CopyRequestResponse {
-  status: CopyRequestStatusEnum!
-}
-
-type ElbaServices {
-  placeCopyRequest(
-    input: CopyRequestInput!
-
-    \\"\\"\\"
-    If this is true, the copy request will not be send to the elba service
-    Use it for testing
-    \\"\\"\\"
-    dryRun: Boolean
-  ): CopyRequestResponse!
-}
-
-input CopyRequestInput {
-  \\"\\"\\"The pid of an article or periodica\\"\\"\\"
-  pid: String!
-  userName: String
-  userMail: String
-  publicationTitle: String
-  publicationDateOfComponent: String
-  publicationYearOfComponent: String
-  volumeOfComponent: String
-  authorOfComponent: String
-  titleOfComponent: String
-  pagesOfComponent: String
-  userInterestDate: String
-  pickUpAgencySubdivision: String
-  issueOfComponent: String
-  openURL: String
-}
-
-type HelpRow {
-  nid: Int!
-  group: String!
-  orgTitle: String!
-  title: String!
-  body: String!
-}
-
-type HelpResponse {
-  result: [HelpRow!]!
-}
-
-type HoldingsItems {
-  \\"\\"\\"
-  Updates all holdings for a given bibliographic record.
-  Non-referenced issues/items are removed, and items may be moved between records.
-  \\"\\"\\"
-  updateAllHoldingsItems(
-    \\"\\"\\"Library number identifying the agency.\\"\\"\\"
-    agencyId: String
-
-    \\"\\"\\"Bibliographic record ID (faust number).\\"\\"\\"
-    bibliographicRecordId: String!
-
-    \\"\\"\\"The payload containing all issues/items for the bibliographic record.\\"\\"\\"
-    input: CompleteWithIssuesInput!
-
-    \\"\\"\\"If dryRun is true, the actual service will never get called.\\"\\"\\"
-    dryRun: Boolean
-  ): HoldingsItemsStatus!
-
-  \\"\\"\\"
-  Updates a single holding for a bibliographic record.
-  If the record does not exist, a bad request is returned.
-  \\"\\"\\"
-  updateSingleHoldingsItem(
-    \\"\\"\\"Library number identifying the agency.\\"\\"\\"
-    agencyId: String
-
-    \\"\\"\\"Bibliographic record ID (faust number).\\"\\"\\"
-    bibliographicRecordId: String!
-
-    \\"\\"\\"Identifier for a material, usually a barcode.\\"\\"\\"
-    itemId: String!
-
-    \\"\\"\\"The payload containing details for the single item and related issue.\\"\\"\\"
-    input: ItemWithIssueInput!
-
-    \\"\\"\\"If dryRun is true, the actual service will never get called.\\"\\"\\"
-    dryRun: Boolean
-  ): HoldingsItemsStatus!
-
-  \\"\\"\\"
-  Removes all issues/items for a bibliographic record.
-  This operation will also remove the 'firstAccessionDate' for any items not resurrected.
-  \\"\\"\\"
-  removeAllHoldingsItems(
-    \\"\\"\\"The agency ID identifying the library.\\"\\"\\"
-    agencyId: String
-
-    \\"\\"\\"The bibliographic record ID (faust number).\\"\\"\\"
-    bibliographicRecordId: String!
-
-    \\"\\"\\"If dryRun is true, the actual service will never get called.\\"\\"\\"
-    dryRun: Boolean
-  ): HoldingsItemsStatus!
-}
-
-\\"\\"\\"The payload for updating all issues/items for a bibliographic record.\\"\\"\\"
-input CompleteWithIssuesInput {
-  \\"\\"\\"When this structure was exported in ISO-8601 format with timezone Z.\\"\\"\\"
-  version: String!
-
-  \\"\\"\\"
-  When the first item for this material was acquired, in ISO-8601 format.
-  \\"\\"\\"
-  firstAccessionDate: String
-
-  \\"\\"\\"Notes about the bibliographic item.\\"\\"\\"
-  note: String
-
-  \\"\\"\\"Issues associated with the bibliographic record.\\"\\"\\"
-  issues: [IssueWithItemsInput]
-
-  \\"\\"\\"Whether online access for this bibliographic item is available.\\"\\"\\"
-  online: Boolean
-}
-
-\\"\\"\\"Details of an issue, including its items.\\"\\"\\"
-input IssueWithItemsInput {
-  \\"\\"\\"Identifier for a material, usually a barcode.\\"\\"\\"
-  issueId: String!
-
-  \\"\\"\\"Items associated with this issue.\\"\\"\\"
-  items: [ItemInput!]
-
-  \\"\\"\\"The text describing the issue.\\"\\"\\"
-  issueText: String!
-
-  \\"\\"\\"When an item is expected to be available for loan, in ISO-8601 format.\\"\\"\\"
-  expectedDelivery: String
-
-  \\"\\"\\"
-  Number of items ready to be lent out. If 0, expectedDelivery must be set.
-  \\"\\"\\"
-  readyForLoan: Int
-}
-
-\\"\\"\\"Details of an individual item.\\"\\"\\"
-input ItemInput {
-  \\"\\"\\"Identifier for a material, usually a barcode.\\"\\"\\"
-  itemId: String!
-
-  \\"\\"\\"Human-readable text describing the branch.\\"\\"\\"
-  branch: String!
-
-  \\"\\"\\"Identifying number of the branch.\\"\\"\\"
-  branchId: Int!
-
-  \\"\\"\\"Human-readable text describing the department within the branch.\\"\\"\\"
-  department: String!
-
-  \\"\\"\\"Human-readable text describing the location within the department.\\"\\"\\"
-  location: String!
-
-  \\"\\"\\"Human-readable text describing the sub-location within the location.\\"\\"\\"
-  subLocation: String!
-
-  \\"\\"\\"Human-readable text describing the rules for lending.\\"\\"\\"
-  circulationRule: String!
-
-  \\"\\"\\"When the item was acquired, in ISO-8601 format.\\"\\"\\"
-  accessionDate: String!
-
-  \\"\\"\\"Rule for lending according to DanMarc 096r.\\"\\"\\"
-  loanRestriction: LoanRestrictionEnum
-
-  \\"\\"\\"The status of the item (e.g., OnShelf, OnLoan, etc.).\\"\\"\\"
-  status: ItemStatusEnum
-
-  \\"\\"\\"When this item was last lent, in ISO-8601 format.\\"\\"\\"
-  lastLoanDate: String
-
-  \\"\\"\\"
-  Identifying the agencyId that owns this, if temporarily part of the library (ILL loan).
-  \\"\\"\\"
-  ownerAgencyId: Int
-}
-
-\\"\\"\\"Represents the status of an item.\\"\\"\\"
-enum ItemStatusEnum {
-  \\"\\"\\"The item has been discarded and is no longer available.\\"\\"\\"
-  DISCARDED
-
-  \\"\\"\\"The item is marked as lost.\\"\\"\\"
-  LOST
-
-  \\"\\"\\"The item is not available for loan.\\"\\"\\"
-  NOTFORLOAN
-
-  \\"\\"\\"The item is currently on loan.\\"\\"\\"
-  ONLOAN
-
-  \\"\\"\\"The item is on order but not yet available.\\"\\"\\"
-  ONORDER
-
-  \\"\\"\\"The item is available on the shelf.\\"\\"\\"
-  ONSHELF
-}
-
-enum LoanRestrictionEnum {
-  A
-  B
-  C
-  D
-  E
-  F
-  G
-}
-
-\\"\\"\\"Payload for updating an item, including related issue details.\\"\\"\\"
-input ItemWithIssueInput {
-  \\"\\"\\"Human-readable text describing the branch.\\"\\"\\"
-  branch: String!
-
-  \\"\\"\\"Identifying number of the branch.\\"\\"\\"
-  branchId: Int!
-
-  \\"\\"\\"Human-readable text describing the department within the branch.\\"\\"\\"
-  department: String!
-
-  \\"\\"\\"Human-readable text describing the location within the department.\\"\\"\\"
-  location: String!
-
-  \\"\\"\\"Human-readable text describing the sub-location within the location.\\"\\"\\"
-  subLocation: String!
-
-  \\"\\"\\"Human-readable text describing the rules for lending.\\"\\"\\"
-  circulationRule: String!
-
-  \\"\\"\\"When the item was acquired, in ISO-8601 format.\\"\\"\\"
-  accessionDate: String!
-
-  \\"\\"\\"Rule for lending according to DanMarc 096r.\\"\\"\\"
-  loanRestriction: LoanRestrictionEnum
-
-  \\"\\"\\"The status of the item (e.g., OnShelf, OnLoan, etc.).\\"\\"\\"
-  status: ItemStatusEnum
-
-  \\"\\"\\"When this item was last lent, in ISO-8601 format.\\"\\"\\"
-  lastLoanDate: String
-
-  \\"\\"\\"
-  Identifying the agencyId that owns this, if temporarily part of the library (ILL loan).
-  \\"\\"\\"
-  ownerAgencyId: Int
-
-  \\"\\"\\"When this structure was exported in ISO-8601 format with timezone Z.\\"\\"\\"
-  version: String!
-
-  \\"\\"\\"Details of the issue, including its ID.\\"\\"\\"
-  issue: IssueInputWithIdInput!
-}
-
-\\"\\"\\"Details of an issue, including its ID.\\"\\"\\"
-input IssueInputWithIdInput {
-  \\"\\"\\"The ID of the issue.\\"\\"\\"
-  issueId: String!
-
-  \\"\\"\\"The text describing the issue.\\"\\"\\"
-  issueText: String!
-
-  \\"\\"\\"When an item is expected to be available for loan, in ISO-8601 format.\\"\\"\\"
-  expectedDelivery: String
-
-  \\"\\"\\"
-  Number of items ready to be lent out. If 0, expectedDelivery must be set.
-  \\"\\"\\"
-  readyForLoan: Int
-}
-
-\\"\\"\\"Represents the status of an operation.\\"\\"\\"
-type HoldingsItemsStatus {
-  \\"\\"\\"Indicates if the operation was successful.\\"\\"\\"
-  ok: Boolean!
-
-  \\"\\"\\"Status code, represented as an ENUM value\\"\\"\\"
-  status: HoldingsItemsStatusEnum!
-
-  \\"\\"\\"Human-readable message about the reason for the status.\\"\\"\\"
-  message: String!
-
-  \\"\\"\\"Optional tracking ID for debugging or log tracking.\\"\\"\\"
-  trackingId: String
-}
-
-\\"\\"\\"Represents the status of an operation related to holdings items.\\"\\"\\"
-enum HoldingsItemsStatusEnum {
-  \\"\\"\\"The operation completed successfully.\\"\\"\\"
-  OK
-
-  \\"\\"\\"A generic error occurred during the operation.\\"\\"\\"
-  ERROR
-
-  \\"\\"\\"The operation failed due to an unauthenticated or invalid token.\\"\\"\\"
-  ERROR_UNAUTHENTICATED_TOKEN
-
-  \\"\\"\\"The operation failed because the token specified agency is invalid.\\"\\"\\"
-  ERROR_INVALID_AGENCY
-
-  \\"\\"\\"The operation failed due to lack of authorisation.\\"\\"\\"
-  ERROR_NO_AUTHORISATION
-}
-
-input DataCollectSearchRequestInput {
-  q: SearchQueryInput!
-  filters: SearchFiltersInput
-}
-
-input DataCollectSearchWorkInput {
-  search_query_hit: Int!
-  search_query_work: String!
-  search_request: DataCollectSearchRequestInput!
-  session_id: String!
-}
-
-input DataCollectSearchInput {
-  search_request: DataCollectSearchRequestInput!
-  search_response_works: [String!]!
-  search_offset: Int!
-  session_id: String!
-}
-
-input DataCollectExampleInput {
-  example: String!
-  session_id: String!
-}
-
-input DataCollectRecommenderClickInput {
-  recommender_based_on: String!
-  recommender_click_hit: Int!
-  recommender_click_work: String!
-  recommender_click_reader: String!
-  recommender_shown_recommendations: [String!]!
-  session_id: String!
-}
-
-input DataCollectSuggestionInput {
-  type: String!
-  value: String!
-}
-
-input DataCollectSuggestClickInput {
-  suggest_query: String!
-  suggest_query_hit: Int!
-  suggest_query_request_types: [String!]!
-  suggest_query_result: DataCollectSuggestionInput!
-  session_id: String!
-}
-
-input DataCollectSuggestPresentedInput {
-  suggest_query: String!
-  suggest_query_request_types: [String!]!
-  suggest_query_results: [DataCollectSuggestionInput!]!
-  session_id: String!
-}
-
-enum FeedbackThumbEnum {
-  UP
-  DOWN
-}
-
-input DataCollectSearchFeedbackInput {
-  thumbs: FeedbackThumbEnum!
-  query: String!
-  reason: String!
-}
-
-input DataCollectInput {
-  recommender_click: DataCollectRecommenderClickInput
-  search: DataCollectSearchInput
-  search_work: DataCollectSearchWorkInput
-  suggest_presented: DataCollectSuggestPresentedInput
-  suggest_click: DataCollectSuggestClickInput
-  search_feedback: DataCollectSearchFeedbackInput
-  example: DataCollectExampleInput
-}
-
-input CategoryFilterInput {
-  category: CategoryFiltersEnum!
-  subCategories: [String!]
-}
-
-enum CategoryFiltersEnum {
-  CHILDRENBOOKSNONFICTION
-  CHILDRENBOOKSFICTION
-  FICTION
-  NONFICTION
-  EBOOKS
+enum GeneralMaterialTypeCodeEnum {
   ARTICLES
-  MOVIES
-  GAMES
+  AUDIO_BOOKS
+  BOARD_GAMES
+  BOOKS
+  COMICS
+  COMPUTER_GAMES
+  EBOOKS
+  FILMS
+  IMAGE_MATERIALS
   MUSIC
-  SHEETMUSIC
-}
-
-type Inspiration {
-  categories(filter: [CategoryFilterInput!]): [Categories]!
-}
-
-enum LanguageCodeEnum {
-  DA
-  EN
-}
-
-enum LibraryStatusEnum {
-  SLETTET
-  AKTIVE
-  ALLE
-  USYNLIG
-}
-
-enum VipUserParameterEnum {
-  CPR
-  USERID
-  BARCODE
-  CARDNO
-  CUSTOMID
-  USERDATEOFBIRTH
-  USERNAME
-  USERADDRESS
-  USERMAIL
-  USERTELEPHONE
-}
-
-enum AgencyTypeEnum {
-  ALLE
-  SKOLEBIBLIOTEK
-  FOLKEBIBLIOTEK
-  FORSKNINGSBIBLIOTEK
-  ANDRE
-}
-
-type UserParameter {
-  userParameterType: VipUserParameterEnum!
-  userParameterName: String!
-  parameterRequired: Boolean!
-  description: String
-}
-
-type BranchResult {
-  hitcount: Int!
-  borrowerStatus: BorrowerStatus
-  result: [Branch!]!
-  agencyUrl: String
-}
-
-\\"\\"\\"
-Indicates if user is blocked for a given agency or 
-if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
-\\"\\"\\"
-type BorrowerStatus {
-  allowed: Boolean!
-  statusCode: String!
-}
-
-type Highlight {
-  key: String!
-  value: String!
-}
-
-type MinisearchDebug {
-  score: String
-  terms: [String!]
-  match: [Match!]
-}
-
-type Match {
-  term: String
-  fields: [String!]
-}
-
-enum LinkCheckStatusEnum {
-  OK
-  BROKEN
-  INVALID
-  GONE
-}
-
-type LinkCheckResponse {
-  url: String!
-  status: LinkCheckStatusEnum!
-  lastCheckedAt: DateTime
-  brokenSince: DateTime
-}
-
-type LinkCheckService {
-  checks(urls: [String!]): [LinkCheckResponse!]!
-}
-
-type RenewLoanResponse {
-  \\"\\"\\"Whether the loan was renewed or not.\\"\\"\\"
-  renewed: Boolean!
-
-  \\"\\"\\"Returns error message, if the renewal failed.\\"\\"\\"
-  error: String
-
-  \\"\\"\\"Returns due date of the loan, if renewal was successful.\\"\\"\\"
-  dueDate: String
-}
-
-type Localizations {
-  count: Int
-  agencies: [HoldingAgency]
-}
-
-type HoldingAgency {
-  agencyId: String
-  holdingItems: [LocalizationsHoldingsItem]
-}
-
-type LocalizationsHoldingsItem {
-  localizationPid: String
-  codes: String
-  localIdentifier: String
-}
-
-enum AvailabilityEnum {
-  NOW
-  LATER
-  UNKNOWN
-}
-
-type MarcRecord {
-  \\"\\"\\"The marc record identifier\\"\\"\\"
-  id: String!
-
-  \\"\\"\\"The library agency\\"\\"\\"
-  agencyId: String!
-
-  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
-  bibliographicRecordId: String!
-
-  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
-  content: String!
-
-  \\"\\"\\"
-  The serialization format of the MARC record content. Defaults to 'marcXchange'
-  \\"\\"\\"
-  contentSerializationFormat: String!
-
-  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
-  deleted: Boolean!
-}
-
-type Marc {
-  \\"\\"\\"
-  Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
-  \\"\\"\\"
-  getMarcByRecordId(
-    \\"\\"\\"The marc record identifier\\"\\"\\"
-    recordId: String!
-  ): MarcRecord
+  NEWSPAPER_JOURNALS
+  OTHER
+  PODCASTS
+  SHEET_MUSIC
+  TV_SERIES
 }
 
 \\"\\"\\"Type of moodSuggest response\\"\\"\\"
@@ -3233,6 +2757,10 @@ type MoodQueries {
   moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
 }
 
+type DigitalArticleServiceResponse {
+  msg: String!
+}
+
 input NetpunktSubmitOrderInput {
   orderType: OrderTypeEnum
   pids: [String!]!
@@ -3254,6 +2782,7 @@ input NetpunktSubmitOrderInput {
   titleOfComponent: String
   volume: String
   requesterInitials: String
+  responderId: String
 }
 
 type Netpunkt {
@@ -3490,6 +3019,21 @@ type OrsQuery {
   itemOrder(itemId: String!): ItemIdResponse!
 }
 
+type Recommendation {
+  \\"\\"\\"The recommended work\\"\\"\\"
+  work: Work!
+
+  \\"\\"\\"The recommended manifestation\\"\\"\\"
+  manifestation: Manifestation!
+
+  \\"\\"\\"Info on how this recommendation was generated\\"\\"\\"
+  reader: [String!]!
+}
+
+type RecommendationResponse {
+  result: [Recommendation!]!
+}
+
 \\"\\"\\"Get different kinds of recommendations\\"\\"\\"
 type Recommendations {
   \\"\\"\\"
@@ -3511,6 +3055,122 @@ type SubjectRecommendation {
   API calls when this suggestion is selected.
   \\"\\"\\"
   traceId: String!
+}
+
+type Relations {
+  \\"\\"\\"
+  The story of this article is continued in this or these other article(s)
+  \\"\\"\\"
+  continuedIn: [Manifestation!]!
+
+  \\"\\"\\"
+  This story of this article actually started in this or these other article(s)
+  \\"\\"\\"
+  continues: [Manifestation!]!
+
+  \\"\\"\\"The contents of this articles is also discussed in these articles\\"\\"\\"
+  discussedIn: [Manifestation!]!
+
+  \\"\\"\\"The article discusses the content of these articles\\"\\"\\"
+  discusses: [Manifestation!]!
+
+  \\"\\"\\"This story is adapted in this or these movie(s)\\"\\"\\"
+  hasAdaptation: [Manifestation!]!
+
+  \\"\\"\\"The contents of this manifestation is analysed in these manifestations\\"\\"\\"
+  hasAnalysis: [Manifestation!]!
+
+  \\"\\"\\"The creator of this manifestation is portrayed in these manifestations\\"\\"\\"
+  hasCreatorDescription: [Manifestation!]!
+
+  \\"\\"\\"
+  The publisher of this manifestation has made a description of the content
+  \\"\\"\\"
+  hasDescriptionFromPublisher: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
+  hasManuscript: [Manifestation!]!
+
+  \\"\\"\\"
+  This manifestation has a 'materialevurdering' that was originally made for another manifestation, but it is still relevant (e.g. book/ebook)
+  \\"\\"\\"
+  hasReusedReview: [Manifestation!]!
+
+  \\"\\"\\"This manifestation has these reviews\\"\\"\\"
+  hasReview: [Manifestation!]!
+
+  \\"\\"\\"This movie or game has this sound track\\"\\"\\"
+  hasSoundtrack: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this or these books\\"\\"\\"
+  isAdaptationOf: [Manifestation!]!
+
+  \\"\\"\\"This manifestation is an analysis of these manifestations\\"\\"\\"
+  isAnalysisOf: [Manifestation!]!
+
+  \\"\\"\\"
+  This is a description from the original publisher of these manifestations
+  \\"\\"\\"
+  isDescriptionFromPublisherOf: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
+  isManuscriptOf: [Manifestation!]!
+
+  \\"\\"\\"
+  This 'materialevurdering' can also be used to review these relevant manifestations, even though it was originally made for another publication
+  \\"\\"\\"
+  isReusedReviewOf: [Manifestation!]!
+
+  \\"\\"\\"This manifestation is a review of these manifestations\\"\\"\\"
+  isReviewOf: [Manifestation!]!
+
+  \\"\\"\\"This sound track for a game is related to these games\\"\\"\\"
+  isSoundtrackOfGame: [Manifestation!]!
+
+  \\"\\"\\"This sound track for a movie is related to these movies\\"\\"\\"
+  isSoundtrackOfMovie: [Manifestation!]!
+
+  \\"\\"\\"This album has these tracks\\"\\"\\"
+  hasTrack: [Manifestation!]!
+
+  \\"\\"\\"This music track is part of these albums\\"\\"\\"
+  isPartOfAlbum: [Manifestation!]!
+
+  \\"\\"\\"This article or book part can be found in these manifestations\\"\\"\\"
+  isPartOfManifestation: [Manifestation!]!
+}
+
+enum ReviewElementTypeEnum {
+  ABSTRACT
+  ACQUISITION_RECOMMENDATIONS
+  AUDIENCE
+  CONCLUSION
+  DESCRIPTION
+  EVALUATION
+  SIMILAR_MATERIALS
+}
+
+type ReviewElement {
+  content: String
+
+  \\"\\"\\"
+  This is a paragraph containing markup where links to manifestations
+  can be inserted. For instance '\\"Axel Steens nye job minder om [870970-basis:20307021] fra ...'.
+  Relevant manifestations are located in the manifestations field. 
+  \\"\\"\\"
+  contentSubstitute: String
+  heading: String
+
+  \\"\\"\\"
+  Manifestations that can be used to generate and insert links into 'contentSubsitute'.
+  \\"\\"\\"
+  manifestations: [Manifestation]
+  type: ReviewElementTypeEnum
+}
+
+type ManifestationReview {
+  rating: String
+  reviewByLibrarians: [ReviewElement]
 }
 
 \\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
@@ -3670,6 +3330,73 @@ type SEO {
   description: String!
 }
 
+type SerieWork {
+  \\"\\"\\"The number of work in the series as a number (as text)\\"\\"\\"
+  numberInSeries: String
+
+  \\"\\"\\"Work of a serieWork\\"\\"\\"
+  work: Work!
+
+  \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
+  readThisFirst: Boolean
+
+  \\"\\"\\"
+  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
+  \\"\\"\\"
+  readThisWhenever: Boolean
+}
+
+type Series {
+  \\"\\"\\"The number of members in the series\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"The title of the series\\"\\"\\"
+  title: String!
+
+  \\"\\"\\"Identifier for the series\\"\\"\\"
+  seriesId: String
+
+  \\"\\"\\"Traceid for tracking\\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"Additional information \\"\\"\\"
+  identifyingAddition: String
+
+  \\"\\"\\"Description of the series\\"\\"\\"
+  description: String
+
+  \\"\\"\\"A alternative title to the main 'title' of the series\\"\\"\\"
+  alternativeTitles: [String!]!
+
+  \\"\\"\\"
+  A parallel title to the main 'title' of the series, in a different language
+  \\"\\"\\"
+  parallelTitles: [String!]!
+
+  \\"\\"\\"The number in the series as text qoutation\\"\\"\\"
+  numberInSeries: String
+
+  \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
+  readThisFirst: Boolean
+
+  \\"\\"\\"
+  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
+  \\"\\"\\"
+  readThisWhenever: Boolean
+
+  \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
+  isPopular: Boolean
+
+  \\"\\"\\"WorkTypes for the series\\"\\"\\"
+  workTypes: [String!]!
+
+  \\"\\"\\"MainLanguages of the series\\"\\"\\"
+  mainLanguages: [String!]!
+
+  \\"\\"\\"Members of this serie. \\"\\"\\"
+  members(limit: Int, offset: Int): [SerieWork!]!
+}
+
 type SessionUserParameters {
   cpr: String
   userId: String
@@ -3727,6 +3454,182 @@ type ProfileStat {
 
 type Stats {
   weekly: [ProfileStat!]!
+}
+
+interface SubjectInterface {
+  display: String!
+
+  \\"\\"\\"
+  The type of subject - 'location', 'time period' etc., 'topic' if not specific kind of subject term
+  \\"\\"\\"
+  type: SubjectTypeEnum!
+
+  \\"\\"\\"Language of the subject - contains display and isoCode \\"\\"\\"
+  language: Language
+  local: Boolean
+}
+
+type SubjectText implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type TimePeriod implements SubjectInterface {
+  type: SubjectTypeEnum!
+  period: Range!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type Mood implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type NarrativeTechnique implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type Setting implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type SubjectWithRating implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+
+  \\"\\"\\"Expressed as integer on a scale from 1 to 5\\"\\"\\"
+  rating: Int
+}
+
+enum SubjectTypeEnum {
+  TOPIC
+  LOCATION
+  FICTIONAL_CHARACTER
+  LAESEKOMPASSET
+  MEDICAL_SUBJECT_HEADING
+  MUSIC_COUNTRY_OF_ORIGIN
+  MUSIC_TIME_PERIOD
+  MUSICAL_INSTRUMENTATION
+  NATIONAL_AGRICULTURAL_LIBRARY
+  TIME_PERIOD
+  TITLE
+  FILM_NATIONALITY
+  LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+  FICTIONAL_LOCATION
+
+  \\"\\"\\"
+  added for manifestation.parts.creators/person - they get a type from small-rye
+  \\"\\"\\"
+  PERSON
+  CORPORATION
+  MOOD
+  MOOD_CHILDREN
+
+  \\"\\"\\"Subject describing selected topics for children, and a rating.\\"\\"\\"
+  TOPIC_CHILDREN
+  PERSPECTIVE
+  STYLE
+  TEMPO
+  REALITY
+  ENVIRONMENT
+}
+
+type Range {
+  begin: Int
+  end: Int
+  display: String!
+}
+
+type SubjectContainer {
+  \\"\\"\\"All subjects\\"\\"\\"
+  all: [SubjectInterface!]!
+
+  \\"\\"\\"Only DBC verified subjects\\"\\"\\"
+  dbcVerified: [SubjectInterface!]!
+}
+
+enum SuggestionTypeEnum {
+  SUBJECT
+  TITLE
+  CREATOR
+  COMPOSIT
+}
+
+enum ComplexSuggestionTypeEnum {
+  HOSTPUBLICATION
+  CONTRIBUTORFUNCTION
+  CREATOR
+  DEFAULT
+  CREATORCONTRIBUTORFUNCTION
+  CREATORFUNCTION
+  SUBJECT
+  FICTIONALCHARACTER
+  TITLE
+  CREATORCONTRIBUTOR
+  SERIES
+  PUBLISHER
+}
+
+type ComplexSearchSuggestion {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this suggestion is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"The type of suggestion\\"\\"\\"
+  type: String!
+
+  \\"\\"\\"The suggested term which can be searched for\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"A work related to the term\\"\\"\\"
+  work: Work
+}
+
+type Suggestion {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this suggestion is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"The type of suggestion: creator, subject or title\\"\\"\\"
+  type: SuggestionTypeEnum!
+
+  \\"\\"\\"The suggested term which can be searched for\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"A work related to the term\\"\\"\\"
+  work: Work
+}
+
+type ComplexSuggestResponse {
+  result: [ComplexSearchSuggestion!]!
+}
+
+type SuggestResponse {
+  result: [Suggestion!]!
+}
+
+type LocalSuggestResponse {
+  result: [Suggestion!]!
 }
 
 \\"\\"\\"\\"\\"\\"
@@ -3842,9 +3745,9 @@ type User {
   mail: String
   culrMail: String
   country: String
-  orders: [Order!]!
-  loans: [Loan!]!
-  debt: [Debt!]!
+  orders: UserStatusOrders
+  loans: UserStatusLoans
+  debt: UserStatusDebt
   bookmarks(orderBy: BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
   isCPRValidated: Boolean!
@@ -3899,6 +3802,34 @@ type BibliotekDkOrder {
 
   \\"\\"\\"Date and time when the order was created\\"\\"\\"
   creationDate: String
+}
+
+\\"\\"\\"Enum holding potential errors from undici fetch\\"\\"\\"
+enum RequestStatusEnum {
+  UND_ERR_HEADERS_TIMEOUT
+  UNKNOWN_ERROR
+  OK
+}
+
+\\"\\"\\"User orders\\"\\"\\"
+type UserStatusOrders {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  result: [Order!]!
+}
+
+\\"\\"\\"User debt\\"\\"\\"
+type UserStatusDebt {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  result: [Debt!]!
+}
+
+\\"\\"\\"User loans\\"\\"\\"
+type UserStatusLoans {
+  status: Boolean!
+  statusCode: RequestStatusEnum
+  result: [Loan!]!
 }
 
 type Loan {
@@ -4539,6 +4470,151 @@ type Vipz3950Ill {
   \\"\\"\\"ILL renew answer synchronous.\\"\\"\\"
   illRenewAnswerSynchronous: Boolean
 }
+
+type Language {
+  \\"\\"\\"Language as displayable text\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"ISO639-2 language code\\"\\"\\"
+  isoCode: String!
+
+  \\"\\"\\"ISO639-1 language code (2 letters)\\"\\"\\"
+  iso639Set1: String!
+
+  \\"\\"\\"ISO639-2 language code (3 letters)\\"\\"\\"
+  iso639Set2: String!
+}
+
+type GeneralMaterialType {
+  \\"\\"\\"
+  code for materialType # @TODO - is this a finite list ?? - and where to get it
+  \\"\\"\\"
+  code: GeneralMaterialTypeCodeEnum!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
+type SpecificMaterialType {
+  \\"\\"\\"code for materialType\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
+type MaterialType {
+  \\"\\"\\"jed 1.1 - the general materialtype\\"\\"\\"
+  materialTypeGeneral: GeneralMaterialType!
+
+  \\"\\"\\"jed 1.1 - the specific materialtType\\"\\"\\"
+  materialTypeSpecific: SpecificMaterialType!
+}
+
+enum FictionNonfictionCodeEnum {
+  FICTION
+  NONFICTION
+  NOT_SPECIFIED
+}
+
+type FictionNonfiction {
+  \\"\\"\\"
+  Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Binary code fiction/nonfiction used for filtering\\"\\"\\"
+  code: FictionNonfictionCodeEnum!
+}
+
+type DK5MainEntry {
+  \\"\\"\\"Displayable main DK5 classification\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Main DK5 classification code\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"The dk5Heading for the classification\\"\\"\\"
+  dk5Heading: String!
+}
+
+enum WorkTypeEnum {
+  ANALYSIS
+  ARTICLE
+  BOOKDESCRIPTION
+  GAME
+  LITERATURE
+  MAP
+  MOVIE
+  MUSIC
+  OTHER
+  PERIODICA
+  PORTRAIT
+  REVIEW
+  SHEETMUSIC
+  TRACK
+}
+
+type WorkTitles {
+  \\"\\"\\"The main title(s) of the work\\"\\"\\"
+  main: [String!]!
+
+  \\"\\"\\"The full title(s) of the work including subtitles etc\\"\\"\\"
+  full: [String!]!
+
+  \\"\\"\\"Titles (in other languages) parallel to the main 'title' of the work\\"\\"\\"
+  parallel: [String!]!
+
+  \\"\\"\\"The sorted title of the entity\\"\\"\\"
+  sort: String!
+
+  \\"\\"\\"
+  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
+  \\"\\"\\"
+  original: [String!]
+
+  \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
+  standard: String
+
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
+
+  \\"\\"\\"Danish translation of the main title\\"\\"\\"
+  translated: [String!]
+
+  \\"\\"\\"detailed title for tv series \\"\\"\\"
+  tvSeries: TvSeries
+}
+
+type TvSeries {
+  \\"\\"\\"Title of the tv serie\\"\\"\\"
+  title: String
+
+  \\"\\"\\"Dansih translated title of the tv serie\\"\\"\\"
+  danishLaunchTitle: String
+
+  \\"\\"\\"Detailed information about the episode\\"\\"\\"
+  episode: TvSeriesDetails
+
+  \\"\\"\\"Episode titles\\"\\"\\"
+  episodeTitles: [String!]
+
+  \\"\\"\\"Detailed information about the disc\\"\\"\\"
+  disc: TvSeriesDetails
+
+  \\"\\"\\"Detailed information about the season\\"\\"\\"
+  season: TvSeriesDetails
+
+  \\"\\"\\"Detailed information about the volume\\"\\"\\"
+  volume: TvSeriesDetails
+}
+
+type TvSeriesDetails {
+  display: String
+  numbers: [Int!]
+}
 "
 `;
 
@@ -4553,16 +4629,105 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the \`da
 \\"\\"\\"
 scalar DateTime
 
+enum AccessTypeCodeEnum {
+  PHYSICAL
+  ONLINE
+  UNKNOWN
+}
+
+enum AccessUrlTypeEnum {
+  IMAGE
+  OTHER
+  RESOURCE
+  SAMPLE
+  TABLE_OF_CONTENTS
+  THUMBNAIL
+}
+
+enum LinkStatusEnum {
+  BROKEN
+  GONE
+  INVALID
+  OK
+}
+
+type AccessType {
+  display: String!
+  code: AccessTypeCodeEnum!
+}
+
+type Ereol {
+  \\"\\"\\"
+  The origin, e.g. \\"Ereolen\\" or \\"Ereolen Go\\"
+  \\"\\"\\"
+  origin: String!
+
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
+  url: String!
+
+  \\"\\"\\"
+  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
+  \\"\\"\\"
+  canAlwaysBeLoaned: Boolean!
+
+  \\"\\"\\"Notes for the resource\\"\\"\\"
+  note: String
+}
+
+type AccessUrl {
+  \\"\\"\\"
+  The origin, e.g. \\"DBC Webarkiv\\"
+  \\"\\"\\"
+  origin: String!
+
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
+  url: String!
+
+  \\"\\"\\"Notes for the resource\\"\\"\\"
+  note: String
+
+  \\"\\"\\"If the resource requires login\\"\\"\\"
+  loginRequired: Boolean!
+
+  \\"\\"\\"The type of content that can be found at this URL\\"\\"\\"
+  type: AccessUrlTypeEnum
+
+  \\"\\"\\"Status from linkcheck\\"\\"\\"
+  status: LinkStatusEnum!
+}
+
+type InterLibraryLoan {
+  \\"\\"\\"Is true when manifestation can be borrowed via ill\\"\\"\\"
+  loanIsPossible: Boolean!
+
+  \\"\\"\\"Is newly added - nice to know if there are no localizations\\"\\"\\"
+  accessNew: Boolean!
+}
+
+type InfomediaService {
+  \\"\\"\\"
+  Infomedia ID which can be used to fetch article through Infomedia Service
+  \\"\\"\\"
+  id: String!
+}
+
+type DigitalArticleService {
+  \\"\\"\\"
+  Issn which can be used to order article through Digital Article Service
+  \\"\\"\\"
+  issn: String!
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+
 type Mutation {
   elba: ElbaServices!
 }
 
 type Query {
+  \\"\\"\\"All indexes in complex search\\"\\"\\"
+  complexSearchIndexes: [ComplexSearchIndex!]
   debug: Debug
-  series(seriesId: String!): Series
-
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: Marc!
   mood: MoodQueries!
 
   \\"\\"\\"Access to various types of recommendations.\\"\\"\\"
@@ -4616,7 +4781,22 @@ type Query {
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
   relatedSubjects(q: [String!]!, limit: Int): [String!] @deprecated(reason: \\"Use 'Recommendations.subjects' instead expires: 01/03-2025\\")
+  series(seriesId: String!): Series
   universe(key: String, universeId: String): Universe
+}
+
+type ComplexSearchIndex {
+  \\"\\"\\"The name of a Complex Search index\\"\\"\\"
+  index: String!
+
+  \\"\\"\\"Can be used for searching\\"\\"\\"
+  search: Boolean!
+
+  \\"\\"\\"Can be used for faceting\\"\\"\\"
+  facet: Boolean!
+
+  \\"\\"\\"Can be used for sorting\\"\\"\\"
+  sort: Boolean!
 }
 
 \\"\\"\\"Search Filters\\"\\"\\"
@@ -4743,6 +4923,12 @@ type ComplexSearchResponse {
   errorMessage: String
 }
 
+type CoverDetails {
+  url: String
+  width: Int
+  height: Int
+}
+
 type Cover {
   detail_117: String
   detail_207: String
@@ -4751,114 +4937,11 @@ type Cover {
   thumbnail: String
   detail: String
   origin: String
+  xSmall: CoverDetails
+  small: CoverDetails
+  medium: CoverDetails
+  large: CoverDetails
 }
-
-type Complexity {
-  value: Int!
-  max: Int!
-  class: String!
-}
-
-type Depth {
-  value: Int!
-  max: Int!
-}
-
-type Debug {
-  complexity: Complexity!
-  depth: Depth!
-}
-
-enum AccessTypeCodeEnum {
-  PHYSICAL
-  ONLINE
-  UNKNOWN
-}
-
-enum AccessUrlTypeEnum {
-  IMAGE
-  OTHER
-  RESOURCE
-  SAMPLE
-  TABLE_OF_CONTENTS
-  THUMBNAIL
-}
-
-enum LinkStatusEnum {
-  BROKEN
-  GONE
-  INVALID
-  OK
-}
-
-type AccessType {
-  display: String!
-  code: AccessTypeCodeEnum!
-}
-
-type Ereol {
-  \\"\\"\\"
-  The origin, e.g. \\"Ereolen\\" or \\"Ereolen Go\\"
-  \\"\\"\\"
-  origin: String!
-
-  \\"\\"\\"The url where manifestation is located\\"\\"\\"
-  url: String!
-
-  \\"\\"\\"
-  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
-  \\"\\"\\"
-  canAlwaysBeLoaned: Boolean!
-
-  \\"\\"\\"Notes for the resource\\"\\"\\"
-  note: String
-}
-
-type AccessUrl {
-  \\"\\"\\"
-  The origin, e.g. \\"DBC Webarkiv\\"
-  \\"\\"\\"
-  origin: String!
-
-  \\"\\"\\"The url where manifestation is located\\"\\"\\"
-  url: String!
-
-  \\"\\"\\"Notes for the resource\\"\\"\\"
-  note: String
-
-  \\"\\"\\"If the resource requires login\\"\\"\\"
-  loginRequired: Boolean!
-
-  \\"\\"\\"The type of content that can be found at this URL\\"\\"\\"
-  type: AccessUrlTypeEnum
-
-  \\"\\"\\"Status from linkcheck\\"\\"\\"
-  status: LinkStatusEnum!
-}
-
-type InterLibraryLoan {
-  \\"\\"\\"Is true when manifestation can be borrowed via ill\\"\\"\\"
-  loanIsPossible: Boolean!
-
-  \\"\\"\\"Is newly added - nice to know if there are no localizations\\"\\"\\"
-  accessNew: Boolean!
-}
-
-type InfomediaService {
-  \\"\\"\\"
-  Infomedia ID which can be used to fetch article through Infomedia Service
-  \\"\\"\\"
-  id: String!
-}
-
-type DigitalArticleService {
-  \\"\\"\\"
-  Issn which can be used to order article through Digital Article Service
-  \\"\\"\\"
-  issn: String!
-}
-
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
 
 type Translation {
   \\"\\"\\"
@@ -4967,6 +5050,72 @@ interface CreatorInterface {
   roles: [Role!]!
 }
 
+type Complexity {
+  value: Int!
+  max: Int!
+  class: String!
+}
+
+type Depth {
+  value: Int!
+  max: Int!
+}
+
+type Debug {
+  complexity: Complexity!
+  depth: Depth!
+}
+
+enum CopyRequestStatusEnum {
+  OK
+  ERROR_UNAUTHENTICATED_USER
+  ERROR_AGENCY_NOT_SUBSCRIBED
+  ERROR_INVALID_PICKUP_BRANCH
+  ERROR_PID_NOT_RESERVABLE
+  ERROR_MISSING_CLIENT_CONFIGURATION
+  ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
+  ERROR_MISSING_MUNICIPALITYAGENCYID
+  UNKNOWN_USER
+  BORCHK_USER_BLOCKED_BY_AGENCY
+  BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
+  BORCHK_USER_NOT_VERIFIED
+  INTERNAL_ERROR
+}
+
+type CopyRequestResponse {
+  status: CopyRequestStatusEnum!
+}
+
+type ElbaServices {
+  placeCopyRequest(
+    input: CopyRequestInput!
+
+    \\"\\"\\"
+    If this is true, the copy request will not be send to the elba service
+    Use it for testing
+    \\"\\"\\"
+    dryRun: Boolean
+  ): CopyRequestResponse!
+}
+
+input CopyRequestInput {
+  \\"\\"\\"The pid of an article or periodica\\"\\"\\"
+  pid: String!
+  userName: String
+  userMail: String
+  publicationTitle: String
+  publicationDateOfComponent: String
+  publicationYearOfComponent: String
+  volumeOfComponent: String
+  authorOfComponent: String
+  titleOfComponent: String
+  pagesOfComponent: String
+  userInterestDate: String
+  pickUpAgencySubdivision: String
+  issueOfComponent: String
+  openURL: String
+}
+
 enum InfomediaErrorEnum {
   SERVICE_NOT_LICENSED
   SERVICE_UNAVAILABLE
@@ -4997,6 +5146,29 @@ type InfomediaArticle {
   hedLine: String
   logo: String
   html: String
+}
+
+enum LanguageCodeEnum {
+  DA
+  EN
+}
+
+enum LinkCheckStatusEnum {
+  OK
+  BROKEN
+  INVALID
+  GONE
+}
+
+type LinkCheckResponse {
+  url: String!
+  status: LinkCheckStatusEnum!
+  lastCheckedAt: DateTime
+  brokenSince: DateTime
+}
+
+type LinkCheckService {
+  checks(urls: [String!]): [LinkCheckResponse!]!
 }
 
 type CatalogueCodes {
@@ -5109,6 +5281,8 @@ enum NoteTypeEnum {
   TECHNICAL_REQUIREMENTS
   ESTIMATED_PLAYING_TIME_FOR_GAMES
   EXPECTED_PUBLICATION_DATE
+  WITHDRAWN_PUBLICATION
+  CONTAINS_AI_GENERATED_CONTENT
 }
 
 enum ChildOrAdultCodeEnum {
@@ -5447,12 +5621,30 @@ type LevelForAudience {
   realisticVsFictional: Int
 }
 
+\\"\\"\\"
+A search hit that encapsulates a matched manifestation from a search query.
+\\"\\"\\"
+type SearchHit {
+  \\"\\"\\"The manifestation that was matched during the search.\\"\\"\\"
+  match: Manifestation
+}
+
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
   all: [Manifestation!]!
   bestRepresentation: Manifestation!
+  bestRepresentations: [Manifestation!]!
   mostRelevant: [Manifestation!]!
+
+  \\"\\"\\"
+  A list of manifestations that matched the search query.
+  
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
+  \\"\\"\\"
+  searchHits: [SearchHit!]
 }
 
 type Manifestation {
@@ -5616,14 +5808,14 @@ type Manifestation {
   \\"\\"\\"Material that can be identified as sheet music\\"\\"\\"
   sheetMusicCategories: SheetMusicCategory
 
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
-
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
 }
 
 type SheetMusicCategory {
@@ -5703,6 +5895,95 @@ type ManifestationTitles {
   tvSeries: TvSeries
 }
 
+type MarcRecord {
+  \\"\\"\\"The marc record identifier\\"\\"\\"
+  id: String!
+
+  \\"\\"\\"The library agency\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
+  bibliographicRecordId: String!
+
+  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
+  content: String!
+
+  \\"\\"\\"
+  The serialization format of the MARC record content. Defaults to 'marcXchange'
+  \\"\\"\\"
+  contentSerializationFormat: String!
+
+  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
+  deleted: Boolean!
+}
+
+type Work {
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this work.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
+  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
+  \\"\\"\\"
+  workId: String!
+  titles: WorkTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]
+
+  \\"\\"\\"Creators\\"\\"\\"
+  creators: [CreatorInterface!]!
+
+  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
+  dk5MainEntry: DK5MainEntry
+
+  \\"\\"\\"
+  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"Date of latest publication\\"\\"\\"
+  latestPublicationDate: String
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Series for this work\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universes: [Universe!]!
+
+  \\"\\"\\"Subjects for this work\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
+  workYear: PublicationYear
+
+  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
+  mainLanguages: [Language!]!
+
+  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
+  manifestations: Manifestations!
+}
+
 enum GeneralMaterialTypeCodeEnum {
   ARTICLES
   AUDIO_BOOKS
@@ -5721,6 +6002,93 @@ enum GeneralMaterialTypeCodeEnum {
   TV_SERIES
 }
 
+\\"\\"\\"Type of moodSuggest response\\"\\"\\"
+enum MoodSuggestEnum {
+  TITLE
+  CREATOR
+  TAG
+}
+
+\\"\\"\\"MoodSuggest item\\"\\"\\"
+type MoodSuggestItem {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this suggestion. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"Suggestion\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"The type of suggestion title/creator/tag\\"\\"\\"
+  type: MoodSuggestEnum!
+
+  \\"\\"\\"A work associated with the suggestion\\"\\"\\"
+  work: Work
+}
+
+\\"\\"\\"Response type for moodTagRecommend\\"\\"\\"
+type MoodTagRecommendResponse {
+  work: Work!
+  similarity: Float
+}
+
+\\"\\"\\"The response type for moodSuggest\\"\\"\\"
+type MoodSuggestResponse {
+  \\"\\"\\"Response is an array of MoodSuggestResponse\\"\\"\\"
+  response: [MoodSuggestItem!]!
+}
+
+\\"\\"\\"Supported fields for moodsearch request\\"\\"\\"
+enum MoodSearchFieldValuesEnum {
+  ALL
+  TITLE
+  CREATOR
+  MOODTAGS
+  ALLTAGS
+}
+
+input KidRecommenderTagsInput {
+  tag: String
+  weight: Int
+}
+
+input MoodKidsRecommendFiltersInput {
+  difficulty: [Int!]
+  illustrationsLevel: [Int!]
+  length: [Int!]
+  realisticVsFictional: [Int!]
+  fictionNonfiction: FictionNonfictionCodeEnum
+}
+
+\\"\\"\\"The response from moodsearch\\"\\"\\"
+type MoodSearchResponse {
+  \\"\\"\\"
+  The works matching the given search query. Use offset and limit for pagination.
+  \\"\\"\\"
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
+}
+
+\\"\\"\\"The reponse from moodsearchkids\\"\\"\\"
+type MoodSearchKidsResponse {
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
+}
+
+\\"\\"\\"The reponse from moodrecommenkids\\"\\"\\"
+type MoodRecommendKidsResponse {
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
+}
+
+type MoodQueries {
+  moodSearch(q: String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchResponse!
+  moodSearchKids(q: String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchKidsResponse!
+  moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
+  moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
+  moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
+  moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
+}
+
 type Recommendation {
   \\"\\"\\"The recommended work\\"\\"\\"
   work: Work!
@@ -5734,6 +6102,29 @@ type Recommendation {
 
 type RecommendationResponse {
   result: [Recommendation!]!
+}
+
+\\"\\"\\"Get different kinds of recommendations\\"\\"\\"
+type Recommendations {
+  \\"\\"\\"
+  Retrieve subject-based recommendations based on a list of query strings and an optional limit.
+  - q: An array of strings used to generate subject recommendations.
+  - limit: The maximum number of recommendations to return.
+  \\"\\"\\"
+  subjects(q: [String!]!, limit: Int): [SubjectRecommendation!]
+}
+
+\\"\\"\\"Details about a single subject recommendation.\\"\\"\\"
+type SubjectRecommendation {
+  \\"\\"\\"The recommended subject.\\"\\"\\"
+  subject: String!
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this subject recommendation. 
+  It is generated in the response and should be included in subsequent
+  API calls when this suggestion is selected.
+  \\"\\"\\"
+  traceId: String!
 }
 
 type Relations {
@@ -5819,73 +6210,6 @@ type Relations {
   isPartOfManifestation: [Manifestation!]!
 }
 
-type Work {
-  \\"\\"\\"Relations to other manifestations\\"\\"\\"
-  relations: Relations!
-
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this work.
-  It is generated in the response and should be included in subsequent
-  API calls when this work is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"
-  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
-  \\"\\"\\"
-  workId: String!
-  titles: WorkTitles!
-
-  \\"\\"\\"Abstract of the entity\\"\\"\\"
-  abstract: [String!]
-
-  \\"\\"\\"Creators\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
-  dk5MainEntry: DK5MainEntry
-
-  \\"\\"\\"
-  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  \\"\\"\\"
-  fictionNonfiction: FictionNonfiction
-
-  \\"\\"\\"Date of latest publication\\"\\"\\"
-  latestPublicationDate: String
-
-  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  materialTypes: [MaterialType!]!
-
-  \\"\\"\\"Series for this work\\"\\"\\"
-  series: [Series!]!
-
-  \\"\\"\\"
-  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
-  \\"\\"\\"
-  universes: [Universe!]!
-
-  \\"\\"\\"Subjects for this work\\"\\"\\"
-  subjects: SubjectContainer!
-
-  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
-  genreAndForm: [String!]!
-
-  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
-  workTypes: [WorkTypeEnum!]!
-
-  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
-  workYear: PublicationYear
-
-  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
-  mainLanguages: [Language!]!
-
-  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
-  manifestations: Manifestations!
-
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
-}
-
 enum ReviewElementTypeEnum {
   ABSTRACT
   ACQUISITION_RECOMMENDATIONS
@@ -5917,6 +6241,158 @@ type ReviewElement {
 type ManifestationReview {
   rating: String
   reviewByLibrarians: [ReviewElement]
+}
+
+\\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
+scalar PaginationLimitScalar
+
+\\"\\"\\"The supported fields to query\\"\\"\\"
+input SearchQueryInput {
+  \\"\\"\\"
+  Search for title, creator, subject or a combination.
+  This is typically used where a single search box is desired.
+  \\"\\"\\"
+  all: String
+
+  \\"\\"\\"Search for creator\\"\\"\\"
+  creator: String
+
+  \\"\\"\\"Search for specific subject\\"\\"\\"
+  subject: String
+
+  \\"\\"\\"Search for specific title\\"\\"\\"
+  title: String
+}
+
+\\"\\"\\"The supported facet fields\\"\\"\\"
+enum FacetFieldEnum {
+  WORKTYPES
+  MAINLANGUAGES
+  MATERIALTYPESGENERAL
+  MATERIALTYPESSPECIFIC
+  FICTIONALCHARACTERS
+  GENREANDFORM
+  CHILDRENORADULTS
+  ACCESSTYPES
+  FICTIONNONFICTION
+  SUBJECTS
+  CREATORS
+  CANALWAYSBELOANED
+  YEAR
+  DK5
+  AGE
+  LIX
+  LET
+  GENERALAUDIENCE
+  LIBRARYRECOMMENDATION
+  GAMEPLATFORM
+}
+
+\\"\\"\\"Search Filters\\"\\"\\"
+input SearchFiltersInput {
+  accessTypes: [String!]
+  childrenOrAdults: [String!]
+  creators: [String!]
+  fictionNonfiction: [String!]
+  fictionalCharacters: [String!]
+  genreAndForm: [String!]
+  mainLanguages: [String!]
+  materialTypesGeneral: [String!]
+  materialTypesSpecific: [String!]
+  subjects: [String!]
+  workTypes: [String!]
+  year: [String!]
+  dk5: [String!]
+  gamePlatform: [String!]
+  branchId: [String!]
+  department: [String!]
+  location: [String!]
+  sublocation: [String!]
+  status: [HoldingsStatusEnum!]
+  canAlwaysBeLoaned: [String!]
+  age: [String!]
+  ageRange: [String!]
+  lixRange: [String!]
+  letRange: [String!]
+  generalAudience: [String!]
+  libraryRecommendation: [String!]
+}
+
+enum HoldingsStatusEnum {
+  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
+  ONSHELF
+
+  \\"\\"\\"Holding is on loan\\"\\"\\"
+  ONLOAN
+}
+
+\\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
+type FacetValue {
+  \\"\\"\\"Use the key when applying filters\\"\\"\\"
+  key: String!
+
+  \\"\\"\\"A value of a facet field\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"A score indicating relevance\\"\\"\\"
+  score: Int
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this facet value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
+}
+
+\\"\\"\\"The result for a specific facet\\"\\"\\"
+type FacetResult {
+  \\"\\"\\"The name of the facet.\\"\\"\\"
+  name: String!
+
+  \\"\\"\\"The enum type of the facet.\\"\\"\\"
+  type: FacetFieldEnum!
+
+  \\"\\"\\"The values of thie facet result\\"\\"\\"
+  values(limit: Int!): [FacetValue!]!
+}
+
+\\"\\"\\"The simple search response\\"\\"\\"
+type SearchResponse {
+  \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"
+  The works matching the given search query. Use offset and limit for pagination.
+  \\"\\"\\"
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
+
+  \\"\\"\\"
+  Make sure only to fetch this when needed
+  This may take seconds to complete
+  \\"\\"\\"
+  facets(facets: [FacetFieldEnum!]!): [FacetResult!]!
+
+  \\"\\"\\"Will return the facets that best match the input query and filters\\"\\"\\"
+  intelligentFacets(limit: Int): [FacetResult!]!
+
+  \\"\\"\\"A list of alternative search queries\\"\\"\\"
+  didYouMean(limit: Int): [DidYouMean!]!
+}
+
+type DidYouMean {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this didYouMean value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"An alternative query\\"\\"\\"
+  query: String!
+
+  \\"\\"\\"A probability score between 0-1 indicating how relevant the query is\\"\\"\\"
+  score: Float!
 }
 
 type SerieWork {
@@ -6162,6 +6638,51 @@ type LocalSuggestResponse {
   result: [Suggestion!]!
 }
 
+union UniverseContentUnion = Work | Series
+
+type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String
+
+  \\"\\"\\"An id that identifies a universe.\\"\\"\\"
+  universeId: String
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
+  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
+  \\"\\"\\"
+  title: String!
+
+  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
+  alternativeTitles: [String!]
+
+  \\"\\"\\"Description of the universe\\"\\"\\"
+  description: String
+
+  \\"\\"\\"All series within the universe\\"\\"\\"
+  series(limit: Int, offset: Int, workType: WorkTypeEnum): [Series!]!
+
+  \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
+  works(limit: Int, offset: Int, workType: WorkTypeEnum): [Work!]!
+
+  \\"\\"\\"work types that are in this universe\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"both series and works in a list\\"\\"\\"
+  content(limit: Int, offset: Int, workType: WorkTypeEnum): UniverseContentResult!
+}
+
+type UniverseContentResult {
+  hitcount: Int!
+  entries: [UniverseContentUnion!]!
+}
+
 type Language {
   \\"\\"\\"Language as displayable text\\"\\"\\"
   display: String!
@@ -6306,418 +6827,6 @@ type TvSeriesDetails {
   display: String
   numbers: [Int!]
 }
-
-enum CopyRequestStatusEnum {
-  OK
-  ERROR_UNAUTHENTICATED_USER
-  ERROR_AGENCY_NOT_SUBSCRIBED
-  ERROR_INVALID_PICKUP_BRANCH
-  ERROR_PID_NOT_RESERVABLE
-  ERROR_MISSING_CLIENT_CONFIGURATION
-  ERROR_MUNICIPALITYAGENCYID_NOT_FOUND
-  ERROR_MISSING_MUNICIPALITYAGENCYID
-  UNKNOWN_USER
-  BORCHK_USER_BLOCKED_BY_AGENCY
-  BORCHK_USER_NO_LONGER_EXIST_ON_AGENCY
-  BORCHK_USER_NOT_VERIFIED
-  INTERNAL_ERROR
-}
-
-type CopyRequestResponse {
-  status: CopyRequestStatusEnum!
-}
-
-type ElbaServices {
-  placeCopyRequest(
-    input: CopyRequestInput!
-
-    \\"\\"\\"
-    If this is true, the copy request will not be send to the elba service
-    Use it for testing
-    \\"\\"\\"
-    dryRun: Boolean
-  ): CopyRequestResponse!
-}
-
-input CopyRequestInput {
-  \\"\\"\\"The pid of an article or periodica\\"\\"\\"
-  pid: String!
-  userName: String
-  userMail: String
-  publicationTitle: String
-  publicationDateOfComponent: String
-  publicationYearOfComponent: String
-  volumeOfComponent: String
-  authorOfComponent: String
-  titleOfComponent: String
-  pagesOfComponent: String
-  userInterestDate: String
-  pickUpAgencySubdivision: String
-  issueOfComponent: String
-  openURL: String
-}
-
-enum LanguageCodeEnum {
-  DA
-  EN
-}
-
-enum LinkCheckStatusEnum {
-  OK
-  BROKEN
-  INVALID
-  GONE
-}
-
-type LinkCheckResponse {
-  url: String!
-  status: LinkCheckStatusEnum!
-  lastCheckedAt: DateTime
-  brokenSince: DateTime
-}
-
-type LinkCheckService {
-  checks(urls: [String!]): [LinkCheckResponse!]!
-}
-
-type MarcRecord {
-  \\"\\"\\"The marc record identifier\\"\\"\\"
-  id: String!
-
-  \\"\\"\\"The library agency\\"\\"\\"
-  agencyId: String!
-
-  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
-  bibliographicRecordId: String!
-
-  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
-  content: String!
-
-  \\"\\"\\"
-  The serialization format of the MARC record content. Defaults to 'marcXchange'
-  \\"\\"\\"
-  contentSerializationFormat: String!
-
-  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
-  deleted: Boolean!
-}
-
-type Marc {
-  \\"\\"\\"
-  Gets the MARC record collection for the given record identifier, containing either standalone or head and/or section and volume records.
-  \\"\\"\\"
-  getMarcByRecordId(
-    \\"\\"\\"The marc record identifier\\"\\"\\"
-    recordId: String!
-  ): MarcRecord
-}
-
-\\"\\"\\"Type of moodSuggest response\\"\\"\\"
-enum MoodSuggestEnum {
-  TITLE
-  CREATOR
-  TAG
-}
-
-\\"\\"\\"MoodSuggest item\\"\\"\\"
-type MoodSuggestItem {
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this suggestion. 
-  It is generated in the response and should be included in subsequent
-  API calls when this manifestation is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"Suggestion\\"\\"\\"
-  term: String!
-
-  \\"\\"\\"The type of suggestion title/creator/tag\\"\\"\\"
-  type: MoodSuggestEnum!
-
-  \\"\\"\\"A work associated with the suggestion\\"\\"\\"
-  work: Work
-}
-
-\\"\\"\\"Response type for moodTagRecommend\\"\\"\\"
-type MoodTagRecommendResponse {
-  work: Work!
-  similarity: Float
-}
-
-\\"\\"\\"The response type for moodSuggest\\"\\"\\"
-type MoodSuggestResponse {
-  \\"\\"\\"Response is an array of MoodSuggestResponse\\"\\"\\"
-  response: [MoodSuggestItem!]!
-}
-
-\\"\\"\\"Supported fields for moodsearch request\\"\\"\\"
-enum MoodSearchFieldValuesEnum {
-  ALL
-  TITLE
-  CREATOR
-  MOODTAGS
-  ALLTAGS
-}
-
-input KidRecommenderTagsInput {
-  tag: String
-  weight: Int
-}
-
-input MoodKidsRecommendFiltersInput {
-  difficulty: [Int!]
-  illustrationsLevel: [Int!]
-  length: [Int!]
-  realisticVsFictional: [Int!]
-  fictionNonfiction: FictionNonfictionCodeEnum
-}
-
-\\"\\"\\"The response from moodsearch\\"\\"\\"
-type MoodSearchResponse {
-  \\"\\"\\"
-  The works matching the given search query. Use offset and limit for pagination.
-  \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
-}
-
-\\"\\"\\"The reponse from moodsearchkids\\"\\"\\"
-type MoodSearchKidsResponse {
-  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
-}
-
-\\"\\"\\"The reponse from moodrecommenkids\\"\\"\\"
-type MoodRecommendKidsResponse {
-  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
-}
-
-type MoodQueries {
-  moodSearch(q: String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchResponse!
-  moodSearchKids(q: String!, field: MoodSearchFieldValuesEnum, offset: Int, limit: Int): MoodSearchKidsResponse!
-  moodSuggest(q: String!, limit: Int): MoodSuggestResponse!
-  moodTagRecommend(tags: [String!]!, limit: Int, plus: [String!], minus: [String!], hasCover: Boolean): [MoodTagRecommendResponse]!
-  moodWorkRecommend(likes: [String!]!, dislikes: [String!], limit: Int, offset: Int, maxAuthorRecommendations: Int, threshold: Float, hasCover: Boolean): [MoodTagRecommendResponse]!
-  moodRecommendKids(tags: [KidRecommenderTagsInput!], work: String, filters: MoodKidsRecommendFiltersInput, dislikes: [String!], offset: Int, limit: Int): MoodRecommendKidsResponse!
-}
-
-\\"\\"\\"Get different kinds of recommendations\\"\\"\\"
-type Recommendations {
-  \\"\\"\\"
-  Retrieve subject-based recommendations based on a list of query strings and an optional limit.
-  - q: An array of strings used to generate subject recommendations.
-  - limit: The maximum number of recommendations to return.
-  \\"\\"\\"
-  subjects(q: [String!]!, limit: Int): [SubjectRecommendation!]
-}
-
-\\"\\"\\"Details about a single subject recommendation.\\"\\"\\"
-type SubjectRecommendation {
-  \\"\\"\\"The recommended subject.\\"\\"\\"
-  subject: String!
-
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this subject recommendation. 
-  It is generated in the response and should be included in subsequent
-  API calls when this suggestion is selected.
-  \\"\\"\\"
-  traceId: String!
-}
-
-\\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
-scalar PaginationLimitScalar
-
-\\"\\"\\"The supported fields to query\\"\\"\\"
-input SearchQueryInput {
-  \\"\\"\\"
-  Search for title, creator, subject or a combination.
-  This is typically used where a single search box is desired.
-  \\"\\"\\"
-  all: String
-
-  \\"\\"\\"Search for creator\\"\\"\\"
-  creator: String
-
-  \\"\\"\\"Search for specific subject\\"\\"\\"
-  subject: String
-
-  \\"\\"\\"Search for specific title\\"\\"\\"
-  title: String
-}
-
-\\"\\"\\"The supported facet fields\\"\\"\\"
-enum FacetFieldEnum {
-  WORKTYPES
-  MAINLANGUAGES
-  MATERIALTYPESGENERAL
-  MATERIALTYPESSPECIFIC
-  FICTIONALCHARACTERS
-  GENREANDFORM
-  CHILDRENORADULTS
-  ACCESSTYPES
-  FICTIONNONFICTION
-  SUBJECTS
-  CREATORS
-  CANALWAYSBELOANED
-  YEAR
-  DK5
-  AGE
-  LIX
-  LET
-  GENERALAUDIENCE
-  LIBRARYRECOMMENDATION
-  GAMEPLATFORM
-}
-
-\\"\\"\\"Search Filters\\"\\"\\"
-input SearchFiltersInput {
-  accessTypes: [String!]
-  childrenOrAdults: [String!]
-  creators: [String!]
-  fictionNonfiction: [String!]
-  fictionalCharacters: [String!]
-  genreAndForm: [String!]
-  mainLanguages: [String!]
-  materialTypesGeneral: [String!]
-  materialTypesSpecific: [String!]
-  subjects: [String!]
-  workTypes: [String!]
-  year: [String!]
-  dk5: [String!]
-  gamePlatform: [String!]
-  branchId: [String!]
-  department: [String!]
-  location: [String!]
-  sublocation: [String!]
-  status: [HoldingsStatusEnum!]
-  canAlwaysBeLoaned: [String!]
-  age: [String!]
-  ageRange: [String!]
-  lixRange: [String!]
-  letRange: [String!]
-  generalAudience: [String!]
-  libraryRecommendation: [String!]
-}
-
-enum HoldingsStatusEnum {
-  \\"\\"\\"Holding is physically available at the branch\\"\\"\\"
-  ONSHELF
-
-  \\"\\"\\"Holding is on loan\\"\\"\\"
-  ONLOAN
-}
-
-\\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
-type FacetValue {
-  \\"\\"\\"Use the key when applying filters\\"\\"\\"
-  key: String!
-
-  \\"\\"\\"A value of a facet field\\"\\"\\"
-  term: String!
-
-  \\"\\"\\"A score indicating relevance\\"\\"\\"
-  score: Int
-
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this facet value. 
-  It is generated in the response and should be included in subsequent
-  API calls when this manifestation is selected.
-  \\"\\"\\"
-  traceId: String!
-}
-
-\\"\\"\\"The result for a specific facet\\"\\"\\"
-type FacetResult {
-  \\"\\"\\"The name of the facet.\\"\\"\\"
-  name: String!
-
-  \\"\\"\\"The enum type of the facet.\\"\\"\\"
-  type: FacetFieldEnum!
-
-  \\"\\"\\"The values of thie facet result\\"\\"\\"
-  values(limit: Int!): [FacetValue!]!
-}
-
-\\"\\"\\"The simple search response\\"\\"\\"
-type SearchResponse {
-  \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
-  hitcount: Int!
-
-  \\"\\"\\"
-  The works matching the given search query. Use offset and limit for pagination.
-  \\"\\"\\"
-  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
-
-  \\"\\"\\"
-  Make sure only to fetch this when needed
-  This may take seconds to complete
-  \\"\\"\\"
-  facets(facets: [FacetFieldEnum!]!): [FacetResult!]!
-
-  \\"\\"\\"Will return the facets that best match the input query and filters\\"\\"\\"
-  intelligentFacets(limit: Int): [FacetResult!]!
-
-  \\"\\"\\"A list of alternative search queries\\"\\"\\"
-  didYouMean(limit: Int): [DidYouMean!]!
-}
-
-type DidYouMean {
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this didYouMean value. 
-  It is generated in the response and should be included in subsequent
-  API calls when this manifestation is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"An alternative query\\"\\"\\"
-  query: String!
-
-  \\"\\"\\"A probability score between 0-1 indicating how relevant the query is\\"\\"\\"
-  score: Float!
-}
-
-union UniverseContentUnion = Work | Series
-
-type Universe {
-  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
-  key: String
-
-  \\"\\"\\"An id that identifies a universe.\\"\\"\\"
-  universeId: String
-
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this universe.
-  It is generated in the response and should be included in subsequent
-  API calls when this work is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"
-  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
-  \\"\\"\\"
-  title: String!
-
-  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
-  alternativeTitles: [String!]
-
-  \\"\\"\\"Description of the universe\\"\\"\\"
-  description: String
-
-  \\"\\"\\"All series within the universe\\"\\"\\"
-  series(limit: Int, offset: Int, workType: WorkTypeEnum): [Series!]!
-
-  \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works(limit: Int, offset: Int, workType: WorkTypeEnum): [Work!]!
-
-  \\"\\"\\"work types that are in this universe\\"\\"\\"
-  workTypes: [WorkTypeEnum!]!
-
-  \\"\\"\\"both series and works in a list\\"\\"\\"
-  content(limit: Int, offset: Int, workType: WorkTypeEnum): UniverseContentResult!
-}
-
-type UniverseContentResult {
-  hitcount: Int!
-  entries: [UniverseContentUnion!]!
-}
 "
 `;
 
@@ -6755,10 +6864,6 @@ exports[`remove all fields by type 1`] = `
 
 \\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
-
-type Query {
-  manifestation(pid: String, faust: String): Manifestation
-}
 
 enum AccessTypeCodeEnum {
   PHYSICAL
@@ -6850,6 +6955,10 @@ type DigitalArticleService {
 }
 
 union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+
+type Query {
+  manifestation(pid: String, faust: String): Manifestation
+}
 
 type Translation {
   \\"\\"\\"
@@ -7068,6 +7177,8 @@ enum NoteTypeEnum {
   TECHNICAL_REQUIREMENTS
   ESTIMATED_PLAYING_TIME_FOR_GAMES
   EXPECTED_PUBLICATION_DATE
+  WITHDRAWN_PUBLICATION
+  CONTAINS_AI_GENERATED_CONTENT
 }
 
 enum ChildOrAdultCodeEnum {
@@ -7406,12 +7517,30 @@ type LevelForAudience {
   realisticVsFictional: Int
 }
 
+\\"\\"\\"
+A search hit that encapsulates a matched manifestation from a search query.
+\\"\\"\\"
+type SearchHit {
+  \\"\\"\\"The manifestation that was matched during the search.\\"\\"\\"
+  match: Manifestation
+}
+
 type Manifestations {
   first: Manifestation!
   latest: Manifestation!
   all: [Manifestation!]!
   bestRepresentation: Manifestation!
+  bestRepresentations: [Manifestation!]!
   mostRelevant: [Manifestation!]!
+
+  \\"\\"\\"
+  A list of manifestations that matched the search query.
+  
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
+  \\"\\"\\"
+  searchHits: [SearchHit!]
 }
 
 type Manifestation {
@@ -7572,14 +7701,14 @@ type Manifestation {
   \\"\\"\\"Material that can be identified as sheet music\\"\\"\\"
   sheetMusicCategories: SheetMusicCategory
 
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
-
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
 }
 
 type SheetMusicCategory {
@@ -7657,6 +7786,95 @@ type ManifestationTitles {
 
   \\"\\"\\"detailed title for tv series \\"\\"\\"
   tvSeries: TvSeries
+}
+
+type MarcRecord {
+  \\"\\"\\"The marc record identifier\\"\\"\\"
+  id: String!
+
+  \\"\\"\\"The library agency\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
+  bibliographicRecordId: String!
+
+  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
+  content: String!
+
+  \\"\\"\\"
+  The serialization format of the MARC record content. Defaults to 'marcXchange'
+  \\"\\"\\"
+  contentSerializationFormat: String!
+
+  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
+  deleted: Boolean!
+}
+
+type Work {
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this work.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
+  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
+  \\"\\"\\"
+  workId: String!
+  titles: WorkTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]
+
+  \\"\\"\\"Creators\\"\\"\\"
+  creators: [CreatorInterface!]!
+
+  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
+  dk5MainEntry: DK5MainEntry
+
+  \\"\\"\\"
+  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"Date of latest publication\\"\\"\\"
+  latestPublicationDate: String
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Series for this work\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universes: [Universe!]!
+
+  \\"\\"\\"Subjects for this work\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
+  workYear: PublicationYear
+
+  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
+  mainLanguages: [Language!]!
+
+  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
+  manifestations: Manifestations!
 }
 
 enum GeneralMaterialTypeCodeEnum {
@@ -7758,73 +7976,6 @@ type Relations {
 
   \\"\\"\\"This article or book part can be found in these manifestations\\"\\"\\"
   isPartOfManifestation: [Manifestation!]!
-}
-
-type Work {
-  \\"\\"\\"Relations to other manifestations\\"\\"\\"
-  relations: Relations!
-
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this work.
-  It is generated in the response and should be included in subsequent
-  API calls when this work is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"
-  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
-  \\"\\"\\"
-  workId: String!
-  titles: WorkTitles!
-
-  \\"\\"\\"Abstract of the entity\\"\\"\\"
-  abstract: [String!]
-
-  \\"\\"\\"Creators\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
-  dk5MainEntry: DK5MainEntry
-
-  \\"\\"\\"
-  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  \\"\\"\\"
-  fictionNonfiction: FictionNonfiction
-
-  \\"\\"\\"Date of latest publication\\"\\"\\"
-  latestPublicationDate: String
-
-  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  materialTypes: [MaterialType!]!
-
-  \\"\\"\\"Series for this work\\"\\"\\"
-  series: [Series!]!
-
-  \\"\\"\\"
-  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
-  \\"\\"\\"
-  universes: [Universe!]!
-
-  \\"\\"\\"Subjects for this work\\"\\"\\"
-  subjects: SubjectContainer!
-
-  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
-  genreAndForm: [String!]!
-
-  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
-  workTypes: [WorkTypeEnum!]!
-
-  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
-  workYear: PublicationYear
-
-  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
-  mainLanguages: [Language!]!
-
-  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
-  manifestations: Manifestations!
-
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
 }
 
 enum ReviewElementTypeEnum {
@@ -8033,6 +8184,51 @@ type SubjectContainer {
   dbcVerified: [SubjectInterface!]!
 }
 
+union UniverseContentUnion = Work | Series
+
+type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String
+
+  \\"\\"\\"An id that identifies a universe.\\"\\"\\"
+  universeId: String
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
+  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
+  \\"\\"\\"
+  title: String!
+
+  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
+  alternativeTitles: [String!]
+
+  \\"\\"\\"Description of the universe\\"\\"\\"
+  description: String
+
+  \\"\\"\\"All series within the universe\\"\\"\\"
+  series(limit: Int, offset: Int, workType: WorkTypeEnum): [Series!]!
+
+  \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
+  works(limit: Int, offset: Int, workType: WorkTypeEnum): [Work!]!
+
+  \\"\\"\\"work types that are in this universe\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"both series and works in a list\\"\\"\\"
+  content(limit: Int, offset: Int, workType: WorkTypeEnum): UniverseContentResult!
+}
+
+type UniverseContentResult {
+  hitcount: Int!
+  entries: [UniverseContentUnion!]!
+}
+
 type Language {
   \\"\\"\\"Language as displayable text\\"\\"\\"
   display: String!
@@ -8176,73 +8372,6 @@ type TvSeries {
 type TvSeriesDetails {
   display: String
   numbers: [Int!]
-}
-
-type MarcRecord {
-  \\"\\"\\"The marc record identifier\\"\\"\\"
-  id: String!
-
-  \\"\\"\\"The library agency\\"\\"\\"
-  agencyId: String!
-
-  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
-  bibliographicRecordId: String!
-
-  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
-  content: String!
-
-  \\"\\"\\"
-  The serialization format of the MARC record content. Defaults to 'marcXchange'
-  \\"\\"\\"
-  contentSerializationFormat: String!
-
-  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
-  deleted: Boolean!
-}
-
-union UniverseContentUnion = Work | Series
-
-type Universe {
-  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
-  key: String
-
-  \\"\\"\\"An id that identifies a universe.\\"\\"\\"
-  universeId: String
-
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this universe.
-  It is generated in the response and should be included in subsequent
-  API calls when this work is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"
-  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
-  \\"\\"\\"
-  title: String!
-
-  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
-  alternativeTitles: [String!]
-
-  \\"\\"\\"Description of the universe\\"\\"\\"
-  description: String
-
-  \\"\\"\\"All series within the universe\\"\\"\\"
-  series(limit: Int, offset: Int, workType: WorkTypeEnum): [Series!]!
-
-  \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
-  works(limit: Int, offset: Int, workType: WorkTypeEnum): [Work!]!
-
-  \\"\\"\\"work types that are in this universe\\"\\"\\"
-  workTypes: [WorkTypeEnum!]!
-
-  \\"\\"\\"both series and works in a list\\"\\"\\"
-  content(limit: Int, offset: Int, workType: WorkTypeEnum): UniverseContentResult!
-}
-
-type UniverseContentResult {
-  hitcount: Int!
-  entries: [UniverseContentUnion!]!
 }
 "
 `;

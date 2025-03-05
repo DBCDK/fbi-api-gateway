@@ -44,6 +44,11 @@ function jsonToPrometheus(data) {
     output.push(
       `service_errors_total{service="${service.service}", team="${team}"} ${service.errors}`
     );
+    //total number of successful requests
+    const success200 = service.status?.['200'] || 0;
+    output.push(
+      `http_requests_total{service="${service.service}", team="${team}" code="200"} ${success200}`
+    );
 
     //TODO: Maybe we need this later
     // let errorCount = 0;

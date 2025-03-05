@@ -4,8 +4,8 @@ import {
   fetchAndExpandSeries,
   resolveSeries,
   resolveWork,
-} from "../../utils/utils";
-import { createTraceId } from "../../utils/trace";
+} from "../utils/utils";
+import { createTraceId } from "../utils/trace";
 
 export const typeDef = `
 type SerieWork {

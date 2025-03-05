@@ -387,6 +387,7 @@ export async function resolveWork(args, context) {
         ...m,
         traceId: createTraceId(),
       })),
+      searchHits: args?.searchHits?.[w?.workId],
     };
 
     return withTraceId;
@@ -954,4 +955,53 @@ export function isPeriodica(periodicaForm) {
   const { authorOfComponent, titleOfComponent, pagesOfComponent } =
     periodicaForm;
   return authorOfComponent || titleOfComponent || pagesOfComponent;
+}
+
+/**
+ * This resolver uses the ranking order in bestRepresentations to map the matched PIDs
+ * from searchHits to their corresponding manifestations. It then filters out duplicates,
+ * ensuring that only the best match for each unit is returned.
+ */
+export function resolveSearchHits(parent) {
+  // Check if we are in a search context
+  if (!parent?.searchHits || !parent?.bestRepresentations) {
+    return null;
+  }
+
+  // List of PIDs that are matched by the search.
+  // Possibly more than one PID per unit.
+  const matchPids = parent.searchHits;
+
+  // All manifestations in the work, ordered by which one best represents the work.
+  const bestRepresentations = parent.bestRepresentations;
+
+  // Build a lookup map from PID to manifestation, and store their indexes.
+  const pidToManifestation = {};
+  bestRepresentations.forEach((m, index) => {
+    pidToManifestation[m.pid] = { ...m, index };
+  });
+
+  // Map searchHits PIDs to their corresponding manifestations and filter out undefined values.
+  const matchManifestations = matchPids
+    .map((pid) => pidToManifestation[pid])
+    .filter(Boolean);
+
+  // Sort the manifestations based on their index in bestRepresentations.
+  const matchManifestationsSorted = matchManifestations.sort(
+    (a, b) => a.index - b.index
+  );
+
+  // Keep only one manifestation per unit.
+  const seenUnits = new Set();
+  const matchManifestationsFiltered = matchManifestationsSorted.filter((m) => {
+    if (seenUnits.has(m.unitId)) {
+      return false;
+    }
+    seenUnits.add(m.unitId);
+    return true;
+  });
+
+  return matchManifestationsFiltered.map((match) => ({
+    match,
+  }));
 }

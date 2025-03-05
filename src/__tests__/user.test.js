@@ -150,6 +150,7 @@ test("user - get orders", async () => {
             query  {
               user {
                 orders {
+                result{
                   orderId
                   status
                   pickUpBranch {
@@ -165,6 +166,7 @@ test("user - get orders", async () => {
                   edition
                   agencyId
 
+                }
                 }
               }
             }
@@ -186,11 +188,13 @@ test("user - get debt", async () => {
             query  {
               user {
                 debt {
+                result {
                   amount
                   creator
                   currency
                   date
                   title
+                  }
                 }
               }
             }
@@ -212,6 +216,7 @@ test("user - get loans", async () => {
             query  {
               user {
                 loans {
+                result{
                   materialType
                   loanId
                   dueDate
@@ -238,7 +243,7 @@ test("user - get loans", async () => {
                     }
                     recordCreationDate
                   }
-                }
+                }}
               }
             }
         `,

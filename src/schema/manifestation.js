@@ -1,4 +1,4 @@
-import { parseJedSubjects, resolveWork } from "../../utils/utils";
+import { parseJedSubjects, resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 
 const IDENTIFIER_TYPES = new Set([
@@ -152,6 +152,8 @@ enum NoteTypeEnum {
   TECHNICAL_REQUIREMENTS
   ESTIMATED_PLAYING_TIME_FOR_GAMES
   EXPECTED_PUBLICATION_DATE
+  WITHDRAWN_PUBLICATION
+  CONTAINS_AI_GENERATED_CONTENT
 }
 enum ChildOrAdultCodeEnum {
   FOR_CHILDREN
@@ -570,7 +572,16 @@ type LevelForAudience {
   Level expressed as integer on a scale from 1 to 5
   """
   realisticVsFictional: Int
+}
 
+"""
+A search hit that encapsulates a matched manifestation from a search query.
+"""
+type SearchHit {
+  """
+  The manifestation that was matched during the search.
+  """
+  match: Manifestation
 }
 
 type Manifestations {
@@ -578,7 +589,17 @@ type Manifestations {
   latest: Manifestation!
   all: [Manifestation!]! @complexity(value: 50)
   bestRepresentation: Manifestation! 
+  bestRepresentations: [Manifestation!]! 
   mostRelevant: [Manifestation!]! @complexity(value: 25)
+
+  """
+  A list of manifestations that matched the search query.
+
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
+  """
+  searchHits: [SearchHit!]
 }
 
 type Manifestation {
@@ -1031,12 +1052,50 @@ export const resolvers = {
           return true;
         }
 
-        const moreinfoCoverImage = await context.datasources
-          .getLoader("moreinfoCovers")
-          .load(parent.pid);
+        if (process.env.NODE_ENV === "production") {
+          // TODO this should be removed when fbiinfo is ready
+          const moreInfoCoverImage = await context.datasources
+            .getLoader("moreinfoCovers")
+            .load(parent.pid);
 
-        if (checkCoverImage(moreinfoCoverImage, "moreinfo")) {
-          return moreinfoCoverImage;
+          if (moreInfoCoverImage?.detail) {
+            return {
+              thumbnail: moreInfoCoverImage?.detail,
+              detail_42: moreInfoCoverImage?.detail,
+              detail_117: moreInfoCoverImage?.detail,
+              detail_207: moreInfoCoverImage?.detail,
+              detail_500: moreInfoCoverImage?.detail,
+              detail: moreInfoCoverImage?.detail,
+              origin: "fbiinfo",
+              xSmall: { url: moreInfoCoverImage?.detail_117 },
+              small: { url: moreInfoCoverImage?.detail_207 },
+              medium: { url: moreInfoCoverImage?.detail },
+              large: { url: moreInfoCoverImage?.detail },
+            };
+          }
+        } else {
+          // This will be run in tests
+          // TODO reenable this when fbiinfo is ready
+          const fbiinfoCoverImage = await context.datasources
+            .getLoader("fbiinfoCovers")
+            .load(parent.pid);
+
+          if (fbiinfoCoverImage?.resources?.["480px"]) {
+            return {
+              origin: "fbiinfo",
+              detail_42: fbiinfoCoverImage?.resources?.["120px"]?.url,
+              detail_117: fbiinfoCoverImage?.resources?.["120px"]?.url,
+              detail_207: fbiinfoCoverImage?.resources?.["240px"]?.url,
+              detail_500: fbiinfoCoverImage?.resources?.["480px"]?.url,
+              detail: fbiinfoCoverImage?.resources?.["960px"]?.url,
+              thumbnail: fbiinfoCoverImage?.resources?.["120px"]?.url,
+
+              xSmall: fbiinfoCoverImage?.resources?.["120px"],
+              small: fbiinfoCoverImage?.resources?.["240px"],
+              medium: fbiinfoCoverImage?.resources?.["480px"],
+              large: fbiinfoCoverImage?.resources?.["960px"],
+            };
+          }
         }
 
         // Maybe the smaug client has a custom color palette
@@ -1048,12 +1107,42 @@ export const resolvers = {
           materialType: parent?.materialTypes?.[0]?.general?.code,
           colors,
         };
+
         const defaultForsiderCoverImage = await context.datasources
           .getLoader("defaultForsider")
           .load(params);
 
         if (checkCoverImage(defaultForsiderCoverImage, "defaultForsider")) {
-          return defaultForsiderCoverImage;
+          return {
+            origin: "default",
+            detail_42: defaultForsiderCoverImage.thumbnail,
+            detail_117: defaultForsiderCoverImage.detail,
+            detail_207: defaultForsiderCoverImage.detail,
+            detail_500: defaultForsiderCoverImage.detail,
+            detail: defaultForsiderCoverImage.detail,
+            thumbnail: defaultForsiderCoverImage.thumbnail,
+
+            xSmall: {
+              url: defaultForsiderCoverImage.thumbnail,
+              width: 75,
+              height: 115,
+            },
+            small: {
+              url: defaultForsiderCoverImage.detail,
+              width: 300,
+              height: 460,
+            },
+            medium: {
+              url: defaultForsiderCoverImage.detail,
+              width: 300,
+              height: 460,
+            },
+            large: {
+              url: defaultForsiderCoverImage.detail,
+              width: 300,
+              height: 460,
+            },
+          };
         }
       }
       // no coverImage

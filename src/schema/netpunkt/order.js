@@ -4,15 +4,19 @@
  * This functionality is necessary to allow librarians to create
  * loans on behalf of end users, ensuring efficient service
  * for library operations.
+ *
+ * If responderId is set, the librarian has taken an active stand
+ * on where the material should come from.
+ * If it is unset, that process is automated.
  */
 
 export const typeDef = `
 
   input NetpunktSubmitOrderInput {
-    orderType: OrderTypeEnum,
-    pids: [String!]!,
-    pickUpBranch: String!,
-    key: String,
+    orderType: OrderTypeEnum
+    pids: [String!]!
+    pickUpBranch: String!
+    key: String
     exactEdition: Boolean
     """
     expires is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
@@ -28,6 +32,7 @@ export const typeDef = `
     titleOfComponent: String
     volume: String
     requesterInitials: String
+    responderId: String
   }
   type Netpunkt {
     """
