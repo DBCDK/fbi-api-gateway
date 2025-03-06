@@ -10,12 +10,12 @@ export async function load(pid, context) {
   return res?.body;
 }
 
-// export const options = {
-//   redis: {
-//     prefix,
-//     ttl: 60 * 60, // 1 hour
-//     staleWhileRevalidate: 60 * 60 * 12, // 12 hours
-//   },
-// };
+export const options = {
+  redis: {
+    prefix,
+    ttl: 60 * 60, // 1 hour
+    staleWhileRevalidate: 60 * 60 * 12, // 12 hours
+  },
+};
 
 export { teamLabel };

@@ -1052,30 +1052,6 @@ export const resolvers = {
           return true;
         }
 
-        // if (process.env.NODE_ENV === "production") {
-        //   // TODO this should be removed when fbiinfo is ready
-        //   const moreInfoCoverImage = await context.datasources
-        //     .getLoader("moreinfoCovers")
-        //     .load(parent.pid);
-
-        //   if (moreInfoCoverImage?.detail) {
-        //     return {
-        //       thumbnail: moreInfoCoverImage?.detail,
-        //       detail_42: moreInfoCoverImage?.detail,
-        //       detail_117: moreInfoCoverImage?.detail,
-        //       detail_207: moreInfoCoverImage?.detail,
-        //       detail_500: moreInfoCoverImage?.detail,
-        //       detail: moreInfoCoverImage?.detail,
-        //       origin: "fbiinfo",
-        //       xSmall: { url: moreInfoCoverImage?.detail_117 },
-        //       small: { url: moreInfoCoverImage?.detail_207 },
-        //       medium: { url: moreInfoCoverImage?.detail },
-        //       large: { url: moreInfoCoverImage?.detail },
-        //     };
-        //   }
-        // } else {
-        // This will be run in tests
-        // TODO reenable this when fbiinfo is ready
         const fbiinfoCoverImage = await context.datasources
           .getLoader("fbiinfoCovers")
           .load(parent.pid);
