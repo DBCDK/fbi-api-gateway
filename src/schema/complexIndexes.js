@@ -19,6 +19,11 @@ type ComplexSearchIndex {
    Can be used for sorting
    """
    sort: Boolean!
+
+   """
+   Aliases for this index
+   """
+   aliases: [String!]
 }
 
 extend type Query {
