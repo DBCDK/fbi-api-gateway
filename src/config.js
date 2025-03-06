@@ -137,7 +137,7 @@ export default {
       teamLabel: "de-team",
     },
     moreinfo: {
-      url: process.env.MOREINFO_URL,
+      url: process.env.MOREINFO_URL || "https://moreinfo.addi.dk/2.11/",
       authenticationUser: process.env.MOREINFO_USER,
       authenticationGroup: process.env.MOREINFO_GROUP,
       authenticationPassword: process.env.MOREINFO_PASSWORD,
@@ -194,10 +194,14 @@ export default {
       teamLabel: "de-team",
     },
     redis: {
-      host: process.env.REDIS_HOST || "127.0.0.1",
+      host:
+        process.env.REDIS_HOST ||
+        "frontend-staging-redis-cluster.platform-redis.svc.cloud.dbc.dk",
       port: process.env.REDIS_PORT || "6379",
       prefix: process.env.REDIS_PREFIX || "bibdk-api-4",
-      enabled: process.env.REDIS_ENABLED || true,
+      enabled: ["1", "true", "yes"].includes(
+        String(process.env.REDIS_ENABLED).toLowerCase()
+      ),
       teamLabel: "febib",
     },
     simplesearch: {
