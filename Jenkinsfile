@@ -23,6 +23,14 @@ pipeline {
         REPOSITORY = "https://docker-frontend.artifacts.dbccloud.dk"
     }
     stages {
+
+        stage('trigger job') {
+            steps { script {
+            build job: 'bibliotekdk-next-frontend/job/prod', wait: false
+
+            } }
+        }
+
         stage('Build image') {
             steps { script {
                 // Work around bug https://issues.jenkins-ci.org/browse/JENKINS-44609 , https://issues.jenkins-ci.org/browse/JENKINS-44789
