@@ -63,7 +63,13 @@ export default {
     denyTypes: [],
   },
   "fbs:system": {
-    allowRootFields: ["culr", "vip", "marc", "holdingsItems", "ors"],
+    allowRootFields: [
+      // "culr", removed for now because of security issues with the culr rest service
+      "vip",
+      "marc",
+      "holdingsItems",
+      "ors",
+    ],
     denyTypes: [],
   },
   ddbcms: {

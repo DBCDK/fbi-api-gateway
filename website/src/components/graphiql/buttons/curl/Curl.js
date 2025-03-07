@@ -36,7 +36,7 @@ export default function CurlButton({ className }) {
   const [copyVisible, setCopyVisibility] = useState(false);
 
   const [value, setValue] = useState("");
-  const { json, hasError } = useParseCurl(value);
+  const { json, hasError, hasEmptyQuery } = useParseCurl(value);
 
   const inputRef = useRef();
   const elRef = useRef();
@@ -50,7 +50,7 @@ export default function CurlButton({ className }) {
 
   // store curl in value if/when curl exist.
   useEffect(() => {
-    if (curl && value === "") {
+    if (curl && !isEqual) {
       setValue(curl);
     }
   }, [curl]);
@@ -66,9 +66,12 @@ export default function CurlButton({ className }) {
         updateInitialParams({ ...params });
         token && profile && setSelectedToken(token, profile);
 
-        //  Try to prettify and run
-        //  Note that this only works inside a GraphiQL contextProvider
-        setTimeout(() => prettifyEditors?.(), 100);
+        // Run if no empty query
+        if (!hasEmptyQuery) {
+          //  Try to prettify and run
+          //  Note that this only works inside a GraphiQL contextProvider
+          setTimeout(() => prettifyEditors?.(), 100);
+        }
         setTimeout(() => run?.(), 500);
 
         setSubmitting(false);
@@ -146,7 +149,6 @@ export default function CurlButton({ className }) {
           title="Restore original curl"
         >
           <span>⤴️</span>
-          {/* 🪄 */}
         </Button>
         <Button
           secondary
@@ -168,8 +170,8 @@ export default function CurlButton({ className }) {
           title="Copy curl"
           elRef={btnRef}
         >
-          📝
-          {/* 📄 */}
+          📄
+          {/* 📝 */}
         </Button>
       </Overlay>
       <Overlay

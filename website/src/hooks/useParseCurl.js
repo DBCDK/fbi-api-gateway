@@ -69,10 +69,6 @@ const parseCurl = (curlCommand) => {
   return result;
 };
 
-const validateParsedCurl = (json) => {
-  return !json?.data?.query;
-};
-
 function isValidCurlCommand(curlCommand) {
   // Trim leading and trailing whitespace
   const trimmedCommand = curlCommand.trim();
@@ -80,9 +76,10 @@ function isValidCurlCommand(curlCommand) {
   // Basic validation checks for common curl components
   const hasCurl = trimmedCommand.startsWith("curl ");
   const hasUrl = /https?:\/\/[^\s]+/.test(trimmedCommand);
-  const hasValidFlags = /(-X\s+(GET|POST|PUT|DELETE)|-H\s+['"]?.+['"]?|-d\s+['"]?.+['"]?)/.test(
-    trimmedCommand
-  );
+  const hasValidFlags =
+    /(-X\s+(GET|POST|PUT|DELETE)|-H\s+['"]?.+['"]?|-d\s+['"]?.+['"]?)/.test(
+      trimmedCommand
+    );
 
   return hasCurl && hasUrl && hasValidFlags;
 }
@@ -98,9 +95,23 @@ const useParseCurl = (curlCommand) => {
     }
   }, [curlCommand]);
 
-  const hasError = validateParsedCurl(parsedResult);
+  const hasEmptyQuery = parsedResult?.data?.query === "";
 
-  return { json: parsedResult, isValidCurlCommand, hasError };
+  const hasEmptyVariables =
+    JSON.stringify(parsedResult?.data?.variables) === "{}";
+
+  // Nothing to do with query, this only checks if the curl command was parsed successfully
+  const isValid =
+    parsedResult?.data?.query !== undefined &&
+    parsedResult?.data?.query !== null;
+
+  return {
+    json: parsedResult,
+    isValidCurlCommand,
+    hasError: !isValid,
+    hasEmptyQuery,
+    hasEmptyVariables,
+  };
 };
 
 export default useParseCurl;

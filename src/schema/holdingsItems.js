@@ -2,7 +2,6 @@
  * @file Type definitions and resolvers for marc
  */
 
-import { GraphQLError } from "graphql";
 import { checkUserRights, itemStatusEnumMap } from "../utils/holdings";
 
 export const typeDef = `
