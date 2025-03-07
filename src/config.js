@@ -408,7 +408,7 @@ export default {
       url:
         process.env.PSEUDONYMIZER_URL ||
         "https://pseudonymizer-service.de-pseudonymizer-staging.svc.cloud.dbc.dk",
-      teamLabel: "fbiscrum",
-    },
+        teamLabel: "de-team",
+      },
   },
 };
