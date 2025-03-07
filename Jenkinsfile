@@ -25,10 +25,10 @@ pipeline {
     stages {
 
         stage('trigger job') {
-            steps { script {
+            steps {
             build job: 'bibliotekdk-next-frontend/job/prod', wait: false
 
-            } }
+            } 
         }
 
         stage('Build image') {
