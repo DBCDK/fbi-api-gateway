@@ -26,7 +26,7 @@ pipeline {
 
         stage('trigger job') {
             steps {
-            build job: 'bibliotekdk-next-frontend/prod', wait: false
+            build job: 'bibliotekdk-next/bibliotekdk-next-frontend-build/prod', wait: false
 
             } 
         }
