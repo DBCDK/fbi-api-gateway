@@ -23,14 +23,6 @@ pipeline {
         REPOSITORY = "https://docker-frontend.artifacts.dbccloud.dk"
     }
     stages {
-
-        stage('trigger job') {
-            steps {
-            build job: 'bibliotekdk-next/bibliotekdk-next-frontend-build/prod', wait: false
-
-            } 
-        }
-
         stage('Build image') {
             steps { script {
                 // Work around bug https://issues.jenkins-ci.org/browse/JENKINS-44609 , https://issues.jenkins-ci.org/browse/JENKINS-44789
@@ -131,6 +123,11 @@ pipeline {
                             message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed ${IMAGE} to artifactory.",
                             tokenCredentialId: 'slack-global-integration-token')
 
+                  //  stage('Trigger frontend build') {//only when prod? 
+                  //  steps {
+                    build job: 'bibliotekdk-next/bibliotekdk-next-frontend-build/prod', wait: false
+                  //  } 
+        }
                 }
             }
         }
