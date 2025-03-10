@@ -122,10 +122,10 @@ pipeline {
                             color: 'good',
                             message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed ${IMAGE} to artifactory.",
                             tokenCredentialId: 'slack-global-integration-token')
-
-                    build job: 'bibliotekdk-next/bibliotekdk-next-frontend-build/prod', wait: false
        // }
                 }
+         build job: 'bibliotekdk-next/bibliotekdk-next-frontend-build/prod', wait: false
+
             }
         }
         fixed {
