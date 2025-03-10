@@ -124,11 +124,10 @@ pipeline {
                             tokenCredentialId: 'slack-global-integration-token')
                 }
            
-              //  if ("${env.BRANCH_NAME}" == 'prod') {
-
-                    //Trigger a build for studiesoeg to ensure there is no breaking changes in the API
+                //Trigger a build for studiesoeg to ensure there is no breaking changes in the API
+               if ("${env.BRANCH_NAME}" == 'prod') {
                     build job: 'studiesoeg-build/main', wait: false
-              //  }
+               }
 
             }
         }
