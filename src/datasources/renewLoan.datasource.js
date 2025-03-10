@@ -67,7 +67,8 @@ export async function load(
 
   const error =
     res.body?.renewLoanResponse?.renewLoanStatus?.[0]?.renewLoanError?.$ ||
-    res.body?.getUserStatusResponse?.getUserStatusError?.$;
+    res.body?.getUserStatusResponse?.getUserStatusError?.$ ||
+    res.body?.renewLoanResponse?.renewLoanError?.$;
 
   return {
     error: error,
