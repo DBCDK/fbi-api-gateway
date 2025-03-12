@@ -24,8 +24,16 @@ export async function resolveGraphQLQuery(req, res, next) {
 
   const { query, variables } = req.body;
 
+  // smaug client custom complexity limit
+  const maxQueryComplexity = req?.smaug?.gateway?.maxQueryComplexity;
+
   // Set incomming query complexity
-  req.queryComplexity = getQueryComplexity({ query, variables, schema });
+  req.queryComplexity = getQueryComplexity({
+    query,
+    variables,
+    schema,
+    limit: maxQueryComplexity,
+  });
 
   // Get query complexity category (simple|complex|critical|rejected)
   req.queryComplexityClass = getQueryComplexityClass(req.queryComplexity);
@@ -62,7 +70,9 @@ export async function resolveGraphQLQuery(req, res, next) {
 
   const handler = createHandler({
     schema,
-    validationRules: [validateQueryComplexity({ query, variables })],
+    validationRules: [
+      validateQueryComplexity({ query, variables, limit: maxQueryComplexity }),
+    ],
     context: req,
     onOperation: async (_, arg, graphQLRes) => {
       const now = performance.now();

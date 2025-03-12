@@ -51,6 +51,38 @@ describe("Complexity validation", () => {
     expect(errors).toMatchSnapshot();
   });
 
+  test("Query complexity validation with custom limit 5 - REJECTED ", () => {
+    const query = `query Test_WorkRecommendations($pid: String!, $limit: Int!) {
+        recommend(pid: $pid, limit: $limit) {
+          result {
+            work {
+              workId
+              titles {
+                main
+              }
+              creators {
+                display
+              }
+            }
+          }
+        }
+      }
+    `;
+    const ast = parse(query);
+    const errors = validate(internalSchema, ast, [
+      validateQueryComplexity({
+        query,
+        limit: 5,
+        variables: {
+          pid: "870970-basis:55139784",
+          limit: 10,
+        },
+      }),
+    ]);
+
+    expect(errors).toMatchSnapshot();
+  });
+
   test("Query complexity validation - Exceed complexity limit ", () => {
     const query = `query Test_WorkRecommendations($pid: String!, $limit: Int!) {
         recommend(pid: $pid, limit: $limit) {
