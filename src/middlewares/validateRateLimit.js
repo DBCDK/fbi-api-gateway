@@ -10,32 +10,33 @@ const { expireSeconds, prefix, max } = config.rateLimit;
 export async function validateRateLimit(req, res, next) {
   const clientId = req.smaug?.app?.clientId;
 
-  // We do not count introspection queries
-
   // Return if no clientId
   if (!clientId) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  // unique key for the client (including global prefix for cache reset)
   const redisKey = `${prefix}:${clientId}`;
-
-  // get the rate limit from smaug settings (fallbacks to config max)
   const RATE_LIMIT = req.smaug?.gateway?.maxRequestsPerMinute || max;
 
-  // increment the count
-  const count = await incr(redisKey, expireSeconds);
+  let count;
 
-  const userAgent = req.get("User-Agent");
+  try {
+    count = await incr(redisKey, expireSeconds);
+  } catch (error) {
+    log.error("Redis error in rate limiting", { error: error.message });
 
+    count = 0; // Fallback, som betyder, at vi ikke begrænser
+  }
+
+  const userAgent = req.get("User-Agent") || "";
+  const userAgentIsBot = isbot(userAgent) || false;
   const accessTokenHash = createHash(req.accessToken);
 
   if (count > RATE_LIMIT) {
-    // Rate limit exceeded info log
     log.info("Rate limit exceeded", {
-      clientId: req?.smaug?.app?.clientId,
+      clientId,
       userAgent,
-      userAgentIsBot: isbot(userAgent),
+      userAgentIsBot,
       ip: req?.smaug?.app?.ips?.[0],
       accessTokenHash,
     });
