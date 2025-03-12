@@ -1,4 +1,9 @@
-import { parseJedSubjects, resolveSearchHits } from "../utils/utils";
+import {
+  parseJedSubjects,
+  resolvePeriodica,
+  resolvePeriodicaIssue,
+  resolveSearchHits,
+} from "../utils/utils";
 
 export const typeDef = `
 type Language {
@@ -173,7 +178,25 @@ type Work {
   Details about the manifestations of this work
   """
   manifestations: Manifestations!
+
+  """
+  Periodica info is set if this is a periodica or an article in periodica
+  """
+  periodicaInfo: WorkPeriodicaInfo
 }
+
+type WorkPeriodicaInfo {
+  """
+  Is set when this is work is the actual periodica
+  """
+  periodica: Periodica
+
+  """
+  is set when this work is an article in an issue of a periodica
+  """
+  issue: PeriodicaIssue
+}
+
 enum WorkTypeEnum {
   ANALYSIS
   ARTICLE
@@ -282,6 +305,28 @@ type TvSeriesDetails {
 
 export const resolvers = {
   Work: {
+    async periodicaInfo(parent, args, context) {
+      const manifestation = parent?.manifestations?.all?.[0];
+      const issn = manifestation?.identifiers?.find(
+        (entry) => entry?.type === "ISSN"
+      )?.value;
+
+      if (issn) {
+        return {
+          periodica: await resolvePeriodica(issn, context),
+        };
+      }
+
+      const hostIssn = manifestation?.hostPublication?.issn;
+      const issue = manifestation?.hostPublication?.issue;
+      if (hostIssn) {
+        return {
+          issue: await resolvePeriodicaIssue(hostIssn, issue, context),
+        };
+      }
+
+      return null;
+    },
     creators(parent, args, context, info) {
       // Handle difference in structure from JED service
       if (Array.isArray(parent?.creators)) {

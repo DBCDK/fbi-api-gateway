@@ -206,6 +206,7 @@ type Query {
   marc: Marc!
   mood: MoodQueries!
   ors: OrsQuery!
+  periodica(issn: String!): Periodica
 
   \\"\\"\\"Access to various types of recommendations.\\"\\"\\"
   recommendations: Recommendations!
@@ -2653,6 +2654,11 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+
+  \\"\\"\\"
+  Periodica info is set if this is a periodica or an article in periodica
+  \\"\\"\\"
+  periodicaInfo: WorkPeriodicaInfo
 }
 
 enum GeneralMaterialTypeCodeEnum {
@@ -3020,6 +3026,28 @@ type OrsQuery {
   Method to retrieve sender and receiver information from ORS based on an itemId.
   \\"\\"\\"
   itemOrder(itemId: String!): ItemIdResponse!
+}
+
+\\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
+type Periodica {
+  issues: PeriodicaEntriesResponse!
+  subjects: PeriodicaFacetResponse!
+}
+
+type PeriodicaFacetResponse {
+  hitcount: Int!
+  entries(offset: Int, limit: Int): [FacetValue!]
+}
+
+type PeriodicaEntriesResponse {
+  hitcount: Int!
+  entries(offset: Int, limit: Int): [PeriodicaIssue!]!
+}
+
+type PeriodicaIssue {
+  display: String!
+  hitcount: Int!
+  works(offset: Int, limit: Int): [Work!]!
 }
 
 type Recommendation {
@@ -4539,6 +4567,14 @@ type DK5MainEntry {
 
   \\"\\"\\"The dk5Heading for the classification\\"\\"\\"
   dk5Heading: String!
+}
+
+type WorkPeriodicaInfo {
+  \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
+  periodica: Periodica
+
+  \\"\\"\\"is set when this work is an article in an issue of a periodica\\"\\"\\"
+  issue: PeriodicaIssue
 }
 
 enum WorkTypeEnum {
@@ -7881,6 +7917,11 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+
+  \\"\\"\\"
+  Periodica info is set if this is a periodica or an article in periodica
+  \\"\\"\\"
+  periodicaInfo: WorkPeriodicaInfo
 }
 
 enum GeneralMaterialTypeCodeEnum {
@@ -7899,6 +7940,28 @@ enum GeneralMaterialTypeCodeEnum {
   PODCASTS
   SHEET_MUSIC
   TV_SERIES
+}
+
+\\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
+type Periodica {
+  issues: PeriodicaEntriesResponse!
+  subjects: PeriodicaFacetResponse!
+}
+
+type PeriodicaFacetResponse {
+  hitcount: Int!
+  entries(offset: Int, limit: Int): [FacetValue!]
+}
+
+type PeriodicaEntriesResponse {
+  hitcount: Int!
+  entries(offset: Int, limit: Int): [PeriodicaIssue!]!
+}
+
+type PeriodicaIssue {
+  display: String!
+  hitcount: Int!
+  works(offset: Int, limit: Int): [Work!]!
 }
 
 type Relations {
@@ -8015,6 +8078,25 @@ type ReviewElement {
 type ManifestationReview {
   rating: String
   reviewByLibrarians: [ReviewElement]
+}
+
+\\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
+type FacetValue {
+  \\"\\"\\"Use the key when applying filters\\"\\"\\"
+  key: String!
+
+  \\"\\"\\"A value of a facet field\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"A score indicating relevance\\"\\"\\"
+  score: Int
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this facet value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
 }
 
 type SerieWork {
@@ -8300,6 +8382,14 @@ type DK5MainEntry {
 
   \\"\\"\\"The dk5Heading for the classification\\"\\"\\"
   dk5Heading: String!
+}
+
+type WorkPeriodicaInfo {
+  \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
+  periodica: Periodica
+
+  \\"\\"\\"is set when this work is an article in an issue of a periodica\\"\\"\\"
+  issue: PeriodicaIssue
 }
 
 enum WorkTypeEnum {

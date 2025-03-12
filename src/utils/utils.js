@@ -1005,3 +1005,95 @@ export function resolveSearchHits(parent) {
     match,
   }));
 }
+
+/**
+ * Extracts the relevant numerical values from a given string:
+ * - Volume number (årgang)
+ * - Issue number (nr.), including ranges like "6/7"
+ * - Year (inside parentheses)
+ *
+ * If a value is missing, it's set to -Infinity to ensure proper sorting (newest first).
+ */
+function extractNumbers(str) {
+  const volumeMatch = str.match(/årg\. ?\[?(\d+)\]?/);
+  const issueMatch = str.match(/nr\. (\d+)(?:\/(\d+))?/);
+  const yearMatch = str.match(/\((\d+)\)/);
+
+  // Default to -Infinity for missing values
+  const volume = volumeMatch ? Number(volumeMatch[1]) : -Infinity;
+  const issueStart = issueMatch ? Number(issueMatch[1]) : -Infinity;
+  const issueEnd =
+    issueMatch && issueMatch[2] ? Number(issueMatch[2]) : issueStart;
+  const year = yearMatch ? Number(yearMatch[1]) : -Infinity;
+
+  // Sorting priority: year > volume > issue start > issue end
+  return [year, volume, issueStart, issueEnd];
+}
+
+/**
+ * Sorts the data in **reverse order**, meaning the newest entries appear **at the top**.
+ * Sorting order:
+ * 1. Newest **year** first
+ * 2. Highest **volume** first
+ * 3. Highest **issue start** first
+ * 4. Highest **issue end** first
+ */
+function sortIssues(a, b) {
+  const [yearA, volumeA, issueA_start, issueA_end] = extractNumbers(a);
+  const [yearB, volumeB, issueB_start, issueB_end] = extractNumbers(b);
+
+  return (
+    yearB - yearA || // Sort by year (newest first)
+    volumeB - volumeA || // Sort by volume (highest first)
+    issueB_start - issueA_start || // Sort by issue start (highest first)
+    issueB_end - issueA_end // Sort by issue end (highest first)
+  );
+}
+
+export async function resolvePeriodica(issn, context) {
+  if (!issn) {
+    return null;
+  }
+
+  const res = await context.datasources.getLoader("complexFacets").load({
+    cql: `term.issn=${issn}`,
+    facets: ["ISSUE", "SUBJECT"],
+    facetLimit: 5000,
+    profile: context.profile,
+  });
+
+  const issuesFacets = res.facets?.find((facet) =>
+    facet?.name?.includes("issue")
+  );
+  const subjectsFacets = res.facets?.find((facet) =>
+    facet?.name?.includes("subject")
+  );
+
+  const issueIds = issuesFacets?.values
+    ?.map?.((entry) => entry.key)
+    ?.sort(sortIssues);
+
+  return {
+    issues: {
+      issn,
+      hitcount: issueIds?.length,
+      entries: issueIds,
+    },
+    subjects: {
+      entries: subjectsFacets?.values?.map((entry) => ({
+        ...entry,
+        term: entry.key,
+      })),
+    },
+  };
+}
+
+export async function resolvePeriodicaIssue(issn, issue, context) {
+  const res = await context.datasources.getLoader("complexsearch").load({
+    cql: `term.issn="${issn}" AND phrase.issue="${issue}"`,
+    profile: context.profile,
+    offset: 0,
+    limit: 100,
+  });
+  return { ...res, display: issue };
+}
