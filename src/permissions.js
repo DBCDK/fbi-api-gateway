@@ -26,7 +26,7 @@ const defaultSettings = {
     "universe",
     "mood",
   ],
-  denyTypes: ["CheckOrderPolicy", "Availability", "SEO"],
+  denyTypes: ["CheckOrderPolicy", "Availability", "SEO", "WorkPeriodicaInfo"],
 };
 
 // smaug roles map in fbi-api
@@ -59,6 +59,7 @@ export default {
       // drupal
       "nodeById",
       "nodeQuery",
+      "periodica",
     ],
     denyTypes: [],
   },
