@@ -9,7 +9,16 @@ export default {
       : 15,
     maxComplexity: process.env.MAX_QUERY_COMPLEXITY
       ? parseInt(process.env.MAX_QUERY_COMPLEXITY, 10)
-      : 1000,
+      : 25000,
+  },
+  rateLimit: {
+    expireSeconds: process.env.RATE_LIMIT_WINDOW_SECONDS
+      ? parseInt(process.env.RATE_LIMIT_WINDOW_SECONDS, 10)
+      : 60,
+    max: process.env.RATE_LIMIT_MAX
+      ? parseInt(process.env.RATE_LIMIT_MAX, 10)
+      : 100000,
+    prefix: process.env.RATE_LIMIT_PREFIX || "rate-limit-1",
   },
   dmzproxy: {
     url: process.env.PROXY_URL || null,
@@ -408,7 +417,7 @@ export default {
       url:
         process.env.PSEUDONYMIZER_URL ||
         "https://pseudonymizer-service.de-pseudonymizer-staging.svc.cloud.dbc.dk",
-        teamLabel: "de-team",
-      },
+      teamLabel: "de-team",
+    },
   },
 };

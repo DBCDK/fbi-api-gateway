@@ -17,7 +17,15 @@ import config from "../config";
  * @param {object} params.schema
  * @returns {object}
  */
-export function buildQueryComplexity({ schema = null, query, variables }) {
+export function buildQueryComplexity({
+  schema = null,
+  query,
+  variables,
+  limit = null,
+}) {
+  // Set the complexity limit (custom or default/config)
+  const COMPLEXITY_LIMIT = limit || config.query.maxComplexity;
+
   return {
     estimators: [
       directiveEstimator(),
@@ -26,7 +34,7 @@ export function buildQueryComplexity({ schema = null, query, variables }) {
       }),
     ],
     schema,
-    maximumComplexity: config.query.maxComplexity,
+    maximumComplexity: COMPLEXITY_LIMIT,
     query: parse(query),
     variables,
     createError: (max, actual) => {
@@ -35,11 +43,12 @@ export function buildQueryComplexity({ schema = null, query, variables }) {
       );
     },
     onComplete: (complexity) => {
-      if (complexity > config.query.maxComplexity) {
+      if (complexity > COMPLEXITY_LIMIT) {
         log.error("Query exceeded complexity limit", {
           complexity,
           query,
-          maxComplexity: config.query.maxComplexity,
+          clientConfiguredLimit: !!limit,
+          maxComplexity: COMPLEXITY_LIMIT,
         });
       }
     },

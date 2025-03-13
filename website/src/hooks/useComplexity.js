@@ -1,6 +1,8 @@
 import fetch from "isomorphic-unfetch";
 import useSWR from "swr";
 
+import config from "../../../src/config";
+
 import { isToken } from "@/components/utils";
 
 // parse function - parse string variables to json
