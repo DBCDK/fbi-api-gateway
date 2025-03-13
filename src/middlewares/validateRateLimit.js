@@ -24,12 +24,16 @@ export async function validateRateLimit(req, res, next) {
     count = await incr(redisKey, expireSeconds);
   } catch (error) {
     log.error("Redis error in rate limiting", { error: error.message });
-
-    count = 0; // Fallback, som betyder, at vi ikke begrænser
+    count = 0;
   }
 
+  // Useragent
   const userAgent = req.get("User-Agent") || "";
+
+  // Define if useragent is a bot
   const userAgentIsBot = isbot(userAgent) || false;
+
+  // Hashed accesstoken
   const accessTokenHash = createHash(req.accessToken);
 
   if (count > RATE_LIMIT) {

@@ -4,7 +4,7 @@ import isbot from "isbot";
 import { log } from "dbc-node-logger";
 import config from "../../config";
 
-// 🚀 Jest Mocking
+// Jest mock functions
 jest.mock("../../datasources/redis.datasource", () => ({
   incr: jest.fn(),
 }));
