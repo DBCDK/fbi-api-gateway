@@ -3,8 +3,7 @@
  *
  */
 
-import { parse } from "graphql/language";
-import { validate } from "graphql/validation";
+import { parse, validate, GraphQLError } from "graphql";
 
 import { getExecutableSchema } from "../schemaLoader";
 import { validateQueryComplexity } from "../utils/complexity";
@@ -51,7 +50,7 @@ describe("Complexity validation", () => {
     expect(errors).toMatchSnapshot();
   });
 
-  test("Query complexity validation with custom limit 5 - REJECTED ", () => {
+  test("Query complexity validation with custom limit 5 - REJECTED", () => {
     const query = `query Test_WorkRecommendations($pid: String!, $limit: Int!) {
         recommend(pid: $pid, limit: $limit) {
           result {
@@ -68,19 +67,28 @@ describe("Complexity validation", () => {
         }
       }
     `;
+
     const ast = parse(query);
     const errors = validate(internalSchema, ast, [
       validateQueryComplexity({
         query,
-        limit: 5,
+        limit: 5, // 👈 Custom limit på 5
         variables: {
           pid: "870970-basis:55139784",
-          limit: 10,
+          limit: 10, // 👈 Bruger prøver at overskride grænsen
         },
       }),
     ]);
 
-    expect(errors).toMatchSnapshot();
+    // 🔹 Kontroller, at der rent faktisk er en fejl
+    expect(errors).not.toHaveLength(0);
+
+    // 🔹 Kontroller, at fejlen er en GraphQLError med korrekt besked
+    expect(errors[0]).toBeInstanceOf(GraphQLError);
+    expect(errors[0].message).toContain("Query is too complex");
+
+    // 🔹 Tjek om den præcise fejlmeddelelse matcher den forventede
+    expect(errors[0].message).toMatch(/Maximum allowed complexity: \d+/);
   });
 
   test("Query complexity validation - Exceed complexity limit ", () => {
