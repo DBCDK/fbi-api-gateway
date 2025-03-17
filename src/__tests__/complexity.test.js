@@ -50,7 +50,7 @@ describe("Complexity validation", () => {
     expect(errors).toMatchSnapshot();
   });
 
-  test("Query complexity validation with custom limit 5 - REJECTED", () => {
+  test("Query complexity validation with custom limit 100 - REJECTED", () => {
     const query = `query Test_WorkRecommendations($pid: String!, $limit: Int!) {
         recommend(pid: $pid, limit: $limit) {
           result {
@@ -72,7 +72,7 @@ describe("Complexity validation", () => {
     const errors = validate(internalSchema, ast, [
       validateQueryComplexity({
         query,
-        limit: 5, // 👈 Custom limit på 5
+        limit: 100, // 👈 Custom limit på 100
         variables: {
           pid: "870970-basis:55139784",
           limit: 10, // 👈 Bruger prøver at overskride grænsen
@@ -91,7 +91,7 @@ describe("Complexity validation", () => {
     expect(errors[0].message).toMatch(/Maximum allowed complexity: \d+/);
   });
 
-  test("Query complexity validation - Exceed complexity limit ", () => {
+  test("Query complexity validation - Exceed global complexity limit 25000", () => {
     const query = `query Test_WorkRecommendations($pid: String!, $limit: Int!) {
         recommend(pid: $pid, limit: $limit) {
           result {
@@ -114,7 +114,7 @@ describe("Complexity validation", () => {
         query,
         variables: {
           pid: "870970-basis:55139784",
-          limit: 100,
+          limit: 5000,
         },
       }),
     ]);

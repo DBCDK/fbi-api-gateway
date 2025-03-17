@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Complexity validation Query complexity validation - Exceed complexity limit  1`] = `Array []`;
+exports[`Complexity validation Query complexity validation - Exceed global complexity limit 25000 1`] = `
+Array [
+  [GraphQLError: Query is too complex: 70000. Maximum allowed complexity: 25000],
+]
+`;
 
 exports[`Complexity validation Query complexity validation - OK  1`] = `Array []`;
+
+exports[`Complexity validation Query complexity validation - Request exceed complexity limit  1`] = `
+Array [
+  [GraphQLError: Query is too complex: 140000. Maximum allowed complexity: 25000],
+]
+`;
