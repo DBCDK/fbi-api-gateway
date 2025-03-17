@@ -122,8 +122,13 @@ pipeline {
                             color: 'good',
                             message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed ${IMAGE} to artifactory.",
                             tokenCredentialId: 'slack-global-integration-token')
-
                 }
+           
+                //Trigger a build for studiesoeg to ensure there is no breaking changes in the API
+               if ("${env.BRANCH_NAME}" == 'prod') {
+                    build job: 'studiesoeg-build/main', wait: false
+               }
+
             }
         }
         fixed {

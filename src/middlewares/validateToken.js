@@ -61,7 +61,7 @@ export async function validateToken(req, res, next) {
   // No token is given
   if (!req.isIntrospectionQuery) {
     // Invalid access token
-    if (!req.smaug) {
+    if (!req.smaug?.app) {
       res.status(403);
       return res.send({
         statusCode: 403,

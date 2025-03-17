@@ -41,9 +41,9 @@ export default {
     catInspire: {
       url:
         process.env.CAT_INSPIRE_URL ||
-        "http://cat-inspire-1-0.ai-prod.svc.cloud.dbc.dk",
+        "http://cat-inspire-1-1.ai-prod.svc.cloud.dbc.dk",
       ttl: process.env.CAT_INSPIRE_TIME_TO_LIVE_SECONDS || 60,
-      prefix: process.env.CAT_INSPIRE_PREFIX || "cat-inspire-1",
+      prefix: process.env.CAT_INSPIRE_PREFIX || "cat-inspire-2",
       teamLabel: "ai",
     },
     complexsearch: {
@@ -137,7 +137,7 @@ export default {
       teamLabel: "de-team",
     },
     moreinfo: {
-      url: process.env.MOREINFO_URL,
+      url: process.env.MOREINFO_URL || "https://moreinfo.addi.dk/2.11/",
       authenticationUser: process.env.MOREINFO_USER,
       authenticationGroup: process.env.MOREINFO_GROUP,
       authenticationPassword: process.env.MOREINFO_PASSWORD,
@@ -194,10 +194,14 @@ export default {
       teamLabel: "de-team",
     },
     redis: {
-      host: process.env.REDIS_HOST || "127.0.0.1",
+      host:
+        process.env.REDIS_HOST ||
+        "frontend-staging-redis-cluster.platform-redis.svc.cloud.dbc.dk",
       port: process.env.REDIS_PORT || "6379",
       prefix: process.env.REDIS_PREFIX || "bibdk-api-4",
-      enabled: process.env.REDIS_ENABLED || true,
+      enabled: ["1", "true", "yes"].includes(
+        String(process.env.REDIS_ENABLED).toLowerCase()
+      ),
       teamLabel: "febib",
     },
     simplesearch: {
@@ -404,7 +408,7 @@ export default {
       url:
         process.env.PSEUDONYMIZER_URL ||
         "https://pseudonymizer-service.de-pseudonymizer-staging.svc.cloud.dbc.dk",
-      teamLabel: "fbiscrum",
+      teamLabel: "de-team",
     },
   },
 };

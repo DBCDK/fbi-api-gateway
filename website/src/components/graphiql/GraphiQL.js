@@ -116,12 +116,27 @@ export default function Wrap() {
   }
 
   function onTabChange({ query: newQuery, variables: newVariables }) {
+    // current params
+    const { query, variables } = params;
+    // updated params
     const updatedParams = {
       ...params,
       query: newQuery,
       variables: newVariables,
     };
-    updateURL(updatedParams);
+
+    // Check if the new query and variables are different from the current ones
+    const isEqual = (a, b) => {
+      const toJsonString = (val) =>
+        typeof val === "string" ? val : JSON.stringify(val);
+      return toJsonString(a) === toJsonString(b);
+    };
+
+    // Update URL only if the query or variables have changed
+    if (!(isEqual(query, newQuery) && isEqual(variables, newVariables))) {
+      // Update URL
+      updateURL(updatedParams);
+    }
   }
 
   const updateURL = useCallback(
