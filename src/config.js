@@ -41,9 +41,9 @@ export default {
     catInspire: {
       url:
         process.env.CAT_INSPIRE_URL ||
-        "http://cat-inspire-1-0.ai-prod.svc.cloud.dbc.dk",
+        "http://cat-inspire-1-1.ai-prod.svc.cloud.dbc.dk",
       ttl: process.env.CAT_INSPIRE_TIME_TO_LIVE_SECONDS || 60,
-      prefix: process.env.CAT_INSPIRE_PREFIX || "cat-inspire-1",
+      prefix: process.env.CAT_INSPIRE_PREFIX || "cat-inspire-2",
       teamLabel: "ai",
     },
     complexsearch: {
@@ -408,7 +408,7 @@ export default {
       url:
         process.env.PSEUDONYMIZER_URL ||
         "https://pseudonymizer-service.de-pseudonymizer-staging.svc.cloud.dbc.dk",
-        teamLabel: "de-team",
-      },
+      teamLabel: "de-team",
+    },
   },
 };
