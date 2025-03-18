@@ -32,7 +32,14 @@ export const typeDef = `
     titleOfComponent: String
     volume: String
     requesterInitials: String
+    """
+    AgencyId of the desired responder for inter library loans. Kept unset if automation is wanted.
+    """
     responderId: String
+    """
+    Indicates whether order is allowed to be put in queue
+    """
+    placeOnHold: String
   }
   type Netpunkt {
     """
