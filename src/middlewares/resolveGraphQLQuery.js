@@ -32,7 +32,7 @@ export async function resolveGraphQLQuery(req, res, next) {
     query,
     variables,
     schema,
-    limit: maxQueryComplexity,
+    maxQueryComplexity,
   });
 
   // Get query complexity category (simple|complex|critical|rejected)
@@ -71,7 +71,7 @@ export async function resolveGraphQLQuery(req, res, next) {
   const handler = createHandler({
     schema,
     validationRules: [
-      validateQueryComplexity({ query, variables, limit: maxQueryComplexity }),
+      validateQueryComplexity({ query, variables, maxQueryComplexity }),
     ],
     context: req,
     onOperation: async (_, arg, graphQLRes) => {

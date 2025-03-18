@@ -21,10 +21,10 @@ export function buildQueryComplexity({
   schema = null,
   query,
   variables,
-  limit = null,
+  maxQueryComplexity = null,
 }) {
   // Set the complexity limit (custom or default/config)
-  const COMPLEXITY_LIMIT = limit || config.query.maxComplexity;
+  const COMPLEXITY_LIMIT = maxQueryComplexity || config.query.maxComplexity;
 
   return {
     estimators: [
@@ -47,7 +47,7 @@ export function buildQueryComplexity({
         log.error("Query exceeded complexity limit", {
           complexity,
           query,
-          clientConfiguredLimit: !!limit,
+          clientConfiguredLimit: !!maxQueryComplexity,
           maxComplexity: COMPLEXITY_LIMIT,
         });
       }

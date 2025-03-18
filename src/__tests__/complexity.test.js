@@ -72,7 +72,7 @@ describe("Complexity validation", () => {
     const errors = validate(internalSchema, ast, [
       validateQueryComplexity({
         query,
-        limit: 100, // 👈 Custom limit på 100
+        maxQueryComplexity: 100, // 👈 Custom limit på 100
         variables: {
           pid: "870970-basis:55139784",
           limit: 10, // 👈 Bruger prøver at overskride grænsen
