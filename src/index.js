@@ -11,7 +11,6 @@ import config from "./config";
 import howruHandler from "./howru";
 import metricsHandler from "./metrics";
 
-import { metrics } from "./utils/monitor";
 import {
   getQueryComplexity,
   getQueryComplexityClass,
@@ -27,6 +26,7 @@ import { validateDepth } from "./middlewares/validateQueryDepth";
 import { resolveGraphQLQuery } from "./middlewares/resolveGraphQLQuery";
 import { validateAgencyId } from "./middlewares/validateAgencyId";
 import { dataHubMiddleware } from "./middlewares/dataHubMiddleware";
+import { validateRateLimit } from "./middlewares/validateRateLimit";
 
 // this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
@@ -83,6 +83,7 @@ prometheusApp.listen(9599, () => {
     dataHubMiddleware,
     initDataloaders,
     validateToken,
+    validateRateLimit,
     validateAgencyId,
     fetchUserInfo,
     validateDepth,
@@ -96,6 +97,7 @@ prometheusApp.listen(9599, () => {
     dataHubMiddleware,
     initDataloaders,
     validateToken,
+    validateRateLimit,
     validateAgencyId,
     fetchUserInfo,
     validateDepth,

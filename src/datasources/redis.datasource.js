@@ -127,6 +127,34 @@ export const set = monitor(
 );
 
 /**
+ * A monitored Redis increment operation
+ */
+export const incr = monitor(
+  { name: "REQUEST_redis_incr", help: "Redis increment request" },
+  async (key, seconds, stats, datasourceName) => {
+    const timings = { redisTime: 0 };
+
+    try {
+      const now = performance.now();
+      const count = await redis.incr(key);
+      timings.redisTime = performance.now() - now;
+
+      if (count === 1) {
+        // Set expiration time (at first count)
+        await redis.expire(key, seconds);
+      }
+
+      return count;
+    } catch (e) {
+      log.error(`Redis INCR failed`, { key });
+      return null;
+    } finally {
+      stats?.addRedisSet(datasourceName, timings);
+    }
+  }
+);
+
+/**
  * A monitored redis delete operation
  */
 export const del = monitor(
