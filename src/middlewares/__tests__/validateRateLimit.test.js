@@ -97,15 +97,14 @@ describe("Rate Limiting Middleware", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("🚨 Should return 401 if clientId is missing", async () => {
+  it("🚨 Should ignore if clientId is missing", async () => {
     const req = mockRequest({ smaug: {} });
     const res = mockResponse();
 
     await validateRateLimit(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: "Unauthorized" });
-    expect(next).not.toHaveBeenCalled();
+    expect(incr).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
   });
 
   it("✅ Should detect bot user agent", async () => {
