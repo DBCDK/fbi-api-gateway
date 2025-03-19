@@ -201,12 +201,12 @@ type Query {
   complexSearchIndexes: [ComplexSearchIndex!]
   culr: CulrQuery!
   debug: Debug
+  periodica(issn: String!): Periodica
 
   \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
   marc: Marc!
   mood: MoodQueries!
   ors: OrsQuery!
-  periodica(issn: String!): Periodica
 
   \\"\\"\\"Access to various types of recommendations.\\"\\"\\"
   recommendations: Recommendations!
@@ -1306,6 +1306,116 @@ input CopyRequestInput {
   pickUpAgencySubdivision: String
   issueOfComponent: String
   openURL: String
+}
+
+\\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
+type Periodica {
+  issues: PeriodicaEntriesResponse!
+  subjects: PeriodicaFacetResponse!
+}
+
+type PeriodicaFacetResponse {
+  hitcount: Int!
+  entries(offset: Int, limit: Int): [FacetValue!]
+}
+
+type PeriodicaEntriesResponse {
+  hitcount: Int!
+  entries(offset: Int, limit: Int): [PeriodicaIssue!]!
+}
+
+type PeriodicaIssue {
+  display: String!
+  hitcount: Int!
+  works(offset: Int, limit: Int): [Work!]!
+}
+
+type SimilarPeriodicaArticleEntry {
+  sharedSubjects: [String!]!
+  work: Work!
+}
+
+type WorkPeriodicaInfo {
+  \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
+  periodica: Periodica
+
+  \\"\\"\\"is set when this work is an article in an issue of a periodica\\"\\"\\"
+  issue: PeriodicaIssue
+
+  \\"\\"\\"Articles in same periodica that are similar in terms of subjects\\"\\"\\"
+  similarArticles: [SimilarPeriodicaArticleEntry!]
+}
+
+type Work {
+  \\"\\"\\"
+  Periodica info is set if this is a periodica or an article in periodica
+  \\"\\"\\"
+  periodicaInfo: WorkPeriodicaInfo
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this work.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
+  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
+  \\"\\"\\"
+  workId: String!
+  titles: WorkTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]
+
+  \\"\\"\\"Creators\\"\\"\\"
+  creators: [CreatorInterface!]!
+
+  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
+  dk5MainEntry: DK5MainEntry
+
+  \\"\\"\\"
+  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"Date of latest publication\\"\\"\\"
+  latestPublicationDate: String
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Series for this work\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universes: [Universe!]!
+
+  \\"\\"\\"Subjects for this work\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
+  workYear: PublicationYear
+
+  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
+  mainLanguages: [Language!]!
+
+  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
+  manifestations: Manifestations!
 }
 
 type HelpRow {
@@ -2589,78 +2699,6 @@ type Marc {
   ): MarcRecord
 }
 
-type Work {
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
-
-  \\"\\"\\"Relations to other manifestations\\"\\"\\"
-  relations: Relations!
-
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this work.
-  It is generated in the response and should be included in subsequent
-  API calls when this work is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"
-  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
-  \\"\\"\\"
-  workId: String!
-  titles: WorkTitles!
-
-  \\"\\"\\"Abstract of the entity\\"\\"\\"
-  abstract: [String!]
-
-  \\"\\"\\"Creators\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
-  dk5MainEntry: DK5MainEntry
-
-  \\"\\"\\"
-  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  \\"\\"\\"
-  fictionNonfiction: FictionNonfiction
-
-  \\"\\"\\"Date of latest publication\\"\\"\\"
-  latestPublicationDate: String
-
-  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  materialTypes: [MaterialType!]!
-
-  \\"\\"\\"Series for this work\\"\\"\\"
-  series: [Series!]!
-
-  \\"\\"\\"
-  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
-  \\"\\"\\"
-  universes: [Universe!]!
-
-  \\"\\"\\"Subjects for this work\\"\\"\\"
-  subjects: SubjectContainer!
-
-  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
-  genreAndForm: [String!]!
-
-  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
-  workTypes: [WorkTypeEnum!]!
-
-  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
-  workYear: PublicationYear
-
-  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
-  mainLanguages: [Language!]!
-
-  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
-  manifestations: Manifestations!
-
-  \\"\\"\\"
-  Periodica info is set if this is a periodica or an article in periodica
-  \\"\\"\\"
-  periodicaInfo: WorkPeriodicaInfo
-}
-
 enum GeneralMaterialTypeCodeEnum {
   ARTICLES
   AUDIO_BOOKS
@@ -3033,28 +3071,6 @@ type OrsQuery {
   Method to retrieve sender and receiver information from ORS based on an itemId.
   \\"\\"\\"
   itemOrder(itemId: String!): ItemIdResponse!
-}
-
-\\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
-type Periodica {
-  issues: PeriodicaEntriesResponse!
-  subjects: PeriodicaFacetResponse!
-}
-
-type PeriodicaFacetResponse {
-  hitcount: Int!
-  entries(offset: Int, limit: Int): [FacetValue!]
-}
-
-type PeriodicaEntriesResponse {
-  hitcount: Int!
-  entries(offset: Int, limit: Int): [PeriodicaIssue!]!
-}
-
-type PeriodicaIssue {
-  display: String!
-  hitcount: Int!
-  works(offset: Int, limit: Int): [Work!]!
 }
 
 type Recommendation {
@@ -4576,14 +4592,6 @@ type DK5MainEntry {
   dk5Heading: String!
 }
 
-type WorkPeriodicaInfo {
-  \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
-  periodica: Periodica
-
-  \\"\\"\\"is set when this work is an article in an issue of a periodica\\"\\"\\"
-  issue: PeriodicaIssue
-}
-
 enum WorkTypeEnum {
   ANALYSIS
   ARTICLE
@@ -5163,6 +5171,73 @@ input CopyRequestInput {
   pickUpAgencySubdivision: String
   issueOfComponent: String
   openURL: String
+}
+
+type Work {
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this work.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
+  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
+  \\"\\"\\"
+  workId: String!
+  titles: WorkTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]
+
+  \\"\\"\\"Creators\\"\\"\\"
+  creators: [CreatorInterface!]!
+
+  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
+  dk5MainEntry: DK5MainEntry
+
+  \\"\\"\\"
+  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"Date of latest publication\\"\\"\\"
+  latestPublicationDate: String
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Series for this work\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universes: [Universe!]!
+
+  \\"\\"\\"Subjects for this work\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
+  workYear: PublicationYear
+
+  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
+  mainLanguages: [Language!]!
+
+  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
+  manifestations: Manifestations!
 }
 
 enum InfomediaErrorEnum {
@@ -5964,73 +6039,6 @@ type MarcRecord {
 
   \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
   deleted: Boolean!
-}
-
-type Work {
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
-
-  \\"\\"\\"Relations to other manifestations\\"\\"\\"
-  relations: Relations!
-
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this work.
-  It is generated in the response and should be included in subsequent
-  API calls when this work is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"
-  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
-  \\"\\"\\"
-  workId: String!
-  titles: WorkTitles!
-
-  \\"\\"\\"Abstract of the entity\\"\\"\\"
-  abstract: [String!]
-
-  \\"\\"\\"Creators\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
-  dk5MainEntry: DK5MainEntry
-
-  \\"\\"\\"
-  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  \\"\\"\\"
-  fictionNonfiction: FictionNonfiction
-
-  \\"\\"\\"Date of latest publication\\"\\"\\"
-  latestPublicationDate: String
-
-  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  materialTypes: [MaterialType!]!
-
-  \\"\\"\\"Series for this work\\"\\"\\"
-  series: [Series!]!
-
-  \\"\\"\\"
-  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
-  \\"\\"\\"
-  universes: [Universe!]!
-
-  \\"\\"\\"Subjects for this work\\"\\"\\"
-  subjects: SubjectContainer!
-
-  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
-  genreAndForm: [String!]!
-
-  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
-  workTypes: [WorkTypeEnum!]!
-
-  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
-  workYear: PublicationYear
-
-  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
-  mainLanguages: [Language!]!
-
-  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
-  manifestations: Manifestations!
 }
 
 enum GeneralMaterialTypeCodeEnum {
@@ -7116,6 +7124,116 @@ interface CreatorInterface {
   roles: [Role!]!
 }
 
+\\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
+type Periodica {
+  issues: PeriodicaEntriesResponse!
+  subjects: PeriodicaFacetResponse!
+}
+
+type PeriodicaFacetResponse {
+  hitcount: Int!
+  entries(offset: Int, limit: Int): [FacetValue!]
+}
+
+type PeriodicaEntriesResponse {
+  hitcount: Int!
+  entries(offset: Int, limit: Int): [PeriodicaIssue!]!
+}
+
+type PeriodicaIssue {
+  display: String!
+  hitcount: Int!
+  works(offset: Int, limit: Int): [Work!]!
+}
+
+type SimilarPeriodicaArticleEntry {
+  sharedSubjects: [String!]!
+  work: Work!
+}
+
+type WorkPeriodicaInfo {
+  \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
+  periodica: Periodica
+
+  \\"\\"\\"is set when this work is an article in an issue of a periodica\\"\\"\\"
+  issue: PeriodicaIssue
+
+  \\"\\"\\"Articles in same periodica that are similar in terms of subjects\\"\\"\\"
+  similarArticles: [SimilarPeriodicaArticleEntry!]
+}
+
+type Work {
+  \\"\\"\\"
+  Periodica info is set if this is a periodica or an article in periodica
+  \\"\\"\\"
+  periodicaInfo: WorkPeriodicaInfo
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this work.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
+  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
+  \\"\\"\\"
+  workId: String!
+  titles: WorkTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]
+
+  \\"\\"\\"Creators\\"\\"\\"
+  creators: [CreatorInterface!]!
+
+  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
+  dk5MainEntry: DK5MainEntry
+
+  \\"\\"\\"
+  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"Date of latest publication\\"\\"\\"
+  latestPublicationDate: String
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Series for this work\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universes: [Universe!]!
+
+  \\"\\"\\"Subjects for this work\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
+  workYear: PublicationYear
+
+  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
+  mainLanguages: [Language!]!
+
+  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
+  manifestations: Manifestations!
+}
+
 type CatalogueCodes {
   \\"\\"\\"CatalogueCodes from the national registers\\"\\"\\"
   nationalBibliography: [String!]!
@@ -7859,78 +7977,6 @@ type MarcRecord {
   deleted: Boolean!
 }
 
-type Work {
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
-
-  \\"\\"\\"Relations to other manifestations\\"\\"\\"
-  relations: Relations!
-
-  \\"\\"\\"
-  A unique identifier for tracking user interactions with this work.
-  It is generated in the response and should be included in subsequent
-  API calls when this work is selected.
-  \\"\\"\\"
-  traceId: String!
-
-  \\"\\"\\"
-  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
-  \\"\\"\\"
-  workId: String!
-  titles: WorkTitles!
-
-  \\"\\"\\"Abstract of the entity\\"\\"\\"
-  abstract: [String!]
-
-  \\"\\"\\"Creators\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
-  dk5MainEntry: DK5MainEntry
-
-  \\"\\"\\"
-  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  \\"\\"\\"
-  fictionNonfiction: FictionNonfiction
-
-  \\"\\"\\"Date of latest publication\\"\\"\\"
-  latestPublicationDate: String
-
-  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
-  materialTypes: [MaterialType!]!
-
-  \\"\\"\\"Series for this work\\"\\"\\"
-  series: [Series!]!
-
-  \\"\\"\\"
-  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
-  \\"\\"\\"
-  universes: [Universe!]!
-
-  \\"\\"\\"Subjects for this work\\"\\"\\"
-  subjects: SubjectContainer!
-
-  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
-  genreAndForm: [String!]!
-
-  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
-  workTypes: [WorkTypeEnum!]!
-
-  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
-  workYear: PublicationYear
-
-  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
-  mainLanguages: [Language!]!
-
-  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
-  manifestations: Manifestations!
-
-  \\"\\"\\"
-  Periodica info is set if this is a periodica or an article in periodica
-  \\"\\"\\"
-  periodicaInfo: WorkPeriodicaInfo
-}
-
 enum GeneralMaterialTypeCodeEnum {
   ARTICLES
   AUDIO_BOOKS
@@ -7947,28 +7993,6 @@ enum GeneralMaterialTypeCodeEnum {
   PODCASTS
   SHEET_MUSIC
   TV_SERIES
-}
-
-\\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
-type Periodica {
-  issues: PeriodicaEntriesResponse!
-  subjects: PeriodicaFacetResponse!
-}
-
-type PeriodicaFacetResponse {
-  hitcount: Int!
-  entries(offset: Int, limit: Int): [FacetValue!]
-}
-
-type PeriodicaEntriesResponse {
-  hitcount: Int!
-  entries(offset: Int, limit: Int): [PeriodicaIssue!]!
-}
-
-type PeriodicaIssue {
-  display: String!
-  hitcount: Int!
-  works(offset: Int, limit: Int): [Work!]!
 }
 
 type Relations {
@@ -8389,14 +8413,6 @@ type DK5MainEntry {
 
   \\"\\"\\"The dk5Heading for the classification\\"\\"\\"
   dk5Heading: String!
-}
-
-type WorkPeriodicaInfo {
-  \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
-  periodica: Periodica
-
-  \\"\\"\\"is set when this work is an article in an issue of a periodica\\"\\"\\"
-  issue: PeriodicaIssue
 }
 
 enum WorkTypeEnum {
