@@ -36,7 +36,11 @@ export const resolvers = {
   Debug: {
     async complexity(parent, args, context, info) {
       const { queryComplexity, queryComplexityClass } = context;
-      const maxComplexity = config?.query?.maxComplexity;
+
+      const maxComplexity =
+        context.smaug?.gateway?.maxQueryComplexity ||
+        config?.query?.maxComplexity;
+
       return {
         value: queryComplexity,
         max: maxComplexity,
@@ -45,7 +49,9 @@ export const resolvers = {
     },
     async depth(parent, args, context, info) {
       const { queryDepth } = context;
-      const maxDepth = config?.query?.maxDepth;
+
+      const maxDepth =
+        context.smaug?.gateway?.maxQueryDepth || config?.query?.maxDepth;
 
       return { value: queryDepth, max: maxDepth };
     },

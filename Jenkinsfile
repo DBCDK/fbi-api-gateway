@@ -11,7 +11,6 @@ pipeline {
     triggers{
         // @TODO parameters on githubPush .. eg. branch
         githubPush()
-
     }
     environment {
         GITLAB_ID = "1232"

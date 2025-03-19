@@ -92,6 +92,28 @@ Queries exceeding **15** levels will be rejected to prevent server overloads, mi
 
 >         <Depth.Demo />
 
+## Rate Limiting 🚦
+
+To ensure a stable and fair distribution of resources, we apply rate limiting to our API. Rate limiting restricts the number of requests a client can make within a given time period. This helps protect the API from overload, abuse, and unwanted traffic.
+
+### How does it work?
+Each client is identified by a unique ID and assigned a quota for the number of requests allowed within a specific timeframe. If this limit is exceeded, the API will return an error message indicating that too many requests have been sent.
+
+### How to avoid hitting the rate limit?
+To ensure smooth operation and avoid disruptions, we recommend implementing some of the following strategies:
+
+- **Caching Responses:** Store frequently requested data locally or in a caching layer to reduce the number of identical API requests.
+- **Efficient Querying:** Optimize your API calls by requesting only the data you need. Avoid excessive or unnecessary queries.
+- **Batching Requests:** Combine multiple smaller requests into fewer, larger requests where possible.
+- **Retry with Backoff:** If your application encounters a rate limit error, implement an exponential backoff strategy to gradually retry requests after a delay.
+- **Monitor Usage:** Keep track of how many requests your application makes to detect patterns that could be optimized.
+
+<br />
+
+### Rate Limits and Agreements
+The exact rate limit applied to your application may depend on your agreement with DBC DIGITAL. Some clients may have access to higher limits based on their specific needs and usage patterns. If your application requires a higher request quota, please contact us to discuss available options.
+
+
 ## Deprecation
 
 FBI-API is a versionless API, which enables the continuous addition of new types and fields to the API. However, this also means that data models can change, and fields can be renamed, moved, or removed, resulting in breaking changes.
