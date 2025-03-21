@@ -1336,6 +1336,9 @@ type SimilarPeriodicaArticleEntry {
 }
 
 type WorkPeriodicaInfo {
+  \\"\\"\\"If current work is an article, its parent is the periodica work\\"\\"\\"
+  parent: Work
+
   \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
   periodica: Periodica
 
@@ -7152,6 +7155,9 @@ type SimilarPeriodicaArticleEntry {
 }
 
 type WorkPeriodicaInfo {
+  \\"\\"\\"If current work is an article, its parent is the periodica work\\"\\"\\"
+  parent: Work
+
   \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
   periodica: Periodica
 
