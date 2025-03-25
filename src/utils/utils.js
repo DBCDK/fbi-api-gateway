@@ -711,7 +711,11 @@ export async function resolveLocalizations(args, context) {
       }
     }
   }
-  const agencies = sortBy(Object.values(realAgenciesMap), "agencyName");
+
+  const agencies = Object.values(realAgenciesMap).sort((a, b) =>
+    a.agencyName.localeCompare(b.agencyName, "da")
+  );
+
   return { count: agencies?.length, agencies };
 }
 
