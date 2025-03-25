@@ -814,6 +814,42 @@ type Manifestation {
   Material that can be identified as sheet music
   """
   sheetMusicCategories: SheetMusicCategory
+
+  """
+  The publication status of a catalogued manifestation.
+  """
+  cataloguedPublicationStatus: CataloguedPublicationStatus
+}
+
+"""
+Represents the publication status of a catalogued manifestation.
+"""
+enum CataloguedPublicationStatusEnum {
+  """
+  New title
+  """
+  NT
+
+  """
+  New edition
+  """
+  NU
+
+  """
+  New print run
+  """
+  OP
+}
+type CataloguedPublicationStatus {
+  """
+  The code representing the catalogued publication status.
+  """
+  code: CataloguedPublicationStatusEnum!
+
+  """
+  The display text corresponding to the publication status code.
+  """
+  display: String!
 }
 
 type SheetMusicCategory {
@@ -919,6 +955,11 @@ type ManifestationTitles {
 `;
 
 export const resolvers = {
+  CataloguedPublicationStatus: {
+    code(parent) {
+      return parent?.code?.toUpperCase?.();
+    },
+  },
   Audience: {
     ages(parent) {
       return parent?.ages
