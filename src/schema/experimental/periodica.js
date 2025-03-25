@@ -50,6 +50,11 @@ extend type Query {
 
 type WorkPeriodicaInfo {
   """
+  If current work is an article, its parent is the periodica work
+  """
+  parent: Work
+
+  """
   Is set when this is work is the actual periodica
   """
   periodica: Periodica
@@ -102,6 +107,9 @@ export const resolvers = {
     },
   },
   WorkPeriodicaInfo: {
+    parent(parent, args, context) {
+      return resolveWorkFromIssn(parent?.hostIssn, context);
+    },
     async similarArticles({ hostIssn, workId, manifestation }, args, context) {
       return resolveSimilarArticles(
         { hostIssn, workId, manifestation },
@@ -265,6 +273,17 @@ export async function resolvePeriodicaIssue(issn, issue, context) {
     limit: 100,
   });
   return { ...res, display: issue };
+}
+
+export async function resolveWorkFromIssn(issn, context) {
+  const res = await context.datasources.getLoader("complexsearch").load({
+    cql: `term.issn="${issn}" AND worktype=periodica`,
+    profile: context.profile,
+    offset: 0,
+    limit: 1,
+  });
+  const workId = res?.works?.[0];
+  return resolveWork({ id: workId }, context);
 }
 
 export async function resolveSimilarArticles(

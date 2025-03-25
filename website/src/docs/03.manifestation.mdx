@@ -180,7 +180,7 @@ the content of the article through the [Infomedia](#Infomedia) type.
 
 ## Manifestation covers
 
-Covers are provided by the moreinfo service. If no covers are provided a default one is generated from the
+Covers are provided by the fbi-info service. If no covers are provided a default one is generated from the
 materialtype and title of the manifestation. The source of the cover is given in the origin field.
 
 <InlineGraphiQL
@@ -190,8 +190,12 @@ materialtype and title of the manifestation. The source of the cover is given in
                 main
               }
               cover {
-                detail
                 origin
+                large {
+                    url
+                    width
+                    height
+                }
               }
             }
           }`}
