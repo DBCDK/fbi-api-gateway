@@ -6,24 +6,6 @@ Object {
     "localizations": Object {
       "agencies": Array [
         Object {
-          "agencyId": "785100",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
-          "agencyId": "775100",
-          "holdingItems": Array [
-            Object {
-              "localIdentifier": "29433909",
-              "localizationPid": "870970-basis:29433909",
-            },
-          ],
-        },
-        Object {
           "agencyId": "716500",
           "holdingItems": Array [
             Object {
@@ -492,6 +474,24 @@ Object {
         },
         Object {
           "agencyId": "739000",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "785100",
+          "holdingItems": Array [
+            Object {
+              "localIdentifier": "29433909",
+              "localizationPid": "870970-basis:29433909",
+            },
+          ],
+        },
+        Object {
+          "agencyId": "775100",
           "holdingItems": Array [
             Object {
               "localIdentifier": "29433909",
