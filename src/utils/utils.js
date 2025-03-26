@@ -711,7 +711,11 @@ export async function resolveLocalizations(args, context) {
       }
     }
   }
-  const agencies = sortBy(Object.values(realAgenciesMap), "agencyName");
+
+  const agencies = Object.values(realAgenciesMap).sort((a, b) =>
+    a.agencyName.localeCompare(b.agencyName, "da")
+  );
+
   return { count: agencies?.length, agencies };
 }
 
@@ -978,12 +982,12 @@ export function resolveSearchHits(parent) {
   // Build a lookup map from PID to manifestation, and store their indexes.
   const pidToManifestation = {};
   bestRepresentations.forEach((m, index) => {
-    pidToManifestation[m.pid] = { ...m, index };
+    pidToManifestation[m.pid?.toLowerCase()] = { ...m, index };
   });
 
   // Map searchHits PIDs to their corresponding manifestations and filter out undefined values.
   const matchManifestations = matchPids
-    .map((pid) => pidToManifestation[pid])
+    .map((pid) => pidToManifestation[pid?.toLowerCase()])
     .filter(Boolean);
 
   // Sort the manifestations based on their index in bestRepresentations.
