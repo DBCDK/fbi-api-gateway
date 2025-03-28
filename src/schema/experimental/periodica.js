@@ -276,6 +276,9 @@ export async function resolvePeriodicaIssue(issn, issue, context) {
 }
 
 export async function resolveWorkFromIssn(issn, context) {
+  if (!issn) {
+    return null;
+  }
   const res = await context.datasources.getLoader("complexsearch").load({
     cql: `term.issn="${issn}" AND worktype=periodica`,
     profile: context.profile,
