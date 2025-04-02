@@ -126,12 +126,17 @@ type RelatedPublication {
   isbn: String
   
   """
+  Alle urls of the related publication
+  """
+  urls: [String]!
+
+  """
   Note regarding the URL of the related publication
   """
   urlText: String
   
   """
-  URL of the related publication
+  The first URL of the urls in related publications
   """
   url: String
 }
@@ -1022,6 +1027,15 @@ export const resolvers = {
       return all.map((m) => m.unitId === unitId && m).filter((p) => p);
     },
   },
+  RelatedPublication: {
+    url(parent) {
+      return parent?.urls?.[0]?.url || null;
+    },
+    urls(parent) {
+      return parent?.urls?.map((url) => url.url);
+    },
+  },
+
   Manifestation: {
     catalogueCodes(parent) {
       return {
