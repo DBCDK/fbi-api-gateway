@@ -235,7 +235,7 @@ export async function resolvePeriodica(issn, context) {
   const res = await context.datasources.getLoader("complexFacets").load({
     cql: `term.issn=${issn}`,
     facets: ["ISSUE", "SUBJECT"],
-    facetLimit: 5000,
+    facetLimit: 100000,
     profile: context.profile,
   });
 
