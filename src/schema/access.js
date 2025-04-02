@@ -52,6 +52,11 @@ type AccessUrl {
   The origin, e.g. "DBC Webarkiv"
   """
   origin: String!
+  
+  """
+  Description/type of URL
+  """
+  urlText: String
 
   """
   The url where manifestation is located
