@@ -866,12 +866,7 @@ type SheetMusicCategory {
   """
   The types of choir material covers
   """
-  choirTypes: [String!]!
-
-  """
-  Material intended to practice with
-  """
-  musicalExercises: MusicalExercise
+  choirTypes: [String!]!  
 
   """
   The types of chamber music material covers
@@ -882,18 +877,6 @@ type SheetMusicCategory {
   The types of orchestra material covers
   """
   orchestraTypes: [String!]!
-}
-
-type MusicalExercise {
-  """
-  Information whether material is intended for practising and in combination with an instrument
-  """
-  forExercise: Boolean!
-
-  """
-  The types of instrument 'schools' intended to practise with
-  """
-  display: [String!]!
 }
 
 type Unit {
