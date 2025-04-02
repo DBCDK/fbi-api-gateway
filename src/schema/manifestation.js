@@ -857,6 +857,11 @@ type SheetMusicCategory {
   The types of instruments material covers
   """
   instruments: [String!]!
+  
+  """
+  I this node for exercises
+  """
+  forMusicalExercise: Boolean
 
   """
   The types of choir material covers
