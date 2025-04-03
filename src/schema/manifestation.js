@@ -177,11 +177,6 @@ type SchoolUse {
   code: SchoolUseCodeEnum!
 }
 
-type NoteUrl {
-  url: String
-  textToLink: String
-}
-
 type Note {
   """
   The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
@@ -201,7 +196,7 @@ type Note {
   """
   A link and possible link text
   """
-  urls: [NoteUrl]
+  urls: [AccessUrl]
 }
 enum ManifestationPartTypeEnum {
   MUSIC_TRACKS
