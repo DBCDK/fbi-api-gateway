@@ -29,6 +29,7 @@ function parseResponse(details, agencyId) {
       localHoldingsId: value.holdingsItem?.[0]?.localItemId || "",
       willLend: value.holdingsItem?.[0]?.policy || "",
       expectedDelivery: value.holdingsItem?.[0]?.expectedDelivery || "",
+      policy: value.holdingsItem?.[0]?.policy,
     });
   }
 
