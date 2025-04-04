@@ -298,15 +298,6 @@ export const resolvers = {
         return { status: "UNKNOWN_MATERIAL" };
       }
 
-      // Now, we check with vip-core if this branch supports detailedHoldings and holdingsItems
-      const detailedHoldingsAddress = await context.datasources
-        .getLoader("detailedHoldingsSupported")
-        .load({
-          branchId: branchIsIndependent ? parent?.branchId : parent?.agencyId,
-        });
-
-      const supportDetailedHoldings = !!detailedHoldingsAddress;
-
       // We then convert pids to local identifers for the entire agency
       const localIdentifiers = await resolveLocalIdentifiers(
         uniquePids,
@@ -363,11 +354,14 @@ export const resolvers = {
       );
 
       // Fetch detailed holdings (this will make a call to a local agency system)
-      let detailedHoldings = (
-        await context.datasources.getLoader("detailedholdings").load({
+      let detailedHoldingsRes = await context.datasources
+        .getLoader("detailedholdings")
+        .load({
           localIds: localIdentifiers,
-        })
-      )?.holdingstatus;
+        });
+      const supportDetailedHoldings =
+        detailedHoldingsRes?.supportDetailedHoldings;
+      let detailedHoldings = detailedHoldingsRes?.holdingstatus;
 
       const filteredDetailedholdings = await filterHoldings(
         detailedHoldings,

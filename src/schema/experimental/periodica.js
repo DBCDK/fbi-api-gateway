@@ -135,6 +135,13 @@ export const resolvers = {
     },
   },
   PeriodicaEntriesResponse: {
+    async hitcount(parent, args, context) {
+      const issn = parent?.issn;
+      const res = await context.datasources
+        .getLoader("periodicaIssues")
+        .load({ issn, profile: context.profile });
+      return res.hitcount;
+    },
     async entries(parent, args, context) {
       const offset = args?.offset || 0;
       const limit = Math.min(
@@ -142,7 +149,10 @@ export const resolvers = {
         typeof args?.limit === "undefined" ? 10 : args?.limit
       );
       const issn = parent?.issn;
-      const entries = parent?.entries?.slice?.(offset, offset + limit) || [];
+      const res = await context.datasources
+        .getLoader("periodicaIssues")
+        .load({ issn, profile: context.profile });
+      const entries = res?.entries?.slice?.(offset, offset + limit) || [];
 
       // fetch works of issues via complex search
       return await Promise.all(
@@ -163,12 +173,15 @@ export const resolvers = {
     },
   },
   Periodica: {
-    subjects(parent, args) {
-      const entries = parent?.subjects?.entries;
-      return {
-        hitcount: entries?.length || 0,
-        entries: entries,
-      };
+    async subjects(parent, args, context) {
+      const issn = parent?.issn;
+      const res = await context.datasources
+        .getLoader("periodicaSubjects")
+        .load({
+          issn,
+          profile: context.profile,
+        });
+      return res;
     },
   },
   Query: {
@@ -178,89 +191,15 @@ export const resolvers = {
   },
 };
 
-/**
- * Extracts the relevant numerical values from a given string:
- * - Volume number (årgang)
- * - Issue number (nr.), including ranges like "6/7"
- * - Year (inside parentheses)
- *
- * pjo NOTE - der findes også sådan nogle dimmere: "2024, nr. 13" - det er vel også et volume match
- * pjo NOT - og sådan nogle her: 2001-04-14 - så skal der vel sorteres som dato
- *
- * If a value is missing, it's set to -Infinity to ensure proper sorting (newest first).
- */
-function extractNumbers(str) {
-  const date = str.match(/^\d{4}-\d{2}-\d{2}$/);
-  const volumeMatch = str.match(/(?:årg\.\s*)?\b(\d{4})\b/);
-  const issueMatch = str.match(/nr\. (\d+)(?:\/(\d+))?/);
-  const yearMatch = str.match(/\((\d+)\)/);
-
-  // Default to -Infinity for missing values
-  const volume = volumeMatch ? Number(volumeMatch[1]) : -Infinity;
-  const issueStart = issueMatch ? Number(issueMatch[1]) : -Infinity;
-  const issueEnd =
-    issueMatch && issueMatch[2] ? Number(issueMatch[2]) : issueStart;
-  const year = yearMatch ? Number(yearMatch[1]) : -Infinity;
-
-  // Sorting priority: year > volume > issue start > issue end
-  return [date, year, volume, issueStart, issueEnd];
-}
-
-/**
- * Sorts the data in **reverse order**, meaning the newest entries appear **at the top**.
- * Sorting order:
- * 1. Newest **year** first
- * 2. Highest **volume** first
- * 3. Highest **issue start** first
- * 4. Highest **issue end** first
- */
-function sortIssues(a, b) {
-  const [dateA, yearA, volumeA, issueA_start, issueA_end] = extractNumbers(a);
-  const [dateB, yearB, volumeB, issueB_start, issueB_end] = extractNumbers(b);
-
-  return (
-    (dateA && dateB && new Date(dateB) - new Date(dateA)) || // sort by date (latest first)
-    yearB - yearA || // Sort by year (newest first)
-    volumeB - volumeA || // Sort by volume (highest first)
-    issueB_start - issueA_start || // Sort by issue start (highest first)
-    issueB_end - issueA_end // Sort by issue end (highest first)
-  );
-}
-
 export async function resolvePeriodica(issn, context) {
   if (!issn) {
     return null;
   }
 
-  const res = await context.datasources.getLoader("complexFacets").load({
-    cql: `term.issn=${issn}`,
-    facets: ["ISSUE", "SUBJECT"],
-    facetLimit: 5000,
-    profile: context.profile,
-  });
-
-  const issuesFacets = res.facets?.find((facet) =>
-    facet?.name?.includes("issue")
-  );
-  const subjectsFacets = res.facets?.find((facet) =>
-    facet?.name?.includes("subject")
-  );
-
-  const issueIds = issuesFacets?.values
-    ?.map?.((entry) => entry.key)
-    ?.sort(sortIssues);
-
   return {
+    issn,
     issues: {
       issn,
-      hitcount: issueIds?.length,
-      entries: issueIds,
-    },
-    subjects: {
-      entries: subjectsFacets?.values?.map((entry) => ({
-        ...entry,
-        term: entry.key,
-      })),
     },
   };
 }
@@ -276,6 +215,9 @@ export async function resolvePeriodicaIssue(issn, issue, context) {
 }
 
 export async function resolveWorkFromIssn(issn, context) {
+  if (!issn) {
+    return null;
+  }
   const res = await context.datasources.getLoader("complexsearch").load({
     cql: `term.issn="${issn}" AND worktype=periodica`,
     profile: context.profile,
@@ -290,13 +232,17 @@ export async function resolveSimilarArticles(
   { hostIssn, workId, manifestation },
   context
 ) {
-  // Resolve periodica based on the host ISSN
-  const periodica = await resolvePeriodica(hostIssn, context);
+  const periodicaSubjects = await context.datasources
+    .getLoader("periodicaSubjects")
+    .load({
+      issn: hostIssn,
+      profile: context.profile,
+    });
 
   // Create a map of subjects from the periodical for quick lookup
   // Each subject has a score (number of articles in the periodica with this subject)
   const periodicaSubjectsMap = {};
-  periodica?.subjects?.entries?.forEach((entry) => {
+  periodicaSubjects?.entries?.forEach((entry) => {
     periodicaSubjectsMap[entry.key?.toLowerCase()] = entry;
   });
 

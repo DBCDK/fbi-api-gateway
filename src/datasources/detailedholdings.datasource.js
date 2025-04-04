@@ -6,6 +6,7 @@ const { url, prefix, teamLabel } = config.datasources.holdingsservice;
 function parseResponse(details, agencyId) {
   const localholdings = [];
   // catch errors
+
   if (details.error) {
     // red lamp - @TODO set message and lamp
     const errors = details.error;
@@ -32,6 +33,9 @@ function parseResponse(details, agencyId) {
   }
 
   return {
+    supportDetailedHoldings: !details?.error?.some?.(
+      (error) => error?.errorMessage === "LIBRARY_CONFIGURATION_ERROR"
+    ),
     branchId: agencyId,
     holdingstatus: localholdings,
     expectedDelivery: [...localholdings]
