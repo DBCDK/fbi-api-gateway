@@ -15,6 +15,8 @@ export async function load({ branchId }, context) {
 }
 
 export const options = {
+  // Enable per-request debugging for this datasource when "x-debug: true" is set
+  allowDebug: true,
   redis: {
     prefix: "detailedHoldingsSupported-1",
     ttl: 60 * 15, // cache for 15 minutes
