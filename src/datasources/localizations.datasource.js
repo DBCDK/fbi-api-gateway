@@ -90,6 +90,8 @@ export async function load({ pids, localizationsRole }, context) {
 }
 
 export const options = {
+  // Enable per-request debugging for this datasource when "x-debug: true" is set
+  allowDebug: true,
   external: true,
   redis: {
     prefix,
