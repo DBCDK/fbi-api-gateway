@@ -387,7 +387,7 @@ export async function resolveWork(args, context) {
         ...m,
         traceId: createTraceId(),
       })),
-      searchHits: args?.searchHits?.[w?.workId],
+      searchHits: args?.searchHits?.[id],
     };
 
     return withTraceId;
