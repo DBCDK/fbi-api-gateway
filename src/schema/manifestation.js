@@ -126,12 +126,17 @@ type RelatedPublication {
   isbn: String
   
   """
+  Alle urls of the related publication
+  """
+  urls: [String]!
+
+  """
   Note regarding the URL of the related publication
   """
   urlText: String
   
   """
-  URL of the related publication
+  The first URL of the urls in related publications
   """
   url: String
 }
@@ -171,6 +176,7 @@ type SchoolUse {
   display: String!
   code: SchoolUseCodeEnum!
 }
+
 type Note {
   """
   The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
@@ -186,6 +192,11 @@ type Note {
   The actual notes
   """
   display: [String!]!  
+
+  """
+  A link and possible link text
+  """
+  urls: [AccessUrl]
 }
 enum ManifestationPartTypeEnum {
   MUSIC_TRACKS
@@ -857,16 +868,16 @@ type SheetMusicCategory {
   The types of instruments material covers
   """
   instruments: [String!]!
+  
+  """
+  I this node for exercises
+  """
+  forMusicalExercise: Boolean
 
   """
   The types of choir material covers
   """
-  choirTypes: [String!]!
-
-  """
-  Material intended to practice with
-  """
-  musicalExercises: MusicalExercise
+  choirTypes: [String!]!  
 
   """
   The types of chamber music material covers
@@ -877,18 +888,6 @@ type SheetMusicCategory {
   The types of orchestra material covers
   """
   orchestraTypes: [String!]!
-}
-
-type MusicalExercise {
-  """
-  Information whether material is intended for practising and in combination with an instrument
-  """
-  forExercise: Boolean!
-
-  """
-  The types of instrument 'schools' intended to practise with
-  """
-  display: [String!]!
 }
 
 type Unit {
@@ -1034,6 +1033,15 @@ export const resolvers = {
       return all.map((m) => m.unitId === unitId && m).filter((p) => p);
     },
   },
+  RelatedPublication: {
+    url(parent) {
+      return parent?.urls?.[0]?.url || null;
+    },
+    urls(parent) {
+      return parent?.urls?.map((url) => url.url);
+    },
+  },
+
   Manifestation: {
     catalogueCodes(parent) {
       return {
