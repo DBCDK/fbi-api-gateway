@@ -367,7 +367,10 @@ export async function resolveWork(args, context) {
   });
 
   if (w) {
-    const withTraceId = { ...w, traceId: args.traceId || createTraceId() };
+    const withTraceId = {
+      ...w,
+      traceId: args.traceId || createTraceId(),
+    };
     withTraceId.manifestations = {
       bestRepresentations: w?.manifestations?.bestRepresentations?.map((m) => ({
         ...m,
@@ -387,7 +390,7 @@ export async function resolveWork(args, context) {
         ...m,
         traceId: createTraceId(),
       })),
-      searchHits: args?.searchHits?.[w?.workId],
+      searchHits: args?.searchHits?.[id],
     };
 
     return withTraceId;
