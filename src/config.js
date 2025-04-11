@@ -3,6 +3,9 @@ export default {
     id: process.env.APP_ID || "bibliotekdk-next-api",
   },
   port: process.env.PORT || 3000,
+  allowDebug: ["1", "true", "yes"].includes(
+    String(process.env.ALLOW_DEBUG).toLowerCase()
+  ),
   query: {
     maxDepth: process.env.MAX_QUERY_DEPTH
       ? parseInt(process.env.MAX_QUERY_DEPTH, 10)
@@ -128,7 +131,7 @@ export default {
         process.env.HOLDINGSSERVICE_URL ||
         "http://holdings-service.cisterne.svc.cloud.dbc.dk/api/v1/holdings-status/",
       ttl: process.env.HOLDINGSSERVICE_URL_TIME_TO_LIVE_SECONDS || 5,
-      prefix: process.env.HOLDINGSITEMS_URL_PREFIX || "holdingsservice-1",
+      prefix: process.env.HOLDINGSITEMS_URL_PREFIX || "holdingsservice-2",
       teamLabel: "de-team",
     },
     holdingsitems: {
