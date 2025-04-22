@@ -489,9 +489,12 @@ export const FAKE_WORK = {
   manifestations: {
     first: FAKE_MANIFESTATION_1,
     latest: FAKE_MANIFESTATION_2,
-    all: [FAKE_MANIFESTATION_1, FAKE_MANIFESTATION_2],
+    all: {
+      [FAKE_MANIFESTATION_1.pid]: FAKE_MANIFESTATION_1,
+      [FAKE_MANIFESTATION_2.pid]: FAKE_MANIFESTATION_2,
+    },
     bestRepresentation: FAKE_MANIFESTATION_2,
-    mostRelevant: [FAKE_MANIFESTATION_2, FAKE_MANIFESTATION_1],
+    mostRelevant: [FAKE_MANIFESTATION_2.pid, FAKE_MANIFESTATION_1.pid],
   },
 };
 
