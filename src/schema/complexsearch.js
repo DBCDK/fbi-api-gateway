@@ -278,6 +278,9 @@ export const resolvers = {
               `ERROR, Got a workID from CS that is missing in jed-presentation. ${id}`
             );
           }
+          if (!work?.manifestations?.searchHits) {
+            log.error(`ERROR, missing searchHits. ${id}`);
+          }
           return work;
         })
       );
