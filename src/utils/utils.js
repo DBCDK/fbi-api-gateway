@@ -377,8 +377,8 @@ export async function resolveWork(args, context) {
           traceId: createTraceId(),
         })
       ),
-      first: { ...w?.manifestations?.first, traceId: createTraceId() },
-      latest: { ...w?.manifestations?.latest, traceId: createTraceId() },
+      first: { ...all[w?.manifestations?.first], traceId: createTraceId() },
+      latest: { ...all[w?.manifestations?.latest], traceId: createTraceId() },
       order: w?.manifestations?.order?.map((pid) => ({
         ...all[pid],
         traceId: createTraceId(),
