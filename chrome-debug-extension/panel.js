@@ -1,16 +1,19 @@
-// panel.js
 const output = document.getElementById("output");
-
-// Create and insert reset button
 const resetBtn = document.getElementById("reset-btn");
+const toggle = document.getElementById("toggle-debug-header");
+const filterInput = document.getElementById("filter-input");
+
+let requests = [];
+
+// === UI SETUP ===
+
 resetBtn.addEventListener("click", () => {
-  output.innerHTML = "";
+  requests = [];
+  renderRows([]);
 });
 
 document.body.insertBefore(resetBtn, output.parentElement);
 
-// Toggle header checkbox sync
-const toggle = document.getElementById("toggle-debug-header");
 chrome.runtime.sendMessage({ getDebugHeaderStatus: true }, (res) => {
   if (res && typeof res.enabled === "boolean") {
     toggle.checked = res.enabled;
@@ -30,7 +33,109 @@ toggle.addEventListener("change", () => {
   );
 });
 
-output.innerHTML = "";
+filterInput.addEventListener("input", () => {
+  renderRows(filterRows());
+});
+
+// === LISTENER ===
+
+chrome.devtools.network.onRequestFinished.addListener(function (request) {
+  if (
+    request.request.method === "POST" &&
+    request.request.url.includes("/graphql")
+  ) {
+    const requestBody = request.request.postData?.text;
+    request.getContent(function (responseBody) {
+      try {
+        const requestJson = JSON.parse(requestBody || "{}");
+        const responseJson = JSON.parse(responseBody || "{}");
+
+        if (requestJson.query && responseJson.extensions?.debug) {
+          const operationName = extractOperationName(requestJson.query);
+          const status = request.response.status.toString();
+          const time = new Date().toLocaleTimeString();
+          const variables = requestJson.variables || {};
+          const query = requestJson.query;
+          const serviceCalls = responseJson.extensions.debug.requests || [];
+
+          requests.push({
+            operationName,
+            variables,
+            query,
+            serviceCalls,
+            responseJson,
+            status,
+            time,
+          });
+          renderRows(filterRows());
+        }
+      } catch (e) {
+        // ignore parse errors
+      }
+    });
+  }
+});
+
+// === FILTERING ===
+
+function filterRows() {
+  const filterValue = filterInput.value.toLowerCase();
+
+  return requests.filter((req) => {
+    const query = req.query || "";
+    const vars = JSON.stringify(req.variables || {});
+    const response = JSON.stringify(req.responseJson || {});
+    return `${query} ${vars} ${response}`.toLowerCase().includes(filterValue);
+  });
+}
+
+// === RENDERING ===
+
+function renderRows(requestList) {
+  output.innerHTML = "";
+
+  for (const req of requestList) {
+    const {
+      operationName,
+      variables,
+      query,
+      serviceCalls,
+      responseJson,
+      status,
+      time,
+    } = req;
+
+    const row = document.createElement("tr");
+    row.classList.add("collapsible");
+    row.innerHTML = `
+      <td><span class="nowrap" title="${operationName}">${operationName}</span></td>
+      <td><span class="nowrap" title='${JSON.stringify(variables, null, 2)}'>
+        ${syntaxHighlight(JSON.stringify(variables).slice(0, 100))}${JSON.stringify(variables).length > 100 ? "..." : ""}
+      </span></td>
+      <td class="${status.startsWith("2") ? "status-2xx" : status.startsWith("4") || status.startsWith("5") ? "status-4xx status-5xx" : ""}">${status}</td>
+      <td>${time}</td>
+    `;
+
+    const detailRow = createVariableRow(
+      variables,
+      query,
+      serviceCalls,
+      responseJson
+    );
+    detailRow.style.display = "none";
+
+    row.addEventListener("click", () => {
+      row.classList.toggle("expanded");
+      detailRow.style.display =
+        detailRow.style.display === "table-row" ? "none" : "table-row";
+    });
+
+    output.appendChild(row);
+    output.appendChild(detailRow);
+  }
+}
+
+// === UTILITIES ===
 
 function extractOperationName(query) {
   const match = query.match(/\b(query|mutation|subscription)\s+(\w+)/);
@@ -50,17 +155,15 @@ function createVariableRow(variables, query, serviceCalls, responseJson) {
   queryEl.className = "sub-json collapsed";
   queryEl.innerHTML = `<strong>Query:</strong><pre class="query-wrap" style="font-size: 12px;">${query}</pre>`;
   wrapper.appendChild(queryEl);
-  queryEl.addEventListener("click", () => {
-    queryEl.classList.toggle("collapsed");
-  });
+  queryEl.addEventListener("click", () =>
+    queryEl.classList.toggle("collapsed")
+  );
 
   const varEl = document.createElement("div");
   varEl.className = "sub-json collapsed";
   varEl.innerHTML = `<strong>Variables:</strong><pre class="json-wrap">${syntaxHighlight(variables)}</pre>`;
   wrapper.appendChild(varEl);
-  varEl.addEventListener("click", () => {
-    varEl.classList.toggle("collapsed");
-  });
+  varEl.addEventListener("click", () => varEl.classList.toggle("collapsed"));
 
   const resEl = document.createElement("div");
   resEl.className = "sub-json collapsed";
@@ -68,9 +171,7 @@ function createVariableRow(variables, query, serviceCalls, responseJson) {
   delete trimmed.extensions;
   resEl.innerHTML = `<strong>GraphQL Response:</strong><pre class="json-wrap">${syntaxHighlight(trimmed)}</pre>`;
   wrapper.appendChild(resEl);
-  resEl.addEventListener("click", () => {
-    resEl.classList.toggle("collapsed");
-  });
+  resEl.addEventListener("click", () => resEl.classList.toggle("collapsed"));
 
   const label = document.createElement("strong");
   label.style.display = "block";
@@ -116,23 +217,23 @@ function createVariableRow(variables, query, serviceCalls, responseJson) {
       const reqBox = document.createElement("div");
       reqBox.className = "sub-json collapsed";
       reqBox.innerHTML = `<strong>Request:</strong><pre class="json-wrap">${syntaxHighlight(cleanRequest)}</pre>`;
-      reqBox.addEventListener("click", () => {
-        reqBox.classList.toggle("collapsed");
-      });
+      reqBox.addEventListener("click", () =>
+        reqBox.classList.toggle("collapsed")
+      );
 
       const resBox = document.createElement("div");
       resBox.className = "sub-json collapsed";
       resBox.innerHTML = `<strong>Response:</strong><pre class="json-wrap">${syntaxHighlight(r.response)}</pre>`;
-      resBox.addEventListener("click", () => {
-        resBox.classList.toggle("collapsed");
-      });
+      resBox.addEventListener("click", () =>
+        resBox.classList.toggle("collapsed")
+      );
 
       const timeBox = document.createElement("div");
       timeBox.className = "sub-json collapsed";
       timeBox.innerHTML = `<strong>Timings:</strong><pre class="json-wrap">${syntaxHighlight(r.request?.timings || {})}</pre>`;
-      timeBox.addEventListener("click", () => {
-        timeBox.classList.toggle("collapsed");
-      });
+      timeBox.addEventListener("click", () =>
+        timeBox.classList.toggle("collapsed")
+      );
 
       jsonCell.appendChild(reqBox);
       jsonCell.appendChild(resBox);
@@ -161,58 +262,6 @@ function createVariableRow(variables, query, serviceCalls, responseJson) {
   row.appendChild(cell);
   return row;
 }
-
-chrome.devtools.network.onRequestFinished.addListener(function (request) {
-  if (
-    request.request.method === "POST" &&
-    request.request.url.includes("/graphql")
-  ) {
-    const requestBody = request.request.postData?.text;
-    request.getContent(function (responseBody) {
-      try {
-        const requestJson = JSON.parse(requestBody || "{}");
-        const responseJson = JSON.parse(responseBody || "{}");
-
-        if (requestJson.query && responseJson.extensions?.debug) {
-          const operationName = extractOperationName(requestJson.query);
-          const status = request.response.status.toString();
-          const time = new Date().toLocaleTimeString();
-          const variables = requestJson.variables || {};
-          const query = requestJson.query;
-          const serviceCalls = responseJson.extensions.debug.requests || [];
-
-          const row = document.createElement("tr");
-          row.classList.add("collapsible");
-          row.innerHTML = `
-            <td><span class="nowrap" title="${operationName}">${operationName}</span></td>
-            <td><span class="nowrap" title='${JSON.stringify(variables, null, 2)}'>${syntaxHighlight(JSON.stringify(variables).slice(0, 100))}${JSON.stringify(variables).length > 100 ? "..." : ""}</span></td>
-            <td class="${status.startsWith("2") ? "status-2xx" : status.startsWith("4") || status.startsWith("5") ? "status-4xx status-5xx" : ""}">${status}</td>
-            <td>${time}</td>
-          `;
-
-          const variablesRow = createVariableRow(
-            variables,
-            query,
-            serviceCalls,
-            responseJson
-          );
-          variablesRow.style.display = "none";
-
-          row.addEventListener("click", () => {
-            row.classList.toggle("expanded");
-            variablesRow.style.display =
-              variablesRow.style.display === "table-row" ? "none" : "table-row";
-          });
-
-          output.appendChild(row);
-          output.appendChild(variablesRow);
-        }
-      } catch (e) {
-        // ignore parse errors
-      }
-    });
-  }
-});
 
 function syntaxHighlight(json) {
   if (typeof json != "string") {
