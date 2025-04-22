@@ -29,6 +29,7 @@ function parseResponse(details, agencyId) {
       localHoldingsId: value.holdingsItem?.[0]?.localItemId || "",
       willLend: value.holdingsItem?.[0]?.policy || "",
       expectedDelivery: value.holdingsItem?.[0]?.expectedDelivery || "",
+      policy: value.holdingsItem?.[0]?.policy,
     });
   }
 
@@ -82,6 +83,8 @@ export async function load({ localIds, agencyId }, context) {
 }
 
 export const options = {
+  // Enable per-request debugging for this datasource when "x-debug: true" is set
+  allowDebug: true,
   redis: {
     prefix,
     ttl: 60 * 15, // cache for 15 minutes

@@ -64,7 +64,14 @@ function setupDataloader(
     ? (keys) => batchLoader(keys, context)
     : (keys) => Promise.all(keys.map((key) => loadImpl(key, context)));
 
-  if (!testModeActivated && options?.redis?.prefix && options?.redis?.ttl) {
+  // Only enable Redis caching if not in test mode and debug mode is off.
+  // Debug mode forces fresh data by bypassing the cache.
+  if (
+    !testModeActivated &&
+    options?.redis?.prefix &&
+    options?.redis?.ttl &&
+    !context.debugObj
+  ) {
     batchLoaderWithContext = withRedis(batchLoaderWithContext, {
       ...options.redis,
       ...context,
@@ -119,7 +126,8 @@ export default function createDataLoaders(
   testUser,
   accessToken,
   tracking,
-  dataHub
+  dataHub,
+  debugObj
 ) {
   const result = {};
   const stats = createTracker(uuid);
@@ -127,24 +135,28 @@ export default function createDataLoaders(
 
   const fetchWithConcurrencyLimit = createFetchWithConcurrencyLimit(
     config.fetchConcurrencyLimit,
-    stats
+    stats,
+    debugObj
   );
   // Gets a loader by name.
   // A loader will be initialized first time it is called
   function getLoader(name) {
     const teamLabel = nameToDatasource[name]?.teamLabel;
+    const allowDebug = nameToDatasource[name]?.options?.allowDebug;
 
     if (!result[name]) {
       result[name] = setupDataloader(nameToDatasource[name], {
         getLoader,
         fetch: (url, options) =>
-          fetchWithConcurrencyLimit(url, options, name, teamLabel),
+          fetchWithConcurrencyLimit(url, options, name, teamLabel, allowDebug),
         trackingId: uuid,
         testUser,
         accessToken,
         stats,
         tracking,
         dataHub,
+        // Only pass debug object to datasources that explicitly allow debugging
+        debugObj: allowDebug && debugObj,
       })?.loader;
     }
     return result[name];

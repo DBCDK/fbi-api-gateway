@@ -395,14 +395,26 @@ export const resolvers = {
       )?.filter((holding) => !!holding);
 
       // Holdings that are on shelf at any branch in agency
-      const onShelfInAgency = holdings?.filter(
-        (holding) => holding?.expectedDelivery === today
-      );
+      const onShelfInAgency = holdings?.filter((holding) => {
+        if (holding?.expectedDelivery !== today) {
+          return false;
+        }
+        if (holding?.policy === 0) {
+          return false;
+        }
+        return true;
+      });
 
       // Holdings that are on shelf but not for loan at any branch in agency
-      const onShelfNotForLoanInAgency = holdings?.filter(
-        (holding) => !holding?.expectedDelivery && !holding?.notOnSHelf
-      );
+      const onShelfNotForLoanInAgency = holdings?.filter((holding) => {
+        if (!holding?.expectedDelivery && !holding?.notOnSHelf) {
+          return true;
+        }
+        if (holding?.expectedDelivery === today && holding?.policy === 0) {
+          return true;
+        }
+        return false;
+      });
 
       // Holdings that are on loan, sorted by the earliest expected delivery first
       const expectedReturnDateInAgency = detailedHoldings?.filter?.(

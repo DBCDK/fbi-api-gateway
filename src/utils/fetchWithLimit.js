@@ -81,11 +81,15 @@ export function getStats() {
  *
  * And it handles errors (logging, and counting)
  */
-export function createFetchWithConcurrencyLimit(concurrency, stats) {
+export function createFetchWithConcurrencyLimit(concurrency, stats, debugObj) {
+  if (debugObj) {
+    debugObj.requests = [];
+  }
+
   const limit = promiseLimit(concurrency);
 
   // The actual fetch function, that handles errors
-  return function fetchWithLimit(url, options, name, teamLabel) {
+  return function fetchWithLimit(url, options, name, teamLabel, allowDebug) {
     return limit(async () => {
       // Retrieve the options for this request
       const fetchOptions = { ...options };
@@ -107,11 +111,28 @@ export function createFetchWithConcurrencyLimit(concurrency, stats) {
       let text;
       try {
         text = Buffer.from(res.buffer)?.toString();
-        return {
+
+        const final = {
           status: res.status,
           body: await parseJSON(text, res.timings),
           ok: res.ok,
         };
+
+        // When debug mode is enabled and allowed for this datasource,
+        // log the full request/response pair for inspection in GraphQL extensions.debug
+        if (allowDebug && debugObj) {
+          debugObj.requests.push({
+            request: {
+              timestamp: new Date().getTime(),
+              url,
+              options: fetchOptions,
+              timings: res.timings,
+            },
+            response: final,
+          });
+        }
+
+        return final;
       } catch (parseError) {
         return { status: res.status, body: text, ok: res.ok };
       } finally {

@@ -83,6 +83,8 @@ export async function load(
 }
 
 export const options = {
+  // Enable per-request debugging for this datasource when "x-debug: true" is set
+  allowDebug: true,
   redis: {
     prefix,
     ttl,

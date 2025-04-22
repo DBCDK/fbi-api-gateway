@@ -1,4 +1,4 @@
-import { trace } from "superagent";
+import { log } from "dbc-node-logger";
 import { resolveWork } from "../utils/utils";
 import { createTraceId } from "../utils/trace";
 
@@ -268,9 +268,21 @@ export const resolvers = {
         .load(setPost(parent, context, args));
 
       const resolvedWorks = await Promise.all(
-        res?.works?.map(async (id) =>
-          resolveWork({ id, searchHits: res?.searchHits }, context)
-        )
+        res?.works?.map(async (id) => {
+          const work = await resolveWork(
+            { id, searchHits: res?.searchHits },
+            context
+          );
+          if (!work) {
+            log.error(
+              `ERROR, Got a workID from CS that is missing in jed-presentation. ${id}`
+            );
+          }
+          if (!work?.manifestations?.searchHits) {
+            log.error(`ERROR, missing searchHits. ${id}`);
+          }
+          return work;
+        })
       );
 
       const input = {

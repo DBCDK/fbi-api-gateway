@@ -368,26 +368,32 @@ export async function resolveWork(args, context) {
 
   if (w) {
     const withTraceId = { ...w, traceId: args.traceId || createTraceId() };
+    const all = w?.manifestations?.all;
+
     withTraceId.manifestations = {
-      bestRepresentations: w?.manifestations?.bestRepresentations?.map((m) => ({
-        ...m,
+      bestRepresentations: w?.manifestations?.bestRepresentations?.map(
+        (pid) => ({
+          ...all[pid],
+          traceId: createTraceId(),
+        })
+      ),
+      first: { ...all[w?.manifestations?.first], traceId: createTraceId() },
+      latest: { ...all[w?.manifestations?.latest], traceId: createTraceId() },
+      order: w?.manifestations?.order?.map((pid) => ({
+        ...all[pid],
         traceId: createTraceId(),
       })),
-      first: { ...w?.manifestations?.first, traceId: createTraceId() },
-      latest: { ...w?.manifestations?.latest, traceId: createTraceId() },
-      order: w?.manifestations?.order?.map((m) => ({
-        ...m,
+      mostRelevant: w?.manifestations?.mostRelevant?.map((pid) => ({
+        ...all[pid],
         traceId: createTraceId(),
       })),
-      mostRelevant: w?.manifestations?.mostRelevant?.map((m) => ({
-        ...m,
-        traceId: createTraceId(),
-      })),
-      all: w?.manifestations?.all?.map((m) => ({
-        ...m,
-        traceId: createTraceId(),
-      })),
-      searchHits: args?.searchHits?.[w?.workId],
+      all:
+        all &&
+        Object.values(all)?.map((m) => ({
+          ...m,
+          traceId: createTraceId(),
+        })),
+      searchHits: args?.searchHits?.[id],
     };
 
     return withTraceId;

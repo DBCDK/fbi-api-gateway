@@ -89,6 +89,15 @@ export async function resolveGraphQLQuery(req, res, next) {
           }
         }
       }
+
+      // Attach collected debug data (if any) to the GraphQL response under `extensions.debug`
+      if (req.datasourcesDebug) {
+        graphQLRes.extensions = {
+          ...(graphQLRes.extensions || {}),
+          debug: req.datasourcesDebug,
+        };
+      }
+
       req.onOperationCompleteDuration = performance.now() - now;
     },
     formatError: (graphQLError) => {
