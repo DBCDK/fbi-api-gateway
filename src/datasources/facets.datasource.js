@@ -59,6 +59,7 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
 }
 
 export const options = {
+  allowDebug: true,
   redis: {
     prefix,
     ttl,
