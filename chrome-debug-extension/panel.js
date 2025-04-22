@@ -47,21 +47,30 @@ function createVariableRow(variables, query, serviceCalls, responseJson) {
   wrapper.className = "subrequests-wrapper";
 
   const queryEl = document.createElement("div");
-  queryEl.className = "sub-json";
+  queryEl.className = "sub-json collapsed";
   queryEl.innerHTML = `<strong>Query:</strong><pre class="query-wrap" style="font-size: 12px;">${query}</pre>`;
   wrapper.appendChild(queryEl);
+  queryEl.addEventListener("click", () => {
+    queryEl.classList.toggle("collapsed");
+  });
 
   const varEl = document.createElement("div");
-  varEl.className = "sub-json";
+  varEl.className = "sub-json collapsed";
   varEl.innerHTML = `<strong>Variables:</strong><pre class="json-wrap">${syntaxHighlight(variables)}</pre>`;
   wrapper.appendChild(varEl);
+  varEl.addEventListener("click", () => {
+    varEl.classList.toggle("collapsed");
+  });
 
   const resEl = document.createElement("div");
-  resEl.className = "sub-json";
+  resEl.className = "sub-json collapsed";
   const trimmed = { ...responseJson };
   delete trimmed.extensions;
   resEl.innerHTML = `<strong>GraphQL Response:</strong><pre class="json-wrap">${syntaxHighlight(trimmed)}</pre>`;
   wrapper.appendChild(resEl);
+  resEl.addEventListener("click", () => {
+    resEl.classList.toggle("collapsed");
+  });
 
   const label = document.createElement("strong");
   label.style.display = "block";
@@ -105,16 +114,25 @@ function createVariableRow(variables, query, serviceCalls, responseJson) {
       delete cleanRequest.timings;
 
       const reqBox = document.createElement("div");
-      reqBox.className = "sub-json";
+      reqBox.className = "sub-json collapsed";
       reqBox.innerHTML = `<strong>Request:</strong><pre class="json-wrap">${syntaxHighlight(cleanRequest)}</pre>`;
+      reqBox.addEventListener("click", () => {
+        reqBox.classList.toggle("collapsed");
+      });
 
       const resBox = document.createElement("div");
-      resBox.className = "sub-json";
+      resBox.className = "sub-json collapsed";
       resBox.innerHTML = `<strong>Response:</strong><pre class="json-wrap">${syntaxHighlight(r.response)}</pre>`;
+      resBox.addEventListener("click", () => {
+        resBox.classList.toggle("collapsed");
+      });
 
       const timeBox = document.createElement("div");
-      timeBox.className = "sub-json";
+      timeBox.className = "sub-json collapsed";
       timeBox.innerHTML = `<strong>Timings:</strong><pre class="json-wrap">${syntaxHighlight(r.request?.timings || {})}</pre>`;
+      timeBox.addEventListener("click", () => {
+        timeBox.classList.toggle("collapsed");
+      });
 
       jsonCell.appendChild(reqBox);
       jsonCell.appendChild(resBox);
