@@ -1,9 +1,11 @@
 import fs from "fs";
 import path from "path";
+import archiver from "archiver";
 
 const EXTENSION_DIR = "extension";
 const DIST_DIR = "unpacked";
 const OUT_DIR = "out";
+const ZIP_FILE = "unpacked.zip";
 
 // 1. Kopiér static assets
 fs.mkdirSync(`${DIST_DIR}/static`, { recursive: true });
@@ -27,4 +29,30 @@ fs.readdirSync(OUT_DIR).forEach((file) => {
 // 3. (Valgfrit) Slet _next mappen bagefter
 fs.rmSync(`${DIST_DIR}/_next`, { recursive: true, force: true });
 
-console.log("Export patched for Chrome Extension!");
+// 4. Pak `unpacked/` som zip
+function zipDirectory(sourceDir, outPath) {
+  const output = fs.createWriteStream(outPath);
+  const archive = archiver("zip", { zlib: { level: 9 } });
+
+  return new Promise((resolve, reject) => {
+    output.on("close", () => {
+      console.log(
+        `Created zip archive: ${outPath} (${archive.pointer()} total bytes)`
+      );
+      resolve();
+    });
+
+    archive.on("error", (err) => {
+      reject(err);
+    });
+
+    archive.pipe(output);
+    archive.directory(sourceDir, false); // false = no root folder inside zip
+    archive.finalize();
+  });
+}
+
+(async () => {
+  await zipDirectory(DIST_DIR, ZIP_FILE);
+  console.log("Export patched and zipped for Chrome Extension!");
+})();
