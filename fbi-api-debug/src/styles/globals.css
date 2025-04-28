@@ -1,0 +1,79 @@
+:root {
+  --color-bg-table-header: #f7f9fd;
+  --color-border-table: #d3e3fd;
+  --color-row-even: #f7f9fd;
+  --color-row-odd: #ffffff;
+  --color-row-expanded: #d3e3fd;
+  --color-row-hover: #f2f2f2;
+  --color-json-key: #007deb;
+  --color-json-string: #d17d00;
+  --color-json-number: #2bab7c;
+  --color-json-boolean: #2bab7c;
+  --color-json-null: #d60590;
+  --color-query: #5c5c5d;
+  --color-filter-bg: #edf2fa;
+  --color-filter-focus: #3a72cc;
+  --color-box-shadow-light: rgba(0, 0, 0, 0.08);
+  --color-box-shadow-dark: rgba(0, 0, 0, 0.2);
+
+  --background: #ffffff; /* Default page/panel background */
+  --foreground: #171717; /* Default text color */
+
+  --primary: #007deb; /* Highlights, links, JSON keys */
+  --primary-light: #d3e3fd; /* Light variant for backgrounds/hover */
+  --primary-dark: #094cb9; /* Focus or active states */
+
+  --secondary: #d17d00; /* Used for JSON string coloring */
+  --success: #2bab7c; /* Green: boolean/numbers */
+  --danger: #d60590; /* Red/pink: nulls */
+  --alert: #d93025; /* Alert/banned indication */
+  --muted: #5c5c5d; /* Secondary text (e.g., GraphQL query) */
+
+  --surface: #f7f9fd; /* Table row even background */
+  --surface-alt: #edf2fa; /* Alternate surface (e.g., inputs) */
+  --surface-hover: #f2f2f2; /* Hover state for rows */
+
+  --border: #d3e3fd; /* Border color for tables */
+
+  --shadow-light: rgba(0, 0, 0, 0.08); /* Light top shadow */
+  --shadow-dark: rgba(0, 0, 0, 0.2); /* Dark bottom shadow */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Menlo, Consolas, Monaco, "Courier New", monospace !important;
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
