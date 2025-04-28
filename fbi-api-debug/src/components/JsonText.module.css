@@ -7,13 +7,13 @@
 }
 
 .json-wrap {
-  white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: break-word;
   overflow-x: hidden;
 }
 
 .json-wrap:not(.collapsed) {
+  white-space: pre-wrap;
   cursor: auto;
 }
 
@@ -36,7 +36,7 @@
 .json-null {
   color: var(--danger);
 }
-.collapsed {
-  white-space: normal !important;
-  word-break: break-word;
+.collapsed,
+.collapsed * {
+  word-break: break-word !important;
 }
