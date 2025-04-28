@@ -4,7 +4,7 @@ import pluginReact from "eslint-plugin-react";
 
 export default [
   {
-    ignores: ["**/.next/**", "chrome-debug-extension"], // Ignorerer .next mapper globalt
+    ignores: ["**/.next/**", "fbi-api-debug"], // Ignorerer .next mapper globalt
   },
   { files: ["**/*.{js,mjs,cjs,jsx}"] },
   {
