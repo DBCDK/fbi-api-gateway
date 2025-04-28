@@ -19,7 +19,8 @@
 .collapsable:not(.collapsed) div {
   border-bottom: 1px solid var(--border);
 }
-.collapsable:not(.collapsed) div:hover {
+
+.collapsable:not(.collapsed) .title:hover {
   background: var(--surface-alt);
 }
 .collapsable.collapsed {

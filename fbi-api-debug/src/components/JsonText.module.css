@@ -13,6 +13,10 @@
   overflow-x: hidden;
 }
 
+.json-wrap:not(.collapsed) {
+  cursor: auto;
+}
+
 .json-key {
   color: var(--primary);
 }

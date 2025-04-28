@@ -23,9 +23,14 @@ export const Collapse: React.FC<{
   return (
     <div
       className={`${styles.collapsable} ${collapsed ? styles.collapsed : ""}`}
-      onClick={() => setCollapsed(!collapsed)}
+      onClick={() => collapsed && setCollapsed(false)}
     >
-      <div>{title}</div>
+      <div
+        className={styles.title}
+        onClick={() => !collapsed && setCollapsed(true)}
+      >
+        {title}
+      </div>
       <div className={styles.collapsecontent}>{enhancedChildren}</div>
     </div>
   );
