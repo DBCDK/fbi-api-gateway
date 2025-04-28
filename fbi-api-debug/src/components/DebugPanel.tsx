@@ -17,12 +17,41 @@ import { JSONText } from "./JsonText";
 import { Collapse } from "./Collapse";
 import { BanIcon } from "./BanIcon";
 import { Divider } from "./Divider";
+import { CopyCurlButton } from "./CopyCurlButton";
+
+function ServiceCallRequest({
+  call,
+  collapsed,
+}: {
+  call: ServiceCall;
+  collapsed?: boolean;
+}) {
+  if (collapsed) {
+    return (
+      <JSONText
+        text={{ ...call.request, timings: undefined }}
+        collapsed={true}
+      />
+    );
+  }
+  return (
+    <div>
+      <JSONText
+        text={{ ...call.request, timings: undefined }}
+        collapsed={false}
+      />
+      <div style={{ marginTop: "8px" }}>
+        <CopyCurlButton request={call.request} />
+      </div>
+    </div>
+  );
+}
 
 function ServiceCallContent({ call }: { call: ServiceCall }) {
   return (
     <div>
       <Collapse title="Request">
-        <JSONText text={{ ...call.request, timings: undefined }} />
+        <ServiceCallRequest call={call} />
       </Collapse>
       <Collapse title="Response">
         <JSONText text={call.response} />

@@ -5,7 +5,8 @@
   "description": "Displays GraphQL extensions.debug information via DevTools panel.",
   "permissions": [
     "declarativeNetRequest",
-    "declarativeNetRequestWithHostAccess"
+    "declarativeNetRequestWithHostAccess",
+    "clipboardWrite"
   ],
   "host_permissions": ["<all_urls>"],
   "action": {

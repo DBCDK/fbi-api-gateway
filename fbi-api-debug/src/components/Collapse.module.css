@@ -12,11 +12,11 @@
   background: var(--surface-alt);
   /* cursor: pointer; */
 }
-.collapsable div {
+.collapsable > div {
   padding: 8px;
   padding-right: 24px;
 }
-.collapsable:not(.collapsed) div {
+.collapsable:not(.collapsed) > div {
   border-bottom: 1px solid var(--border);
 }
 
