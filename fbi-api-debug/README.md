@@ -21,11 +21,21 @@ It gives you detailed insights into both the outgoing GraphQL requests and the u
    git@github.com:DBCDK/fbi-api-gateway.git
    ```
 
-2. Open Chrome and go to `chrome://extensions/`.
+2. Build the extension
 
-3. Enable **Developer mode** in the top right corner.
+   ```bash
+   cd fbi-api-gateway/fbi-api-debug
+   npm i
+   npm run build
+   ```
 
-4. Click **Load unpacked** and select the 'unpacked' folder, .../fbi-api-gateway/fbi-api-debug/unpacked.
+   A folder named 'unpacked' should now be created
+
+3. Open Chrome and go to `chrome://extensions/`.
+
+4. Enable **Developer mode** in the top right corner.
+
+5. Click **Load unpacked** and select the 'unpacked' folder, .../fbi-api-gateway/fbi-api-debug/unpacked.
 
 ---
 
