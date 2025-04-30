@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 import archiver from "archiver";
 
 const EXTENSION_DIR = "extension";
@@ -7,52 +6,44 @@ const DIST_DIR = "unpacked";
 const OUT_DIR = "out";
 const ZIP_FILE = "unpacked.zip";
 
-// 1. Kopiér static assets
-fs.mkdirSync(`${DIST_DIR}/static`, { recursive: true });
-fs.cpSync(`${OUT_DIR}/_next/static`, `${DIST_DIR}/static`, { recursive: true });
-fs.cpSync(`${EXTENSION_DIR}/`, `${DIST_DIR}/`, { recursive: true });
+// 1. Opret outputmappe
+fs.mkdirSync(`${DIST_DIR}/next/_next/static`, { recursive: true });
 
-// 2. Kopiér HTML og andre filer
-fs.readdirSync(OUT_DIR).forEach((file) => {
-  const srcPath = path.join(OUT_DIR, file);
-  const destPath = path.join(DIST_DIR, file);
-
-  if (file.endsWith(".html")) {
-    let html = fs.readFileSync(srcPath, "utf-8");
-    html = html.replace(/\/_next\/static\//g, "/static/");
-    fs.writeFileSync(destPath, html);
-  } else if (file !== "_next") {
-    fs.cpSync(srcPath, destPath, { recursive: true });
-  }
+fs.cpSync(`${OUT_DIR}/`, `${DIST_DIR}/`, {
+  recursive: true,
 });
 
-// 3. (Valgfrit) Slet _next mappen bagefter
+// 2. Kopiér alle statiske assets
+fs.cpSync(`${OUT_DIR}/_next/static`, `${DIST_DIR}/next/_next/static`, {
+  recursive: true,
+});
+
+// 5. Kopiér extension-filer
+fs.cpSync(`${EXTENSION_DIR}/`, `${DIST_DIR}/`, { recursive: true });
+
+// 6. Ryd op hvis _next stadig ligger der
 fs.rmSync(`${DIST_DIR}/_next`, { recursive: true, force: true });
 
-// 4. Pak `unpacked/` som zip
+// 7. Pak som zip
 function zipDirectory(sourceDir, outPath) {
   const output = fs.createWriteStream(outPath);
   const archive = archiver("zip", { zlib: { level: 9 } });
 
   return new Promise((resolve, reject) => {
     output.on("close", () => {
-      console.log(
-        `Created zip archive: ${outPath} (${archive.pointer()} total bytes)`
-      );
+      console.log(`✅ Zip oprettet: ${outPath} (${archive.pointer()} bytes)`);
       resolve();
     });
 
-    archive.on("error", (err) => {
-      reject(err);
-    });
-
+    archive.on("error", (err) => reject(err));
     archive.pipe(output);
-    archive.directory(sourceDir, false); // false = no root folder inside zip
+    archive.directory(sourceDir, false);
     archive.finalize();
   });
 }
 
+// 8. Kør det hele
 (async () => {
   await zipDirectory(DIST_DIR, ZIP_FILE);
-  console.log("Export patched and zipped for Chrome Extension!");
+  console.log("🎉 Extension klar! Alle referencer til _next fjernet.");
 })();

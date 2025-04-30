@@ -7,6 +7,11 @@
 
 import { useMemo } from "react";
 import styles from "./JsonText.module.css";
+import dynamic from "next/dynamic";
+
+const ReactJsonView = dynamic(import("@microlink/react-json-view"), {
+  ssr: false,
+});
 
 const syntaxHighlight = (json: string | Record<string, unknown>): string => {
   const jsonStr =
@@ -46,12 +51,23 @@ export function JSONText({
     return syntaxHighlight(text);
   }, [text]);
 
+  if (collapsed) {
+    return (
+      <span
+        className={`${styles["json-wrap"]} ${collapsed ? styles.collapsed : ""}`}
+        dangerouslySetInnerHTML={{
+          __html: highlighted,
+        }}
+      />
+    );
+  }
+
   return (
-    <span
-      className={`${styles["json-wrap"]} ${collapsed ? styles.collapsed : ""}`}
-      dangerouslySetInnerHTML={{
-        __html: highlighted,
-      }}
+    <ReactJsonView
+      src={text as object}
+      enableClipboard={false}
+      displayDataTypes={false}
+      name={false}
     />
   );
 }
