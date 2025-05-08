@@ -17,9 +17,9 @@
     "test": "jest",
     "prettier": "prettier --write 'src/**/*.js'",
     "postinstall": "(cd testuser-website && npm i); (cd website && npm i); npx --yes @dbcdk/npm-tools@latest verify latest",
-    "build": "eslint . && (cd testuser-website && npm run build && npm prune --production) && (cd website && npm run build && npm prune --production);",
+    "build": "eslint . && (cd fbi-api-debug && npm i && npm run build && cp ./unpacked.zip ../website/public/unpacked.zip) && (cd testuser-website && npm run build && npm prune --production) && (cd website && npm run build && npm prune --production);",
     "lint": "eslint ."
-    },
+  },
   "author": "Frontend @ DBC",
   "license": "GNU",
   "dependencies": {

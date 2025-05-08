@@ -1,0 +1,40 @@
+.collapsable {
+  background: var(--surface);
+  /* padding: 8px; */
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+  /* align-items: center;
+  justify-content: flex-start; */
+}
+.collapsable.collapsed:hover {
+  background: var(--surface-alt);
+  /* cursor: pointer; */
+}
+.collapsable > div {
+  padding: 8px;
+  padding-right: 24px;
+}
+.collapsable:not(.collapsed) > div {
+  border-bottom: 1px solid var(--border);
+}
+
+.collapsable:not(.collapsed) .title:hover {
+  background: var(--surface-alt);
+}
+.collapsable.collapsed {
+  flex-direction: row;
+}
+.collapsed .collapsecontent,
+.collapsed .collapsecontent > * {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal !important;
+}
+.collapsable:not(.collapsed) .collapsecontent {
+  background-color: var(--background);
+}

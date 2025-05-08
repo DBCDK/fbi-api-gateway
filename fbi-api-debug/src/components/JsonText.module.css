@@ -1,0 +1,42 @@
+.query-wrap {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  color: var(--muted);
+}
+
+.json-wrap {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+}
+
+.json-wrap:not(.collapsed) {
+  white-space: pre-wrap;
+  cursor: auto;
+}
+
+.json-key {
+  color: var(--primary);
+}
+
+.json-string {
+  color: var(--secondary);
+}
+
+.json-number {
+  color: var(--success);
+}
+
+.json-boolean {
+  color: var(--success);
+}
+
+.json-null {
+  color: var(--danger);
+}
+.collapsed,
+.collapsed * {
+  word-break: break-word !important;
+}
