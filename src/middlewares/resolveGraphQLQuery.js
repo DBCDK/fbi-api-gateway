@@ -46,6 +46,8 @@ export async function resolveGraphQLQuery(req, res, next) {
     "dbcdk-complexityClass": req.queryComplexityClass,
     "dbcdk-traceId": req?.datasources?.stats.uuid,
     "dbcdk-withExternalRequest": req?.withExternalRequest,
+    "dbcdk-action": `${req?.queryComplexityClass}${req?.withExternalRequest ? "-withexternal" : ""}`,
+    "dbcdk-agency": req?.profile?.agency,
   });
 
   // check if the query allows for fast lane
