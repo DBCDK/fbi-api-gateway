@@ -20,8 +20,39 @@ pipeline {
         // we need to use metascrums gitlab token .. for the metascrum bot in deploy stage
         GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
         REPOSITORY = "https://docker-frontend.artifacts.dbccloud.dk"
+
+        SONAR_SCANNER_HOME = tool 'SonarQube Scanner from Maven Central'
+        SONAR_SCANNER = "$SONAR_SCANNER_HOME/bin/sonar-scanner"
+        SONAR_PROJECT_KEY = "fbi-api"
+        SONAR_SOURCES='./'
+        SONAR_TESTS='./'
     }
     stages {
+        stage("SonarQube") {
+            steps {
+                withSonarQubeEnv(installationName: 'sonarqube.dbc.dk') {
+                    script {
+                        // trigger sonarqube analysis
+                        def sonarOptions = "-Dsonar.branch.name=$BRANCH_NAME"
+                        if (env.BRANCH_NAME != 'main') {
+                            sonarOptions += " -Dsonar.newCode.referenceBranch=main"
+                        }
+
+                        sh returnStatus: true, script: """
+                        $SONAR_SCANNER $sonarOptions -Dsonar.token=${SONAR_AUTH_TOKEN} -Dsonar.projectKey="${SONAR_PROJECT_KEY}"
+                        """
+                    }
+                }
+            }
+        }
+        stage("Quality gate") {
+            steps {
+                // wait for analysis results
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
         stage('Build image') {
             steps { script {
                 // Work around bug https://issues.jenkins-ci.org/browse/JENKINS-44609 , https://issues.jenkins-ci.org/browse/JENKINS-44789
