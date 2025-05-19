@@ -186,7 +186,7 @@ export const resolvers = {
       const resFirst = await context.datasources
         .getLoader("complexsearch")
         .load({
-          cql: `term.issn="${issn}"`,
+          cql: `term.issn="${issn}" AND worktype="Article"`,
           profile: context.profile,
           offset: 0,
           limit: 1,
@@ -195,7 +195,7 @@ export const resolvers = {
       const resLast = await context.datasources
         .getLoader("complexsearch")
         .load({
-          cql: `term.issn="${issn}"`,
+          cql: `term.issn="${issn}" AND worktype="Article"`,
           profile: context.profile,
           offset: 0,
           limit: 1,
