@@ -11,6 +11,9 @@ pipeline {
     triggers{
         // @TODO parameters on githubPush .. eg. branch
         githubPush()
+        upstream(
+          upstreamProjects: env.BRANCH_NAME == "master" ? 'Docker-base-node-bump-trigger' : ''
+        )
     }
     environment {
         GITLAB_ID = "1232"
