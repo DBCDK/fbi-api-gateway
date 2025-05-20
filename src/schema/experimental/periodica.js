@@ -18,6 +18,7 @@ export const typeDef = `
 A periodica that contains all its issues and subjects
 """
 type Periodica {
+  articles: PeriodicaArticlesResponse!
   issues: PeriodicaEntriesResponse!
   subjects: PeriodicaFacetResponse!
 }
@@ -25,6 +26,12 @@ type Periodica {
 type PeriodicaFacetResponse {
   hitcount: Int!
   entries(offset: Int, limit: Int): [FacetValue!]
+}
+
+type PeriodicaArticlesResponse {
+  hitcount: Int!
+  first: Work
+  last: Work
 }
 
 type PeriodicaEntriesResponse {
@@ -173,6 +180,34 @@ export const resolvers = {
     },
   },
   Periodica: {
+    async articles(parent, args, context) {
+      const issn = parent.issn;
+
+      const resFirst = await context.datasources
+        .getLoader("complexsearch")
+        .load({
+          cql: `term.issn="${issn}" AND worktype="Article"`,
+          profile: context.profile,
+          offset: 0,
+          limit: 1,
+          sort: [{ index: "sort.latestpublicationdate", order: "ASC" }],
+        });
+      const resLast = await context.datasources
+        .getLoader("complexsearch")
+        .load({
+          cql: `term.issn="${issn}" AND worktype="Article"`,
+          profile: context.profile,
+          offset: 0,
+          limit: 1,
+          sort: [{ index: "sort.latestpublicationdate", order: "DESC" }],
+        });
+
+      return {
+        hitcount: resFirst.hitcount,
+        first: await resolveWork({ id: resFirst?.works?.[0] }, context),
+        last: await resolveWork({ id: resLast?.works?.[0] }, context),
+      };
+    },
     async subjects(parent, args, context) {
       const issn = parent?.issn;
       const res = await context.datasources

@@ -1313,6 +1313,7 @@ input CopyRequestInput {
 
 \\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
 type Periodica {
+  articles: PeriodicaArticlesResponse!
   issues: PeriodicaEntriesResponse!
   subjects: PeriodicaFacetResponse!
 }
@@ -1320,6 +1321,12 @@ type Periodica {
 type PeriodicaFacetResponse {
   hitcount: Int!
   entries(offset: Int, limit: Int): [FacetValue!]
+}
+
+type PeriodicaArticlesResponse {
+  hitcount: Int!
+  first: Work
+  last: Work
 }
 
 type PeriodicaEntriesResponse {
@@ -7176,6 +7183,7 @@ interface CreatorInterface {
 
 \\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
 type Periodica {
+  articles: PeriodicaArticlesResponse!
   issues: PeriodicaEntriesResponse!
   subjects: PeriodicaFacetResponse!
 }
@@ -7183,6 +7191,12 @@ type Periodica {
 type PeriodicaFacetResponse {
   hitcount: Int!
   entries(offset: Int, limit: Int): [FacetValue!]
+}
+
+type PeriodicaArticlesResponse {
+  hitcount: Int!
+  first: Work
+  last: Work
 }
 
 type PeriodicaEntriesResponse {

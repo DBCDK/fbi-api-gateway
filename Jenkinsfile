@@ -34,8 +34,8 @@ pipeline {
                     script {
                         // trigger sonarqube analysis
                         def sonarOptions = "-Dsonar.branch.name=$BRANCH_NAME"
-                        if (env.BRANCH_NAME != 'main') {
-                            sonarOptions += " -Dsonar.newCode.referenceBranch=main"
+                        if (env.BRANCH_NAME != 'master') {
+                            sonarOptions += " -Dsonar.newCode.referenceBranch=master"
                         }
 
                         sh returnStatus: true, script: """

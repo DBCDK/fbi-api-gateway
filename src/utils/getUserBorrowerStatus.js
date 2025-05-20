@@ -14,6 +14,9 @@ import { resolveBorrowerCheck } from "./utils";
 // all possible id field types
 export const USER_ID_TYPES = ["cpr", "userId", "cardno", "customId", "barcode"];
 
+// Some agencies (Currently reindex FFU libraries) are omitted in this check during to some borchk pincode issues.
+const omittedAgencies = ["861160"];
+
 /**
  * Verify if user is allowed to place an digital or physical order
  *
@@ -97,7 +100,13 @@ async function userBorrowerStatus(
   // add to summary log
   summary.hasBorrowerCheck = hasBorrowerCheck;
 
-  if (!hasBorrowerCheck) {
+  // AgencyId is omitted from the check
+  const isOmittedAgency = omittedAgencies.includes(agencyId);
+
+  // add to summary log
+  summary.isOmittedAgency = isOmittedAgency;
+
+  if (!hasBorrowerCheck || isOmittedAgency) {
     // Verification possible in openorder
     const status = !!(isAuthenticated || !isEmpty(userIds));
 
