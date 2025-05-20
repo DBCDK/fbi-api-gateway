@@ -26,6 +26,8 @@ export function GraphiQL({
   settings,
   toolbar,
 }) {
+  console.log("################ render! 2");
+
   const { tabs, activeTabIndex } = useEditorContext({ nonNull: true });
   const { run, isFetching } = useExecutionContext({
     caller: GraphiQL,
@@ -81,6 +83,8 @@ export default function Wrap() {
   const [init, setInit] = useState(false);
   const initialParamsUpdated = useRef(false);
 
+  console.log("################ render! 1");
+
   useEffect(() => {
     setInit(true);
   }, []);
@@ -89,6 +93,7 @@ export default function Wrap() {
     if (!selectedToken?.token) {
       return { statusCode: 403, message: "Unauthorized" };
     }
+
     const data = await fetch(url, {
       method: "POST",
       headers: {
@@ -184,6 +189,9 @@ export default function Wrap() {
           ],
         }}
         settings={{ execute }}
+        // onEditQuery={() => {}}
+        // onEditVariables={() => {}}
+        // onTabChange={() => {}}
         onEditQuery={onEditQuery}
         onEditVariables={onEditVariables}
         onTabChange={onTabChange}

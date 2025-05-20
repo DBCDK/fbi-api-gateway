@@ -10,8 +10,6 @@ const { url, ttl, prefix, teamLabel } = config.datasources.cicero;
  * Gets the holdings informations by recordid
  */
 export async function load({ recordId, agencyId }, context) {
-  console.log("........... datasource props", { recordId, agencyId, context });
-
   const accessToken = context?.accessToken;
 
   if (recordId && agencyId) {
@@ -26,8 +24,6 @@ export async function load({ recordId, agencyId }, context) {
       }
     );
 
-    console.log("######## res", res);
-
     if (res.status === 200) {
       const body = res.body?.[0] || {};
 
@@ -38,11 +34,11 @@ export async function load({ recordId, agencyId }, context) {
   return null;
 }
 
-// export const options = {
-//   redis: {
-//     prefix,
-//     ttl,
-//   },
-// };
+export const options = {
+  redis: {
+    prefix,
+    ttl,
+  },
+};
 
 export { teamLabel };
