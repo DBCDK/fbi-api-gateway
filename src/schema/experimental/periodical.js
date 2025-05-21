@@ -361,10 +361,13 @@ export async function resolveSimilarArticles(
   context
 ) {
   const periodicaSubjects = await context.datasources
-    .getLoader("periodicaSubjects")
+    .getLoader("periodicalFacets")
     .load({
       issn: hostIssn,
       profile: context.profile,
+      facet: "SUBJECT",
+      sort: "score",
+      sortDirection: "DESC",
     });
 
   // Create a map of subjects from the periodical for quick lookup
