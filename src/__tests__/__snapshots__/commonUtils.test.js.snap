@@ -32,7 +32,8 @@ Object {
     "CheckOrderPolicy",
     "Availability",
     "SEO",
-    "WorkPeriodicaInfo",
+    "Periodical",
+    "PeriodicalArticle",
   ],
 }
 `;
@@ -78,7 +79,8 @@ Object {
     "CheckOrderPolicy",
     "Availability",
     "SEO",
-    "WorkPeriodicaInfo",
+    "Periodical",
+    "PeriodicalArticle",
     "WorkReview",
   ],
 }
@@ -116,7 +118,8 @@ Object {
     "CheckOrderPolicy",
     "Availability",
     "SEO",
-    "WorkPeriodicaInfo",
+    "Periodical",
+    "PeriodicalArticle",
   ],
 }
 `;
@@ -159,7 +162,8 @@ Object {
     "CheckOrderPolicy",
     "Availability",
     "SEO",
-    "WorkPeriodicaInfo",
+    "Periodical",
+    "PeriodicalArticle",
   ],
 }
 `;

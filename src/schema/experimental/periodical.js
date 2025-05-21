@@ -14,107 +14,153 @@
 import { resolveWork } from "../../utils/utils";
 
 export const typeDef = `
+
 """
 A periodica that contains all its issues and subjects
 """
-type Periodica {
-  articles: PeriodicaArticlesResponse!
-  issues: PeriodicaEntriesResponse!
-  subjects: PeriodicaFacetResponse!
+type Periodical {
+
+  """Info about articles in this periodical"""
+  articles: PeriodicalArticlesResponse!
+
+  """All issues in this periodical"""
+  issues(filters: [PeriodicalIssueFilterInput!]): PeriodicalEntriesResponse!
 }
 
-type PeriodicaFacetResponse {
+enum PeriodicalFacetEnum {
+  SUBJECT
+  PUBLICATIONYEAR
+}
+
+type PeriodicalFacetResponse {
+  facet: PeriodicalFacetEnum!
+
+  """Total number of matching items"""
   hitcount: Int!
+
+  """Facet entries"""
   entries(offset: Int, limit: Int): [FacetValue!]
 }
 
-type PeriodicaArticlesResponse {
+"""
+Metadata about articles in a periodical
+"""
+type PeriodicalArticlesResponse {
+  """Total number of articles in the periodical"""
   hitcount: Int!
+
+  """First article (e.g. chronologically)"""
   first: Work
+
+  """Last article (e.g. most recent)"""
   last: Work
 }
 
-type PeriodicaEntriesResponse {
+
+"""
+Response containing all issues of a periodical
+"""
+type PeriodicalEntriesResponse {
+"""Total number of issues in periodical"""
   hitcount: Int!
-  entries(offset: Int, limit: Int): [PeriodicaIssue!]!
+
+  """List of issues"""
+  entries(offset: Int, limit: Int): [PeriodicalIssue!]!
+
+  """Subjects aggregated from articles in the issues"""
+  subjects: PeriodicalFacetResponse!
+
+  """Publication years aggregated from articles in the issues"""
+  publicationYears: PeriodicalFacetResponse!
+
+  """Smart facets inferred from periodical metadata"""
+  intelligentFacets: [PeriodicalFacetResponse!]!
 }
 
-type PeriodicaIssue {
-   display: String!
-   hitcount: Int!
-   works(offset: Int, limit: Int): [Work!]!
+"""
+A single issue of a periodical
+"""
+type PeriodicalIssue {
+  """Display name of the issue (e.g. "2023, nr. 2")"""
+  display: String!
+
+  """Number of works/articles in the issue"""
+  hitcount: Int!
+
+  """List of works/articles in this issue"""
+  works(offset: Int, limit: Int): [Work!]!
 }
 
-type SimilarPeriodicaArticleEntry {
+"""
+An article similar to another, with shared subjects
+"""
+type SimilarPeriodicalArticleEntry {
+  """Subjects shared with the reference article"""
   sharedSubjects: [String!]!
+
+  """The similar article"""
   work: Work!
 }
 
-extend type Query {
-   periodica(issn: String!): Periodica
-}
-
-
-type WorkPeriodicaInfo {
-  """
-  If current work is an article, its parent is the periodica work
-  """
-  parent: Work
-
+type PeriodicalArticle {
   """
   Is set when this is work is the actual periodica
   """
-  periodica: Periodica
+  parentPeriodical: Work
 
   """
   is set when this work is an article in an issue of a periodica
   """
-  issue: PeriodicaIssue
+  parentIssue: PeriodicalIssue
 
   """
   Articles in same periodica that are similar in terms of subjects
   """
-  similarArticles: [SimilarPeriodicaArticleEntry!]
+  similarArticles: [SimilarPeriodicalArticleEntry!]
 }
 
+input PeriodicalIssueFilterInput {
+  key: PeriodicalFacetEnum!
+  values: [String!]!
+}
+
+union WorkExtensionUnion = Periodical | PeriodicalArticle
+
 extend type Work {
-  """
-  Periodica info is set if this is a periodica or an article in periodica
-  """
-  periodicaInfo: WorkPeriodicaInfo
+   """Contains either a Periodical or a PeriodicalArticle"""
+  extendedWork: WorkExtensionUnion
 }
 `;
 
 export const resolvers = {
   Work: {
-    async periodicaInfo(parent, args, context) {
+    async extendedWork(parent, args, context) {
       const manifestation = parent?.manifestations?.all?.[0];
+      const hostIssn = manifestation?.hostPublication?.issn;
+      const issue = manifestation?.hostPublication?.issue;
+      if (hostIssn) {
+        return {
+          __typename: "PeriodicalArticle",
+          workId: parent?.workId,
+          manifestation,
+          hostIssn,
+          issue: await resolvePeriodicalIssue(hostIssn, issue, context),
+        };
+      }
+
       const issn = manifestation?.identifiers?.find(
         (entry) => entry?.type === "ISSN"
       )?.value;
 
       if (issn) {
-        return {
-          periodica: await resolvePeriodica(issn, context),
-        };
-      }
-
-      const hostIssn = manifestation?.hostPublication?.issn;
-      const issue = manifestation?.hostPublication?.issue;
-      if (hostIssn) {
-        return {
-          workId: parent?.workId,
-          manifestation,
-          hostIssn,
-          issue: await resolvePeriodicaIssue(hostIssn, issue, context),
-        };
+        return resolvePeriodical(issn, context);
       }
 
       return null;
     },
   },
-  WorkPeriodicaInfo: {
-    parent(parent, args, context) {
+  PeriodicalArticle: {
+    parentPeriodical(parent, args, context) {
       return resolveWorkFromIssn(parent?.hostIssn, context);
     },
     async similarArticles({ hostIssn, workId, manifestation }, args, context) {
@@ -124,7 +170,7 @@ export const resolvers = {
       );
     },
   },
-  PeriodicaIssue: {
+  PeriodicalIssue: {
     async works(parent, args, context) {
       const workIds = parent?.works;
 
@@ -141,15 +187,17 @@ export const resolvers = {
       return result?.filter?.((work) => !!work);
     },
   },
-  PeriodicaEntriesResponse: {
+  PeriodicalEntriesResponse: {
     async hitcount(parent, args, context) {
+      const filters = parent?.issuesArgs?.filters;
       const issn = parent?.issn;
       const res = await context.datasources
         .getLoader("periodicaIssues")
-        .load({ issn, profile: context.profile });
+        .load({ issn, profile: context.profile, filters });
       return res.hitcount;
     },
     async entries(parent, args, context) {
+      const filters = parent?.issuesArgs?.filters;
       const offset = args?.offset || 0;
       const limit = Math.min(
         100,
@@ -158,28 +206,87 @@ export const resolvers = {
       const issn = parent?.issn;
       const res = await context.datasources
         .getLoader("periodicaIssues")
-        .load({ issn, profile: context.profile });
+        .load({ issn, profile: context.profile, filters });
       const entries = res?.entries?.slice?.(offset, offset + limit) || [];
 
       // fetch works of issues via complex search
       return await Promise.all(
-        entries?.map((issue) => resolvePeriodicaIssue(issn, issue, context))
+        entries?.map((issue) => resolvePeriodicalIssue(issn, issue, context))
       );
     },
+    async subjects(parent, args, context) {
+      const filters = parent?.issuesArgs?.filters;
+      const issn = parent?.issn;
+      const res = await context.datasources.getLoader("periodicalFacets").load({
+        issn,
+        profile: context.profile,
+        facet: "SUBJECT",
+        sort: "score",
+        sortDirection: "DESC",
+        filters,
+      });
+      return res;
+    },
+    async publicationYears(parent, args, context) {
+      const filters = parent?.issuesArgs?.filters;
+      const issn = parent?.issn;
+      const res = await context.datasources.getLoader("periodicalFacets").load({
+        issn,
+        profile: context.profile,
+        facet: "PUBLICATIONYEAR",
+        sort: "alpha",
+        sortDirection: "DESC",
+        filters,
+      });
+      return res;
+    },
+    async intelligentFacets(parent, args, context) {
+      const filters = parent?.issuesArgs?.filters;
+      const issn = parent?.issn;
+      const multiRes = await Promise.all(
+        [
+          {
+            facet: "PUBLICATIONYEAR",
+            sort: "alpha",
+            sortDirection: "DESC",
+            limit: 1000,
+          },
+          { facet: "SUBJECT", sort: "score", sortDirection: "DESC", limit: 10 },
+        ].map(async (args) => {
+          const facetRes = await context.datasources
+            .getLoader("periodicalFacets")
+            .load({
+              issn,
+              profile: context.profile,
+              facet: args.facet,
+              sort: args.sort,
+              sortDirection: args.sortDirection,
+              filters,
+            });
+          return { ...facetRes, limit: args.limit };
+        })
+      );
+
+      return multiRes;
+    },
   },
-  PeriodicaFacetResponse: {
+  PeriodicalFacetResponse: {
     entries(parent, args) {
+      const rawLimit = args?.limit || parent?.limit;
       const offset = args?.offset || 0;
       const limit = Math.min(
-        100,
-        typeof args?.limit === "undefined" ? 10 : args?.limit
+        1000,
+        typeof rawLimit === "undefined" ? 10 : rawLimit
       );
       const entries = parent?.entries;
 
       return entries?.slice?.(offset, offset + limit);
     },
   },
-  Periodica: {
+  Periodical: {
+    async issues(parent, args, context) {
+      return { ...parent, issuesArgs: args };
+    },
     async articles(parent, args, context) {
       const issn = parent.issn;
 
@@ -208,30 +315,16 @@ export const resolvers = {
         last: await resolveWork({ id: resLast?.works?.[0] }, context),
       };
     },
-    async subjects(parent, args, context) {
-      const issn = parent?.issn;
-      const res = await context.datasources
-        .getLoader("periodicaSubjects")
-        .load({
-          issn,
-          profile: context.profile,
-        });
-      return res;
-    },
-  },
-  Query: {
-    async periodica(parent, args, context, info) {
-      return resolvePeriodica(args?.issn, context);
-    },
   },
 };
 
-export async function resolvePeriodica(issn, context) {
+export async function resolvePeriodical(issn, context) {
   if (!issn) {
     return null;
   }
 
   return {
+    __typename: "Periodical",
     issn,
     issues: {
       issn,
@@ -239,7 +332,7 @@ export async function resolvePeriodica(issn, context) {
   };
 }
 
-export async function resolvePeriodicaIssue(issn, issue, context) {
+export async function resolvePeriodicalIssue(issn, issue, context) {
   const res = await context.datasources.getLoader("complexsearch").load({
     cql: `term.issn="${issn}" AND phrase.issue="${issue}"`,
     profile: context.profile,

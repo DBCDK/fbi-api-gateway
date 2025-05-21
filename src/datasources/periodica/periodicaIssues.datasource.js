@@ -65,9 +65,19 @@ export function sortIssues(a, b) {
   );
 }
 
-export async function load({ issn, profile }, context) {
+const FILTERS = {
+  SUBJECT: "phrase.subject",
+  PUBLICATIONYEAR: "publicationyear",
+};
+
+export async function load({ issn, profile, filters }, context) {
+  let cql = `term.issn=${issn}`;
+  filters?.forEach((filter) => {
+    cql += ` AND ${FILTERS[filter.key]}=(${filter.values.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  });
+
   const res = await context.getLoader("complexFacets").load({
-    cql: `term.issn=${issn}`,
+    cql,
     facets: ["ISSUE"],
     facetLimit: 100000,
     profile,
@@ -86,7 +96,7 @@ export async function load({ issn, profile }, context) {
 
 export const options = {
   redis: {
-    prefix: "periodica-issues-2",
+    prefix: "periodica-issues-3",
     ttl: 60 * 60,
   },
 };
