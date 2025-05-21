@@ -5250,12 +5250,7 @@ input CopyRequestInput {
   openURL: String
 }
 
-union WorkExtensionUnion
-
 type Work {
-  \\"\\"\\"Contains either a Periodical or a PeriodicalArticle\\"\\"\\"
-  extendedWork: WorkExtensionUnion
-
   \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
   marc: MarcRecord
 
