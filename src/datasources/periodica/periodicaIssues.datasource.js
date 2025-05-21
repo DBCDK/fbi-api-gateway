@@ -72,9 +72,11 @@ const FILTERS = {
 
 export async function load({ issn, profile, filters }, context) {
   let cql = `term.issn=${issn}`;
-  filters?.forEach((filter) => {
-    cql += ` AND ${FILTERS[filter.key]}=(${filter.values.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
-  });
+  filters
+    ?.filter((filter) => filter.values.length)
+    ?.forEach((filter) => {
+      cql += ` AND ${FILTERS[filter.key]}=(${filter.values.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+    });
 
   const res = await context.getLoader("complexFacets").load({
     cql,

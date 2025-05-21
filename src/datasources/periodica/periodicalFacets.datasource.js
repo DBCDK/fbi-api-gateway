@@ -11,7 +11,7 @@ export async function load(
 ) {
   let cql = `term.issn=${issn} AND worktype="Article"`;
   filters
-    ?.filter((filter) => filter.key !== facet)
+    ?.filter((filter) => filter.values.length)
     ?.forEach((filter) => {
       cql += ` AND ${FILTERS[filter.key]}=(${filter.values.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
     });
