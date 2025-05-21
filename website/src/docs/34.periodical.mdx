@@ -15,23 +15,25 @@ The same goes for subjects which may contain thousands of entries - pagination i
     titles {
       full
     }
-    periodical {
-      issues {
-        hitcount
-        entries(limit: $issuesLimit) {
-          display
-          works(limit: $worksLimit) {
-            workId
-            titles {
-              full
+    extendedWork {
+      ... on Periodical {
+        issues {
+          hitcount
+          entries(limit: $issuesLimit) {
+            display
+            works(limit: $worksLimit) {
+              workId
+              titles {
+                full
+              }
             }
           }
-        }
-      }
-      subjects {
-        hitcount
-        entries {
-          term
+          subjects {
+            hitcount
+            entries {
+              term
+            }
+          }
         }
       }
     }
@@ -56,17 +58,19 @@ The following example shows how you retrieve all articles in that issue
     titles {
       full
     }
-    periodicalArticle {
-      periodical {
-        titles {
-          main
+    extendedWork {
+      ... on PeriodicalArticle {
+        parentPeriodical {
+          titles {
+            main
+          }
         }
-      }
-      issue {
-        hitcount
-        display
-        works {
-          workId
+        parentIssue {
+          hitcount
+          display
+          works {
+            workId
+          }
         }
       }
     }

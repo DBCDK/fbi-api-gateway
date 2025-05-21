@@ -144,7 +144,7 @@ export const resolvers = {
           workId: parent?.workId,
           manifestation,
           hostIssn,
-          issue: await resolvePeriodicalIssue(hostIssn, issue, context),
+          parentIssue: await resolvePeriodicalIssue(hostIssn, issue, context),
         };
       }
 

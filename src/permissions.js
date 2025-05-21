@@ -26,13 +26,7 @@ const defaultSettings = {
     "universe",
     "mood",
   ],
-  denyTypes: [
-    "CheckOrderPolicy",
-    "Availability",
-    "SEO",
-    "Periodical",
-    "PeriodicalArticle",
-  ],
+  denyTypes: ["CheckOrderPolicy", "Availability", "SEO", "WorkExtensionUnion"],
 };
 
 // smaug roles map in fbi-api
