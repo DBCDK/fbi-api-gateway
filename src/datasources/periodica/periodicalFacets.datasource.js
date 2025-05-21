@@ -16,8 +16,6 @@ export async function load(
       cql += ` AND ${FILTERS[filter.key]}=(${filter.values.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
     });
 
-  console.log({ text: "GOT REWQUEST", cql, facet });
-
   const res = await context.getLoader("complexFacets").load({
     cql,
     facets: [facet],
