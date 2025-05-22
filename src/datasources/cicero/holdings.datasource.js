@@ -26,7 +26,6 @@ export async function load({ recordId, agencyId }, context) {
 
     if (res.status === 200) {
       const body = res.body?.[0] || {};
-
       return { ...body };
     }
   }

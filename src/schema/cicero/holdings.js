@@ -3,6 +3,8 @@
  *
  */
 
+import { resolveManifestation } from "../../utils/utils";
+
 export const typeDef = `
     extend type HoldingsResponse {
     """
@@ -18,9 +20,9 @@ export const typeDef = `
        reservable: Boolean
 
     """
-    The pid of the holdingsitem
+    The manifestation of the holdingsitem
     """
-       pid: String
+    manifestation: Manifestation
     }
  `;
 
@@ -56,13 +58,13 @@ export const resolvers = {
 
       return res?.reservable ?? null;
     },
-    async pid(parent, args, context, info) {
+    async manifestation(parent, args, context, info) {
       const faust = parent?.bibliographicRecordId;
       const pid = await context.datasources
         .getLoader("faustToPid")
         .load({ faust, profile: context.profile });
 
-      return pid || null;
+      return await resolveManifestation({ pid }, context);
     },
   },
 };
