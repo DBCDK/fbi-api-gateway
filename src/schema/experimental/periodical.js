@@ -24,16 +24,10 @@ type Periodical {
   articles: PeriodicalArticlesResponse!
 
   """All issues in this periodical"""
-  issues(filters: [PeriodicalIssueFilterInput!]): PeriodicalEntriesResponse!
-}
-
-enum PeriodicalFacetEnum {
-  SUBJECT
-  PUBLICATIONYEAR
+  issues(filters: PeriodicalIssueFilterInput): PeriodicalEntriesResponse!
 }
 
 type PeriodicalFacetResponse {
-  facet: PeriodicalFacetEnum!
 
   """Total number of matching items"""
   hitcount: Int!
@@ -73,8 +67,8 @@ type PeriodicalEntriesResponse {
   """Publication years aggregated from articles in the issues"""
   publicationYears: PeriodicalFacetResponse!
 
-  """Smart facets inferred from periodical metadata"""
-  intelligentFacets: [PeriodicalFacetResponse!]!
+  """Publication years aggregated from articles in the issues"""
+  publicationMonths: PeriodicalFacetResponse!
 }
 
 """
@@ -120,8 +114,9 @@ type PeriodicalArticle {
 }
 
 input PeriodicalIssueFilterInput {
-  key: PeriodicalFacetEnum!
-  values: [String!]!
+  subjects: [String!]
+  publicationYears: [String!]
+  publicationMonths: [String!]
 }
 
 union WorkExtensionUnion = Periodical | PeriodicalArticle
@@ -131,6 +126,46 @@ extend type Work {
   extendedWork: WorkExtensionUnion
 }
 `;
+
+const numToMonths = [
+  "januar",
+  "februar",
+  "marts",
+  "april",
+  "maj",
+  "juni",
+  "juli",
+  "august",
+  "september",
+  "oktober",
+  "november",
+  "december",
+];
+const monthToNum = {
+  januar: 1,
+  februar: 2,
+  marts: 3,
+  april: 4,
+  maj: 5,
+  juni: 6,
+  juli: 7,
+  august: 8,
+  september: 9,
+  oktober: 10,
+  november: 11,
+  december: 12,
+};
+
+function getMonth(dateString) {
+  const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return null;
+
+  const monthNumber = parseInt(match[2], 10);
+
+  if (monthNumber < 1 || monthNumber > 12) return null;
+
+  return monthNumber - 1;
+}
 
 export const resolvers = {
   Work: {
@@ -194,7 +229,8 @@ export const resolvers = {
       const res = await context.datasources
         .getLoader("periodicaIssues")
         .load({ issn, profile: context.profile, filters });
-      return res.hitcount;
+
+      return res.hitcount || 0;
     },
     async entries(parent, args, context) {
       const filters = parent?.issuesArgs?.filters;
@@ -240,34 +276,31 @@ export const resolvers = {
       });
       return res;
     },
-    async intelligentFacets(parent, args, context) {
+    async publicationMonths(parent, args, context) {
       const filters = parent?.issuesArgs?.filters;
       const issn = parent?.issn;
-      const multiRes = await Promise.all(
-        [
-          {
-            facet: "PUBLICATIONYEAR",
-            sort: "alpha",
-            sortDirection: "DESC",
-            limit: 1000,
-          },
-          { facet: "SUBJECT", sort: "score", sortDirection: "DESC", limit: 10 },
-        ].map(async (args) => {
-          const facetRes = await context.datasources
-            .getLoader("periodicalFacets")
-            .load({
-              issn,
-              profile: context.profile,
-              facet: args.facet,
-              sort: args.sort,
-              sortDirection: args.sortDirection,
-              filters,
-            });
-          return { ...facetRes, limit: args.limit };
+      const res = await context.datasources
+        .getLoader("periodicaIssues")
+        .load({ issn, profile: context.profile, filters });
+
+      const entriesMap = {};
+      res?.entries?.forEach((entry) => {
+        const month = getMonth(entry);
+        if (month !== null) {
+          if (!entriesMap[month]) {
+            entriesMap[month] = 0;
+          }
+          entriesMap[month]++;
+        }
+      });
+      const entries = Object.entries(entriesMap).map(
+        ([monthNumber, score]) => ({
+          term: numToMonths[monthNumber],
+          key: numToMonths[monthNumber],
+          score,
         })
       );
-
-      return multiRes;
+      return { hitcount: entries.length || 0, entries };
     },
   },
   PeriodicalFacetResponse: {
@@ -285,7 +318,17 @@ export const resolvers = {
   },
   Periodical: {
     async issues(parent, args, context) {
-      return { ...parent, issuesArgs: args };
+      const parsedArgs = {
+        filters: { ...args.filters },
+      };
+      if (parsedArgs?.filters?.publicationMonths?.length > 0) {
+        parsedArgs.filters.publicationMonths =
+          parsedArgs.filters.publicationMonths?.map(
+            (month) => `*-${String(monthToNum[month]).padStart(2, "0")}-*`
+          );
+      }
+
+      return { ...parent, issuesArgs: parsedArgs };
     },
     async articles(parent, args, context) {
       const issn = parent.issn;

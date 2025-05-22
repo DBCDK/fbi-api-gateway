@@ -1,20 +1,19 @@
 const teamLabel = "febib";
 
-const FILTERS = {
-  SUBJECT: "phrase.subject",
-  PUBLICATIONYEAR: "publicationyear",
-};
-
 export async function load(
   { issn, profile, facet, sort = "score", sortDirection = "DESC", filters },
   context
 ) {
   let cql = `term.issn=${issn} AND worktype="Article"`;
-  filters
-    ?.filter((filter) => filter.values.length)
-    ?.forEach((filter) => {
-      cql += ` AND ${FILTERS[filter.key]}=(${filter.values.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
-    });
+  if (filters?.publicationYears?.length > 0) {
+    cql += ` AND publicationyear=(${filters?.publicationYears.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  if (filters?.publicationMonths?.length > 0) {
+    cql += ` AND phrase.issue=(${filters?.publicationMonths.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  if (filters?.subjects?.length > 0) {
+    cql += ` AND phrase.subject=(${filters?.subjects.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
 
   const res = await context.getLoader("complexFacets").load({
     cql,
@@ -22,6 +21,7 @@ export async function load(
     facetLimit: 100000,
     profile,
   });
+
   const subjectsFacets = res.facets?.find((entry) =>
     entry?.name?.includes(facet.toLowerCase())
   );
@@ -52,7 +52,7 @@ export async function load(
 
 export const options = {
   redis: {
-    prefix: "periodica-subjects-2",
+    prefix: "periodica-subjects-3",
     ttl: 60 * 60,
   },
 };

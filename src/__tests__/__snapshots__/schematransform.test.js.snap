@@ -1316,17 +1316,10 @@ type Periodical {
   articles: PeriodicalArticlesResponse!
 
   \\"\\"\\"All issues in this periodical\\"\\"\\"
-  issues(filters: [PeriodicalIssueFilterInput!]): PeriodicalEntriesResponse!
-}
-
-enum PeriodicalFacetEnum {
-  SUBJECT
-  PUBLICATIONYEAR
+  issues(filters: PeriodicalIssueFilterInput): PeriodicalEntriesResponse!
 }
 
 type PeriodicalFacetResponse {
-  facet: PeriodicalFacetEnum!
-
   \\"\\"\\"Total number of matching items\\"\\"\\"
   hitcount: Int!
 
@@ -1360,8 +1353,8 @@ type PeriodicalEntriesResponse {
   \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
   publicationYears: PeriodicalFacetResponse!
 
-  \\"\\"\\"Smart facets inferred from periodical metadata\\"\\"\\"
-  intelligentFacets: [PeriodicalFacetResponse!]!
+  \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
+  publicationMonths: PeriodicalFacetResponse!
 }
 
 \\"\\"\\"A single issue of a periodical\\"\\"\\"
@@ -1397,8 +1390,9 @@ type PeriodicalArticle {
 }
 
 input PeriodicalIssueFilterInput {
-  key: PeriodicalFacetEnum!
-  values: [String!]!
+  subjects: [String!]
+  publicationYears: [String!]
+  publicationMonths: [String!]
 }
 
 union WorkExtensionUnion = Periodical | PeriodicalArticle
@@ -7229,17 +7223,10 @@ type Periodical {
   articles: PeriodicalArticlesResponse!
 
   \\"\\"\\"All issues in this periodical\\"\\"\\"
-  issues(filters: [PeriodicalIssueFilterInput!]): PeriodicalEntriesResponse!
-}
-
-enum PeriodicalFacetEnum {
-  SUBJECT
-  PUBLICATIONYEAR
+  issues(filters: PeriodicalIssueFilterInput): PeriodicalEntriesResponse!
 }
 
 type PeriodicalFacetResponse {
-  facet: PeriodicalFacetEnum!
-
   \\"\\"\\"Total number of matching items\\"\\"\\"
   hitcount: Int!
 
@@ -7273,8 +7260,8 @@ type PeriodicalEntriesResponse {
   \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
   publicationYears: PeriodicalFacetResponse!
 
-  \\"\\"\\"Smart facets inferred from periodical metadata\\"\\"\\"
-  intelligentFacets: [PeriodicalFacetResponse!]!
+  \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
+  publicationMonths: PeriodicalFacetResponse!
 }
 
 \\"\\"\\"A single issue of a periodical\\"\\"\\"
@@ -7310,8 +7297,9 @@ type PeriodicalArticle {
 }
 
 input PeriodicalIssueFilterInput {
-  key: PeriodicalFacetEnum!
-  values: [String!]!
+  subjects: [String!]
+  publicationYears: [String!]
+  publicationMonths: [String!]
 }
 
 union WorkExtensionUnion = Periodical | PeriodicalArticle
