@@ -44,6 +44,20 @@ function extractNumbers(str) {
   return [date, year, volume, issueStart, issueEnd];
 }
 
+export function periodicalFiltersToCql(filters) {
+  let cql = "";
+  if (filters?.publicationYears?.length > 0) {
+    cql += ` AND publicationyear=(${filters?.publicationYears.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  if (filters?.publicationMonths?.length > 0) {
+    cql += ` AND phrase.issue=(${filters?.publicationMonths.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  if (filters?.subjects?.length > 0) {
+    cql += ` AND phrase.subject=(${filters?.subjects.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  return cql;
+}
+
 /**
  * Sorts the data in **reverse order**, meaning the newest entries appear **at the top**.
  * Sorting order:
@@ -67,15 +81,7 @@ export function sortIssues(a, b) {
 
 export async function load({ issn, profile, filters }, context) {
   let cql = `term.issn=${issn}`;
-  if (filters?.publicationYears?.length > 0) {
-    cql += ` AND publicationyear=(${filters?.publicationYears.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
-  }
-  if (filters?.publicationMonths?.length > 0) {
-    cql += ` AND phrase.issue=(${filters?.publicationMonths.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
-  }
-  if (filters?.subjects?.length > 0) {
-    cql += ` AND phrase.subject=(${filters?.subjects.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
-  }
+  cql += periodicalFiltersToCql(filters);
 
   const res = await context.getLoader("complexFacets").load({
     cql,

@@ -1,3 +1,5 @@
+import { periodicalFiltersToCql } from "./periodicaIssues.datasource";
+
 const teamLabel = "febib";
 
 export async function load(
@@ -5,15 +7,7 @@ export async function load(
   context
 ) {
   let cql = `term.issn=${issn} AND worktype="Article"`;
-  if (filters?.publicationYears?.length > 0) {
-    cql += ` AND publicationyear=(${filters?.publicationYears.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
-  }
-  if (filters?.publicationMonths?.length > 0) {
-    cql += ` AND phrase.issue=(${filters?.publicationMonths.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
-  }
-  if (filters?.subjects?.length > 0) {
-    cql += ` AND phrase.subject=(${filters?.subjects.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
-  }
+  cql += periodicalFiltersToCql(filters);
 
   const res = await context.getLoader("complexFacets").load({
     cql,
