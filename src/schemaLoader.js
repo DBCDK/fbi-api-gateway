@@ -53,7 +53,10 @@ class PermissionsTransform {
           this.clientPermissions?.allowRootFields?.includes(fieldName),
         typeFilter: (typeName) =>
           !this.clientPermissions?.denyTypes?.includes(typeName),
-        // fieldFilter: (typeName, fieldName) => true,
+        fieldFilter: (typeName, fieldName) =>
+          !this.clientPermissions?.denyFields?.includes(
+            `${typeName}.${fieldName}`
+          ),
         // argumentFilter: (typeName, fieldName, argName) => true
       })
     );

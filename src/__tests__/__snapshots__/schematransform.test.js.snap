@@ -593,6 +593,62 @@ type CheckOrderPolicy {
   orderPossibleReason: OrderPossibleReasonEnum
 }
 
+type HoldingsResponse {
+  \\"\\"\\"
+  Represents the overall reservability status across all items according to the Cicero API (booking allowed).
+  \\"\\"\\"
+  reservable: Boolean
+  status: HoldingsResponseStatusEnum!
+
+  \\"\\"\\"
+  Expected return date for the material at agency level
+  
+  Is only set if no branches in agency have the material ON_SHELF
+  \\"\\"\\"
+  expectedAgencyReturnDate: String
+
+  \\"\\"\\"Expected return date for the material at branch level\\"\\"\\"
+  expectedBranchReturnDate: String
+
+  \\"\\"\\"Items on the shelf at the branch (actual copies)\\"\\"\\"
+  items: [HoldingsItem!]
+
+  \\"\\"\\"
+  A list of items that belong to branches that are not visible or accessible in the system.
+  These branches, such as book storage facilities or off-site repositories, are not listed
+  for end-users, but their items can still be requested or accessed.
+  \\"\\"\\"
+  unlistedBranchItems: [HoldingsItem!]
+
+  \\"\\"\\"Url to local site, where holding details may be found\\"\\"\\"
+  lookupUrl: String
+
+  \\"\\"\\"Urls to local site - one for each identifier\\"\\"\\"
+  lookupUrls: [String!]
+
+  \\"\\"\\"
+  The number of items owned by the agency.
+  Returns null if it is unknown
+  \\"\\"\\"
+  ownedByAgency: Int
+}
+
+type HoldingsItem {
+  \\"\\"\\"
+  Indicates whether the item can be reserved according to the Cicero API (booking allowed).
+  \\"\\"\\"
+  reservable: Boolean
+
+  \\"\\"\\"The manifestation of the holdingsitem\\"\\"\\"
+  manifestation: Manifestation
+  branchName: String
+  status: ItemStatusEnum
+  department: String
+  location: String
+  subLocation: String
+  loanRestriction: HoldingsItemLoanRestrictionEnum
+}
+
 type ComplexSearchIndex {
   \\"\\"\\"The name of a Complex Search index\\"\\"\\"
   index: String!
@@ -1118,51 +1174,6 @@ enum HoldingsItemLoanRestrictionEnum {
   Indicates that the material can only be loaned to the library's own users and is not available for interlibrary loan
   \\"\\"\\"
   G
-}
-
-type HoldingsItem {
-  branchName: String
-  status: ItemStatusEnum
-  department: String
-  location: String
-  subLocation: String
-  loanRestriction: HoldingsItemLoanRestrictionEnum
-}
-
-type HoldingsResponse {
-  status: HoldingsResponseStatusEnum!
-
-  \\"\\"\\"
-  Expected return date for the material at agency level
-  
-  Is only set if no branches in agency have the material ON_SHELF
-  \\"\\"\\"
-  expectedAgencyReturnDate: String
-
-  \\"\\"\\"Expected return date for the material at branch level\\"\\"\\"
-  expectedBranchReturnDate: String
-
-  \\"\\"\\"Items on the shelf at the branch (actual copies)\\"\\"\\"
-  items: [HoldingsItem!]
-
-  \\"\\"\\"
-  A list of items that belong to branches that are not visible or accessible in the system.
-  These branches, such as book storage facilities or off-site repositories, are not listed
-  for end-users, but their items can still be requested or accessed.
-  \\"\\"\\"
-  unlistedBranchItems: [HoldingsItem!]
-
-  \\"\\"\\"Url to local site, where holding details may be found\\"\\"\\"
-  lookupUrl: String
-
-  \\"\\"\\"Urls to local site - one for each identifier\\"\\"\\"
-  lookupUrls: [String!]
-
-  \\"\\"\\"
-  The number of items owned by the agency.
-  Returns null if it is unknown
-  \\"\\"\\"
-  ownedByAgency: Int
 }
 
 type Branch {

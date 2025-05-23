@@ -28,6 +28,10 @@ Object {
     "universe",
     "mood",
   ],
+  "denyFields": Array [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
+  ],
   "denyTypes": Array [
     "CheckOrderPolicy",
     "Availability",
@@ -74,6 +78,10 @@ Object {
     "mood",
     "submitOrder",
   ],
+  "denyFields": Array [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
+  ],
   "denyTypes": Array [
     "CheckOrderPolicy",
     "Availability",
@@ -111,6 +119,10 @@ Object {
     "series",
     "universe",
     "mood",
+  ],
+  "denyFields": Array [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -154,6 +166,10 @@ Object {
     "series",
     "universe",
     "mood",
+  ],
+  "denyFields": Array [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
