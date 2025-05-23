@@ -28,7 +28,7 @@ const defaultSettings = {
     "universe",
     "mood",
   ],
-  denyTypes: ["CheckOrderPolicy", "Availability", "SEO", "WorkPeriodicaInfo"],
+  denyTypes: ["CheckOrderPolicy", "Availability", "SEO", "WorkExtensionUnion"],
   denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
 };
 

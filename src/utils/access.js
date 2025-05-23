@@ -155,10 +155,16 @@ export async function resolveAccess(manifestation, context) {
   });
 
   if (parent?.access?.infomediaService?.id) {
-    res.push({
-      __typename: "InfomediaService",
-      id: parent.access.infomediaService.id,
-    });
+    if (
+      !["politiken", "jyllands-posten"].some((publication) =>
+        parent?.hostPublication?.title?.toLowerCase()?.includes(publication)
+      )
+    ) {
+      res.push({
+        __typename: "InfomediaService",
+        id: parent.access.infomediaService.id,
+      });
+    }
   }
 
   // Get the issn for this article or periodica

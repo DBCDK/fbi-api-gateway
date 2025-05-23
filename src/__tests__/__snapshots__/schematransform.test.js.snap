@@ -204,7 +204,6 @@ type Query {
   complexSearchIndexes: [ComplexSearchIndex!]
   culr: CulrQuery!
   debug: Debug
-  periodica(issn: String!): Periodica
 
   \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
   marc: Marc!
@@ -1323,51 +1322,95 @@ input CopyRequestInput {
 }
 
 \\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
-type Periodica {
-  issues: PeriodicaEntriesResponse!
-  subjects: PeriodicaFacetResponse!
+type Periodical {
+  \\"\\"\\"Info about articles in this periodical\\"\\"\\"
+  articles: PeriodicalArticlesResponse!
+
+  \\"\\"\\"All issues in this periodical\\"\\"\\"
+  issues(filters: PeriodicalIssueFilterInput): PeriodicalEntriesResponse!
 }
 
-type PeriodicaFacetResponse {
+type PeriodicalFacetResponse {
+  \\"\\"\\"Total number of matching items\\"\\"\\"
   hitcount: Int!
+
+  \\"\\"\\"Facet entries\\"\\"\\"
   entries(offset: Int, limit: Int): [FacetValue!]
 }
 
-type PeriodicaEntriesResponse {
+\\"\\"\\"Metadata about articles in a periodical\\"\\"\\"
+type PeriodicalArticlesResponse {
+  \\"\\"\\"Total number of articles in the periodical\\"\\"\\"
   hitcount: Int!
-  entries(offset: Int, limit: Int): [PeriodicaIssue!]!
+
+  \\"\\"\\"First article (e.g. chronologically)\\"\\"\\"
+  first: Work
+
+  \\"\\"\\"Last article (e.g. most recent)\\"\\"\\"
+  last: Work
 }
 
-type PeriodicaIssue {
-  display: String!
+\\"\\"\\"Response containing all issues of a periodical\\"\\"\\"
+type PeriodicalEntriesResponse {
+  \\"\\"\\"Total number of issues in periodical\\"\\"\\"
   hitcount: Int!
+
+  \\"\\"\\"List of issues\\"\\"\\"
+  entries(offset: Int, limit: Int): [PeriodicalIssue!]!
+
+  \\"\\"\\"Subjects aggregated from articles in the issues\\"\\"\\"
+  subjects: PeriodicalFacetResponse!
+
+  \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
+  publicationYears: PeriodicalFacetResponse!
+
+  \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
+  publicationMonths: PeriodicalFacetResponse!
+}
+
+\\"\\"\\"A single issue of a periodical\\"\\"\\"
+type PeriodicalIssue {
+  \\"\\"\\"Display name of the issue (e.g. \\"2023, nr. 2\\")\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Number of works/articles in the issue\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"List of works/articles in this issue\\"\\"\\"
   works(offset: Int, limit: Int): [Work!]!
 }
 
-type SimilarPeriodicaArticleEntry {
+\\"\\"\\"An article similar to another, with shared subjects\\"\\"\\"
+type SimilarPeriodicalArticleEntry {
+  \\"\\"\\"Subjects shared with the reference article\\"\\"\\"
   sharedSubjects: [String!]!
+
+  \\"\\"\\"The similar article\\"\\"\\"
   work: Work!
 }
 
-type WorkPeriodicaInfo {
-  \\"\\"\\"If current work is an article, its parent is the periodica work\\"\\"\\"
-  parent: Work
-
+type PeriodicalArticle {
   \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
-  periodica: Periodica
+  parentPeriodical: Work
 
   \\"\\"\\"is set when this work is an article in an issue of a periodica\\"\\"\\"
-  issue: PeriodicaIssue
+  parentIssue: PeriodicalIssue
 
   \\"\\"\\"Articles in same periodica that are similar in terms of subjects\\"\\"\\"
-  similarArticles: [SimilarPeriodicaArticleEntry!]
+  similarArticles: [SimilarPeriodicalArticleEntry!]
 }
 
+input PeriodicalIssueFilterInput {
+  subjects: [String!]
+  publicationYears: [String!]
+  publicationMonths: [String!]
+}
+
+union WorkExtensionUnion = Periodical | PeriodicalArticle
+
 type Work {
-  \\"\\"\\"
-  Periodica info is set if this is a periodica or an article in periodica
-  \\"\\"\\"
-  periodicaInfo: WorkPeriodicaInfo
+  \\"\\"\\"Contains either a Periodical or a PeriodicalArticle\\"\\"\\"
+  extendedWork: WorkExtensionUnion
 
   \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
   marc: MarcRecord
@@ -7186,51 +7229,95 @@ interface CreatorInterface {
 }
 
 \\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
-type Periodica {
-  issues: PeriodicaEntriesResponse!
-  subjects: PeriodicaFacetResponse!
+type Periodical {
+  \\"\\"\\"Info about articles in this periodical\\"\\"\\"
+  articles: PeriodicalArticlesResponse!
+
+  \\"\\"\\"All issues in this periodical\\"\\"\\"
+  issues(filters: PeriodicalIssueFilterInput): PeriodicalEntriesResponse!
 }
 
-type PeriodicaFacetResponse {
+type PeriodicalFacetResponse {
+  \\"\\"\\"Total number of matching items\\"\\"\\"
   hitcount: Int!
+
+  \\"\\"\\"Facet entries\\"\\"\\"
   entries(offset: Int, limit: Int): [FacetValue!]
 }
 
-type PeriodicaEntriesResponse {
+\\"\\"\\"Metadata about articles in a periodical\\"\\"\\"
+type PeriodicalArticlesResponse {
+  \\"\\"\\"Total number of articles in the periodical\\"\\"\\"
   hitcount: Int!
-  entries(offset: Int, limit: Int): [PeriodicaIssue!]!
+
+  \\"\\"\\"First article (e.g. chronologically)\\"\\"\\"
+  first: Work
+
+  \\"\\"\\"Last article (e.g. most recent)\\"\\"\\"
+  last: Work
 }
 
-type PeriodicaIssue {
-  display: String!
+\\"\\"\\"Response containing all issues of a periodical\\"\\"\\"
+type PeriodicalEntriesResponse {
+  \\"\\"\\"Total number of issues in periodical\\"\\"\\"
   hitcount: Int!
+
+  \\"\\"\\"List of issues\\"\\"\\"
+  entries(offset: Int, limit: Int): [PeriodicalIssue!]!
+
+  \\"\\"\\"Subjects aggregated from articles in the issues\\"\\"\\"
+  subjects: PeriodicalFacetResponse!
+
+  \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
+  publicationYears: PeriodicalFacetResponse!
+
+  \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
+  publicationMonths: PeriodicalFacetResponse!
+}
+
+\\"\\"\\"A single issue of a periodical\\"\\"\\"
+type PeriodicalIssue {
+  \\"\\"\\"Display name of the issue (e.g. \\"2023, nr. 2\\")\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Number of works/articles in the issue\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"List of works/articles in this issue\\"\\"\\"
   works(offset: Int, limit: Int): [Work!]!
 }
 
-type SimilarPeriodicaArticleEntry {
+\\"\\"\\"An article similar to another, with shared subjects\\"\\"\\"
+type SimilarPeriodicalArticleEntry {
+  \\"\\"\\"Subjects shared with the reference article\\"\\"\\"
   sharedSubjects: [String!]!
+
+  \\"\\"\\"The similar article\\"\\"\\"
   work: Work!
 }
 
-type WorkPeriodicaInfo {
-  \\"\\"\\"If current work is an article, its parent is the periodica work\\"\\"\\"
-  parent: Work
-
+type PeriodicalArticle {
   \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
-  periodica: Periodica
+  parentPeriodical: Work
 
   \\"\\"\\"is set when this work is an article in an issue of a periodica\\"\\"\\"
-  issue: PeriodicaIssue
+  parentIssue: PeriodicalIssue
 
   \\"\\"\\"Articles in same periodica that are similar in terms of subjects\\"\\"\\"
-  similarArticles: [SimilarPeriodicaArticleEntry!]
+  similarArticles: [SimilarPeriodicalArticleEntry!]
 }
 
+input PeriodicalIssueFilterInput {
+  subjects: [String!]
+  publicationYears: [String!]
+  publicationMonths: [String!]
+}
+
+union WorkExtensionUnion = Periodical | PeriodicalArticle
+
 type Work {
-  \\"\\"\\"
-  Periodica info is set if this is a periodica or an article in periodica
-  \\"\\"\\"
-  periodicaInfo: WorkPeriodicaInfo
+  \\"\\"\\"Contains either a Periodical or a PeriodicalArticle\\"\\"\\"
+  extendedWork: WorkExtensionUnion
 
   \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
   marc: MarcRecord

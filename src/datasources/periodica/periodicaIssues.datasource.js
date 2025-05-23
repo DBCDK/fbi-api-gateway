@@ -1,4 +1,18 @@
+import { periodicalFiltersToCql } from "../../utils/utils";
+
 const teamLabel = "febib";
+
+function extractAndRemoveMatch(str, regex) {
+  const match = str.match(regex);
+  if (!match) {
+    return { rest: str, match: null };
+  }
+
+  const matchedText = match[0];
+  const rest = str.replace(matchedText, "").trim();
+
+  return { rest, match };
+}
 
 /**
  * Extracts the relevant numerical values from a given string:
@@ -13,16 +27,20 @@ const teamLabel = "febib";
  */
 function extractNumbers(str) {
   const date = str.match(/^\d{4}-\d{2}-\d{2}$/);
-  const volumeMatch = str.match(/(?:årg\.\s*)?\b(\d{4})\b/);
-  const issueMatch = str.match(/nr\. (\d+)(?:\/(\d+))?/);
-  const yearMatch = str.match(/\((\d+)\)/);
-
+  const volumeMatch = extractAndRemoveMatch(str, /årg\.\s*\b(\d+)\b/);
+  const issueMatch = extractAndRemoveMatch(
+    volumeMatch.rest,
+    /nr\. (\d+)(?:\/(\d+))?/
+  );
+  const yearMatch = extractAndRemoveMatch(issueMatch.rest, /\(?(\d{4})\)?/);
   // Default to -Infinity for missing values
-  const volume = volumeMatch ? Number(volumeMatch[1]) : -Infinity;
-  const issueStart = issueMatch ? Number(issueMatch[1]) : -Infinity;
+  const volume = volumeMatch.match ? Number(volumeMatch.match[1]) : -Infinity;
+  const issueStart = issueMatch.match ? Number(issueMatch.match[1]) : -Infinity;
   const issueEnd =
-    issueMatch && issueMatch[2] ? Number(issueMatch[2]) : issueStart;
-  const year = yearMatch ? Number(yearMatch[1]) : -Infinity;
+    issueMatch.match && issueMatch.match[2]
+      ? Number(issueMatch.match[2])
+      : issueStart.match;
+  const year = yearMatch.match ? Number(yearMatch.match[1]) : -Infinity;
 
   // Sorting priority: year > volume > issue start > issue end
   return [date, year, volume, issueStart, issueEnd];
@@ -36,7 +54,7 @@ function extractNumbers(str) {
  * 3. Highest **issue start** first
  * 4. Highest **issue end** first
  */
-function sortIssues(a, b) {
+export function sortIssues(a, b) {
   const [dateA, yearA, volumeA, issueA_start, issueA_end] = extractNumbers(a);
   const [dateB, yearB, volumeB, issueB_start, issueB_end] = extractNumbers(b);
 
@@ -49,14 +67,16 @@ function sortIssues(a, b) {
   );
 }
 
-export async function load({ issn, profile }, context) {
+export async function load({ issn, profile, filters }, context) {
+  let cql = `term.issn=${issn}`;
+  cql += periodicalFiltersToCql(filters);
+
   const res = await context.getLoader("complexFacets").load({
-    cql: `term.issn=${issn}`,
+    cql,
     facets: ["ISSUE"],
     facetLimit: 100000,
     profile,
   });
-
   const issuesFacets = res.facets?.find((facet) =>
     facet?.name?.includes("issue")
   );
@@ -70,7 +90,7 @@ export async function load({ issn, profile }, context) {
 
 export const options = {
   redis: {
-    prefix: "periodica-issues-1",
+    prefix: "periodica-issues-4",
     ttl: 60 * 60,
   },
 };

@@ -1015,3 +1015,17 @@ export function resolveSearchHits(parent) {
     match,
   }));
 }
+
+export function periodicalFiltersToCql(filters) {
+  let cql = "";
+  if (filters?.publicationYears?.length > 0) {
+    cql += ` AND publicationyear=(${filters?.publicationYears.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  if (filters?.publicationMonths?.length > 0) {
+    cql += ` AND phrase.issue=(${filters?.publicationMonths.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  if (filters?.subjects?.length > 0) {
+    cql += ` AND phrase.subject=(${filters?.subjects.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  return cql;
+}

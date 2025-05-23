@@ -36,7 +36,7 @@ Object {
     "CheckOrderPolicy",
     "Availability",
     "SEO",
-    "WorkPeriodicaInfo",
+    "WorkExtensionUnion",
   ],
 }
 `;
@@ -86,7 +86,7 @@ Object {
     "CheckOrderPolicy",
     "Availability",
     "SEO",
-    "WorkPeriodicaInfo",
+    "WorkExtensionUnion",
     "WorkReview",
   ],
 }
@@ -128,7 +128,7 @@ Object {
     "CheckOrderPolicy",
     "Availability",
     "SEO",
-    "WorkPeriodicaInfo",
+    "WorkExtensionUnion",
   ],
 }
 `;
@@ -175,7 +175,7 @@ Object {
     "CheckOrderPolicy",
     "Availability",
     "SEO",
-    "WorkPeriodicaInfo",
+    "WorkExtensionUnion",
   ],
 }
 `;

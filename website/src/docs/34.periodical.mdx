@@ -15,8 +15,8 @@ The same goes for subjects which may contain thousands of entries - pagination i
     titles {
       full
     }
-    periodicaInfo {
-      periodica {
+    extendedWork {
+      ... on Periodical {
         issues {
           hitcount
           entries(limit: $issuesLimit) {
@@ -28,11 +28,11 @@ The same goes for subjects which may contain thousands of entries - pagination i
               }
             }
           }
-        }
-        subjects {
-          hitcount
-          entries {
-            term
+          subjects {
+            hitcount
+            entries {
+              term
+            }
           }
         }
       }
@@ -58,11 +58,19 @@ The following example shows how you retrieve all articles in that issue
     titles {
       full
     }
-    periodicaInfo {
-      issue {
-        display
-        works {
-          workId
+    extendedWork {
+      ... on PeriodicalArticle {
+        parentPeriodical {
+          titles {
+            main
+          }
+        }
+        parentIssue {
+          hitcount
+          display
+          works {
+            workId
+          }
         }
       }
     }

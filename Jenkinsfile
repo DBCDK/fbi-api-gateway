@@ -11,6 +11,9 @@ pipeline {
     triggers{
         // @TODO parameters on githubPush .. eg. branch
         githubPush()
+        upstream(
+          upstreamProjects: env.BRANCH_NAME == "master" ? 'Docker-base-node-bump-trigger' : ''
+        )
     }
     environment {
         GITLAB_ID = "1232"
@@ -34,8 +37,8 @@ pipeline {
                     script {
                         // trigger sonarqube analysis
                         def sonarOptions = "-Dsonar.branch.name=$BRANCH_NAME"
-                        if (env.BRANCH_NAME != 'main') {
-                            sonarOptions += " -Dsonar.newCode.referenceBranch=main"
+                        if (env.BRANCH_NAME != 'master') {
+                            sonarOptions += " -Dsonar.newCode.referenceBranch=master"
                         }
 
                         sh returnStatus: true, script: """
