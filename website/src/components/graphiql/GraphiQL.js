@@ -89,7 +89,6 @@ export default function Wrap() {
     if (!selectedToken?.token) {
       return { statusCode: 403, message: "Unauthorized" };
     }
-
     const data = await fetch(url, {
       method: "POST",
       headers: {
