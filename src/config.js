@@ -127,7 +127,7 @@ export default {
       teamLabel: "fbiscrum",
     },
     cicero: {
-      url: process.env.CICERO_URL || "https://fbs-openplatform.test.dbc.dk",
+      url: process.env.CICERO_URL || "https://fbs-openplatform.dbc.dk",
       ttl: process.env.CICERO_URL_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.CICERO_URL_PREFIX || "cicero-1",
       teamLabel: "febib",
