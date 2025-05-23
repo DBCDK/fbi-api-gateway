@@ -1,4 +1,4 @@
-import { periodicalFiltersToCql } from "./periodicaIssues.datasource";
+import { periodicalFiltersToCql } from "../../utils/utils";
 
 const teamLabel = "febib";
 

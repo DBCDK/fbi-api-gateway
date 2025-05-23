@@ -11,7 +11,7 @@
  * of a dedicated service for handling periodicals.
  */
 
-import { resolveWork } from "../../utils/utils";
+import { periodicalFiltersToCql, resolveWork } from "../../utils/utils";
 
 export const typeDef = `
 
@@ -179,7 +179,12 @@ export const resolvers = {
           workId: parent?.workId,
           manifestation,
           hostIssn,
-          parentIssue: await resolvePeriodicalIssue(hostIssn, issue, context),
+          parentIssue: await resolvePeriodicalIssue(
+            hostIssn,
+            issue,
+            {},
+            context
+          ),
         };
       }
 
@@ -247,7 +252,9 @@ export const resolvers = {
 
       // fetch works of issues via complex search
       return await Promise.all(
-        entries?.map((issue) => resolvePeriodicalIssue(issn, issue, context))
+        entries?.map((issue) =>
+          resolvePeriodicalIssue(issn, issue, filters, context)
+        )
       );
     },
     async subjects(parent, args, context) {
@@ -375,9 +382,11 @@ export async function resolvePeriodical(issn, context) {
   };
 }
 
-export async function resolvePeriodicalIssue(issn, issue, context) {
+export async function resolvePeriodicalIssue(issn, issue, filters, context) {
   const res = await context.datasources.getLoader("complexsearch").load({
-    cql: `term.issn="${issn}" AND phrase.issue="${issue}"`,
+    cql:
+      `term.issn="${issn}" AND phrase.issue="${issue}"` +
+      periodicalFiltersToCql(filters),
     profile: context.profile,
     offset: 0,
     limit: 100,
