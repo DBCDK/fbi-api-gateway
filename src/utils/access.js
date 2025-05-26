@@ -155,21 +155,11 @@ export async function resolveAccess(manifestation, context) {
   });
 
   if (parent?.access?.infomediaService?.id) {
-    if (context?.profile?.agency === "190101") {
-      // This is a temp fix, for removing Infomedia articles
-      // for certain host publications in BIBDK
-      if (
-        !["politiken", "jyllands-posten"].some((publication) =>
-          parent?.hostPublication?.title?.toLowerCase()?.includes(publication)
-        )
-      ) {
-        res.push({
-          __typename: "InfomediaService",
-          id: parent.access.infomediaService.id,
-        });
-      }
-    } else {
-      // Normal access for every other agency
+    if (
+      !["politiken", "jyllands-posten"].some((publication) =>
+        parent?.hostPublication?.title?.toLowerCase()?.includes(publication)
+      )
+    ) {
       res.push({
         __typename: "InfomediaService",
         id: parent.access.infomediaService.id,
