@@ -1,3 +1,5 @@
+import { periodicalFiltersToCql } from "../../utils/utils";
+
 const teamLabel = "febib";
 
 function extractAndRemoveMatch(str, regex) {
@@ -65,18 +67,9 @@ export function sortIssues(a, b) {
   );
 }
 
-const FILTERS = {
-  SUBJECT: "phrase.subject",
-  PUBLICATIONYEAR: "publicationyear",
-};
-
 export async function load({ issn, profile, filters }, context) {
   let cql = `term.issn=${issn}`;
-  filters
-    ?.filter((filter) => filter.values.length)
-    ?.forEach((filter) => {
-      cql += ` AND ${FILTERS[filter.key]}=(${filter.values.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
-    });
+  cql += periodicalFiltersToCql(filters);
 
   const res = await context.getLoader("complexFacets").load({
     cql,
@@ -84,7 +77,6 @@ export async function load({ issn, profile, filters }, context) {
     facetLimit: 100000,
     profile,
   });
-
   const issuesFacets = res.facets?.find((facet) =>
     facet?.name?.includes("issue")
   );
@@ -98,7 +90,7 @@ export async function load({ issn, profile, filters }, context) {
 
 export const options = {
   redis: {
-    prefix: "periodica-issues-3",
+    prefix: "periodica-issues-4",
     ttl: 60 * 60,
   },
 };

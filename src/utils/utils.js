@@ -638,9 +638,18 @@ export const fetchOrderStatus = async (args, context) => {
   //fetch order data for each orderID provided in the orderIds List
   const orders = await Promise.all(
     orderIds.map(async (orderId) => {
+      // orderId might be empty
+      if (!orderId) {
+        log.error(`Failed to fetch orderStatus. Order with empty orderId.`);
+        return {
+          orderId: "No orderId given",
+          errorMessage: "Could not fetch order info from ors-maintenance.",
+        };
+      }
       const order = await context.datasources
         .getLoader("orderStatus")
         .load({ orderId });
+
       if (!order) {
         log.error(
           `Failed to fetch orderStatus. Order with order id ${orderId} not found.`
@@ -1014,4 +1023,18 @@ export function resolveSearchHits(parent) {
   return matchManifestationsFiltered.map((match) => ({
     match,
   }));
+}
+
+export function periodicalFiltersToCql(filters) {
+  let cql = "";
+  if (filters?.publicationYears?.length > 0) {
+    cql += ` AND publicationyear=(${filters?.publicationYears.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  if (filters?.publicationMonths?.length > 0) {
+    cql += ` AND phrase.issue=(${filters?.publicationMonths.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  if (filters?.subjects?.length > 0) {
+    cql += ` AND phrase.subject=(${filters?.subjects.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
+  }
+  return cql;
 }

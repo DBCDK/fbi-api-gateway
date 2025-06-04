@@ -126,6 +126,12 @@ export default {
       ffuIsBlocked: process.env.BORCHK_FFU_BLOCKED || false,
       teamLabel: "fbiscrum",
     },
+    cicero: {
+      url: process.env.CICERO_URL || "https://fbs-openplatform.dbc.dk",
+      ttl: process.env.CICERO_URL_TIME_TO_LIVE_SECONDS || 5,
+      prefix: process.env.CICERO_URL_PREFIX || "cicero-1",
+      teamLabel: "febib",
+    },
     holdingsservice: {
       url:
         process.env.HOLDINGSSERVICE_URL ||

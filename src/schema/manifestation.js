@@ -1,3 +1,4 @@
+import { entries } from "lodash";
 import { parseJedSubjects, resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 
@@ -729,7 +730,17 @@ type Manifestation {
   """
   Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
   """
-  manifestationParts: ManifestationParts
+  manifestationParts: ManifestationParts @deprecated(reason: "Use 'Manifestation.contents' instead expires: 01/11-2025")
+
+  """
+  Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
+  """
+  contents: [ContentsEntity!]
+
+  """
+  Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
+  """
+  _contents: [_ContentsEntity!]
 
   """
   The type of material of the manifestation based on bibliotek.dk types
@@ -799,7 +810,7 @@ type Manifestation {
   """
   Quotation of the manifestation's table of contents or a similar content list
   """
-  tableOfContents: TableOfContent
+  tableOfContents: TableOfContent @deprecated(reason: "Use 'Manifestation.contents' instead expires: 01/11-2025")
 
   """
   Worktypes for this manifestations work
@@ -950,6 +961,211 @@ type ManifestationTitles {
   detailed title for tv series 
   """
   tvSeries: TvSeries
+  }
+
+  enum ContentsEntityEnum {
+    ARTICLES
+    CHAPTERS
+    FICTION
+    MUSIC_TRACKS
+    SHEET_MUSIC
+    NOT_SPECIFIED
+  }
+
+  type ContentEntryTitle {
+    """
+    Title of the content entry
+    """
+    display: String!
+  }
+
+  type ContentEntryCreators{
+    """
+    Details about a person, name, role etc.
+    """
+    persons: [Person!]
+
+    """
+    Details about a corporation or conference, name, role, etc.
+    """
+    corporations: [Corporation!]
+  }
+
+  type EntrySubLevel2 {
+
+    """
+    Title subordinate to the title in the entry's top level
+    """
+    title: ContentEntryTitle!
+
+    """
+    Additional 'authors' (lyricists, arrangers, performers/soloists etc.) related to the title on sublevel 1, quoted as strings (including possible author's statement) from the record
+    """
+    contributorsUnstructured: [String!]
+
+    """
+    Playing time for music tracks
+    """
+    playingTime: String
+  }
+
+  type EntrySubLevel1 {
+
+    """
+    Title subordinate to the title in the entry's top level
+    """
+    title: ContentEntryTitle!
+
+    """
+    Additional 'authors' (lyricists, arrangers, performers/soloists etc.) related to the title on sublevel 1, quoted as strings (including possible author's statement) from the record
+    """
+    contributorsUnstructured: [String!]
+
+    """
+    Playing time for music tracks
+    """
+    playingTime: String
+
+    """
+    Possible entry data (title, contributors, playingtime) subordinate to the entry's sublevel 1
+    """
+    entrySubLevel2: [EntrySubLevel2!]
+  }
+
+  type ContentEntry {
+    """
+    Top level title of the entry
+    """
+    title: ContentEntryTitle!
+
+    """
+    Main creator(s) of the entry i.e. composer (classical music), artist/band (rhythmic music), author (fiction, articles). For music and sheet music always only 1 creator, for articles and fiction possibly more than 1
+    """
+    creators: ContentEntryCreators
+
+    """
+    Additional 'authors' (lyricists, arrangers, performers/soloists etc.), quoted as strings (including possible author's statement) from the record
+    """
+    contributorsUnstructured: [String!]
+    
+    """
+    Playing time for music tracks, quoted from the record
+    """
+    playingTime: String
+
+    """
+    Possible entry data (title, creators, contributors, playingtime) subordinate to the entry's top level
+    """
+    entrySubLevel1: [EntrySubLevel1!]
+  }
+
+  type ContentsStructured {
+    """
+    Content entry with title and possible creator(s), contributors and (for some music and movies) playing time
+    """
+    entries: [ContentEntry!]
+  }
+
+  type ContentsEntity {
+    """
+    Heading for the contents of this entity
+    """
+    heading: String!
+
+    """
+    ENUM for type of content entries (music tracks, articles, fiction etc.) in this entity
+    """
+    type: ContentsEntityEnum!
+
+    """
+    Contents text note quoted as it is from the marc field. Used for non-machine-decipherable content notes (un)formatted in only 1 subfield)
+    """
+    unstructured: String
+
+    """
+    Object with an array of structured entries for each content element (title, creator, contributors ...)
+    """
+    structured: ContentsStructured
+  }
+
+
+
+
+
+
+
+
+
+  type _ContentsEntity {
+    """
+    Heading for the contents of this entity
+    """
+    heading: String!
+
+    """
+    ENUM for type of content entries (music tracks, articles, fiction etc.) in this entity
+    """
+    type: ContentsEntityEnum!
+
+    """
+    Contents text note quoted as it is from the marc field. Used for non-machine-decipherable content notes (un)formatted in only 1 subfield)
+    """
+    raw: String
+
+    """
+    Content entry with title and possible creator(s), contributors and (for some music and movies) playing time
+    """
+    entries: [_ContentEntry!]
+  }
+
+  type _ContentSublevel {
+
+    """
+    Title subordinate to the title in the entry's top level
+    """
+    title: ContentEntryTitle!
+
+    """
+    Additional 'authors' (lyricists, arrangers, performers/soloists etc.) related to the title on sublevel 1, quoted as strings (including possible author's statement) from the record
+    """
+    contributors: [String!]
+
+    """
+    Playing time for music tracks
+    """
+    playingTime: String
+
+    """
+    Possible entry data (title, contributors, playingtime) subordinate to the entry's sublevel 1
+    """
+    sublevel: [_ContentSublevel!]
+  }
+
+  type _ContentEntry {
+    """
+    Top level title of the entry
+    """
+    title: ContentEntryTitle!
+
+    """
+    Main creator(s) of the entry i.e. composer (classical music), artist/band (rhythmic music), author (fiction, articles). For music and sheet music always only 1 creator, for articles and fiction possibly more than 1
+    """
+    creators: ContentEntryCreators
+
+    """
+    Additional 'authors' (lyricists, arrangers, performers/soloists etc.), quoted as strings (including possible author's statement) from the record
+    """
+    contributors: [String!]
+    
+    """
+    Playing time for music tracks, quoted from the record
+    """
+    playingTime: String
+
+    """
+    Possible entry data (title, creators, contributors, playingtime) subordinate to the entry's top level
+    """
+    sublevel: [_ContentSublevel!]
   }
 `;
 
@@ -1239,9 +1455,59 @@ export const resolvers = {
 
       return null;
     },
-
     async unit(parent, args, context, info) {
       return parent;
+    },
+
+    contents(parent, args, context, info) {
+      return parent?.contents;
+    },
+
+    // Experimental - remove me!
+    _contents(parent, args, context, info) {
+      return parent?.contents;
+    },
+  },
+
+  ContentEntry: {
+    entrySubLevel1(parent, args, context, info) {
+      return parent?.entrySubLevel1?.length > 0 ? parent?.entrySubLevel1 : null;
+    },
+  },
+
+  EntrySubLevel1: {
+    entrySubLevel2(parent, args, context, info) {
+      return parent?.entrySubLevel2?.length > 0 ? parent?.entrySubLevel2 : null;
+    },
+  },
+
+  ContentsEntity: {
+    unstructured(parent, args, context, info) {
+      return parent?.contentsUnstructured;
+    },
+    structured(parent, args, context, info) {
+      return parent?.contentsStructured;
+    },
+  },
+
+  _ContentsEntity: {
+    raw(parent, args, context, info) {
+      return parent?.contentsUnstructured;
+    },
+    entries(parent, args, context, info) {
+      return parent?.contentsStructured?.entries;
+    },
+  },
+
+  _ContentSublevel: {
+    sublevel(parent, args, context, info) {
+      return parent?.entrySubLevel2?.length > 0 ? parent?.entrySubLevel2 : null;
+    },
+  },
+
+  _ContentEntry: {
+    sublevel(parent, args, context, info) {
+      return parent?.entrySubLevel1?.length > 0 ? parent?.entrySubLevel1 : null;
     },
   },
 };
