@@ -977,11 +977,6 @@ type ManifestationTitles {
     Title of the content entry
     """
     display: String!
-
-    """
-    Possible variants of title of the content entry - for search
-    """
-    titlesForSearch: [String!]
   }
 
   type ContentEntryCreators{
@@ -1066,11 +1061,6 @@ type ManifestationTitles {
 
   type ContentsStructured {
     """
-    Possible title variants of one or more titles quoted in the title entries of the entity
-    """
-    titlesForSearch: [String!]
-
-    """
     Content entry with title and possible creator(s), contributors and (for some music and movies) playing time
     """
     entries: [ContentEntry!]
@@ -1121,11 +1111,6 @@ type ManifestationTitles {
     Contents text note quoted as it is from the marc field. Used for non-machine-decipherable content notes (un)formatted in only 1 subfield)
     """
     raw: String
-
-    """
-    Possible title variants of one or more titles quoted in the title entries of the entity
-    """
-    titlesForSearch: [String!]
 
     """
     Content entry with title and possible creator(s), contributors and (for some music and movies) playing time
@@ -1508,9 +1493,6 @@ export const resolvers = {
   _ContentsEntity: {
     raw(parent, args, context, info) {
       return parent?.contentsUnstructured;
-    },
-    titlesForSearch(parent, args, context, info) {
-      return parent?.contentsStructured?.titlesForSearch;
     },
     entries(parent, args, context, info) {
       return parent?.contentsStructured?.entries;
