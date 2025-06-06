@@ -1503,11 +1503,21 @@ export const resolvers = {
     sublevel(parent, args, context, info) {
       return parent?.entrySubLevel2?.length > 0 ? parent?.entrySubLevel2 : null;
     },
+    contributors(parent, args, context, info) {
+      return parent?.contributorsUnstructured.length > 0
+        ? parent?.contributorsUnstructured
+        : null;
+    },
   },
 
   _ContentEntry: {
     sublevel(parent, args, context, info) {
       return parent?.entrySubLevel1?.length > 0 ? parent?.entrySubLevel1 : null;
+    },
+    contributors(parent, args, context, info) {
+      return parent?.contributorsUnstructured.length > 0
+        ? parent?.contributorsUnstructured
+        : null;
     },
   },
 };
