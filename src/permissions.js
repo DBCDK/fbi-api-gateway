@@ -29,12 +29,7 @@ const defaultSettings = {
     "mood",
   ],
   denyTypes: ["CheckOrderPolicy", "Availability", "SEO", "WorkExtensionUnion"],
-  denyFields: [
-    "HoldingsItem.reservable",
-    "HoldingsResponse.reservable",
-    "Manifestation.contents",
-    "Manifestation._contents",
-  ],
+  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
 };
 
 /**
