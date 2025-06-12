@@ -986,10 +986,6 @@ type ManifestationTitles {
     corporations: [Corporation!]
   }
 
-
-
-
-
   type ContentEntry {
     """
     Top level title of the entry
@@ -1389,7 +1385,7 @@ export const resolvers = {
     sublevel(parent, args, context, info) {
       return parent?.entrySubLevel2?.length > 0 ? parent?.entrySubLevel2 : null;
     },
-    contributors(parent, args, context, info) {
+    contributorsRaw(parent, args, context, info) {
       return parent?.contributorsUnstructured.length > 0
         ? parent?.contributorsUnstructured
         : null;
@@ -1400,7 +1396,7 @@ export const resolvers = {
     sublevel(parent, args, context, info) {
       return parent?.entrySubLevel1?.length > 0 ? parent?.entrySubLevel1 : null;
     },
-    contributors(parent, args, context, info) {
+    contributorsRaw(parent, args, context, info) {
       return parent?.contributorsUnstructured.length > 0
         ? parent?.contributorsUnstructured
         : null;
