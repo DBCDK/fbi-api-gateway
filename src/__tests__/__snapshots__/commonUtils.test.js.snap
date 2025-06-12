@@ -31,8 +31,6 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "Manifestation.contents",
-    "Manifestation._contents",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -83,8 +81,6 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "Manifestation.contents",
-    "Manifestation._contents",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -127,8 +123,6 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "Manifestation.contents",
-    "Manifestation._contents",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -176,8 +170,6 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "Manifestation.contents",
-    "Manifestation._contents",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
