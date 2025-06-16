@@ -316,6 +316,10 @@ export default {
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
       teamLabel: "fbiscrum",
     },
+    rawrepo: {
+      url: "http://update-service.basismig.svc.cloud.dbc.dk/UpdateService/rest/api/v2",
+      teamLabel: "febib",
+    },
     idp: {
       url:
         process.env.IDP_URL ||

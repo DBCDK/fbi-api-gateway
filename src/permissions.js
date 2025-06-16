@@ -85,6 +85,7 @@ export default {
       "marc",
       "holdingsItems",
       "ors",
+      "rawrepo",
     ],
     denyTypes: [],
     denyFields: [...defaultSettings.denyFields],
