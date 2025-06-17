@@ -141,7 +141,7 @@ export const resolvers = {
       );
 
       const results = resolvedResults.filter(
-        (_v, index) => !!resolvedResults[index]
+        (_v, index) => _v?.work && !!resolvedResults[index]
       );
 
       // create the datahub event
