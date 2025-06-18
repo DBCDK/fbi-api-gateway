@@ -1,5 +1,5 @@
 /**
- * @file This datasource is used to retrieve holdings from fbs-cms adapter (cicero api)
+ * @file This file handles "updateOveCode" request to the rawrepo/update service.
  */
 
 import config from "../../config";
@@ -7,7 +7,7 @@ import config from "../../config";
 const { url, teamLabel } = config.datasources.rawrepo;
 
 /**
- * Gets the holdings informations by recordid
+ * Updates the Ove code for a bibliographic record.
  */
 export async function load({ agencyId, recordId }, context) {
   if (recordId && agencyId) {
