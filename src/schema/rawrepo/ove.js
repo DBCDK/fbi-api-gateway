@@ -87,7 +87,7 @@ export const resolvers = {
       );
     },
     message(parent, args, context, info) {
-      const STATES = { OK: "Ovecode was successfully updated" };
+      const STATES = { OK: "Ovecode was successfully updated." };
 
       return (
         // Message from 'updateOveCode' resolver
@@ -97,7 +97,7 @@ export const resolvers = {
         // Translated message according to API response status
         STATES[parent.updateStatusEnumDTO] ||
         // Fallback
-        "Some unknown error occured"
+        "Some unknown error occured."
       );
     },
   },
