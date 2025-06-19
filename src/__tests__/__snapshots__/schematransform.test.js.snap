@@ -3984,9 +3984,9 @@ type User {
   debt: UserStatusDebt
   bookmarks(orderBy: BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
-  isCPRValidated: Boolean!
-  identityProviderUsed: String!
-  hasCulrUniqueId: Boolean!
+  isCPRValidated: Boolean
+  identityProviderUsed: String
+  hasCulrUniqueId: Boolean
   omittedCulrData: OmittedCulrDataResponse
 }
 
