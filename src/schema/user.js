@@ -70,9 +70,9 @@ type User {
   debt: UserStatusDebt @complexity(value: 3)
   bookmarks(orderBy:BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
-  isCPRValidated: Boolean!
-  identityProviderUsed: String!
-  hasCulrUniqueId: Boolean!
+  isCPRValidated: Boolean
+  identityProviderUsed: String
+  hasCulrUniqueId: Boolean
   omittedCulrData: OmittedCulrDataResponse
 }
 
