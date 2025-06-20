@@ -95,13 +95,13 @@ export function getQueryComplexity(params) {
  * @returns {string}
  */
 export function getQueryComplexityClass(complexity) {
-  if (complexity < 500) {
+  if (complexity < 250) {
     return "simple";
   }
-  if (complexity < 1000) {
+  if (complexity < 2500) {
     return "complex";
   }
-  if (complexity < 100000) {
+  if (complexity < 25000) {
     return "critical";
   }
 
