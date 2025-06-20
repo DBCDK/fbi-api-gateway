@@ -34,22 +34,25 @@ export const resolvers = {
     },
     async result(parent, args, context, info) {
       const limit = args.limit || 10;
+      const limitOverfetch = 10; // Used to ensure we have enough results to fill the limit after filtering
+
       const result = await Promise.all(
-        parent.result.slice(0, limit).map(async (entry) => {
+        parent.result.slice(0, limit + limitOverfetch).map(async (entry) => {
           const work = await resolveWork(
             { id: entry.work, traceId: entry.traceId },
             context
           );
-          const manifestation = resolveManifestation(
+          const manifestation = await resolveManifestation(
             { pid: entry.pid },
             context
           );
           return { work, manifestation };
         })
       );
-      return result.filter(
-        ({ work, manifestation }) => !!work && !!manifestation
-      );
+
+      return result
+        .filter(({ work, manifestation }) => !!work && !!manifestation)
+        .slice(0, limit);
     },
   },
 };

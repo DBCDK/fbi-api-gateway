@@ -91,24 +91,27 @@ with info for loaned manifestations
 
 <InlineGraphiQL
   query={`query Example_UserLoans {
-    user {
-      name
-      orders {
-        status
+  user {
+    name
+    orders {
+      statusCode
+      result {
+        orderId
         pickUpBranch {
           name
           openingHours
         }
       }
-      loans {
-      loanId
+    }
+    loans {
+      statusCode
+      result {
+        loanId
         manifestation {
           pid
-          titles {
-            main
-          }
         }
       }
     }
-    }`}
+  }
+}`}
 />

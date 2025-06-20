@@ -296,7 +296,7 @@ export default {
     facets: {
       url:
         process.env.FACETS_URL ||
-        "http://simple-search-fbiapi-1-8.mi-prod.svc.cloud.dbc.dk/facets", // NOSONAR
+        "http://simple-search-fbiapi-1-8.ai-prod.svc.cloud.dbc.dk/facets", // NOSONAR
       prefix: process.env.FACETS_PREFIX || "facets-1",
       token: process.env.FACETS_TOKEN,
       ttl: process.env.FACETS_TIME_TO_LIVE_SECONDS || 10,

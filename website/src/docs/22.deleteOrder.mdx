@@ -1,17 +1,18 @@
-# BIBDK Delete Order
+# BIBDK Delete order
 
 Delete an order which has been placed with the submitOrder mutation.
 
 It is possible to delete an order at any agency the user is registered.
-The example sets dryRun:true, which prevents the deletetion query from actually being executed against openuserstatus.
-If omitted, dryRun is sat to false.
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a deleted "true".
 
 <InlineGraphiQL
-  query={`mutation cancelOrder($orderId: String!, $agencyId: String!) {
-  deleteOrder(orderId: $orderId, agencyId: $agencyId, dryRun: true) {
+  query={`mutation cancelOrder($orderId: String!, $agencyId: String! $dryRun: Boolean) {
+  deleteOrder(orderId: $orderId, agencyId: $agencyId, dryRun: $dryRun) {
     deleted
     error
   }
 }`}
-  variables={{ orderId: "78434523", agencyId: "715100" }}
+  variables={{ orderId: "78434523", agencyId: "715100", dryRun: true }}
 />
+
