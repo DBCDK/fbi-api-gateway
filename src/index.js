@@ -27,6 +27,7 @@ import { resolveGraphQLQuery } from "./middlewares/resolveGraphQLQuery";
 import { validateAgencyId } from "./middlewares/validateAgencyId";
 import { dataHubMiddleware } from "./middlewares/dataHubMiddleware";
 import { validateRateLimit } from "./middlewares/validateRateLimit";
+import estimatedCpuTimeMs from "./middlewares/estimatedCpuTime";
 
 // this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
@@ -77,6 +78,7 @@ prometheusApp.listen(9599, () => {
   });
 
   app.post("/:profile/graphql", [
+    estimatedCpuTimeMs,
     performanceTracker,
     parseToken,
     dataCollectMiddleware,
@@ -91,6 +93,7 @@ prometheusApp.listen(9599, () => {
   ]);
 
   app.post("/:agencyId/:profile/graphql", [
+    estimatedCpuTimeMs,
     performanceTracker,
     parseToken,
     dataCollectMiddleware,
