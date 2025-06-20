@@ -66,8 +66,8 @@ GraphQL schema. See how different types are connected and zoom in for more detai
 When making an API request for data, a complexity value will be computed by considering the query fields.
 Certain fields have a higher cost associated with querying them compared to others.
 
-Queries with a complexity value _below 500_ will be classified as <span style={{color: "var(--success-dark)"}}>**simple**</span> queries, while
-those _above 500_ will be considered <span style={{color: "var(--warning-dark)"}}>**complex**</span>.
+Queries with a complexity value _below 250_ will be classified as <span style={{color: "var(--success-dark)"}}>**simple**</span> queries, while
+those _above 250_ will be considered <span style={{color: "var(--warning-dark)"}}>**complex**</span>.
 
 Queries surpassing the _2500_ threshold will be categorized as <span style={{color: "var(--error)"}}>**critical**</span>, indicating a potential decrease in performance.
 Such queries will be treated as slow requests, prompting measures to optimize and enhance system responsiveness.
