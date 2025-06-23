@@ -6,6 +6,9 @@ export default {
   allowDebug: ["1", "true", "yes"].includes(
     String(process.env.ALLOW_DEBUG).toLowerCase()
   ),
+  enableCpuUsagePerRequest: ["1", "true", "yes"].includes(
+    String(process.env.ENABLE_CPU_USAGE_PER_REQUEST).toLowerCase()
+  ),
   query: {
     maxDepth: process.env.MAX_QUERY_DEPTH
       ? parseInt(process.env.MAX_QUERY_DEPTH, 10)

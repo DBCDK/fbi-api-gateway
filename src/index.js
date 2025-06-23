@@ -77,35 +77,41 @@ prometheusApp.listen(9599, () => {
     next();
   });
 
-  app.post("/:profile/graphql", [
-    estimatedCpuTimeMs,
-    performanceTracker,
-    parseToken,
-    dataCollectMiddleware,
-    dataHubMiddleware,
-    initDataloaders,
-    validateToken,
-    validateRateLimit,
-    validateAgencyId,
-    fetchUserInfo,
-    validateDepth,
-    resolveGraphQLQuery,
-  ]);
+  app.post(
+    "/:profile/graphql",
+    [
+      config.enableCpuUsagePerRequest && estimatedCpuTimeMs,
+      performanceTracker,
+      parseToken,
+      dataCollectMiddleware,
+      dataHubMiddleware,
+      initDataloaders,
+      validateToken,
+      validateRateLimit,
+      validateAgencyId,
+      fetchUserInfo,
+      validateDepth,
+      resolveGraphQLQuery,
+    ].filter(Boolean)
+  );
 
-  app.post("/:agencyId/:profile/graphql", [
-    estimatedCpuTimeMs,
-    performanceTracker,
-    parseToken,
-    dataCollectMiddleware,
-    dataHubMiddleware,
-    initDataloaders,
-    validateToken,
-    validateRateLimit,
-    validateAgencyId,
-    fetchUserInfo,
-    validateDepth,
-    resolveGraphQLQuery,
-  ]);
+  app.post(
+    "/:agencyId/:profile/graphql",
+    [
+      config.enableCpuUsagePerRequest && estimatedCpuTimeMs,
+      performanceTracker,
+      parseToken,
+      dataCollectMiddleware,
+      dataHubMiddleware,
+      initDataloaders,
+      validateToken,
+      validateRateLimit,
+      validateAgencyId,
+      fetchUserInfo,
+      validateDepth,
+      resolveGraphQLQuery,
+    ].filter(Boolean)
+  );
 
   // Setup route handler for howru - triggers an alert in prod
   app.get("/howru", howruHandler);
