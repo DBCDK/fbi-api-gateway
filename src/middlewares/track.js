@@ -34,6 +34,8 @@ export async function performanceTracker(req, res, next) {
 
     const accessTokenHash = createHash(req.accessToken);
 
+    const estimatedCpu = req.cpuTracker?.estimatedCpuTimeMs;
+
     // detailed logging for SLA
     log.info("TRACK", {
       clientId: req?.smaug?.app?.clientId,
@@ -60,7 +62,10 @@ export async function performanceTracker(req, res, next) {
       operationName: req.operationName,
       onOperationCompleteDuration: req.onOperationCompleteDuration,
       keepAliveReqCount: req.socket.count,
-      estimatedCpuTimeMs: Number(req.cpuTracker.estimatedCpuTimeMs?.toFixed(1)),
+      estimatedCpuTimeMs:
+        typeof estimatedCpu === "number"
+          ? Number(estimatedCpu.toFixed(1))
+          : undefined,
     });
     // monitorName is added to context/req in the monitor resolver
     if (req.monitorName) {
