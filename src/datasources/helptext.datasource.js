@@ -115,7 +115,7 @@ const timeToLiveMS = 1000 * 60 * 5;
  *
  * @param {string} q the query
  */
-export async function load({ q, language = "da" }) {
+export async function load({ q, language = "DA" }) {
   const age = lastUpdateMS ? new Date().getTime() - lastUpdateMS : 0;
 
   if (!docs || age > timeToLiveMS) {

@@ -60,6 +60,7 @@ export async function performanceTracker(req, res, next) {
       operationName: req.operationName,
       onOperationCompleteDuration: req.onOperationCompleteDuration,
       keepAliveReqCount: req.socket.count,
+      estimatedCpuTimeMs: Number(req.cpuTracker.estimatedCpuTimeMs?.toFixed(1)),
     });
     // monitorName is added to context/req in the monitor resolver
     if (req.monitorName) {

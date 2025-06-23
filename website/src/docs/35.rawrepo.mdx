@@ -1,0 +1,38 @@
+# RawRepo
+
+Handles update requests to MARC records stored in RawRepo.
+
+## Update OVE code
+
+The _updateOveCode_ operation is a service endpoint that inserts or updates an OVE code in a bibliographic record.
+Before proceeding, the system verifies that the library is authorized by checking whether `vip.regional_obligations` is set to true.
+If not, the operation is denied.
+
+If the record exists, the service ensures that field `032` contains an OVE code by either inserting it or updating it with the OVE code 
+and the _agencyId_ associated with the access token used in the API request.
+
+A successful operation returns a enum status code and a confirmation message.
+In case of errors (e.g., unknown record), a structured response with error details is returned.
+
+The returned status can be one of following:
+<DescribeEnum name="UpdateOveCodeStatusEnum" />
+
+⚠️ If the _dryRun_ argument is set to true. The actual service will never get called, but will return a status "OK".
+
+<InlineGraphiQL
+  query={`
+    mutation ($id: String! $dryRun: Boolean!) {
+      rawrepo {
+        updateOveCode(bibliographicRecordId: $id, dryRun: $dryRun) {
+          status
+          message
+        }
+      }
+    }
+  `}
+  variables={{
+    "id": "21177083",
+    "dryRun": true
+  }}
+/>
+

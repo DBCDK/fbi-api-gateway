@@ -235,9 +235,11 @@ export default function Wrap(props) {
   // Scroll to anchor
   useEffect(() => {
     const anchor = decodeURIComponent(location?.hash?.replace("#", "") || "");
-    const el = flattenSections?.find?.(
-      (section) => section.text?.replace?.(/\s/g, "-") === anchor
-    );
+    const el = flattenSections?.find?.((s) => {
+      const id = s.id || s.headingId;
+      return id + "-" + s.text?.replace?.(/\s/g, "-") === anchor;
+    });
+
     if (el) {
       setIsScrolling(true);
       scrollTo({ top: el.top, callback: () => setIsScrolling(false) });
@@ -251,7 +253,8 @@ export default function Wrap(props) {
       {...props}
       isScrolling={isScrolling}
       onClick={(s) => {
-        router.replace("#" + s.text?.replace?.(/\s/g, "-"));
+        const id = s.id || s.headingId;
+        router.replace("#" + id + "-" + s.text?.replace?.(/\s/g, "-"));
       }}
     />
   );

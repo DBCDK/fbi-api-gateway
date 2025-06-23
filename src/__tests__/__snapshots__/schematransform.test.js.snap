@@ -165,6 +165,11 @@ type Mutation {
   netpunkt: Netpunkt!
   submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
+
+  \\"\\"\\"
+  Represents the overall reservability status across all items according to the Cicero API (booking allowed).
+  \\"\\"\\"
+  rawrepo: RawRepo
   data_collect(input: DataCollectInput!): String!
   deleteOrder(
     \\"\\"\\"id of the order to be deleted\\"\\"\\"
@@ -3253,6 +3258,22 @@ type OrsQuery {
   itemOrder(itemId: String!): ItemIdResponse!
 }
 
+type RawRepo {
+  updateOveCode(bibliographicRecordId: String!, dryRun: Boolean): UpdateOveCodeResponse!
+}
+
+type UpdateOveCodeResponse {
+  status: UpdateOveCodeStatusEnum!
+  message: String
+}
+
+enum UpdateOveCodeStatusEnum {
+  OK
+  FORBIDDEN
+  FAILED
+  ERROR
+}
+
 type Recommendation {
   \\"\\"\\"The recommended work\\"\\"\\"
   work: Work!
@@ -3984,9 +4005,9 @@ type User {
   debt: UserStatusDebt
   bookmarks(orderBy: BookMarkOrderByEnum): BookMarkResponse!
   rights: UserSubscriptions!
-  isCPRValidated: Boolean!
-  identityProviderUsed: String!
-  hasCulrUniqueId: Boolean!
+  isCPRValidated: Boolean
+  identityProviderUsed: String
+  hasCulrUniqueId: Boolean
   omittedCulrData: OmittedCulrDataResponse
 }
 

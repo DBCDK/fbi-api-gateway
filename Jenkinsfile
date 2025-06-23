@@ -35,11 +35,15 @@ pipeline {
             steps {
                 withSonarQubeEnv(installationName: 'sonarqube.dbc.dk') {
                     script {
-                        // trigger sonarqube analysis
-                        def sonarOptions = "-Dsonar.branch.name=$BRANCH_NAME"
+                        def sonarOptions = ""
+                        sonarOptions += " -Dsonar.branch.name=$BRANCH_NAME"
                         if (env.BRANCH_NAME != 'master') {
                             sonarOptions += " -Dsonar.newCode.referenceBranch=master"
                         }
+
+                        sonarOptions += " -Dsonar.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
+                        sonarOptions += " -Dsonar.test.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
+                        sonarOptions += " -Dsonar.coverage.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
 
                         sh returnStatus: true, script: """
                         $SONAR_SCANNER $sonarOptions -Dsonar.token=${SONAR_AUTH_TOKEN} -Dsonar.projectKey="${SONAR_PROJECT_KEY}"

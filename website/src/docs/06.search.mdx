@@ -159,49 +159,6 @@ If multiple filters are added for the same category, they are OR'ed together.
 For instance, _works_ must be Svensk OR Engelsk. Filters applied across categories
 are AND'ed together. For instance (Svensk OR Engelsk) AND dvd.
 
-## Range filters
-
-Some filters supports range. The following example uses ageRange. Other filters are lixRange and letRange.
-
-<InlineGraphiQL
-  query={`query Example_FilterRange($q: SearchQueryInput!, $facets: [FacetFieldEnum!]!, $facetLimit: Int!, $filters: SearchFiltersInput!) {
-  search(q: $q, filters: $filters) {
-    hitcount
-    works(offset: 0, limit: 10) {
-      titles {
-        main
-      }
-      manifestations {
-        bestRepresentation {
-          audience {
-            ages {
-              display
-            }
-          }
-        }
-      }
-    }
-    facets(facets: $facets) {
-      name
-      values(limit: $facetLimit) {
-        term
-        score
-      }
-    }
-  }
-}`}
-  variables={{
-    q: {
-      all: "den grimme ælling",
-    },
-    filters: {
-      ageRange: ["4-6"],
-    },
-    facetLimit: 5,
-    facets: ["AGE"],
-  }}
-/>
-
 ## Facet performance :warning:
 
 While it is possible to fetch both _facets_ and _works_ in a single request, it is not recommended.
@@ -269,7 +226,7 @@ should be displayed.
 In the following example we only include works that are on the shelf in a specific branch.
 
 <InlineGraphiQL
-  query={`query Example_HoldingsFilters ($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!, $filters: SearchFiltersInput!, $facets: [FacetFieldEnum!]!) {
+  query={`query Example_HoldingsFilters($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!, $filters: SearchFiltersInput!) {
   search(q: $q, filters: $filters) {
     hitcount
     works(offset: $offset, limit: $limit) {
@@ -277,22 +234,13 @@ In the following example we only include works that are on the shelf in a specif
         main
       }
     }
-    facets(facets: $facets) {
-      name
-      values(limit: 10) {
-        key
-        term
-        score
-      }
-    }
   }
 }`}
   variables={{
     q: {
-      all: "Harry",
+      title: "Harry",
     },
-    filters: { branchId: ["775122"], status: ["ONSHELF"] },
-    facets: ["WORKTYPES"],
+    filters: { branchId: ["710100"], status: ["ONSHELF"] },
     offset: 0,
     limit: 5,
   }}
