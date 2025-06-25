@@ -269,7 +269,25 @@ type Query {
   \\"\\"\\"Get recommendations\\"\\"\\"
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
   help(q: String!, language: LanguageCodeEnum): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCodeEnum, q: String, offset: Int, limit: PaginationLimitScalar, statuses: [LibraryStatusEnum], bibdkExcludeBranches: Boolean, agencyTypes: [AgencyTypeEnum!]): BranchResult!
+  branches(
+    agencyid: String
+    branchId: String
+    language: LanguageCodeEnum
+    q: String
+    offset: Int
+    limit: PaginationLimitScalar
+    statuses: [LibraryStatusEnum]
+    bibdkExcludeBranches: Boolean
+    agencyTypes: [AgencyTypeEnum!]
+
+    \\"\\"\\"
+    When set to true, search results where pickupAllowed is false will be moved to the bottom of the result list. 
+    This allows users to prioritize items that are available for pickup (pickupAllowed: true) while still including all results.
+    
+    Default is false
+    \\"\\"\\"
+    sortPickupAllowed: Boolean
+  ): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
   infomedia(id: String!): InfomediaResponse!
   session: Session
