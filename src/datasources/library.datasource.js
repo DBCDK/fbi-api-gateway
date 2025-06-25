@@ -224,6 +224,7 @@ export async function search(props, getFunc = doRequest) {
     statuses = ["ALLE"],
     agencyTypes = ["ALLE"],
     bibdkExcludeBranches,
+    sortPickupAllowed = false,
   } = props;
 
   // ensure lowercased language prop
@@ -317,10 +318,13 @@ export async function search(props, getFunc = doRequest) {
 
   // Disabled this sort for now - see if login result gets better
   // sort by pickupAllowed AFTER sorting by score/branchId or name
-  merged = [
-    ...merged.filter((branch) => branch.pickupAllowed),
-    ...merged.filter((branch) => !branch.pickupAllowed),
-  ];
+  if (sortPickupAllowed) {
+    merged = [
+      ...merged.filter((branch) => branch.pickupAllowed),
+      ...merged.filter((branch) => !branch.pickupAllowed),
+    ];
+  }
+
   return {
     hitcount: merged.length,
     result: merged.slice(offset, limit + offset).map((branch) => ({

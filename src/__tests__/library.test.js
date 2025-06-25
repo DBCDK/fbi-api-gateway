@@ -5,7 +5,7 @@ test("library - get branches for agency", async () => {
   const result = await performTestQuery({
     query: `
           query{
-            branches(agencyid: "710100"){
+            branches(agencyid: "710100", sortPickupAllowed: true){
               hitcount
               result {
                 borrowerCheck
@@ -36,7 +36,7 @@ test("library - get all", async () => {
   const result = await performTestQuery({
     query: `
         query{
-            branches{
+            branches(sortPickupAllowed: true){
               hitcount
               result {
                 borrowerCheck

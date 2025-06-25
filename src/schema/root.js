@@ -105,7 +105,26 @@ type Query {
   """
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
   help(q: String!, language: LanguageCodeEnum): HelpResponse
-  branches(agencyid: String, branchId: String, language: LanguageCodeEnum, q: String, offset: Int, limit: PaginationLimitScalar, statuses: [LibraryStatusEnum], bibdkExcludeBranches:Boolean, agencyTypes: [AgencyTypeEnum!]): BranchResult! @complexity(value: 5, multipliers: ["limit"])
+  branches(
+    agencyid: String, 
+    branchId: String, 
+    language: LanguageCodeEnum, 
+    q: String, 
+    offset: Int, 
+    limit: PaginationLimitScalar, 
+    statuses: [LibraryStatusEnum], 
+    bibdkExcludeBranches:Boolean, 
+    agencyTypes: [AgencyTypeEnum!],
+
+    """
+    When set to true, search results where pickupAllowed is false will be moved to the bottom of the result list. 
+    This allows users to prioritize items that are available for pickup (pickupAllowed: true) while still including all results.
+
+    Default is false
+    """
+    sortPickupAllowed: Boolean
+  ): BranchResult! @complexity(value: 5, multipliers: ["limit"])
+
   deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
   infomedia(id: String!): InfomediaResponse!
   session: Session
@@ -238,6 +257,7 @@ export const resolvers = {
       const language = args?.language?.toLowerCase() ?? "da";
       const status = args.status ?? "ALLE";
       const bibdkExcludeBranches = args.bibdkExcludeBranches;
+      const sortPickupAllowed = args.sortPickupAllowed;
 
       return await resolveLocalizationsWithHoldings({
         args: args,
@@ -248,6 +268,7 @@ export const resolvers = {
         language: language,
         status: status,
         bibdkExcludeBranches: bibdkExcludeBranches,
+        sortPickupAllowed,
       });
     },
     howru(parent, args, context, info) {
@@ -384,6 +405,7 @@ export const resolvers = {
         statuses: args.statuses || ["ALLE"],
         agencyTypes: args.agencyTypes,
         bibdkExcludeBranches: args.bibdkExcludeBranches || false,
+        sortPickupAllowed: args.sortPickupAllowed,
       });
     },
     async suggest(parent, args, context, info) {
