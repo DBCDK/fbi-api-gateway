@@ -6,7 +6,7 @@ def imageLabel=BUILD_NUMBER
 
 pipeline {
     agent {
-        label 'devel10'
+        label 'devel11'
     }
     triggers{
         // @TODO parameters on githubPush .. eg. branch
@@ -95,7 +95,7 @@ pipeline {
         stage("Update 'staging' version number") {
             agent {
                 docker {
-                    label 'devel10'
+                    label 'devel11'
                     image "docker-dbc.artifacts.dbccloud.dk/build-env:latest"
                     alwaysPull true
                 }
@@ -116,7 +116,7 @@ pipeline {
        stage("Update 'prod'  version number") {
 			agent {
 				docker {
-					label 'devel10'
+					label 'devel11'
 					image "docker-dbc.artifacts.dbccloud.dk/build-env:latest"
 					alwaysPull true
 				}
