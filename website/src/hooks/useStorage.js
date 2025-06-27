@@ -44,7 +44,7 @@ export default function useStorage() {
     const timestamp = Date.now();
 
     // Find existing
-    const existing = history.find((obj) => obj.token === token);
+    const existing = history?.find((obj) => obj.token === token);
 
     const note = typeof _note === "string" ? _note : existing?.note || "";
 
@@ -52,7 +52,7 @@ export default function useStorage() {
     let copy = [...history];
 
     if (shallow) {
-      const index = history.findIndex((obj) => obj.token === token);
+      const index = history?.findIndex((obj) => obj.token === token);
 
       // update only the profile if token already exist
       copy[index] = {
@@ -96,7 +96,7 @@ export default function useStorage() {
   };
 
   const getHistoryItem = (token) => {
-    const match = history.find((obj) => obj.token === token);
+    const match = history.find((obj) => obj?.token === token);
 
     if (match) {
       return match;
