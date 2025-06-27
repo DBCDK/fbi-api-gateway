@@ -96,7 +96,7 @@ function Item({
   user,
   configurationStatus,
 }) {
-  const { setSelectedToken, setHistory, removeHistoryItem } = useStorage();
+  const { setSelectedToken, setHistoryItem, removeHistoryItem } = useStorage();
 
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
@@ -233,7 +233,7 @@ function Item({
               maxLength="50"
               placeholder={open ? " Some token note ..." : false}
               onChange={(e) => setNote(e.target.value)}
-              onBlur={() => setHistory({ token, profile, note })}
+              onBlur={() => setHistoryItem({ token, profile, note })}
             />
           </div>
 
