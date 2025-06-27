@@ -81,7 +81,7 @@ export default {
   "fbs:system": {
     allowRootFields: [
       ...defaultSettings.allowRootFields,
-      // "culr", // disabled for now because of security issues with the culr rest service
+      "culr",
       "vip",
       "marc",
       "holdingsItems",

@@ -1,7 +1,7 @@
 #!groovy​
 
 def app
-def imageName="fbi-api-gateway"
+def imageName="fbi-api-gateway-test"
 def imageLabel=BUILD_NUMBER
 
 pipeline {
