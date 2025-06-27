@@ -92,6 +92,7 @@ const icons = {
   future: "🔮",
   temp: "👷",
   old: "👴",
+  test: "🧪",
 };
 
 const holidays = {
