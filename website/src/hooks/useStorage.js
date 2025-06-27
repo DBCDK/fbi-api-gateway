@@ -5,11 +5,9 @@ export default function useStorage() {
     JSON.parse(localStorage.getItem(key) || "[]")
   );
 
-  let {
-    data: selectedToken,
-    mutate: mutateSelectedToken,
-  } = useSWR("selectedToken", (key) =>
-    JSON.parse(sessionStorage.getItem(key || "{}"))
+  let { data: selectedToken, mutate: mutateSelectedToken } = useSWR(
+    "selectedToken",
+    (key) => JSON.parse(sessionStorage.getItem(key || "{}"))
   );
 
   // If user has not explicitly selected a token
@@ -28,7 +26,7 @@ export default function useStorage() {
       const val = { token, profile };
       sessionStorage.setItem("selectedToken", JSON.stringify(val));
       mutateSelectedToken(val, false);
-      setHistory(val, false);
+      setHistoryItem(val, false);
     }
   };
 
@@ -42,7 +40,7 @@ export default function useStorage() {
   };
 
   // Shallow true will update history items without reordering the items (last updated first)
-  const setHistory = ({ token, profile, note: _note }, shallow = true) => {
+  const setHistoryItem = ({ token, profile, note: _note }, shallow = true) => {
     const timestamp = Date.now();
 
     // Find existing
@@ -97,12 +95,22 @@ export default function useStorage() {
     }
   };
 
+  const getHistoryItem = (token) => {
+    const match = history.find((obj) => obj.token === token);
+
+    if (match) {
+      return match;
+    }
+    return null;
+  };
+
   return {
     selectedToken,
     setSelectedToken,
     removeSelectedToken,
     history,
-    setHistory,
+    setHistoryItem,
+    getHistoryItem,
     removeHistoryItem,
   };
 }
