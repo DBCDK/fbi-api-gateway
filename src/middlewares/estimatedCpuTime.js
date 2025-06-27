@@ -52,8 +52,8 @@ const hook = createHook({
   },
 });
 
-// 🚀 Enable async hook globally
-hook.enable();
+// Track if hook is enabled to avoid enabling it multiple times
+let hookEnabled = false;
 
 /**
  * 🔍 Express middleware to track CPU time per request.
@@ -76,6 +76,12 @@ hook.enable();
  * to ensure we can track time accurately across all async hops.
  */
 export default function estimatedCpuTimeMiddleware(req, res, next) {
+  // Only enable the hook once when the middleware is first used
+  if (!hookEnabled) {
+    hook.enable();
+    hookEnabled = true;
+  }
+
   const context = {
     estimatedCpuTimeMs: 0, // Total accumulated time spent executing code for this request
     _entryTime: null, // Timestamp for current "entered" async block
