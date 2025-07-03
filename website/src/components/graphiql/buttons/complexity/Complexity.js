@@ -39,7 +39,7 @@ export default function ComplexityButton({ className, query, variables }) {
           speed={1}
           states={{
             0: { color: "var(--success-dark)" },
-            20: { color: "var(--warning-dark)" },
+            10: { color: "var(--warning-dark)" },
             100: { color: "var(--error)" },
           }}
         />
