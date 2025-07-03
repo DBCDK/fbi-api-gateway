@@ -96,12 +96,7 @@ export default function useStorage() {
   };
 
   const getHistoryItem = (token) => {
-    const match = history.find((obj) => obj?.token === token);
-
-    if (match) {
-      return match;
-    }
-    return null;
+    return history?.find((obj) => obj?.token === token) || null;
   };
 
   return {
