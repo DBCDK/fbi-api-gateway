@@ -1,93 +1,85 @@
 import useSWR from "swr";
 
-export default function useStorage() {
-  const { data: history, mutate: mutateHistory } = useSWR("history", (key) =>
-    JSON.parse(localStorage.getItem(key) || "[]")
-  );
-
-  let { data: selectedToken, mutate: mutateSelectedToken } = useSWR(
-    "selectedToken",
-    (key) => JSON.parse(sessionStorage.getItem(key || "{}"))
-  );
-
-  // If user has not explicitly selected a token
-  // we use the first one from history if one exists
-  if (!selectedToken) {
-    // selectedToken = history?.[0];
+const safeParseJSON = (str, fallback = null) => {
+  try {
+    return JSON.parse(str);
+  } catch {
+    return fallback;
   }
+};
+
+const isBrowser = typeof window !== "undefined";
+
+export default function useStorage() {
+  const { data: history = [], mutate: mutateHistory } = useSWR(
+    "history",
+    (key) => (isBrowser ? safeParseJSON(localStorage.getItem(key), []) : [])
+  );
+
+  const { data: selectedToken, mutate: mutateSelectedToken } = useSWR(
+    "selectedToken",
+    (key) =>
+      isBrowser ? safeParseJSON(sessionStorage.getItem(key), null) : null
+  );
 
   const isToken = (token) => {
-    const strippedToken = token?.replace(/test.*:/, "");
-    return !!(strippedToken.length === 40);
+    if (typeof token !== "string") return false;
+    const stripped = token.replace(/test.*:/, "");
+    return stripped.length === 40;
   };
 
   const setSelectedToken = (token, profile) => {
-    if (isToken(token)) {
-      const val = { token, profile };
-      sessionStorage.setItem("selectedToken", JSON.stringify(val));
-      mutateSelectedToken(val, false);
-      setHistoryItem(val, false);
-    }
+    if (!isBrowser || !isToken(token)) return;
+
+    const value = { token, profile };
+    sessionStorage.setItem("selectedToken", JSON.stringify(value));
+    mutateSelectedToken(value, false);
+    setHistoryItem(value, false);
   };
 
-  /**
-   * Clear token from sessionStorage
-   *
-   */
   const removeSelectedToken = () => {
+    if (!isBrowser) return;
+
     sessionStorage.removeItem("selectedToken");
     mutateSelectedToken(null, false);
   };
 
-  // Shallow true will update history items without reordering the items (last updated first)
   const setHistoryItem = ({ token, profile, note: _note }, shallow = true) => {
+    if (!isBrowser || !isToken(token)) return;
+
     const timestamp = Date.now();
-
-    // Find existing
-    const existing = history?.find((obj) => obj.token === token);
-
+    const existing = history.find((obj) => obj.token === token);
     const note = typeof _note === "string" ? _note : existing?.note || "";
 
-    // history copy
     let copy = [...history];
 
     if (shallow) {
-      const index = history?.findIndex((obj) => obj.token === token);
-
-      // update only the profile if token already exist
-      copy[index] = {
-        ...existing,
-        profile,
-        note,
-      };
+      const index = history.findIndex((obj) => obj.token === token);
+      if (index !== -1) {
+        copy[index] = {
+          ...existing,
+          profile,
+          note,
+        };
+      } else {
+        // fallback if not found
+        copy.unshift({ token, profile, note, timestamp });
+      }
     } else {
-      // remove duplicate
-      copy = copy.filter((obj) => !(obj.token === token));
-
-      // add to beginning of array
-      copy.unshift({
-        token,
-        profile,
-        note,
-        timestamp,
-      });
+      copy = copy.filter((obj) => obj.token !== token);
+      copy.unshift({ token, profile, note, timestamp });
     }
 
-    // slice
     const sliced = copy.slice(0, 10);
-    // store
-    const stringified = JSON.stringify(sliced);
-    localStorage.setItem("history", stringified);
-    // mutate
+    localStorage.setItem("history", JSON.stringify(sliced));
     mutateHistory(sliced, false);
   };
 
   const removeHistoryItem = (token) => {
-    const newHistory = history.filter((obj) => !(obj.token === token));
-    // store
-    const stringified = JSON.stringify(newHistory);
-    localStorage.setItem("history", stringified);
-    // mutate
+    if (!isBrowser || !isToken(token)) return;
+
+    const newHistory = history.filter((obj) => obj.token !== token);
+    localStorage.setItem("history", JSON.stringify(newHistory));
     mutateHistory(newHistory, false);
 
     if (selectedToken?.token === token) {
@@ -96,7 +88,8 @@ export default function useStorage() {
   };
 
   const getHistoryItem = (token) => {
-    return history?.find((obj) => obj?.token === token) || null;
+    if (!isBrowser || !isToken(token)) return null;
+    return history.find((obj) => obj.token === token) || null;
   };
 
   return {
