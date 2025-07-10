@@ -405,22 +405,22 @@ export async function getAvailablePids(pids, context) {
   });
 
   // If there are pids that are available to lend out, return them
-  if (available.length > 0 && removed.length > 0) {
+  if (available.length > 0) {
     addDebugInfo(
       "nonLendablePids",
       removed.map((item) => item.pid).join(", "),
       context
     );
+
     return available;
   }
 
+  // If no pids are available to lend out, fallback to returning all pids
   addDebugInfo(
     "nonLendablePids",
     `None of the pids are lendable - fallback to all pids`,
     context
   );
-
-  // If no pids are available to lend out, fallback to returning all pids
   return pids;
 }
 
