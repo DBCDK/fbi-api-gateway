@@ -67,7 +67,8 @@ export async function load({ localIds, agencyId }, context) {
   const query = construcQuery(localIds, agencyId);
 
   try {
-    const response = await context.fetch(url + "detailed-holdings", {
+    const baseUrl = url.replace(/\/?$/, '/');
+    const response = await context.fetch(baseUrl + "v1/holdings-status/detailed-holdings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

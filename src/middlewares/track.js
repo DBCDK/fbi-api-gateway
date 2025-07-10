@@ -3,6 +3,7 @@ import createHash from "../utils/hash";
 import { log } from "dbc-node-logger";
 import isbot from "isbot";
 import { observeDuration } from "../utils/monitor";
+import { getDebugInfo } from "../utils/debug";
 
 /**
  * Middleware that monitors performance of those GraphQL queries
@@ -66,6 +67,7 @@ export async function performanceTracker(req, res, next) {
         typeof estimatedCpu === "number"
           ? Number(estimatedCpu.toFixed(1))
           : undefined,
+      debug: getDebugInfo(req),
     });
     // monitorName is added to context/req in the monitor resolver
     if (req.monitorName) {
