@@ -759,7 +759,7 @@ export const resolvers = {
           }
           successfullyCreated.push(material.key);
 
-          const pidToOrder = material.pids[0];
+          const pidToOrder = pids[0];
           await saveOrderToUserdata({
             context,
             submitOrderRes,
