@@ -398,19 +398,15 @@ export async function getAvailablePids(pids, context) {
   // Fill result and removed arrays based on availability
   availability.forEach((item) => {
     if (item.availability.librariesLend > 0) {
-      available.push(item);
+      available.push(item.pid);
     } else {
-      removed.push(item);
+      removed.push(item.pid);
     }
   });
 
   // If there are pids that are available to lend out, return them
   if (available.length > 0) {
-    addDebugInfo(
-      "nonLendablePids",
-      removed.map((item) => item.pid).join(", "),
-      context
-    );
+    addDebugInfo("nonLendablePids", removed.join(", "), context);
 
     return available;
   }
@@ -735,6 +731,7 @@ export const resolvers = {
       await Promise.all(
         flattenedOrders?.map(async (material) => {
           const pids = await getAvailablePids(material.pids, context);
+
           if (args.dryRun) {
             // return if dryrun
             successfullyCreated.push(material.key);
