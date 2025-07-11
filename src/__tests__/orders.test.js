@@ -244,8 +244,8 @@ describe("submitMultipleOrders", () => {
 
     // Should return only available PIDs
     expect(result).toHaveLength(2);
-    expect(result[0].pid).toBe("870970-basis:62795522");
-    expect(result[1].pid).toBe("870970-basis:134976977");
+    expect(result[0]).toBe("870970-basis:62795522");
+    expect(result[1]).toBe("870970-basis:134976977");
 
     // Verify that holdingsGetAllAvailability was called for each PID
     expect(mockHoldingsLoader.load).toHaveBeenCalledTimes(4);
