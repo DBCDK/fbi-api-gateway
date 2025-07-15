@@ -2,6 +2,7 @@
  * @file Contains functionality for indexing documents
  */
 
+import { log } from "dbc-node-logger";
 import MiniSearch from "minisearch";
 
 /**
@@ -20,11 +21,16 @@ export function createIndexer({ options }) {
     if (_docs !== docs) {
       _docs = docs;
 
+      const now = performance.now();
       // Create the index
       _index = new MiniSearch(options);
 
       // And index
       _index.addAll(_docs);
+
+      log.info(`Indexed documents: ${_docs.length}`, {
+        total_ms: Math.round(performance.now() - now),
+      });
     }
   };
 
