@@ -7,10 +7,21 @@
  *
  */
 import { orderBy } from "lodash";
-import request from "superagent";
 import config from "../config";
 import { createIndexer } from "../utils/searcher";
 import { checkLoginIndependence } from "../utils/agency";
+import { fetch } from "../utils/fetchWorker";
+
+/**
+ * The default fetch is used, when library search is invoked outside of the context of a graphql request.
+ * For instance directly from the documentation website
+ */
+const defaultFetch = async (...args) => {
+  const res = await fetch(...args);
+  return {
+    body: JSON.parse(Buffer.from(res.buffer).toString()),
+  };
+};
 
 const { teamLabel } = config.datasources.vipcore;
 
@@ -79,7 +90,7 @@ const timeToLiveMS = 1000 * 60 * 30;
  * Get ALL libraries
  * @returns {Promise<*>}
  */
-async function get() {
+async function get(fetch = defaultFetch) {
   // This contain information with a different structure (but no agencySubdivision)
   const alllibrariesUrl = `${config.datasources.vipcore.url}/alllibraries`;
 
@@ -90,11 +101,18 @@ async function get() {
   const borrowerchecklistUrl = `${config.datasources.vipcore.url}/borrowerchecklist/login.bib.dk/true`;
 
   // Fetch in parallel
-  const res = await Promise.all([
-    (await request.get(alllibrariesUrl)).body.allLibraries,
-    (await request.get(findlibraryUrl)).body.pickupAgency,
-    (await request.get(borrowerchecklistUrl)).body.borrowerCheckLibrary,
-  ]);
+  const [allLibrariesRes, findLibraryRes, borrowerChecklistRes] =
+    await Promise.all([
+      fetch(alllibrariesUrl),
+      fetch(findlibraryUrl),
+      fetch(borrowerchecklistUrl),
+    ]);
+
+  const res = [
+    allLibrariesRes.body.allLibraries,
+    findLibraryRes.body.pickupAgency,
+    borrowerChecklistRes.body.borrowerCheckLibrary,
+  ];
 
   // Make a map for fast branchId->branch lookups
   const branchMap = {};
@@ -168,8 +186,8 @@ const translatedStatus = (enumStatus) => {
  *
  * @returns {Promise<(*&{branchShortName, branchName, openingHours, illOrderReceiptText})[]>}
  */
-async function doRequest() {
-  const libraries = await get();
+async function doRequest(fetch = defaultFetch) {
+  const libraries = await get(fetch);
   return libraries.map((branch) => ({
     ...branch,
     agencyType: translatedAgencyType(branch.agencyType) || "ANDRE",
@@ -179,7 +197,7 @@ async function doRequest() {
   }));
 }
 
-async function fetchIfOld(getFunc) {
+async function fetchIfOld(getFunc, fetch = defaultFetch) {
   if (!branches || age() > timeToLiveMS) {
     // if (true) {
     try {
@@ -188,7 +206,7 @@ async function fetchIfOld(getFunc) {
       if (fetchingPromise) {
         await fetchingPromise;
       } else {
-        fetchingPromise = getFunc();
+        fetchingPromise = getFunc(fetch);
         branches = (await fetchingPromise).map((branch) => ({
           ...branch,
           id: branch.branchId,
@@ -211,7 +229,7 @@ async function fetchIfOld(getFunc) {
  * @param getFunc
  * @returns {Promise<{result: (*&{language: string})[], hitcount: number}>}
  */
-export async function search(props, getFunc = doRequest) {
+export async function search(props, getFunc = doRequest, fetch = defaultFetch) {
   const {
     q,
     limit = 10,
@@ -230,7 +248,7 @@ export async function search(props, getFunc = doRequest) {
   // ensure lowercased language prop
   const language = props?.language?.toLowerCase() || "da";
 
-  await fetchIfOld(getFunc);
+  await fetchIfOld(getFunc, fetch);
 
   // filter on requested status
   const useAgencyTypesFilter = !agencyTypes.includes("ALLE");
@@ -336,7 +354,7 @@ export async function search(props, getFunc = doRequest) {
   };
 }
 
-export async function load(props, { getLoader }) {
+export async function load(props, { getLoader }, context) {
   // We need to fetch digital access and infomedia subscriptions
   // for all agencies, in order to build the search index
   const digitalAccessSubscriptions = await getLoader(
@@ -346,7 +364,8 @@ export async function load(props, { getLoader }) {
 
   const res = await search(
     { ...props, digitalAccessSubscriptions, infomediaSubscriptions },
-    doRequest
+    doRequest,
+    context?.fetch || defaultFetch
   );
 
   return res;

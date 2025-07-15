@@ -3,7 +3,6 @@ import promiseLimit from "promise-limit";
 import { log } from "dbc-node-logger";
 import { parseJSON } from "./json";
 import { fetch } from "./fetchWorker";
-import config from "../config";
 
 /**
  * Factory function that creates object for collecting
