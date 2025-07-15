@@ -67,14 +67,18 @@ export async function load({ localIds, agencyId }, context) {
   const query = construcQuery(localIds, agencyId);
 
   try {
-    const baseUrl = url.replace(/\/?$/, '/');
-    const response = await context.fetch(baseUrl + "v1/holdings-status/detailed-holdings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(query),
-    });
+    const baseUrl = url.replace(/\/?$/, "/");
+    const response = await context.fetch(
+      baseUrl + "v1/holdings-status/detailed-holdings",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(query),
+        timeoutMs: 60000,
+      }
+    );
 
     return parseResponse(response?.body, agencyId);
   } catch (e) {

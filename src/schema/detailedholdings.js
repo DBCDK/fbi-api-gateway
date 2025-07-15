@@ -368,7 +368,7 @@ export const resolvers = {
         context,
         parent?.agencyId
       );
-      detailedHoldings = filteredDetailedholdings.holdings;
+      detailedHoldings = filteredDetailedholdings?.holdings;
 
       // Prefer holdings from holdings items
       let holdings =
