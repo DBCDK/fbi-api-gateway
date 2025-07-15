@@ -52,7 +52,7 @@ function summary(trackerObj) {
         cacheMiss: timings.redisLookups - timings.redisHits,
         cacheLookups: timings.redisLookups,
         jsonProcessingMs: timings.jsonParseSum + timings.jsonStringifySum,
-        avgCacheTimeMs: timings.redisTimeSum / timings.redisLookups,
+        avgCacheTimeMs: timings.redisTimeSum / timings.redisLookups || 0,
       };
     }
   );
@@ -68,7 +68,7 @@ function summary(trackerObj) {
     avgItemFetchMs: trackerObj.overall.totalSum / trackerObj.overall.count,
     bytesIn: trackerObj.overall.bytesSum,
     avgCacheTimeMs:
-      trackerObj.overall.redisTimeSum / trackerObj.overall.redisLookups,
+      trackerObj.overall.redisTimeSum / trackerObj.overall.redisLookups || 0,
   };
 
   return datasources;

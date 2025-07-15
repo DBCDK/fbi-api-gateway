@@ -1,4 +1,3 @@
-import request from "superagent";
 import config from "../config";
 import { createIndexer } from "../utils/searcher";
 
@@ -23,12 +22,17 @@ const { teamLabel } = config.datasources.backend;
  * Fetch all help texts from the Drupal backend
  * for all languages
  */
-async function get() {
+async function get(context) {
   const url = config.datasources.backend.url;
   const responses = await Promise.all(
     Object.keys(toDrupalLanguage).map(async (langcode) => {
-      const res = await request.post(url).send({
-        query: `query {
+      const res = await context.fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: `query {
               nodeQuery (limit:100 filter: {conditions: [
                 {field: "type", value: ["help_text"]},
                 {field: "status", value:"1"}
@@ -56,6 +60,7 @@ async function get() {
                 }
               }
             }`,
+        }),
       });
 
       // Parse them, strip html tags
@@ -115,12 +120,12 @@ const timeToLiveMS = 1000 * 60 * 5;
  *
  * @param {string} q the query
  */
-export async function load({ q, language = "DA" }) {
+export async function load({ q, language = "DA" }, context) {
   const age = lastUpdateMS ? new Date().getTime() - lastUpdateMS : 0;
 
   if (!docs || age > timeToLiveMS) {
     // Fetch help texts
-    docs = await get();
+    docs = await get(context);
     lastUpdateMS = new Date().getTime();
   }
 

@@ -1,4 +1,3 @@
-import request from "superagent";
 import config from "../config";
 
 const { url, ttl, teamLabel } = config.datasources.vipcore;
