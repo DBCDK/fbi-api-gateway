@@ -1,14 +1,24 @@
-import request from "superagent";
 import { introspectSchema, wrapSchema, RenameTypes } from "@graphql-tools/wrap";
 import { print } from "graphql";
 import config from "../../config";
 import drupalSchema from "./drupalSchema.json";
+import { fetch } from "../../utils/fetchWorker";
 
 const executor = async ({ document, variables }) => {
   const query = print(document);
   const url = config.datasources.backend.url;
-  const fetchResult = await request.post(url).send({ query, variables });
-  return await fetchResult.body;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+
+  // fetchWorker returns { status, ok, buffer, timings }
+  // We need to parse the buffer as JSON
+  const text = Buffer.from(response.buffer).toString();
+  return JSON.parse(text);
 };
 
 // Avoid naming conflicts with internal schema

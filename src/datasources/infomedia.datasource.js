@@ -1,4 +1,3 @@
-import request from "superagent";
 import config from "../config";
 import { getInfomediaDetails } from "../utils/utils";
 
@@ -26,20 +25,27 @@ function createSoap({ articleId, userId, agencyId }) {
 </SOAP-ENV:Envelope>`;
 }
 
-export async function load({ articleId, userId, agencyId }) {
+export async function load({ articleId, userId, agencyId }, context) {
   // agencyId might be empty
   if (!agencyId) {
     return { error: "NO_AGENCYID" };
   }
-
   try {
-    const res = await request
-      .post(url)
-      .field("xml", createSoap({ articleId, userId, agencyId }));
+    const formData = new URLSearchParams();
+    formData.append("xml", createSoap({ articleId, userId, agencyId }));
+
+    const res = await context.fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData.toString(),
+    });
+
+    const data = await res.body;
     const html =
-      res?.body?.getArticleResponse?.getArticleResponseDetails?.[0]?.imArticle
-        ?.$;
-    const error = res?.body?.getArticleResponse?.error?.$;
+      data?.getArticleResponse?.getArticleResponseDetails?.[0]?.imArticle?.$;
+    const error = data?.getArticleResponse?.error?.$;
     if (error) {
       return { error: error.toUpperCase() };
     }

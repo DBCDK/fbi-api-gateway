@@ -1,5 +1,4 @@
 import { log } from "dbc-node-logger";
-import request from "superagent";
 import config from "../config";
 
 const {
@@ -27,11 +26,21 @@ function createRequest(pid) {
 }
 
 // @TODO - handle net archive also - moreInfoResponse.identifierInformation.netArchive
-export async function load(pid) {
+export async function load(pid, context) {
   try {
-    const archives = (
-      await request.post(url).field("xml", createRequest(pid))
-    ).body.moreInfoResponse.identifierInformation
+    const formData = new URLSearchParams();
+    formData.append("xml", createRequest(pid));
+
+    const response = await context.fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData.toString(),
+    });
+
+    const data = await response.body;
+    const archives = data.moreInfoResponse.identifierInformation
       .map((entry) => entry.netArchive)
       .filter((entry) => entry);
 

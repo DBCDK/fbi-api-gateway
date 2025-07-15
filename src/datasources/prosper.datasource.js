@@ -4,7 +4,6 @@
  * This is temporary until real suggester is implemented
  */
 
-import request from "superagent";
 import config from "../config";
 
 const { url, prefix, ttl, token, teamLabel } = config.datasources.prosper;

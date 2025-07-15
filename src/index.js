@@ -6,7 +6,6 @@ import fs from "fs";
 import { log } from "dbc-node-logger";
 import { getExecutableSchema } from "./schemaLoader";
 import express from "express";
-import request from "superagent";
 import config from "./config";
 import howruHandler from "./howru";
 import metricsHandler from "./metrics";
@@ -122,46 +121,39 @@ prometheusApp.listen(9599, () => {
    * token set as bearer header (Not required)
    * query {string} and variables {string} set as body params.
    */
-  app.post("/complexity", async (req, res) => {
-    // get AccessToken from header
-    const token = req.headers.authorization?.replace(/bearer /i, "");
+  app.post(
+    "/complexity",
+    parseToken,
+    initDataloaders,
+    validateToken,
+    async (req, res) => {
+      // get AccessToken from header
+      const token = req.headers.authorization?.replace(/bearer /i, "");
 
-    // Get body params
-    const { query, variables } = req.body;
+      // Get body params
+      const { query, variables } = req.body;
 
-    // Get client permissions from smuag
-    let clientPermissions;
-    try {
-      const url = config.datasources.smaug.url;
-      const smaug = (
-        await request.get(`${url}/configuration`).query({
-          token,
-        })
-      ).body;
+      // Get client permissions from smuag
+      let clientPermissions = req?.smaug?.gateway;
 
-      // Set token client permissions
-      clientPermissions = smaug?.gateway;
-    } catch (e) {
-      // No valid accessToken - fallbacks to default schema (introspect)
+      const schema = await getExecutableSchema({
+        clientPermissions: { gateway: { ...clientPermissions } },
+        hasAccessToken: !!(clientPermissions && token),
+      });
+
+      // // Set incomming query complexity
+      const queryComplexity = getQueryComplexity({
+        query,
+        variables,
+        schema,
+      });
+
+      // Get query complexity class (simple|complex|critical|rejected)
+      const complexityClass = getQueryComplexityClass(queryComplexity);
+
+      res.send({ complexity: queryComplexity, complexityClass });
     }
-
-    const schema = await getExecutableSchema({
-      clientPermissions: { gateway: { ...clientPermissions } },
-      hasAccessToken: !!(clientPermissions && token),
-    });
-
-    // // Set incomming query complexity
-    const queryComplexity = getQueryComplexity({
-      query,
-      variables,
-      schema,
-    });
-
-    // Get query complexity class (simple|complex|critical|rejected)
-    const complexityClass = getQueryComplexityClass(queryComplexity);
-
-    res.send({ complexity: queryComplexity, complexityClass });
-  });
+  );
 
   // Default error handler
   app.use((error, request, response, next) => {

@@ -2,20 +2,19 @@
  * @file This is for the prototype, will likely be deleted soon
  */
 
-import request from "superagent";
 import { log } from "dbc-node-logger";
 import config from "../config";
 
 const { url, ttl, prefix, teamLabel } = config.datasources.idp;
 
-export async function load() {
+export async function load(_key, context) {
   try {
-    const response = await request.get(
+    const response = await context.fetch(
       `${url}/queries/subscribersbyproductname/INFOMEDIA`
     );
 
     const agencyMap = {};
-    response.body.organisations.forEach(
+    response?.body?.organisations?.forEach(
       ({ agencyId }) => (agencyMap[agencyId] = 1)
     );
     return agencyMap;
