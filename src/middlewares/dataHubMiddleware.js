@@ -33,6 +33,9 @@ export function dataHubMiddleware(req, res, next) {
     // - With tracking consent, the client app should use a long lived cookie.
     const sessionToken = req.headers["x-session-token"];
 
+    // A cookieless fingerprint identifying an end user
+    const clientFingerprint = req.headers["x-client-fingerprint"] || "";
+
     // User ID (only used if user is logged in and tracking consent is given):
     // - Uses the uniqueId from culr if available.
     // - Otherwise, a hashed userId (if userId exists).
@@ -48,6 +51,7 @@ export function dataHubMiddleware(req, res, next) {
     let res = {
       systemId,
       sessionToken,
+      clientFingerprint,
       causedBy: causedBy ? [causedBy] : [],
       agency: req.profile?.agency,
       profile: req.profile?.name,
