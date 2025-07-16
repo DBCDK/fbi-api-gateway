@@ -49,6 +49,8 @@ export function dataHubMiddleware(req, res, next) {
       systemId,
       sessionToken,
       causedBy: causedBy ? [causedBy] : [],
+      agency: req.profile?.agency,
+      profile: req.profile?.name,
       // uniqueKey: uniqueKey,
     };
 
