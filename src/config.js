@@ -50,7 +50,6 @@ export default {
     didyoumean: {
       url:
         process.env.DID_YOU_MEAN_URL ||
-        // NOSONAR
         "http://did-you-mean-1-0.ai-prod.svc.cloud.dbc.dk",
       teamLabel: "ai",
     },
@@ -90,7 +89,6 @@ export default {
     relatedsubjects: {
       url:
         process.env.RELATED_SUBJECTS ||
-        // NOSONAR
         "http://query-related-subjects-1-0.ai-prod.svc.cloud.dbc.dk/",
       teamLabel: "ai",
     },
