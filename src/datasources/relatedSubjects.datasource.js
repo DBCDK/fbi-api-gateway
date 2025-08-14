@@ -9,6 +9,7 @@ export async function load({ q, limit }, context) {
   if (limit) {
     query += "&n=" + limit;
   }
+
   const result = await context.fetch(`${url}${query}`);
   return result.body;
 }
