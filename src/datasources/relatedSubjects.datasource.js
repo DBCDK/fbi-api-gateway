@@ -10,6 +10,8 @@ export async function load({ q, limit }, context) {
     query += "&n=" + limit;
   }
 
+  console.log('\n\n\n\n IN relatedsubjects : url: ',url,'\n\n\n\n')
+  console.log('\n\n\n\n IN relatedsubjects : query: ',query,'\n\n\n\n')
   const result = await context.fetch(`${url}${query}`);
   return result.body;
 }

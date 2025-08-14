@@ -50,7 +50,7 @@ export default {
     didyoumean: {
       url:
         process.env.DID_YOU_MEAN_URL ||
-        "http://did-you-mean-1-0.mi-prod.svc.cloud.dbc.dk",
+        "http://did-you-mean-1-0.ai-prod.svc.cloud.dbc.dk",
       teamLabel: "ai",
     },
     catInspire: {
@@ -89,7 +89,7 @@ export default {
     relatedsubjects: {
       url:
         process.env.RELATED_SUBJECTS ||
-        "http://query-related-subject-1-0.mi-prod.svc.cloud.dbc.dk/",
+        "http://query-related-subject-1-0.ai-prod.svc.cloud.dbc.dk/",
       teamLabel: "ai",
     },
     faustService: {
