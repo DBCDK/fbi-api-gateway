@@ -151,7 +151,7 @@ function validateRedirectUri(redirect_uri, client) {
 /**
  * The usual anon token fetching
  */
-async function fetchAnonToken(loginBibUrl, clientId) {
+async function fetchAnonToken(loginBibUrl, clientId, clientSecret) {
   const res = await fetch(`${loginBibUrl}/oauth/token`, {
     method: "POST",
     headers: {
@@ -159,8 +159,9 @@ async function fetchAnonToken(loginBibUrl, clientId) {
     },
     body: `grant_type=password&username=@&password=@&client_id=${encodeURIComponent(
       clientId
-    )}&client_secret=@`,
+    )}&client_secret=${encodeURIComponent(clientSecret)}`,
   });
+
   return await res.json();
 }
 
@@ -168,14 +169,15 @@ export async function getServerSideProps({ query }) {
   // Fetch anonymous token. we use this later to generate the test user token
   const loginBibUrl = new URL(globalConfig.datasources.userInfo.url).origin;
 
-  // clientId is either a query param, or if dev mode it may be an environment variable
-  const clientId =
-    query.client_id ||
-    (process.env.NODE_ENV === "development" && process.env.NEXT_DEV_CLIENT_ID);
+  const clientId = globalConfig.testUser.clientId;
+  const clientSecret = globalConfig.testUser.clientSecret;
 
   // fetch token
-  const anonymousToken = await fetchAnonToken(loginBibUrl, clientId);
-
+  const anonymousToken = await fetchAnonToken(
+    loginBibUrl,
+    clientId,
+    clientSecret
+  );
   // We need the smaug config in order to validate redirect_uri
   const smaugConfig = await fetch(
     `${globalConfig.datasources.smaug.url}/configuration?token=${anonymousToken.access_token}`,
