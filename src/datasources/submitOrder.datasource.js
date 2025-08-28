@@ -108,20 +108,15 @@ export function parseOrder(orderFromService) {
  */
 
 export async function load(
-  {
-    userId,
-    input,
-    branch,
-    accessToken,
-    smaug,
-    authUserId,
-    endpoint = "placeorder/",
-  },
+  { userId, input, branch, accessToken, smaug, authUserId, caller = "bibdk" },
   context
 ) {
   const orderSystem = smaug?.orderSystem;
   // build parameters for service request
   const parameters = buildParameters({ userId, input, orderSystem });
+
+  const endpoint =
+    caller === "netpunkt" ? "netpunkt/placeorder/" : "placeorder/";
 
   try {
     const order = await context.fetch(`${url}${endpoint}`, {
