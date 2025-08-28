@@ -91,6 +91,7 @@ export const resolvers = {
         accessToken: context.accessToken,
         smaug: context.smaug,
         authUserId,
+        caller: "netpunkt",
       });
     },
   },
