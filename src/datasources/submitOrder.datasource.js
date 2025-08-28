@@ -108,7 +108,15 @@ export function parseOrder(orderFromService) {
  */
 
 export async function load(
-  { userId, input, branch, accessToken, smaug, authUserId },
+  {
+    userId,
+    input,
+    branch,
+    accessToken,
+    smaug,
+    authUserId,
+    endpoint = "placeorder/",
+  },
   context
 ) {
   const orderSystem = smaug?.orderSystem;
@@ -116,7 +124,7 @@ export async function load(
   const parameters = buildParameters({ userId, input, orderSystem });
 
   try {
-    const order = await context.fetch(`${url}placeorder/`, {
+    const order = await context.fetch(`${url}${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
