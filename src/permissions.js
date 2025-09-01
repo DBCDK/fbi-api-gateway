@@ -29,7 +29,12 @@ const defaultSettings = {
     "mood",
   ],
   denyTypes: ["CheckOrderPolicy", "Availability", "SEO", "WorkExtensionUnion"],
-  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
+  denyFields: [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
+    // "Manifestation.marc",
+    // "Work.marc",
+  ],
 };
 
 /**
@@ -89,12 +94,17 @@ export default {
       "rawrepo",
     ],
     denyTypes: [],
-    denyFields: [...defaultSettings.denyFields],
+    denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
   },
   ddbcms: {
     allowRootFields: [...defaultSettings.allowRootFields, "submitOrder"],
     denyTypes: [...defaultSettings.denyTypes, "WorkReview"],
     denyFields: [...defaultSettings.denyFields],
+  },
+  "donotuse-ddbcms-marc-enabled": {
+    allowRootFields: [...defaultSettings.allowRootFields, "submitOrder"],
+    denyTypes: [...defaultSettings.denyTypes, "WorkReview"],
+    denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
   },
   default: defaultSettings,
 };
