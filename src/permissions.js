@@ -28,13 +28,14 @@ const defaultSettings = {
     "universe",
     "mood",
   ],
-  denyTypes: ["CheckOrderPolicy", "Availability", "SEO", "WorkExtensionUnion"],
-  denyFields: [
-    "HoldingsItem.reservable",
-    "HoldingsResponse.reservable",
-    // "Manifestation.marc",
-    // "Work.marc",
+  denyTypes: [
+    "CheckOrderPolicy",
+    "Availability",
+    "SEO",
+    "WorkExtensionUnion",
+    "MarcRecord",
   ],
+  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
 };
 
 /**
@@ -71,7 +72,7 @@ const bibdk = {
     "nodeQuery",
     "periodica",
   ],
-  denyTypes: [],
+  denyTypes: ["MarcRecord"],
   denyFields: [...defaultSettings.denyFields],
 };
 
@@ -94,7 +95,7 @@ export default {
       "rawrepo",
     ],
     denyTypes: [],
-    denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
+    denyFields: [...defaultSettings.denyFields],
   },
   ddbcms: {
     allowRootFields: [...defaultSettings.allowRootFields, "submitOrder"],
@@ -103,8 +104,14 @@ export default {
   },
   "donotuse-ddbcms-marc-enabled": {
     allowRootFields: [...defaultSettings.allowRootFields, "submitOrder"],
-    denyTypes: [...defaultSettings.denyTypes, "WorkReview"],
-    denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
+    denyTypes: [
+      "CheckOrderPolicy",
+      "Availability",
+      "SEO",
+      "WorkExtensionUnion",
+      "WorkReview",
+    ],
+    denyFields: [...defaultSettings.denyFields],
   },
   default: defaultSettings,
 };
