@@ -5396,9 +5396,6 @@ input CopyRequestInput {
 }
 
 type Work {
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
-
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
@@ -6168,9 +6165,6 @@ type Manifestation {
   \\"\\"\\"The publication status of a catalogued manifestation.\\"\\"\\"
   cataloguedPublicationStatus: CataloguedPublicationStatus
 
-  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
-  marc: MarcRecord
-
   \\"\\"\\"Relations to other manifestations\\"\\"\\"
   relations: Relations!
 
@@ -6359,28 +6353,6 @@ type ContentSublevel {
   Possible entry data (title, contributors, playingtime) subordinate to the entry's sublevel 1
   \\"\\"\\"
   sublevel: [ContentSublevelLast!]
-}
-
-type MarcRecord {
-  \\"\\"\\"The marc record identifier\\"\\"\\"
-  id: String!
-
-  \\"\\"\\"The library agency\\"\\"\\"
-  agencyId: String!
-
-  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
-  bibliographicRecordId: String!
-
-  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
-  content: String!
-
-  \\"\\"\\"
-  The serialization format of the MARC record content. Defaults to 'marcXchange'
-  \\"\\"\\"
-  contentSerializationFormat: String!
-
-  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
-  deleted: Boolean!
 }
 
 enum GeneralMaterialTypeCodeEnum {
