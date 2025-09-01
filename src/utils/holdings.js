@@ -5,6 +5,7 @@ export const itemStatusEnumMap = {
   ONLOAN: "OnLoan",
   ONORDER: "OnOrder",
   ONSHELF: "OnShelf",
+  ONLINE: "Online",
 };
 
 export function checkUserRights(user) {
