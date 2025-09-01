@@ -74,13 +74,17 @@ export async function load({ pids, localizationsRole }, context) {
   }
 
   try {
-    const response = await context.fetch(url + "localizations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
+    const baseUrl = url.replace(/\/?$/, "/");
+    const response = await context.fetch(
+      baseUrl + "v1/holdings-status/localizations",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }
+    );
 
     return parseResponse(response?.body?.localizations);
   } catch (e) {

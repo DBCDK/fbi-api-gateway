@@ -1,6 +1,5 @@
 import config from "../config";
 import displayFormat from "./openformat.displayformat.json";
-import { fetch } from "undici";
 
 const { url, ttl, prefix, teamLabel } = config.datasources.openformat;
 

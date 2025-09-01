@@ -5,6 +5,7 @@
 
 import { createMockedDataLoaders } from "../datasourceLoader";
 import { performTestQuery } from "../utils/utils";
+import { getAvailablePids } from "../schema/order";
 
 const userParameters = {
   userName: "Test Testesen",
@@ -205,5 +206,64 @@ describe("submitMultipleOrders", () => {
       context,
     });
     expect(result).toMatchSnapshot();
+  });
+
+  test("getAvailablePids filters PIDs based on availability", async () => {
+    // Mock the holdingsGetAllAvailability datasource
+    const mockHoldingsLoader = {
+      load: jest.fn().mockImplementation(({ pid }) => {
+        // Mock that some PIDs are not available (librariesLend = 0)
+        const availabilityMap = {
+          "870970-basis:62795522": { librariesLend: 2 }, // Available
+          "870970-basis:39074184": { librariesLend: 0 }, // Not available
+          "870970-basis:134976977": { librariesLend: 1 }, // Available
+          "870970-basis:62371455": { librariesLend: 0 }, // Not available
+        };
+        return Promise.resolve(availabilityMap[pid] || { librariesLend: 0 });
+      }),
+    };
+
+    const testContext = {
+      datasources: {
+        getLoader: jest.fn().mockReturnValue(mockHoldingsLoader),
+      },
+      smaug: {
+        gateway: {
+          localizationsRole: "test-role",
+        },
+      },
+    };
+
+    const pids = [
+      "870970-basis:62795522",
+      "870970-basis:39074184",
+      "870970-basis:134976977",
+      "870970-basis:62371455",
+    ];
+    const result = await getAvailablePids(pids, testContext);
+
+    // Should return only available PIDs
+    expect(result).toHaveLength(2);
+    expect(result[0]).toBe("870970-basis:62795522");
+    expect(result[1]).toBe("870970-basis:134976977");
+
+    // Verify that holdingsGetAllAvailability was called for each PID
+    expect(mockHoldingsLoader.load).toHaveBeenCalledTimes(4);
+    expect(mockHoldingsLoader.load).toHaveBeenCalledWith({
+      pid: "870970-basis:62795522",
+      role: "test-role",
+    });
+    expect(mockHoldingsLoader.load).toHaveBeenCalledWith({
+      pid: "870970-basis:39074184",
+      role: "test-role",
+    });
+    expect(mockHoldingsLoader.load).toHaveBeenCalledWith({
+      pid: "870970-basis:134976977",
+      role: "test-role",
+    });
+    expect(mockHoldingsLoader.load).toHaveBeenCalledWith({
+      pid: "870970-basis:62371455",
+      role: "test-role",
+    });
   });
 });

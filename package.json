@@ -8,7 +8,7 @@
     "dev:website": "cd website && npm run dev",
     "dev:proxy": "nodemon --ignore 'website/*' --ignore '**/drupalSchema.json' -r esm-wallaby -r esm-wallaby ./src/proxy.js",
     "dev:graphql": ". ./env.env && nodemon --ignore 'website/*' --ignore '**/drupalSchema.json' -r esm-wallaby ./src/index.js",
-    "dev:testuser": "cd testuser-website && npm run dev",
+    "dev:testuser": ". ./env.env && cd testuser-website && npm run dev",
     "start": "run-p start:proxy start:website start:graphql start:testuser",
     "start:website": "cd website && npm run start",
     "start:proxy": "node -r esm-wallaby ./src/proxy.js",
@@ -51,7 +51,6 @@
     "prom-client": "^12.0.0",
     "promise-limit": "^2.7.0",
     "react-bootstrap": "^2.5.0",
-    "superagent": "^5.2.2",
     "undici": "^5.20.0",
     "uuid": "^9.0.0"
   },

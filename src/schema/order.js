@@ -10,6 +10,7 @@ import { filterAgenciesByProps } from "../utils/accounts";
 import { resolveBorrowerCheck } from "../utils/utils";
 import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
 import { resolveAccess } from "../utils/access";
+import { addDebugInfo } from "../utils/debug";
 
 import getUserBorrowerStatus, {
   getUserIds,
@@ -374,6 +375,51 @@ async function saveLastUsedBranch({ uniqueId, pickUpBranch, context }) {
   }
 }
 
+/**
+ * Fetches availability data for multiple PIDs and filters based on lending availability
+ */
+export async function getAvailablePids(pids, context) {
+  // Holds list of removed pids (no libraries lend out)
+  const removed = [];
+
+  // Holds pids that are available to lend out
+  const available = [];
+
+  // Fetch availability data for all PIDs in parallel
+  const availability = await Promise.all(
+    pids.map(async (pid) => ({
+      pid,
+      availability: await context.datasources
+        .getLoader("holdingsGetAllAvailability")
+        .load({ pid, role: context?.smaug?.gateway?.localizationsRole }),
+    }))
+  );
+
+  // Fill result and removed arrays based on availability
+  availability.forEach((item) => {
+    if (item.availability.librariesLend > 0) {
+      available.push(item.pid);
+    } else {
+      removed.push(item.pid);
+    }
+  });
+
+  // If there are pids that are available to lend out, return them
+  if (available.length > 0) {
+    addDebugInfo("nonLendablePids", removed.join(", "), context);
+
+    return available;
+  }
+
+  // If no pids are available to lend out, fallback to returning all pids
+  addDebugInfo(
+    "nonLendablePids",
+    `None of the pids are lendable - fallback to all pids`,
+    context
+  );
+  return pids;
+}
+
 export const resolvers = {
   Mutation: {
     async submitOrder(parent, args, context, info) {
@@ -684,6 +730,8 @@ export const resolvers = {
       // flatten input to spread periodicaFrom into the input, then send them via submitOrder
       await Promise.all(
         flattenedOrders?.map(async (material) => {
+          const pids = await getAvailablePids(material.pids, context);
+
           if (args.dryRun) {
             // return if dryrun
             successfullyCreated.push(material.key);
@@ -696,7 +744,7 @@ export const resolvers = {
             .load({
               userId: userId || user?.userId,
               branch,
-              input: { ...args.input, ...material, key: null },
+              input: { ...args.input, ...material, key: null, pids },
               accessToken: context.accessToken,
               smaug: context.smaug,
             });
@@ -708,7 +756,7 @@ export const resolvers = {
           }
           successfullyCreated.push(material.key);
 
-          const pidToOrder = material.pids[0];
+          const pidToOrder = pids[0];
           await saveOrderToUserdata({
             context,
             submitOrderRes,

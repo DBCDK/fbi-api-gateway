@@ -33,6 +33,10 @@ export default {
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 20000,
   fastLaneEnabled: process.env.FASTLANE_ENABLED == "1" ? true : false,
+  testUser: {
+    clientId: process.env.TEST_USER_CLIENT_ID,
+    clientSecret: process.env.TEST_USER_CLIENT_SECRET,
+  },
   datasources: {
     bibevents: {
       url:
@@ -50,7 +54,7 @@ export default {
     didyoumean: {
       url:
         process.env.DID_YOU_MEAN_URL ||
-        "http://did-you-mean-1-0.mi-prod.svc.cloud.dbc.dk",
+        "http://did-you-mean-1-0.ai-prod.svc.cloud.dbc.dk",
       teamLabel: "ai",
     },
     catInspire: {
@@ -89,7 +93,7 @@ export default {
     relatedsubjects: {
       url:
         process.env.RELATED_SUBJECTS ||
-        "http://query-related-subject-1-0.mi-prod.svc.cloud.dbc.dk/",
+        "http://query-related-subjects-1-0.ai-prod.svc.cloud.dbc.dk/",
       teamLabel: "ai",
     },
     faustService: {
@@ -138,7 +142,7 @@ export default {
     holdingsservice: {
       url:
         process.env.HOLDINGSSERVICE_URL ||
-        "http://holdings-service.cisterne.svc.cloud.dbc.dk/api/v1/holdings-status/",
+        "http://holdings-service.cisterne.svc.cloud.dbc.dk/api/",
       ttl: process.env.HOLDINGSSERVICE_URL_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.HOLDINGSITEMS_URL_PREFIX || "holdingsservice-2",
       teamLabel: "de-team",
