@@ -37,6 +37,7 @@ Object {
     "Availability",
     "SEO",
     "WorkExtensionUnion",
+    "MarcRecord",
   ],
 }
 `;
@@ -87,6 +88,7 @@ Object {
     "Availability",
     "SEO",
     "WorkExtensionUnion",
+    "MarcRecord",
     "WorkReview",
   ],
 }
@@ -129,6 +131,7 @@ Object {
     "Availability",
     "SEO",
     "WorkExtensionUnion",
+    "MarcRecord",
   ],
 }
 `;
@@ -176,6 +179,7 @@ Object {
     "Availability",
     "SEO",
     "WorkExtensionUnion",
+    "MarcRecord",
   ],
 }
 `;
