@@ -254,6 +254,11 @@ enum ItemStatusEnum {
   The item is available on the shelf.
   """
   ONSHELF
+
+  """
+  The item is available online.
+  """
+  ONLINE
 }
 
 enum LoanRestrictionEnum {
