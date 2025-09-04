@@ -1,0 +1,17 @@
+.container {
+}
+
+.input {
+  width: 200px;
+  border-color: var(--divider);
+  background-color: transparent;
+  color: var(--text-dark);
+}
+
+.input:focus {
+  width: 250px;
+}
+
+.input:global(.hasValue) {
+  border-color: var(--secondary);
+}

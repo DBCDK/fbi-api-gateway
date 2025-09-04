@@ -1,0 +1,32 @@
+.period button,
+.period input {
+  background-color: transparent;
+  width: var(--pt5);
+  height: var(--pt5);
+
+  font-size: 14px;
+  font-family: var(--font-mono-semibold);
+
+  border-radius: calc(var(--pt5) / 2);
+
+  cursor: pointer;
+
+  color: var(--text-light);
+
+  border: solid 2px var(--divider);
+
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.period input {
+  margin: 0 var(--pt1);
+  width: var(--pt8);
+  text-align: center;
+}
+
+.period input:focus-visible {
+  border: 2px solid var(--text-dark);
+}

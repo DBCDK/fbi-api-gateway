@@ -224,9 +224,10 @@ export default {
         "frontend-staging-redis-cluster.platform-redis.svc.cloud.dbc.dk",
       port: process.env.REDIS_PORT || "6379",
       prefix: process.env.REDIS_PREFIX || "bibdk-api-4",
-      enabled: ["1", "true", "yes"].includes(
-        String(process.env.REDIS_ENABLED).toLowerCase()
-      ),
+      enabled: false,
+      // enabled: ["1", "true", "yes"].includes(
+      //   String(process.env.REDIS_ENABLED).toLowerCase()
+      // ),
       teamLabel: "febib",
     },
     simplesearch: {
@@ -379,7 +380,7 @@ export default {
     elk: {
       url:
         process.env.ELK_URL ||
-        "https://elk.dbc.dk:9100/k8s-frontend-prod-*/_search",
+        "https://elk.dbc.dk:9100/k8s-febib-prod-*/_search",
       user: process.env.ELK_USER,
       password: process.env.ELK_PASSWORD,
       prefix: process.env.ELK_PREFIX || "elk-1",

@@ -42,13 +42,14 @@ function Input({
 
   const readOnlyClass = readOnly || disabled ? styles.readOnly : "";
   const invalidClass = !readOnlyClass && invalid ? styles.error : "";
+  const hasValueGlobalClass = val ? "hasValue" : "";
 
   return (
     <input
       {...props}
       id={id}
       ref={elRef}
-      className={`${styles.input} ${readOnlyClass} ${invalidClass} ${className}`}
+      className={`${styles.input} ${readOnlyClass} ${hasValueGlobalClass} ${invalidClass} ${className}`}
       type={type}
       value={val}
       placeholder={placeholder}
