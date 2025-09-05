@@ -47,7 +47,7 @@ function getByClient(data) {
 /**
  * useInsights(auth, options?)
  * - auth: { token: string | {token:string}, profile: string }
- * - options?: { clientId?: string, origin?: string }
+ * - options?: { clientId?: string, days?: number, origin?: string }
  */
 export default function useInsights(auth, options = {}) {
   const tokenLike = auth?.token;
@@ -55,13 +55,17 @@ export default function useInsights(auth, options = {}) {
   const bearer = typeof tokenLike === "string" ? tokenLike : tokenLike?.token;
 
   const { clientId, origin } = options;
+  // clamp days to [1, 30], default 14
+  const daysRaw = options?.days ?? 14;
+  const days = Math.max(1, Math.min(30, Math.floor(daysRaw || 14)));
+
   const url = useMemo(() => getGraphQLUrl(profile, origin), [profile, origin]);
 
-  const query = `query($clientId: String) {
-    insights {
+  const query = `query($clientId: String, $days: Int) {
+    insights(days: $days, clientId: $clientId) {
       start
       end
-      clients(clientId: $clientId) {
+      clients {
         clientId
         fields {
           path
@@ -74,7 +78,10 @@ export default function useInsights(auth, options = {}) {
     }
   }`;
 
-  const key = bearer && url ? [url, query, bearer, { clientId }] : null;
+  const key =
+    bearer && url
+      ? [url, query, bearer, { clientId: clientId || null, days }]
+      : null;
 
   const fetcher = async (u, q, b, variables) => {
     const res = await fetch(u, {
@@ -108,7 +115,7 @@ export default function useInsights(auth, options = {}) {
 
   return {
     json: data,
-    byField: byFieldAgg.map, // bagudkompatibelt navn (din komponent bruger byField)
+    byField: byFieldAgg.map, // bagudkompatibelt navn
     byFieldMap: byFieldAgg.map, // alias
     byFieldList: byFieldAgg.list,
     byClient,

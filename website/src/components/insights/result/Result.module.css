@@ -59,6 +59,16 @@
   border-right: 3px solid var(--error);
 }
 
+.table th[role="button"]:hover {
+  cursor: pointer;
+  color: var(--primary-dark);
+}
+
+/* aktiv (uanset retning) */
+.thActive {
+  color: var(--primary-dark) !important;
+}
+
 /* 
   * Dark mode
   */

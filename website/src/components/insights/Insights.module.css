@@ -23,8 +23,28 @@
   justify-content: space-between;
 }
 
-.options > span {
+.options > button {
   margin-right: var(--pt2);
+}
+
+/* Wrapper around Layout + Canvas to share width and push layout */
+.shell {
+  /* one source of truth for panel width */
+  --canvas-width: clamp(320px, 36vw, 420px);
+  position: relative;
+}
+
+/* When open, push the layout to the right by the panel width */
+.shellOpen .container {
+  margin-left: var(--canvas-width);
+  transition: margin-left 200ms ease;
+}
+
+/* Optional: don’t push on narrow screens (overlay instead) */
+@media (max-width: 992px) {
+  .shellOpen .container {
+    margin-left: 0;
+  }
 }
 
 @media screen and (max-width: 576px) {

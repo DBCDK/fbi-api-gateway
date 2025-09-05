@@ -30,3 +30,16 @@
 .period input:focus-visible {
   border: 2px solid var(--text-dark);
 }
+
+/* Skjul number-input pile i Chrome, Safari, Edge (WebKit/Blink) */
+.period input[type="number"]::-webkit-outer-spin-button,
+.period input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Skjul i Firefox */
+.period input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield; /* moderne fallback */
+}

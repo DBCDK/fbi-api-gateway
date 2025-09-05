@@ -22,7 +22,7 @@ type Insight {
 }
 
 extend type Query {
-  insights: Insight
+  insights(days: Int, clientId: String): Insight
 }
 `;
 
@@ -71,8 +71,8 @@ function getFieldPaths(typeMap, queryString, out, count) {
         if (!out[pathStr]) {
           out[pathStr] = {
             path: pathStr,
-            type: parentType?.name || null, // parent type navn
-            kind: namedType?.name || null, // feltets returtype
+            type: parentType?.name || null,
+            kind: namedType?.name || null,
             field: fieldName,
             count: 0,
           };
@@ -92,11 +92,16 @@ function getFieldPaths(typeMap, queryString, out, count) {
 
 export const resolvers = {
   Query: {
-    async insights(_parent, _args, context, info) {
+    async insights(_parent, args, context, info) {
+      // --- days clamp (server-side) ---
+      const daysRaw = Number.isFinite(args?.days) ? args.days : 14;
+      const days = Math.max(1, Math.min(30, Math.floor(daysRaw)));
+
       const end = new Date();
       end.setUTCHours(0, 0, 0, 0);
+
       const start = new Date(end);
-      start.setDate(end.getDate() - 30);
+      start.setUTCDate(end.getUTCDate() - days);
 
       const res = await context.datasources.getLoader("insights").load({
         start: start.toISOString(),
@@ -106,7 +111,7 @@ export const resolvers = {
       const typeMap = info.schema.getTypeMap();
       const profileMap = Object.create(null);
 
-      // Forventet ES-struktur:
+      // ES-struktur:
       // aggregations["2"].buckets[*].key = parsedQuery
       // aggregations["2"].buckets[*]["3"].buckets[*].key = clientId
       const parsedQueryAgg = res?.aggregations?.["2"];
@@ -128,9 +133,12 @@ export const resolvers = {
           if (key == null) continue;
           const clientId = String(key).split("/")[0];
 
-          // Brug doc_count pr. klient-bucket (korrekt pr. klient)
+          // doc_count pr. klient-bucket
           const count = profileBucket?.doc_count ?? 0;
           if (count <= 0) continue;
+
+          // Hvis der er et clientId-argument, kan vi allerede her springe andre over (let post-filter)
+          if (args?.clientId && clientId !== args.clientId) continue;
 
           const entry = (profileMap[clientId] ??= {
             clientId,
@@ -160,7 +168,7 @@ export const resolvers = {
     },
   },
 
-  // Gør filter-argumentet effektivt (valgfrit at bruge fra klient)
+  // Beholder stadig Insight.clients(clientId) for bagudkompatibilitet
   Insight: {
     clients(parent, { clientId }) {
       const all = parent.clients || [];

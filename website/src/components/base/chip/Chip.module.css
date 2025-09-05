@@ -1,3 +1,4 @@
+/* --- eksisterende boolean-styles (beholdt) --- */
 .chip {
   display: inline-block;
 }
@@ -38,4 +39,70 @@
 
 .chip input[type="checkbox"][disabled] + label {
   cursor: default;
+}
+
+/* === NYT: tri-state button-variant ===================================== */
+/* vi bruger samme .chip klasse, men når elementet er et <button> med data-mode="tri" */
+
+.chip[data-mode="tri"] {
+  /* når .chip er et <button> */
+  -webkit-transition: all 200ms ease;
+  transition: all 200ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pt1);
+
+  font-size: 14px;
+  font-family: var(--font-mono-semibold);
+  height: var(--pt5);
+  border-radius: calc(var(--pt5) / 2);
+
+  cursor: pointer;
+
+  color: var(--text-light);
+  border: 2px solid var(--divider);
+  padding: 0 var(--pt3) 0 var(--pt2);
+  background: transparent;
+
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ikon/pip til venstre (✓, ✕, •) */
+.dot {
+  display: inline-block;
+  width: 1em;
+  text-align: center;
+}
+
+/* hover/focus for tri */
+.chip[data-mode="tri"]:hover {
+  border-color: var(--divider-strong, var(--divider));
+}
+
+.chip[data-mode="tri"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus, rgba(0, 123, 255, 0.35));
+}
+
+/* tri-state: INCLUDE (= aktiv/positiv) */
+.chip[data-mode="tri"][data-state="include"] {
+  color: var(--secondary);
+  border-color: var(--secondary);
+}
+
+/* tri-state: EXCLUDE (= “negativ” filter) */
+.chip[data-mode="tri"][data-state="exclude"] {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+/* tri disabled */
+.chip[disabled],
+.chip[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.6;
+  pointer-events: none;
 }
