@@ -1,83 +1,78 @@
-/* selected dark theme */
-:global(body.dark) .wrap {
-  background: var(--dark);
-}
+/* views/insights/Result.module.css */
 
+/* Basistabel */
 .table {
-  border-spacing: 0;
-  font-size: 14px;
-  padding-top: var(--pt4);
+  margin: 0;
+  font-size: 13px;
+  --cell-pad-y: 8px;
+  --cell-pad-x: 10px;
 }
 
-.table:first-child {
-  margin-top: 0;
+/* Sticky header – bruger samme offset som Canvas */
+.thead th {
+  position: sticky;
+  top: var(--canvas-offset-top, 0px);
+  z-index: 3;
+  background: var(--bg, #fff);
+  border-bottom: 1px solid var(--divider);
+  padding: var(--cell-pad-y) var(--cell-pad-x);
+  white-space: nowrap;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
 }
 
-.body {
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+/* Fallback: sikre zebra-stripes selv hvis BS-variabler overstyres */
+.table :global(tbody tr:nth-of-type(odd) > td),
+.table :global(tbody tr:nth-of-type(odd) > th) {
+  background-color: var(--row-stripe, rgba(127, 127, 127, 0.05));
 }
 
-.body .type {
-  color: var(--secondary);
-}
-
-/* table header */
-.table td,
-.table th {
-  padding: var(--pt2);
-}
-.table th {
-  text-align: left;
-}
-.table td {
+/* Body-celler */
+.body td {
+  padding: var(--cell-pad-y) var(--cell-pad-x);
   vertical-align: middle;
+  border-top-color: var(--divider);
 }
 
-/* striped */
-.table tbody tr {
-  background-color: var(--divider);
+/* Klik-/hoverstil (på celler, så den overstyrer stripe ved hover) */
+.table :global(tbody tr:hover > td),
+.table :global(tbody tr:hover > th) {
+  background-color: var(--row-hover, rgba(127, 127, 127, 0.08));
 }
 
-.table tr:nth-child(2n),
-.table thead tr {
-  background-color: transparent;
-}
-
-.separator {
-  height: var(--pt8);
-  vertical-align: bottom;
-}
-
-/* expiration status class */
-.table tr.expire-more-or-eq-to-90-days td:last-child {
-  border-right: 3px solid var(--success-dark);
-}
-.table tr.expire-more-or-eq-to-15-days td:last-child {
-  border-right: 3px solid var(--warning-dark);
-}
-.table tr.expire-less-than-15-days td:last-child {
-  border-right: 3px solid var(--error);
-}
-
-.table th[role="button"]:hover {
+.result {
   cursor: pointer;
-  color: var(--primary-dark);
 }
 
-/* aktiv (uanset retning) */
+/* Fokus-stil til keyboard-navigation */
+.result:focus-within {
+  outline: 2px solid var(--secondary, #6c63ff);
+  outline-offset: -2px;
+}
+
+/* Sorterings-headers */
+.th {
+  user-select: none;
+  cursor: pointer;
+}
 .thActive {
-  color: var(--primary-dark) !important;
+  color: var(--text-dark);
+}
+.thAsc::after,
+.thDesc::after {
+  content: "";
+  display: inline-block;
+  margin-left: 6px;
+  border: 5px solid transparent;
+  transform: translateY(-1px);
+}
+.thAsc::after {
+  border-bottom-color: currentColor;
+}
+.thDesc::after {
+  border-top-color: currentColor;
 }
 
-/* 
-  * Dark mode
-  */
-
-/* selected dark theme */
-:global(body.dark) .table tbody tr {
-  background-color: var(--dark);
-}
-
-:global(body.dark) .table tr:nth-child(2n) {
-  background-color: transparent;
+/* Type-label i Field-kolonnen */
+.type {
+  font-family: var(--font-mono-semibold);
 }

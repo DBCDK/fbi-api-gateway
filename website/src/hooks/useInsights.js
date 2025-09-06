@@ -8,11 +8,18 @@ function getGraphQLUrl(profile, origin) {
   return base ? `${base}/${profile || "default"}/graphql` : "";
 }
 
+function toIntInRange(v, def = 3) {
+  const n =
+    typeof v === "string" ? parseInt(v, 10) : typeof v === "number" ? v : NaN;
+  const num = Number.isFinite(n) ? n : def;
+  return Math.max(1, Math.min(30, num));
+}
+
 function aggregateByField(data) {
   const clients = data?.data?.insights?.clients;
   if (!clients?.length) return { map: {}, list: [] };
 
-  const map = new Map(); // key => acc
+  const map = new Map();
   for (const { clientId, fields } of clients) {
     for (const f of fields || []) {
       const key = `${f.type}.${f.field}`;
@@ -36,8 +43,10 @@ function aggregateByField(data) {
     .map((x) => ({ ...x, clients: Array.from(x.clients) }))
     .sort((a, b) => b.count - a.count);
 
-  const obj = Object.fromEntries(list.map((x) => [`${x.type}.${x.field}`, x]));
-  return { map: obj, list };
+  return {
+    map: Object.fromEntries(list.map((x) => [`${x.type}.${x.field}`, x])),
+    list,
+  };
 }
 
 function getByClient(data) {
@@ -47,7 +56,7 @@ function getByClient(data) {
 /**
  * useInsights(auth, options?)
  * - auth: { token: string | {token:string}, profile: string }
- * - options?: { clientId?: string, days?: number, origin?: string }
+ * - options?: { days?: number|string, clientId?: string, origin?: string }
  */
 export default function useInsights(auth, options = {}) {
   const tokenLike = auth?.token;
@@ -55,17 +64,15 @@ export default function useInsights(auth, options = {}) {
   const bearer = typeof tokenLike === "string" ? tokenLike : tokenLike?.token;
 
   const { clientId, origin } = options;
-  // clamp days to [1, 30], default 14
-  const daysRaw = options?.days ?? 14;
-  const days = Math.max(1, Math.min(30, Math.floor(daysRaw || 14)));
+  const days = toIntInRange(options?.days, 14); // <-- coerces til tal
 
   const url = useMemo(() => getGraphQLUrl(profile, origin), [profile, origin]);
 
-  const query = `query($clientId: String, $days: Int) {
-    insights(days: $days, clientId: $clientId) {
+  const query = `query ($clientId: String, $days: Int) {
+    insights(days: $days) {
       start
       end
-      clients {
+      clients(clientId: $clientId) {
         clientId
         fields {
           path
@@ -78,12 +85,23 @@ export default function useInsights(auth, options = {}) {
     }
   }`;
 
+  // VIGTIGT: nøgle med primitive værdier (ingen objekt-refs).
   const key =
-    bearer && url
-      ? [url, query, bearer, { clientId: clientId || null, days }]
-      : null;
+    bearer && url ? [url, query, bearer, clientId || null, days] : null;
 
-  const fetcher = async (u, q, b, variables) => {
+  const fetcher = async (u, q, b, cid, d) => {
+    const variables = { clientId: cid || null, days: d };
+
+    if (process.env.NODE_ENV !== "production") {
+      // let det være tydeligt i dev, at vi revalidere
+      // eslint-disable-next-line no-console
+      console.info("[useInsights] fetch", {
+        url: u,
+        clientId: cid || null,
+        days: d,
+      });
+    }
+
     const res = await fetch(u, {
       method: "POST",
       headers: {
@@ -93,6 +111,7 @@ export default function useInsights(auth, options = {}) {
       },
       body: JSON.stringify({ query: q, variables }),
     });
+
     if (!res.ok) {
       const text = await res.text().catch(() => "");
       const err = new Error(
@@ -106,8 +125,10 @@ export default function useInsights(auth, options = {}) {
 
   const { data, error, isLoading, mutate } = useSWR(key, fetcher, {
     revalidateOnFocus: false,
-    shouldRetryOnError: true,
-    dedupingInterval: 5_000,
+    revalidateIfStale: true,
+    revalidateOnReconnect: true,
+    dedupingInterval: 0, // <-- ingen “debounce” ved ændring af days
+    keepPreviousData: true,
   });
 
   const byFieldAgg = useMemo(() => aggregateByField(data), [data]);
@@ -115,8 +136,8 @@ export default function useInsights(auth, options = {}) {
 
   return {
     json: data,
-    byField: byFieldAgg.map, // bagudkompatibelt navn
-    byFieldMap: byFieldAgg.map, // alias
+    byField: byFieldAgg.map,
+    byFieldMap: byFieldAgg.map,
     byFieldList: byFieldAgg.list,
     byClient,
     isLoading: !!key && isLoading,

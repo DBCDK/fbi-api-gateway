@@ -1,5 +1,5 @@
 // views/insights/Insights.jsx
-import { useMemo, useState, useRef, useLayoutEffect } from "react";
+import { useMemo, useState, useRef, useLayoutEffect, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
 
 import useSchema from "@/hooks/useSchema";
@@ -27,7 +27,9 @@ export default function Insights() {
   const { selectedToken } = useStorage();
   const { json } = useSchema(selectedToken);
 
-  const [days, setDays] = useState(14);
+  const [days, setDays] = useState(3);
+  const { byFieldMap, byClient } = useInsights(selectedToken, { days }); // <- vigtigt
+
   const [settings, setSettings] = useState({
     filter: null,
     sort: null,
@@ -36,7 +38,9 @@ export default function Insights() {
     countFilter: "off",
   });
 
-  const { byFieldMap, byClient } = useInsights(selectedToken, { days });
+  useEffect(() => {
+    console.log("[Insights] days =", days);
+  }, [days]);
 
   let data = useMemo(() => buildTemplates(getFields(json)), [json]);
   const update = (patch) => setSettings((s) => ({ ...s, ...patch }));
@@ -218,7 +222,11 @@ export default function Insights() {
                   <Search onChange={(val) => update({ filter: val })} />
                 </div>
 
-                <Result data={data} onSelect={handleSelectRow} />
+                <Result
+                  data={data}
+                  byFieldMap={byFieldMap}
+                  onSelect={handleSelectRow}
+                />
               </Col>
             </Row>
           </Layout>

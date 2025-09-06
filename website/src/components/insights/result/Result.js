@@ -1,7 +1,6 @@
+// views/insights/result.jsx
 import { useMemo, useState } from "react";
 import { Table } from "react-bootstrap";
-import useStorage from "@/hooks/useStorage";
-import useInsights from "@/hooks/useInsights";
 import styles from "./Result.module.css";
 
 const COL = {
@@ -26,16 +25,15 @@ function nextDir(currentKey, currentDir, clickedKey) {
 
 /**
  * Result-table
- * @param {{ data: Array<any>, onSelect?: (row:any)=>void }} props
+ * @param {{
+ *   data: Array<any>,
+ *   byFieldMap: Record<string,{count:number}>,
+ *   onSelect?: (row:any)=>void
+ * }} props
  */
-export default function Result({ data, onSelect }) {
-  const { selectedToken } = useStorage();
-  const { byFieldMap } = useInsights(selectedToken);
-
-  // Startsortering: Count desc
+export default function Result({ data, byFieldMap, onSelect }) {
   const [sort, setSort] = useState({ key: COL.COUNT, dir: "desc" });
 
-  // Berig rækker med hjælpefelter til sortering/visning
   const rows = useMemo(() => {
     if (!Array.isArray(data)) return [];
     return data.map((obj, idx) => {
@@ -46,13 +44,12 @@ export default function Result({ data, onSelect }) {
         ...obj,
         __key: key || `${idx}-${field}`,
         __count: count,
-        __index: idx, // original rækkefølge
+        __index: idx,
         __fieldLabel: type && field ? `${String(type)}.${String(field)}` : "",
       };
     });
   }, [data, byFieldMap]);
 
-  // Sortér efter valgt kolonne
   const sorted = useMemo(() => {
     if (!rows.length) return rows;
     const { key, dir } = sort;
@@ -71,7 +68,6 @@ export default function Result({ data, onSelect }) {
           return sign * (cmp || a.__index - b.__index);
         }
         case COL.DEPRECATED: {
-          // false < true når asc
           const av = a?.isDeprecated ? 1 : 0;
           const bv = b?.isDeprecated ? 1 : 0;
           const cmp = av - bv;
@@ -88,7 +84,6 @@ export default function Result({ data, onSelect }) {
     return arr;
   }, [rows, sort]);
 
-  // Header klik -> cykl retning
   function onHeaderClick(colKey) {
     setSort((s) => ({ key: colKey, dir: nextDir(s.key, s.dir, colKey) }));
   }
@@ -98,7 +93,6 @@ export default function Result({ data, onSelect }) {
     return sort.dir === "asc" ? " ↑" : " ↓";
   }
 
-  // Hjælpere til aktiv header styling
   const isActive = (colKey) => sort.key === colKey && sort.dir !== "off";
   const ariaSort = (colKey) =>
     isActive(colKey)
@@ -117,10 +111,9 @@ export default function Result({ data, onSelect }) {
       .join(" ");
 
   return (
-    <Table className={styles.table} responsive="md">
-      <thead>
+    <Table className={styles.table} responsive="md" striped hover>
+      <thead className={styles.thead}>
         <tr>
-          {/* INDEX: ikke-sortérbar */}
           <th className={styles.th} aria-sort="none" title="Row number">
             #
           </th>
@@ -173,7 +166,14 @@ export default function Result({ data, onSelect }) {
               className={styles.result}
               title={description || ""}
               role="button"
-              onClick={() => onSelect?.(r)} // informér parent (Insights) om valg
+              tabIndex={0}
+              onClick={() => onSelect?.(r)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect?.(r);
+                }
+              }}
             >
               <td>{idx + 1}</td>
               <td>

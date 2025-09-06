@@ -156,6 +156,9 @@ export async function load({ start, end }, context) {
   // 1) jeres wrapper
   if (context?.fetch) {
     const r = await context.fetch(url, init);
+
+    console.log("rrrrrrrrrrrrrrrrrrrrrrrr", start, end, r?.body?.aggregations);
+
     // forventet form { status, ok, body }
     if (r && typeof r === "object" && "ok" in r) {
       if (r.ok === false) {

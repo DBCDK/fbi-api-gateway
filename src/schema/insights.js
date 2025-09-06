@@ -4,8 +4,8 @@ const { parse, visit, getNamedType } = require("graphql");
 export const typeDef = `
 type FieldInsight {
   path: String
-  type: String         # parent type navn (fx "Query", "User")
-  kind: String         # feltets (afpakkede) returtype (fx "String", "User")
+  type: String         # parent type name (e.g. "Query", "User")
+  kind: String         # unwrapped return type (e.g. "String", "User")
   field: String!
   count: Int!
 }
@@ -22,7 +22,7 @@ type Insight {
 }
 
 extend type Query {
-  insights(days: Int, clientId: String): Insight
+  insights(days: Int): Insight
 }
 `;
 
@@ -64,7 +64,6 @@ function getFieldPaths(typeMap, queryString, out, count) {
 
         const namedType = getNamedType(fieldDef.type);
         const nextType = typeMap[namedType?.name];
-
         stack.push({ fieldName, type: nextType });
 
         const pathStr = stack.map((e) => e.fieldName).join(".");
@@ -93,15 +92,13 @@ function getFieldPaths(typeMap, queryString, out, count) {
 export const resolvers = {
   Query: {
     async insights(_parent, args, context, info) {
-      // --- days clamp (server-side) ---
-      const daysRaw = Number.isFinite(args?.days) ? args.days : 14;
-      const days = Math.max(1, Math.min(30, Math.floor(daysRaw)));
+      const n = Number.isFinite(args?.days) ? Math.floor(args.days) : 14;
+      const windowDays = Math.max(1, Math.min(30, n));
 
       const end = new Date();
       end.setUTCHours(0, 0, 0, 0);
-
       const start = new Date(end);
-      start.setUTCDate(end.getUTCDate() - days);
+      start.setDate(end.getDate() - windowDays);
 
       const res = await context.datasources.getLoader("insights").load({
         start: start.toISOString(),
@@ -111,9 +108,6 @@ export const resolvers = {
       const typeMap = info.schema.getTypeMap();
       const profileMap = Object.create(null);
 
-      // ES-struktur:
-      // aggregations["2"].buckets[*].key = parsedQuery
-      // aggregations["2"].buckets[*]["3"].buckets[*].key = clientId
       const parsedQueryAgg = res?.aggregations?.["2"];
       if (!parsedQueryAgg?.buckets?.length) {
         return {
@@ -133,12 +127,9 @@ export const resolvers = {
           if (key == null) continue;
           const clientId = String(key).split("/")[0];
 
-          // doc_count pr. klient-bucket
+          // brug doc_count pr. klient-bucket
           const count = profileBucket?.doc_count ?? 0;
           if (count <= 0) continue;
-
-          // Hvis der er et clientId-argument, kan vi allerede her springe andre over (let post-filter)
-          if (args?.clientId && clientId !== args.clientId) continue;
 
           const entry = (profileMap[clientId] ??= {
             clientId,
@@ -168,7 +159,7 @@ export const resolvers = {
     },
   },
 
-  // Beholder stadig Insight.clients(clientId) for bagudkompatibilitet
+  // nested filter (valgfrit): clients(clientId: ...)
   Insight: {
     clients(parent, { clientId }) {
       const all = parent.clients || [];

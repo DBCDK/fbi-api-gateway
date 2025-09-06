@@ -1,14 +1,10 @@
 /* components/insights/Canvas.module.css */
 .canvas {
-  /* brug samme width som spaceren via shell-variablen */
   --bs-offcanvas-width: var(--canvas-width);
-
-  /* start under den synlige header og tilpas højden */
-  top: var(--canvas-offset-top, 0px) !important;
-  height: calc(100% - var(--canvas-offset-top, 0px)) !important;
+  top: var(--canvas-offset-top, 0px);
+  height: calc(100% - var(--canvas-offset-top, 0px));
 }
 
-/* Header */
 .canvas :global(.offcanvas-header) {
   padding: var(--pt3) var(--pt3);
   border-bottom: 1px solid var(--divider);
@@ -31,7 +27,6 @@
   border: 1px solid var(--divider);
 }
 
-/* Body */
 .canvas :global(.offcanvas-body) {
   padding: var(--pt3);
   display: flex;
@@ -39,7 +34,6 @@
   gap: var(--pt3);
 }
 
-/* Summary */
 .summary {
   display: flex;
   align-items: center;
@@ -52,7 +46,6 @@
   color: var(--text-muted, #8a8f98);
 }
 
-/* Table area */
 .tableWrap {
   overflow: auto;
   max-height: min(70vh, 720px);
@@ -61,12 +54,17 @@
   background: var(--bg, #fff);
 }
 
-/* Self-contained table styles */
 .table {
   margin: 0;
   font-size: 13px;
   --cell-pad-y: 6px;
   --cell-pad-x: 10px;
+}
+
+/* Sikre zebra-stripes i canvas også */
+.table :global(tbody tr:nth-of-type(odd) > td),
+.table :global(tbody tr:nth-of-type(odd) > th) {
+  background-color: var(--row-stripe, rgba(127, 127, 127, 0.05));
 }
 
 .table thead th {
@@ -85,15 +83,12 @@
   border-top-color: var(--divider);
 }
 
-.body {
-}
-
 .result {
   transition: background-color 120ms ease;
 }
-
-.result:hover {
-  background: var(--row-hover, rgba(127, 127, 127, 0.06));
+.table :global(tbody tr:hover > td),
+.table :global(tbody tr:hover > th) {
+  background-color: var(--row-hover, rgba(127, 127, 127, 0.08));
 }
 
 .countCol {
@@ -111,17 +106,4 @@
 }
 .canvas :global(.btn-close:hover) {
   opacity: 1;
-}
-
-/* Optional: subtle scrollbars */
-.tableWrap::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
-}
-.tableWrap::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.18);
-  border-radius: 6px;
-}
-.tableWrap::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.28);
 }
