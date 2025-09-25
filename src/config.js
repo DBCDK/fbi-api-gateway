@@ -324,7 +324,9 @@ export default {
       teamLabel: "fbiscrum",
     },
     rawrepo: {
-      url: "http://update-service.basismig.svc.cloud.dbc.dk/UpdateService/rest/api/v2", // NOSONAR
+      url:
+        process.env.RAWREPO_URL ||
+        "http://update-service.basismig.svc.cloud.dbc.dk/UpdateService/rest/api/v2", // NOSONAR
       teamLabel: "febib",
     },
     idp: {
