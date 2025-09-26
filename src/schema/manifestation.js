@@ -1247,6 +1247,7 @@ export const resolvers = {
             small: fbiinfoCoverImage?.resources?.["240px"],
             medium: fbiinfoCoverImage?.resources?.["480px"],
             large: fbiinfoCoverImage?.resources?.["960px"],
+            original: fbiinfoCoverImage?.resources?.["original"],
           };
         }
         // }
