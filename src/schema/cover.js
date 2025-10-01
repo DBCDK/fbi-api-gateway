@@ -26,6 +26,7 @@ type Cover {
   small: CoverDetails
   medium: CoverDetails
   large: CoverDetails
+  original: CoverDetails
 }
 `;
 
