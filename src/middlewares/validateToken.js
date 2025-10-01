@@ -62,10 +62,10 @@ export async function validateToken(req, res, next) {
   if (!req.isIntrospectionQuery) {
     // Invalid access token
     if (!req.smaug?.app) {
-      res.status(403);
+      res.status(401);
       return res.send({
-        statusCode: 403,
-        message: "Unauthorized",
+        statusCode: 401,
+        message: "Invalid access token",
       });
     }
 
