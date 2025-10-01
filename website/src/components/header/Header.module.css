@@ -260,3 +260,7 @@
 :global(body.dark) .top:not(.index) .border {
   display: none;
 }
+
+:global(body.dark) .top:not(.index) {
+  border-bottom: 4px solid var(--text-light);
+}
