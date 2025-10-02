@@ -216,8 +216,6 @@ export async function resolveAccess(manifestation, context) {
     });
   }
 
-  console.log("#### res", res);
-
   // Return array containing all types of access
   return _sortOnlineAccess(res);
 }
