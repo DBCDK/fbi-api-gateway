@@ -86,7 +86,7 @@ export async function resolveAccess(manifestation, context) {
   // At some point we may choose to follow the structure of JED closely,
   // but it has to be coordinated with stakeholders
 
-  const parent =
+  let parent =
     typeof manifestation === "object"
       ? manifestation
       : await resolveManifestation({ pid: manifestation }, context);
@@ -165,6 +165,23 @@ export async function resolveAccess(manifestation, context) {
         id: parent.access.infomediaService.id,
       });
     }
+
+    // If this is a omitted online access for politiken or jyllands-posten.
+    else {
+      const hasPhysical = parent?.accessTypes?.some(
+        (t) => (t?.code ?? "").toUpperCase() === "PHYSICAL"
+      );
+
+      if (hasPhysical) {
+        parent = {
+          ...parent,
+          access: {
+            ...(parent.access ?? {}),
+            interLibraryLoanIsPossible: true,
+          },
+        };
+      }
+    }
   }
 
   // Get the issn for this article or periodica
@@ -198,6 +215,8 @@ export async function resolveAccess(manifestation, context) {
       accessNew: isNewMaterial,
     });
   }
+
+  console.log("#### res", res);
 
   // Return array containing all types of access
   return _sortOnlineAccess(res);
