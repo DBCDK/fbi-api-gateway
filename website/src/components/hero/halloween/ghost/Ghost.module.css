@@ -122,12 +122,12 @@
   height: 35px;
   background: #edf1f2;
   border-radius: 50%;
-  border-bottom: 5px solid #252f33;
+  border-bottom: 5px solid lightgray;
 }
 
 .shadow {
   margin: -90px auto 0;
-  background: 0 #252f33;
+  background: 0 lightgray;
   width: 180px;
   height: 40px;
   border-radius: 50%;
@@ -154,4 +154,14 @@
   50% {
     transform: scale(0.8);
   }
+}
+
+:global(body.dark) .shadow {
+  background: 0 #252f33;
+}
+
+:global(body.dark) .spooky .body .feet > *,
+:global(body.dark) .spooky .body .feet::before,
+:global(body.dark) .spooky .body .feet::after {
+  border-bottom: 5px solid darkgray;
 }

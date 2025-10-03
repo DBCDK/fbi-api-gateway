@@ -21,9 +21,12 @@ import Complexity from "@/components/complexity";
 import Depth from "@/components/depth";
 import Header from "@/components/header";
 import Menu from "@/components/menu";
+import Link from "@/components/base/link";
+import Button from "@/components/base/button/Button";
 
 import styles from "./Docs.module.css";
 
+// Custom components to be used in MDX
 const customComponents = {
   InlineGraphiQL,
   DeprecationBox,
@@ -34,6 +37,8 @@ const customComponents = {
   Complexity,
   Depth,
   DescribeEnum,
+  Link,
+  Button,
 };
 
 export default function Docs() {
