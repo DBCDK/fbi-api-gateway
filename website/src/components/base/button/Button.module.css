@@ -138,6 +138,6 @@
 *
 */
 
-:global(body.halloween:not(.dark)) .button.primary {
+:global(body.halloween:not(.dark)) .button.primary:not(.disabled) {
   color: var(--white);
 }
