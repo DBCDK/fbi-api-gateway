@@ -166,12 +166,14 @@ export async function resolveAccess(manifestation, context) {
       });
     }
 
-    // If this is a omitted online access for politiken or jyllands-posten.
+    // If this is an omitted online access for politiken or jyllands-posten.
     else {
       const hasPhysical = parent?.accessTypes?.some(
         (t) => (t?.code ?? "").toUpperCase() === "PHYSICAL"
       );
 
+      // And the item has physical access - then we set interLibraryLoanIsPossible to true
+      // This makes the article available for interlibrary loan
       if (hasPhysical) {
         parent = {
           ...parent,
