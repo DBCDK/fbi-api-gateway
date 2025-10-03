@@ -1,3 +1,165 @@
+/* Variabler scopes til .shell (CSS Modules) */
+.shell {
+  --header-h: 68px; /* kendt headerhøjde */
+  --canvas-width: 420px; /* fast panelbredde på desktop */
+  --sticky-gap: 16px;
+
+  position: relative;
+  width: 100%;
+  display: flex; /* flex layout */
+  flex-direction: row; /* sidebar (venstre) → content (højre) */
+  align-items: stretch;
+
+  /* Sticky virker kun hvis Y-overflow er visible hele vejen op */
+  overflow-y: visible;
+}
+
+/* Sidebar reserverer fast bredde (ingen width-animation) */
+.sidebar {
+  flex: 0 0 var(--canvas-width);
+  position: relative;
+  min-width: var(--canvas-width);
+  max-width: var(--canvas-width);
+  pointer-events: none; /* klik blokeres når panelet er “lukket” */
+  overflow: visible; /* vigtig for sticky */
+}
+
+/* Indre wrapper i sidebar */
+.sidebarInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: visible; /* vigtig for sticky */
+}
+
+/* Spacer med headerhøjde: skubber sticky ned under headeren (ren CSS) */
+.sidebarSpacer {
+  height: var(--header-h);
+  flex: 0 0 var(--header-h);
+}
+
+/* Sticky panel-container:
+   - Ligger under headeren pga. spaceren
+   - Når spacer er scrollet væk, hæfter den ved top:0
+   - 100% viewport-højde (100dvh) i sticky-tilstand */
+.panelSticky {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  display: flex;
+  align-items: stretch;
+  padding-left: var(--sticky-gap);
+  overflow: visible;
+}
+
+/* Selve panelets kort (Canvas renderes herinde) */
+.canvasCard {
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+
+  /* glide panelet ind/ud uden at ændre layout */
+  transform: translate3d(-100%, 0, 0); /* lukket: helt væk til venstre */
+  transition: transform 200ms ease;
+  will-change: transform;
+}
+.shell[data-open="true"] .canvasCard {
+  transform: translate3d(0, 0, 0);
+}
+.shell[data-open="true"] .sidebar {
+  pointer-events: auto; /* kun klikbar når panelet er åbent */
+}
+
+/* Content-wrapper kompenserer for sidebarens faste bredde med transform:
+   - Lukket: flyt content ind under sidebarens reserverede plads
+   - Åben: retur til normal placering */
+.content {
+  flex: 1 1 auto;
+  min-width: 0;
+  transform: translate3d(calc(-1 * var(--canvas-width)), 0, 0);
+  transition: transform 200ms ease;
+  will-change: transform;
+  overflow-y: visible; /* bevar sticky-virkning */
+}
+.shell[data-open="true"] .content {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Main inde i content */
+.main {
+  min-width: 0;
+}
+
+/* Mobil: sidebar bliver overlay (ingen push af content) */
+@media (max-width: 992px) {
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0; /* top/left/bottom */
+    width: min(100vw, var(--canvas-width));
+    min-width: 0;
+    max-width: none;
+    z-index: 60;
+  }
+
+  .sidebarInner {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Spacer er ikke nødvendig på mobil overlay */
+  .sidebarSpacer {
+    display: none;
+  }
+
+  .panelSticky {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    padding: var(--sticky-gap);
+  }
+
+  .canvasCard {
+    transform: translate3d(-100%, 0, 0);
+  }
+  .shell[data-open="true"] .canvasCard {
+    transform: translate3d(0, 0, 0);
+  }
+
+  .content {
+    transform: translate3d(0, 0, 0) !important; /* ingen push på mobil */
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+    z-index: 50;
+  }
+  .backdrop[data-visible="true"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Desktop: ingen backdrop */
+@media (min-width: 993px) {
+  .backdrop {
+    display: none;
+  }
+}
+
+/* ===== Page-specific styles ===== */
 .container {
   padding-top: var(--pt10);
 }
@@ -5,14 +167,12 @@
 .title {
   margin: var(--pt4) 0 var(--pt2) 0;
 }
-
 .title strong {
   color: var(--secondary);
 }
 
 .settings {
   padding-top: var(--pt6);
-
   display: flex;
   justify-content: flex-end;
 }
@@ -22,32 +182,28 @@
   display: flex;
   justify-content: space-between;
 }
-
 .options > button {
   margin-right: var(--pt2);
 }
 
-/* Wrapper around Layout + Canvas to share width and push layout */
-.shell {
-  /* one source of truth for panel width */
-  --canvas-width: clamp(320px, 36vw, 420px);
-  position: relative;
+/* “hard load” indikator – sticky under header (brug header-højde som offset) */
+.loadingOverlay {
+  position: sticky;
+  top: calc(var(--header-h) + 8px);
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: inline-block;
+  margin-bottom: 8px;
 }
 
-/* When open, push the layout to the right by the panel width */
-.shellOpen .container {
-  margin-left: var(--canvas-width);
-  transition: margin-left 200ms ease;
+/* helper */
+.wrap {
 }
 
-/* Optional: don’t push on narrow screens (overlay instead) */
-@media (max-width: 992px) {
-  .shellOpen .container {
-    margin-left: 0;
-  }
-}
-
-@media screen and (max-width: 576px) {
+@media (max-width: 576px) {
   .container {
     padding-top: var(--pt2);
   }

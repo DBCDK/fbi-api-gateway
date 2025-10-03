@@ -29,9 +29,11 @@ extend type Query {
 function getFieldPaths(typeMap, queryString, out, count) {
   const ast = parse(queryString);
   const stack = [];
+  const seen = new Set(); // Deduplikér paths per query
 
   visit(ast, {
     enter(node) {
+      // Operation root (Query/Mutation)
       if (node.kind === "OperationDefinition") {
         stack.push({
           type:
@@ -40,47 +42,57 @@ function getFieldPaths(typeMap, queryString, out, count) {
         });
         return;
       }
+
+      // Inline fragment -> skift parent-type midlertidigt
+      if (node.kind === "InlineFragment" && node.typeCondition) {
+        const typeName = node.typeCondition.name.value;
+        const t = typeMap[typeName];
+        stack.push({ fieldName: `⟨${typeName}⟩`, type: t });
+        return;
+      }
+
+      // Felt
       if (node.kind === "Field") {
         const parent = stack[stack.length - 1];
         const parentType = parent?.type;
         const fieldName = node.name.value;
 
         const fieldDef = parentType?.getFields?.()[fieldName];
-        if (!fieldDef) {
-          stack.push({ fieldName, type: undefined });
-          const pathStr = stack.map((e) => e.fieldName).join(".");
+        let namedType = null;
+        let nextType = null;
+
+        if (fieldDef) {
+          namedType = getNamedType(fieldDef.type);
+          nextType = typeMap[namedType?.name];
+        }
+
+        // Push child context (også ved ukendt felt)
+        stack.push({ fieldName, type: nextType });
+
+        const pathStr = stack.map((e) => e.fieldName).join(".");
+
+        if (!seen.has(pathStr)) {
+          seen.add(pathStr);
+
           if (!out[pathStr]) {
             out[pathStr] = {
               path: pathStr,
               type: parentType?.name || null,
-              kind: null,
+              kind: namedType?.name || null, // null ved ukendt felt
               field: fieldName,
               count: 0,
             };
           }
           out[pathStr].count += count;
-          return;
         }
-
-        const namedType = getNamedType(fieldDef.type);
-        const nextType = typeMap[namedType?.name];
-        stack.push({ fieldName, type: nextType });
-
-        const pathStr = stack.map((e) => e.fieldName).join(".");
-        if (!out[pathStr]) {
-          out[pathStr] = {
-            path: pathStr,
-            type: parentType?.name || null,
-            kind: namedType?.name || null,
-            field: fieldName,
-            count: 0,
-          };
-        }
-        out[pathStr].count += count;
       }
     },
     leave(node) {
-      if (node.kind === "Field" || node.kind === "OperationDefinition") {
+      if (
+        node.kind === "Field" ||
+        node.kind === "OperationDefinition" ||
+        node.kind === "InlineFragment"
+      ) {
         stack.pop();
       }
     },
@@ -95,10 +107,9 @@ export const resolvers = {
       const n = Number.isFinite(args?.days) ? Math.floor(args.days) : 14;
       const windowDays = Math.max(1, Math.min(30, n));
 
-      const end = new Date();
-      end.setUTCHours(0, 0, 0, 0);
-      const start = new Date(end);
-      start.setDate(end.getDate() - windowDays);
+      // FIX #1: rullende vindue (nu som end), ikke nulstilling til UTC-midnat
+      const end = new Date(); // nu
+      const start = new Date(end.getTime() - windowDays * 24 * 60 * 60 * 1000);
 
       const res = await context.datasources.getLoader("insights").load({
         start: start.toISOString(),
@@ -125,7 +136,7 @@ export const resolvers = {
         for (const profileBucket of clientAgg.buckets) {
           const key = profileBucket?.key;
           if (key == null) continue;
-          const clientId = String(key).split("/")[0];
+          const clientId = String(key).split("/")[0]; // behold split som før
 
           // brug doc_count pr. klient-bucket
           const count = profileBucket?.doc_count ?? 0;
@@ -137,6 +148,7 @@ export const resolvers = {
           });
 
           try {
+            // FIX #2: getFieldPaths deduplikerer paths per query
             getFieldPaths(typeMap, query, entry.fieldsMap, count);
           } catch {
             // skip invalid GraphQL strings

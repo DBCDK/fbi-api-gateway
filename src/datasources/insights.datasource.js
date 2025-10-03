@@ -25,7 +25,7 @@ function logCoverage(json, context) {
     const sumOther = agg?.sum_other_doc_count || 0;
     const sumTop = buckets.reduce((s, b) => s + (b?.doc_count || 0), 0);
     const total = sumTop + sumOther;
-    const coverage = total > 0 ? sumTop / total : 1;
+    const coverage = total > 0 ? sumTop / total : 0; // 0% hvis total=0 giver mere mening
 
     info(
       "[ELK] took=%s ms timed_out=%s outerBuckets=%s sum_other=%s coverage=%s doc_count_error_upper_bound=%s",
@@ -49,7 +49,7 @@ function logCoverage(json, context) {
       const innerOther = inner?.sum_other_doc_count || 0;
       if (innerOther > 0) {
         const innerTotal = innerTop + innerOther;
-        const innerCov = innerTotal > 0 ? innerTop / innerTotal : 1;
+        const innerCov = innerTotal > 0 ? innerTop / innerTotal : 0;
         info(
           "[ELK] inner coverage q#%s key=%s buckets=%s other=%s coverage=%s",
           idx,
@@ -131,7 +131,7 @@ export async function load({ start, end }, context) {
             range: {
               timestamp: {
                 gte: start,
-                lte: end,
+                lt: end, // <--- VIGTIGT: brug "lt" i stedet for "lte" for rullende vindue
                 format: "strict_date_optional_time",
               },
             },
@@ -156,8 +156,6 @@ export async function load({ start, end }, context) {
   // 1) jeres wrapper
   if (context?.fetch) {
     const r = await context.fetch(url, init);
-
-    console.log("rrrrrrrrrrrrrrrrrrrrrrrr", start, end, r?.body?.aggregations);
 
     // forventet form { status, ok, body }
     if (r && typeof r === "object" && "ok" in r) {

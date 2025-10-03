@@ -8,18 +8,6 @@
   --cell-pad-x: 10px;
 }
 
-/* Sticky header – bruger samme offset som Canvas */
-.thead th {
-  position: sticky;
-  top: var(--canvas-offset-top, 0px);
-  z-index: 3;
-  background: var(--bg, #fff);
-  border-bottom: 1px solid var(--divider);
-  padding: var(--cell-pad-y) var(--cell-pad-x);
-  white-space: nowrap;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
-}
-
 /* Fallback: sikre zebra-stripes selv hvis BS-variabler overstyres */
 .table :global(tbody tr:nth-of-type(odd) > td),
 .table :global(tbody tr:nth-of-type(odd) > th) {

@@ -5,7 +5,10 @@ import useSWR from "swr";
 function getGraphQLUrl(profile, origin) {
   const base =
     origin || (typeof window !== "undefined" ? window.location.origin : "");
-  return base ? `${base}/${profile || "default"}/graphql` : "";
+  // undgå dobbelt-slash ved fx origin med / til sidst
+  const trimmed = base.endsWith("/") ? base.slice(0, -1) : base;
+  const p = (profile && String(profile)) || "default";
+  return trimmed ? `${trimmed}/${p}/graphql` : "";
 }
 
 function toIntInRange(v, def = 3) {
@@ -22,19 +25,23 @@ function aggregateByField(data) {
   const map = new Map();
   for (const { clientId, fields } of clients) {
     for (const f of fields || []) {
-      const key = `${f.type}.${f.field}`;
+      // type kan i sjældne tilfælde være null (ukendt felt) -> normalisér til "Unknown"
+      const type = f?.type ?? "Unknown";
+      const field = f?.field ?? "(unknown)";
+      const key = `${type}.${field}`;
+
       if (!map.has(key)) {
         map.set(key, {
-          path: f.path,
-          type: f.type,
-          field: f.field,
-          kind: f.kind,
+          path: f?.path ?? null,
+          type,
+          field,
+          kind: f?.kind ?? null,
           count: 0,
           clients: new Set(),
         });
       }
       const acc = map.get(key);
-      acc.count += f.count || 0;
+      acc.count += Number.isFinite(f?.count) ? f.count : 0;
       if (clientId) acc.clients.add(clientId);
     }
   }
@@ -57,6 +64,13 @@ function getByClient(data) {
  * useInsights(auth, options?)
  * - auth: { token: string | {token:string}, profile: string }
  * - options?: { days?: number|string, clientId?: string, origin?: string }
+ *
+ * Returnerer:
+ *  - json, byField, byFieldMap, byFieldList, byClient
+ *  - isLoading  (første load)
+ *  - isValidating (revalidation/baggrunds-fetch)
+ *  - isFetching (true hvis der hentes — både første load og revalidate)
+ *  - error, mutate
  */
 export default function useInsights(auth, options = {}) {
   const tokenLike = auth?.token;
@@ -64,7 +78,7 @@ export default function useInsights(auth, options = {}) {
   const bearer = typeof tokenLike === "string" ? tokenLike : tokenLike?.token;
 
   const { clientId, origin } = options;
-  const days = toIntInRange(options?.days, 14); // <-- coerces til tal
+  const days = toIntInRange(options?.days, 14); // coerces til tal og clamp
 
   const url = useMemo(() => getGraphQLUrl(profile, origin), [profile, origin]);
 
@@ -93,7 +107,6 @@ export default function useInsights(auth, options = {}) {
     const variables = { clientId: cid || null, days: d };
 
     if (process.env.NODE_ENV !== "production") {
-      // let det være tydeligt i dev, at vi revalidere
       // eslint-disable-next-line no-console
       console.info("[useInsights] fetch", {
         url: u,
@@ -123,16 +136,24 @@ export default function useInsights(auth, options = {}) {
     return res.json();
   };
 
-  const { data, error, isLoading, mutate } = useSWR(key, fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: true,
-    revalidateOnReconnect: true,
-    dedupingInterval: 0, // <-- ingen “debounce” ved ændring af days
-    keepPreviousData: true,
-  });
+  // SWR: isLoading (første load), isValidating (baggrunds-fetch)
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    key,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: true,
+      revalidateOnReconnect: true,
+      dedupingInterval: 0, // ingen “debounce” ved ændring af days/clientId
+      keepPreviousData: true, // behold forrige data mens vi henter ny
+    }
+  );
 
   const byFieldAgg = useMemo(() => aggregateByField(data), [data]);
   const byClient = useMemo(() => getByClient(data), [data]);
+
+  // Praktisk flag til UI: vis loader når vi henter — uanset om det er initialt eller revalidate
+  const isFetching = (!!key && isLoading) || isValidating;
 
   return {
     json: data,
@@ -140,7 +161,9 @@ export default function useInsights(auth, options = {}) {
     byFieldMap: byFieldAgg.map,
     byFieldList: byFieldAgg.list,
     byClient,
-    isLoading: !!key && isLoading,
+    isLoading: !!key && isLoading, // initial fetch
+    isValidating, // revalidation
+    isFetching, // samlet “vi henter nu”-flag til din tabel
     error,
     mutate,
   };

@@ -1,5 +1,4 @@
-// components/insights/Canvas.jsx
-import { Offcanvas, Table, Badge } from "react-bootstrap";
+import { Table, Badge } from "react-bootstrap";
 import styles from "./Canvas.module.css";
 
 export default function Canvas({
@@ -9,27 +8,24 @@ export default function Canvas({
   field,
   isDeprecated = false,
   totalCount = 0,
-  clientUsage = [], // [{ clientId, count }]
-  container, // DOM-node fra shellRef.current
+  clientUsage = [],
 }) {
+  if (!show) return null;
+
   const hasSelection = Boolean(type && field);
   const usedBy = clientUsage.length;
 
   return (
-    <Offcanvas
-      className={styles.canvas}
-      show={show}
-      onHide={onHide}
-      placement="start"
-      scroll
-      backdrop={false}
-      container={container}
+    <div
+      className={styles.canvasInner}
+      role="region"
+      aria-label="Insights panel"
     >
-      <Offcanvas.Header closeButton>
-        <Offcanvas.Title>
+      <div className={styles.canvasHeader}>
+        <h3 className={styles.canvasTitle}>
           {hasSelection ? (
             <>
-              <code>
+              <code className={styles.canvasCode}>
                 {type}.{field}
               </code>{" "}
               {isDeprecated && (
@@ -41,10 +37,18 @@ export default function Canvas({
           ) : (
             "Clients"
           )}
-        </Offcanvas.Title>
-      </Offcanvas.Header>
+        </h3>
+        <button
+          type="button"
+          className={styles.canvasClose}
+          aria-label="Close"
+          onClick={onHide}
+        >
+          ×
+        </button>
+      </div>
 
-      <Offcanvas.Body>
+      <div className={styles.canvasBody}>
         {!hasSelection ? (
           <div className={styles.empty}>Select a row to see client usage.</div>
         ) : (
@@ -82,7 +86,7 @@ export default function Canvas({
             </div>
           </>
         )}
-      </Offcanvas.Body>
-    </Offcanvas>
+      </div>
+    </div>
   );
 }

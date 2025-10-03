@@ -1,37 +1,76 @@
-/* components/insights/Canvas.module.css */
-.canvas {
-  --bs-offcanvas-width: var(--canvas-width);
-  top: var(--canvas-offset-top, 0px);
-  height: calc(100% - var(--canvas-offset-top, 0px));
+/* Eget modul for Canvas. Ingen global :root. Variabler (fx --divider) forventes sat globalt eller arvet. */
+
+.canvasInner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.canvas :global(.offcanvas-header) {
+/* Header */
+.canvasHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: var(--pt3) var(--pt3);
-  border-bottom: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider, #e5e7eb);
 }
 
-.canvas :global(.offcanvas-title) {
+.canvasTitle {
+  margin: 0;
   display: inline-flex;
   align-items: center;
   gap: var(--pt2);
-  font-family: var(--font-mono-semibold);
+  font-family: var(
+    --font-mono-semibold,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace
+  );
   font-size: 14px;
   line-height: 1.2;
 }
 
-.canvas :global(.offcanvas-title) code {
-  font-family: var(--font-mono-semibold);
+.canvasCode {
+  font-family: var(
+    --font-mono-semibold,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace
+  );
   padding: 2px 6px;
   border-radius: 6px;
   background: var(--bg-elevated, rgba(127, 127, 127, 0.08));
-  border: 1px solid var(--divider);
+  border: 1px solid var(--divider, #e5e7eb);
 }
 
-.canvas :global(.offcanvas-body) {
+/* Close-knap */
+.canvasClose {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+}
+.canvasClose:hover {
+  opacity: 1;
+  background: rgba(127, 127, 127, 0.08);
+}
+
+/* Body */
+.canvasBody {
   padding: var(--pt3);
   display: flex;
   flex-direction: column;
   gap: var(--pt3);
+  min-height: 0; /* vigtigt for overflow children */
+  flex: 1 1 auto;
 }
 
 .summary {
@@ -46,11 +85,12 @@
   color: var(--text-muted, #8a8f98);
 }
 
+/* Tabelområde */
 .tableWrap {
   overflow: auto;
   max-height: min(70vh, 720px);
   border-radius: 12px;
-  border: 1px solid var(--divider);
+  border: 1px solid var(--divider, #e5e7eb);
   background: var(--bg, #fff);
 }
 
@@ -61,7 +101,7 @@
   --cell-pad-x: 10px;
 }
 
-/* Sikre zebra-stripes i canvas også */
+/* zebra-stripes (Bootstrap child selectors skal være globale i CSS Modules) */
 .table :global(tbody tr:nth-of-type(odd) > td),
 .table :global(tbody tr:nth-of-type(odd) > th) {
   background-color: var(--row-stripe, rgba(127, 127, 127, 0.05));
@@ -72,7 +112,7 @@
   top: 0;
   background: var(--bg, #fff);
   z-index: 1;
-  border-bottom: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider, #e5e7eb);
   padding: var(--cell-pad-y) var(--cell-pad-x);
   white-space: nowrap;
 }
@@ -80,7 +120,7 @@
 .table tbody td {
   padding: var(--cell-pad-y) var(--cell-pad-x);
   vertical-align: middle;
-  border-top-color: var(--divider);
+  border-top-color: var(--divider, #e5e7eb);
 }
 
 .result {
@@ -99,11 +139,4 @@
 .empty {
   color: var(--text-muted, #8a8f98);
   font-size: 13px;
-}
-
-.canvas :global(.btn-close) {
-  opacity: 0.6;
-}
-.canvas :global(.btn-close:hover) {
-  opacity: 1;
 }
