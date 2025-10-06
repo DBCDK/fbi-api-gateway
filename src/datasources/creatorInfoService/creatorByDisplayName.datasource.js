@@ -7,7 +7,7 @@ const { url, ttl, prefix, teamLabel } = config.datasources.creatorInfo;
  */
 export async function load({ displayName }, context) {
   const endpoint = `${url}creator/display/${encodeURIComponent(displayName)}`;
-console.log("\n\n\n INDO DISPLAY NAME endpoint", endpoint,'\n\n\n');
+  console.log("\n\n\n INDO DISPLAY NAME endpoint", endpoint, "\n\n\n");
   const res = await context.fetch(endpoint, {
     headers: {
       "Content-Type": "application/json",
@@ -26,5 +26,3 @@ export const options = {
 };
 
 export { teamLabel };
-
-

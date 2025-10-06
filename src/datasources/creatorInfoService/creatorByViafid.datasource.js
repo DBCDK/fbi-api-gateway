@@ -26,5 +26,3 @@ export const options = {
 };
 
 export { teamLabel };
-
-
