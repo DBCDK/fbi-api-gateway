@@ -1,29 +1,94 @@
-/* views/insights/Result.module.css */
+/* Justér kun luftens højde her */
+.tableWrap {
+  --gap-height: 60px;
+
+  position: relative;
+  overflow: visible; /* vi bruger hovedscrollbaren */
+  background: var(--bg, #fff);
+}
+
+/* Sentinel: 1px høj, bruges til at detektere “stuck” state via IO */
+.sentinel {
+  height: 1px;
+  width: 1px;
+}
+
+/* Sticky spacer: ren hvid luft under topbaren, ingen kanter */
+.stickyGap {
+  position: sticky;
+  top: 68px; /* din sticky header-højde */
+  height: var(--gap-height); /* <- rent hvidt felt */
+  background: var(--bg, #fff);
+  z-index: 2;
+}
+
+/* Indre frame: her starter venstre/højre/bund-kant først under gap'et */
+.frame {
+  border: 1px solid var(--divider, #e5e7eb);
+  border-radius: 12px;
+  background: var(--bg, #fff);
+}
 
 /* Basistabel */
 .table {
   margin: 0;
+  width: 100%;
   font-size: 13px;
   --cell-pad-y: 8px;
   --cell-pad-x: 10px;
+  border-collapse: separate; /* bedre sammen med sticky + border radius */
+  border-spacing: 0;
 }
 
-/* Fallback: sikre zebra-stripes selv hvis BS-variabler overstyres */
-.table :global(tbody tr:nth-of-type(odd) > td),
-.table :global(tbody tr:nth-of-type(odd) > th) {
-  background-color: var(--row-stripe, rgba(127, 127, 127, 0.05));
+/* Sticky header: lige under spacerens bund, med bund-separator */
+.thead th {
+  position: sticky;
+  top: calc(68px + var(--gap-height));
+  z-index: 3;
+  background: var(--bg, #fff);
+  /* bund-linje */
+  box-shadow: inset 0 -1px 0 var(--divider, #e5e7eb);
+  padding: var(--cell-pad-y) var(--cell-pad-x);
+  white-space: nowrap;
+}
+
+/* Når headeren er stuck, tilføj også en top-linje */
+.tableWrap[data-stuck="true"] .thead th {
+  box-shadow:
+    inset 0 -1px 0 var(--divider, #e5e7eb),
+    /* bund */ inset 0 1px 0 var(--divider, #e5e7eb); /* top */
+}
+
+/* Valgfri blød skygge under headeren */
+.thead {
+  position: relative;
+}
+.thead::after {
+  content: "";
+  position: sticky;
+  top: calc(68px + var(--gap-height) + 38px); /* header-row højde ≈38px */
+  display: block;
+  height: 0;
+  box-shadow: 0 6px 10px -6px rgba(0, 0, 0, 0.12);
+  z-index: 2;
 }
 
 /* Body-celler */
 .body td {
   padding: var(--cell-pad-y) var(--cell-pad-x);
   vertical-align: middle;
-  border-top-color: var(--divider);
+  border-top: 1px solid var(--divider, #e5e7eb);
 }
 
-/* Klik-/hoverstil (på celler, så den overstyrer stripe ved hover) */
-.table :global(tbody tr:hover > td),
-.table :global(tbody tr:hover > th) {
+/* Zebra-stripes */
+.table tbody tr:nth-of-type(odd) > td,
+.table tbody tr:nth-of-type(odd) > th {
+  background-color: var(--row-stripe, rgba(127, 127, 127, 0.05));
+}
+
+/* Hover */
+.table tbody tr:hover > td,
+.table tbody tr:hover > th {
   background-color: var(--row-hover, rgba(127, 127, 127, 0.08));
 }
 
@@ -31,7 +96,7 @@
   cursor: pointer;
 }
 
-/* Fokus-stil til keyboard-navigation */
+/* Fokus-stil */
 .result:focus-within {
   outline: 2px solid var(--secondary, #6c63ff);
   outline-offset: -2px;
@@ -43,7 +108,7 @@
   cursor: pointer;
 }
 .thActive {
-  color: var(--text-dark);
+  color: var(--text-dark, #111);
 }
 .thAsc::after,
 .thDesc::after {
@@ -62,5 +127,15 @@
 
 /* Type-label i Field-kolonnen */
 .type {
-  font-family: var(--font-mono-semibold);
+  font-family: var(
+    --font-mono-semibold,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    "Courier New",
+    monospace
+  );
 }

@@ -1,5 +1,5 @@
 // views/insights/result.jsx
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Table } from "react-bootstrap";
 import styles from "./Result.module.css";
 
@@ -110,81 +110,131 @@ export default function Result({ data, byFieldMap, onSelect }) {
       .filter(Boolean)
       .join(" ");
 
+  // ==== Sticky top-border når headeren er “stuck” ====
+  const wrapRef = useRef(null);
+  const sentinelRef = useRef(null);
+  const [stuck, setStuck] = useState(false);
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    const sentinel = sentinelRef.current;
+    if (!wrap || !sentinel) return;
+
+    // Læs --gap-height (px) fra CSS for korrekt offset
+    const cs = getComputedStyle(wrap);
+    const gapVar = cs.getPropertyValue("--gap-height").trim() || "12px";
+    const gap = parseFloat(gapVar) || 12;
+
+    const TOP_BAR = 68; // din sticky header-højde
+    const offset = TOP_BAR + gap; // samme som sticky top på thead
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        // når sentinel passerer offset, er headeren stuck
+        setStuck(!entry.isIntersecting);
+      },
+      {
+        root: null, // viewport
+        rootMargin: `-${offset}px 0px 0px 0px`,
+        threshold: 0,
+      }
+    );
+
+    io.observe(sentinel);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <Table className={styles.table} responsive="md" striped hover>
-      <thead className={styles.thead}>
-        <tr>
-          <th className={styles.th} aria-sort="none" title="Row number">
-            #
-          </th>
+    <div
+      ref={wrapRef}
+      className={styles.tableWrap}
+      data-stuck={stuck ? "true" : "false"}
+    >
+      {/* Static sentinel (ikke sticky) før stickyGap:
+          Når denne passerer offset, sætter vi data-stuck="true" */}
+      <div ref={sentinelRef} className={styles.sentinel} aria-hidden />
 
-          <th
-            role="button"
-            onClick={() => onHeaderClick(COL.FIELD)}
-            className={thClass(COL.FIELD)}
-            data-sort-active={isActive(COL.FIELD)}
-            data-sort-dir={isActive(COL.FIELD) ? sort.dir : "off"}
-            aria-sort={ariaSort(COL.FIELD)}
-            title="Sort by Field (a–z / z–a / off)"
-          >
-            Field {renderSortIcon(COL.FIELD)}
-          </th>
+      {/* Sticky spacer: ren hvid luft under topbaren */}
+      <div className={styles.stickyGap} aria-hidden />
 
-          <th
-            role="button"
-            onClick={() => onHeaderClick(COL.DEPRECATED)}
-            className={thClass(COL.DEPRECATED)}
-            data-sort-active={isActive(COL.DEPRECATED)}
-            data-sort-dir={isActive(COL.DEPRECATED) ? sort.dir : "off"}
-            aria-sort={ariaSort(COL.DEPRECATED)}
-            title="Sort by Deprecated (false/true)"
-          >
-            Deprecated {renderSortIcon(COL.DEPRECATED)}
-          </th>
+      {/* Indre frame: kant/radius starter først under gap'et */}
+      <div className={styles.frame}>
+        <Table className={styles.table}>
+          <thead className={styles.thead}>
+            <tr>
+              <th className={styles.th} aria-sort="none" title="Row number">
+                #
+              </th>
 
-          <th
-            role="button"
-            onClick={() => onHeaderClick(COL.COUNT)}
-            className={thClass(COL.COUNT)}
-            data-sort-active={isActive(COL.COUNT)}
-            data-sort-dir={isActive(COL.COUNT) ? sort.dir : "off"}
-            aria-sort={ariaSort(COL.COUNT)}
-            title="Sort by Count (low/high)"
-          >
-            Count {renderSortIcon(COL.COUNT)}
-          </th>
-        </tr>
-      </thead>
+              <th
+                role="button"
+                onClick={() => onHeaderClick(COL.FIELD)}
+                className={thClass(COL.FIELD)}
+                data-sort-active={isActive(COL.FIELD)}
+                data-sort-dir={isActive(COL.FIELD) ? sort.dir : "off"}
+                aria-sort={ariaSort(COL.FIELD)}
+                title="Sort by Field (a–z / z–a / off)"
+              >
+                Field {renderSortIcon(COL.FIELD)}
+              </th>
 
-      <tbody className={styles.body}>
-        {sorted.map((r, idx) => {
-          const { field, type, isDeprecated, description, __key, __count } =
-            r || {};
-          return (
-            <tr
-              key={__key}
-              className={styles.result}
-              title={description || ""}
-              role="button"
-              tabIndex={0}
-              onClick={() => onSelect?.(r)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onSelect?.(r);
-                }
-              }}
-            >
-              <td>{idx + 1}</td>
-              <td>
-                <span className={styles.type}>{type}</span>.{field}
-              </td>
-              <td>{isDeprecated ? "true" : "false"}</td>
-              <td>{__count}</td>
+              <th
+                role="button"
+                onClick={() => onHeaderClick(COL.DEPRECATED)}
+                className={thClass(COL.DEPRECATED)}
+                data-sort-active={isActive(COL.DEPRECATED)}
+                data-sort-dir={isActive(COL.DEPRECATED) ? sort.dir : "off"}
+                aria-sort={ariaSort(COL.DEPRECATED)}
+                title="Sort by Deprecated (false/true)"
+              >
+                Deprecated {renderSortIcon(COL.DEPRECATED)}
+              </th>
+
+              <th
+                role="button"
+                onClick={() => onHeaderClick(COL.COUNT)}
+                className={thClass(COL.COUNT)}
+                data-sort-active={isActive(COL.COUNT)}
+                data-sort-dir={isActive(COL.COUNT) ? sort.dir : "off"}
+                aria-sort={ariaSort(COL.COUNT)}
+                title="Sort by Count (low/high)"
+              >
+                Count {renderSortIcon(COL.COUNT)}
+              </th>
             </tr>
-          );
-        })}
-      </tbody>
-    </Table>
+          </thead>
+
+          <tbody className={styles.body}>
+            {sorted.map((r, idx) => {
+              const { field, type, isDeprecated, description, __key, __count } =
+                r || {};
+              return (
+                <tr
+                  key={__key}
+                  className={styles.result}
+                  title={description || ""}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onSelect?.(r)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onSelect?.(r);
+                    }
+                  }}
+                >
+                  <td>{idx + 1}</td>
+                  <td>
+                    <span className={styles.type}>{type}</span>.{field}
+                  </td>
+                  <td>{isDeprecated ? "true" : "false"}</td>
+                  <td>{__count}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </div>
+    </div>
   );
 }

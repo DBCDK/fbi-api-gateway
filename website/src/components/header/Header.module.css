@@ -1,18 +1,52 @@
+/* ────────────────────────────────
+   Base layout
+────────────────────────────────── */
 .top {
-  /* observer hack */
   top: -1px;
-
   position: relative;
-
   z-index: 99;
   padding: var(--pt1) 0;
   background-color: var(--white);
   border-bottom: 4px solid var(--primary-dark);
-
-  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.25);
-  transition-duration: 0.2s;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.25);
+  transition: box-shadow 0.25s ease-in-out;
 }
 
+/* Sticky for alle ikke-index sider */
+.stickyEnabled {
+  position: sticky;
+  top: 0;
+}
+
+/* Skygge når sticky */
+.sticky {
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
+}
+
+/* Sentinel: bruges af IntersectionObserver */
+.sentinel {
+  position: relative;
+  height: 1px;
+  top: 0;
+}
+
+/* Index overrides */
+.top.index {
+  border-bottom: none;
+}
+
+.top.index .profiles,
+.top.index .token {
+  display: none;
+}
+
+.top.index .history {
+  display: none;
+}
+
+/* ────────────────────────────────
+   Structure
+────────────────────────────────── */
 .left {
   flex-grow: 99;
 }
@@ -34,14 +68,10 @@
   color: white;
 }
 
-.top.index .history {
-  display: none;
-}
-
+/* History button */
 .history {
   max-height: var(--pt5);
   max-width: var(--pt5);
-
   box-sizing: content-box;
   padding: 0;
   border: 2px solid var(--primary-dark);
@@ -49,18 +79,18 @@
 }
 
 .history span {
-  /* icon size */
   font-size: 16px;
   line-height: var(--pt5);
 }
 
 .history:hover,
 .history:focus-visible {
-  border: none;
   border: 2px solid transparent;
 }
-/* logo */
 
+/* ────────────────────────────────
+   Logo
+────────────────────────────────── */
 .logo {
   height: var(--pt6);
   display: flex;
@@ -78,8 +108,9 @@
   color: var(--primary-dark);
 }
 
-/* links */
-
+/* ────────────────────────────────
+   Links
+────────────────────────────────── */
 .links {
   display: flex;
   align-self: center;
@@ -105,48 +136,13 @@
   color: var(--text-light);
 }
 
-/* documentation */
-
-.top.documentation {
-  position: sticky;
-}
-
-.top.documentation.sticky {
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
-}
-
-/* schema */
-
-.top.schema {
-  position: sticky;
-}
-
-.top.schema.sticky {
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
-}
-
-/* index */
-.top.index {
-  border-bottom: none;
-}
-
-.top.index .profiles {
-  display: none;
-}
-
-.top.index .token {
-  display: none;
-}
-
-.top .logo a:hover {
-  color: var(--primary-dark);
-}
-
+/* ────────────────────────────────
+   Modal + Settings
+────────────────────────────────── */
 .modal :global(.offcanvas-body) {
   padding: 0;
 }
 
-/* hack */
 .modal :global(.offcanvas-header) {
   position: absolute;
   width: 100%;
@@ -154,7 +150,6 @@
 
 .settings {
   display: flex;
-
   position: fixed;
   right: 0;
   bottom: 15vh;
@@ -169,6 +164,9 @@
   }
 }
 
+/* ────────────────────────────────
+   Responsive
+────────────────────────────────── */
 @media screen and (max-width: 1200px) {
   .links {
     padding: 0;
@@ -193,31 +191,21 @@
   }
 }
 
-/* 
-* Dark mode
-*/
-
-:global(body.dark) .top {
-  background-color: var(--dark);
-}
-:global(body.dark) .top.index {
-  background-color: var(--dark-light);
-}
-:global(body.dark) .token,
-:global(body.dark) .history {
-  border: 2px solid var(--text-light);
-}
-:global(body.dark) .token button {
-  border: 2px solid var(--dark);
-  background-color: var(--dark-light) !important;
-}
-:global(body.dark) .token > div:first-child {
-  background-color: var(--text-light) !important;
-}
-
-/* pride border theme*/
-:global(body.pride) .top:not(.index) .border {
+/* ────────────────────────────────
+   Borders (theme)
+────────────────────────────────── */
+.border {
   content: "";
+  display: block;
+  height: 4px;
+  width: 100%;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+}
+
+/* Pride theme border */
+:global(body.pride) .top:not(.index) .border {
   background: linear-gradient(
     90deg,
     #fe0000 16.66%,
@@ -231,17 +219,10 @@
     83.3%,
     #c22edc 83.3%
   );
-  display: block;
-  height: 4px;
-  width: 100%;
-  position: absolute;
-  bottom: -4px;
-  left: 0;
 }
 
-/* pride border theme*/
+/* Future theme border */
 :global(body.future) .top:not(.index) .border {
-  content: "";
   background: linear-gradient(
     75deg,
     var(--hero-gradient-primary),
@@ -249,16 +230,36 @@
     var(--hero-gradient-primary),
     var(--hero-gradient-secondary)
   );
-  display: block;
-  height: 4px;
-  width: 100%;
-  position: absolute;
-  bottom: -4px;
-  left: 0;
 }
 
+/* Dark mode hides custom border */
 :global(body.dark) .top:not(.index) .border {
   display: none;
+}
+
+/* ────────────────────────────────
+   Dark mode
+────────────────────────────────── */
+:global(body.dark) .top {
+  background-color: var(--dark);
+}
+
+:global(body.dark) .top.index {
+  background-color: var(--dark-light);
+}
+
+:global(body.dark) .token,
+:global(body.dark) .history {
+  border: 2px solid var(--text-light);
+}
+
+:global(body.dark) .token button {
+  border: 2px solid var(--dark);
+  background-color: var(--dark-light) !important;
+}
+
+:global(body.dark) .token > div:first-child {
+  background-color: var(--text-light) !important;
 }
 
 :global(body.dark) .top:not(.index) {

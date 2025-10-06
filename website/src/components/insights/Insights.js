@@ -1,5 +1,5 @@
 // views/insights/Insights.jsx
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { Col, Row } from "react-bootstrap";
 import { orderBy } from "lodash";
 
@@ -18,6 +18,8 @@ import Chip from "../base/chip";
 import Search from "./search";
 import Result from "./result";
 import Period from "./period";
+
+// IMPORTANT: as requested
 import Canvas from "./canvas";
 
 import styles from "./Insights.module.css";
@@ -39,112 +41,97 @@ function InsightsUI({
 }) {
   return (
     <>
-      {/* Header i normal dokument-flow */}
       <Header />
 
-      {/* Shell: venstre sidebar med CSS-sticky panel; content skubbes via transform */}
       <div className={styles.shell} data-open={panel?.open ? "true" : "false"}>
-        {/* Sidebar / Canvas (VENSTRE) — sticky med spacer */}
-        <aside className={styles.sidebar} aria-live="polite">
-          <div className={styles.sidebarInner}>
-            {/* Spacer = headerhøjde (68px). Panelet starter under headeren */}
-            <div className={styles.sidebarSpacer} aria-hidden="true" />
-            {/* Sticky wrapper: hæfter ved top:0 når spacer er scrollet væk */}
-            <div className={styles.panelSticky}>
-              <div className={styles.canvasCard}>
-                <Canvas
-                  show={panel?.open}
-                  onHide={onClosePanel}
-                  type={panel?.type}
-                  field={panel?.field}
-                  isDeprecated={panel?.isDeprecated}
-                  totalCount={totalCount}
-                  clientUsage={clientUsage}
-                />
-              </div>
-            </div>
+        {/* VENSTRE placeholder */}
+        <aside className={styles.sidebar}>
+          <div className={styles.canvasWrap}>
+            <Canvas
+              show={panel?.open}
+              onHide={onClosePanel}
+              type={panel?.type}
+              field={panel?.field}
+              isDeprecated={panel?.isDeprecated}
+              totalCount={totalCount}
+              clientUsage={clientUsage}
+            />
           </div>
         </aside>
 
-        {/* Alt andet indhold skubbes via transform (GPU) – ikke layout */}
+        {/* INDHOLD */}
         <div className={styles.content}>
-          <div className={styles.main}>
-            <Layout className={styles.container}>
-              <Row>
-                <Col>
-                  <Title as="h1" type="title6" className={styles.title}>
-                    FBI-API <strong>[Insights]</strong>
-                  </Title>
-                  <Text>
-                    Insights shows how our GraphQL API is used in practice, per
-                    client and per field. Choose a period, sort by activity, and
-                    filter to highlight deprecated or zero-usage fields. Use it
-                    to verify whether specific clients still call deprecated
-                    fields before you remove or migrate them.
-                  </Text>
-                </Col>
-              </Row>
+          <Layout className={styles.container}>
+            <Row>
+              <Col>
+                <Title as="h1" type="title6" className={styles.title}>
+                  FBI-API <strong>[Insights]</strong>
+                </Title>
+                <Text>
+                  Insights viser hvordan vores GraphQL API bruges i praksis –
+                  per klient og per felt. Vælg periode, sortér på aktivitet, og
+                  filtrér for at se deprecated eller inaktive felter.
+                </Text>
+              </Col>
+            </Row>
 
-              <Row className={styles.wrap}>
-                <Col>
-                  <div className={styles.settings}>
-                    <Period
-                      className={styles.period}
-                      value={days}
-                      onChange={onDaysChange}
-                    />
-                  </div>
-
-                  <div className={styles.filters}>
-                    <div className={styles.options}>
-                      <Chip
-                        mode="tri"
-                        state={settings?.deprecatedFilter}
-                        onChange={(next) =>
-                          onUpdateSettings({ deprecatedFilter: next })
-                        }
-                      >
-                        {"isDeprecated"}
-                      </Chip>
-                      <Chip
-                        mode="tri"
-                        state={settings?.countFilter}
-                        onChange={(next) =>
-                          onUpdateSettings({ countFilter: next })
-                        }
-                      >
-                        {"hasCount"}
-                      </Chip>
-                    </div>
-
-                    <Search
-                      onChange={(val) => onUpdateSettings({ filter: val })}
-                    />
-                  </div>
-
-                  {isFetching && (
-                    <div className={styles.loadingOverlay} aria-live="polite">
-                      Loading…
-                    </div>
-                  )}
-
-                  <Result
-                    data={data}
-                    byFieldMap={byFieldMap}
-                    onSelect={onSelectRow}
+            <Row className={styles.wrap}>
+              <Col>
+                <div className={styles.settings}>
+                  <Period
+                    className={styles.period}
+                    value={days}
+                    onChange={onDaysChange}
                   />
-                </Col>
-              </Row>
-            </Layout>
-          </div>
+                </div>
 
-          {/* Mobil backdrop (tryk for at lukke) */}
+                <div className={styles.filters}>
+                  <div className={styles.options}>
+                    <Chip
+                      mode="tri"
+                      state={settings?.deprecatedFilter}
+                      onChange={(next) =>
+                        onUpdateSettings({ deprecatedFilter: next })
+                      }
+                    >
+                      {"isDeprecated"}
+                    </Chip>
+                    <Chip
+                      mode="tri"
+                      state={settings?.countFilter}
+                      onChange={(next) =>
+                        onUpdateSettings({ countFilter: next })
+                      }
+                    >
+                      {"hasCount"}
+                    </Chip>
+                  </div>
+
+                  <Search
+                    onChange={(val) => onUpdateSettings({ filter: val })}
+                  />
+                </div>
+
+                {isFetching && (
+                  <div className={styles.loadingOverlay}>Loading…</div>
+                )}
+
+                <Result
+                  data={data}
+                  byFieldMap={byFieldMap}
+                  onSelect={onSelectRow}
+                />
+              </Col>
+            </Row>
+          </Layout>
+
+          {/* Backdrop (mobil) */}
           <button
             type="button"
             className={styles.backdrop}
             data-visible={panel?.open ? "true" : "false"}
-            aria-hidden={panel?.open ? "false" : "true"}
             onClick={onClosePanel}
+            aria-hidden={!panel?.open}
           />
         </div>
       </div>
@@ -156,6 +143,9 @@ function InsightsUI({
 export default function Insights() {
   const { selectedToken } = useStorage();
   const { json } = useSchema(selectedToken);
+
+  // 1) Byg basisliste KUN når schema ændrer sig
+  const baseData = useMemo(() => buildTemplates(getFields(json)), [json]);
 
   const [days, setDays] = useState(3);
   const { byFieldMap, byClient, isFetching } = useInsights(selectedToken, {
@@ -169,42 +159,64 @@ export default function Insights() {
     deprecatedFilter: "off",
     countFilter: "off",
   });
-  const updateSettings = (patch) => setSettings((s) => ({ ...s, ...patch }));
+  const updateSettings = useCallback(
+    (patch) => setSettings((s) => ({ ...s, ...patch })),
+    []
+  );
 
-  let data = useMemo(() => buildTemplates(getFields(json)), [json]);
+  // 2) Slank getCount der ikke alokerer nye strings unødigt
+  const getCount = useCallback(
+    (row) => {
+      const t = row?.type;
+      const f = row?.field;
+      if (!t || !f || !byFieldMap) return 0;
+      const k = t + "." + f;
+      const hit = byFieldMap[k];
+      return hit ? hit.count || 0 : 0;
+    },
+    [byFieldMap]
+  );
 
-  const getCount = (row) => {
-    const key = row?.type && row?.field ? `${row.type}.${row.field}` : null;
-    return key && byFieldMap ? (byFieldMap[key]?.count ?? 0) : 0;
-  };
+  // 3) Memoisér filtrering/sortering – ændrer KUN når settings, baseData eller byFieldMap ændrer sig
+  const data = useMemo(() => {
+    if (!Array.isArray(baseData)) return [];
 
-  if (settings.filter) {
-    const q = settings.filter.toLowerCase();
-    data = data?.filter(({ field, type }) => {
-      const combo = `${type}.${field}`.toLowerCase();
-      return (
-        field?.toLowerCase().includes(q) ||
-        type?.toLowerCase().includes(q) ||
-        combo.includes(q)
-      );
-    });
-  }
-  if (settings.deprecatedFilter !== "off") {
-    data = data?.filter((d) =>
-      settings.deprecatedFilter === "include"
-        ? !!d.isDeprecated
-        : !d.isDeprecated
-    );
-  }
-  if (settings.countFilter !== "off") {
-    data = data?.filter((d) =>
-      settings.countFilter === "include" ? getCount(d) > 0 : getCount(d) === 0
-    );
-  }
-  if (settings.sort) {
-    data = orderBy(data, [settings.sort], [settings.sortDirection]);
-  }
+    let out = baseData;
 
+    // filter
+    if (settings.filter) {
+      const q = settings.filter.toLowerCase();
+      out = out.filter(({ field, type }) => {
+        const combo = `${type}.${field}`.toLowerCase();
+        return (
+          (field && field.toLowerCase().includes(q)) ||
+          (type && type.toLowerCase().includes(q)) ||
+          combo.includes(q)
+        );
+      });
+    }
+
+    // deprecated
+    if (settings.deprecatedFilter !== "off") {
+      const inc = settings.deprecatedFilter === "include";
+      out = out.filter((d) => (inc ? !!d.isDeprecated : !d.isDeprecated));
+    }
+
+    // count
+    if (settings.countFilter !== "off") {
+      const inc = settings.countFilter === "include";
+      out = out.filter((d) => (inc ? getCount(d) > 0 : getCount(d) === 0));
+    }
+
+    // sort
+    if (settings.sort) {
+      out = orderBy(out, [settings.sort], [settings.sortDirection]);
+    }
+
+    return out;
+  }, [baseData, settings, getCount]);
+
+  // Panel
   const [panel, setPanel] = useState({
     open: false,
     key: null,
@@ -213,41 +225,39 @@ export default function Insights() {
     isDeprecated: false,
   });
 
-  function handleSelectRow(r) {
-    const key = r?.type && r?.field ? `${r.type}.${r.field}` : null;
-    if (!key) return;
+  const handleSelectRow = useCallback((r) => {
+    if (!r?.type || !r?.field) return;
     setPanel({
       open: true,
-      key,
+      key: `${r.type}.${r.field}`,
       type: r.type,
       field: r.field,
       isDeprecated: !!r.isDeprecated,
     });
-  }
-  const handleClosePanel = () => setPanel((p) => ({ ...p, open: false }));
+  }, []);
 
+  const handleClosePanel = useCallback(
+    () => setPanel((p) => ({ ...p, open: false })),
+    []
+  );
+
+  // Udregn clientUsage + totalCount
   const clientUsage = useMemo(() => {
+    if (!panel.key || !Array.isArray(byClient)) return [];
     const list = [];
-    const k = panel.key;
-    if (!k || !Array.isArray(byClient)) return list;
-
     for (const c of byClient) {
       const { clientId, fields } = c || {};
       if (!clientId || !Array.isArray(fields)) continue;
-      const match = fields.find((f) => `${f.type}.${f.field}` === k);
-      const cnt = match?.count ?? 0;
-      if (cnt > 0) list.push({ clientId, count: cnt });
+      const m = fields.find((f) => `${f.type}.${f.field}` === panel.key);
+      if (m?.count > 0) list.push({ clientId, count: m.count });
     }
     list.sort(
-      (a, b) =>
-        b.count - a.count ||
-        String(a.clientId).localeCompare(String(b.clientId))
+      (a, b) => b.count - a.count || a.clientId.localeCompare(b.clientId)
     );
     return list;
   }, [panel.key, byClient]);
 
-  const totalCount =
-    panel.key && byFieldMap ? (byFieldMap[panel.key]?.count ?? 0) : 0;
+  const totalCount = byFieldMap?.[panel.key]?.count ?? 0;
 
   return (
     <InsightsUI
