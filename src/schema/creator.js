@@ -166,15 +166,6 @@ type Corporation implements SubjectInterface & CreatorInterface {
     language: Language
     local: Boolean
 
-    """
-    VIAF identifier of the creator
-    """
-    viafid: String
-
-    """
-    Additional metadata for the creator
-    """
-    wikidata: Wikidata
 }
 interface CreatorInterface {
   """
@@ -258,12 +249,6 @@ export const resolvers = {
   Corporation: {
     roles(parent) {
       return Array.isArray(parent?.roles) ? parent?.roles : [];
-    },
-    viafid() {
-      return null;
-    },
-    async wikidata(parent, args, context) {
-      return null;
     },
   },
 };
