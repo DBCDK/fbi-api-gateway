@@ -1,4 +1,35 @@
+import { mapWikidata } from "../utils/utils";
+
 export const typeDef = `
+type LocalizedString {
+  da: String
+  en: String
+}
+
+type CreatorImage {
+  url: String
+  isFreeLicense: Boolean
+  attributionText: String
+}
+
+type Wikidata {
+  education: [LocalizedString!]
+  image: CreatorImage
+  nationality: LocalizedString
+  occupation: [LocalizedString!]
+  wikidataId: String
+  description: LocalizedString
+  awards: [LocalizedString!]
+}
+
+type CreatorInfo {
+  display: String!
+  firstName: String
+  lastName: String
+  viafid: String
+  wikidata: Wikidata
+}
+
 type Translation {
   """
   Translation in plural form, e.g. forfattere, komponister, instruktører etc.
@@ -73,6 +104,16 @@ type Person implements SubjectInterface & CreatorInterface {
 
   language: Language
   local: Boolean
+
+  """
+  VIAF identifier of the creator
+  """
+  viafid: String
+
+  """
+  Additional metadata for the creator
+  """
+  wikidata: Wikidata
 }
 type Corporation implements SubjectInterface & CreatorInterface {
     """
@@ -124,6 +165,16 @@ type Corporation implements SubjectInterface & CreatorInterface {
 
     language: Language
     local: Boolean
+
+    """
+    VIAF identifier of the creator
+    """
+    viafid: String
+
+    """
+    Additional metadata for the creator
+    """
+    wikidata: Wikidata
 }
 interface CreatorInterface {
   """
@@ -140,16 +191,79 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   """
   roles: [Role!]!
+
+  """
+  VIAF identifier of the creator
+  """
+  viafid: String
+
+  """
+  Additional data from Wikidata
+  """
+  wikidata: Wikidata
+}
+
+extend type Query {
+  """
+  Fetch a creator by VIAF identifier
+  """
+  creatorByViafid(viafid: String!): CreatorInfo
 }
 `;
 
 export const resolvers = {
+  Query: {
+    async creatorByViafid(parent, args, context) {
+      const creatorInfoRaw = await context.datasources
+        .getLoader("creatorByViafid")
+        .load({ viafid: args.viafid });
+      return {
+        display: creatorInfoRaw?.display,
+        firstName: creatorInfoRaw?.original?.firstname || null,
+        lastName: creatorInfoRaw?.original?.lastname || null,
+        viafid: creatorInfoRaw?.viafId || null,
+        wikidata: mapWikidata(creatorInfoRaw),
+      };
+    },
+  },
   Person: {
     roles(parent, args, context, info) {
       return Array.isArray(parent?.roles) ? parent?.roles : [];
     },
     aliases(parent) {
       return Array.isArray(parent?.aliases) ? parent?.aliases : [];
+    },
+    async viafid(parent, args, context) {
+      try {
+        if (parent?.viafid) return parent.viafid;
+        const info = await context.datasources
+          .getLoader("creatorByDisplayName")
+          .load({ displayName: parent?.display });
+        return info?.viafId || null;
+      } catch (e) {
+        return null;
+      }
+    },
+    async wikidata(parent, args, context) {
+      try {
+        const info = await context.datasources
+          .getLoader("creatorByDisplayName")
+          .load({ displayName: parent?.display });
+        return mapWikidata(info);
+      } catch (e) {
+        return null;
+      }
+    },
+  },
+  Corporation: {
+    roles(parent) {
+      return Array.isArray(parent?.roles) ? parent?.roles : [];
+    },
+    viafid() {
+      return null;
+    },
+    async wikidata(parent, args, context) {
+      return null;
     },
   },
 };
