@@ -250,5 +250,11 @@ export const resolvers = {
     roles(parent) {
       return Array.isArray(parent?.roles) ? parent?.roles : [];
     },
+    wikidata() {
+      return null;
+    },
+    viafid() {
+      return null;
+    },
   },
 };
