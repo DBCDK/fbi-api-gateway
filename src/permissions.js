@@ -71,6 +71,7 @@ const bibdk = {
     "nodeById",
     "nodeQuery",
     "periodica",
+    "creatorByViafid", //TODO: ask mtni & kfu
   ],
   denyTypes: ["MarcRecord"],
   denyFields: [...defaultSettings.denyFields],
