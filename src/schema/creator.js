@@ -166,6 +166,15 @@ type Corporation implements SubjectInterface & CreatorInterface {
     language: Language
     local: Boolean
 
+    """
+    VIAF identifier of the creator
+    """
+    viafid: String
+
+    """
+    Additional data from Wikidata
+    """
+    wikidata: Wikidata
 }
 interface CreatorInterface {
   """
