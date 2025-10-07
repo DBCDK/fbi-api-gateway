@@ -1,21 +1,55 @@
-/**
- * Checks if the calling may use the selected agencyId
- */
-export async function validateAgencyId(req, res, next) {
-  const selectedAgencyId = req?.profile?.agency;
-  const defaultAgencyId = req.smaug?.agencyId;
-  const gatewaySettings = req.smaug?.gateway;
-  const allowedAgencies = [
-    ...(gatewaySettings?.agencies?.ids || []),
-    defaultAgencyId,
-  ];
+import { getStringArray } from "../utils/env";
 
-  if (!allowedAgencies?.includes(selectedAgencyId)) {
+// Normalize IDs: cast to string, trim, and drop empty/null
+const norm = (v) => {
+  if (v == null) return null;
+  const s = String(v).trim();
+  return s.length ? s : null;
+};
+
+export function validateAgencyId(req, res, next) {
+  const selectedAgencyId = norm(req?.profile?.agency);
+  const defaultAgencyId = norm(req.smaug?.agencyId);
+  const gatewaySettings = req.smaug?.gateway;
+
+  // Build allowed list (gateway + default), normalize and remove falsy
+  const allowedAgencies = [
+    ...(gatewaySettings?.agencies?.ids || []).map(norm).filter(Boolean),
+    defaultAgencyId,
+  ].filter(Boolean);
+
+  // Locked list from env, normalized
+  const lockedAgencyIds = getStringArray("LOCKED_AGENCY_ID_LIST")
+    .map(norm)
+    .filter(Boolean);
+
+  // If agency is completely missing -> 400 Bad Request
+  if (!selectedAgencyId) {
+    res.status(400);
+    return res.send({
+      statusCode: 400,
+      message: "Missing agencyId",
+    });
+  }
+
+  // First guard: must be allowed by gateway/default
+  if (!allowedAgencies.includes(selectedAgencyId)) {
     res.status(403);
     return res.send({
       statusCode: 403,
       message: "Invalid agencyId",
     });
+  }
+
+  // If a locked list is provided, only those IDs are allowed
+  if (lockedAgencyIds.length > 0) {
+    if (!lockedAgencyIds.includes(selectedAgencyId)) {
+      res.status(403);
+      return res.send({
+        statusCode: 403,
+        message: "Invalid agencyId",
+      });
+    }
   }
 
   next();
