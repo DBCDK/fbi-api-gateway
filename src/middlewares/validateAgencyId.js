@@ -23,15 +23,6 @@ export function validateAgencyId(req, res, next) {
     .map(norm)
     .filter(Boolean);
 
-  // If agency is completely missing -> 400 Bad Request
-  if (!selectedAgencyId) {
-    res.status(400);
-    return res.send({
-      statusCode: 400,
-      message: "Missing agencyId",
-    });
-  }
-
   // First guard: must be allowed by gateway/default
   if (!allowedAgencies.includes(selectedAgencyId)) {
     res.status(403);
