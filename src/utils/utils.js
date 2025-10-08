@@ -1038,3 +1038,62 @@ export function periodicalFiltersToCql(filters) {
   }
   return cql;
 }
+
+/**
+ *  Map a localized object with 'da'/'en' keys to LocalizedString or null
+ */
+export function mapLocalized(obj) {
+  if (!obj) return null;
+  const da = obj?.da ?? null;
+  const en = obj?.en ?? null;
+  if (da == null && en == null) return null;
+  return { da, en };
+}
+
+/**
+ * Map raw image object to CreatorImage; returns null if no usable URL
+ */
+export function mapImage(wikidataImage) {
+  const img = wikidataImage;
+  if (!img?.url) return null;
+  return {
+    url: img?.url || null,
+    attributionText: img?.attributionText || null,
+  };
+}
+
+/**
+ * Map raw wikidata object to API Wikidata type or null
+ */
+export function mapWikidata(creatorInfoRaw) {
+  const wikidataRaw = creatorInfoRaw?.wikidata;
+  const education = Array.isArray(wikidataRaw?.education)
+    ? wikidataRaw.education.map((entry) => mapLocalized(entry)).filter((v) => v)
+    : [];
+  const image = mapImage(wikidataRaw?.image);
+  const nationality = mapLocalized(wikidataRaw?.nationality);
+  const occupation = Array.isArray(wikidataRaw?.occupations)
+    ? wikidataRaw.occupations
+        .map((entry) => mapLocalized(entry))
+        .filter((v) => v)
+    : [];
+  const wikidataId = wikidataRaw?.wikidataId || null;
+  const description = mapLocalized(wikidataRaw?.description);
+  const awards = Array.isArray(wikidataRaw?.awards)
+    ? wikidataRaw.awards.map((entry) => mapLocalized(entry)).filter((v) => v)
+    : [];
+
+  // const hasContent =
+  //   education.length || image || nationality || occupation.length || wikidataId || description || awards.length;
+  // if (!hasContent) return null;
+
+  return {
+    education,
+    image,
+    nationality,
+    occupation,
+    wikidataId,
+    description,
+    awards,
+  };
+}
