@@ -1058,7 +1058,6 @@ export function mapImage(wikidataImage) {
   if (!img?.url) return null;
   return {
     url: img?.url || null,
-    isFreeLicense: img?.isFreeLicense ?? null,
     attributionText: img?.attributionText || null,
   };
 }

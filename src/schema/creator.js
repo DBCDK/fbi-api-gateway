@@ -1,25 +1,19 @@
 import { mapWikidata } from "../utils/utils";
 
 export const typeDef = `
-type LocalizedString {
-  da: String
-  en: String
-}
-
 type CreatorImage {
   url: String
-  isFreeLicense: Boolean
   attributionText: String
 }
 
 type Wikidata {
-  education: [LocalizedString!]
+  education: [String!]
   image: CreatorImage
-  nationality: LocalizedString
-  occupation: [LocalizedString!]
+  nationality: String
+  occupation: [String!]
   wikidataId: String
-  description: LocalizedString
-  awards: [LocalizedString!]
+  description: String
+  awards: [String!]
 }
 
 type CreatorInfo {
@@ -27,7 +21,7 @@ type CreatorInfo {
   firstName: String
   lastName: String
   viafid: String
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Translation {
@@ -113,7 +107,7 @@ type Person implements SubjectInterface & CreatorInterface {
   """
   Additional metadata for the creator
   """
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 type Corporation implements SubjectInterface & CreatorInterface {
     """
@@ -174,7 +168,7 @@ type Corporation implements SubjectInterface & CreatorInterface {
     """
     Additional data from Wikidata
     """
-    wikidata: Wikidata
+    wikidata(language: LanguageCodeEnum): Wikidata
 }
 interface CreatorInterface {
   """
@@ -200,7 +194,7 @@ interface CreatorInterface {
   """
   Additional data from Wikidata
   """
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 extend type Query {
@@ -226,6 +220,14 @@ export const resolvers = {
       };
     },
   },
+  CreatorInfo: {
+    wikidata(parent, args) {
+      const language = args?.language || "DA";
+      const data = parent?.wikidata;
+      if (!data) return null;
+      return { ...data, language };
+    },
+  },
   Person: {
     roles(parent, args, context, info) {
       return Array.isArray(parent?.roles) ? parent?.roles : [];
@@ -246,10 +248,14 @@ export const resolvers = {
     },
     async wikidata(parent, args, context) {
       try {
+        const language = args?.language || "DA";
         const info = await context.datasources
           .getLoader("creatorByDisplayName")
           .load({ displayName: parent?.display });
-        return mapWikidata(info);
+        const data = mapWikidata(info);
+
+        if (!data) return null;
+        return { ...data, language };
       } catch (e) {
         return null;
       }
@@ -259,11 +265,75 @@ export const resolvers = {
     roles(parent) {
       return Array.isArray(parent?.roles) ? parent?.roles : [];
     },
-    wikidata() {
-      return null;
+    wikidata(parent, args) {
+      const language = args?.language || "DA";
+      return { language: language };
     },
     viafid() {
       return null;
+    },
+  },
+  Wikidata: {
+    education(parent) {
+      const language = parent?.language || "DA";
+      const list = Array.isArray(parent?.education) ? parent.education : [];
+      if (language === "DA") {
+        return list
+          .map((entry) => entry?.da ?? entry?.en ?? null)
+          .filter((v) => v != null);
+      }
+      if (language === "EN") {
+        return list
+          .map((entry) => entry?.en ?? entry?.da ?? null)
+          .filter((v) => v != null);
+      }
+      return [];
+    },
+    nationality(parent) {
+      const language = parent?.language || "DA";
+      const value = parent?.nationality || null;
+      if (!value) return null;
+      if (language === "DA") return value?.da ?? value?.en ?? null;
+      if (language === "EN") return value?.en ?? value?.da ?? null;
+      return null;
+    },
+    occupation(parent) {
+      const language = parent?.language || "DA";
+      const list = Array.isArray(parent?.occupation) ? parent.occupation : [];
+      if (language === "DA") {
+        return list
+          .map((entry) => entry?.da ?? entry?.en ?? null)
+          .filter((v) => v != null);
+      }
+      if (language === "EN") {
+        return list
+          .map((entry) => entry?.en ?? entry?.da ?? null)
+          .filter((v) => v != null);
+      }
+      return [];
+    },
+    description(parent) {
+      const language = parent?.language || "DA";
+      const value = parent?.description || null;
+      if (!value) return null;
+      if (language === "DA") return value?.da ?? value?.en ?? null;
+      if (language === "EN") return value?.en ?? value?.da ?? null;
+      return null;
+    },
+    awards(parent) {
+      const language = parent?.language || "DA";
+      const list = Array.isArray(parent?.awards) ? parent.awards : [];
+      if (language === "DA") {
+        return list
+          .map((entry) => entry?.da ?? entry?.en ?? null)
+          .filter((v) => v != null);
+      }
+      if (language === "EN") {
+        return list
+          .map((entry) => entry?.en ?? entry?.da ?? null)
+          .filter((v) => v != null);
+      }
+      return [];
     },
   },
 };
