@@ -94,4 +94,44 @@ describe("Test validateAgencyId", () => {
     });
     expect(next).not.toHaveBeenCalled();
   });
+
+  test("should respond with 403 when selectedAgencyId is not in lockedAgencyIds", async () => {
+    process.env.LOCKED_AGENCY_ID_LIST = '["locked1","locked2"]';
+    req.profile.agency = "agency1";
+
+    await validateAgencyId(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.send).toHaveBeenCalledWith({
+      statusCode: 403,
+      message: "Invalid agencyId",
+    });
+    expect(next).not.toHaveBeenCalled();
+
+    delete process.env.LOCKED_AGENCY_ID_LIST;
+  });
+
+  test("should call next when selectedAgencyId is in lockedAgencyIds", async () => {
+    process.env.LOCKED_AGENCY_ID_LIST = '["agency1","locked2"]';
+    req.profile.agency = "agency1";
+
+    await validateAgencyId(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.send).not.toHaveBeenCalled();
+
+    delete process.env.LOCKED_AGENCY_ID_LIST;
+  });
+
+  test("should ignore lockedAgencyIds when env is missing", async () => {
+    delete process.env.LOCKED_AGENCY_ID_LIST;
+    req.profile.agency = "agency1";
+
+    await validateAgencyId(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.send).not.toHaveBeenCalled();
+  });
 });
