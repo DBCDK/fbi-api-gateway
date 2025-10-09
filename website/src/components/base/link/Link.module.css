@@ -65,7 +65,7 @@
     transition-duration: 0.2s;
   }
 
-  .link:not(.disabled):not(.underline):hover:before {
+  .link.animation:not(.disabled):not(.underline):hover:before {
     transform: scaleY(1) translateX(calc((var(--pt1) + var(--pt05)) * -1));
     opacity: 1;
     pointer-events: unset;

@@ -22,6 +22,7 @@ export default function Link({
   tag = "a",
   disabled = false,
   scroll = true,
+  animation = true,
   keepActive = false,
   underline = false,
   ...props
@@ -32,6 +33,7 @@ export default function Link({
     const disabledClass = disabled ? styles.disabled : "";
     const keepActiveClass = keepActive ? styles.keepActive : "";
     const underlineClass = underline ? styles.underline : "";
+    const animationClass = animation ? styles.animation : "";
 
     children = (
       <Tag
@@ -44,7 +46,7 @@ export default function Link({
             onClick(e);
           }
         }}
-        className={`${styles.link} ${keepActiveClass} ${disabledClass} ${underlineClass} ${className}`}
+        className={`${styles.link} ${animationClass} ${keepActiveClass} ${disabledClass} ${underlineClass} ${className}`}
         tabIndex={disabled ? "-1" : tabIndex}
         disabled={disabled}
         {...props}

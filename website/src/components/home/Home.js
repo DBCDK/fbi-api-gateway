@@ -17,8 +17,8 @@ export default function Home() {
 
   const isTemp = theme === "temp";
   const isFuture = theme === "future";
+  const isTest = theme === "test" || theme === "fbstest";
   const isOld = theme === "old";
-  const isTest = theme === "test";
 
   return (
     <>
@@ -30,8 +30,9 @@ export default function Home() {
             <Text className={styles.text}>Hello! You have found the</Text>
             <Title as="h1" type="title6" className={styles.title}>
               {(isTemp || isFuture) && <strong>[Temporary]</strong>}
+              {(isTemp || isFuture) && <strong>[Temporary]</strong>}
               {isOld && <strong>[Old]</strong>}
-              {isTest && <strong>[Test]</strong>} FBI API
+              {isTest && <strong>[{theme}]</strong>} FBI API
             </Title>
           </Col>
         </Row>

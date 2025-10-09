@@ -86,7 +86,7 @@ export async function resolveAccess(manifestation, context) {
   // At some point we may choose to follow the structure of JED closely,
   // but it has to be coordinated with stakeholders
 
-  const parent =
+  let parent =
     typeof manifestation === "object"
       ? manifestation
       : await resolveManifestation({ pid: manifestation }, context);
@@ -164,6 +164,25 @@ export async function resolveAccess(manifestation, context) {
         __typename: "InfomediaService",
         id: parent.access.infomediaService.id,
       });
+    }
+
+    // If this is an omitted online access for politiken or jyllands-posten.
+    else {
+      const hasPhysical = parent?.accessTypes?.some(
+        (t) => (t?.code ?? "").toUpperCase() === "PHYSICAL"
+      );
+
+      // And the item has physical access - then we set interLibraryLoanIsPossible to true
+      // This makes the article available for interlibrary loan
+      if (hasPhysical) {
+        parent = {
+          ...parent,
+          access: {
+            ...(parent.access ?? {}),
+            interLibraryLoanIsPossible: true,
+          },
+        };
+      }
     }
   }
 

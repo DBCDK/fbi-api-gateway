@@ -29,8 +29,14 @@
   padding: var(--pt2);
   width: 100%;
   height: 175px;
-  transition: top 0.3s, height 0.2s, width 0.3s, margin 0.3s, box-shadow 0.3s,
-    border-width 0.2s, z-index 0s linear 0.3s;
+  transition:
+    top 0.3s,
+    height 0.2s,
+    width 0.3s,
+    margin 0.3s,
+    box-shadow 0.3s,
+    border-width 0.2s,
+    z-index 0s linear 0.3s;
   background-color: var(--white);
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
   z-index: 1;
@@ -53,7 +59,9 @@
 .content .collapsed {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.2s, padding 0.2s linear 0s;
+  transition:
+    max-height 0.2s,
+    padding 0.2s linear 0s;
 }
 
 .item.expanded .content {
@@ -64,8 +72,14 @@
   border-width: 4px;
 
   z-index: 2;
-  transition: top 0.3s, height 0.3s, width 0.3s, margin 0.3s, box-shadow 0.3s,
-    border-width 0.2s, z-index 0s linear 0s;
+  transition:
+    top 0.3s,
+    height 0.3s,
+    width 0.3s,
+    margin 0.3s,
+    box-shadow 0.3s,
+    border-width 0.2s,
+    z-index 0s linear 0s;
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
@@ -73,7 +87,9 @@
   padding: 0 0 var(--pt2) 0;
   margin-bottom: var(--pt2);
   max-height: 100vh;
-  transition: max-height 0.3s, padding 0.2s linear 0s;
+  transition:
+    max-height 0.3s,
+    padding 0.2s linear 0s;
 
   /* set scrollbar */
   overflow-y: auto;
@@ -97,7 +113,9 @@
 }
 
 .display p {
-  transition: font-size 0.25s, color 0.25s linear 0s;
+  transition:
+    font-size 0.25s,
+    color 0.25s linear 0s;
 }
 
 .authentication span {
@@ -157,7 +175,9 @@
   width: 0;
   opacity: 0;
   display: inline-block;
-  transition: margin 0.3s, width 0.3s;
+  transition:
+    margin 0.3s,
+    width 0.3s;
 }
 
 .item.expanded .content .note label {
@@ -262,6 +282,7 @@
 
 .item.inUse .content .buttons .use {
   background-color: var(--primary-dark);
+  color: var(--text-dark);
 }
 
 .item.inUse .content .buttons .use:hover,
@@ -286,7 +307,9 @@
   text-align: center;
   cursor: pointer;
   color: var(--text-light);
-  transition: transform 0.2s, background-color 0.3s;
+  transition:
+    transform 0.2s,
+    background-color 0.3s;
   position: absolute;
   top: var(--pt1);
   right: var(--pt1);
