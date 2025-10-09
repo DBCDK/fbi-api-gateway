@@ -135,4 +135,19 @@ describe("Test validateAgencyId", () => {
     expect(res.status).not.toHaveBeenCalled();
     expect(res.send).not.toHaveBeenCalled();
   });
+
+  test("should bypass validation for introspection queries", async () => {
+    // Simuler introspection query
+    req.body = { query: "{ __schema { types { name } } }" };
+    req.isIntrospectionQuery = true;
+
+    // Ingen agency sat — normalt ville det give 403
+    req.profile.agency = undefined;
+
+    await validateAgencyId(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.send).not.toHaveBeenCalled();
+  });
 });
