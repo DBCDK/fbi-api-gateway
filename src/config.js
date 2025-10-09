@@ -1,3 +1,5 @@
+import { getStringArray } from "./utils/env.js";
+
 export default {
   app: {
     id: process.env.APP_ID || "bibliotekdk-next-api",
@@ -28,6 +30,9 @@ export default {
   },
   dmzproxy: {
     url: process.env.PROXY_URL || null,
+  },
+  lockedAgencyIds: {
+    list: getStringArray(process.env.LOCKED_AGENCY_ID_LIST),
   },
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,

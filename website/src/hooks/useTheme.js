@@ -93,6 +93,7 @@ const icons = {
   temp: "👷",
   old: "👴",
   test: "🧪",
+  fbstest: "🧪",
 };
 
 const holidays = {
