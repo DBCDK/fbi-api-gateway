@@ -101,7 +101,7 @@ describe("Test validateAgencyId", () => {
   });
 
   test("should respond with 403 when selectedAgencyId is not in lockedAgencyIds", async () => {
-    config.lockedAgencyIds.list = ["locked1", "locked2"]; // mock direkte
+    config.lockedAgencyIds.list = ["locked1", "locked2"];
     req.profile.agency = "agency1";
 
     await validateAgencyId(req, res, next);
