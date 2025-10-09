@@ -1,6 +1,11 @@
 import config from "../config";
 
 export function validateAgencyId(req, res, next) {
+  // Bypass for introspection queries
+  if (req.isIntrospectionQuery) {
+    return next();
+  }
+
   const selectedAgencyId = req?.profile?.agency;
   const defaultAgencyId = req.smaug?.agencyId;
   const gatewaySettings = req.smaug?.gateway;
