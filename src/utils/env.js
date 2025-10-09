@@ -1,43 +1,35 @@
 /**
- * Read an environment variable and return it as string[].
+ * Read an environment variable expected to be a comma-separated list of strings.
  *
  * Behavior:
- * - If the variable is missing or an empty string, returns [].
- * - Tries to parse the value as JSON first (recommended: '["a","b"]').
- * - If JSON parsing fails or is not a string[], falls back to comma-split.
+ * - If the variable is missing or empty, returns [].
+ * - Splits the string on commas.
  * - Trims each item and removes empty entries.
  *
- * @param {string} name
- *   The name of the environment variable (e.g. "MY_LIST").
+ * Expected format (e.g. in Kubernetes or .env):
+ *   - name: LOCKED_AGENCY_ID_LIST
+ *     value: "190101,790900"
+ *
+ * @param {string | undefined | null} raw
+ *   The raw comma-separated string value to parse.
  *
  * @returns {string[]}
- *   An array of strings derived from the environment variable.
+ *   Array of strings, or [] if missing/invalid.
  *
  * @example
- * // .env -> MY_LIST=["alpha","beta","gamma"]
- * const list = getStringArray("MY_LIST"); // ["alpha","beta","gamma"]
+ * getStringArray("190101,790900");
+ * // => ["190101", "790900"]
  *
  * @example
- * // .env -> MY_LIST=alpha, beta , gamma
- * const list = getStringArray("MY_LIST"); // ["alpha","beta","gamma"]
+ * getStringArray(" 190101 , , 790900 ");
+ * // => ["190101", "790900"]
  *
  * @example
- * // Missing or empty env -> returns []
- * const list = getStringArray("NOT_SET"); // []
+ * getStringArray(undefined);
+ * // => []
  */
-export function getStringArray(name) {
-  const raw = process.env[name];
-  if (raw == null || raw === "") return [];
-
-  try {
-    const arr = JSON.parse(raw);
-    if (Array.isArray(arr) && arr.every((x) => typeof x === "string")) {
-      return arr;
-    }
-    // If JSON exists but is not a string[], fall back to split
-  } catch {
-    // Ignore and try delimiter split
-  }
+export function getStringArray(raw) {
+  if (typeof raw !== "string" || raw.trim() === "") return [];
 
   return raw
     .split(",")
