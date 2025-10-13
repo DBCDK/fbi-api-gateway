@@ -23,6 +23,7 @@ import Header from "@/components/header";
 import Menu from "@/components/menu";
 import Link from "@/components/base/link";
 import Button from "@/components/base/button/Button";
+import Highlight from "@/components/base/highlight";
 
 import styles from "./Docs.module.css";
 
@@ -39,6 +40,7 @@ const customComponents = {
   DescribeEnum,
   Link,
   Button,
+  Highlight,
 };
 
 export default function Docs() {

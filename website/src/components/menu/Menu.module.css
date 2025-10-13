@@ -30,6 +30,10 @@
   padding-left: var(--pt3);
 }
 
+.item.h2:last-child {
+  margin-bottom: var(--pt1);
+}
+
 .item.active > p > a {
   color: var(--primary-dark);
 }
