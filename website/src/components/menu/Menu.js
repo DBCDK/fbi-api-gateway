@@ -42,11 +42,33 @@ function liveTopById(id) {
 
 /* Slug helper (bevarer emojis) */
 function slugify(text = "") {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\p{L}\p{N}]+/gu, "-")
-    .replace(/^-+|-+$/g, "");
+  // Normaliser & lower-case (fjerner diakritika via NFKD)
+  const s = text.normalize("NFKD").toLowerCase();
+
+  let out = "";
+  let justAddedDash = false;
+
+  for (const ch of s) {
+    // Fjern kombinerende tegn (diakritika)
+    if (/\p{M}/u.test(ch)) continue;
+
+    const isAlphaNum = /\p{L}|\p{N}/u.test(ch); // per-tegn check = O(1)
+
+    if (isAlphaNum) {
+      out += ch;
+      justAddedDash = false;
+    } else {
+      // Saml enhver ikke-alfanum sekvens til ét '-'
+      if (!justAddedDash && out.length) {
+        out += "-";
+        justAddedDash = true;
+      }
+    }
+  }
+
+  // Trim trailing '-' (front er allerede håndteret af logikken)
+  if (out.endsWith("-")) out = out.slice(0, -1);
+  return out;
 }
 
 /* Tolerant match – men nu forventer vi primært exact menu-format:
@@ -194,15 +216,7 @@ export function Menu({ sections, active, onClick, isScrolling }) {
  * Udlæsning af h1+h2 fra content
  * ------------------------------------------*/
 function getHeadings(container) {
-  // H1 som sektioner, H2 under samme parent
   const headings = container.querySelectorAll("h1");
-
-  const slug = (txt) =>
-    (txt || "")
-      .toLowerCase()
-      .trim()
-      .replace(/[^\p{L}\p{N}]+/gu, "-")
-      .replace(/^-+|-+$/g, "");
 
   const hash = (str) => {
     let h = 0;
@@ -213,12 +227,12 @@ function getHeadings(container) {
   };
 
   function extract(el) {
-    const top = el.offsetTop; // beholdt til scrollspy-sammenligning
+    const top = el.offsetTop;
     const tag = el.tagName.toLowerCase();
     const text = el.innerText || "";
     const html = el.innerHTML || "";
-    const stableId = `${tag}-${slug(text)}-${hash(text)}`;
-    el.id = stableId; // så liveTopById kan finde elementet
+    const stableId = `${tag}-${slugify(text)}-${hash(text)}`;
+    el.id = stableId;
     return {
       tag,
       html,
