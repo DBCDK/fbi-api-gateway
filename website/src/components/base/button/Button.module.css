@@ -141,3 +141,17 @@
 :global(body.halloween:not(.dark)) .button.primary:not(.disabled) {
   color: var(--white);
 }
+
+:global(body.dark) .button.primary:not(.disabled) {
+  color: var(--white);
+  background-color: var(--secondary-dark);
+}
+
+/* Real-hover */
+@media (hover: hover) {
+  :global(body.dark) .button.primary:not(.disabled):hover,
+  :global(body.dark) .button.primary:not(.disabled):focus-within {
+    background-color: var(--text-dark);
+    color: var(--white);
+  }
+}
