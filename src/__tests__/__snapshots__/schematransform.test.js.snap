@@ -842,25 +842,19 @@ type Cover {
   original: CoverDetails
 }
 
-type LocalizedString {
-  da: String
-  en: String
-}
-
 type CreatorImage {
   url: String
-  isFreeLicense: Boolean
   attributionText: String
 }
 
 type Wikidata {
-  education: [LocalizedString!]
+  education: [String!]
   image: CreatorImage
-  nationality: LocalizedString
-  occupation: [LocalizedString!]
+  nationality: String
+  occupation: [String!]
   wikidataId: String
-  description: LocalizedString
-  awards: [LocalizedString!]
+  description: String
+  awards: [String!]
 }
 
 type CreatorInfo {
@@ -868,7 +862,7 @@ type CreatorInfo {
   firstName: String
   lastName: String
   viafid: String
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Translation {
@@ -930,7 +924,7 @@ type Person implements SubjectInterface & CreatorInterface {
   viafid: String
 
   \\"\\"\\"Additional metadata for the creator\\"\\"\\"
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -974,7 +968,7 @@ type Corporation implements SubjectInterface & CreatorInterface {
   viafid: String
 
   \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 interface CreatorInterface {
@@ -993,7 +987,7 @@ interface CreatorInterface {
   viafid: String
 
   \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 enum CulrResponseCodesEnum {
@@ -5274,25 +5268,19 @@ type Cover {
   original: CoverDetails
 }
 
-type LocalizedString {
-  da: String
-  en: String
-}
-
 type CreatorImage {
   url: String
-  isFreeLicense: Boolean
   attributionText: String
 }
 
 type Wikidata {
-  education: [LocalizedString!]
+  education: [String!]
   image: CreatorImage
-  nationality: LocalizedString
-  occupation: [LocalizedString!]
+  nationality: String
+  occupation: [String!]
   wikidataId: String
-  description: LocalizedString
-  awards: [LocalizedString!]
+  description: String
+  awards: [String!]
 }
 
 type Translation {
@@ -5354,7 +5342,7 @@ type Person implements SubjectInterface & CreatorInterface {
   viafid: String
 
   \\"\\"\\"Additional metadata for the creator\\"\\"\\"
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -5398,7 +5386,7 @@ type Corporation implements SubjectInterface & CreatorInterface {
   viafid: String
 
   \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 interface CreatorInterface {
@@ -5417,7 +5405,7 @@ interface CreatorInterface {
   viafid: String
 
   \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Complexity {
@@ -7425,25 +7413,19 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation
 }
 
-type LocalizedString {
-  da: String
-  en: String
-}
-
 type CreatorImage {
   url: String
-  isFreeLicense: Boolean
   attributionText: String
 }
 
 type Wikidata {
-  education: [LocalizedString!]
+  education: [String!]
   image: CreatorImage
-  nationality: LocalizedString
-  occupation: [LocalizedString!]
+  nationality: String
+  occupation: [String!]
   wikidataId: String
-  description: LocalizedString
-  awards: [LocalizedString!]
+  description: String
+  awards: [String!]
 }
 
 type Translation {
@@ -7505,7 +7487,7 @@ type Person implements SubjectInterface & CreatorInterface {
   viafid: String
 
   \\"\\"\\"Additional metadata for the creator\\"\\"\\"
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -7549,7 +7531,7 @@ type Corporation implements SubjectInterface & CreatorInterface {
   viafid: String
 
   \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 interface CreatorInterface {
@@ -7568,7 +7550,7 @@ interface CreatorInterface {
   viafid: String
 
   \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata: Wikidata
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 \\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
@@ -7726,6 +7708,11 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+}
+
+enum LanguageCodeEnum {
+  DA
+  EN
 }
 
 type CatalogueCodes {
