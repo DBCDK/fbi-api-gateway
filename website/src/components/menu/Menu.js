@@ -123,8 +123,7 @@ export function Menu({ sections, active, onClick, isScrolling }) {
 
             const expandSubheadings =
               hasSubheadings &&
-              (!isScrolling || activeParent === s.id) &&
-              (s.subHeadings.find((x) => x.id === active) || isActive);
+              (isActive || s.subHeadings.some((x) => x.id === active));
 
             const activeClass = isActive ? styles.active : "";
             const tagClass = styles[s.tag] || "";
