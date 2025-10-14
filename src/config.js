@@ -422,8 +422,9 @@ export default {
       teamLabel: "febib",
     },
     creatorInfo: {
-      url: process.env.CREATORINFO_URL || "http://localhost:3003/",
-      //  "http://creator-info-stg.febib-staging.svc.cloud.dbc.dk/",
+      url:
+        process.env.CREATORINFO_URL ||
+        "http://creator-info-staging.febib-staging.svc.cloud.dbc.dk/",
       ttl: process.env.CREATORINFO_TIME_TO_LIVE_SECONDS || 60 * 5,
       prefix: "creatorinfo",
       teamLabel: "febib",

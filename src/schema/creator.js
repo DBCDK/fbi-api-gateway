@@ -211,6 +211,11 @@ export const resolvers = {
       const creatorInfoRaw = await context.datasources
         .getLoader("creatorByViafid")
         .load({ viafid: args.viafid });
+
+      if (!creatorInfoRaw?.viafId) {
+        return null;
+      }
+
       return {
         display: creatorInfoRaw?.display,
         firstName: creatorInfoRaw?.original?.firstname || null,
