@@ -426,6 +426,14 @@ export default {
       prefix: "userdata",
       teamLabel: "febib",
     },
+    creatorInfo: {
+      url:
+        process.env.CREATORINFO_URL ||
+        "http://creator-info-staging.febib-staging.svc.cloud.dbc.dk/",
+      ttl: process.env.CREATORINFO_TIME_TO_LIVE_SECONDS || 60 * 5,
+      prefix: "creatorinfo",
+      teamLabel: "febib",
+    },
     orderStatus: {
       url:
         process.env.ORDERSTATUS_URL ||
