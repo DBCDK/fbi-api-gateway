@@ -207,6 +207,9 @@ type Query {
 
   \\"\\"\\"All indexes in complex search\\"\\"\\"
   complexSearchIndexes: [ComplexSearchIndex!]
+
+  \\"\\"\\"Fetch a creator by VIAF identifier\\"\\"\\"
+  creatorByViafid(viafid: String!): CreatorInfo
   culr: CulrQuery!
   debug: Debug
 
@@ -839,6 +842,29 @@ type Cover {
   original: CoverDetails
 }
 
+type CreatorImage {
+  url: String
+  attributionText: String
+}
+
+type Wikidata {
+  education: [String!]
+  image: CreatorImage
+  nationality: String
+  occupation: [String!]
+  wikidataId: String
+  description: String
+  awards: [String!]
+}
+
+type CreatorInfo {
+  display: String!
+  firstName: String
+  lastName: String
+  viafid: String
+  wikidata(language: LanguageCodeEnum): Wikidata
+}
+
 type Translation {
   \\"\\"\\"
   Translation in plural form, e.g. forfattere, komponister, instruktører etc.
@@ -893,6 +919,12 @@ type Person implements SubjectInterface & CreatorInterface {
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"Additional metadata for the creator\\"\\"\\"
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -931,6 +963,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 interface CreatorInterface {
@@ -944,6 +982,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   \\"\\"\\"
   roles: [Role!]!
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 enum CulrResponseCodesEnum {
@@ -5224,6 +5268,21 @@ type Cover {
   original: CoverDetails
 }
 
+type CreatorImage {
+  url: String
+  attributionText: String
+}
+
+type Wikidata {
+  education: [String!]
+  image: CreatorImage
+  nationality: String
+  occupation: [String!]
+  wikidataId: String
+  description: String
+  awards: [String!]
+}
+
 type Translation {
   \\"\\"\\"
   Translation in plural form, e.g. forfattere, komponister, instruktører etc.
@@ -5278,6 +5337,12 @@ type Person implements SubjectInterface & CreatorInterface {
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"Additional metadata for the creator\\"\\"\\"
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -5316,6 +5381,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 interface CreatorInterface {
@@ -5329,6 +5400,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   \\"\\"\\"
   roles: [Role!]!
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Complexity {
@@ -7336,6 +7413,21 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation
 }
 
+type CreatorImage {
+  url: String
+  attributionText: String
+}
+
+type Wikidata {
+  education: [String!]
+  image: CreatorImage
+  nationality: String
+  occupation: [String!]
+  wikidataId: String
+  description: String
+  awards: [String!]
+}
+
 type Translation {
   \\"\\"\\"
   Translation in plural form, e.g. forfattere, komponister, instruktører etc.
@@ -7390,6 +7482,12 @@ type Person implements SubjectInterface & CreatorInterface {
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"Additional metadata for the creator\\"\\"\\"
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -7428,6 +7526,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 interface CreatorInterface {
@@ -7441,6 +7545,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   \\"\\"\\"
   roles: [Role!]!
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
+  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 \\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
@@ -7598,6 +7708,11 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
+}
+
+enum LanguageCodeEnum {
+  DA
+  EN
 }
 
 type CatalogueCodes {
