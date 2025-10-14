@@ -1,34 +1,47 @@
+// src/hooks/useSchema.js
 import useSWR from "swr";
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql";
 import useStorage from "./useStorage";
 
 /**
- * Som før: bygger endpoint af window.origin + profil fra storage.
- * Bevarer tidligere adfærd, så vi ikke introducerer SSR-afhængigheder her.
+ * Build the GraphQL endpoint from window.origin + selected profile.
+ * - Calls hooks unconditionally (rules-of-hooks safe)
+ * - SSR-safe: returns null when window is not available yet
  */
 export function useGraphQLUrl(origin) {
-  const url = origin
-    ? origin
-    : typeof window !== "undefined" && window.location.origin;
-
-  const { selectedToken } = useStorage();
-  const { profile = "default" } = selectedToken || {};
+  const { selectedToken } = useStorage(); // ✅ hook always called
+  const profile = selectedToken?.profile ?? "default";
   const encodedProfile = encodeURIComponent(profile);
 
-  return `${url}/${encodedProfile}/graphql`;
+  // SSR: no window → no base URL yet
+  const base =
+    origin ?? (typeof window !== "undefined" ? window.location.origin : "");
+
+  return base ? `${base}/${encodedProfile}/graphql` : null;
 }
 
+/**
+ * useSchema
+ * - Uses a STRING SWR key (endpoint or null)
+ * - Fetches only when a token exists
+ * - Keeps tolerant non-200 behavior (returns {}) to avoid forcing error UIs
+ */
 export default function useSchema(token, _url) {
-  const endpoint = _url ?? useGraphQLUrl();
+  // Call hook unconditionally, then choose value (rules-of-hooks safe)
+  const computedEndpoint = useGraphQLUrl();
+  const endpoint = _url ?? computedEndpoint;
 
-  // samme header casing som før refaktor (det virkede hos dig)
+  const hasToken = Boolean(token?.token);
+
+  // STRING key (like your original working version)
+  const swrKey = hasToken && endpoint ? endpoint : null;
+
   const authHeader = token?.token
     ? { Authorization: `bearer ${token.token}` }
     : {};
 
-  // fetcher modtager en STRINGS-key (url)
   const fetcher = async (fetchUrl) => {
-    const response = await fetch(fetchUrl, {
+    const res = await fetch(fetchUrl, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -40,37 +53,43 @@ export default function useSchema(token, _url) {
       }),
     });
 
-    // Bevar “tolerant” opførsel: returnér tomt objekt ved non-200 (som før),
-    // så dit nuværende UI ikke går i error-state.
-    if (response.status !== 200) {
-      return {};
-    }
+    // Tolerant behavior: keep returning {} on non-200 like your original code
+    if (res.status !== 200) return {};
 
-    const json = await response.json();
+    const json = await res.json();
+    // If data is missing, keep shape predictable
+    if (!json?.data) return { schema: null, schemaStr: null, json };
+
     const schema = buildClientSchema(json.data);
     const schemaStr = printSchema(schema);
     return { schema, schemaStr, json };
   };
 
-  // STRINGS-key ⇒ fetcher(url). Ingen fetch når token mangler.
   const {
     data,
     isLoading: swrLoading,
     error,
-  } = useSWR(token?.token ? endpoint : null, fetcher, {
+    isValidating,
+    mutate,
+  } = useSWR(swrKey, fetcher, {
     revalidateOnFocus: false,
     shouldRetryOnError: false,
   });
 
-  // Kun “loading” når vi reelt henter (aldrig når token mangler)
-  const isLoading = Boolean(token?.token) ? swrLoading : false;
+  // Loading only when we actually fetch (never when token is missing or SSR has no endpoint yet)
+  const isIdle = !hasToken || !endpoint;
+  const isLoading = !isIdle && swrLoading;
 
   return {
-    schema: data?.schema,
-    schemaStr: data?.schemaStr,
-    json: data?.json,
+    schema: data?.schema ?? null,
+    schemaStr: data?.schemaStr ?? null,
+    json: data?.json ?? null,
     isLoading,
-    error,
-    endpoint,
+    isIdle,
+    isValidating,
+    error: error ?? null,
+    mutate,
+    endpoint: endpoint ?? null,
+    hasToken,
   };
 }
