@@ -220,6 +220,10 @@ export default function Changelog() {
     );
   }
 
+  if (!data.length && !selectedToken?.token && !isLoading) {
+    return <Text>... Provide a token to watch the changelog 🔑</Text>;
+  }
+
   if (!data.length && !isLoading) {
     return <Text>... Currently no deprecated fields 🤸</Text>;
   }
