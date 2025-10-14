@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 /* --------------------------------------------
  * Offset til sticky header (justér efter behov)
  * ------------------------------------------*/
-const OFFSET = 140;
+const OFFSET = 100;
 
 /* --------------------------------------------
  * Smooth scroll (bruges til både menu- og docs-links)
@@ -71,7 +71,7 @@ function slugify(text = "") {
   return out;
 }
 
-/* Tolerant match – men nu forventer vi primært exact menu-format:
+/* Tolerant match – accepterer:
    - id
    - id-slug
    - (fallback) tag-slug og tag-slug-*
@@ -230,6 +230,7 @@ function getHeadings(container) {
     const tag = el.tagName.toLowerCase();
     const text = el.innerText || "";
     const html = el.innerHTML || "";
+    // id inkluderer allerede slug + hash
     const stableId = `${tag}-${slugify(text)}-${hash(text)}`;
     el.id = stableId;
     return {
@@ -280,6 +281,7 @@ export default function Wrap(props) {
   const [isScrolling, setIsScrolling] = useState(false);
   const router = useRouter();
 
+  // VIGTIGT: containerRef skal være en DOM-node (fx ref.current), ikke selve ref-objektet
   const container = props.containerRef;
   const [sections, setSections] = useState([]);
 
@@ -302,7 +304,7 @@ export default function Wrap(props) {
     return [...subs, ...sections].sort((a, b) => (a.top > b.top ? 1 : -1));
   }, [sections]);
 
-  // Scrollspy (som din originale)
+  // Scrollspy
   useEffect(() => {
     const onScroll = throttle(() => handleScroll(), 10);
 
@@ -334,7 +336,7 @@ export default function Wrap(props) {
     return flattenSections?.find?.((s) => matchesHash(s, anchor));
   };
 
-  // Hard refresh + hashchange → SMOOTH scroll med OFFSET
+  // Hard refresh + hashchange → SMOOTH scroll med OFFSET (og normalisering af hash)
   useEffect(() => {
     const run = () => {
       const match = findMatchFromHash();
@@ -343,6 +345,9 @@ export default function Wrap(props) {
       const id = match.id || match.headingId;
       const live = liveTopById(id);
       const top = live ?? match.top;
+
+      // normalisér URL til kanonisk form (kun id)
+      setHash(id);
 
       setIsScrolling(true);
       smoothScrollTo({
@@ -361,40 +366,39 @@ export default function Wrap(props) {
     return () => window.removeEventListener("hashchange", onHash);
   }, [router, flattenSections]);
 
-  // Intercept dokumentationslinks (a[href^="#"]) → SMOOTH, ingen native bump
+  // Intercept dokumentationslinks (MDX m.m.) → SMOOTH, ingen native bump
   useEffect(() => {
     if (!container) return;
 
     const onClickCapture = (evt) => {
-      let node = evt.target;
-      let anchorEl = null;
-      while (node && node !== container) {
-        if (node.nodeType === 1 && node.matches?.('a[href^="#"]')) {
-          anchorEl = node;
-          break;
-        }
-        node = node.parentNode;
-      }
-      if (!anchorEl) return;
+      // Find nærmeste <a href="#...">, også når man klikker på child-elementer
+      const anchorEl = evt.target.closest?.('a[href^="#"]');
+      if (!anchorEl || !container.contains(anchorEl)) return;
 
       const raw = anchorEl.getAttribute("href") || "";
       const anchor = decodeURIComponent(raw.replace("#", ""));
 
-      // nu er anchor i samme format som menuen (#<id>-<slug>)
+      // 1) Prøv at matche mod kendte sektioner (tillader id, id-slug, tag-slug, ...)
       const match = flattenSections?.find?.((s) => matchesHash(s, anchor));
-      if (!match) return;
+
+      // 2) Fallback: hvis der ikke var et match, men der findes et element med det id i DOM,
+      //    så smooth-scroll direkte til det (understøtter manuelle MDX-anchors).
+      const targetId = match?.id ?? anchor;
+      const live = liveTopById(targetId);
+      const top = live ?? match?.top ?? null;
+
+      if (top == null) {
+        // Ingen kendt position → lad browseren gøre standard (ingen preventDefault)
+        return;
+      }
 
       // stop native jump (bump), vi scroller selv
       evt.preventDefault();
       evt.stopPropagation();
       if (evt.stopImmediatePropagation) evt.stopImmediatePropagation();
 
-      const id = match.id || match.headingId;
-      const live = liveTopById(id);
-      const top = live ?? match.top;
-
-      // opdater hash til *præcis* det link, der blev klikket (uden hashchange)
-      setHash(anchor);
+      // normalisér hash til kanonisk form (kun id hvis vi har match, ellers anchor)
+      setHash(match?.id ?? anchor);
 
       setIsScrolling(true);
       smoothScrollTo({
@@ -409,13 +413,12 @@ export default function Wrap(props) {
       container.removeEventListener("click", onClickCapture, { capture: true });
   }, [container, flattenSections]);
 
-  // Klik i menu → SMOOTH (samme offset & hash-format)
+  // Klik i menu → SMOOTH (kanonisk hash = kun id)
   const handleMenuClick = (s) => {
     const id = s.id || s.headingId;
-    const slug = slugify(s.text || "");
-    const desired = `${id}-${slug}`;
 
-    setHash(desired);
+    // skriv den korte/kanoniske form
+    setHash(id);
 
     const live = liveTopById(id);
     const top = live ?? s.top;
