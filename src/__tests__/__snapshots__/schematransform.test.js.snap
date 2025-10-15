@@ -843,7 +843,14 @@ type Cover {
 }
 
 type CreatorImage {
-  url: String
+  \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
+  small: String
+
+  \\"\\"\\"Url to creator image. Width 1200px\\"\\"\\"
+  medium: String
+
+  \\"\\"\\"Url to creator image. Width 1800px\\"\\"\\"
+  large: String
   attributionText: String
 }
 
@@ -5269,7 +5276,14 @@ type Cover {
 }
 
 type CreatorImage {
-  url: String
+  \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
+  small: String
+
+  \\"\\"\\"Url to creator image. Width 1200px\\"\\"\\"
+  medium: String
+
+  \\"\\"\\"Url to creator image. Width 1800px\\"\\"\\"
+  large: String
   attributionText: String
 }
 
@@ -5403,9 +5417,6 @@ interface CreatorInterface {
 
   \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
   viafid: String
-
-  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Complexity {
@@ -7414,7 +7425,14 @@ type Query {
 }
 
 type CreatorImage {
-  url: String
+  \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
+  small: String
+
+  \\"\\"\\"Url to creator image. Width 1200px\\"\\"\\"
+  medium: String
+
+  \\"\\"\\"Url to creator image. Width 1800px\\"\\"\\"
+  large: String
   attributionText: String
 }
 

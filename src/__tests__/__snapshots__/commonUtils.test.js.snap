@@ -31,6 +31,7 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
+    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -82,6 +83,7 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
+    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -125,6 +127,7 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
+    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -173,6 +176,7 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
+    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
