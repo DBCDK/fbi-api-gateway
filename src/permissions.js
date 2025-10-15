@@ -78,11 +78,7 @@ const bibdk = {
     "creatorByViafid",
   ],
   denyTypes: ["MarcRecord"],
-  denyFields: [
-    ...defaultSettings.denyFields.filter(
-      (field) => !field.endsWith(".wikidata")
-    ),
-  ],
+  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
 };
 
 /**
