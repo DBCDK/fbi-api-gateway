@@ -2,7 +2,18 @@ import { mapWikidata } from "../utils/utils";
 
 export const typeDef = `
 type CreatorImage {
-  url: String
+  """
+  Url to creator image. Width 800px
+  """
+  small: String
+  """
+  Url to creator image. Width 1200px
+  """
+  medium: String
+  """
+  Url to creator image. Width 1800px
+  """
+  large: String
   attributionText: String
 }
 
