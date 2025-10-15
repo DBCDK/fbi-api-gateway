@@ -35,7 +35,11 @@ const defaultSettings = {
     "WorkExtensionUnion",
     "MarcRecord",
   ],
-  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
+  denyFields: [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
+    "CreatorInterface.wikidata",
+  ],
 };
 
 /**
@@ -74,7 +78,11 @@ const bibdk = {
     "creatorByViafid",
   ],
   denyTypes: ["MarcRecord"],
-  denyFields: [...defaultSettings.denyFields],
+  denyFields: [
+    ...defaultSettings.denyFields.filter(
+      (field) => !field.endsWith(".wikidata")
+    ),
+  ],
 };
 
 /**
