@@ -34,6 +34,7 @@ const defaultSettings = {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
+    "GeneratedContentPerson",
   ],
   denyFields: [
     "HoldingsItem.reservable",
@@ -99,7 +100,7 @@ export default {
       "ors",
       "rawrepo",
     ],
-    denyTypes: [],
+    denyTypes: ["GeneratedContentPerson"],
     denyFields: [...defaultSettings.denyFields],
   },
   ddbcms: {
@@ -115,6 +116,7 @@ export default {
       "SEO",
       "WorkExtensionUnion",
       "WorkReview",
+      "GeneratedContentPerson",
     ],
     denyFields: [...defaultSettings.denyFields],
   },
