@@ -1055,9 +1055,12 @@ export function mapLocalized(obj) {
  */
 export function mapImage(wikidataImage) {
   const img = wikidataImage;
-  if (!img?.url) return null;
+  if (!img?.small && !img?.medium && !img?.large) return null;
+
   return {
-    url: img?.url || null,
+    small: img?.small || null,
+    medium: img?.medium || null,
+    large: img?.large || null,
     attributionText: img?.attributionText || null,
   };
 }
