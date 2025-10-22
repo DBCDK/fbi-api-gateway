@@ -31,6 +31,7 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
+    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -38,6 +39,7 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
+    "GeneratedContentPerson",
   ],
 }
 `;
@@ -82,6 +84,7 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
+    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -89,6 +92,7 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
+    "GeneratedContentPerson",
     "WorkReview",
   ],
 }
@@ -125,6 +129,7 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
+    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -132,6 +137,7 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
+    "GeneratedContentPerson",
   ],
 }
 `;
@@ -173,6 +179,7 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
+    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -180,6 +187,7 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
+    "GeneratedContentPerson",
   ],
 }
 `;
