@@ -180,4 +180,8 @@ export async function testLoad({ input }, context) {
   };
 }
 
+export const options = {
+  allowDebug: true,
+};
+
 export { teamLabel };
