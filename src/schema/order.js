@@ -252,6 +252,7 @@ export const typeDef = `
     pickUpBranch: String!
     pickUpBranchSubdivision: String
     userParameters: SubmitOrderUserParametersInput!
+    exactEdition: Boolean
     pagination: String
   } 
   
