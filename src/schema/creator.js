@@ -2,7 +2,7 @@ import { mapWikidata } from "../utils/utils";
 import generatedContentExamples from "../utils/generatedContentExamples.json";
 
 const GENERATED_DISCLAIMER =
-  "Teksten er skabt med hjælp fra AI på baggrund af lektørudtalelser om personens værker. Indholdet kan indeholde fejl, upræcise oplysninger eller fortolkninger.";
+  "Teksten er automatisk genereret ud fra bibliotekernes materialevurderinger og kan indeholde fejl.";
 
 export const typeDef = `
 type CreatorImage {
@@ -252,6 +252,10 @@ extend type Query {
   Fetch a creator by VIAF identifier
   """
   creatorByViafid(viafid: String!): CreatorInfo
+  """
+  Fetch a creator by display name
+  """
+  creatorByDisplay(display: String!): CreatorInfo
 }
 `;
 
@@ -272,16 +276,43 @@ export const resolvers = {
         lastName: creatorInfoRaw?.original?.lastname || null,
         viafid: creatorInfoRaw?.viafId || null,
         wikidata: mapWikidata(creatorInfoRaw),
-        generated: generatedContentExamples[creatorInfoRaw?.display]
+        generated: creatorInfoRaw?.generated?.shortSummary
           ? {
               summary: {
-                text: generatedContentExamples[creatorInfoRaw?.display]
-                  .longDescription,
+                text: creatorInfoRaw?.generated?.summary,
                 disclaimer: GENERATED_DISCLAIMER,
               },
               shortSummary: {
-                text: generatedContentExamples[creatorInfoRaw?.display]
-                  .shortDescription,
+                text: creatorInfoRaw?.generated?.shortSummary,
+                disclaimer: GENERATED_DISCLAIMER,
+              },
+            }
+          : null,
+      };
+    },
+    async creatorByDisplay(parent, args, context) {
+      const creatorInfoRaw = await context.datasources
+        .getLoader("creatorByDisplayName")
+        .load({ displayName: args.display });
+
+      if (!creatorInfoRaw?.viafId && !creatorInfoRaw?.display) {
+        return null;
+      }
+
+      return {
+        display: creatorInfoRaw?.display,
+        firstName: creatorInfoRaw?.original?.firstname || null,
+        lastName: creatorInfoRaw?.original?.lastname || null,
+        viafid: creatorInfoRaw?.viafId || null,
+        wikidata: mapWikidata(creatorInfoRaw),
+        generated: creatorInfoRaw?.generated?.shortSummary
+          ? {
+              summary: {
+                text: creatorInfoRaw?.generated?.summary,
+                disclaimer: GENERATED_DISCLAIMER,
+              },
+              shortSummary: {
+                text: creatorInfoRaw?.generated?.shortSummary,
                 disclaimer: GENERATED_DISCLAIMER,
               },
             }
@@ -330,18 +361,27 @@ export const resolvers = {
       }
     },
     async generated(parent, args, context) {
-      return generatedContentExamples[parent?.display]
-        ? {
+      try {
+        const info = await context.datasources
+          .getLoader("creatorByDisplayName")
+          .load({ displayName: parent?.display });
+        if (info?.generated?.shortSummary) {
+          return {
             summary: {
-              text: generatedContentExamples[parent?.display].longDescription,
+              text: info?.generated?.summary,
               disclaimer: GENERATED_DISCLAIMER,
             },
             shortSummary: {
-              text: generatedContentExamples[parent?.display].shortDescription,
+              text: info?.generated?.shortSummary,
               disclaimer: GENERATED_DISCLAIMER,
             },
-          }
-        : null;
+          };
+        }
+
+        return null;
+      } catch (e) {
+        return null;
+      }
     },
   },
   Corporation: {
