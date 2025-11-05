@@ -3094,8 +3094,7 @@ input NetpunktSubmitOrderInput {
   callNumber: String
   copy: Boolean
   exactEdition: Boolean
-  \\"\\"\\"
-  needBeforeDate is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
+  \\"\\"\\"needBeforeDate is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
   \\"\\"\\"
   needBeforeDate: String
   issue: String
@@ -3109,16 +3108,14 @@ input NetpunktSubmitOrderInput {
   pickUpAgencySubdivision: String
   pids: [String!]!
   pidOfPrimaryObject: String
-  \\"\\"\\"
-  Indicates whether order is allowed to be put in queue
+  \\"\\"\\"Indicates whether order is allowed to be put in queue
   \\"\\"\\"
   placeOnHold: String
   publicationDate: String
   publicationDateOfComponent: String
   requesterInitials: String
   requesterId: String
-  \\"\\"\\"
-  AgencyId of the desired responder for inter library loans. Kept unset if automation is wanted.
+  \\"\\"\\"AgencyId of the desired responder for inter library loans. Kept unset if automation is wanted.
   \\"\\"\\"
   responderId: String
   title: String
