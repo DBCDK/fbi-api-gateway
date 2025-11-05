@@ -210,6 +210,9 @@ type Query {
 
   \\"\\"\\"Fetch a creator by VIAF identifier\\"\\"\\"
   creatorByViafid(viafid: String!): CreatorInfo
+
+  \\"\\"\\"Fetch a creator by display name\\"\\"\\"
+  creatorByDisplay(display: String!): CreatorInfo
   culr: CulrQuery!
   debug: Debug
 

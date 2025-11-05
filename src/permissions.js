@@ -77,6 +77,7 @@ const bibdk = {
     "nodeQuery",
     "periodica",
     "creatorByViafid",
+    "creatorByDisplay",
   ],
   denyTypes: ["MarcRecord"],
   denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
