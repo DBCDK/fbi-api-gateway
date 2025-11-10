@@ -24,8 +24,6 @@ export async function load({ isbn }, context) {
       allowedErrorStatusCodes: [],
     });
 
-    console.log("res", res);
-
     if (res.status === 200) {
       return res?.body?.product || {};
     }
