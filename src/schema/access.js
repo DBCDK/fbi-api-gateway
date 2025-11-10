@@ -106,13 +106,71 @@ type DigitalArticleService {
   issn: String!
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+type Publizon {
+  """
+  URL of the sample provided by Publizon (Pubhub), typically a preview
+  of the e-book or audiobook content.
+  """
+  sample: String!
+
+  """
+  The file format of the Publizon resource (e.g., "epub", "mp3").
+  """
+  format: String
+
+  """
+  The file size of the resource in bytes, if available.
+  """
+  fileSizeInBytes: Int
+
+  """
+  The total duration of the resource in seconds, if available.
+  """
+  durationInSeconds: Int
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
 `;
 
 export const resolvers = {
   Manifestation: {
     async access(parent, args, context, info) {
       return resolveAccess(parent, context);
+    },
+  },
+
+  Publizon: {
+    async sample(parent, args, context, info) {
+      // Fetch product from Publizon (pubhup API)
+      const product = await context.datasources
+        .getLoader("products")
+        .load({ isbn: parent?.isbn });
+
+      return product?.sampleUri;
+    },
+    async format(parent, args, context, info) {
+      // Fetch product from Publizon (pubhup API)
+      const product = await context.datasources
+        .getLoader("products")
+        .load({ isbn: parent?.isbn });
+
+      return product?.format;
+    },
+    async fileSizeInBytes(parent, args, context, info) {
+      // Fetch product from Publizon (pubhup API)
+      const product = await context.datasources
+        .getLoader("products")
+        .load({ isbn: parent?.isbn });
+
+      return product?.fileSizeInBytes;
+    },
+    async durationInSeconds(parent, args, context, info) {
+      // Fetch product from Publizon (pubhup API)
+      const product = await context.datasources
+        .getLoader("products")
+        .load({ isbn: parent?.isbn });
+
+      return product?.durationInSeconds;
     },
   },
 };

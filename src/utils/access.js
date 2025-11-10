@@ -218,6 +218,21 @@ export async function resolveAccess(manifestation, context) {
     });
   }
 
+  if (parent?.identifiers) {
+    const publizonIdentifier = parent.identifiers.find(
+      ({ type, value }) => type === "PUBLIZON" && value
+    );
+
+    const isbn = publizonIdentifier?.value;
+
+    if (isbn) {
+      res.push({
+        __typename: "Publizon",
+        isbn,
+      });
+    }
+  }
+
   // Return array containing all types of access
   return _sortOnlineAccess(res);
 }
