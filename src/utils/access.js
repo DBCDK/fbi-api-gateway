@@ -219,6 +219,7 @@ export async function resolveAccess(manifestation, context) {
   }
 
   if (parent?.identifiers) {
+    // if (!context.clientPermissions?.denyTypes?.includes("Publizon")) {
     const publizonIdentifier = parent.identifiers.find(
       ({ type, value }) => type === "PUBLIZON" && value
     );
@@ -231,10 +232,17 @@ export async function resolveAccess(manifestation, context) {
         isbn,
       });
     }
+    // }
   }
 
-  // Return array containing all types of access
-  return _sortOnlineAccess(res);
+  // Ensure client can access the returned union types
+  const denyTypes = context?.clientPermissions?.denyTypes || [];
+
+  // remove restricted __typenames
+  const filtered = res.filter((obj) => !denyTypes.includes(obj.__typename));
+
+  // Return array containing all types of allowed access
+  return _sortOnlineAccess(filtered);
 }
 
 /**

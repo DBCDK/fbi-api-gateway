@@ -338,11 +338,15 @@ export function schemaLoader() {
 export async function getExecutableSchema({
   loadExternal = true,
   clientPermissions,
+  parsedPermissions = null,
   hasAccessToken,
 }) {
-  const parsedPermissions = parseClientPermissions({
-    smaug: clientPermissions,
-  });
+  // ensure Parsed permissions if not provided
+  if (!parsedPermissions) {
+    parsedPermissions = parseClientPermissions({
+      smaug: clientPermissions,
+    });
+  }
 
   const key = JSON.stringify({ hasAccessToken, parsedPermissions });
 

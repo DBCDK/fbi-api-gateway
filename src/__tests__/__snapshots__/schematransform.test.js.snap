@@ -103,7 +103,24 @@ type DigitalArticleService {
   issn: String!
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+type Publizon {
+  \\"\\"\\"
+  URL of the sample provided by Publizon (Pubhub), typically a preview
+  of the e-book or audiobook content.
+  \\"\\"\\"
+  sample: String!
+
+  \\"\\"\\"The file format of the Publizon resource (e.g., \\"epub\\", \\"mp3\\").\\"\\"\\"
+  format: String
+
+  \\"\\"\\"The file size of the resource in bytes, if available.\\"\\"\\"
+  fileSizeInBytes: Int
+
+  \\"\\"\\"The total duration of the resource in seconds, if available.\\"\\"\\"
+  durationInSeconds: Int
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
 
 type AdminData {
   creationDate: String
@@ -5073,7 +5090,24 @@ type DigitalArticleService {
   issn: String!
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+type Publizon {
+  \\"\\"\\"
+  URL of the sample provided by Publizon (Pubhub), typically a preview
+  of the e-book or audiobook content.
+  \\"\\"\\"
+  sample: String!
+
+  \\"\\"\\"The file format of the Publizon resource (e.g., \\"epub\\", \\"mp3\\").\\"\\"\\"
+  format: String
+
+  \\"\\"\\"The file size of the resource in bytes, if available.\\"\\"\\"
+  fileSizeInBytes: Int
+
+  \\"\\"\\"The total duration of the resource in seconds, if available.\\"\\"\\"
+  durationInSeconds: Int
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
 
 type Mutation {
   elba: ElbaServices!
@@ -7445,7 +7479,24 @@ type DigitalArticleService {
   issn: String!
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+type Publizon {
+  \\"\\"\\"
+  URL of the sample provided by Publizon (Pubhub), typically a preview
+  of the e-book or audiobook content.
+  \\"\\"\\"
+  sample: String!
+
+  \\"\\"\\"The file format of the Publizon resource (e.g., \\"epub\\", \\"mp3\\").\\"\\"\\"
+  format: String
+
+  \\"\\"\\"The file size of the resource in bytes, if available.\\"\\"\\"
+  fileSizeInBytes: Int
+
+  \\"\\"\\"The total duration of the resource in seconds, if available.\\"\\"\\"
+  durationInSeconds: Int
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
 
 type Query {
   manifestation(pid: String, faust: String): Manifestation

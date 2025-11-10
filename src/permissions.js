@@ -79,7 +79,7 @@ const bibdk = {
     "creatorByViafid",
     "creatorByDisplay",
   ],
-  denyTypes: ["MarcRecord"],
+  denyTypes: ["MarcRecord", "Publizon"],
   denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
 };
 

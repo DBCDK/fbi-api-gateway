@@ -12,13 +12,20 @@ import hasExternalRequest from "../utils/externalRequest";
 
 import isFastLaneQuery, { getFastLane } from "../middlewares/fastLane";
 import { log } from "dbc-node-logger";
+import { parseClientPermissions } from "../../commonUtils";
 
 /**
  * Resolves the GraphQL query
  */
 export async function resolveGraphQLQuery(req, res, next) {
+  const parsedPermissions = parseClientPermissions({
+    smaug: { gateway: { ...req?.smaug?.gateway } },
+  });
+
+  req.clientPermissions = parsedPermissions;
+
   const schema = await getExecutableSchema({
-    clientPermissions: { gateway: { ...req?.smaug?.gateway } },
+    parsedPermissions,
     hasAccessToken: !!req.accessToken,
   });
 
