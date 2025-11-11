@@ -219,8 +219,7 @@ export async function resolveAccess(manifestation, context) {
   }
 
   if (parent?.identifiers) {
-    // if (!context.clientPermissions?.denyTypes?.includes("Publizon")) {
-    const publizonIdentifier = parent.identifiers.find(
+    const publizonIdentifier = parent?.identifiers?.find(
       ({ type, value }) => type === "PUBLIZON" && value
     );
 
@@ -232,7 +231,6 @@ export async function resolveAccess(manifestation, context) {
         isbn,
       });
     }
-    // }
   }
 
   // Ensure client can access the returned union types

@@ -1,4 +1,5 @@
 import { resolveAccess } from "../utils/access";
+import { extFromUrl, forceHttpsAndStripQa } from "../utils/publizon";
 
 export const typeDef = `
 enum AccessTypeCodeEnum {
@@ -139,38 +140,50 @@ export const resolvers = {
     },
   },
 
+  // Normalization:
+  // - remove .qa. subdomain
+  // - force https
+  // - override format from file extension (fallback to API format)
+
   Publizon: {
     async sample(parent, args, context, info) {
-      // Fetch product from Publizon (pubhup API)
+      // Hent produkt fra Publizon (Pubhub API)
       const product = await context.datasources
         .getLoader("products")
         .load({ isbn: parent?.isbn });
 
-      return product?.sampleUri;
+      // Rens og tving https
+      return forceHttpsAndStripQa(product?.sampleUri);
     },
+
     async format(parent, args, context, info) {
-      // Fetch product from Publizon (pubhup API)
+      // Hent produkt
       const product = await context.datasources
         .getLoader("products")
         .load({ isbn: parent?.isbn });
 
-      return product?.format;
+      // 1) Udled fra sample-URL'ens ekstension
+      const fromExt = extFromUrl(product?.sampleUri);
+      if (fromExt) return fromExt; // fx 'epub' eller 'mp3'
+
+      // 2) Fallback: produktets eget format, normaliseret til lowercase
+      return product?.format?.toLowerCase?.() ?? null;
     },
+
     async fileSizeInBytes(parent, args, context, info) {
-      // Fetch product from Publizon (pubhup API)
       const product = await context.datasources
         .getLoader("products")
         .load({ isbn: parent?.isbn });
 
-      return product?.fileSizeInBytes;
+      return product?.fileSizeInBytes ?? null;
     },
+
     async durationInSeconds(parent, args, context, info) {
-      // Fetch product from Publizon (pubhup API)
       const product = await context.datasources
         .getLoader("products")
         .load({ isbn: parent?.isbn });
 
-      return product?.durationInSeconds;
+      return product?.durationInSeconds ?? null;
     },
   },
 };
