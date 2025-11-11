@@ -59,12 +59,12 @@ export function buildParameters({ userId, input, orderSystem }) {
     exactEdition: input.exactEdition || false,
     issue: input.issue,
     latestRequesterNote: input.latestRequesterNote,
-    needBeforeDate: input.needBeforeDate || createNeedBeforeDate(),
+    needBeforeDate: input.needBeforeDate || input.expires || createNeedBeforeDate(),
     orderSystem: input.orderSystem ? input.orderSystem : orderSystem?.toUpperCase(),
     originalOrderId: input.originalOrderId,
     pagination: input.pagesOfComponent,
-    pickUpAgencyId: input.pickUpAgencyId,
-    pickUpAgencySubdivision: input.pickUpAgencySubdivision,
+    pickUpAgencyId: input.pickUpAgencyId || input.pickUpBranch,
+    pickUpAgencySubdivision: input.pickUpAgencySubdivision || input.pickUpBranchSubdivision,
     pid: input.pids.map((pid) => pid),
     pidOfPrimaryObject: input.pidOfPrimaryObject,
     placeOnHold: input.placeOnHold,
@@ -173,7 +173,6 @@ export async function load(
 
     return parsedOrder;
   } catch (e) {
-    log.error("SUBMIT ORDER: Error object", { e })
     log.error("SUBMIT ORDER: Error placing order", { parameters });
     return null;
   }
