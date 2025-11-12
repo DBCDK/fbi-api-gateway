@@ -4,13 +4,13 @@ export const forceHttpsAndStripQa = (u) => {
   const hasProto = /^(https?:)?\/\//i.test(u);
   const url = new URL(u, hasProto ? undefined : "https://x");
 
-  // fjern 'qa' labels i host
+  // remove 'qa' labels in host
   url.hostname = url.hostname
     .split(".")
     .filter((l) => l.toLowerCase() !== "qa")
     .join(".");
 
-  // tving https
+  // force https
   url.protocol = "https:";
   return url.toString();
 };

@@ -147,26 +147,24 @@ export const resolvers = {
 
   Publizon: {
     async sample(parent, args, context, info) {
-      // Hent produkt fra Publizon (Pubhub API)
       const product = await context.datasources
         .getLoader("products")
         .load({ isbn: parent?.isbn });
 
-      // Rens og tving https
+      // Clean and force https
       return forceHttpsAndStripQa(product?.sampleUri);
     },
 
     async format(parent, args, context, info) {
-      // Hent produkt
       const product = await context.datasources
         .getLoader("products")
         .load({ isbn: parent?.isbn });
 
-      // 1) Udled fra sample-URL'ens ekstension
+      // try to get format from file extension first
       const fromExt = extFromUrl(product?.sampleUri);
       if (fromExt) return fromExt; // fx 'epub' eller 'mp3'
 
-      // 2) Fallback: produktets eget format, normaliseret til lowercase
+      // fallback to API format
       return product?.format?.toLowerCase?.() ?? null;
     },
 
