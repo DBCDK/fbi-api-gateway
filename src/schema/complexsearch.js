@@ -1,5 +1,10 @@
 import { log } from "dbc-node-logger";
-import { resolveWork } from "../utils/utils";
+import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
+import {
+  collectAuthorEntriesFromWork,
+  selectDominantAuthor,
+  fetchCreatorInfoForCandidate,
+} from "../utils/search";
 import { createTraceId } from "../utils/trace";
 
 export const typeDef = `
@@ -161,6 +166,16 @@ type ComplexSearchResponse {
   Error message, for instance if CQL is invalid
   """
   errorMessage: String
+
+  """
+  Dominant author among the top 5 works if at least 3 works share the same author.
+  """
+  creatorHit: CreatorInfo
+
+  """
+  Dominant series among the top 5 works if at least 3 belong to the same series.
+  """
+  seriesHit: Series
 }
 `;
 
@@ -212,6 +227,16 @@ async function traceFacets({ response, context, parent, args }) {
   return facetsWithTraceIds;
 }
 
+/**
+ * Load top 5 workIds for the given complex search parent
+ */
+async function loadTopWorkIds(parent, context, limit = 5) {
+  const res = await context.datasources
+    .getLoader("complexsearch")
+    .load(setPost(parent, context, { offset: 0, limit }));
+  return { workIds: res?.works || [], searchHits: res?.searchHits };
+}
+
 export const resolvers = {
   ComplexFacetResponse: {
     async facets(parent, args, context) {
@@ -241,6 +266,111 @@ export const resolvers = {
         .getLoader("complexsearch")
         .load(setPost(parent, context, args));
       return res?.hitcount || 0;
+    },
+    async creatorHit(parent, args, context) {
+      const { workIds: topWorkIds, searchHits } = await loadTopWorkIds(
+        parent,
+        context,
+        5
+      );
+      if (topWorkIds.length === 0) return null;
+
+      const works = await Promise.all(
+        topWorkIds.map(async (id) => {
+          try {
+            return await resolveWork({ id, searchHits }, context);
+          } catch (e) {
+            return null;
+          }
+        })
+      );
+
+      // Collect authors across works
+      const authorEntries = works
+        .map((work, idx) => collectAuthorEntriesFromWork(work, idx))
+        .flat()
+        .filter(Boolean);
+
+      if (authorEntries.length === 0) return null;
+
+      // Choose dominant author (>= 3 in top 5)
+      const candidate = selectDominantAuthor(authorEntries);
+
+      if (!candidate) return null;
+
+      // Fetch CreatorInfo details
+      try {
+        return await fetchCreatorInfoForCandidate(candidate, context);
+      } catch (e) {
+        return null;
+      }
+    },
+    async seriesHit(parent, args, context) {
+      // Load top 5 works and check if at least 3 belong to the same series
+      const { workIds: topWorkIds } = await loadTopWorkIds(parent, context, 5);
+      if (!topWorkIds || topWorkIds.length < 3) return null;
+
+      // Resolve works
+      const works = await Promise.all(
+        topWorkIds.map(async (id) => {
+          try {
+            return await resolveWork({ id }, context);
+          } catch (e) {
+            return null;
+          }
+        })
+      );
+
+      // For each work, fetch its series list and collect seriesIds
+      const seriesPerWork = await Promise.all(
+        works.map(async (work) => {
+          if (!work) return [];
+          try {
+            const list = await fetchAndExpandSeries(work, context);
+            // list elements include seriesId from utils.fetchAndExpandSeries
+            const ids = Array.isArray(list)
+              ? list
+                  .map((s) => s?.seriesId)
+                  .filter((v) => typeof v === "string" && v.length > 0)
+              : [];
+            // Deduplicate per work
+            return Array.from(new Set(ids));
+          } catch (e) {
+            return [];
+          }
+        })
+      );
+
+      // Count series occurrences across the 3 works
+      const counts = new Map();
+      seriesPerWork.forEach((ids) => {
+        ids.forEach((id) => {
+          counts.set(id, (counts.get(id) || 0) + 1);
+        });
+      });
+
+      // Find a series that appears in all three works (>=3)
+      let selectedSeriesId = null;
+      counts.forEach((count, id) => {
+        if (count >= 3 && !selectedSeriesId) {
+          selectedSeriesId = id;
+        }
+      });
+
+      if (!selectedSeriesId) return null;
+
+      // Fetch and return the series object similar to Query.series
+      const seriesById = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: selectedSeriesId, profile: context.profile });
+
+      if (!seriesById) return null;
+
+      return {
+        ...seriesById,
+        seriesId: selectedSeriesId,
+        traceId: createTraceId(),
+      };
     },
     async errorMessage(parent, args, context) {
       const res = await context.datasources

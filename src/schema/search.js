@@ -1,8 +1,13 @@
 import translations from "../utils/translations.json";
-import { resolveWork } from "../utils/utils";
+import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
 import { log } from "dbc-node-logger";
 import { mapFacet, mapFromFacetEnum } from "../utils/filtersAndFacetsMap";
 import { createTraceId } from "../utils/trace";
+import {
+  collectAuthorEntriesFromWork,
+  selectDominantAuthor,
+  fetchCreatorInfoForCandidate,
+} from "../utils/search";
 
 /**
  * define a searchquery
@@ -174,6 +179,16 @@ type SearchResponse {
   hitcount: Int!
 
   """
+  Dominant author among the top 5 works if at least 3 works share the same author.
+  """
+  creatorHit: CreatorInfo
+
+  """
+  Dominant series among the top 5 works if at least 3 belong to the same series.
+  """
+  seriesHit: Series
+
+  """
   The works matching the given search query. Use offset and limit for pagination.
   """
   works(offset: Int! limit: PaginationLimitScalar!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
@@ -250,6 +265,115 @@ export const resolvers = {
     },
   },
   SearchResponse: {
+    async creatorHit(parent, args, context) {
+      // Load first 5 works from simple search
+      const res = await context.datasources.getLoader("simplesearch").load({
+        ...parent,
+        offset: 0,
+        limit: 5,
+        profile: context.profile,
+      });
+      const top = Array.isArray(res?.result) ? res.result.slice(0, 5) : [];
+      if (top.length === 0) return null;
+
+      const works = await Promise.all(
+        top.map(async ({ workid }) => {
+          try {
+            return await resolveWork({ id: workid }, context);
+          } catch (e) {
+            return null;
+          }
+        })
+      );
+
+      // Collect authors across works
+      const authorEntries = works
+        .map((work, idx) => collectAuthorEntriesFromWork(work, idx))
+        .flat()
+        .filter(Boolean);
+      if (authorEntries.length === 0) return null;
+
+      // Choose dominant author (>= 3 in top 5)
+      const candidate = selectDominantAuthor(authorEntries);
+      if (!candidate) return null;
+
+      // Fetch CreatorInfo details
+      try {
+        return await fetchCreatorInfoForCandidate(candidate, context);
+      } catch (e) {
+        return null;
+      }
+    },
+    async seriesHit(parent, args, context) {
+      // Load first 5 works from simple search
+      const res = await context.datasources.getLoader("simplesearch").load({
+        ...parent,
+        offset: 0,
+        limit: 5,
+        profile: context.profile,
+      });
+      const top = Array.isArray(res?.result) ? res.result.slice(0, 5) : [];
+      if (top.length < 3) return null;
+
+      // Resolve works
+      const works = await Promise.all(
+        top.map(async ({ workid }) => {
+          try {
+            return await resolveWork({ id: workid }, context);
+          } catch (e) {
+            return null;
+          }
+        })
+      );
+
+      // For each work, fetch its series list and collect seriesIds
+      const seriesPerWork = await Promise.all(
+        works.map(async (work) => {
+          if (!work) return [];
+          try {
+            const list = await fetchAndExpandSeries(work, context);
+            const ids = Array.isArray(list)
+              ? list
+                  .map((s) => s?.seriesId)
+                  .filter((v) => typeof v === "string" && v.length > 0)
+              : [];
+            // Deduplicate per work
+            return Array.from(new Set(ids));
+          } catch (e) {
+            return [];
+          }
+        })
+      );
+
+      // Count series occurrences across the works
+      const counts = new Map();
+      seriesPerWork.forEach((ids) => {
+        ids.forEach((id) => {
+          counts.set(id, (counts.get(id) || 0) + 1);
+        });
+      });
+
+      // Find a series that appears in at least 3 works
+      let selectedSeriesId = null;
+      counts.forEach((count, id) => {
+        if (count >= 3 && !selectedSeriesId) {
+          selectedSeriesId = id;
+        }
+      });
+      if (!selectedSeriesId) return null;
+
+      // Fetch and return the series object
+      const seriesById = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: selectedSeriesId, profile: context.profile });
+      if (!seriesById) return null;
+
+      return {
+        ...seriesById,
+        seriesId: selectedSeriesId,
+        traceId: createTraceId(),
+      };
+    },
     async intelligentFacets(parent, args, context, info) {
       const input = {
         ...parent,
