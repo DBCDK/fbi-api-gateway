@@ -1,9 +1,16 @@
 import { log } from "dbc-node-logger";
-import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
+import { resolveWork } from "../utils/utils";
 import {
   collectAuthorEntriesFromWork,
   selectDominantAuthor,
   fetchCreatorInfoForCandidate,
+  TOP_K,
+  DOMINANT_MIN_COUNT,
+  getTopWorkIdsFromComplexSearch,
+  resolveWorksByIds,
+  collectSeriesIdsPerWork,
+  selectDominantSeriesId,
+  loadSeriesById,
 } from "../utils/search";
 import { createTraceId } from "../utils/trace";
 
@@ -268,22 +275,12 @@ export const resolvers = {
       return res?.hitcount || 0;
     },
     async creatorHit(parent, args, context) {
-      const { workIds: topWorkIds, searchHits } = await loadTopWorkIds(
+      const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
         parent,
-        context,
-        5
+        context
       );
-      if (topWorkIds.length === 0) return null;
-
-      const works = await Promise.all(
-        topWorkIds.map(async (id) => {
-          try {
-            return await resolveWork({ id, searchHits }, context);
-          } catch (e) {
-            return null;
-          }
-        })
-      );
+      if (!workIds || workIds.length === 0) return null;
+      const works = await resolveWorksByIds(workIds, context, searchHits);
 
       // Collect authors across works
       const authorEntries = works
@@ -306,71 +303,25 @@ export const resolvers = {
       }
     },
     async seriesHit(parent, args, context) {
-      // Load top 5 works and check if at least 3 belong to the same series
-      const { workIds: topWorkIds } = await loadTopWorkIds(parent, context, 5);
-      if (!topWorkIds || topWorkIds.length < 3) return null;
-
-      // Resolve works
-      const works = await Promise.all(
-        topWorkIds.map(async (id) => {
-          try {
-            return await resolveWork({ id }, context);
-          } catch (e) {
-            return null;
-          }
-        })
+      const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
+        parent,
+        context,
+        TOP_K
       );
+      if (!workIds || workIds.length < DOMINANT_MIN_COUNT) return null;
 
-      // For each work, fetch its series list and collect seriesIds
+      const works = await resolveWorksByIds(workIds, context, searchHits);
       const seriesPerWork = await Promise.all(
-        works.map(async (work) => {
-          if (!work) return [];
-          try {
-            const list = await fetchAndExpandSeries(work, context);
-            // list elements include seriesId from utils.fetchAndExpandSeries
-            const ids = Array.isArray(list)
-              ? list
-                  .map((s) => s?.seriesId)
-                  .filter((v) => typeof v === "string" && v.length > 0)
-              : [];
-            // Deduplicate per work
-            return Array.from(new Set(ids));
-          } catch (e) {
-            return [];
-          }
-        })
+        works.map((work) => collectSeriesIdsPerWork(work, context))
       );
 
-      // Count series occurrences across the 3 works
-      const counts = new Map();
-      seriesPerWork.forEach((ids) => {
-        ids.forEach((id) => {
-          counts.set(id, (counts.get(id) || 0) + 1);
-        });
-      });
-
-      // Find a series that appears in all three works (>=3)
-      let selectedSeriesId = null;
-      counts.forEach((count, id) => {
-        if (count >= 3 && !selectedSeriesId) {
-          selectedSeriesId = id;
-        }
-      });
-
+      const selectedSeriesId = selectDominantSeriesId(
+        seriesPerWork,
+        DOMINANT_MIN_COUNT
+      );
       if (!selectedSeriesId) return null;
 
-      // Fetch and return the series object similar to Query.series
-      const seriesById = await context.datasources
-        .getLoader("seriesById")
-        .load({ seriesId: selectedSeriesId, profile: context.profile });
-
-      if (!seriesById) return null;
-
-      return {
-        ...seriesById,
-        seriesId: selectedSeriesId,
-        traceId: createTraceId(),
-      };
+      return await loadSeriesById(selectedSeriesId, context);
     },
     async errorMessage(parent, args, context) {
       const res = await context.datasources

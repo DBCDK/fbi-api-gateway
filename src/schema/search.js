@@ -1,5 +1,5 @@
 import translations from "../utils/translations.json";
-import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
+import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 import { mapFacet, mapFromFacetEnum } from "../utils/filtersAndFacetsMap";
 import { createTraceId } from "../utils/trace";
@@ -7,6 +7,13 @@ import {
   collectAuthorEntriesFromWork,
   selectDominantAuthor,
   fetchCreatorInfoForCandidate,
+  TOP_K,
+  DOMINANT_MIN_COUNT,
+  getTopWorkIdsFromSimpleSearch,
+  resolveWorksByIds,
+  collectSeriesIdsPerWork,
+  selectDominantSeriesId,
+  loadSeriesById,
 } from "../utils/search";
 
 /**
@@ -266,25 +273,13 @@ export const resolvers = {
   },
   SearchResponse: {
     async creatorHit(parent, args, context) {
-      // Load first 5 works from simple search
-      const res = await context.datasources.getLoader("simplesearch").load({
-        ...parent,
-        offset: 0,
-        limit: 5,
-        profile: context.profile,
-      });
-      const top = Array.isArray(res?.result) ? res.result.slice(0, 5) : [];
-      if (top.length === 0) return null;
-
-      const works = await Promise.all(
-        top.map(async ({ workid }) => {
-          try {
-            return await resolveWork({ id: workid }, context);
-          } catch (e) {
-            return null;
-          }
-        })
+      const workIds = await getTopWorkIdsFromSimpleSearch(
+        parent,
+        context,
+        TOP_K
       );
+      if (!workIds || workIds.length === 0) return null;
+      const works = await resolveWorksByIds(workIds, context);
 
       // Collect authors across works
       const authorEntries = works
@@ -305,74 +300,25 @@ export const resolvers = {
       }
     },
     async seriesHit(parent, args, context) {
-      // Load first 5 works from simple search
-      const res = await context.datasources.getLoader("simplesearch").load({
-        ...parent,
-        offset: 0,
-        limit: 5,
-        profile: context.profile,
-      });
-      const top = Array.isArray(res?.result) ? res.result.slice(0, 5) : [];
-      if (top.length < 3) return null;
-
-      // Resolve works
-      const works = await Promise.all(
-        top.map(async ({ workid }) => {
-          try {
-            return await resolveWork({ id: workid }, context);
-          } catch (e) {
-            return null;
-          }
-        })
+      const workIds = await getTopWorkIdsFromSimpleSearch(
+        parent,
+        context,
+        TOP_K
       );
+      if (!workIds || workIds.length < DOMINANT_MIN_COUNT) return null;
 
-      // For each work, fetch its series list and collect seriesIds
+      const works = await resolveWorksByIds(workIds, context);
       const seriesPerWork = await Promise.all(
-        works.map(async (work) => {
-          if (!work) return [];
-          try {
-            const list = await fetchAndExpandSeries(work, context);
-            const ids = Array.isArray(list)
-              ? list
-                  .map((s) => s?.seriesId)
-                  .filter((v) => typeof v === "string" && v.length > 0)
-              : [];
-            // Deduplicate per work
-            return Array.from(new Set(ids));
-          } catch (e) {
-            return [];
-          }
-        })
+        works.map((work) => collectSeriesIdsPerWork(work, context))
       );
 
-      // Count series occurrences across the works
-      const counts = new Map();
-      seriesPerWork.forEach((ids) => {
-        ids.forEach((id) => {
-          counts.set(id, (counts.get(id) || 0) + 1);
-        });
-      });
-
-      // Find a series that appears in at least 3 works
-      let selectedSeriesId = null;
-      counts.forEach((count, id) => {
-        if (count >= 3 && !selectedSeriesId) {
-          selectedSeriesId = id;
-        }
-      });
+      const selectedSeriesId = selectDominantSeriesId(
+        seriesPerWork,
+        DOMINANT_MIN_COUNT
+      );
       if (!selectedSeriesId) return null;
 
-      // Fetch and return the series object
-      const seriesById = await context.datasources
-        .getLoader("seriesById")
-        .load({ seriesId: selectedSeriesId, profile: context.profile });
-      if (!seriesById) return null;
-
-      return {
-        ...seriesById,
-        seriesId: selectedSeriesId,
-        traceId: createTraceId(),
-      };
+      return await loadSeriesById(selectedSeriesId, context);
     },
     async intelligentFacets(parent, args, context, info) {
       const input = {
