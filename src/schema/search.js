@@ -3,6 +3,17 @@ import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 import { mapFacet, mapFromFacetEnum } from "../utils/filtersAndFacetsMap";
 import { createTraceId } from "../utils/trace";
+import {
+  collectAuthorEntriesFromWork,
+  selectDominantAuthor,
+  fetchCreatorInfoForCandidate,
+  DOMINANT_MIN_COUNT,
+  getTopWorkIdsFromSimpleSearch,
+  resolveWorksByIds,
+  collectSeriesIdsPerWork,
+  selectDominantSeriesId,
+  loadSeriesById,
+} from "../utils/search";
 
 /**
  * define a searchquery
@@ -174,6 +185,16 @@ type SearchResponse {
   hitcount: Int!
 
   """
+  Dominant author among the top 5 works if at least 3 works share the same author.
+  """
+  creatorHit: CreatorInfo
+
+  """
+  Dominant series among the top 5 works if at least 3 belong to the same series.
+  """
+  seriesHit: Series
+
+  """
   The works matching the given search query. Use offset and limit for pagination.
   """
   works(offset: Int! limit: PaginationLimitScalar!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
@@ -215,6 +236,9 @@ type DidYouMean {
 }
 `;
 
+// Local override for how many top works to evaluate for creator/series hits
+const TOP_WORKS_LIMIT = 5;
+
 export const resolvers = {
   FacetValue: {
     key(parent, args, context) {
@@ -250,6 +274,54 @@ export const resolvers = {
     },
   },
   SearchResponse: {
+    async creatorHit(parent, args, context) {
+      const workIds = await getTopWorkIdsFromSimpleSearch(
+        parent,
+        context,
+        TOP_WORKS_LIMIT
+      );
+      if (!workIds || workIds.length === 0) return null;
+      const works = await resolveWorksByIds(workIds, context);
+
+      // Collect authors across works
+      const authorEntries = works
+        .map((work, idx) => collectAuthorEntriesFromWork(work, idx))
+        .flat()
+        .filter(Boolean);
+      if (authorEntries.length === 0) return null;
+
+      // Choose dominant author (>= 3 in top 5)
+      const candidate = selectDominantAuthor(authorEntries);
+      if (!candidate) return null;
+
+      // Fetch CreatorInfo details
+      try {
+        return await fetchCreatorInfoForCandidate(candidate, context);
+      } catch (e) {
+        return null;
+      }
+    },
+    async seriesHit(parent, args, context) {
+      const workIds = await getTopWorkIdsFromSimpleSearch(
+        parent,
+        context,
+        TOP_WORKS_LIMIT
+      );
+      if (!workIds || workIds.length < DOMINANT_MIN_COUNT) return null;
+
+      const works = await resolveWorksByIds(workIds, context);
+      const seriesPerWork = await Promise.all(
+        works.map((work) => collectSeriesIdsPerWork(work, context))
+      );
+
+      const selectedSeriesId = selectDominantSeriesId(
+        seriesPerWork,
+        DOMINANT_MIN_COUNT
+      );
+      if (!selectedSeriesId) return null;
+
+      return await loadSeriesById(selectedSeriesId, context);
+    },
     async intelligentFacets(parent, args, context, info) {
       const input = {
         ...parent,

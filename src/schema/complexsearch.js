@@ -1,5 +1,16 @@
 import { log } from "dbc-node-logger";
 import { resolveWork } from "../utils/utils";
+import {
+  collectAuthorEntriesFromWork,
+  selectDominantAuthor,
+  fetchCreatorInfoForCandidate,
+  DOMINANT_MIN_COUNT,
+  getTopWorkIdsFromComplexSearch,
+  resolveWorksByIds,
+  collectSeriesIdsPerWork,
+  selectDominantSeriesId,
+  loadSeriesById,
+} from "../utils/search";
 import { createTraceId } from "../utils/trace";
 
 export const typeDef = `
@@ -161,8 +172,21 @@ type ComplexSearchResponse {
   Error message, for instance if CQL is invalid
   """
   errorMessage: String
+
+  """
+  Dominant author among the top 5 works if at least 3 works share the same author.
+  """
+  creatorHit: CreatorInfo
+
+  """
+  Dominant series among the top 5 works if at least 3 belong to the same series.
+  """
+  seriesHit: Series
 }
 `;
+
+// Local override for how many top works to evaluate for creator/series hits
+const TOP_WORKS_LIMIT = 5;
 
 /**
  * Make an object for a POST request
@@ -212,6 +236,16 @@ async function traceFacets({ response, context, parent, args }) {
   return facetsWithTraceIds;
 }
 
+/**
+ * Load top 5 workIds for the given complex search parent
+ */
+async function loadTopWorkIds(parent, context, limit = 5) {
+  const res = await context.datasources
+    .getLoader("complexsearch")
+    .load(setPost(parent, context, { offset: 0, limit }));
+  return { workIds: res?.works || [], searchHits: res?.searchHits };
+}
+
 export const resolvers = {
   ComplexFacetResponse: {
     async facets(parent, args, context) {
@@ -241,6 +275,56 @@ export const resolvers = {
         .getLoader("complexsearch")
         .load(setPost(parent, context, args));
       return res?.hitcount || 0;
+    },
+    async creatorHit(parent, args, context) {
+      const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
+        parent,
+        context,
+        TOP_WORKS_LIMIT
+      );
+      if (!workIds || workIds.length === 0) return null;
+      const works = await resolveWorksByIds(workIds, context, searchHits);
+
+      // Collect authors across works
+      const authorEntries = works
+        .map((work, idx) => collectAuthorEntriesFromWork(work, idx))
+        .flat()
+        .filter(Boolean);
+
+      if (authorEntries.length === 0) return null;
+
+      // Choose dominant author (>= 3 in top 5)
+      const candidate = selectDominantAuthor(authorEntries);
+
+      if (!candidate) return null;
+
+      // Fetch CreatorInfo details
+      try {
+        return await fetchCreatorInfoForCandidate(candidate, context);
+      } catch (e) {
+        return null;
+      }
+    },
+    async seriesHit(parent, args, context) {
+      const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
+        parent,
+        context,
+        TOP_WORKS_LIMIT
+      );
+      if (!workIds || workIds.length < DOMINANT_MIN_COUNT) return null;
+
+      const works = await resolveWorksByIds(workIds, context, searchHits);
+      const seriesPerWork = await Promise.all(
+        works.map((work) => collectSeriesIdsPerWork(work, context))
+      );
+
+      const selectedSeriesId = selectDominantSeriesId(
+        seriesPerWork,
+        DOMINANT_MIN_COUNT
+      );
+      if (!selectedSeriesId) return null;
+
+      return await loadSeriesById(selectedSeriesId, context);
     },
     async errorMessage(parent, args, context) {
       const res = await context.datasources
