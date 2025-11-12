@@ -4,7 +4,6 @@ import {
   collectAuthorEntriesFromWork,
   selectDominantAuthor,
   fetchCreatorInfoForCandidate,
-  TOP_K,
   DOMINANT_MIN_COUNT,
   getTopWorkIdsFromComplexSearch,
   resolveWorksByIds,
@@ -186,6 +185,9 @@ type ComplexSearchResponse {
 }
 `;
 
+// Local override for how many top works to evaluate for creator/series hits
+const TOP_WORKS_LIMIT = 5;
+
 /**
  * Make an object for a POST request
  * @param parent
@@ -277,7 +279,8 @@ export const resolvers = {
     async creatorHit(parent, args, context) {
       const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
         parent,
-        context
+        context,
+        TOP_WORKS_LIMIT
       );
       if (!workIds || workIds.length === 0) return null;
       const works = await resolveWorksByIds(workIds, context, searchHits);
@@ -306,7 +309,7 @@ export const resolvers = {
       const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
         parent,
         context,
-        TOP_K
+        TOP_WORKS_LIMIT
       );
       if (!workIds || workIds.length < DOMINANT_MIN_COUNT) return null;
 

@@ -111,13 +111,13 @@ export async function fetchCreatorInfoForCandidate(candidate, context) {
 /**
  * Shared constants for hit calculations
  */
-export const TOP_K = 5;
+export const DEFAULT_TOP_WORKS_LIMIT = 5;
 export const DOMINANT_MIN_COUNT = 3;
 
 /**
  * Load top workIds from simple search
  */
-export async function getTopWorkIdsFromSimpleSearch(parent, context, limit = TOP_K) {
+export async function getTopWorkIdsFromSimpleSearch(parent, context, limit = DEFAULT_TOP_WORKS_LIMIT) {
   const res = await context.datasources.getLoader("simplesearch").load({
     ...parent,
     offset: 0,
@@ -131,7 +131,7 @@ export async function getTopWorkIdsFromSimpleSearch(parent, context, limit = TOP
 /**
  * Load top workIds (and searchHits) from complex search
  */
-export async function getTopWorkIdsFromComplexSearch(parent, context, limit = TOP_K) {
+export async function getTopWorkIdsFromComplexSearch(parent, context, limit = DEFAULT_TOP_WORKS_LIMIT) {
   const res = await context.datasources.getLoader("complexsearch").load({
     offset: 0,
     limit,

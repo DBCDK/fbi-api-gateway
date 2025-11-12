@@ -7,7 +7,6 @@ import {
   collectAuthorEntriesFromWork,
   selectDominantAuthor,
   fetchCreatorInfoForCandidate,
-  TOP_K,
   DOMINANT_MIN_COUNT,
   getTopWorkIdsFromSimpleSearch,
   resolveWorksByIds,
@@ -237,6 +236,9 @@ type DidYouMean {
 }
 `;
 
+// Local override for how many top works to evaluate for creator/series hits
+const TOP_WORKS_LIMIT = 5;
+
 export const resolvers = {
   FacetValue: {
     key(parent, args, context) {
@@ -276,7 +278,7 @@ export const resolvers = {
       const workIds = await getTopWorkIdsFromSimpleSearch(
         parent,
         context,
-        TOP_K
+        TOP_WORKS_LIMIT
       );
       if (!workIds || workIds.length === 0) return null;
       const works = await resolveWorksByIds(workIds, context);
@@ -303,7 +305,7 @@ export const resolvers = {
       const workIds = await getTopWorkIdsFromSimpleSearch(
         parent,
         context,
-        TOP_K
+        TOP_WORKS_LIMIT
       );
       if (!workIds || workIds.length < DOMINANT_MIN_COUNT) return null;
 
