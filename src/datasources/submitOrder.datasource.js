@@ -51,35 +51,41 @@ export function buildParameters({ userId, input, orderSystem }) {
 
   // Set order parameters
   const params = {
-    copy: false,
-    exactEdition: input.exactEdition || false,
-    needBeforeDate: input.expires || createNeedBeforeDate(),
-    orderSystem: orderSystem?.toUpperCase(),
-    pickUpAgencyId: input.pickUpBranch,
-    pickUpAgencySubdivision: input.pickUpBranchSubdivision,
     author: input.author,
     authorOfComponent: input.authorOfComponent,
+    bibliographicCategory: input.bibliographicCategory,
+    callNumber: input.callNumber,
+    copy: false,
+    exactEdition: input.exactEdition || false,
+    issue: input.issue,
+    latestRequesterNote: input.latestRequesterNote,
+    needBeforeDate: input.needBeforeDate || input.expires || createNeedBeforeDate(),
+    orderSystem: input.orderSystem ? input.orderSystem : orderSystem?.toUpperCase(),
+    originalOrderId: input.originalOrderId,
     pagination: input.pagesOfComponent,
+    pickUpAgencyId: input.pickUpAgencyId || input.pickUpBranch,
+    pickUpAgencySubdivision: input.pickUpAgencySubdivision || input.pickUpBranchSubdivision,
+    pid: input.pids.map((pid) => pid),
+    pidOfPrimaryObject: input.pidOfPrimaryObject,
+    placeOnHold: input.placeOnHold,
     publicationDate: input.publicationDate,
     publicationDateOfComponent: input.publicationDateOfComponent,
+    requesterId: input.requesterId,
+    requesterInitials: input.requesterInitials,
+    responderId: input.responderId,
+    serviceRequester: serviceRequester,
     title: input.title,
     titleOfComponent: input.titleOfComponent,
-    volume: input.volumeOfComponent,
-    pid: input.pids.map((pid) => pid),
-    serviceRequester: serviceRequester,
     trackingId: createTrackingId(),
     ...input.userParameters,
     userId: userId || id?.value,
     userIdType,
-    verificationReferenceSource: "DBCDATAWELL",
-    requesterInitials: input.requesterInitials,
-    responderId: input.responderId,
-    placeOnHold: input.placeOnHold,
+    verificationReferenceSource: input.verificationReferenceSource ?? "DBCDATAWELL",
+    volume: input.volumeOfComponent,
   };
 
   // delete empty params
   Object.keys(params).forEach((k) => params[k] == null && delete params[k]);
-
   return params;
 }
 
