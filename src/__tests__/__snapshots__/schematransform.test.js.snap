@@ -881,6 +881,12 @@ type GeneratedContentPerson {
 
   \\"\\"\\"AI short generated summary\\"\\"\\"
   shortSummary: GeneratedContent
+
+  \\"\\"\\"
+  A summary generated from work count, workYears, often used topics etc.
+  Is null, when shortSummary exists
+  \\"\\"\\"
+  dataSummary: GeneratedContent
 }
 
 type GeneratedContent {
@@ -7515,6 +7521,12 @@ type GeneratedContentPerson {
 
   \\"\\"\\"AI short generated summary\\"\\"\\"
   shortSummary: GeneratedContent
+
+  \\"\\"\\"
+  A summary generated from work count, workYears, often used topics etc.
+  Is null, when shortSummary exists
+  \\"\\"\\"
+  dataSummary: GeneratedContent
 }
 
 type GeneratedContent {

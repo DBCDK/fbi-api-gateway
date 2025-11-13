@@ -35,6 +35,12 @@ type GeneratedContentPerson {
   AI short generated summary
   """
   shortSummary: GeneratedContent
+
+  """
+  A summary generated from work count, workYears, often used topics etc.
+  Is null, when shortSummary exists
+  """
+  dataSummary: GeneratedContent @complexity(value: 500)
 }
 
 type GeneratedContent {
@@ -278,6 +284,7 @@ export const resolvers = {
         wikidata: mapWikidata(creatorInfoRaw),
         generated: creatorInfoRaw?.generated?.shortSummary
           ? {
+              creator: creatorInfoRaw?.display,
               summary: {
                 text: creatorInfoRaw?.generated?.summary,
                 disclaimer: GENERATED_DISCLAIMER,
@@ -295,28 +302,23 @@ export const resolvers = {
         .getLoader("creatorByDisplayName")
         .load({ displayName: args.display });
 
-      if (!creatorInfoRaw?.viafId && !creatorInfoRaw?.display) {
-        return null;
-      }
-
       return {
-        display: creatorInfoRaw?.display,
+        display: args.display,
         firstName: creatorInfoRaw?.original?.firstname || null,
         lastName: creatorInfoRaw?.original?.lastname || null,
         viafid: creatorInfoRaw?.viafId || null,
-        wikidata: mapWikidata(creatorInfoRaw),
-        generated: creatorInfoRaw?.generated?.shortSummary
-          ? {
-              summary: {
-                text: creatorInfoRaw?.generated?.summary,
-                disclaimer: GENERATED_DISCLAIMER,
-              },
-              shortSummary: {
-                text: creatorInfoRaw?.generated?.shortSummary,
-                disclaimer: GENERATED_DISCLAIMER,
-              },
-            }
-          : null,
+        wikidata: creatorInfoRaw ? mapWikidata(creatorInfoRaw) : null,
+        generated: {
+          creator: args.display,
+          summary: creatorInfoRaw?.generated?.summary && {
+            text: creatorInfoRaw?.generated?.summary,
+            disclaimer: GENERATED_DISCLAIMER,
+          },
+          shortSummary: creatorInfoRaw?.generated?.shortSummary && {
+            text: creatorInfoRaw?.generated?.shortSummary,
+            disclaimer: GENERATED_DISCLAIMER,
+          },
+        },
       };
     },
   },
@@ -367,6 +369,7 @@ export const resolvers = {
           .load({ displayName: parent?.display });
         if (info?.generated?.shortSummary) {
           return {
+            creator: parent?.display,
             summary: {
               text: info?.generated?.summary,
               disclaimer: GENERATED_DISCLAIMER,
@@ -382,6 +385,24 @@ export const resolvers = {
       } catch (e) {
         return null;
       }
+    },
+  },
+  GeneratedContentPerson: {
+    async dataSummary(parent, args, context) {
+      // If a short summary exists, we don't need to generate a data summary
+      if (parent?.shortSummary) {
+        return null;
+      }
+      const res = await context.datasources
+        .getLoader("creatorDescriptionFromData")
+        .load({
+          creatorDisplayName: parent?.creator,
+          profile: context.profile,
+        });
+      return {
+        text: res,
+        disclaimer: null,
+      };
     },
   },
   Corporation: {
