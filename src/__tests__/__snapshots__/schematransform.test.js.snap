@@ -862,6 +862,20 @@ type Cover {
   original: CoverDetails
 }
 
+type FbiInfoImage {
+  url: String
+  width: Int
+  height: Int
+}
+
+type FbiInfoImages {
+  xSmall: FbiInfoImage
+  small: FbiInfoImage
+  medium: FbiInfoImage
+  large: FbiInfoImage
+  original: FbiInfoImage
+}
+
 type CreatorImage {
   \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
   small: String
@@ -887,6 +901,9 @@ type GeneratedContentPerson {
   Is null, when shortSummary exists
   \\"\\"\\"
   dataSummary: GeneratedContent
+
+  \\"\\"\\"The most often used topics of the creator\\"\\"\\"
+  topSubjects: [String!]
 }
 
 type GeneratedContent {
@@ -898,6 +915,10 @@ type GeneratedContent {
   May contain info about the source of the content.
   \\"\\"\\"
   disclaimer: String
+}
+
+type Forfatterweb {
+  image: FbiInfoImages
 }
 
 type Wikidata {
@@ -917,6 +938,7 @@ type CreatorInfo {
   viafid: String
   wikidata(language: LanguageCodeEnum): Wikidata
   generated: GeneratedContentPerson
+  forfatterweb: Forfatterweb
 }
 
 type Translation {
@@ -982,6 +1004,9 @@ type Person implements SubjectInterface & CreatorInterface {
 
   \\"\\"\\"AI Generated content for the creator\\"\\"\\"
   generated: GeneratedContentPerson
+
+  \\"\\"\\"Additional data from Forfatterweb\\"\\"\\"
+  forfatterweb: Forfatterweb
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -5336,6 +5361,20 @@ type Cover {
   original: CoverDetails
 }
 
+type FbiInfoImage {
+  url: String
+  width: Int
+  height: Int
+}
+
+type FbiInfoImages {
+  xSmall: FbiInfoImage
+  small: FbiInfoImage
+  medium: FbiInfoImage
+  large: FbiInfoImage
+  original: FbiInfoImage
+}
+
 type CreatorImage {
   \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
   small: String
@@ -5346,6 +5385,10 @@ type CreatorImage {
   \\"\\"\\"Url to creator image. Width 1800px\\"\\"\\"
   large: String
   attributionText: String
+}
+
+type Forfatterweb {
+  image: FbiInfoImages
 }
 
 type Wikidata {
@@ -5418,6 +5461,9 @@ type Person implements SubjectInterface & CreatorInterface {
 
   \\"\\"\\"Additional metadata for the creator\\"\\"\\"
   wikidata(language: LanguageCodeEnum): Wikidata
+
+  \\"\\"\\"Additional data from Forfatterweb\\"\\"\\"
+  forfatterweb: Forfatterweb
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -7502,6 +7548,20 @@ type Query {
   manifestation(pid: String, faust: String): Manifestation
 }
 
+type FbiInfoImage {
+  url: String
+  width: Int
+  height: Int
+}
+
+type FbiInfoImages {
+  xSmall: FbiInfoImage
+  small: FbiInfoImage
+  medium: FbiInfoImage
+  large: FbiInfoImage
+  original: FbiInfoImage
+}
+
 type CreatorImage {
   \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
   small: String
@@ -7527,6 +7587,9 @@ type GeneratedContentPerson {
   Is null, when shortSummary exists
   \\"\\"\\"
   dataSummary: GeneratedContent
+
+  \\"\\"\\"The most often used topics of the creator\\"\\"\\"
+  topSubjects: [String!]
 }
 
 type GeneratedContent {
@@ -7538,6 +7601,10 @@ type GeneratedContent {
   May contain info about the source of the content.
   \\"\\"\\"
   disclaimer: String
+}
+
+type Forfatterweb {
+  image: FbiInfoImages
 }
 
 type Wikidata {
@@ -7613,6 +7680,9 @@ type Person implements SubjectInterface & CreatorInterface {
 
   \\"\\"\\"AI Generated content for the creator\\"\\"\\"
   generated: GeneratedContentPerson
+
+  \\"\\"\\"Additional data from Forfatterweb\\"\\"\\"
+  forfatterweb: Forfatterweb
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {

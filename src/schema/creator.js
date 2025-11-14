@@ -41,6 +41,11 @@ type GeneratedContentPerson {
   Is null, when shortSummary exists
   """
   dataSummary: GeneratedContent @complexity(value: 500)
+
+  """
+  The most often used topics of the creator
+  """
+  topSubjects: [String!]
 }
 
 type GeneratedContent {
@@ -54,6 +59,10 @@ type GeneratedContent {
   May contain info about the source of the content.
   """
   disclaimer: String
+}
+
+type Forfatterweb {
+  image: FbiInfoImages
 }
 
 type Wikidata {
@@ -73,6 +82,7 @@ type CreatorInfo {
   viafid: String
   wikidata(language: LanguageCodeEnum): Wikidata
   generated: GeneratedContentPerson
+  forfatterweb: Forfatterweb
 }
 
 type Translation {
@@ -164,6 +174,11 @@ type Person implements SubjectInterface & CreatorInterface {
   AI Generated content for the creator
   """
   generated: GeneratedContentPerson
+
+  """
+  Additional data from Forfatterweb
+  """
+  forfatterweb: Forfatterweb
 }
 type Corporation implements SubjectInterface & CreatorInterface {
     """
@@ -329,6 +344,16 @@ export const resolvers = {
       if (!data) return null;
       return { ...data, language };
     },
+    async forfatterweb(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("creatorInfoFromData")
+        .load({
+          creatorDisplayName: parent?.display,
+          profile: context.profile,
+        });
+
+      return res?.forfatterweb;
+    },
   },
   Person: {
     roles(parent, args, context, info) {
@@ -389,20 +414,25 @@ export const resolvers = {
   },
   GeneratedContentPerson: {
     async dataSummary(parent, args, context) {
-      // If a short summary exists, we don't need to generate a data summary
-      if (parent?.shortSummary) {
-        return null;
-      }
       const res = await context.datasources
-        .getLoader("creatorDescriptionFromData")
+        .getLoader("creatorInfoFromData")
         .load({
           creatorDisplayName: parent?.creator,
           profile: context.profile,
         });
       return {
-        text: res,
+        text: res?.dataSummary || null,
         disclaimer: null,
       };
+    },
+    async topSubjects(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("creatorInfoFromData")
+        .load({
+          creatorDisplayName: parent?.creator,
+          profile: context.profile,
+        });
+      return res?.topSubjects || [];
     },
   },
   Corporation: {
