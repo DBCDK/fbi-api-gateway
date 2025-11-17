@@ -53,7 +53,8 @@ export function selectDominantAuthor(authorEntries) {
       if (
         !candidate ||
         value.count > candidate.count ||
-        (value.count === candidate.count && value.firstIndex < candidate.firstIndex)
+        (value.count === candidate.count &&
+          value.firstIndex < candidate.firstIndex)
       ) {
         candidate = value;
       }
@@ -80,7 +81,10 @@ export async function fetchCreatorInfoForCandidate(candidate, context) {
       .load({ displayName: candidate.display });
   }
 
-  if (!creatorInfoRaw || (!creatorInfoRaw?.viafId && !creatorInfoRaw?.display)) {
+  if (
+    !creatorInfoRaw ||
+    (!creatorInfoRaw?.viafId && !creatorInfoRaw?.display)
+  ) {
     return null;
   }
 
@@ -108,16 +112,19 @@ export async function fetchCreatorInfoForCandidate(candidate, context) {
   };
 }
 
-/**
- * Shared constants for hit calculations
- */
+// Shared constants for hit calculations - top works limit
 export const DEFAULT_TOP_WORKS_LIMIT = 5;
+// number of works that must share the same author/series to be considered dominant
 export const DOMINANT_MIN_COUNT = 3;
 
 /**
  * Load top workIds from simple search
  */
-export async function getTopWorkIdsFromSimpleSearch(parent, context, limit = DEFAULT_TOP_WORKS_LIMIT) {
+export async function getTopWorkIdsFromSimpleSearch(
+  parent,
+  context,
+  limit = DEFAULT_TOP_WORKS_LIMIT
+) {
   const res = await context.datasources.getLoader("simplesearch").load({
     ...parent,
     offset: 0,
@@ -131,7 +138,11 @@ export async function getTopWorkIdsFromSimpleSearch(parent, context, limit = DEF
 /**
  * Load top workIds (and searchHits) from complex search
  */
-export async function getTopWorkIdsFromComplexSearch(parent, context, limit = DEFAULT_TOP_WORKS_LIMIT) {
+export async function getTopWorkIdsFromComplexSearch(
+  parent,
+  context,
+  limit = DEFAULT_TOP_WORKS_LIMIT
+) {
   const res = await context.datasources.getLoader("complexsearch").load({
     offset: 0,
     limit,
@@ -184,7 +195,10 @@ export async function collectSeriesIdsPerWork(work, context) {
  * Given arrays of seriesIds per work, select a dominant series id
  * that occurs at least minCount times across works.
  */
-export function selectDominantSeriesId(seriesIdsPerWork, minCount = DOMINANT_MIN_COUNT) {
+export function selectDominantSeriesId(
+  seriesIdsPerWork,
+  minCount = DOMINANT_MIN_COUNT
+) {
   const counts = new Map();
   (seriesIdsPerWork || []).forEach((ids) => {
     (ids || []).forEach((id) => {
@@ -216,5 +230,3 @@ export async function loadSeriesById(seriesId, context) {
     traceId: createTraceId(),
   };
 }
-
-

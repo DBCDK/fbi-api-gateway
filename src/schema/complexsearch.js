@@ -2,14 +2,13 @@ import { log } from "dbc-node-logger";
 import { resolveWork } from "../utils/utils";
 import {
   collectAuthorEntriesFromWork,
-  selectDominantAuthor,
-  fetchCreatorInfoForCandidate,
-  DOMINANT_MIN_COUNT,
-  getTopWorkIdsFromComplexSearch,
-  resolveWorksByIds,
   collectSeriesIdsPerWork,
-  selectDominantSeriesId,
+  fetchCreatorInfoForCandidate,
+  getTopWorkIdsFromComplexSearch,
   loadSeriesById,
+  resolveWorksByIds,
+  selectDominantAuthor,
+  selectDominantSeriesId,
 } from "../utils/search";
 import { createTraceId } from "../utils/trace";
 
@@ -185,9 +184,6 @@ type ComplexSearchResponse {
 }
 `;
 
-// Local override for how many top works to evaluate for creator/series hits
-const TOP_WORKS_LIMIT = 5;
-
 /**
  * Make an object for a POST request
  * @param parent
@@ -236,15 +232,15 @@ async function traceFacets({ response, context, parent, args }) {
   return facetsWithTraceIds;
 }
 
-/**
- * Load top 5 workIds for the given complex search parent
- */
-async function loadTopWorkIds(parent, context, limit = 5) {
-  const res = await context.datasources
-    .getLoader("complexsearch")
-    .load(setPost(parent, context, { offset: 0, limit }));
-  return { workIds: res?.works || [], searchHits: res?.searchHits };
-}
+// /**
+//  * Load top 5 workIds for the given complex search parent
+//  */
+// async function loadTopWorkIds(parent, context, limit = 5) {
+//   const res = await context.datasources
+//     .getLoader("complexsearch")
+//     .load(setPost(parent, context, { offset: 0, limit }));
+//   return { workIds: res?.works || [], searchHits: res?.searchHits };
+// }
 
 export const resolvers = {
   ComplexFacetResponse: {
@@ -279,9 +275,9 @@ export const resolvers = {
     async creatorHit(parent, args, context) {
       const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
         parent,
-        context,
-        TOP_WORKS_LIMIT
+        context
       );
+
       if (!workIds || workIds.length === 0) return null;
       const works = await resolveWorksByIds(workIds, context, searchHits);
 
@@ -308,20 +304,16 @@ export const resolvers = {
     async seriesHit(parent, args, context) {
       const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
         parent,
-        context,
-        TOP_WORKS_LIMIT
+        context
       );
-      if (!workIds || workIds.length < DOMINANT_MIN_COUNT) return null;
+      if (workIds?.length < 0) return null;
 
       const works = await resolveWorksByIds(workIds, context, searchHits);
       const seriesPerWork = await Promise.all(
         works.map((work) => collectSeriesIdsPerWork(work, context))
       );
 
-      const selectedSeriesId = selectDominantSeriesId(
-        seriesPerWork,
-        DOMINANT_MIN_COUNT
-      );
+      const selectedSeriesId = selectDominantSeriesId(seriesPerWork);
       if (!selectedSeriesId) return null;
 
       return await loadSeriesById(selectedSeriesId, context);
