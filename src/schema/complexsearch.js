@@ -173,12 +173,12 @@ type ComplexSearchResponse {
   errorMessage: String
 
   """
-  Dominant author among the top 5 works if at least 3 works share the same author.
+  Returned when at least 3 of the top 5 works share the same creator.
   """
   creatorHit: CreatorInfo
 
   """
-  Dominant series among the top 5 works if at least 3 belong to the same series.
+  Returned when at least 3 of the top 5 works belong to the same series.
   """
   seriesHit: Series
 }
