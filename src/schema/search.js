@@ -278,6 +278,7 @@ export const resolvers = {
 
       const workIds = res?.result.map(({ workid }) => workid).filter(Boolean);
       if (!workIds || workIds.length === 0) return null;
+      
       const works = await resolveWorksByIds(workIds, context);
 
       // Collect authors across works

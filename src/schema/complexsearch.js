@@ -267,6 +267,7 @@ export const resolvers = {
         .load(setPost(parent, context, { ...args, limit: 5 }));
       const workIds = res?.works || [];
       if (!workIds || workIds?.length === 0) return null;
+      
       const works = await resolveWorksByIds(workIds, context);
 
       // Collect authors across works
