@@ -57,7 +57,6 @@ export function selectPrimaryAuthor(authorEntries) {
   return null;
 }
 
-
 /**
  * Fetch and map CreatorInfo for a candidate
  */
@@ -107,15 +106,15 @@ export async function getCreatorInfo(candidate, context) {
   };
 }
 
-
-
 /**
  * Resolve a list of workIds to work objects
  * Optionally enrich with searchHits (complex search)
  */
 export async function resolveWorksByIds(workIds, context, searchHits) {
+  //only resolve the top 5 workIds
+  const limitedWorkIds = workIds.slice(0, DEFAULT_TOP_WORKS_LIMIT);
   const works = await Promise.all(
-    (workIds || []).map(async (id) => {
+    (limitedWorkIds || []).map(async (id) => {
       try {
         return await resolveWork({ id, searchHits }, context);
       } catch (e) {

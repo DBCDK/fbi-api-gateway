@@ -264,10 +264,10 @@ export const resolvers = {
       // Get top 5 workIds and resolve works
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context, { ...args, limit: 5 }));
+        .load(setPost(parent, context, args));
       const workIds = res?.works || [];
       if (!workIds || workIds?.length === 0) return null;
-      
+
       const works = await resolveWorksByIds(workIds, context);
 
       // Collect authors across works
@@ -291,9 +291,10 @@ export const resolvers = {
       // Get top 5 workIds and resolve works
       const res = await context.datasources
         .getLoader("complexsearch")
-        .load(setPost(parent, context, { ...args, limit: 5 }));
+        .load(setPost(parent, context, args));
       const workIds = res?.works || [];
       const searchHits = res?.searchHits;
+
       if (!workIds || workIds.length === 0) return null;
 
       const works = await resolveWorksByIds(workIds, context, searchHits);

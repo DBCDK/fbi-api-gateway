@@ -271,16 +271,13 @@ export const resolvers = {
     async creatorHit(parent, args, context) {
       const res = await context.datasources.getLoader("simplesearch").load({
         ...parent,
-        offset: 0,
-        limit: 5,
         profile: context.profile,
       });
+      const workIds =
+        res?.result.map(({ workid }) => workid).filter(Boolean) || [];
+      if (workIds.length === 0) return null;
 
-      const workIds = res?.result.map(({ workid }) => workid).filter(Boolean);
-      if (!workIds || workIds.length === 0) return null;
-      
       const works = await resolveWorksByIds(workIds, context);
-
       // Collect authors across works
       const authorEntries = getWorkAuthors(works);
       if (authorEntries.length === 0) return null;
@@ -300,8 +297,6 @@ export const resolvers = {
       // Get top 5 workIds and resolve works
       const res = await context.datasources.getLoader("simplesearch").load({
         ...parent,
-        offset: 0,
-        limit: 5,
         profile: context.profile,
       });
 
