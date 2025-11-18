@@ -288,33 +288,29 @@ export const resolvers = {
       const works = await resolveWorksByIds(workIds, context);
 
       // Collect authors across works
-      const authorEntries = works
-        .map((work, idx) => getWorkAuthors(work, idx))
-        .flat()
-        .filter(Boolean);
+      const authorEntries = getWorkAuthors(works);
       if (authorEntries.length === 0) return null;
 
       // Choose dominant author (>= 3 in top 5)
-      const candidate = selectPrimaryAuthor(authorEntries);
-      if (!candidate) return null;
+      const primaryAuthor = selectPrimaryAuthor(authorEntries);
+      if (!primaryAuthor) return null;
 
       // Fetch CreatorInfo details
       try {
-        return await getCreatorInfo(candidate, context);
+        return await getCreatorInfo(primaryAuthor, context);
       } catch (e) {
         return null;
       }
     },
     async seriesHit(parent, args, context) {
+      // Get top 5 workIds and resolve works
       const res = await context.datasources.getLoader("simplesearch").load({
         ...parent,
         offset: 0,
         limit: 5,
         profile: context.profile,
       });
-      // const top = Array.isArray(res?.result)
-      //   ? res.result.slice(0, TOP_WORKS_LIMIT)
-      //   : [];
+
       const workIds = res?.result?.map(({ workid }) => workid).filter(Boolean);
       if (!workIds || workIds.length < DOMINANT_MIN_COUNT) return null;
 
@@ -324,10 +320,10 @@ export const resolvers = {
         works.map((work) => getSeriesIdsFromWork(work, context))
       );
 
+      // return seriessid if it appears more than 3 times
       const selectedSeriesId = selectPrimarySeriesId(seriesPerWork);
       if (!selectedSeriesId) return null;
 
-      // load and return a series by id
       const seriesById = await context.datasources
         .getLoader("seriesById")
         .load({ seriesId: selectedSeriesId, profile: context.profile });

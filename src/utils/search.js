@@ -5,29 +5,31 @@ import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
  * Extract author entries from works for counting.
  * creators with role functionCode === 'aut'
  */
-export function getWorkAuthors(work, workIndex) {
-  const creators = Array.isArray(work?.creators)
-    ? work.creators
-    : [
-        ...(work?.creators?.persons || []),
-        ...(work?.creators?.corporations || []),
-      ];
+export function getWorkAuthors(works) {
+  const allEntries = [];
+  (works || []).forEach((work, workIndex) => {
+    const creators = Array.isArray(work?.creators)
+      ? work.creators
+      : [
+          ...(work?.creators?.persons || []),
+          ...(work?.creators?.corporations || []),
+        ];
 
-  const entries = [];
-  creators
-    ?.filter((c) => Array.isArray(c?.roles))
-    ?.filter((c) => c.roles?.some?.((r) => r?.functionCode === "aut"))
-    ?.forEach((c) => {
-      const viafid = c?.viafid || null;
-      const display = c?.display || null;
-      if (!viafid && !display) return;
-      const key = viafid
-        ? `viaf:${viafid}`
-        : `name:${String(display).toLowerCase().trim()}`;
-      entries.push({ key, viafid, display, index: workIndex });
-    });
+    creators
+      ?.filter((c) => Array.isArray(c?.roles))
+      ?.filter((c) => c.roles?.some?.((r) => r?.functionCode === "aut"))
+      ?.forEach((c) => {
+        const viafid = c?.viafid || null;
+        const display = c?.display || null;
+        if (!viafid && !display) return;
+        const key = viafid
+          ? `viaf:${viafid}`
+          : `name:${String(display).toLowerCase().trim()}`;
+        allEntries.push({ key, viafid, display, index: workIndex });
+      });
+  });
 
-  return entries;
+  return allEntries;
 }
 
 /**
