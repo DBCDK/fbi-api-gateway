@@ -7,7 +7,6 @@ import {
   getWorkAuthors,
   selectPrimaryAuthor,
   getCreatorInfo,
-  DOMINANT_MIN_COUNT,
   resolveWorksByIds,
   getSeriesIdsFromWork,
   selectPrimarySeriesId,
@@ -312,7 +311,7 @@ export const resolvers = {
       });
 
       const workIds = res?.result?.map(({ workid }) => workid).filter(Boolean);
-      if (!workIds || workIds.length < DOMINANT_MIN_COUNT) return null;
+      if (!workIds || workIds.length === 0) return null;
 
       const works = await resolveWorksByIds(workIds, context);
       // get series ids from works
