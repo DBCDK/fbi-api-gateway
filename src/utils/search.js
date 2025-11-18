@@ -1,6 +1,11 @@
 import { mapWikidata } from "./utils";
 import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
 
+// Shared constants for hit calculations - top works limit
+export const DEFAULT_TOP_WORKS_LIMIT = 5;
+// number of works that must share the same author/series to be considered dominant
+export const DOMINANT_MIN_COUNT = 3;
+
 /**
  * Extract author entries from works for counting.
  * creators with role functionCode === 'aut'
@@ -39,31 +44,19 @@ export function selectPrimaryAuthor(authorEntries) {
   if (!authorEntries?.length) return null;
 
   const counts = new Map();
-  authorEntries.forEach(({ key, viafid, display, index }) => {
-    if (!counts.has(key)) {
-      counts.set(key, { viafid, display, count: 0, firstIndex: index });
-    }
-    const entry = counts.get(key);
-    entry.count += 1;
-    if (index < entry.firstIndex) entry.firstIndex = index;
-  });
 
-  let candidate = null;
-  counts.forEach((value) => {
-    if (value.count >= 3) {
-      if (
-        !candidate ||
-        value.count > candidate.count ||
-        (value.count === candidate.count &&
-          value.firstIndex < candidate.firstIndex)
-      ) {
-        candidate = value;
-      }
-    }
-  });
+  for (const { key, viafid, display } of authorEntries) {
+    const nextCount = (counts.get(key) || 0) + 1;
+    counts.set(key, nextCount);
 
-  return candidate;
+    if (nextCount >= DOMINANT_MIN_COUNT) {
+      return { viafid, display, count: nextCount };
+    }
+  }
+
+  return null;
 }
+
 
 /**
  * Fetch and map CreatorInfo for a candidate
@@ -114,10 +107,7 @@ export async function getCreatorInfo(candidate, context) {
   };
 }
 
-// Shared constants for hit calculations - top works limit
-export const DEFAULT_TOP_WORKS_LIMIT = 5;
-// number of works that must share the same author/series to be considered dominant
-export const DOMINANT_MIN_COUNT = 3;
+
 
 /**
  * Resolve a list of workIds to work objects
