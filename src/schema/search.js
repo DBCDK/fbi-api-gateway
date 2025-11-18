@@ -233,9 +233,6 @@ type DidYouMean {
 }
 `;
 
-// Local override for how many top works to evaluate for creator/series hits
-const TOP_WORKS_LIMIT = 5;
-
 export const resolvers = {
   FacetValue: {
     key(parent, args, context) {
@@ -278,7 +275,6 @@ export const resolvers = {
         limit: 5,
         profile: context.profile,
       });
-
 
       const workIds = res?.result.map(({ workid }) => workid).filter(Boolean);
       if (!workIds || workIds.length === 0) return null;
