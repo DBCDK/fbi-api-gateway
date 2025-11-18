@@ -177,7 +177,3 @@ export function selectPrimarySeriesId(
   });
   return selectedSeriesId;
 }
-
-/**
- * Load a Series by id and shape for API response, including traceId
- */

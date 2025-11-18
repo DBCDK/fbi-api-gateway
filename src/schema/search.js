@@ -279,9 +279,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      // const top = Array.isArray(res?.result)
-      //   ? res.result.slice(0, TOP_WORKS_LIMIT)
-      //   : [];
+
       const workIds = res?.result.map(({ workid }) => workid).filter(Boolean);
       if (!workIds || workIds.length === 0) return null;
       const works = await resolveWorksByIds(workIds, context);
