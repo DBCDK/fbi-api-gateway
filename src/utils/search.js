@@ -1,12 +1,11 @@
 import { mapWikidata } from "./utils";
 import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
-import { createTraceId } from "../utils/trace";
 
 /**
  * Extract author entries from works for counting.
- * Considers persons with role functionCode === 'aut'
+ * creators with role functionCode === 'aut'
  */
-export function collectAuthorEntriesFromWork(work, workIndex) {
+export function getWorkAuthors(work, workIndex) {
   const creators = Array.isArray(work?.creators)
     ? work.creators
     : [
@@ -34,7 +33,7 @@ export function collectAuthorEntriesFromWork(work, workIndex) {
 /**
  * From author entries, compute counts and pick a dominant author (>=3)
  */
-export function selectDominantAuthor(authorEntries) {
+export function selectPrimaryAuthor(authorEntries) {
   if (!authorEntries?.length) return null;
 
   const counts = new Map();
@@ -67,7 +66,7 @@ export function selectDominantAuthor(authorEntries) {
 /**
  * Fetch and map CreatorInfo for a candidate
  */
-export async function fetchCreatorInfoForCandidate(candidate, context) {
+export async function getCreatorInfo(candidate, context) {
   if (!candidate) return null;
 
   let creatorInfoRaw = null;
@@ -88,6 +87,7 @@ export async function fetchCreatorInfoForCandidate(candidate, context) {
     return null;
   }
 
+  //Todo: add somewhere more central/readable
   const GENERATED_DISCLAIMER =
     "Teksten er automatisk genereret ud fra bibliotekernes materialevurderinger og kan indeholde fejl.";
 
@@ -118,45 +118,6 @@ export const DEFAULT_TOP_WORKS_LIMIT = 5;
 export const DOMINANT_MIN_COUNT = 3;
 
 /**
- * Load top workIds from simple search
- */
-export async function getTopWorkIdsFromSimpleSearch(
-  parent,
-  context,
-  limit = DEFAULT_TOP_WORKS_LIMIT
-) {
-  const res = await context.datasources.getLoader("simplesearch").load({
-    ...parent,
-    offset: 0,
-    limit,
-    profile: context.profile,
-  });
-  const top = Array.isArray(res?.result) ? res.result.slice(0, limit) : [];
-  return top.map(({ workid }) => workid).filter(Boolean);
-}
-
-/**
- * Load top workIds (and searchHits) from complex search
- */
-export async function getTopWorkIdsFromComplexSearch(
-  parent,
-  context,
-  limit = DEFAULT_TOP_WORKS_LIMIT
-) {
-  const res = await context.datasources.getLoader("complexsearch").load({
-    offset: 0,
-    limit,
-    cql: parent.cql,
-    profile: context.profile,
-    filters: parent.filters,
-    facets: parent?.facets?.facets,
-    facetLimit: parent?.facets?.facetLimit,
-    includeFilteredPids: parent?.includeFilteredPids || false,
-  });
-  return { workIds: res?.works || [], searchHits: res?.searchHits };
-}
-
-/**
  * Resolve a list of workIds to work objects
  * Optionally enrich with searchHits (complex search)
  */
@@ -176,7 +137,7 @@ export async function resolveWorksByIds(workIds, context, searchHits) {
 /**
  * For a work, fetch series and return a unique list of seriesIds for that work
  */
-export async function collectSeriesIdsPerWork(work, context) {
+export async function getSeriesIdsFromWork(work, context) {
   if (!work) return [];
   try {
     const list = await fetchAndExpandSeries(work, context);
@@ -195,7 +156,7 @@ export async function collectSeriesIdsPerWork(work, context) {
  * Given arrays of seriesIds per work, select a dominant series id
  * that occurs at least minCount times across works.
  */
-export function selectDominantSeriesId(
+export function selectPrimarySeriesId(
   seriesIdsPerWork,
   minCount = DOMINANT_MIN_COUNT
 ) {
@@ -218,15 +179,3 @@ export function selectDominantSeriesId(
 /**
  * Load a Series by id and shape for API response, including traceId
  */
-export async function loadSeriesById(seriesId, context) {
-  if (!seriesId) return null;
-  const seriesById = await context.datasources
-    .getLoader("seriesById")
-    .load({ seriesId, profile: context.profile });
-  if (!seriesById) return null;
-  return {
-    ...seriesById,
-    seriesId,
-    traceId: createTraceId(),
-  };
-}

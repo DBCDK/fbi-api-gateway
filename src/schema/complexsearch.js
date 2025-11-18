@@ -1,14 +1,12 @@
 import { log } from "dbc-node-logger";
 import { resolveWork } from "../utils/utils";
 import {
-  collectAuthorEntriesFromWork,
-  collectSeriesIdsPerWork,
-  fetchCreatorInfoForCandidate,
-  getTopWorkIdsFromComplexSearch,
-  loadSeriesById,
+  getWorkAuthors,
+  getSeriesIdsFromWork,
+  getCreatorInfo,
   resolveWorksByIds,
-  selectDominantAuthor,
-  selectDominantSeriesId,
+  selectPrimaryAuthor,
+  selectPrimarySeriesId,
 } from "../utils/search";
 import { createTraceId } from "../utils/trace";
 
@@ -232,16 +230,6 @@ async function traceFacets({ response, context, parent, args }) {
   return facetsWithTraceIds;
 }
 
-// /**
-//  * Load top 5 workIds for the given complex search parent
-//  */
-// async function loadTopWorkIds(parent, context, limit = 5) {
-//   const res = await context.datasources
-//     .getLoader("complexsearch")
-//     .load(setPost(parent, context, { offset: 0, limit }));
-//   return { workIds: res?.works || [], searchHits: res?.searchHits };
-// }
-
 export const resolvers = {
   ComplexFacetResponse: {
     async facets(parent, args, context) {
@@ -273,50 +261,60 @@ export const resolvers = {
       return res?.hitcount || 0;
     },
     async creatorHit(parent, args, context) {
-      const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
-        parent,
-        context
-      );
-
-      if (!workIds || workIds.length === 0) return null;
-      const works = await resolveWorksByIds(workIds, context, searchHits);
+      // Get top 5 workIds and resolve works
+      const res = await context.datasources
+        .getLoader("complexsearch")
+        .load(setPost(parent, context, { ...args, limit: 5 }));
+      const workIds = res?.works || [];
+      if (!workIds || workIds?.length === 0) return null;
+      const works = await resolveWorksByIds(workIds, context);
 
       // Collect authors across works
       const authorEntries = works
-        .map((work, idx) => collectAuthorEntriesFromWork(work, idx))
+        .map((work, idx) => getWorkAuthors(work, idx))
         .flat()
         .filter(Boolean);
 
       if (authorEntries.length === 0) return null;
 
-      // Choose dominant author (>= 3 in top 5)
-      const candidate = selectDominantAuthor(authorEntries);
+      // Choose dominant author (appears at least 3 times in top 5)
+      const candidate = selectPrimaryAuthor(authorEntries);
 
       if (!candidate) return null;
 
       // Fetch CreatorInfo details
       try {
-        return await fetchCreatorInfoForCandidate(candidate, context);
+        return await getCreatorInfo(candidate, context);
       } catch (e) {
         return null;
       }
     },
     async seriesHit(parent, args, context) {
-      const { workIds, searchHits } = await getTopWorkIdsFromComplexSearch(
-        parent,
-        context
-      );
-      if (workIds?.length < 0) return null;
+      const res = await context.datasources
+        .getLoader("complexsearch")
+        .load(setPost(parent, context, { ...args, limit: 5 }));
+      const workIds = res?.works || [];
+      const searchHits = res?.searchHits;
+      if (!workIds || workIds.length === 0) return null;
 
       const works = await resolveWorksByIds(workIds, context, searchHits);
+      // get series ids from works
       const seriesPerWork = await Promise.all(
-        works.map((work) => collectSeriesIdsPerWork(work, context))
+        works.map((work) => getSeriesIdsFromWork(work, context))
       );
 
-      const selectedSeriesId = selectDominantSeriesId(seriesPerWork);
+      const selectedSeriesId = selectPrimarySeriesId(seriesPerWork);
       if (!selectedSeriesId) return null;
 
-      return await loadSeriesById(selectedSeriesId, context);
+      const seriesById = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: selectedSeriesId, profile: context.profile });
+      if (!seriesById) return null;
+      return {
+        ...seriesById,
+        seriesId: selectedSeriesId,
+        traceId: createTraceId(),
+      };
     },
     async errorMessage(parent, args, context) {
       const res = await context.datasources
