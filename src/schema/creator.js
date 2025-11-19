@@ -46,6 +46,12 @@ type GeneratedContentPerson {
   The most often used topics of the creator
   """
   topSubjects: [String!]
+
+  """
+  The year when the creator first published their work, calculated by finding the earliest year in their main period of publications. 
+  This helps filter out outliers where an incorrect year has been registered, giving a more accurate debut year.
+  """
+  debutYear: Int
 }
 
 type GeneratedContent {
@@ -434,6 +440,15 @@ export const resolvers = {
           profile: context.profile,
         });
       return res?.topSubjects || [];
+    },
+    async debutYear(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("creatorInfoFromData")
+        .load({
+          creatorDisplayName: parent?.creator,
+          profile: context.profile,
+        });
+      return res?.debutYear || null;
     },
   },
   Corporation: {

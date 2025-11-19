@@ -42,6 +42,7 @@ export async function load({ creatorDisplayName, profile }, context) {
   return {
     dataSummary: dataSummaryResult?.dataSummary || null,
     topSubjects: dataSummaryResult?.topSubjects || null,
+    debutYear: dataSummaryResult?.debutYear || null,
     forfatterweb,
   };
 }
@@ -65,17 +66,25 @@ async function getDataSummary(creatorDisplayName, profile, context) {
   const workCount = res.hitcount || 0;
   let dataSummary = null;
   let topSubjects = null;
+  let debutYear = null;
 
   if (workCount > 0) {
-    // Extract years
-    const years =
-      facetsResult?.facets
-        ?.find((f) => f.name === "facet.publicationyear")
-        ?.values?.map((v) => parseInt(v.key, 10))
-        ?.filter((y) => !isNaN(y))
-        ?.sort((a, b) => a - b) || [];
+    // Get year facet values
+    const yearFacet = facetsResult?.facets?.find(
+      (f) => f.name === "facet.publicationyear"
+    );
+    const yearValues = yearFacet?.values || [];
 
-    const startYear = years[0];
+    // Calculate debut year using clustering algorithm
+    debutYear = getDebutYear(yearValues);
+
+    // Extract years as numbers for date range calculation
+    const years = yearValues
+      .map((v) => parseInt(v.key, 10))
+      .filter((y) => !isNaN(y))
+      .sort((a, b) => a - b);
+
+    const startYear = debutYear;
     const endYear = years[years.length - 1];
 
     if (startYear && endYear) {
@@ -125,7 +134,129 @@ async function getDataSummary(creatorDisplayName, profile, context) {
   return {
     dataSummary,
     topSubjects,
+    debutYear,
   };
+}
+
+/**
+ * Calculates the debut year for a creator by clustering publication years and identifying outliers.
+ *
+ * Uses a clustering algorithm to group years based on gaps between consecutive publications.
+ * Years with large gaps (outliers, likely incorrect registrations) are filtered out,
+ * and the debut year is determined as the earliest year in the main cluster of publications.
+ *
+ * @param {Array<{key: string, score?: number}>} years - Array of year objects with a 'key' property containing the year as a string,
+ *   and optionally a 'score' property for weighting. Typically from facet values.
+ *
+ * @returns {number|undefined} The calculated debut year (earliest year in main cluster), or undefined if no valid years
+ *
+ * @example
+ * // With years: [2000, 2001, 2002, 1950, 2003, 2004]
+ * // The function would cluster: [2000-2004] as main, [1950] as outlier
+ * // Returns: 2000
+ */
+function getDebutYear(years) {
+  // Convert to numeric years and sort ascending
+  const yearEntries = years
+    ?.map((y) => ({
+      year: Number(y.key),
+      value: y,
+    }))
+    ?.filter((entry) => !Number.isNaN(entry.year))
+    ?.sort((a, b) => a.year - b.year);
+
+  if (!yearEntries?.length) {
+    return null;
+  }
+
+  // For very few years, don't try to be clever – just return the first year
+  if (yearEntries.length <= 10) {
+    return yearEntries[0]?.year;
+  }
+
+  // Cluster years based on gaps
+  const clusters = clusterYears(yearEntries);
+
+  // If only one cluster, all years are normal
+  if (clusters.length === 1) {
+    return clusters[0][0]?.year;
+  }
+
+  // Find the main cluster (largest by size, then by score)
+  const mainCluster = findMainCluster(clusters);
+  return mainCluster[0]?.year;
+}
+
+function clusterYears(yearEntries) {
+  // Compute gaps between consecutive years
+  const gaps = [];
+  for (let i = 1; i < yearEntries.length; i++) {
+    gaps.push(yearEntries[i].year - yearEntries[i - 1].year);
+  }
+
+  // Compute median gap
+  const sortedGaps = [...gaps].sort((a, b) => a - b);
+  const mid = Math.floor(sortedGaps.length / 2);
+  const medianGap =
+    sortedGaps.length % 2 === 0
+      ? (sortedGaps[mid - 1] + sortedGaps[mid]) / 2
+      : sortedGaps[mid];
+
+  // A "cluster gap" is a gap larger than "normal" jump
+  // Use both a relative factor and an absolute threshold
+  const clusterGapThreshold = Math.max(medianGap * 3, 15);
+
+  // Build clusters: each time we see a large gap, start a new cluster
+  const clusters = [];
+  let currentCluster = [yearEntries[0]];
+
+  for (let i = 1; i < yearEntries.length; i++) {
+    const gap = yearEntries[i].year - yearEntries[i - 1].year;
+    if (gap > clusterGapThreshold) {
+      clusters.push(currentCluster);
+      currentCluster = [yearEntries[i]];
+    } else {
+      currentCluster.push(yearEntries[i]);
+    }
+  }
+  if (currentCluster.length) {
+    clusters.push(currentCluster);
+  }
+
+  return clusters;
+}
+
+function findMainCluster(clusters) {
+  let mainClusterIndex = 0;
+  let mainClusterSize = clusters[0].length;
+  let mainClusterScore =
+    clusters[0].reduce(
+      (sum, entry) =>
+        sum + (typeof entry.value.score === "number" ? entry.value.score : 0),
+      0
+    ) || 0;
+
+  for (let i = 1; i < clusters.length; i++) {
+    const size = clusters[i].length;
+    const score =
+      clusters[i].reduce(
+        (sum, entry) =>
+          sum + (typeof entry.value.score === "number" ? entry.value.score : 0),
+        0
+      ) || 0;
+
+    if (size > mainClusterSize) {
+      mainClusterIndex = i;
+      mainClusterSize = size;
+      mainClusterScore = score;
+    } else if (size === mainClusterSize && score > mainClusterScore) {
+      mainClusterIndex = i;
+      mainClusterSize = size;
+      mainClusterScore = score;
+    }
+  }
+
+  return clusters[mainClusterIndex];
 }
 
 function extractTopSubjects(works, creatorDisplayName) {
@@ -201,7 +332,7 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-5",
+    prefix: "creatorInfoFromData-6",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
