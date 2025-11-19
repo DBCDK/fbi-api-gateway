@@ -161,40 +161,47 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
     cql: `worktype=article AND phrase.subject="${creatorDisplayName}" AND phrase.hostpublication="Forfatterweb"`,
     profile,
     offset: 0,
-    limit: 1,
+    limit: 10,
+    sort: [{ index: "sort.latestpublicationdate", order: "DESC" }],
   });
-  const pid =
-    forfatterwebSearch?.searchHits?.[forfatterwebSearch?.works?.[0]]?.[0];
-  let image = null;
-  let manifestation;
 
-  if (pid) {
-    manifestation = await resolveManifestation(
-      { pid },
-      { profile, datasources: { getLoader: context.getLoader } }
-    );
-    // Get cover data directly using the PID from searchHits
-    const cover = await context.getLoader("fbiinfoCovers").load(pid);
+  const pids = [];
+  forfatterwebSearch?.works?.forEach((id) => {
+    pids.push(forfatterwebSearch?.searchHits?.[id]?.[0]);
+  });
 
-    const coverResources = cover?.resources;
-    if (coverResources) {
-      // Map cover resources to FbiInfoImages format
-      image = {
-        xSmall: coverResources["120px"] || null,
-        small: coverResources["240px"] || null,
-        medium: coverResources["480px"] || null,
-        large: coverResources["960px"] || null,
-        original: coverResources["original"] || null,
-      };
-    }
-  }
+  const resolvedManifestations = await Promise.all(
+    pids.map(async (pid) => {
+      const manifestation = await resolveManifestation(
+        { pid },
+        { profile, datasources: { getLoader: context.getLoader } }
+      );
+      const cover = await context.getLoader("fbiinfoCovers").load(pid);
+      const coverResources = cover?.resources;
+      const image = coverResources
+        ? {
+            xSmall: coverResources["120px"] || null,
+            small: coverResources["240px"] || null,
+            medium: coverResources["480px"] || null,
+            large: coverResources["960px"] || null,
+            original: coverResources["original"] || null,
+          }
+        : null;
+      return { manifestation, image };
+    })
+  );
 
-  return { image, url: manifestation?.access?.accessUrls?.[0]?.url };
+  const image = resolvedManifestations.find((m) => m.image)?.image;
+  const url = resolvedManifestations.find(
+    (m) => m?.manifestation?.access?.accessUrls?.[0]?.url
+  )?.manifestation?.access?.accessUrls?.[0]?.url;
+
+  return { image, url };
 }
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-4",
+    prefix: "creatorInfoFromData-5",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
