@@ -36,6 +36,7 @@ const defaultSettings = {
     "MarcRecord",
     "GeneratedContentPerson",
     "Publizon",
+    "Forfatterweb",
   ],
   denyFields: [
     "HoldingsItem.reservable",
@@ -103,7 +104,7 @@ export default {
       "rawrepo",
       "submitOrder",
     ],
-    denyTypes: ["GeneratedContentPerson", "Publizon"],
+    denyTypes: ["GeneratedContentPerson", "Publizon", "Forfatterweb"],
     denyFields: [...defaultSettings.denyFields],
   },
   ddbcms: {
@@ -121,6 +122,7 @@ export default {
       "WorkReview",
       "GeneratedContentPerson",
       "Publizon",
+      "Forfatterweb",
     ],
     denyFields: [...defaultSettings.denyFields],
   },

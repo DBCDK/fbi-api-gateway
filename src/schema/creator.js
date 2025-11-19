@@ -63,6 +63,7 @@ type GeneratedContent {
 
 type Forfatterweb {
   image: FbiInfoImages
+  url: String
 }
 
 type Wikidata {

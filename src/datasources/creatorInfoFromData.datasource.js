@@ -8,7 +8,11 @@
  * All operations are cached together to minimize expensive database and API calls.
  */
 
-import { parseJedSubjects, resolveWork } from "../utils/utils";
+import {
+  parseJedSubjects,
+  resolveManifestation,
+  resolveWork,
+} from "../utils/utils";
 
 /**
  * Normalize letters by converting to lowercase and removing diacritics
@@ -162,8 +166,13 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
   const pid =
     forfatterwebSearch?.searchHits?.[forfatterwebSearch?.works?.[0]]?.[0];
   let image = null;
+  let manifestation;
 
   if (pid) {
+    manifestation = await resolveManifestation(
+      { pid },
+      { profile, datasources: { getLoader: context.getLoader } }
+    );
     // Get cover data directly using the PID from searchHits
     const cover = await context.getLoader("fbiinfoCovers").load(pid);
 
@@ -180,12 +189,12 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
     }
   }
 
-  return image ? { image } : null;
+  return { image, url: manifestation?.access?.accessUrls?.[0]?.url };
 }
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-3",
+    prefix: "creatorInfoFromData-4",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },

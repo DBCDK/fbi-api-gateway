@@ -919,6 +919,7 @@ type GeneratedContent {
 
 type Forfatterweb {
   image: FbiInfoImages
+  url: String
 }
 
 type Wikidata {
@@ -5361,20 +5362,6 @@ type Cover {
   original: CoverDetails
 }
 
-type FbiInfoImage {
-  url: String
-  width: Int
-  height: Int
-}
-
-type FbiInfoImages {
-  xSmall: FbiInfoImage
-  small: FbiInfoImage
-  medium: FbiInfoImage
-  large: FbiInfoImage
-  original: FbiInfoImage
-}
-
 type CreatorImage {
   \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
   small: String
@@ -5385,10 +5372,6 @@ type CreatorImage {
   \\"\\"\\"Url to creator image. Width 1800px\\"\\"\\"
   large: String
   attributionText: String
-}
-
-type Forfatterweb {
-  image: FbiInfoImages
 }
 
 type Wikidata {
@@ -5461,9 +5444,6 @@ type Person implements SubjectInterface & CreatorInterface {
 
   \\"\\"\\"Additional metadata for the creator\\"\\"\\"
   wikidata(language: LanguageCodeEnum): Wikidata
-
-  \\"\\"\\"Additional data from Forfatterweb\\"\\"\\"
-  forfatterweb: Forfatterweb
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -7605,6 +7585,7 @@ type GeneratedContent {
 
 type Forfatterweb {
   image: FbiInfoImages
+  url: String
 }
 
 type Wikidata {
