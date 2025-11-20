@@ -5359,9 +5359,6 @@ type ComplexSearchResponse {
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
-
-  \\"\\"\\"Returned when at least 3 of the top 5 works belong to the same series.\\"\\"\\"
-  seriesHit: Series
 }
 
 type CoverDetails {
@@ -6904,9 +6901,6 @@ type FacetResult {
 type SearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
   hitcount: Int!
-
-  \\"\\"\\"Returned when at least 3 of the top 5 works belong to the same series.\\"\\"\\"
-  seriesHit: Series
 
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
