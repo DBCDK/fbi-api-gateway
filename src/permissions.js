@@ -34,15 +34,10 @@ const defaultSettings = {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
     "Publizon",
-    "Forfatterweb",
   ],
-  denyFields: [
-    "HoldingsItem.reservable",
-    "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
-  ],
+  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
 };
 
 /**
@@ -104,7 +99,7 @@ export default {
       "rawrepo",
       "submitOrder",
     ],
-    denyTypes: ["GeneratedContentPerson", "Publizon", "Forfatterweb"],
+    denyTypes: ["CreatorInfo", "Publizon"],
     denyFields: [...defaultSettings.denyFields],
   },
   ddbcms: {
@@ -120,9 +115,7 @@ export default {
       "SEO",
       "WorkExtensionUnion",
       "WorkReview",
-      "GeneratedContentPerson",
-      "Publizon",
-      "Forfatterweb",
+      "CreatorInfo",
     ],
     denyFields: [...defaultSettings.denyFields],
   },

@@ -31,7 +31,6 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -39,9 +38,8 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
     "Publizon",
-    "Forfatterweb",
   ],
 }
 `;
@@ -86,7 +84,6 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -94,9 +91,8 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
     "Publizon",
-    "Forfatterweb",
     "WorkReview",
   ],
 }
@@ -133,7 +129,6 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -141,9 +136,8 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
     "Publizon",
-    "Forfatterweb",
   ],
 }
 `;
@@ -185,7 +179,6 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -193,9 +186,8 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
     "Publizon",
-    "Forfatterweb",
   ],
 }
 `;

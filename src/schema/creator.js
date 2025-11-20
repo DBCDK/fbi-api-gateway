@@ -180,19 +180,14 @@ type Person implements SubjectInterface & CreatorInterface {
   viafid: String
 
   """
-  Additional metadata for the creator
-  """
-  wikidata(language: LanguageCodeEnum): Wikidata
+  Additional enriched metadata about the creator.
 
+  Aggregates information from multiple internal and external sources
+  (for example authority data, knowledge bases, generated content and
+  partner services). The exact fields available on CreatorInfo may
+  evolve over time as new data sources are added.
   """
-  AI Generated content for the creator
-  """
-  generated: GeneratedContentPerson
-
-  """
-  Additional data from Forfatterweb
-  """
-  forfatterweb: Forfatterweb
+  enriched: CreatorInfo
 }
 type Corporation implements SubjectInterface & CreatorInterface {
     """
@@ -250,10 +245,6 @@ type Corporation implements SubjectInterface & CreatorInterface {
     """
     viafid: String
 
-    """
-    Additional data from Wikidata
-    """
-    wikidata(language: LanguageCodeEnum): Wikidata
 }
 interface CreatorInterface {
   """
@@ -276,10 +267,6 @@ interface CreatorInterface {
   """
   viafid: String
 
-  """
-  Additional data from Wikidata
-  """
-  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 extend type Query {
@@ -387,40 +374,36 @@ export const resolvers = {
         return null;
       }
     },
-    async wikidata(parent, args, context) {
-      try {
-        const language = args?.language || "DA";
-        const info = await context.datasources
-          .getLoader("creatorByDisplayName")
-          .load({ displayName: parent?.display });
-        const data = mapWikidata(info);
-
-        if (!data) return null;
-        return { ...data, language };
-      } catch (e) {
-        return null;
-      }
-    },
-    async generated(parent, args, context) {
+    async enriched(parent, args, context) {
       try {
         const info = await context.datasources
           .getLoader("creatorByDisplayName")
           .load({ displayName: parent?.display });
-        if (info?.generated?.shortSummary) {
-          return {
-            creator: parent?.display,
-            summary: {
-              text: info?.generated?.summary,
-              disclaimer: GENERATED_DISCLAIMER,
-            },
-            shortSummary: {
-              text: info?.generated?.shortSummary,
-              disclaimer: GENERATED_DISCLAIMER,
-            },
-          };
+        if (!info) {
+          return null;
         }
 
-        return null;
+        return {
+          display: parent?.display,
+          firstName: info?.original?.firstname || null,
+          lastName: info?.original?.lastname || null,
+          viafid: info?.viafId || null,
+          wikidata: mapWikidata(info),
+          generated:
+            info?.generated?.shortSummary || info?.generated?.summary
+              ? {
+                  creator: parent?.display,
+                  summary: info?.generated?.summary && {
+                    text: info?.generated?.summary,
+                    disclaimer: GENERATED_DISCLAIMER,
+                  },
+                  shortSummary: info?.generated?.shortSummary && {
+                    text: info?.generated?.shortSummary,
+                    disclaimer: GENERATED_DISCLAIMER,
+                  },
+                }
+              : null,
+        };
       } catch (e) {
         return null;
       }
@@ -468,10 +451,6 @@ export const resolvers = {
   Corporation: {
     roles(parent) {
       return Array.isArray(parent?.roles) ? parent?.roles : [];
-    },
-    wikidata(parent, args) {
-      const language = args?.language || "DA";
-      return { language: language };
     },
     viafid() {
       return null;
