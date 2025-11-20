@@ -183,14 +183,25 @@ function getDebutYear(years) {
   // Cluster years based on gaps
   const clusters = clusterYears(yearEntries);
 
-  // If only one cluster, all years are normal
-  if (clusters.length === 1) {
-    return clusters[0][0]?.year;
+  // Find the first cluster (chronological) that is "significant":
+  // - at least 3 distinct years in the cluster, OR
+  // - at least 5 works in total (sum of scores across years).
+  for (const cluster of clusters) {
+    const yearCount = cluster.length;
+    const workCount =
+      cluster.reduce(
+        (sum, entry) =>
+          sum + (typeof entry.value.score === "number" ? entry.value.score : 0),
+        0
+      ) || 0;
+
+    if (yearCount >= 10 || workCount >= 10) {
+      return cluster[0]?.year;
+    }
   }
 
-  // Find the main cluster (largest by size, then by score)
-  const mainCluster = findMainCluster(clusters);
-  return mainCluster[0]?.year;
+  // If no cluster meets the threshold, fall back to the absolute earliest year.
+  return yearEntries[0]?.year;
 }
 
 function clusterYears(yearEntries) {
@@ -229,40 +240,45 @@ function clusterYears(yearEntries) {
     clusters.push(currentCluster);
   }
 
-  return clusters;
-}
+  // Merge neighboring clusters when the left cluster is already substantial
+  // and the gap between them is not too large. This helps avoid splitting the
+  // primary publication period into multiple small clusters just because of
+  // a moderate pause in publications.
+  const mergedClusters = [];
+  let i = 0;
 
-function findMainCluster(clusters) {
-  let mainClusterIndex = 0;
-  let mainClusterSize = clusters[0].length;
-  let mainClusterScore =
-    clusters[0].reduce(
-      (sum, entry) =>
-        sum + (typeof entry.value.score === "number" ? entry.value.score : 0),
-      0
-    ) || 0;
+  while (i < clusters.length) {
+    let current = clusters[i];
+    let j = i + 1;
 
-  for (let i = 1; i < clusters.length; i++) {
-    const size = clusters[i].length;
-    const score =
-      clusters[i].reduce(
-        (sum, entry) =>
-          sum + (typeof entry.value.score === "number" ? entry.value.score : 0),
-        0
-      ) || 0;
+    while (j < clusters.length) {
+      const left = current;
+      const right = clusters[j];
 
-    if (size > mainClusterSize) {
-      mainClusterIndex = i;
-      mainClusterSize = size;
-      mainClusterScore = score;
-    } else if (size === mainClusterSize && score > mainClusterScore) {
-      mainClusterIndex = i;
-      mainClusterSize = size;
-      mainClusterScore = score;
+      const leftYearCount = left.length;
+      const leftLastYear = left[left.length - 1]?.year;
+      const rightFirstYear = right[0]?.year;
+      const gapBetweenClusters =
+        typeof leftLastYear === "number" && typeof rightFirstYear === "number"
+          ? rightFirstYear - leftLastYear
+          : Number.POSITIVE_INFINITY;
+
+      // If the left cluster has more than 3 distinct years and the gap to the
+      // next cluster is less than 80 years, treat them as part of the same
+      // broader period and merge them.
+      if (leftYearCount >= 3 && gapBetweenClusters < 80) {
+        current = [...left, ...right];
+        j += 1;
+      } else {
+        break;
+      }
     }
+
+    mergedClusters.push(current);
+    i = j;
   }
 
-  return clusters[mainClusterIndex];
+  return mergedClusters;
 }
 
 function extractTopSubjects(works, creatorDisplayName) {
@@ -330,12 +346,14 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
 
   const image = resolvedManifestations.find((m) => m.image)?.image;
   let urls = [];
-  resolvedManifestations.find((m) => {
-    if (m?.manifestation?.access?.accessUrls?.length > 0) {
+  resolvedManifestations.forEach((m) => {
+    const accessUrls = m?.manifestation?.access?.accessUrls;
+    if (Array.isArray(accessUrls) && accessUrls.length > 0) {
       urls = [
         ...urls,
-        ...m?.manifestation?.access?.accessUrls?.filter(
-          (entry) => !entry.url?.includes("php")
+        ...accessUrls.filter(
+          (entry) =>
+            entry && typeof entry.url === "string" && !entry.url.includes("php")
         ),
       ];
     }
@@ -346,7 +364,7 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-9",
+    prefix: "creatorInfoFromData-10",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
