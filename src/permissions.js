@@ -37,7 +37,14 @@ const defaultSettings = {
     "CreatorInfo",
     "Publizon",
   ],
-  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
+  denyFields: [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
+    "SearchResponse.creatorHit",
+    "SearchResponse.seriesHit",
+    "ComplexSearchResponse.creatorHit",
+    "ComplexSearchResponse.seriesHit",
+  ],
 };
 
 /**
