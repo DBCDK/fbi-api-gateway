@@ -210,7 +210,7 @@ function clusterYears(yearEntries) {
 
   // A "cluster gap" is a gap larger than "normal" jump
   // Use both a relative factor and an absolute threshold
-  const clusterGapThreshold = Math.max(medianGap * 3, 15);
+  const clusterGapThreshold = Math.max(medianGap * 3, 20);
 
   // Build clusters: each time we see a large gap, start a new cluster
   const clusters = [];
@@ -329,16 +329,24 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
   );
 
   const image = resolvedManifestations.find((m) => m.image)?.image;
-  const url = resolvedManifestations.find(
-    (m) => m?.manifestation?.access?.accessUrls?.[0]?.url
-  )?.manifestation?.access?.accessUrls?.[0]?.url;
+  let urls = [];
+  resolvedManifestations.find((m) => {
+    if (m?.manifestation?.access?.accessUrls?.length > 0) {
+      urls = [
+        ...urls,
+        ...m?.manifestation?.access?.accessUrls?.filter(
+          (entry) => !entry.url?.includes("php")
+        ),
+      ];
+    }
+  });
 
-  return { image, url };
+  return { image, url: urls?.[0]?.url };
 }
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-8",
+    prefix: "creatorInfoFromData-9",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
