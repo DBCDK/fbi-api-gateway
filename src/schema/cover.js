@@ -28,6 +28,20 @@ type Cover {
   large: CoverDetails
   original: CoverDetails
 }
+
+type FbiInfoImage {
+  url: String
+  width: Int
+  height: Int
+}
+type FbiInfoImages {
+  xSmall: FbiInfoImage
+  small: FbiInfoImage
+  medium: FbiInfoImage
+  large: FbiInfoImage
+  original: FbiInfoImage
+}
+
 `;
 
 /**

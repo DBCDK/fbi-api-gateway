@@ -1,4 +1,5 @@
 import { resolveAccess } from "../utils/access";
+import { extFromUrl, forceHttpsAndStripQa } from "../utils/publizon";
 
 export const typeDef = `
 enum AccessTypeCodeEnum {
@@ -106,13 +107,81 @@ type DigitalArticleService {
   issn: String!
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+type Publizon {
+  """
+  URL of the sample provided by Publizon (Pubhub), typically a preview
+  of the e-book or audiobook content.
+  """
+  sample: String!
+
+  """
+  The file format of the Publizon resource (e.g., "epub", "mp3").
+  """
+  format: String
+
+  """
+  The file size of the resource in bytes, if available.
+  """
+  fileSizeInBytes: Int
+
+  """
+  The total duration of the resource in seconds, if available.
+  """
+  durationInSeconds: Int
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
 `;
 
 export const resolvers = {
   Manifestation: {
     async access(parent, args, context, info) {
       return resolveAccess(parent, context);
+    },
+  },
+
+  // Normalization:
+  // - remove .qa. subdomain
+  // - force https
+  // - override format from file extension (fallback to API format)
+
+  Publizon: {
+    async sample(parent, args, context, info) {
+      const product = await context.datasources
+        .getLoader("products")
+        .load({ isbn: parent?.isbn });
+
+      // Clean and force https
+      return forceHttpsAndStripQa(product?.sampleUri);
+    },
+
+    async format(parent, args, context, info) {
+      const product = await context.datasources
+        .getLoader("products")
+        .load({ isbn: parent?.isbn });
+
+      // try to get format from file extension first
+      const fromExt = extFromUrl(product?.sampleUri);
+      if (fromExt) return fromExt; // fx 'epub' eller 'mp3'
+
+      // fallback to API format
+      return product?.format?.toLowerCase?.() ?? null;
+    },
+
+    async fileSizeInBytes(parent, args, context, info) {
+      const product = await context.datasources
+        .getLoader("products")
+        .load({ isbn: parent?.isbn });
+
+      return product?.fileSizeInBytes ?? null;
+    },
+
+    async durationInSeconds(parent, args, context, info) {
+      const product = await context.datasources
+        .getLoader("products")
+        .load({ isbn: parent?.isbn });
+
+      return product?.durationInSeconds ?? null;
     },
   },
 };

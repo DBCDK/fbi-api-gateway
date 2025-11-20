@@ -13,33 +13,44 @@
 export const typeDef = `
 
   input NetpunktSubmitOrderInput {
-    orderType: OrderTypeEnum
-    pids: [String!]!
-    pickUpBranch: String!
-    key: String
-    exactEdition: Boolean
-    """
-    expires is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
-    """
-    expires: String
-    userParameters: SubmitOrderUserParametersInput!
     author: String
     authorOfComponent: String
+    bibliographicCategory: String
+    callNumber: String
+    copy: Boolean
+    exactEdition: Boolean
+    """
+    needBeforeDate is required to be iso 8601 dateTime eg. "2024-03-15T12:24:32Z"
+    """
+    needBeforeDate: String
+    issue: String
+    key: String
+    latestRequesterNote: String
+    orderSystem: String
+    orderType: OrderTypeEnum
+    originalOrderId: String
     pagination: String
-    publicationDate: String
-    publicationDateOfComponent: String
-    title: String
-    titleOfComponent: String
-    volume: String
-    requesterInitials: String
-    """
-    AgencyId of the desired responder for inter library loans. Kept unset if automation is wanted.
-    """
-    responderId: String
+    pickUpAgencyId: String!
+    pickUpAgencySubdivision: String
+    pids: [String!]!
+    pidOfPrimaryObject: String
     """
     Indicates whether order is allowed to be put in queue
     """
     placeOnHold: String
+    publicationDate: String
+    publicationDateOfComponent: String
+    requesterInitials: String
+    requesterId: String
+    """
+    AgencyId of the desired responder for inter library loans. Kept unset if automation is wanted.
+    """
+    responderId: String
+    title: String
+    titleOfComponent: String
+    userParameters: SubmitOrderUserParametersInput!
+    verificationReferenceSource: String
+    volume: String
   }
   type Netpunkt {
     """
@@ -71,11 +82,11 @@ export const resolvers = {
       const authUserId =
         context?.user?.userId || args?.input?.requesterInitials;
 
-      const pickupBranch = args?.input?.pickUpBranch;
+      const pickUpAgencyId = args?.input?.pickUpAgencyId;
 
       const branch = (
         await context.datasources.getLoader("library").load({
-          branchId: pickupBranch,
+          branchId: pickUpAgencyId,
         })
       ).result?.[0];
 

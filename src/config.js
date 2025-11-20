@@ -144,6 +144,12 @@ export default {
       prefix: process.env.CICERO_URL_PREFIX || "cicero-1",
       teamLabel: "febib",
     },
+    publizon: {
+      url: process.env.PUBLIZON_URL || "https://pubhub-openplatform.dbc.dk",
+      ttl: process.env.PUBLIZON_URL_TIME_TO_LIVE_SECONDS || 5,
+      prefix: process.env.PUBLIZON_URL_PREFIX || "pubhub-1",
+      teamLabel: "febib",
+    },
     holdingsservice: {
       url:
         process.env.HOLDINGSSERVICE_URL ||

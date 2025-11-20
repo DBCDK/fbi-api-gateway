@@ -31,7 +31,10 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
+    "SearchResponse.creatorHit",
+    "SearchResponse.seriesHit",
+    "ComplexSearchResponse.creatorHit",
+    "ComplexSearchResponse.seriesHit",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -39,7 +42,8 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
+    "Publizon",
   ],
 }
 `;
@@ -84,7 +88,10 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
+    "SearchResponse.creatorHit",
+    "SearchResponse.seriesHit",
+    "ComplexSearchResponse.creatorHit",
+    "ComplexSearchResponse.seriesHit",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -92,7 +99,8 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
+    "Publizon",
     "WorkReview",
   ],
 }
@@ -129,7 +137,10 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
+    "SearchResponse.creatorHit",
+    "SearchResponse.seriesHit",
+    "ComplexSearchResponse.creatorHit",
+    "ComplexSearchResponse.seriesHit",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -137,7 +148,8 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
+    "Publizon",
   ],
 }
 `;
@@ -179,7 +191,10 @@ Object {
   "denyFields": Array [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
+    "SearchResponse.creatorHit",
+    "SearchResponse.seriesHit",
+    "ComplexSearchResponse.creatorHit",
+    "ComplexSearchResponse.seriesHit",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -187,7 +202,8 @@ Object {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
+    "Publizon",
   ],
 }
 `;
