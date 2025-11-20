@@ -48,10 +48,17 @@ type GeneratedContentPerson {
   topSubjects: [String!]
 
   """
-  The year when the creator first published their work, calculated by finding the earliest year in their main period of publications. 
-  This helps filter out outliers where an incorrect year has been registered, giving a more accurate debut year.
+  Estimated start year of the creator's primary publication period.
+
+  Calculated from the distribution of publication years for the creator's works
+  by finding the earliest year in the main cluster of publications. This helps
+  filter out obvious outliers (e.g. mis-registered years or single late reprints).
+
+  Represents the start of the period where the creator is primarily published
+  in the catalogue data, and may not correspond to the creator's actual historical
+  debut or lifetime.
   """
-  debutYear: Int
+  primaryPublicationPeriodStartYear: Int
 }
 
 type GeneratedContent {
@@ -427,8 +434,15 @@ export const resolvers = {
           creatorDisplayName: parent?.creator,
           profile: context.profile,
         });
+
+      // If there is no generated dataSummary text, return null for the whole field.
+      // The GraphQL type allows dataSummary to be nullable, but its inner text field is non-nullable.
+      if (!res?.dataSummary) {
+        return null;
+      }
+
       return {
-        text: res?.dataSummary || null,
+        text: res.dataSummary,
         disclaimer: null,
       };
     },
@@ -441,14 +455,14 @@ export const resolvers = {
         });
       return res?.topSubjects || [];
     },
-    async debutYear(parent, args, context) {
+    async primaryPublicationPeriodStartYear(parent, args, context) {
       const res = await context.datasources
         .getLoader("creatorInfoFromData")
         .load({
           creatorDisplayName: parent?.creator,
           profile: context.profile,
         });
-      return res?.debutYear || null;
+      return res?.primaryPublicationPeriodStartYear || null;
     },
   },
   Corporation: {

@@ -906,10 +906,17 @@ type GeneratedContentPerson {
   topSubjects: [String!]
 
   \\"\\"\\"
-  The year when the creator first published their work, calculated by finding the earliest year in their main period of publications. 
-  This helps filter out outliers where an incorrect year has been registered, giving a more accurate debut year.
+  Estimated start year of the creator's primary publication period.
+  
+  Calculated from the distribution of publication years for the creator's works
+  by finding the earliest year in the main cluster of publications. This helps
+  filter out obvious outliers (e.g. mis-registered years or single late reprints).
+  
+  Represents the start of the period where the creator is primarily published
+  in the catalogue data, and may not correspond to the creator's actual historical
+  debut or lifetime.
   \\"\\"\\"
-  debutYear: Int
+  primaryPublicationPeriodStartYear: Int
 }
 
 type GeneratedContent {
@@ -7578,10 +7585,17 @@ type GeneratedContentPerson {
   topSubjects: [String!]
 
   \\"\\"\\"
-  The year when the creator first published their work, calculated by finding the earliest year in their main period of publications. 
-  This helps filter out outliers where an incorrect year has been registered, giving a more accurate debut year.
+  Estimated start year of the creator's primary publication period.
+  
+  Calculated from the distribution of publication years for the creator's works
+  by finding the earliest year in the main cluster of publications. This helps
+  filter out obvious outliers (e.g. mis-registered years or single late reprints).
+  
+  Represents the start of the period where the creator is primarily published
+  in the catalogue data, and may not correspond to the creator's actual historical
+  debut or lifetime.
   \\"\\"\\"
-  debutYear: Int
+  primaryPublicationPeriodStartYear: Int
 }
 
 type GeneratedContent {

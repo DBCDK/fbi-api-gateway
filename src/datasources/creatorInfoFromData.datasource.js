@@ -42,7 +42,8 @@ export async function load({ creatorDisplayName, profile }, context) {
   return {
     dataSummary: dataSummaryResult?.dataSummary || null,
     topSubjects: dataSummaryResult?.topSubjects || null,
-    debutYear: dataSummaryResult?.debutYear || null,
+    primaryPublicationPeriodStartYear:
+      dataSummaryResult?.primaryPublicationPeriodStartYear || null,
     forfatterweb,
   };
 }
@@ -66,7 +67,7 @@ async function getDataSummary(creatorDisplayName, profile, context) {
   const workCount = res.hitcount || 0;
   let dataSummary = null;
   let topSubjects = null;
-  let debutYear = null;
+  let primaryPublicationPeriodStartYear = null;
 
   if (workCount > 0) {
     // Get year facet values
@@ -75,8 +76,8 @@ async function getDataSummary(creatorDisplayName, profile, context) {
     );
     const yearValues = yearFacet?.values || [];
 
-    // Calculate debut year using clustering algorithm
-    debutYear = getDebutYear(yearValues);
+    // Calculate estimated start of primary publication period using clustering algorithm
+    primaryPublicationPeriodStartYear = getDebutYear(yearValues);
 
     // Extract years as numbers for date range calculation
     const years = yearValues
@@ -84,7 +85,8 @@ async function getDataSummary(creatorDisplayName, profile, context) {
       .filter((y) => !isNaN(y))
       .sort((a, b) => a - b);
 
-    const startYear = debutYear;
+    const usesDebutYear = primaryPublicationPeriodStartYear !== years[0];
+    const startYear = primaryPublicationPeriodStartYear;
     const endYear = years[years.length - 1];
 
     if (startYear && endYear) {
@@ -112,9 +114,13 @@ async function getDataSummary(creatorDisplayName, profile, context) {
           ? `udgivet i ${startYear}`
           : `udgivet mellem ${startYear} og ${endYear}`;
 
-      const baseSentence = `${creatorDisplayName} er registreret som ophav til ${workCount} ${
-        workCount === 1 ? "værk" : "værker"
-      } ${yearText}.`;
+      const baseSentence = usesDebutYear
+        ? `${creatorDisplayName} er registreret som ophav til ${workCount} ${
+            workCount === 1 ? "værk" : "værker"
+          }, som fortrinsvis er ${yearText}.`
+        : `${creatorDisplayName} er registreret som ophav til ${workCount} ${
+            workCount === 1 ? "værk" : "værker"
+          } ${yearText}.`;
 
       if (topSubjects && topSubjects.length > 0) {
         // Use first 3 for the text description
@@ -134,7 +140,7 @@ async function getDataSummary(creatorDisplayName, profile, context) {
   return {
     dataSummary,
     topSubjects,
-    debutYear,
+    primaryPublicationPeriodStartYear,
   };
 }
 
@@ -332,7 +338,7 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-6",
+    prefix: "creatorInfoFromData-8",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
