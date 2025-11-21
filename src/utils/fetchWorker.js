@@ -132,6 +132,7 @@ if (!isMainThread) {
 
     // Call resolve with collected timings
     pendingTimingCallbacks[identifier]?.({
+      path: request.path,
       origin: request.origin,
       connectionStart: request.timings.sendHeaders - request.timings.create,
       requestSent: request.timings.bodySent - request.timings.sendHeaders,

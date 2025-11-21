@@ -49,15 +49,16 @@ export async function load({ creatorDisplayName, profile }, context) {
 }
 
 async function getDataSummary(creatorDisplayName, profile, context) {
+  const cql = `phrase.creator="${creatorDisplayName}" OR phrase.creatorcontributorfunction="${creatorDisplayName} (skuespiller)"`;
   const [res, facetsResult] = await Promise.all([
     context.getLoader("complexsearch").load({
-      cql: `phrase.creator="${creatorDisplayName}"`,
+      cql,
       profile,
       offset: 0,
       limit: 100,
     }),
     context.getLoader("complexFacets").load({
-      cql: `phrase.creator="${creatorDisplayName}"`,
+      cql,
       profile,
       facets: ["publicationyear"],
       facetLimit: 1000,
@@ -364,7 +365,7 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-10",
+    prefix: "creatorInfoFromData-11",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
