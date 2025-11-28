@@ -38,7 +38,7 @@ export const resolvers = {
       }
       if (args?.input?.requesterId !== authUser.netpunktAgency) {
         return {
-          status: "REQUESTERID NOT EQUAL TO LOGIN ID",
+          status: "REQUESTER_ID_NOT_EQUALvTO_LOGIN_ID",
         };
       }
 
@@ -50,7 +50,7 @@ export const resolvers = {
 
       if (!branch) {
         return {
-          status: "UNKNOWN_REQUESTERID",
+          status: "UNKNOWN_REQUESTER_ID",
         };
       }
 

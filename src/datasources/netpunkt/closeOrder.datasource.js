@@ -27,12 +27,12 @@ export async function load({ accessToken, orderId, requesterId}, context) {
     if (closeOrder.status === 200) {
       return { orderId: closeOrder.body.orderId };
     } else {
-      return { status: "STATUS NOT 200", };
+      return { status: "STATUS_NOT_200", };
     }
 
   } catch {
     log.error("CLOSE ORDER: Error closing order", { parameters });
-    return { status: "ERROR OCCURED", };
+    return { status: "ERROR_OCCURRED", };
   }
 };
 

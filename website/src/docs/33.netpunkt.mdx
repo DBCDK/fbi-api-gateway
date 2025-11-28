@@ -2,7 +2,7 @@
 
 ## Submit Order
 
-Submit order on behalf of another user
+Submit an automated order on behalf of another user.
 
 <InlineGraphiQL
   query={`mutation example_submitorder($input: NetpunktSubmitOrderInput!) {
@@ -30,9 +30,43 @@ variables={{
   }}
 />
 
+Submit a nonautomated order on behalf of another user.
+
+<InlineGraphiQL
+  query={`mutation example_submitorder($input: NetpunktSubmitOrderInput!) {
+    netpunkt {
+      submitOrder(input: $input, dryRun: true) {
+        status
+        message
+        orderId
+      }
+    }
+
+          }`}
+
+variables={{
+    input: {
+      pids: ["870970-basis:25574486"],
+      pickUpAgencyId: "790903",
+      responderId: "100400",
+      requesterId: "790900",
+      userParameters: {
+        userId: "0102033690",
+        userAddress: "test",
+        userName: "Flemming test",
+        userMail: "flemminghoimark@gmail.com"
+      }
+    }
+  }}
+/>
+
 ## Submit remit Order
 
 Create an interlibrary loan based on an enduser loan.
+
+The only difference between an order and a remit order, is the originalOrderId field.
+
+The remit order must have all the data from the original order and its orderId in the originalOrderId field.
 
 <InlineGraphiQL
   query={`mutation example_submitremitorder($input: NetpunktSubmitOrderInput!) {
@@ -63,7 +97,7 @@ variables={{
 
 ## Close Order
 
-Close an order manually
+Close an order manually. You can only close an order from your own agency.
 
 <InlineGraphiQL
   query={`mutation example_closeorder($input: NetpunktCloseOrderInput!) {
