@@ -16,8 +16,8 @@
     "start:testuser": "cd testuser-website && npm run start",
     "test": "jest",
     "prettier": "prettier --write 'src/**/*.js'",
-    "postinstall": "if [ \"$CI\" = \"true\" ]; then (cd testuser-website && npm ci); (cd website && npm ci); else (cd testuser-website && npm i); (cd website && npm i); fi; npx --yes @dbcdk/npm-tools@latest verify latest",
-    "build": "eslint . && (cd fbi-api-debug && if [ \"$CI\" = \"true\" ]; then npm ci; else npm i; fi && npm run build && cp ./unpacked.zip ../website/public/unpacked.zip) && (cd testuser-website && npm run build && npm prune --production) && (cd website && npm run build && npm prune --production);",
+    "postinstall": "echo \"postinstall: CI=$CI\"; if [ \"$CI\" = \"true\" ]; then echo \"using npm ci in subprojects\"; (cd testuser-website && npm ci); (cd website && npm ci); else echo \"using npm i in subprojects\"; (cd testuser-website && npm i); (cd website && npm i); fi; npx --yes @dbcdk/npm-tools@latest verify latest",
+    "build": "echo \"build: CI=$CI\"; eslint . && (cd fbi-api-debug && if [ \"$CI\" = \"true\" ]; then echo \"fbi-api-debug: using npm ci\"; npm ci; else echo \"fbi-api-debug: using npm i\"; npm i; fi && npm run build && cp ./unpacked.zip ../website/public/unpacked.zip) && (cd testuser-website && npm run build && npm prune --production) && (cd website && npm run build && npm prune --production);",
     "lint": "eslint ."
   },
   "author": "Frontend @ DBC",
