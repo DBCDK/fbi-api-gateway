@@ -34,12 +34,16 @@ const defaultSettings = {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
-    "GeneratedContentPerson",
+    "CreatorInfo",
+    "Publizon",
   ],
   denyFields: [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
-    "CreatorInterface.wikidata",
+    "SearchResponse.creatorHit",
+    "SearchResponse.seriesHit",
+    "ComplexSearchResponse.creatorHit",
+    "ComplexSearchResponse.seriesHit",
   ],
 };
 
@@ -78,6 +82,7 @@ const bibdk = {
     "nodeQuery",
     "periodica",
     "creatorByViafid",
+    "creatorByDisplay",
   ],
   denyTypes: ["MarcRecord"],
   denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
@@ -94,14 +99,15 @@ export default {
   "fbs:system": {
     allowRootFields: [
       ...defaultSettings.allowRootFields,
-      // "culr", // disabled for now because of security issues with the culr rest service
+      "culr",
       "vip",
       "marc",
       "holdingsItems",
       "ors",
       "rawrepo",
+      "submitOrder",
     ],
-    denyTypes: ["GeneratedContentPerson"],
+    denyTypes: ["CreatorInfo", "Publizon"],
     denyFields: [...defaultSettings.denyFields],
   },
   ddbcms: {
@@ -117,7 +123,7 @@ export default {
       "SEO",
       "WorkExtensionUnion",
       "WorkReview",
-      "GeneratedContentPerson",
+      "CreatorInfo",
     ],
     denyFields: [...defaultSettings.denyFields],
   },

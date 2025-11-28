@@ -103,7 +103,24 @@ type DigitalArticleService {
   issn: String!
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+type Publizon {
+  \\"\\"\\"
+  URL of the sample provided by Publizon (Pubhub), typically a preview
+  of the e-book or audiobook content.
+  \\"\\"\\"
+  sample: String!
+
+  \\"\\"\\"The file format of the Publizon resource (e.g., \\"epub\\", \\"mp3\\").\\"\\"\\"
+  format: String
+
+  \\"\\"\\"The file size of the resource in bytes, if available.\\"\\"\\"
+  fileSizeInBytes: Int
+
+  \\"\\"\\"The total duration of the resource in seconds, if available.\\"\\"\\"
+  durationInSeconds: Int
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
 
 type AdminData {
   creationDate: String
@@ -210,6 +227,9 @@ type Query {
 
   \\"\\"\\"Fetch a creator by VIAF identifier\\"\\"\\"
   creatorByViafid(viafid: String!): CreatorInfo
+
+  \\"\\"\\"Fetch a creator by display name\\"\\"\\"
+  creatorByDisplay(display: String!): CreatorInfo
   culr: CulrQuery!
   debug: Debug
 
@@ -819,6 +839,12 @@ type ComplexSearchResponse {
 
   \\"\\"\\"Error message, for instance if CQL is invalid\\"\\"\\"
   errorMessage: String
+
+  \\"\\"\\"Returned when at least 3 of the top 5 works share the same creator.\\"\\"\\"
+  creatorHit: CreatorInfo
+
+  \\"\\"\\"Returned when at least 3 of the top 5 works belong to the same series.\\"\\"\\"
+  seriesHit: Series
 }
 
 type CoverDetails {
@@ -842,6 +868,20 @@ type Cover {
   original: CoverDetails
 }
 
+type FbiInfoImage {
+  url: String
+  width: Int
+  height: Int
+}
+
+type FbiInfoImages {
+  xSmall: FbiInfoImage
+  small: FbiInfoImage
+  medium: FbiInfoImage
+  large: FbiInfoImage
+  original: FbiInfoImage
+}
+
 type CreatorImage {
   \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
   small: String
@@ -861,6 +901,28 @@ type GeneratedContentPerson {
 
   \\"\\"\\"AI short generated summary\\"\\"\\"
   shortSummary: GeneratedContent
+
+  \\"\\"\\"
+  A summary generated from work count, workYears, often used topics etc.
+  Is null, when shortSummary exists
+  \\"\\"\\"
+  dataSummary: GeneratedContent
+
+  \\"\\"\\"The most often used topics of the creator\\"\\"\\"
+  topSubjects: [String!]
+
+  \\"\\"\\"
+  Estimated start year of the creator's primary publication period.
+  
+  Calculated from the distribution of publication years for the creator's works
+  by finding the earliest year in the main cluster of publications. This helps
+  filter out obvious outliers (e.g. mis-registered years or single late reprints).
+  
+  Represents the start of the period where the creator is primarily published
+  in the catalogue data, and may not correspond to the creator's actual historical
+  debut or lifetime.
+  \\"\\"\\"
+  primaryPublicationPeriodStartYear: Int
 }
 
 type GeneratedContent {
@@ -872,6 +934,11 @@ type GeneratedContent {
   May contain info about the source of the content.
   \\"\\"\\"
   disclaimer: String
+}
+
+type Forfatterweb {
+  image: FbiInfoImages
+  url: String
 }
 
 type Wikidata {
@@ -891,6 +958,7 @@ type CreatorInfo {
   viafid: String
   wikidata(language: LanguageCodeEnum): Wikidata
   generated: GeneratedContentPerson
+  forfatterweb: Forfatterweb
 }
 
 type Translation {
@@ -951,11 +1019,15 @@ type Person implements SubjectInterface & CreatorInterface {
   \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
   viafid: String
 
-  \\"\\"\\"Additional metadata for the creator\\"\\"\\"
-  wikidata(language: LanguageCodeEnum): Wikidata
-
-  \\"\\"\\"AI Generated content for the creator\\"\\"\\"
-  generated: GeneratedContentPerson
+  \\"\\"\\"
+  Additional enriched metadata about the creator.
+  
+  Aggregates information from multiple internal and external sources
+  (for example authority data, knowledge bases, generated content and
+  partner services). The exact fields available on CreatorInfo may
+  evolve over time as new data sources are added.
+  \\"\\"\\"
+  enriched: CreatorInfo
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -997,9 +1069,6 @@ type Corporation implements SubjectInterface & CreatorInterface {
 
   \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
   viafid: String
-
-  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 interface CreatorInterface {
@@ -1016,9 +1085,6 @@ interface CreatorInterface {
 
   \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
   viafid: String
-
-  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 enum CulrResponseCodesEnum {
@@ -3664,6 +3730,12 @@ type SearchResponse {
   \\"\\"\\"Total number of works found. May be used for pagination.\\"\\"\\"
   hitcount: Int!
 
+  \\"\\"\\"Returned when at least 3 of the top 5 works share the same creator.\\"\\"\\"
+  creatorHit: CreatorInfo
+
+  \\"\\"\\"Returned when at least 3 of the top 5 works belong to the same series.\\"\\"\\"
+  seriesHit: Series
+
   \\"\\"\\"
   The works matching the given search query. Use offset and limit for pagination.
   \\"\\"\\"
@@ -5322,28 +5394,6 @@ type Cover {
   original: CoverDetails
 }
 
-type CreatorImage {
-  \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
-  small: String
-
-  \\"\\"\\"Url to creator image. Width 1200px\\"\\"\\"
-  medium: String
-
-  \\"\\"\\"Url to creator image. Width 1800px\\"\\"\\"
-  large: String
-  attributionText: String
-}
-
-type Wikidata {
-  education: [String!]
-  image: CreatorImage
-  nationality: String
-  occupation: [String!]
-  wikidataId: String
-  description: String
-  awards: [String!]
-}
-
 type Translation {
   \\"\\"\\"
   Translation in plural form, e.g. forfattere, komponister, instruktører etc.
@@ -5401,9 +5451,6 @@ type Person implements SubjectInterface & CreatorInterface {
 
   \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
   viafid: String
-
-  \\"\\"\\"Additional metadata for the creator\\"\\"\\"
-  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -5445,9 +5492,6 @@ type Corporation implements SubjectInterface & CreatorInterface {
 
   \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
   viafid: String
-
-  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 interface CreatorInterface {
@@ -7465,10 +7509,41 @@ type DigitalArticleService {
   issn: String!
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+type Publizon {
+  \\"\\"\\"
+  URL of the sample provided by Publizon (Pubhub), typically a preview
+  of the e-book or audiobook content.
+  \\"\\"\\"
+  sample: String!
+
+  \\"\\"\\"The file format of the Publizon resource (e.g., \\"epub\\", \\"mp3\\").\\"\\"\\"
+  format: String
+
+  \\"\\"\\"The file size of the resource in bytes, if available.\\"\\"\\"
+  fileSizeInBytes: Int
+
+  \\"\\"\\"The total duration of the resource in seconds, if available.\\"\\"\\"
+  durationInSeconds: Int
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
 
 type Query {
   manifestation(pid: String, faust: String): Manifestation
+}
+
+type FbiInfoImage {
+  url: String
+  width: Int
+  height: Int
+}
+
+type FbiInfoImages {
+  xSmall: FbiInfoImage
+  small: FbiInfoImage
+  medium: FbiInfoImage
+  large: FbiInfoImage
+  original: FbiInfoImage
 }
 
 type CreatorImage {
@@ -7490,6 +7565,28 @@ type GeneratedContentPerson {
 
   \\"\\"\\"AI short generated summary\\"\\"\\"
   shortSummary: GeneratedContent
+
+  \\"\\"\\"
+  A summary generated from work count, workYears, often used topics etc.
+  Is null, when shortSummary exists
+  \\"\\"\\"
+  dataSummary: GeneratedContent
+
+  \\"\\"\\"The most often used topics of the creator\\"\\"\\"
+  topSubjects: [String!]
+
+  \\"\\"\\"
+  Estimated start year of the creator's primary publication period.
+  
+  Calculated from the distribution of publication years for the creator's works
+  by finding the earliest year in the main cluster of publications. This helps
+  filter out obvious outliers (e.g. mis-registered years or single late reprints).
+  
+  Represents the start of the period where the creator is primarily published
+  in the catalogue data, and may not correspond to the creator's actual historical
+  debut or lifetime.
+  \\"\\"\\"
+  primaryPublicationPeriodStartYear: Int
 }
 
 type GeneratedContent {
@@ -7503,6 +7600,11 @@ type GeneratedContent {
   disclaimer: String
 }
 
+type Forfatterweb {
+  image: FbiInfoImages
+  url: String
+}
+
 type Wikidata {
   education: [String!]
   image: CreatorImage
@@ -7511,6 +7613,16 @@ type Wikidata {
   wikidataId: String
   description: String
   awards: [String!]
+}
+
+type CreatorInfo {
+  display: String!
+  firstName: String
+  lastName: String
+  viafid: String
+  wikidata(language: LanguageCodeEnum): Wikidata
+  generated: GeneratedContentPerson
+  forfatterweb: Forfatterweb
 }
 
 type Translation {
@@ -7571,11 +7683,15 @@ type Person implements SubjectInterface & CreatorInterface {
   \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
   viafid: String
 
-  \\"\\"\\"Additional metadata for the creator\\"\\"\\"
-  wikidata(language: LanguageCodeEnum): Wikidata
-
-  \\"\\"\\"AI Generated content for the creator\\"\\"\\"
-  generated: GeneratedContentPerson
+  \\"\\"\\"
+  Additional enriched metadata about the creator.
+  
+  Aggregates information from multiple internal and external sources
+  (for example authority data, knowledge bases, generated content and
+  partner services). The exact fields available on CreatorInfo may
+  evolve over time as new data sources are added.
+  \\"\\"\\"
+  enriched: CreatorInfo
 }
 
 type Corporation implements SubjectInterface & CreatorInterface {
@@ -7617,9 +7733,6 @@ type Corporation implements SubjectInterface & CreatorInterface {
 
   \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
   viafid: String
-
-  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 interface CreatorInterface {
@@ -7636,9 +7749,6 @@ interface CreatorInterface {
 
   \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
   viafid: String
-
-  \\"\\"\\"Additional data from Wikidata\\"\\"\\"
-  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 \\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"

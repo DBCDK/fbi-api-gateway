@@ -218,8 +218,29 @@ export async function resolveAccess(manifestation, context) {
     });
   }
 
-  // Return array containing all types of access
-  return _sortOnlineAccess(res);
+  if (parent?.identifiers) {
+    const publizonIdentifier = parent?.identifiers?.find(
+      ({ type, value }) => type === "PUBLIZON" && value
+    );
+
+    const isbn = publizonIdentifier?.value;
+
+    if (isbn) {
+      res.push({
+        __typename: "Publizon",
+        isbn,
+      });
+    }
+  }
+
+  // Ensure client can access the returned union types
+  const denyTypes = context?.clientPermissions?.denyTypes || [];
+
+  // remove restricted __typenames
+  const filtered = res.filter((obj) => !denyTypes.includes(obj.__typename));
+
+  // Return array containing all types of allowed access
+  return _sortOnlineAccess(filtered);
 }
 
 /**

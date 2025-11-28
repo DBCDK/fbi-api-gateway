@@ -2,7 +2,7 @@ import { mapWikidata } from "../utils/utils";
 import generatedContentExamples from "../utils/generatedContentExamples.json";
 
 const GENERATED_DISCLAIMER =
-  "Teksten er skabt med hjælp fra AI på baggrund af lektørudtalelser om personens værker. Indholdet kan indeholde fejl, upræcise oplysninger eller fortolkninger.";
+  "Teksten er automatisk genereret ud fra bibliotekernes materialevurderinger og kan indeholde fejl.";
 
 export const typeDef = `
 type CreatorImage {
@@ -35,6 +35,30 @@ type GeneratedContentPerson {
   AI short generated summary
   """
   shortSummary: GeneratedContent
+
+  """
+  A summary generated from work count, workYears, often used topics etc.
+  Is null, when shortSummary exists
+  """
+  dataSummary: GeneratedContent @complexity(value: 500)
+
+  """
+  The most often used topics of the creator
+  """
+  topSubjects: [String!]
+
+  """
+  Estimated start year of the creator's primary publication period.
+
+  Calculated from the distribution of publication years for the creator's works
+  by finding the earliest year in the main cluster of publications. This helps
+  filter out obvious outliers (e.g. mis-registered years or single late reprints).
+
+  Represents the start of the period where the creator is primarily published
+  in the catalogue data, and may not correspond to the creator's actual historical
+  debut or lifetime.
+  """
+  primaryPublicationPeriodStartYear: Int
 }
 
 type GeneratedContent {
@@ -48,6 +72,11 @@ type GeneratedContent {
   May contain info about the source of the content.
   """
   disclaimer: String
+}
+
+type Forfatterweb {
+  image: FbiInfoImages
+  url: String
 }
 
 type Wikidata {
@@ -67,6 +96,7 @@ type CreatorInfo {
   viafid: String
   wikidata(language: LanguageCodeEnum): Wikidata
   generated: GeneratedContentPerson
+  forfatterweb: Forfatterweb
 }
 
 type Translation {
@@ -150,14 +180,14 @@ type Person implements SubjectInterface & CreatorInterface {
   viafid: String
 
   """
-  Additional metadata for the creator
-  """
-  wikidata(language: LanguageCodeEnum): Wikidata
+  Additional enriched metadata about the creator.
 
+  Aggregates information from multiple internal and external sources
+  (for example authority data, knowledge bases, generated content and
+  partner services). The exact fields available on CreatorInfo may
+  evolve over time as new data sources are added.
   """
-  AI Generated content for the creator
-  """
-  generated: GeneratedContentPerson
+  enriched: CreatorInfo
 }
 type Corporation implements SubjectInterface & CreatorInterface {
     """
@@ -215,10 +245,6 @@ type Corporation implements SubjectInterface & CreatorInterface {
     """
     viafid: String
 
-    """
-    Additional data from Wikidata
-    """
-    wikidata(language: LanguageCodeEnum): Wikidata
 }
 interface CreatorInterface {
   """
@@ -241,10 +267,6 @@ interface CreatorInterface {
   """
   viafid: String
 
-  """
-  Additional data from Wikidata
-  """
-  wikidata(language: LanguageCodeEnum): Wikidata
 }
 
 extend type Query {
@@ -252,6 +274,10 @@ extend type Query {
   Fetch a creator by VIAF identifier
   """
   creatorByViafid(viafid: String!): CreatorInfo
+  """
+  Fetch a creator by display name
+  """
+  creatorByDisplay(display: String!): CreatorInfo
 }
 `;
 
@@ -272,20 +298,43 @@ export const resolvers = {
         lastName: creatorInfoRaw?.original?.lastname || null,
         viafid: creatorInfoRaw?.viafId || null,
         wikidata: mapWikidata(creatorInfoRaw),
-        generated: generatedContentExamples[creatorInfoRaw?.display]
+        generated: creatorInfoRaw?.generated?.shortSummary
           ? {
+              creator: creatorInfoRaw?.display,
               summary: {
-                text: generatedContentExamples[creatorInfoRaw?.display]
-                  .longDescription,
+                text: creatorInfoRaw?.generated?.summary,
                 disclaimer: GENERATED_DISCLAIMER,
               },
               shortSummary: {
-                text: generatedContentExamples[creatorInfoRaw?.display]
-                  .shortDescription,
+                text: creatorInfoRaw?.generated?.shortSummary,
                 disclaimer: GENERATED_DISCLAIMER,
               },
             }
           : null,
+      };
+    },
+    async creatorByDisplay(parent, args, context) {
+      const creatorInfoRaw = await context.datasources
+        .getLoader("creatorByDisplayName")
+        .load({ displayName: args.display });
+
+      return {
+        display: args.display,
+        firstName: creatorInfoRaw?.original?.firstname || null,
+        lastName: creatorInfoRaw?.original?.lastname || null,
+        viafid: creatorInfoRaw?.viafId || null,
+        wikidata: creatorInfoRaw ? mapWikidata(creatorInfoRaw) : null,
+        generated: {
+          creator: args.display,
+          summary: creatorInfoRaw?.generated?.summary && {
+            text: creatorInfoRaw?.generated?.summary,
+            disclaimer: GENERATED_DISCLAIMER,
+          },
+          shortSummary: creatorInfoRaw?.generated?.shortSummary && {
+            text: creatorInfoRaw?.generated?.shortSummary,
+            disclaimer: GENERATED_DISCLAIMER,
+          },
+        },
       };
     },
   },
@@ -295,6 +344,16 @@ export const resolvers = {
       const data = parent?.wikidata;
       if (!data) return null;
       return { ...data, language };
+    },
+    async forfatterweb(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("creatorInfoFromData")
+        .load({
+          creatorDisplayName: parent?.display,
+          profile: context.profile,
+        });
+
+      return res?.forfatterweb;
     },
   },
   Person: {
@@ -315,42 +374,83 @@ export const resolvers = {
         return null;
       }
     },
-    async wikidata(parent, args, context) {
+    async enriched(parent, args, context) {
       try {
-        const language = args?.language || "DA";
         const info = await context.datasources
           .getLoader("creatorByDisplayName")
           .load({ displayName: parent?.display });
-        const data = mapWikidata(info);
+        if (!info) {
+          return null;
+        }
 
-        if (!data) return null;
-        return { ...data, language };
+        return {
+          display: parent?.display,
+          firstName: info?.original?.firstname || null,
+          lastName: info?.original?.lastname || null,
+          viafid: info?.viafId || null,
+          wikidata: mapWikidata(info),
+          generated:
+            info?.generated?.shortSummary || info?.generated?.summary
+              ? {
+                  creator: parent?.display,
+                  summary: info?.generated?.summary && {
+                    text: info?.generated?.summary,
+                    disclaimer: GENERATED_DISCLAIMER,
+                  },
+                  shortSummary: info?.generated?.shortSummary && {
+                    text: info?.generated?.shortSummary,
+                    disclaimer: GENERATED_DISCLAIMER,
+                  },
+                }
+              : null,
+        };
       } catch (e) {
         return null;
       }
     },
-    async generated(parent, args, context) {
-      return generatedContentExamples[parent?.display]
-        ? {
-            summary: {
-              text: generatedContentExamples[parent?.display].longDescription,
-              disclaimer: GENERATED_DISCLAIMER,
-            },
-            shortSummary: {
-              text: generatedContentExamples[parent?.display].shortDescription,
-              disclaimer: GENERATED_DISCLAIMER,
-            },
-          }
-        : null;
+  },
+  GeneratedContentPerson: {
+    async dataSummary(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("creatorInfoFromData")
+        .load({
+          creatorDisplayName: parent?.creator,
+          profile: context.profile,
+        });
+
+      // If there is no generated dataSummary text, return null for the whole field.
+      // The GraphQL type allows dataSummary to be nullable, but its inner text field is non-nullable.
+      if (!res?.dataSummary) {
+        return null;
+      }
+
+      return {
+        text: res.dataSummary,
+        disclaimer: null,
+      };
+    },
+    async topSubjects(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("creatorInfoFromData")
+        .load({
+          creatorDisplayName: parent?.creator,
+          profile: context.profile,
+        });
+      return res?.topSubjects || [];
+    },
+    async primaryPublicationPeriodStartYear(parent, args, context) {
+      const res = await context.datasources
+        .getLoader("creatorInfoFromData")
+        .load({
+          creatorDisplayName: parent?.creator,
+          profile: context.profile,
+        });
+      return res?.primaryPublicationPeriodStartYear || null;
     },
   },
   Corporation: {
     roles(parent) {
       return Array.isArray(parent?.roles) ? parent?.roles : [];
-    },
-    wikidata(parent, args) {
-      const language = args?.language || "DA";
-      return { language: language };
     },
     viafid() {
       return null;
