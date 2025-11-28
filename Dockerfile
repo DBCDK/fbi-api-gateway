@@ -11,7 +11,7 @@ USER node
 
 # install node packages
 RUN npm set progress=false && npm config set depth 0 && \
-    npm install
+    npm ci
 
 # test
 RUN npm test
