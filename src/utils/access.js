@@ -86,7 +86,7 @@ export async function resolveAccess(manifestation, context) {
   // At some point we may choose to follow the structure of JED closely,
   // but it has to be coordinated with stakeholders
 
-  const parent =
+  let parent =
     typeof manifestation === "object"
       ? manifestation
       : await resolveManifestation({ pid: manifestation }, context);
@@ -165,6 +165,25 @@ export async function resolveAccess(manifestation, context) {
         id: parent.access.infomediaService.id,
       });
     }
+
+    // If this is an omitted online access for politiken or jyllands-posten.
+    else {
+      const hasPhysical = parent?.accessTypes?.some(
+        (t) => (t?.code ?? "").toUpperCase() === "PHYSICAL"
+      );
+
+      // And the item has physical access - then we set interLibraryLoanIsPossible to true
+      // This makes the article available for interlibrary loan
+      if (hasPhysical) {
+        parent = {
+          ...parent,
+          access: {
+            ...(parent.access ?? {}),
+            interLibraryLoanIsPossible: true,
+          },
+        };
+      }
+    }
   }
 
   // Get the issn for this article or periodica
@@ -199,8 +218,29 @@ export async function resolveAccess(manifestation, context) {
     });
   }
 
-  // Return array containing all types of access
-  return _sortOnlineAccess(res);
+  if (parent?.identifiers) {
+    const publizonIdentifier = parent?.identifiers?.find(
+      ({ type, value }) => type === "PUBLIZON" && value
+    );
+
+    const isbn = publizonIdentifier?.value;
+
+    if (isbn) {
+      res.push({
+        __typename: "Publizon",
+        isbn,
+      });
+    }
+  }
+
+  // Ensure client can access the returned union types
+  const denyTypes = context?.clientPermissions?.denyTypes || [];
+
+  // remove restricted __typenames
+  const filtered = res.filter((obj) => !denyTypes.includes(obj.__typename));
+
+  // Return array containing all types of allowed access
+  return _sortOnlineAccess(filtered);
 }
 
 /**

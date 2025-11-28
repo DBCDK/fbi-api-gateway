@@ -34,8 +34,17 @@ const defaultSettings = {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
+    "CreatorInfo",
+    "Publizon",
   ],
-  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
+  denyFields: [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
+    "SearchResponse.creatorHit",
+    "SearchResponse.seriesHit",
+    "ComplexSearchResponse.creatorHit",
+    "ComplexSearchResponse.seriesHit",
+  ],
 };
 
 /**
@@ -71,9 +80,11 @@ const bibdk = {
     "nodeById",
     "nodeQuery",
     "periodica",
+    "creatorByViafid",
+    "creatorByDisplay",
   ],
   denyTypes: ["MarcRecord"],
-  denyFields: [...defaultSettings.denyFields],
+  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
 };
 
 /**
@@ -93,8 +104,9 @@ export default {
       "holdingsItems",
       "ors",
       "rawrepo",
+      "submitOrder",
     ],
-    denyTypes: [],
+    denyTypes: ["CreatorInfo", "Publizon"],
     denyFields: [...defaultSettings.denyFields],
   },
   ddbcms: {
@@ -110,6 +122,7 @@ export default {
       "SEO",
       "WorkExtensionUnion",
       "WorkReview",
+      "CreatorInfo",
     ],
     denyFields: [...defaultSettings.denyFields],
   },

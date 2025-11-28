@@ -8,7 +8,7 @@
 
   /* scroll */
   height: 85vh;
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 .items {
@@ -28,6 +28,10 @@
 
 .item.h2 {
   padding-left: var(--pt3);
+}
+
+.item.h2:last-child {
+  margin-bottom: var(--pt1);
 }
 
 .item.active > p > a {
@@ -61,4 +65,32 @@
 
 .input {
   border: 2px solid var(--text-dark);
+}
+
+/* WebKit/Blink (Chrome, Edge, Safari) */
+.menu::-webkit-scrollbar {
+  width: 8px; /* <- vigtigt: uden denne ser du ofte ingen ændring */
+}
+
+.menu::-webkit-scrollbar-track {
+  background: transparent; /* evt. tilføj border-radius hvis du vil matche thumb'en */
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background: var(--divider);
+  border-radius: var(--pt05);
+}
+
+.menu::-webkit-scrollbar-thumb:hover {
+  background: var(--divider-dark);
+}
+
+/* darkmode */
+
+:global(body.dark) .menu::-webkit-scrollbar-thumb {
+  background: var(--divider-dark);
+}
+
+:global(body.dark) .menu::-webkit-scrollbar-thumb:hover {
+  background: var(--text-light);
 }

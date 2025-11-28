@@ -1,3 +1,5 @@
+import { getStringArray } from "./utils/env.js";
+
 export default {
   app: {
     id: process.env.APP_ID || "bibliotekdk-next-api",
@@ -28,6 +30,9 @@ export default {
   },
   dmzproxy: {
     url: process.env.PROXY_URL || null,
+  },
+  lockedAgencyIds: {
+    list: getStringArray(process.env.LOCKED_AGENCY_ID_LIST),
   },
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
@@ -137,6 +142,12 @@ export default {
       url: process.env.CICERO_URL || "https://fbs-openplatform.dbc.dk",
       ttl: process.env.CICERO_URL_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.CICERO_URL_PREFIX || "cicero-1",
+      teamLabel: "febib",
+    },
+    publizon: {
+      url: process.env.PUBLIZON_URL || "https://pubhub-openplatform.dbc.dk",
+      ttl: process.env.PUBLIZON_URL_TIME_TO_LIVE_SECONDS || 5,
+      prefix: process.env.PUBLIZON_URL_PREFIX || "pubhub-1",
       teamLabel: "febib",
     },
     holdingsservice: {
@@ -419,6 +430,14 @@ export default {
         "http://bibliotekdk-next-userdata-stg.febib-staging.svc.cloud.dbc.dk/",
       ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 0,
       prefix: "userdata",
+      teamLabel: "febib",
+    },
+    creatorInfo: {
+      url:
+        process.env.CREATORINFO_URL ||
+        "http://creator-info-staging.febib-staging.svc.cloud.dbc.dk/",
+      ttl: process.env.CREATORINFO_TIME_TO_LIVE_SECONDS || 60 * 5,
+      prefix: "creatorinfo",
       teamLabel: "febib",
     },
     orderStatus: {

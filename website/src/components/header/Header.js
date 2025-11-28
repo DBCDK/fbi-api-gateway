@@ -54,6 +54,8 @@ export default function Header() {
   const isFuture = theme === "future";
   const isOld = theme === "old";
 
+  const isTest = theme === "test" || theme === "fbstest";
+
   const indexStyles = isIndex ? styles.index : "";
   const documentationStyles = isDocumentation ? styles.documentation : "";
   const schemaStyles = isSchema ? styles.schema : "";
@@ -71,7 +73,10 @@ export default function Header() {
             <Title className={styles.logo}>
               <span>
                 <Link href="/">
-                  {isOld && <strong>{"[old]"}</strong>} FBI API
+                  {(isOld || isTest) && (
+                    <strong>{`[${isTest ? "test" : "old"}]`}</strong>
+                  )}{" "}
+                  FBI API
                 </Link>{" "}
                 {icon}
               </span>

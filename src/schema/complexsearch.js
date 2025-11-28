@@ -1,5 +1,13 @@
 import { log } from "dbc-node-logger";
 import { resolveWork } from "../utils/utils";
+import {
+  getWorkAuthors,
+  getSeriesIdsFromWork,
+  getCreatorInfo,
+  resolveWorksByIds,
+  selectPrimaryAuthor,
+  selectPrimarySeriesId,
+} from "../utils/search";
 import { createTraceId } from "../utils/trace";
 
 export const typeDef = `
@@ -161,6 +169,16 @@ type ComplexSearchResponse {
   Error message, for instance if CQL is invalid
   """
   errorMessage: String
+
+  """
+  Returned when at least 3 of the top 5 works share the same creator.
+  """
+  creatorHit: CreatorInfo
+
+  """
+  Returned when at least 3 of the top 5 works belong to the same series.
+  """
+  seriesHit: Series
 }
 `;
 
@@ -241,6 +259,65 @@ export const resolvers = {
         .getLoader("complexsearch")
         .load(setPost(parent, context, args));
       return res?.hitcount || 0;
+    },
+    async creatorHit(parent, args, context) {
+      // Get top 5 workIds and resolve works
+      const res = await context.datasources
+        .getLoader("complexsearch")
+        .load(setPost(parent, context, args));
+      const workIds = res?.works || [];
+      if (!workIds || workIds?.length === 0) return null;
+
+      const works = await resolveWorksByIds(workIds, context);
+
+      // Collect authors across works
+      const authorEntries = getWorkAuthors(works);
+
+      if (authorEntries.length === 0) return null;
+
+      // Choose dominant author (appears at least 3 times in top 5)
+      const primaryAuthor = selectPrimaryAuthor(authorEntries);
+
+      if (!primaryAuthor) return null;
+
+      // Fetch CreatorInfo details
+      try {
+        return await getCreatorInfo(primaryAuthor, context);
+      } catch (e) {
+        return null;
+      }
+    },
+    async seriesHit(parent, args, context) {
+      // Get top 5 workIds and resolve works
+      const res = await context.datasources
+        .getLoader("complexsearch")
+        .load(setPost(parent, context, args));
+      const workIds = res?.works || [];
+      const searchHits = res?.searchHits;
+
+      if (!workIds || workIds.length === 0) return null;
+
+      const works = await resolveWorksByIds(workIds, context, searchHits);
+
+      // get series ids from works
+      const seriesPerWork = await Promise.all(
+        works.map((work) => getSeriesIdsFromWork(work, context))
+      );
+
+      // return seriesid if it appears more than 3 times
+      const selectedSeriesId = selectPrimarySeriesId(seriesPerWork);
+      if (!selectedSeriesId) return null;
+
+      const seriesById = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: selectedSeriesId, profile: context.profile });
+      if (!seriesById) return null;
+
+      return {
+        ...seriesById,
+        seriesId: selectedSeriesId,
+        traceId: createTraceId(),
+      };
     },
     async errorMessage(parent, args, context) {
       const res = await context.datasources

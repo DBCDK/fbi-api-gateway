@@ -8,7 +8,7 @@
   /* changes on focus */
   border: 2px solid transparent;
   transition-duration: 0.3s;
-  padding: 0 var(--pt2);
+  padding: 0 var(--pt3);
 }
 
 .button:hover {
@@ -131,4 +131,27 @@
 .button.disabled,
 .button.disabled:hover {
   color: var(--text-light);
+}
+
+/* 
+* Halloween theme
+*
+*/
+
+:global(body.halloween:not(.dark)) .button.primary:not(.disabled) {
+  color: var(--white);
+}
+
+:global(body.dark) .button.primary:not(.disabled) {
+  color: var(--white);
+  background-color: var(--secondary-dark);
+}
+
+/* Real-hover */
+@media (hover: hover) {
+  :global(body.dark) .button.primary:not(.disabled):hover,
+  :global(body.dark) .button.primary:not(.disabled):focus-within {
+    background-color: var(--text-dark);
+    color: var(--white);
+  }
 }
