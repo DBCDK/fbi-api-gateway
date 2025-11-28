@@ -16,8 +16,8 @@
     "start:testuser": "cd testuser-website && npm run start",
     "test": "jest",
     "prettier": "prettier --write 'src/**/*.js'",
-    "postinstall": "(cd testuser-website && npm i); (cd website && npm i); npx --yes @dbcdk/npm-tools@latest verify latest",
-    "build": "eslint . && (cd fbi-api-debug && npm i && npm run build && cp ./unpacked.zip ../website/public/unpacked.zip) && (cd testuser-website && npm run build && npm prune --production) && (cd website && npm run build && npm prune --production);",
+    "postinstall": "if [ \"$CI\" = \"true\" ]; then (cd testuser-website && npm ci); (cd website && npm ci); else (cd testuser-website && npm i); (cd website && npm i); fi; npx --yes @dbcdk/npm-tools@latest verify latest",
+    "build": "eslint . && (cd fbi-api-debug && if [ \"$CI\" = \"true\" ]; then npm ci; else npm i; fi && npm run build && cp ./unpacked.zip ../website/public/unpacked.zip) && (cd testuser-website && npm run build && npm prune --production) && (cd website && npm run build && npm prune --production);",
     "lint": "eslint ."
   },
   "author": "Frontend @ DBC",

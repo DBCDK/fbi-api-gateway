@@ -10,6 +10,7 @@ RUN chown -R node /home/node/app
 USER node
 
 # install node packages
+ENV CI=true
 RUN npm set progress=false && npm config set depth 0 && \
     npm ci
 
