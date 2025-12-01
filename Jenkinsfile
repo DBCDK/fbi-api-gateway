@@ -79,7 +79,7 @@ pipeline {
             }
         }
         stage('Push to Artifactory') {
-            when { anyOf { branch 'master'; branch 'future'; branch 'NET-1707-closeorder' } }
+            when { anyOf { branch 'master'; branch 'future' } }
 
             steps {
                 script {

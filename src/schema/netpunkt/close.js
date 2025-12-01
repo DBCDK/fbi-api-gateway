@@ -36,9 +36,9 @@ export const resolvers = {
       if (args?.dryRun) {
         return { orderId: "654321" };
       }
-      if (args?.input?.requesterId !== authUser.netpunktAgency) {
+      if (args?.input?.requesterId !== authUser?.netpunktAgency) {
         return {
-          status: "REQUESTER_ID_NOT_EQUALvTO_LOGIN_ID",
+          status: "REQUESTER_ID_NOT_EQUAL_TO_LOGIN_ID",
         };
       }
 
@@ -58,7 +58,7 @@ export const resolvers = {
       return await context.datasources.getLoader("closeOrder").load({
         accessToken: context.accessToken,
         orderId: args.input?.orderId,
-        requesterId: args.input?.requesterId
+        requesterId: args.input?.requesterId,
       });
     },
   },

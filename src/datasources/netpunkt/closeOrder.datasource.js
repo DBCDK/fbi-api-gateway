@@ -1,14 +1,13 @@
 import config from "../../config";
-import {log} from "dbc-node-logger";
+import { log } from "dbc-node-logger";
 
 const { serviceRequester, url, teamLabel } = config.datasources.openorder;
 
-export async function load({ accessToken, orderId, requesterId}, context) {
-
+export async function load({ accessToken, orderId, requesterId }, context) {
   const parameters = {
-    "requesterId": requesterId,
-    "orderId": orderId,
-    "closed": true
+    requesterId: requesterId,
+    orderId: orderId,
+    closed: true,
   };
 
   try {
@@ -27,13 +26,12 @@ export async function load({ accessToken, orderId, requesterId}, context) {
     if (closeOrder.status === 200) {
       return { orderId: closeOrder.body.orderId };
     } else {
-      return { status: "STATUS_NOT_200", };
+      return { status: "STATUS_NOT_200" };
     }
-
   } catch {
     log.error("CLOSE ORDER: Error closing order", { parameters });
-    return { status: "ERROR_OCCURRED", };
+    return { status: "ERROR_OCCURRED" };
   }
-};
+}
 
 export { teamLabel };
