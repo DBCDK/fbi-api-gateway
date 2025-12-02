@@ -3153,6 +3153,23 @@ type DigitalArticleServiceResponse {
   msg: String!
 }
 
+input NetpunktCloseOrderInput {
+  requesterId: String
+  orderId: String
+}
+
+type Netpunkt {
+  \\"\\"\\"Closes an order from Netpunkt to OpenOrder\\"\\"\\"
+  closeOrder(input: NetpunktCloseOrderInput!, dryRun: Boolean): CloseOrder
+
+  \\"\\"\\"Submits an order from Netpunkt to OpenOrder on behalf of an end user\\"\\"\\"
+  submitOrder(input: NetpunktSubmitOrderInput!, dryRun: Boolean): SubmitOrder
+}
+
+type CloseOrder {
+  orderId: String
+}
+
 input NetpunktSubmitOrderInput {
   author: String
   authorOfComponent: String
@@ -3193,11 +3210,6 @@ input NetpunktSubmitOrderInput {
   userParameters: SubmitOrderUserParametersInput!
   verificationReferenceSource: String
   volume: String
-}
-
-type Netpunkt {
-  \\"\\"\\"Submits an order from Netpunkt to OpenOrder on behalf of an end user\\"\\"\\"
-  submitOrder(input: NetpunktSubmitOrderInput!, dryRun: Boolean): SubmitOrder
 }
 
 enum SubmitOrderStatusEnum {
