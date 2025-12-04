@@ -59,12 +59,16 @@ export function buildParameters({ userId, input, orderSystem }) {
     exactEdition: input.exactEdition || false,
     issue: input.issue,
     latestRequesterNote: input.latestRequesterNote,
-    needBeforeDate: input.needBeforeDate || input.expires || createNeedBeforeDate(),
-    orderSystem: input.orderSystem ? input.orderSystem : orderSystem?.toUpperCase(),
+    needBeforeDate:
+      input.needBeforeDate || input.expires || createNeedBeforeDate(),
+    orderSystem: input.orderSystem
+      ? input.orderSystem
+      : orderSystem?.toUpperCase(),
     originalOrderId: input.originalOrderId,
     pagination: input.pagesOfComponent,
     pickUpAgencyId: input.pickUpAgencyId || input.pickUpBranch,
-    pickUpAgencySubdivision: input.pickUpAgencySubdivision || input.pickUpBranchSubdivision,
+    pickUpAgencySubdivision:
+      input.pickUpAgencySubdivision || input.pickUpBranchSubdivision,
     pid: input.pids.map((pid) => pid),
     pidOfPrimaryObject: input.pidOfPrimaryObject,
     placeOnHold: input.placeOnHold,
@@ -80,7 +84,8 @@ export function buildParameters({ userId, input, orderSystem }) {
     ...input.userParameters,
     userId: userId || id?.value,
     userIdType,
-    verificationReferenceSource: input.verificationReferenceSource ?? "DBCDATAWELL",
+    verificationReferenceSource:
+      input.verificationReferenceSource ?? "DBCDATAWELL",
     volume: input.volumeOfComponent,
   };
 

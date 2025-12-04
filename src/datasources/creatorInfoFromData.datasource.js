@@ -48,8 +48,11 @@ export async function load({ creatorDisplayName, profile }, context) {
   };
 }
 
+// Functions/roles that are supported for contributor data summary
+const supportedContributorFunctions = ["skuespiller", "illustrator"];
+
 async function getDataSummary(creatorDisplayName, profile, context) {
-  const cql = `phrase.creator="${creatorDisplayName}" OR phrase.creatorcontributorfunction="${creatorDisplayName} (skuespiller)"`;
+  const cql = `phrase.creator="${creatorDisplayName}" OR ${supportedContributorFunctions.map((role) => `phrase.creatorcontributorfunction="${creatorDisplayName} (${role})"`).join(" OR ")}`;
   const [res, facetsResult] = await Promise.all([
     context.getLoader("complexsearch").load({
       cql,
@@ -116,10 +119,10 @@ async function getDataSummary(creatorDisplayName, profile, context) {
           : `udgivet mellem ${startYear} og ${endYear}`;
 
       const baseSentence = usesDebutYear
-        ? `${creatorDisplayName} er registreret som ophav til ${workCount} ${
+        ? `${creatorDisplayName} er registreret som bidragsyder eller ophav til ${workCount} ${
             workCount === 1 ? "værk" : "værker"
           }, som fortrinsvis er ${yearText}.`
-        : `${creatorDisplayName} er registreret som ophav til ${workCount} ${
+        : `${creatorDisplayName} er registreret som bidragsyder eller ophav til ${workCount} ${
             workCount === 1 ? "værk" : "værker"
           } ${yearText}.`;
 
@@ -365,7 +368,7 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-11",
+    prefix: "creatorInfoFromData-12",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
