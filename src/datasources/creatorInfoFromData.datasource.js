@@ -8,6 +8,7 @@
  * All operations are cached together to minimize expensive database and API calls.
  */
 
+import { resolveAccess } from "../utils/access";
 import {
   parseJedSubjects,
   resolveManifestation,
@@ -48,8 +49,11 @@ export async function load({ creatorDisplayName, profile }, context) {
   };
 }
 
+// Functions/roles that are supported for contributor data summary
+const supportedContributorFunctions = ["skuespiller", "illustrator"];
+
 async function getDataSummary(creatorDisplayName, profile, context) {
-  const cql = `phrase.creator="${creatorDisplayName}" OR phrase.creatorcontributorfunction="${creatorDisplayName} (skuespiller)"`;
+  const cql = `phrase.creator="${creatorDisplayName}" OR ${supportedContributorFunctions.map((role) => `phrase.creatorcontributorfunction="${creatorDisplayName} (${role})"`).join(" OR ")}`;
   const [res, facetsResult] = await Promise.all([
     context.getLoader("complexsearch").load({
       cql,
@@ -116,10 +120,10 @@ async function getDataSummary(creatorDisplayName, profile, context) {
           : `udgivet mellem ${startYear} og ${endYear}`;
 
       const baseSentence = usesDebutYear
-        ? `${creatorDisplayName} er registreret som ophav til ${workCount} ${
+        ? `${creatorDisplayName} er registreret som bidragsyder eller ophav til ${workCount} ${
             workCount === 1 ? "værk" : "værker"
           }, som fortrinsvis er ${yearText}.`
-        : `${creatorDisplayName} er registreret som ophav til ${workCount} ${
+        : `${creatorDisplayName} er registreret som bidragsyder eller ophav til ${workCount} ${
             workCount === 1 ? "værk" : "værker"
           } ${yearText}.`;
 
@@ -326,9 +330,19 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
 
   const resolvedManifestations = await Promise.all(
     pids.map(async (pid) => {
+      const contextForResolver = {
+        profile,
+        datasources: { getLoader: context.getLoader },
+      };
       const manifestation = await resolveManifestation(
         { pid },
-        { profile, datasources: { getLoader: context.getLoader } }
+        contextForResolver
+      );
+      const access = await resolveAccess(manifestation, contextForResolver);
+      await Promise.all(
+        access.map(async (entry) => {
+          entry.status = await entry.status;
+        })
       );
       const cover = await context.getLoader("fbiinfoCovers").load(pid);
       const coverResources = cover?.resources;
@@ -341,22 +355,15 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
             original: coverResources["original"] || null,
           }
         : null;
-      return { manifestation, image };
+      return { manifestation, image, access };
     })
   );
-
   const image = resolvedManifestations.find((m) => m.image)?.image;
   let urls = [];
   resolvedManifestations.forEach((m) => {
-    const accessUrls = m?.manifestation?.access?.accessUrls;
+    const accessUrls = m?.access;
     if (Array.isArray(accessUrls) && accessUrls.length > 0) {
-      urls = [
-        ...urls,
-        ...accessUrls.filter(
-          (entry) =>
-            entry && typeof entry.url === "string" && !entry.url.includes("php")
-        ),
-      ];
+      urls = [...urls, ...accessUrls.filter((entry) => entry.status === "OK")];
     }
   });
 
@@ -365,7 +372,7 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-11",
+    prefix: "creatorInfoFromData-13",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
