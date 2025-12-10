@@ -3,8 +3,17 @@ import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
 
 // Shared constants for hit calculations - top works limit
 export const DEFAULT_TOP_WORKS_LIMIT = 5;
-// number of works that must share the same author/series to be considered dominant
-export const DOMINANT_MIN_COUNT = 3;
+
+// Weight schedule for author scoring by work index (top N works)
+// Earlier works get strictly higher weights
+const WORK_INDEX_WEIGHTS = [5, 3, 2, 1, 1];
+
+function getWorkIndexWeight(index) {
+  if (typeof index !== "number" || index < 0) return 0;
+  if (index < WORK_INDEX_WEIGHTS.length) return WORK_INDEX_WEIGHTS[index];
+  // Only the top WORK_INDEX_WEIGHTS.length works contribute to the score
+  return 0;
+}
 
 /**
  * Extract author entries from works for counting.
@@ -53,7 +62,6 @@ export function getWorkAuthors(works) {
     // is only counted once per work, even if present in multiple manifestations.
     const seenKeys = new Set();
   const merged= [...creatorAuthors, ...contributorAuthors];
-  console.log("\n\n\n\n\ngetWorkAuthors.merged", merged, "\n\n\n\n\n");
   merged.forEach((c) => {
       const viafid = c?.viafid || null;
       const display = c?.display || null;
@@ -66,7 +74,6 @@ export function getWorkAuthors(works) {
       allEntries.push({ key, viafid, display, index: workIndex });
     });
   });
-  console.log("\n\n\n\n\ngetWorkAuthors.allEntries", allEntries, "\n\n\n\n\n");
   return allEntries;
 }
 
@@ -74,74 +81,51 @@ export function getWorkAuthors(works) {
  * From author entries, compute counts and pick a dominant author (>=3)
  */
 export function selectPrimaryAuthor(authorEntries) {
-  console.log(
-    "\n\n\n\n\nselectPrimaryAuthor.authorEntries",
-    authorEntries,
-    "\n\n\n\n\n"
-  );
+
   if (!authorEntries?.length) return null;
 
-  const counts = new Map(); // key -> count
-  const firstEntryByKey = new Map(); // key -> { viafid, display, firstIndex }
-  let dominantCandidate = null;
+  // key -> total weighted score
+  const scores = new Map();
+  // key -> { viafid, display, firstIndex }
+  const firstEntryByKey = new Map();
 
   for (const { key, viafid, display, index } of authorEntries) {
     if (!firstEntryByKey.has(key)) {
       firstEntryByKey.set(key, { viafid, display, firstIndex: index ?? 0 });
     }
 
-    const nextCount = (counts.get(key) || 0) + 1;
-    counts.set(key, nextCount);
-
-    if (!dominantCandidate && nextCount >= DOMINANT_MIN_COUNT) {
-      const first = firstEntryByKey.get(key);
-      dominantCandidate = {
-        viafid: first.viafid,
-        display: first.display,
-        count: nextCount,
-      };
-    }
-  }
-  console.log("\n\n\n\n\ndominantCandidate", dominantCandidate, "\n\n\n\n\n");
-  // 1st priority: dominant author across works
-  if (dominantCandidate) {
-    return dominantCandidate;
+    const weight = getWorkIndexWeight(index);
+    const nextScore = (scores.get(key) || 0) + weight;
+    scores.set(key, nextScore);
   }
 
-  // 2nd priority: most frequent person across works
-  // 3rd priority (tie-breaker): earliest appearance in the works list
+  // Select primary creator by:
+  // 1) highest total weighted score
+  // 2) tie-breaker: earliest appearance in the works list
   let bestKey = null;
-  let bestCount = 0;
+  let bestScore = 0;
   let bestFirstIndex = Infinity;
 
-  // Walk through all keys and pick the "best" one:
-  // - Prefer higher total count across works
-  // - For equal counts, prefer the one that appeared in an earlier work
-
-  console.log("\n\n\n\n\ncounts", counts, "\n\n\n\n\n");
-  counts.forEach((count, key) => {
-    // We stored the first index where this key appeared when building `firstEntryByKey`
+  scores.forEach((score, key) => {
     const first = firstEntryByKey.get(key);
     const firstIndex = first?.firstIndex ?? 0;
 
     if (
-      count > bestCount ||
-      (count === bestCount && firstIndex < bestFirstIndex)
+      score > bestScore ||
+      (score === bestScore && firstIndex < bestFirstIndex)
     ) {
       bestKey = key;
-      bestCount = count;
+      bestScore = score;
       bestFirstIndex = firstIndex;
     }
   });
-  console.log("\n\n\n\n\nbestKey", bestKey, "\n\n\n\n\n");
   if (!bestKey) return null;
 
   const best = firstEntryByKey.get(bestKey);
-  console.log("\n\n\n\n\nbest", best, "\n\n\n\n\n");
   return {
     viafid: best?.viafid ?? null,
     display: best?.display ?? null,
-    count: bestCount,
+    count: bestScore,
   };
 }
 
