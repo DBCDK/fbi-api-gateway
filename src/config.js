@@ -243,7 +243,7 @@ export default {
     simplesearch: {
       url:
         process.env.SIMPLESEARCH_URL ||
-        "http://simple-search-fbiapi-1-8.ai-prod.svc.cloud.dbc.dk/search", // NOSONAR
+        "http://simple-search-fbiapi-1-9.ai-prod.svc.cloud.dbc.dk/search", // NOSONAR
       prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-6",
       token: process.env.SIMPLESEARCH_TOKEN,
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,

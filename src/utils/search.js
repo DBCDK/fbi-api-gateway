@@ -147,22 +147,28 @@ export async function getSeriesIdsFromWork(work, context) {
  * Given arrays of seriesIds per work, select a dominant series id
  * that occurs at least minCount times across works.
  */
-export function selectPrimarySeriesId(
-  seriesIdsPerWork,
-  minCount = DOMINANT_MIN_COUNT
-) {
+export function selectPrimarySeriesId(seriesIdsPerWork, minCount = 2) {
   const counts = new Map();
-  (seriesIdsPerWork || []).forEach((ids) => {
-    (ids || []).forEach((id) => {
-      counts.set(id, (counts.get(id) || 0) + 1);
-    });
-  });
+
+  for (const ids of seriesIdsPerWork ?? []) {
+    for (const id of ids ?? []) {
+      if (!id) continue;
+      counts.set(id, (counts.get(id) ?? 0) + 1);
+    }
+  }
 
   let selectedSeriesId = null;
-  counts.forEach((count, id) => {
-    if (count >= minCount && !selectedSeriesId) {
+  let bestCount = 0;
+
+  for (const [id, count] of counts.entries()) {
+    if (count < minCount) continue;
+
+    // pick highest count; tie-breaker: keep the first encountered (stable)
+    if (count > bestCount) {
+      bestCount = count;
       selectedSeriesId = id;
     }
-  });
+  }
+
   return selectedSeriesId;
 }
