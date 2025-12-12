@@ -148,16 +148,12 @@ export async function getCreatorInfo(candidate, context) {
   if (!candidate) return null;
 
   let creatorInfoRaw = null;
-  if (candidate.viafid) {
-    creatorInfoRaw = await context.datasources
-      .getLoader("creatorByViafid")
-      .load({ viafid: candidate.viafid });
-  } else if (candidate.display) {
+
+  if (candidate.display) {
     creatorInfoRaw = await context.datasources
       .getLoader("creatorByDisplayName")
       .load({ displayName: candidate.display });
   }
-
   if (
     !creatorInfoRaw ||
     (!creatorInfoRaw?.viafId && !creatorInfoRaw?.display)
@@ -168,22 +164,31 @@ export async function getCreatorInfo(candidate, context) {
   const GENERATED_DISCLAIMER =
     "Teksten er automatisk genereret ud fra bibliotekernes materialevurderinger og kan indeholde fejl.";
 
+  const creatorDisplay = creatorInfoRaw?.display || candidate.display || null;
+  const hasSummary = !!creatorInfoRaw?.generated?.summary;
+  const hasShortSummary = !!creatorInfoRaw?.generated?.shortSummary;
+
   return {
-    display: creatorInfoRaw?.display,
+    display: creatorDisplay,
     firstName: creatorInfoRaw?.original?.firstname || null,
     lastName: creatorInfoRaw?.original?.lastname || null,
     viafid: creatorInfoRaw?.viafId || null,
     wikidata: mapWikidata(creatorInfoRaw),
-    generated: creatorInfoRaw?.generated?.shortSummary
+    generated: creatorDisplay
       ? {
-          summary: {
-            text: creatorInfoRaw?.generated?.summary,
-            disclaimer: GENERATED_DISCLAIMER,
-          },
-          shortSummary: {
-            text: creatorInfoRaw?.generated?.shortSummary,
-            disclaimer: GENERATED_DISCLAIMER,
-          },
+          creator: creatorDisplay,
+          summary: hasSummary
+            ? {
+                text: creatorInfoRaw?.generated?.summary,
+                disclaimer: GENERATED_DISCLAIMER,
+              }
+            : null,
+          shortSummary: hasShortSummary
+            ? {
+                text: creatorInfoRaw?.generated?.shortSummary,
+                disclaimer: GENERATED_DISCLAIMER,
+              }
+            : null,
         }
       : null,
   };
