@@ -13,6 +13,7 @@ export async function load({ viafid }, context) {
       "Content-Type": "application/json",
     },
     method: "GET",
+    allowedErrorStatusCodes: [404],
   });
 
   return res.body;
