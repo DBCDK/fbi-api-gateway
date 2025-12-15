@@ -1,14 +1,24 @@
 import { mapWikidata } from "./utils";
 import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
 
-// Shared constants for hit calculations - top works limit
 export const DEFAULT_TOP_WORKS_LIMIT = 5;
-// number of works that must share the same author/series to be considered dominant
-export const DOMINANT_MIN_COUNT = 3;
+
+// Weight schedule for author scoring by work rank (top N works)
+const WORK_RANK_WEIGHTS = [5, 3, 2, 1, 1];
 
 /**
- * Extract author entries from works for counting.
- * creators with role functionCode === 'aut'
+ * Get the weight for a work index. First work has the highest weight, last work has the lowest weight.
+ */
+function getWorkRankWeight(index) {
+  if (typeof index !== "number" || index < 0) return 0;
+  if (index < WORK_RANK_WEIGHTS.length) return WORK_RANK_WEIGHTS[index];
+  return 0;
+}
+
+/**TODO: rename authors->contributors
+ * Extract author entries from works for scoring.
+ * - creators with role functionCode === 'aut', 'ill' or 'act'
+ * - contributors (from manifestations.all) with functionCode === 'ill' or 'act'
  */
 export function getWorkAuthors(works) {
   const allEntries = [];
@@ -20,41 +30,115 @@ export function getWorkAuthors(works) {
           ...(work?.creators?.corporations || []),
         ];
 
-    creators
-      ?.filter((c) => Array.isArray(c?.roles))
-      ?.filter((c) => c.roles?.some?.((r) => r?.functionCode === "aut"))
-      ?.forEach((c) => {
-        const viafid = c?.viafid || null;
-        const display = c?.display || null;
-        if (!viafid && !display) return;
-        const key = viafid
-          ? `viaf:${viafid}`
-          : `name:${String(display).toLowerCase().trim()}`;
-        allEntries.push({ key, viafid, display, index: workIndex });
-      });
+    const manifestationsAll = Array.isArray(work?.manifestations?.all)
+      ? work.manifestations.all
+      : [];
+
+    const contributors = manifestationsAll.flatMap((m) =>
+      Array.isArray(m?.contributors) ? m.contributors : []
+    );
+
+    const creatorAuthors =
+      creators
+        ?.filter((c) => Array.isArray(c?.roles))
+        ?.filter((c) =>
+          c.roles?.some?.(
+            (r) =>
+              r?.functionCode === "aut" ||
+              r?.functionCode === "ill" ||
+              r?.functionCode === "act"
+          )
+        ) || [];
+
+    const contributorAuthors =
+      contributors
+        ?.filter((c) => Array.isArray(c?.roles))
+        ?.filter((c) =>
+          c.roles?.some?.(
+            (r) => r?.functionCode === "ill" || r?.functionCode === "act"
+          )
+        ) || [];
+
+    // Deduplicate per work so the same person is only scored once per work.
+    const seenKeys = new Set();
+    const merged = [...creatorAuthors, ...contributorAuthors];
+
+    merged.forEach((c) => {
+      const viafid = c?.viafid || null;
+      const display = c?.display || null;
+      if (!viafid && !display) return;
+
+      const key = viafid
+        ? `viaf:${viafid}`
+        : `name:${String(display).toLowerCase().trim()}`;
+
+      if (seenKeys.has(key)) return;
+      seenKeys.add(key);
+
+      allEntries.push({ key, viafid, display, index: workIndex });
+    });
   });
 
   return allEntries;
 }
 
 /**
- * From author entries, compute counts and pick a dominant author (>=3)
+ * From author entries, select the primary author using weighted-by-rank scoring.
+ * Earlier works contribute more to the total score.
  */
 export function selectPrimaryAuthor(authorEntries) {
   if (!authorEntries?.length) return null;
 
-  const counts = new Map();
+  // Stores the total weighted score for each author key.
+  // Example: "viaf:123" => 8, "name:john doe" => 5
+  const weightedScores = new Map();
+  // Stores info about where we first saw each author.
+  // Example: "viaf:123" => { viafid: "123", display: "John Doe", firstIndex: 0 }
+  const firstEntryByKey = new Map();
 
-  for (const { key, viafid, display } of authorEntries) {
-    const nextCount = (counts.get(key) || 0) + 1;
-    counts.set(key, nextCount);
-
-    if (nextCount >= DOMINANT_MIN_COUNT) {
-      return { viafid, display, count: nextCount };
+  // Iterate over each author entry and update the weighted scores and first entry maps
+  for (const { key, viafid, display, index } of authorEntries) {
+    if (!firstEntryByKey.has(key)) {
+      firstEntryByKey.set(key, { viafid, display, firstIndex: index ?? 0 });
     }
+
+    // Get the weight for this work index. Higher weight for earlier works.
+    const weight = getWorkRankWeight(index ?? 0);
+    // Update the total score for this author key. If we've seen this key before, add the weight to the existing score.
+    const nextScore = (weightedScores.get(key) || 0) + weight;
+    // Store the updated score for this author key.
+    weightedScores.set(key, nextScore);
   }
 
-  return null;
+  // Find the author key with the highest total score.
+  let bestKey = null;
+  // The highest total score found so far.
+  let bestScore = 0;
+  // The index of the first work where we saw this author key.
+  let bestFirstIndex = Infinity;
+
+  weightedScores.forEach((score, key) => {
+    const first = firstEntryByKey.get(key);
+    const firstIndex = first?.firstIndex ?? 0;
+
+    if (
+      score > bestScore ||
+      (score === bestScore && firstIndex < bestFirstIndex)
+    ) {
+      bestKey = key;
+      bestScore = score;
+      bestFirstIndex = firstIndex;
+    }
+  });
+
+  if (!bestKey) return null;
+
+  const best = firstEntryByKey.get(bestKey);
+  return {
+    viafid: best?.viafid ?? null,
+    display: best?.display ?? null,
+    score: bestScore,
+  };
 }
 
 /**
@@ -64,16 +148,12 @@ export async function getCreatorInfo(candidate, context) {
   if (!candidate) return null;
 
   let creatorInfoRaw = null;
-  if (candidate.viafid) {
-    creatorInfoRaw = await context.datasources
-      .getLoader("creatorByViafid")
-      .load({ viafid: candidate.viafid });
-  } else if (candidate.display) {
+
+  if (candidate.display) {
     creatorInfoRaw = await context.datasources
       .getLoader("creatorByDisplayName")
       .load({ displayName: candidate.display });
   }
-
   if (
     !creatorInfoRaw ||
     (!creatorInfoRaw?.viafId && !creatorInfoRaw?.display)
@@ -81,26 +161,34 @@ export async function getCreatorInfo(candidate, context) {
     return null;
   }
 
-  //Todo: add somewhere more central/readable
   const GENERATED_DISCLAIMER =
     "Teksten er automatisk genereret ud fra bibliotekernes materialevurderinger og kan indeholde fejl.";
 
+  const creatorDisplay = creatorInfoRaw?.display || candidate.display || null;
+  const hasSummary = !!creatorInfoRaw?.generated?.summary;
+  const hasShortSummary = !!creatorInfoRaw?.generated?.shortSummary;
+
   return {
-    display: creatorInfoRaw?.display,
+    display: creatorDisplay,
     firstName: creatorInfoRaw?.original?.firstname || null,
     lastName: creatorInfoRaw?.original?.lastname || null,
     viafid: creatorInfoRaw?.viafId || null,
     wikidata: mapWikidata(creatorInfoRaw),
-    generated: creatorInfoRaw?.generated?.shortSummary
+    generated: creatorDisplay
       ? {
-          summary: {
-            text: creatorInfoRaw?.generated?.summary,
-            disclaimer: GENERATED_DISCLAIMER,
-          },
-          shortSummary: {
-            text: creatorInfoRaw?.generated?.shortSummary,
-            disclaimer: GENERATED_DISCLAIMER,
-          },
+          creator: creatorDisplay,
+          summary: hasSummary
+            ? {
+                text: creatorInfoRaw?.generated?.summary,
+                disclaimer: GENERATED_DISCLAIMER,
+              }
+            : null,
+          shortSummary: hasShortSummary
+            ? {
+                text: creatorInfoRaw?.generated?.shortSummary,
+                disclaimer: GENERATED_DISCLAIMER,
+              }
+            : null,
         }
       : null,
   };
@@ -111,7 +199,6 @@ export async function getCreatorInfo(candidate, context) {
  * Optionally enrich with searchHits (complex search)
  */
 export async function resolveWorksByIds(workIds, context, searchHits) {
-  //only resolve the top 5 workIds
   const limitedWorkIds = workIds.slice(0, DEFAULT_TOP_WORKS_LIMIT);
   const works = await Promise.all(
     (limitedWorkIds || []).map(async (id) => {
@@ -144,25 +231,28 @@ export async function getSeriesIdsFromWork(work, context) {
 }
 
 /**
- * Given arrays of seriesIds per work, select a dominant series id
+ * Given arrays of seriesIds per work, select a series id
  * that occurs at least minCount times across works.
  */
-export function selectPrimarySeriesId(
-  seriesIdsPerWork,
-  minCount = DOMINANT_MIN_COUNT
-) {
+export function selectPrimarySeriesId(seriesIdsPerWork, minCount = 2) {
   const counts = new Map();
-  (seriesIdsPerWork || []).forEach((ids) => {
-    (ids || []).forEach((id) => {
-      counts.set(id, (counts.get(id) || 0) + 1);
-    });
-  });
+
+  for (const ids of seriesIdsPerWork ?? []) {
+    for (const id of ids ?? []) {
+      if (!id) continue;
+      counts.set(id, (counts.get(id) ?? 0) + 1);
+    }
+  }
 
   let selectedSeriesId = null;
-  counts.forEach((count, id) => {
-    if (count >= minCount && !selectedSeriesId) {
+  let bestCount = 0;
+  for (const [id, count] of counts.entries()) {
+    if (count < minCount) continue;
+    if (count > bestCount) {
+      bestCount = count;
       selectedSeriesId = id;
     }
-  });
+  }
+
   return selectedSeriesId;
 }

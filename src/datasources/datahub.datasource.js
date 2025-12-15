@@ -14,12 +14,6 @@ export async function load(event, context) {
         body: JSON.stringify(event),
       }
     );
-  } else {
-    console.log("");
-    console.log("EVENT START");
-    console.log(JSON.stringify(event, null, 2));
-    console.log("EVENT END");
-    console.log("");
   }
 }
 
