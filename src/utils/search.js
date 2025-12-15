@@ -4,7 +4,7 @@ import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
 export const DEFAULT_TOP_WORKS_LIMIT = 5;
 
 // Weight schedule for author scoring by work rank (top N works)
-const WORK_RANK_WEIGHTS = [5, 3, 2, 1, 1];
+const WORK_RANK_WEIGHTS = [2, 2, 2, 1, 1];
 
 /**
  * Get the weight for a work index. First work has the highest weight, last work has the lowest weight.
@@ -85,13 +85,16 @@ export function getWorkAuthors(works) {
 /**
  * From author entries, select the primary author using weighted-by-rank scoring.
  * Earlier works contribute more to the total score.
+ * An author is only selected if it appears in more than 2 works.
  */
 export function selectPrimaryAuthor(authorEntries) {
   if (!authorEntries?.length) return null;
 
   // Stores the total weighted score for each author key.
-  // Example: "viaf:123" => 8, "name:john doe" => 5
+  // Example: "viaf:123" => 3, "name:john doe" => 4
   const weightedScores = new Map();
+  // Stores how many times each author key appears across works.
+  const occurrenceCounts = new Map();
   // Stores info about where we first saw each author.
   // Example: "viaf:123" => { viafid: "123", display: "John Doe", firstIndex: 0 }
   const firstEntryByKey = new Map();
@@ -106,8 +109,10 @@ export function selectPrimaryAuthor(authorEntries) {
     const weight = getWorkRankWeight(index ?? 0);
     // Update the total score for this author key. If we've seen this key before, add the weight to the existing score.
     const nextScore = (weightedScores.get(key) || 0) + weight;
+    const nextCount = (occurrenceCounts.get(key) || 0) + 1;
     // Store the updated score for this author key.
     weightedScores.set(key, nextScore);
+    occurrenceCounts.set(key, nextCount);
   }
 
   // Find the author key with the highest total score.
@@ -118,6 +123,10 @@ export function selectPrimaryAuthor(authorEntries) {
   let bestFirstIndex = Infinity;
 
   weightedScores.forEach((score, key) => {
+    const occurrenceCount = occurrenceCounts.get(key) ?? 0;
+    // Only consider authors that appear more than 2 times.
+    if (occurrenceCount <= 2) return;
+
     const first = firstEntryByKey.get(key);
     const firstIndex = first?.firstIndex ?? 0;
 
