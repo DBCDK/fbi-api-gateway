@@ -117,15 +117,15 @@ async function getDataSummary(creatorDisplayName, profile, context) {
       const yearText =
         startYear === endYear
           ? `fra ${startYear}`
-          : `fra perioden ${startYear} til ${endYear}`;
+          : `i perioden ${startYear} til ${endYear}`;
 
       const baseSentence = usesDebutYear
-        ? `${creatorDisplayName} er registreret som ophav eller bidragsyder/medvirkende til ${workCount} ${
+        ? `${creatorDisplayName} er registreret som ophav eller bidragsyder til ${workCount} ${
             workCount === 1 ? "udgivelse" : "udgivelser"
-          } som fortrinsvis er ${yearText}.`
-        : `${creatorDisplayName} er registreret som ophav eller bidragsyder/medvirkende til ${workCount} ${
+          }, fortrinsvis udgivet ${yearText}.`
+        : `${creatorDisplayName} er registreret som ophav eller bidragsyder til ${workCount} ${
             workCount === 1 ? "udgivelse" : "udgivelser"
-          } som er ${yearText}.`;
+          } ${yearText}.`;
 
       if (topSubjects && topSubjects.length > 0) {
         // Use first 3 for the text description
@@ -372,7 +372,7 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-14",
+    prefix: "creatorInfoFromData-15",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
