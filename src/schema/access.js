@@ -1,5 +1,11 @@
 import { resolveAccess } from "../utils/access";
 import { extFromUrl, forceHttpsAndStripQa } from "../utils/publizon";
+import { resolveWork } from "../utils/utils";
+import {
+  getLookupUrl,
+  resolveLocalIdentifiers,
+  resolveUnits,
+} from "./detailedholdings";
 
 export const typeDef = `
 enum AccessTypeCodeEnum {
@@ -109,6 +115,11 @@ type DigitalArticleService {
 
 type Publizon {
   """
+  URL to the material on the public library's website
+  """
+  agencyUrl(agencyId: String): String
+
+  """
   URL of the sample provided by Publizon (Pubhub), typically a preview
   of the e-book or audiobook content.
   """
@@ -140,12 +151,33 @@ export const resolvers = {
     },
   },
 
-  // Normalization:
-  // - remove .qa. subdomain
-  // - force https
-  // - override format from file extension (fallback to API format)
-
   Publizon: {
+    async agencyUrl(parent, args, context, info) {
+      const agencyId = args.agencyId || context?.user?.loggedInAgencyId;
+      const id = parent?.workId;
+
+      if (!agencyId) {
+        return null;
+      }
+
+      const branch = (
+        await context.datasources
+          .getLoader("library")
+          .load({ branchId: agencyId })
+      )?.result?.[0];
+
+      const url = branch?.lookupUrl?.replace("work-of:870970-basis:", "");
+
+      if (!url || !url?.endsWith("/work/")) {
+        return null;
+      }
+
+      return url + id;
+    },
+    // Normalization:
+    // - remove .qa. subdomain
+    // - force https
+    // - override format from file extension (fallback to API format)
     async sample(parent, args, context, info) {
       const product = await context.datasources
         .getLoader("products")
