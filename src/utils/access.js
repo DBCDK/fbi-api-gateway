@@ -224,11 +224,13 @@ export async function resolveAccess(manifestation, context) {
     );
 
     const isbn = publizonIdentifier?.value;
+    const workId = parent?.workId;
 
     if (isbn) {
       res.push({
         __typename: "Publizon",
         isbn,
+        workId,
       });
     }
   }
