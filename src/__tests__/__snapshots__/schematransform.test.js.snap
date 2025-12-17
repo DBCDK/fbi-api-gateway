@@ -105,6 +105,11 @@ type DigitalArticleService {
 
 type Publizon {
   \\"\\"\\"
+  URL to the material on the public library's website. Url is created using the agency's lookupUrl and the manifestation workId. If no agencyId is provided, the logged in user's agencyId is used.
+  \\"\\"\\"
+  agencyUrl(agencyId: String): String
+
+  \\"\\"\\"
   URL of the sample provided by Publizon (Pubhub), typically a preview
   of the e-book or audiobook content.
   \\"\\"\\"
@@ -7512,6 +7517,11 @@ type DigitalArticleService {
 }
 
 type Publizon {
+  \\"\\"\\"
+  URL to the material on the public library's website. Url is created using the agency's lookupUrl and the manifestation workId. If no agencyId is provided, the logged in user's agencyId is used.
+  \\"\\"\\"
+  agencyUrl(agencyId: String): String
+
   \\"\\"\\"
   URL of the sample provided by Publizon (Pubhub), typically a preview
   of the e-book or audiobook content.

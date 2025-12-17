@@ -1,11 +1,5 @@
 import { resolveAccess } from "../utils/access";
 import { extFromUrl, forceHttpsAndStripQa } from "../utils/publizon";
-import { resolveWork } from "../utils/utils";
-import {
-  getLookupUrl,
-  resolveLocalIdentifiers,
-  resolveUnits,
-} from "./detailedholdings";
 
 export const typeDef = `
 enum AccessTypeCodeEnum {
@@ -115,7 +109,7 @@ type DigitalArticleService {
 
 type Publizon {
   """
-  URL to the material on the public library's website
+  URL to the material on the public library's website. Url is created using the agency's lookupUrl and the manifestation workId. If no agencyId is provided, the logged in user's agencyId is used.
   """
   agencyUrl(agencyId: String): String
 
