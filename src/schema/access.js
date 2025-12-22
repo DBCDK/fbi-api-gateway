@@ -109,7 +109,7 @@ type DigitalArticleService {
 
 type Publizon {
   """
-  URL to the material on the public library's website. Url is created using the agency's lookupUrl and the manifestation workId. If no agencyId is provided, the logged in user's agencyId is used.
+  URL to the material on the public library's website, built from the agency's lookupUrl and the manifestation workId. Defaults to the logged-in user's municipality agency.
   """
   agencyUrl(agencyId: String): String
 
@@ -147,7 +147,7 @@ export const resolvers = {
 
   Publizon: {
     async agencyUrl(parent, args, context, info) {
-      const agencyId = args.agencyId || context?.user?.loggedInAgencyId;
+      const agencyId = args.agencyId || context?.user?.municipalityAgencyId;
       const id = parent?.workId;
 
       if (!agencyId) {
