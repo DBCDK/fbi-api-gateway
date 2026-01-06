@@ -549,33 +549,37 @@ export const resolvers = {
         });
 
       const workresult = await Promise.all(
-        res?.result?.map(async (order) => {
-          let orsResult = {};
-          if (order.orderId) {
-            //TODO: remove fetchOrderStatus call once frontend is updated to use titles and creators instead of titile and author.
-            const orsResponse = await fetchOrderStatus(
-              { orderIds: [order.orderId] },
-              context
-            );
-            orsResult = orsResponse?.[0];
+        (res?.result || []).map(async (order) => {
+          let work = null;
+          if (order?.pid) {
+            try {
+              const workData = await resolveWork({ pid: order.pid }, context);
+              if (workData) {
+                const creators = [
+                  ...(workData?.creators?.persons || []).map((person) => ({
+                    ...person,
+                    __typename: "Person",
+                  })),
+                  ...(workData?.creators?.corporations || []).map((corp) => ({
+                    ...corp,
+                    __typename: "Corporation",
+                  })),
+                ];
+                work = { ...workData, creators };
+              }
+            } catch (error) {
+              // If work resolving fails (e.g. pidToWorkId fails), we still return the order data.
+              log.warn("Failed to resolve work for bibliotekDkOrder", {
+                orderId: order?.orderId,
+                pid: order?.pid,
+              });
+              work = null;
+            }
           }
-
-          const workData = await resolveWork({ pid: order.pid }, context);
-          const creators = [
-            ...workData?.creators?.persons?.map((person) => ({
-              ...person,
-              __typename: "Person",
-            })),
-            ...workData?.creators?.corporations?.map((person) => ({
-              ...person,
-              __typename: "Corporation",
-            })),
-          ];
-          const work = { ...workData, creators };
           return {
+            orderId: order?.orderId,
             work,
             creationDate: order.createdAt,
-            ...orsResult,
           };
         })
       );
