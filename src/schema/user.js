@@ -569,10 +569,6 @@ export const resolvers = {
               }
             } catch (error) {
               // If work resolving fails (e.g. pidToWorkId fails), we still return the order data.
-              log.warn("Failed to resolve work for bibliotekDkOrder", {
-                orderId: order?.orderId,
-                pid: order?.pid,
-              });
               work = null;
             }
           }
