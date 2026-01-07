@@ -4,7 +4,6 @@
  */
 
 import {
-  fetchOrderStatus,
   filterDuplicateAgencies,
   getUserBranchIds,
   resolveManifestation,
