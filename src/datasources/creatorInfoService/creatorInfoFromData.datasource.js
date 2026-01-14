@@ -8,12 +8,20 @@
  * All operations are cached together to minimize expensive database and API calls.
  */
 
-import { resolveAccess } from "../utils/access";
+import { resolveAccess } from "../../utils/access";
 import {
   parseJedSubjects,
   resolveManifestation,
   resolveWork,
-} from "../utils/utils";
+} from "../../utils/utils";
+import skipImagesData from "./skip-images.json";
+
+/**
+ * Create a set of bibdkNames to skip from imported data
+ */
+const skipImagesSet = new Set(
+  skipImagesData.map((entry) => entry.bibdkName).filter((name) => name !== null)
+);
 
 /**
  * Normalize letters by converting to lowercase and removing diacritics
@@ -366,13 +374,15 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
       urls = [...urls, ...accessUrls.filter((entry) => entry.status === "OK")];
     }
   });
+  // Check if creatorDisplayName is in skip images list and set image to null if so
+  const finalImage = skipImagesSet.has(creatorDisplayName) ? null : image;
 
-  return { image, url: urls?.[0]?.url };
+  return { image: finalImage, url: urls?.[0]?.url };
 }
 
 export const options = {
   redis: {
-    prefix: "creatorInfoFromData-15",
+    prefix: "creatorInfoFromData-16",
     ttl: 60 * 60 * 24,
     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
   },
