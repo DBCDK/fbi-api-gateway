@@ -380,12 +380,12 @@ async function getForfatterweb(creatorDisplayName, profile, context) {
   return { image: finalImage, url: urls?.[0]?.url };
 }
 
-// export const options = {
-//   redis: {
-//     prefix: "creatorInfoFromData-15",
-//     ttl: 60 * 60 * 24,
-//     staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
-//   },
-// };
+export const options = {
+  redis: {
+    prefix: "creatorInfoFromData-16",
+    ttl: 60 * 60 * 24,
+    staleWhileRevalidate: 60 * 60 * 24 * 7, // A week
+  },
+};
 const teamLabel = "febib";
 export { teamLabel };
