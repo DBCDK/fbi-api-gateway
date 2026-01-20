@@ -605,7 +605,7 @@ type Manifestations {
   """
   bestRepresentation: Manifestation! 
   """
-  All manifisations sorted after best representation. Newer is better. Records from DBC or KB are considered better. MaterialType.specific 'bog', 'music (cd)', and 'film (dvd)' are also considered better
+  All manifestations sorted after best representation. Newer is better. Records from DBC or KB are considered better. MaterialType.specific 'bog', 'music (cd)', and 'film (dvd)' are also considered better
   """
   bestRepresentations: [Manifestation!]! 
   mostRelevant: [Manifestation!]! @complexity(value: 25)
