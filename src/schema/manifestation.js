@@ -600,7 +600,13 @@ type Manifestations {
   first: Manifestation!
   latest: Manifestation!
   all: [Manifestation!]! @complexity(value: 50)
+  """
+  The best representation of all manifestations. Corresponds to the first element in the bestRepresentations list.
+  """
   bestRepresentation: Manifestation! 
+  """
+  All manifestations sorted after best representation. Newer is better. Records from DBC or KB are considered better. MaterialType.specific 'bog', 'music (cd)', and 'film (dvd)' are also considered better
+  """
   bestRepresentations: [Manifestation!]! 
   mostRelevant: [Manifestation!]! @complexity(value: 25)
 
