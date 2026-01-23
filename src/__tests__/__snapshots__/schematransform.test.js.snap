@@ -5179,7 +5179,29 @@ type DigitalArticleService {
   issn: String!
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService
+type Publizon {
+  \\"\\"\\"
+  URL to the material on the public library's website, built from the agency's lookupUrl and the manifestation workId. Defaults to the logged-in user's municipality agency.
+  \\"\\"\\"
+  agencyUrl(agencyId: String): String
+
+  \\"\\"\\"
+  URL of the sample provided by Publizon (Pubhub), typically a preview
+  of the e-book or audiobook content.
+  \\"\\"\\"
+  sample: String!
+
+  \\"\\"\\"The file format of the Publizon resource (e.g., \\"epub\\", \\"mp3\\").\\"\\"\\"
+  format: String
+
+  \\"\\"\\"The file size of the resource in bytes, if available.\\"\\"\\"
+  fileSizeInBytes: Int
+
+  \\"\\"\\"The total duration of the resource in seconds, if available.\\"\\"\\"
+  durationInSeconds: Int
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
 
 type Mutation {
   elba: ElbaServices!
