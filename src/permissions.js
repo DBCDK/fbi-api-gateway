@@ -35,7 +35,6 @@ const defaultSettings = {
     "WorkExtensionUnion",
     "MarcRecord",
     "CreatorInfo",
-    "Publizon",
   ],
   denyFields: [
     "HoldingsItem.reservable",
@@ -107,7 +106,7 @@ export default {
       "rawrepo",
       "submitOrder",
     ],
-    denyTypes: ["CreatorInfo", "Publizon"],
+    denyTypes: ["CreatorInfo"],
     denyFields: [...defaultSettings.denyFields],
   },
   ddbcms: {
