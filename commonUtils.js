@@ -12,3 +12,8 @@ export function parseClientPermissions({ smaug }) {
   }
   return permissions.default;
 }
+
+export function getIsIdpSystemUser({ smaug, user }) {
+  const isAnonymous = !user?.id;
+  return isAnonymous && smaug?.access?.includes("idpsystemuser");
+}
