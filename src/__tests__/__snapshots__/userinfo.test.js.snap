@@ -62,6 +62,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "800010",
     "loggedInBranchId": "800021",
     "municipality": null,
