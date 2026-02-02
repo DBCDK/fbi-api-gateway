@@ -804,6 +804,7 @@ enum ComplexSearchFacetsEnum {
   INSTRUMENT
   CHOIRTYPE
   CHAMBERMUSICTYPE
+  DATEFIRSTEDITION
 }
 
 \\"\\"\\"The facets to ask for\\"\\"\\"
@@ -5372,6 +5373,7 @@ enum ComplexSearchFacetsEnum {
   INSTRUMENT
   CHOIRTYPE
   CHAMBERMUSICTYPE
+  DATEFIRSTEDITION
 }
 
 \\"\\"\\"The facets to ask for\\"\\"\\"
