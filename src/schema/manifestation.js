@@ -550,11 +550,6 @@ type Audience {
   """
   PEGI age rating for games 
   """
-  PEGI: PEGI @deprecated(reason: "Use 'Audience.pegi' instead expires: 01/06-2025")
-
-  """
-  PEGI age rating for games 
-  """
   pegi: PEGI
 
   """
@@ -734,11 +729,6 @@ type Manifestation {
   languages: Languages
 
   """
-  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
-  """
-  manifestationParts: ManifestationParts @deprecated(reason: "Use 'Manifestation.contents' instead expires: 01/11-2025")
-
-  """
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   """
   contents: [ContentsEntity!]
@@ -807,11 +797,6 @@ type Manifestation {
   Information about on which volume this manifestation is in multi volume work
   """
   volume: String
-
-  """
-  Quotation of the manifestation's table of contents or a similar content list
-  """
-  tableOfContents: TableOfContent @deprecated(reason: "Use 'Manifestation.contents' instead expires: 01/11-2025")
 
   """
   Worktypes for this manifestations work

@@ -14,7 +14,7 @@ export async function load({ uniqueId, bookmarkIds }, context) {
       method: "DELETE",
       body: JSON.stringify({ smaugUserId: uniqueId, bookmarkIds }),
     });
-    return { IdsDeletedCount: deleteresult.body.IdsDeleted };
+    return { idsDeletedCount: deleteresult.body.IdsDeleted };
   } catch (e) {
     // @TODO log
     return [];

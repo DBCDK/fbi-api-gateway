@@ -219,48 +219,6 @@ Object {
         },
         "summary": "Dummy 11. oplag, 2020",
       },
-      "manifestationParts": Object {
-        "heading": "Dummy Indhold:",
-        "parts": Array [
-          Object {
-            "classifications": Array [
-              Object {
-                "code": "Dummy 78.424",
-              },
-            ],
-            "creators": Array [
-              Object {
-                "display": "Dummy H. C. Lumbye",
-              },
-            ],
-            "creatorsFromDescription": Array [
-              "Dummy arr.: Peter Ettrup Larsen",
-            ],
-            "playingTime": "Dummy playing time",
-            "subjects": null,
-            "title": "Dummy Bouquet royal",
-          },
-          Object {
-            "classifications": Array [
-              Object {
-                "code": "Dummy 88.424",
-              },
-            ],
-            "creators": Array [
-              Object {
-                "display": "Dummy A. C. Handerson",
-              },
-            ],
-            "creatorsFromDescription": Array [
-              "Dummy arr.: Don Alderson Drumf",
-            ],
-            "playingTime": "Dummy long playing time",
-            "subjects": null,
-            "title": "Dummy Banker Loyal",
-          },
-        ],
-        "type": "MUSIC_TRACKS",
-      },
       "materialTypes": Array [
         Object {
           "materialTypeGeneral": Object {
@@ -370,21 +328,6 @@ Object {
           },
           Object {
             "display": "Dummy Some Corporation",
-          },
-        ],
-      },
-      "tableOfContents": Object {
-        "content": null,
-        "heading": "Dummy Indhold",
-        "listOfContent": Array [
-          Object {
-            "content": null,
-          },
-          Object {
-            "content": "Dummy Tykke-Olsen m.fl.",
-          },
-          Object {
-            "content": "Dummy Over skulderen",
           },
         ],
       },

@@ -403,7 +403,6 @@ export const FAKE_MANIFESTATION_1 = {
     },
   ],
   languages: FAKE_LANGUAGES,
-  manifestationParts: FAKE_MANIFESTATION_PARTS,
   materialTypes: [FAKE_MATERIALTYPE],
   notes: [FAKE_NOTES],
   ownerWork: FAKE_OWNER_WORK,
@@ -431,7 +430,6 @@ export const FAKE_MANIFESTATION_1 = {
   source: ["Dummy some source"],
   subjects: FAKE_SUBJECTS,
   volume: "Dummy Bind 2",
-  tableOfContents: FAKE_LIST_OF_CONTENT,
   workYear: {
     display: "Dummy",
     year: 1950,

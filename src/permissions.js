@@ -22,7 +22,6 @@ const defaultSettings = {
     "ris",
     "elba",
     "library",
-    "relatedSubjects",
     "linkCheck",
     "series",
     "universe",
