@@ -27,9 +27,9 @@ Send a request via [customer support](https://kundeservice.dbc.dk) and include t
 
 The API accepts OAuth 2 access tokens issued by `login.bib.dk`.
 
-Access tokens can be obtained using either the Client Credentials Grant or the Authorization Code Grant.
+Access tokens can be obtained using the following grant types:
 
-### Client Credentials
+### Client Credentials Grant
 
 Used when the application needs to access the API **as itself**, without any end user involved. This is typically used for backend-to-backend integration, scheduled jobs, or server-side processing.
 
@@ -41,9 +41,19 @@ curl --user "${CLIENT_ID}:${CLIENT_SECRET}" \
   -d "grant_type=client_credentials"
 ```
 
-### Authorization Code
+### Authorization Code Grant
 
 Used when the application needs to access the API **on behalf of an authenticated end user**. This flow requires redirecting the user to the login page and exchanging an authorization code for an access token.
+
+### Password Grant (legacy)
+
+For legacy integrations, it is possible to obtain an access token **on behalf of an authenticated end user** using the Password Grant.
+
+```bash
+curl --user "${CLIENT_ID}:${CLIENT_SECRET}" \
+  -X POST https://login.bib.dk/oauth/token \
+  -d "grant_type=password&username=${USERNAME}&password=${PASSWORD}"
+```
 
 ## Begin using the API
 
