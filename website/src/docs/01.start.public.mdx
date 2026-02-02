@@ -10,43 +10,49 @@ bunch of examples, which you can modify right in the browser.
 You need to _configure access_ to see the examples, and you will need an access token to do so.
 Read on, and learn how to get one.
 
-## How to get access?
+## Register your application/project
 
 You can get usage rights to FBI-API if you have access to FBI (Fælles BiblioteksInfastruktur), which is governed by KOMBIT.
 Currently only Danish libraries can get access to the API. So, in order to get started, you will need an agreement with a library.
 
-1. First of all, you need to obtain a _CLIENT_ID_ and a _SECRET_ for your application/project
+First of all, you need to obtain a _CLIENT_ID_ and a _SECRET_ for your application/project
 
-   Send a request via [customer support](https://kundeservice.dbc.dk) and include the following information:
+Send a request via [customer support](https://kundeservice.dbc.dk) and include the following information:
 
-   - Project owner (library, email, phone)
-   - Technical contact person (name, email, phone)
-   - Name and description of the application/project
+- Project owner (library, email, phone)
+- Technical contact person (name, email, phone)
+- Name and description of the application/project
 
-2. Obtain an access token
+## Obtain an access token
 
-   Get an _anonymous access token_ to access the API on behalf of the application:
+The API accepts OAuth 2 access tokens issued by `login.bib.dk`.
 
-   ```
-   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://login.bib.dk/oauth/token -d "grant_type=password&username=@&password=@"
-   ```
+Access tokens can be obtained using either the Client Credentials Grant or the Authorization Code Grant.
 
-   Or get an _authenticated access token_ to access the API on behalf of an end user.
+### Client Credentials
 
-   ```
-   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://login.bib.dk/oauth/token -d "grant_type=password&username=${USERNAME}&password=${PASSWORD}"
-   ```
+Used when the application needs to access the API **as itself**, without any end user involved. This is typically used for backend-to-backend integration, scheduled jobs, or server-side processing.
 
-   `${USERNAME}` is Loanernumber@library-agencyId and `${PASSWORD}` is the end user's pincode.
+Obtain an access token from the token endpoint:
 
-3. Begin using the API
+```bash
+curl --user "${CLIENT_ID}:${CLIENT_SECRET}" \
+  -X POST https://login.bib.dk/oauth/token \
+  -d "grant_type=client_credentials"
+```
 
-   Configure access on this site (you will need to fill in an access token in the field where it reads "Drop token here ..."), to see
-   examples and build your own queries.
+### Authorization Code
 
-   The examples show how to include the access token as a header when calling the API.
+Used when the application needs to access the API **on behalf of an authenticated end user**. This flow requires redirecting the user to the login page and exchanging an authorization code for an access token.
 
-   The api is continously expanding with new functionality.
+## Begin using the API
+
+Configure access on this site (you will need to fill in an access token in the field where it reads "Drop token here ..."), to see
+examples and build your own queries.
+
+The examples show how to include the access token as a header when calling the API.
+
+The api is continously expanding with new functionality.
 
 ## Developer tools 🧰
 
@@ -96,9 +102,11 @@ Queries exceeding **15** levels will be rejected to prevent server overloads, mi
 To ensure a stable and fair distribution of resources, we apply rate limiting to our API. Rate limiting restricts the number of requests a client can make within a given time period. This helps protect the API from overload, abuse, and unwanted traffic.
 
 ### How does it work?
+
 Each client is identified by a unique ID and assigned a quota for the number of requests allowed within a specific timeframe. If this limit is exceeded, the API will return an error message indicating that too many requests have been sent.
 
 ### How to avoid hitting the rate limit?
+
 To ensure smooth operation and avoid disruptions, we recommend implementing some of the following strategies:
 
 - **Caching Responses:** Store frequently requested data locally or in a caching layer to reduce the number of identical API requests.
@@ -110,8 +118,8 @@ To ensure smooth operation and avoid disruptions, we recommend implementing some
 <br />
 
 ### Rate Limits and Agreements
-The exact rate limit applied to your application may depend on your agreement with DBC DIGITAL. Some clients may have access to higher limits based on their specific needs and usage patterns. If your application requires a higher request quota, please contact us to discuss available options.
 
+The exact rate limit applied to your application may depend on your agreement with DBC DIGITAL. Some clients may have access to higher limits based on their specific needs and usage patterns. If your application requires a higher request quota, please contact us to discuss available options.
 
 ## Deprecation
 
@@ -190,27 +198,27 @@ One of the traceIds from the response should be used as the x-caused-by in subse
 
 ```bash
 curl -X POST \
-  -H "Content-Type: application/json" \
-  -H "Authorization: bearer ..." \
-  -H "x-tracking-consent: true" \
-  -H "x-session-token: test-session-token" \
-  -H "x-caused-by: test-trace-id" \
-  -d '{
-    "query": "query Example_SearchWithTrace($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!) {
-      search(q: $q) {
-        works(offset: $offset, limit: $limit) {
-          workId
-          traceId
-        }
+-H "Content-Type: application/json" \
+-H "Authorization: bearer ..." \
+-H "x-tracking-consent: true" \
+-H "x-session-token: test-session-token" \
+-H "x-caused-by: test-trace-id" \
+-d '{
+  "query": "query Example_SearchWithTrace($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!) {
+    search(q: $q) {
+      works(offset: $offset, limit: $limit) {
+        workId
+        traceId
       }
-   }",
-    "variables": {
-      "q": { "all": "test" },
-      "offset": 0,
-      "limit": 10
     }
-  }' \
-  https://fbi-api.dbc.dk/opac/graphql
+ }",
+  "variables": {
+    "q": { "all": "test" },
+    "offset": 0,
+    "limit": 10
+  }
+}' \
+https://fbi-api.dbc.dk/opac/graphql
 ```
 
 ## Feedback
@@ -222,12 +230,12 @@ Please attach the query that caused the bug in the issue.
 
 ## <Highlight>Stay Updated 📬</Highlight>
 
-Get notified when the FBI-API GraphQL schema changes. Subscribe to concise emails about **deprecations** and **breaking changes**, including guidance on which fields to use instead. 
+Get notified when the FBI-API GraphQL schema changes. Subscribe to concise emails about **deprecations** and **breaking changes**, including guidance on which fields to use instead.
 
 Managed via Mailchimp — you can unsubscribe at any time.
 
 <Link href="http://eepurl.com/jlfdkE" animation={false} target="_blank">
-  <Button tabIndex = "-1"> Join the update list </Button>
+  <Button tabIndex="-1"> Join the update list </Button>
 </Link>
 
 <br />
