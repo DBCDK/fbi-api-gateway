@@ -53,6 +53,9 @@
 .content section h2 {
   margin: var(--pt6) 0 var(--pt2) 0;
 }
+.content section h3 {
+  margin: var(--pt3) 0 var(--pt2) 0;
+}
 
 .content section h1 + h2 {
   margin: var(--pt2) 0;
