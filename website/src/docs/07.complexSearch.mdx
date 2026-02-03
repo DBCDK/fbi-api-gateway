@@ -103,10 +103,9 @@ Get a list of facets for given search query.
   }}
 />
 
-### What matched within the work?
+## What matched within the work?
 
 Complex search returns works. A work can contain multiple manifestations (editions, formats, ISBNs, etc.). `searchHits` shows which manifestations matched.
-
 
 <InlineGraphiQL
   query={`query Example_ComplexSearch_Searchhits($cql: String!, $offset: Int!, $limit: PaginationLimitScalar!,) {
@@ -134,6 +133,6 @@ Complex search returns works. A work can contain multiple manifestations (editio
   variables={{
     cql: "9788757017915",
     offset: 0,
-    limit: 10
+    limit: 10,
   }}
 />
