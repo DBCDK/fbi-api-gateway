@@ -57,7 +57,11 @@ export function buildParameters({ userId, input, orderSystem }) {
     callNumber: input.callNumber,
     copy: false,
     exactEdition: input.exactEdition || false,
+    initials: input.initials || "",
+    isbn: input.isbn,
+    issn: input.issn,
     issue: input.issue,
+    key: input.key,
     latestRequesterNote: input.latestRequesterNote,
     needBeforeDate:
       input.needBeforeDate || input.expires || createNeedBeforeDate(),
@@ -122,6 +126,8 @@ export async function load(
   { userId, input, branch, accessToken, smaug, authUserId, caller = "bibdk" },
   context
 ) {
+  console.log("her?");
+
   const orderSystem = smaug?.orderSystem;
   // build parameters for service request
   const parameters = buildParameters({ userId, input, orderSystem });
