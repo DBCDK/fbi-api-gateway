@@ -14,6 +14,9 @@ ENV CI=true
 RUN npm set progress=false && npm config set depth 0 && \
     npm ci
 
+# install dependencies for subprojects (postinstall scripts ignored via .npmrc)
+RUN npm run install:subprojects
+
 # test
 RUN npm test
 
