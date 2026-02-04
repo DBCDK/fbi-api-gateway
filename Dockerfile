@@ -12,16 +12,10 @@ USER node
 # install node packages
 ENV CI=true
 RUN npm set progress=false && npm config set depth 0 && \
-    npm ci
-
-# install dependencies for subprojects (postinstall scripts ignored via .npmrc)
-RUN npm run install:subprojects
-
-# test
-RUN npm test
-
-# build for production
-RUN npm run build
+    npm ci && \
+    npm run install:subprojects && \
+    npm test && \
+    npm run build
 
 # ---- Release ----
 FROM $NODE_BASEIMAGE AS release
