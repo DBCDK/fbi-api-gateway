@@ -56,30 +56,19 @@ export const typeDef = `
     verificationReferenceSource: String
     volume: String
   }
-  type Netpunkt {
+  extend type Netpunkt {
     """
     Submits a skaf order from Netpunkt to OpenOrder on behalf of an end user
     """
-    submitOrder(input: NetpunktSkafSubmitOrderInput!, dryRun: Boolean): SubmitOrder
-  }
-  extend type Mutation {
-    """
-    Netpunkt related mutations
-    """
-    netpunkt: Netpunkt!
+    submitSkafOrder(input: NetpunktSkafSubmitOrderInput!, dryRun: Boolean): SubmitOrder
   }
 `;
 
 export const resolvers = {
-  Mutation: {
-    netpunkt() {
-      return {};
-    },
-  },
   Netpunkt: {
-    async submitOrder(parent, args, context) {
+    async submitSkafOrder(parent, args, context) {
       if (args?.dryRun) {
-        return { status: "OWNED_ACCEPTED", orderId: "123456" };
+        return { status: "OWNED_ACCEPTED", orderId: "654123" };
       }
 
       // The userId of the Netpunkt user (not the end user)

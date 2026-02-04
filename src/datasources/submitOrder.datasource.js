@@ -49,6 +49,15 @@ export function buildParameters({ userId, input, orderSystem }) {
     userIdType = null;
   }
 
+  // Netpunkt has a submit funktion, submitSkafOrder, where the PID isn't known.
+  // But we need to make sure that the pid is used in all the other submit functions.
+  const pids =
+    input.pids === undefined &&
+    orderSystem === "netpunkt_25" &&
+    input.title !== ""
+      ? null
+      : input.pids.map((pid) => pid);
+
   // Set order parameters
   const params = {
     author: input.author,
@@ -73,7 +82,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     pickUpAgencyId: input.pickUpAgencyId || input.pickUpBranch,
     pickUpAgencySubdivision:
       input.pickUpAgencySubdivision || input.pickUpBranchSubdivision,
-    pid: input.pids.map((pid) => pid),
+    pid: pids,
     pidOfPrimaryObject: input.pidOfPrimaryObject,
     placeOnHold: input.placeOnHold,
     publicationDate: input.publicationDate,
@@ -126,8 +135,6 @@ export async function load(
   { userId, input, branch, accessToken, smaug, authUserId, caller = "bibdk" },
   context
 ) {
-  console.log("her?");
-
   const orderSystem = smaug?.orderSystem;
   // build parameters for service request
   const parameters = buildParameters({ userId, input, orderSystem });

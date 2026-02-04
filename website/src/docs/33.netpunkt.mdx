@@ -69,7 +69,7 @@ A skaf order doesn't have an PID, the only required field, beside agency info, i
 <InlineGraphiQL
   query={`mutation example_submitskaforder($input: NetpunktSkafSubmitOrderInput!) {
     netpunkt {
-      submitOrder(input: $input, dryRun: true) {
+      submitSkafOrder(input: $input, dryRun: true) {
         status
         message
         orderId
