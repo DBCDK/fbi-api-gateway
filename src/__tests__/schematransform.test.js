@@ -98,7 +98,7 @@ fragment TypeRef on __Type {
 }
 `;
 
-test("complete access to whole schema LKH", async () => {
+test("complete access to whole schema", async () => {
   const result = await performTestQuery({
     query: introspectionQuery,
     variables: {},

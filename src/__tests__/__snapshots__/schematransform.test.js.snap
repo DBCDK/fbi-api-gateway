@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`complete access to whole schema LKH 1`] = `
+exports[`complete access to whole schema 1`] = `
 "directive @fallback on ENUM_VALUE
 
 \\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
