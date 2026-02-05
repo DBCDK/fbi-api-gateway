@@ -68,6 +68,7 @@ const bibdk = {
     "user",
     // mutation
     "submitOrder",
+    "submitSkafOrder",
     "closeOrder",
     "submitMultipleOrders",
     "data_collect",
