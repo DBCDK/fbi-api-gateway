@@ -3,6 +3,11 @@
  *
  */
 
+import config from "../../config";
+
+  // Locked list from env
+  const lockedAgencyIds = config?.lockedAgencyIds?.list;
+
 export const typeDef = `
     extend type Mutation {
     """
@@ -41,9 +46,9 @@ export const resolvers = {
       const agencyId = context?.smaug.agencyId;
 
       // Used for systematic fbs-test specific fbi-api - can be removed in future
-      const isFBSTest = agencyId === "877000";
+      const isFBSTest = lockedAgencyIds?.includes?.(agencyId) && agencyId === "877000";
 
-      // Return OK for FBSTest dryRun or not
+      // Return OK for FBSTest dryRun or not - can be removed in future
       if (isFBSTest) {
         return {
           status: "OK",
