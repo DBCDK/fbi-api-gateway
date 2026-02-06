@@ -40,6 +40,17 @@ export const resolvers = {
       const recordId = args?.bibliographicRecordId;
       const agencyId = context?.smaug.agencyId;
 
+      // Used for systematic fbs-test specific fbi-api - can be removed in future
+      const isFBSTest = agencyId === "877000";
+
+      // Return OK for FBSTest dryRun or not
+      if (isFBSTest) {
+        return {
+          status: "OK",
+          message: "FBSTest mode - no changes made.",
+        };
+      }
+
       // Check library VIP rights
       const libraryRules = await context.datasources
         .getLoader("viplibraryrules")

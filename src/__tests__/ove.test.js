@@ -117,3 +117,24 @@ test("Succeeds in dryRun mode with valid agency and bibliographicRecordId", asyn
     message: `Dry run mode - no changes made.`,
   });
 });
+
+test("Succeeds for FBSTest agency regardless of dryRun", async () => {
+  const result = await performTestQuery({
+    query,
+    variables: {
+      id: "12345678",
+    },
+    context: {
+      datasources: createMockedDataLoaders(),
+      accessToken: "DUMMY_TOKEN",
+      smaug: {
+        agencyId: "877000",
+      },
+    },
+  });
+
+  expect(result?.data?.rawrepo?.updateOveCode).toEqual({
+    status: "OK",
+    message: "FBSTest mode - no changes made.",
+  });
+});
