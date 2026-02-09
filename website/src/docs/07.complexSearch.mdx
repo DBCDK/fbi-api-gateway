@@ -102,3 +102,37 @@ Get a list of facets for given search query.
     },
   }}
 />
+
+## What matched within the work?
+
+In a complex search response, results are returned as works. Each work can contain multiple manifestations (editions, formats, ISBNs, etc.). The `searchHits` field lists the manifestations within the work that matched the search query.
+
+<InlineGraphiQL
+  query={`query Example_ComplexSearch_Searchhits($cql: String!, $offset: Int!, $limit: PaginationLimitScalar!,) {
+  complexSearch(cql: $cql) {
+    hitcount
+    errorMessage
+    works(offset: $offset, limit: $limit) {
+      titles {
+        main
+      }
+      manifestations {
+        searchHits {
+          match {
+            pid
+            identifiers {
+              type
+              value
+            }
+          }
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    cql: "9788757017915",
+    offset: 0,
+    limit: 10,
+  }}
+/>
