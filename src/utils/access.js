@@ -127,7 +127,7 @@ export async function resolveAccess(manifestation, context) {
 
   if (parent?.access?.dbcWebArchive) {
     const archives = await context.datasources
-      .getLoader("moreinfoWebarchive")
+      .getLoader("fbiArchive")
       .load(parent.pid);
 
     archives.forEach((archive) => {
@@ -318,7 +318,7 @@ function checkInterLibraryLoan(parent, context) {
 export function parseOnlineUrlToOrigin(url) {
   try {
     const parsedUrl = new URL(url);
-    if (parsedUrl["host"] === "moreinfo.addi.dk") {
+    if (parsedUrl["host"] === "fbi-arkiv.dbc.dk") {
       return "DBC Webarkiv";
     } else {
       return (parsedUrl["host"] && parsedUrl["host"]) || "";
