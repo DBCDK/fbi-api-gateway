@@ -140,9 +140,7 @@ export const resolvers = {
         }))
       );
 
-      const results = resolvedResults.filter(
-        (_v, index) => !!resolvedResults[index]
-      );
+      const results = resolvedResults.filter((entry) => !!entry?.work);
 
       // create the datahub event
       context?.dataHub?.createSeriesEvent({
