@@ -13,25 +13,25 @@ export function _isFFUAgency(branchId) {
 }
 
 export function _hasCulrDataSync(branchId) {
-  /**
-   * Odense Katedralskole, 872960,
-   * Roskilde Gymnasium, 872600
-   * Sorø Akademis Skole, 861640
-   * Slagelse Gymnasium, biblioteket 872320
-   * Greve Gymnasium, Biblioteket 874260
-   * Stenhus Gymnasium, 875140
-   * Sct. Knuds Gymnasium, 871890
-   */
-
   const whitelist = [
     // Gymnasier
-    "872960",
-    "872600",
-    "861640",
-    "872320",
-    "874260",
-    "875140",
-    "871890",
+    "872960", // Odense Katedralskole
+    "872600", // Roskilde Gymnasium
+    "861640", // Sorø Akademis Skole
+    "872320", // Slagelse Gymnasium, biblioteket
+    "874260", // Greve Gymnasium, Biblioteket
+    "875140", // Stenhus Gymnasium
+    "871890", // Sct. Knuds Gymnasium
+    "872090", // Brønderslev Gymnasium og HF. Biblioteket
+    "874100", // Dronninglund Gymnasium. Biblioteket
+    "872340", // Frederikshavn Gymnasium. Gymnasiebiblioteket
+    "872080", // Hasseris Gymnasium. Biblioteket
+    "872060", // Hjørring Gymnasium, STX og HF. Biblioteket
+    "873310", // Nørresundby Gymnasium og HF, Biblioteket
+    "872050", // Støvring Gymnasium. Biblioteket
+    "872100", // Vesthimmerlands Gymnasium & HF. Biblioteket
+    "872520", // Aalborg Katedralskole. Biblioteket
+    "872140", // Aalborghus Gymnasium. Biblioteket
 
     // Login with mitId, when no library accounts
     "190101",
