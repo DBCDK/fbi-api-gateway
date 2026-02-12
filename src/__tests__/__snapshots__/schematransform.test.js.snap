@@ -2782,6 +2782,9 @@ type Manifestation {
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
 
+  \\"\\"\\"The city or place where the item was published\\"\\"\\"
+  placeOfPublication: [String!]!
+
   \\"\\"\\"
   The creation date of the record describing this manifestation in the format YYYYMMDD
   \\"\\"\\"
@@ -6341,6 +6344,9 @@ type Manifestation {
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
 
+  \\"\\"\\"The city or place where the item was published\\"\\"\\"
+  placeOfPublication: [String!]!
+
   \\"\\"\\"
   The creation date of the record describing this manifestation in the format YYYYMMDD
   \\"\\"\\"
@@ -8568,6 +8574,9 @@ type Manifestation {
 
   \\"\\"\\"Publisher of this manifestion\\"\\"\\"
   publisher: [String!]!
+
+  \\"\\"\\"The city or place where the item was published\\"\\"\\"
+  placeOfPublication: [String!]!
 
   \\"\\"\\"
   The creation date of the record describing this manifestation in the format YYYYMMDD

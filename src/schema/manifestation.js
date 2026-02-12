@@ -774,6 +774,11 @@ type Manifestation {
   publisher: [String!]!
 
   """
+  The city or place where the item was published
+  """
+  placeOfPublication: [String!]!
+
+  """
   The creation date of the record describing this manifestation in the format YYYYMMDD
   """
   recordCreationDate: String!
@@ -1380,6 +1385,10 @@ export const resolvers = {
 
     contents(parent, args, context, info) {
       return parent?.contents;
+    },
+
+    placeOfPublication(parent) {
+      return parent?.placeOfPublication ?? [];
     },
   },
 
