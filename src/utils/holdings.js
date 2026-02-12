@@ -8,19 +8,8 @@ export const itemStatusEnumMap = {
 };
 
 export function checkUserRights(user) {
-  const isAuthenticated = !!user?.userId;
   const loggedInAgencyId = user?.loggedInAgencyId;
   const dbcidp = user?.dbcidp;
-
-  // Check if user is authenticated
-  if (!isAuthenticated) {
-    return {
-      ok: false,
-      status: "ERROR_UNAUTHENTICATED_TOKEN",
-      message:
-        "Anonymous token detected. Please provide an authenticated token.",
-    };
-  }
 
   // Missing agencyId for provided user token (e.g. nemlogin)
   if (!loggedInAgencyId) {

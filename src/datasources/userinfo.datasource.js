@@ -1,3 +1,4 @@
+import { getIsIdpSystemUser } from "../../commonUtils";
 import config from "../config";
 import { hasCulrDataSync, getAgencyIdByBranchId } from "../utils/agency";
 import { setMunicipalityAgencyId } from "../utils/municipalityAgencyId";
@@ -21,19 +22,27 @@ export async function load({ accessToken }, context) {
       accessToken,
     });
 
+    const isIdpSystemUser = getIsIdpSystemUser({ smaug, user: smaug?.user });
+
     const idpUsed = res.body?.attributes?.idpUsed;
 
     // Set loggedInBranchId (Former loggedInAgencyId)
-    const loggedInBranchId =
+    let loggedInBranchId =
       idpUsed === "nemlogin" && !smaug?.user?.agency
         ? "190101"
         : smaug?.user?.agency || null;
+
+    // If user is an IDP system user, we set the loggedInBranchId to the agencyId configured in smaug
+    if (isIdpSystemUser) {
+      loggedInBranchId = smaug?.agencyId;
+    }
 
     // user attributes enriched with loggedInBranchId (from smaug)
     let attributes = {
       ...res.body?.attributes,
       loggedInBranchId,
       loggedInAgencyId: null,
+      isIdpSystemUser,
     };
 
     // The Smaug "agency" field can now hold both agencyIds and branchIds. Therefore, we ensure that loggedInAgencyId always contains an agencyId.
@@ -50,7 +59,7 @@ export async function load({ accessToken }, context) {
 
     // If no uniqueId was found for the user, we check with culr, if a user was found on the agencyId instead
     // BIBDK connected FFU users, exist in Culr with agencyId only. The bibdk provided id for /userinfo will be an branchId.
-    if (!attributes.uniqueId) {
+    if (!attributes.uniqueId && !isIdpSystemUser) {
       // Retrieve user culr account
       const response = await context
         .getLoader("culrGetAccountsByLocalId")
