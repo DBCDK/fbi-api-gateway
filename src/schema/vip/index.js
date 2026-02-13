@@ -474,10 +474,6 @@ type VipAgency {
   """
   routeNumber: String
   """
-  ILL service text. Example: "https://bibliotek.kk.dk/help/general-info/library-regulations".
-  """
-  illServiceTxt: String @deprecated(reason: "Use correct 'illServiceTekst' instead expires: 01/04-2025")
-  """
   THE REAL ILL service tekst. Example: "https://bibliotek.kk.dk/help/general-info/library-regulations".
   """
   illServiceTekst: String  

@@ -328,7 +328,6 @@ type Query {
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches: Boolean): Localizations
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
-  relatedSubjects(q: [String!]!, limit: Int): [String!] @deprecated(reason: \\"Use 'Recommendations.subjects' instead expires: 01/03-2025\\")
   inspiration(limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   series(seriesId: String!): Series
@@ -2185,12 +2184,6 @@ type CatalogueCodes {
   otherCatalogues: [String!]!
 }
 
-type TableOfContent {
-  heading: String
-  content: String
-  listOfContent: [TableOfContent!]
-}
-
 type Shelfmark {
   \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
   postfix: String
@@ -2326,51 +2319,6 @@ type Note {
 
   \\"\\"\\"A link and possible link text\\"\\"\\"
   urls: [AccessUrl]
-}
-
-enum ManifestationPartTypeEnum {
-  MUSIC_TRACKS
-  SHEET_MUSIC_CONTENT
-  PARTS_OF_BOOK
-  NOT_SPECIFIED
-}
-
-type ManifestationPart {
-  \\"\\"\\"The title of the entry (music track or title of a literary analysis)\\"\\"\\"
-  title: String!
-
-  \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
-  classifications: [Classification!]!
-
-  \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [SubjectInterface!]
-
-  \\"\\"\\"
-  Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
-  \\"\\"\\"
-  creatorsFromDescription: [String!]!
-
-  \\"\\"\\"Contributors from description - additional contributor to this entry\\"\\"\\"
-  contributorsFromDescription: [String!]!
-
-  \\"\\"\\"
-  The playing time for this specific part (i.e. the duration of a music track) 
-  \\"\\"\\"
-  playingTime: String
-}
-
-type ManifestationParts {
-  \\"\\"\\"Heading for the music content note\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"The creator and title etc of the individual parts\\"\\"\\"
-  parts: [ManifestationPart!]!
-
-  \\"\\"\\"The type of manifestation parts, is this music tracks, book parts etc.\\"\\"\\"
-  type: ManifestationPartTypeEnum!
 }
 
 type Languages {
@@ -2608,9 +2556,6 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
-
-  \\"\\"\\"PEGI age rating for games \\"\\"\\"
   pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
@@ -2751,11 +2696,6 @@ type Manifestation {
   languages: Languages
 
   \\"\\"\\"
-  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
-  \\"\\"\\"
-  manifestationParts: ManifestationParts @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
-
-  \\"\\"\\"
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   \\"\\"\\"
   contents: [ContentsEntity!]
@@ -2810,11 +2750,6 @@ type Manifestation {
   Information about on which volume this manifestation is in multi volume work
   \\"\\"\\"
   volume: String
-
-  \\"\\"\\"
-  Quotation of the manifestation's table of contents or a similar content list
-  \\"\\"\\"
-  tableOfContents: TableOfContent @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
 
   \\"\\"\\"Worktypes for this manifestations work\\"\\"\\"
   workTypes: [WorkTypeEnum!]!
@@ -4381,7 +4316,6 @@ input BookMarkInput {
 }
 
 type BookMarkDeleteResponse {
-  IdsDeletedCount: Int! @deprecated(reason: \\"Use 'BookMarkDeleteResponse.idsDeletedCount' instead expires: 01/06-2025\\")
   idsDeletedCount: Int!
 }
 
@@ -4851,11 +4785,6 @@ type VipAgency {
   routeNumber: String
 
   \\"\\"\\"
-  ILL service text. Example: \\"https://bibliotek.kk.dk/help/general-info/library-regulations\\".
-  \\"\\"\\"
-  illServiceTxt: String @deprecated(reason: \\"Use correct 'illServiceTekst' instead expires: 01/04-2025\\")
-
-  \\"\\"\\"
   THE REAL ILL service tekst. Example: \\"https://bibliotek.kk.dk/help/general-info/library-regulations\\".
   \\"\\"\\"
   illServiceTekst: String
@@ -5264,7 +5193,6 @@ type Query {
   infomedia(id: String!): InfomediaResponse!
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
-  relatedSubjects(q: [String!]!, limit: Int): [String!] @deprecated(reason: \\"Use 'Recommendations.subjects' instead expires: 01/03-2025\\")
   series(seriesId: String!): Series
   universe(key: String, universeId: String): Universe
 }
@@ -5744,12 +5672,6 @@ type CatalogueCodes {
   otherCatalogues: [String!]!
 }
 
-type TableOfContent {
-  heading: String
-  content: String
-  listOfContent: [TableOfContent!]
-}
-
 type Shelfmark {
   \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
   postfix: String
@@ -5885,51 +5807,6 @@ type Note {
 
   \\"\\"\\"A link and possible link text\\"\\"\\"
   urls: [AccessUrl]
-}
-
-enum ManifestationPartTypeEnum {
-  MUSIC_TRACKS
-  SHEET_MUSIC_CONTENT
-  PARTS_OF_BOOK
-  NOT_SPECIFIED
-}
-
-type ManifestationPart {
-  \\"\\"\\"The title of the entry (music track or title of a literary analysis)\\"\\"\\"
-  title: String!
-
-  \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
-  classifications: [Classification!]!
-
-  \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [SubjectInterface!]
-
-  \\"\\"\\"
-  Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
-  \\"\\"\\"
-  creatorsFromDescription: [String!]!
-
-  \\"\\"\\"Contributors from description - additional contributor to this entry\\"\\"\\"
-  contributorsFromDescription: [String!]!
-
-  \\"\\"\\"
-  The playing time for this specific part (i.e. the duration of a music track) 
-  \\"\\"\\"
-  playingTime: String
-}
-
-type ManifestationParts {
-  \\"\\"\\"Heading for the music content note\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"The creator and title etc of the individual parts\\"\\"\\"
-  parts: [ManifestationPart!]!
-
-  \\"\\"\\"The type of manifestation parts, is this music tracks, book parts etc.\\"\\"\\"
-  type: ManifestationPartTypeEnum!
 }
 
 type Languages {
@@ -6167,9 +6044,6 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
-
-  \\"\\"\\"PEGI age rating for games \\"\\"\\"
   pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
@@ -6310,11 +6184,6 @@ type Manifestation {
   languages: Languages
 
   \\"\\"\\"
-  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
-  \\"\\"\\"
-  manifestationParts: ManifestationParts @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
-
-  \\"\\"\\"
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   \\"\\"\\"
   contents: [ContentsEntity!]
@@ -6369,11 +6238,6 @@ type Manifestation {
   Information about on which volume this manifestation is in multi volume work
   \\"\\"\\"
   volume: String
-
-  \\"\\"\\"
-  Quotation of the manifestation's table of contents or a similar content list
-  \\"\\"\\"
-  tableOfContents: TableOfContent @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
 
   \\"\\"\\"Worktypes for this manifestations work\\"\\"\\"
   workTypes: [WorkTypeEnum!]!
@@ -7975,12 +7839,6 @@ type CatalogueCodes {
   otherCatalogues: [String!]!
 }
 
-type TableOfContent {
-  heading: String
-  content: String
-  listOfContent: [TableOfContent!]
-}
-
 type Shelfmark {
   \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
   postfix: String
@@ -8116,51 +7974,6 @@ type Note {
 
   \\"\\"\\"A link and possible link text\\"\\"\\"
   urls: [AccessUrl]
-}
-
-enum ManifestationPartTypeEnum {
-  MUSIC_TRACKS
-  SHEET_MUSIC_CONTENT
-  PARTS_OF_BOOK
-  NOT_SPECIFIED
-}
-
-type ManifestationPart {
-  \\"\\"\\"The title of the entry (music track or title of a literary analysis)\\"\\"\\"
-  title: String!
-
-  \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
-  classifications: [Classification!]!
-
-  \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [SubjectInterface!]
-
-  \\"\\"\\"
-  Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
-  \\"\\"\\"
-  creatorsFromDescription: [String!]!
-
-  \\"\\"\\"Contributors from description - additional contributor to this entry\\"\\"\\"
-  contributorsFromDescription: [String!]!
-
-  \\"\\"\\"
-  The playing time for this specific part (i.e. the duration of a music track) 
-  \\"\\"\\"
-  playingTime: String
-}
-
-type ManifestationParts {
-  \\"\\"\\"Heading for the music content note\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"The creator and title etc of the individual parts\\"\\"\\"
-  parts: [ManifestationPart!]!
-
-  \\"\\"\\"The type of manifestation parts, is this music tracks, book parts etc.\\"\\"\\"
-  type: ManifestationPartTypeEnum!
 }
 
 type Languages {
@@ -8398,9 +8211,6 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
-
-  \\"\\"\\"PEGI age rating for games \\"\\"\\"
   pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
@@ -8538,11 +8348,6 @@ type Manifestation {
   languages: Languages
 
   \\"\\"\\"
-  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
-  \\"\\"\\"
-  manifestationParts: ManifestationParts @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
-
-  \\"\\"\\"
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   \\"\\"\\"
   contents: [ContentsEntity!]
@@ -8597,11 +8402,6 @@ type Manifestation {
   Information about on which volume this manifestation is in multi volume work
   \\"\\"\\"
   volume: String
-
-  \\"\\"\\"
-  Quotation of the manifestation's table of contents or a similar content list
-  \\"\\"\\"
-  tableOfContents: TableOfContent @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
 
   \\"\\"\\"Worktypes for this manifestations work\\"\\"\\"
   workTypes: [WorkTypeEnum!]!
