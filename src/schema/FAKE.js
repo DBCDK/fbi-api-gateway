@@ -208,80 +208,6 @@ export const FAKE_LANGUAGES = {
   abstract: [{ display: "Dummy dansk", isoCode: "Dummy dan" }],
 };
 
-export const FAKE_MANIFESTATION_PARTS = {
-  type: "MUSIC_TRACKS",
-  heading: "Dummy Indhold:",
-  parts: [
-    {
-      title: { display: "Dummy Bouquet royal" },
-      creators: [
-        {
-          __typename: "Person",
-          display: "Dummy H. C. Lumbye",
-          nameSort: "Dummy Lumbye, H.C.",
-          firstName: "Dummy H. C.",
-          lastName: "Dummy Lumbye",
-          roles: [],
-        },
-      ],
-      creatorsFromDescription: ["Dummy arr.: Peter Ettrup Larsen"],
-      classifications: [
-        {
-          system: "DK5",
-          code: "Dummy 78.424",
-          display: "Dummy Klaver og strygere. Orgel og strygere",
-        },
-      ],
-      playingTime: "Dummy playing time",
-    },
-    {
-      title: { display: "Dummy Banker Loyal" },
-      creators: [
-        {
-          __typename: "Person",
-          display: "Dummy A. C. Handerson",
-          nameSort: "Dummy Handerson, A.C.",
-          firstName: "Dummy A. C.",
-          lastName: "Dummy Handerson",
-          roles: [],
-        },
-      ],
-      creatorsFromDescription: ["Dummy arr.: Don Alderson Drumf"],
-      classifications: [
-        {
-          system: "DK5",
-          code: "Dummy 88.424",
-          display: "Dummy Saxofon og blæsere. Trompet og blæsere",
-        },
-      ],
-      playingTime: "Dummy long playing time",
-    },
-    {
-      title: { forSearchIndexOnly: "Dummy forSearchIndexOnly" },
-      creators: [
-        {
-          __typename: "Person",
-          display: "Dummy Search Index Only",
-          nameSort: "Dummy Only, Search Index",
-          firstName: "Dummy Search Index",
-          lastName: "Dummy Only",
-          roles: [],
-        },
-      ],
-      creatorsFromDescription: ["Dummy arr.: Benny Strompet"],
-      classifications: [
-        {
-          system: "DK5",
-          code: "Dummy 88.424",
-          display:
-            "Dummy Trommer og slaginstrumenter. Bongo og slaginstrumenter",
-        },
-      ],
-      playingTime: "Dummy wasteful playing time",
-    },
-  ],
-};
-
 export const FAKE_MATERIALTYPE = {
   general: { code: "AUDIO_BOOKS", display: "Dummy bøger" },
   specific: { code: "AUDIO_BOOK", display: "Dummy bog" },
@@ -327,25 +253,6 @@ export const FAKE_PUBLICATIONYEAR = {
 export const FAKE_SHELFMARK = {
   postfix: "Dummy some postfix",
   shelfmark: "Dummy some shelfmark",
-};
-
-export const FAKE_LIST_OF_CONTENT = {
-  heading: "Dummy Indhold",
-  listOfContent: [
-    {
-      heading: "Dummy Puderne",
-      listOfContent: [
-        { content: "Dummy Bruddet" },
-        { content: "Dummy Hustelefonen" },
-      ],
-    },
-    {
-      content: "Dummy Tykke-Olsen m.fl.",
-    },
-    {
-      content: "Dummy Over skulderen",
-    },
-  ],
 };
 
 const FAKE_OWNER_WORK = {
@@ -403,7 +310,6 @@ export const FAKE_MANIFESTATION_1 = {
     },
   ],
   languages: FAKE_LANGUAGES,
-  manifestationParts: FAKE_MANIFESTATION_PARTS,
   materialTypes: [FAKE_MATERIALTYPE],
   notes: [FAKE_NOTES],
   ownerWork: FAKE_OWNER_WORK,
@@ -431,7 +337,6 @@ export const FAKE_MANIFESTATION_1 = {
   source: ["Dummy some source"],
   subjects: FAKE_SUBJECTS,
   volume: "Dummy Bind 2",
-  tableOfContents: FAKE_LIST_OF_CONTENT,
   workYear: {
     display: "Dummy",
     year: 1950,
