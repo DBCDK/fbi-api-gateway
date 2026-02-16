@@ -49,6 +49,15 @@ export function buildParameters({ userId, input, orderSystem }) {
     userIdType = null;
   }
 
+  // Netpunkt has a submit funktion, submitSkafOrder, where the PID isn't known.
+  // But we need to make sure that the pid is used in all the other submit functions.
+  const pids =
+    input.pids === undefined &&
+    orderSystem === "netpunkt_25" &&
+    input.title !== ""
+      ? null
+      : input.pids.map((pid) => pid);
+
   // Set order parameters
   const params = {
     author: input.author,
@@ -57,7 +66,11 @@ export function buildParameters({ userId, input, orderSystem }) {
     callNumber: input.callNumber,
     copy: false,
     exactEdition: input.exactEdition || false,
+    initials: input.initials || "",
+    isbn: input.isbn,
+    issn: input.issn,
     issue: input.issue,
+    key: input.key,
     latestRequesterNote: input.latestRequesterNote,
     needBeforeDate:
       input.needBeforeDate || input.expires || createNeedBeforeDate(),
@@ -69,7 +82,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     pickUpAgencyId: input.pickUpAgencyId || input.pickUpBranch,
     pickUpAgencySubdivision:
       input.pickUpAgencySubdivision || input.pickUpBranchSubdivision,
-    pid: input.pids.map((pid) => pid),
+    pid: pids,
     pidOfPrimaryObject: input.pidOfPrimaryObject,
     placeOnHold: input.placeOnHold,
     publicationDate: input.publicationDate,
