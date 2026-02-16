@@ -137,12 +137,13 @@ export const incr = monitor(
     try {
       const now = performance.now();
       const count = await redis.incr(key);
-      timings.redisTime = performance.now() - now;
 
-      if (count === 1) {
-        // Set expiration time (at first count)
-        await redis.expire(key, seconds);
-      }
+      // Ensure the counter key always has a TTL:
+      // - Fixes rare cases where a key ended up without expiry (would count forever).
+      // - "NX" means: only set expiry if the key has no expiry already.
+      await redis.expire(key, seconds, "NX");
+
+      timings.redisTime = performance.now() - now;
 
       return count;
     } catch (e) {

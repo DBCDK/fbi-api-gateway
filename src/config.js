@@ -172,20 +172,17 @@ export default {
         "http://holdings-items-2-service.fbstest.svc.cloud.dbc.dk/api/v1/holdings",
       teamLabel: "de-team",
     },
-    moreinfo: {
-      url: process.env.MOREINFO_URL || "https://moreinfo.addi.dk/2.11/",
-      authenticationUser: process.env.MOREINFO_USER,
-      authenticationGroup: process.env.MOREINFO_GROUP,
-      authenticationPassword: process.env.MOREINFO_PASSWORD,
-      ttl: process.env.MOREINFO_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
-      prefix: process.env.MOREINFO_PREFIX || "moreinfo-2",
-      teamLabel: "febib",
-    },
     fbiinfo: {
       url:
         process.env.FBIINFO_URL ||
         "http://fbiinfo-service.cisterne.svc.cloud.dbc.dk/api/v1",
       prefix: process.env.FBIINFO_PREFIX || "fbiinfo-1",
+      teamLabel: "de-team",
+    },
+    fbiArchive: {
+      url: process.env.FBI_ARCHIVE_URL || "https://fbi-arkiv.dbc.dk/api/v1",
+      prefix: process.env.FBI_ARCHIVE_PREFIX || "fbi-archive-1",
+      ttl: process.env.FBI_ARCHIVE_TIME_TO_LIVE_SECONDS || 60 * 60,
       teamLabel: "de-team",
     },
     openuserstatus: {

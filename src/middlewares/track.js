@@ -68,6 +68,7 @@ export async function performanceTracker(req, res, next) {
           ? Number(estimatedCpu.toFixed(1))
           : undefined,
       debug: getDebugInfo(req),
+      isIdpSystemUser: !!req.user?.isIdpSystemUser,
     });
     // monitorName is added to context/req in the monitor resolver
     if (req.monitorName) {
