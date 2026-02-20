@@ -38,7 +38,7 @@ async function infomedia(context) {
   const userInfoAccounts = filterDuplicateAgencies(user.agencies);
 
   const hasAccess = userInfoAccounts?.filter(
-    ({ agencyId }) => idpRights[agencyId]
+    ({ agencyId }) => infomediaRights[agencyId]
   );
 
   // check for infomedia access - if any of users agencies subscribes
