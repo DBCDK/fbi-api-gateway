@@ -20,13 +20,13 @@ import { filterDuplicateAgencies, resolveManifestation } from "./utils";
 async function infomedia(context) {
   const user = context?.user;
 
-  // get rights from idp
-  const idpRights = await context.datasources.getLoader("idp").load("");
+  // get allowed agencies from subscribersbyproductname/INFOMEDIA
+  const infomediaRights = await context.datasources.getLoader("idp").load("");
 
   // check if users loggedInAgency has infomedia access
   const loggedInAgencyId = user?.loggedInAgencyId;
 
-  if (loggedInAgencyId && idpRights[loggedInAgencyId]) {
+  if (loggedInAgencyId && infomediaRights[loggedInAgencyId]) {
     return loggedInAgencyId;
   }
 
@@ -38,7 +38,7 @@ async function infomedia(context) {
   const userInfoAccounts = filterDuplicateAgencies(user.agencies);
 
   const hasAccess = userInfoAccounts?.filter(
-    ({ agencyId }) => idpRights[agencyId]
+    ({ agencyId }) => infomediaRights[agencyId]
   );
 
   // check for infomedia access - if any of users agencies subscribes

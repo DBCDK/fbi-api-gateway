@@ -1,5 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Shuld get idpSystemUser:true for anon token 1`] = `
+Object {
+  "attributes": Object {
+    "agencies": Array [],
+    "blocked": false,
+    "isIdpSystemUser": true,
+    "loggedInAgencyId": null,
+    "loggedInBranchId": null,
+    "municipality": null,
+    "municipalityAgencyId": null,
+    "userId": null,
+  },
+}
+`;
+
 exports[`userinfo DataSynced library authenticated user, enriched with smaug agency 1`] = `
 Object {
   "attributes": Object {
@@ -12,6 +27,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "872960",
     "loggedInBranchId": "872960",
     "municipality": null,
@@ -34,6 +50,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "800010",
     "loggedInBranchId": "800010",
     "municipality": null,
@@ -91,6 +108,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "872100",
     "loggedInBranchId": "872100",
     "municipality": null,
@@ -113,6 +131,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "872100",
     "loggedInBranchId": "872100",
     "municipality": null,
@@ -141,6 +160,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "710100",
     "loggedInBranchId": "710100",
     "municipality": null,
@@ -168,6 +188,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "737000",
     "loggedInBranchId": "737001",
     "municipality": "101",
@@ -200,6 +221,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "710100",
     "loggedInBranchId": "710100",
     "municipality": "101",
@@ -227,6 +249,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "710100",
     "loggedInBranchId": "710100",
     "municipality": "101",
@@ -249,6 +272,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "nemlogin",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "190101",
     "loggedInBranchId": "190101",
     "municipality": null,

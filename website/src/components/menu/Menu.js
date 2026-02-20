@@ -175,7 +175,7 @@ export function Menu({ sections, active, onClick, isScrolling }) {
                               key={sub.id}
                               className={`${styles.item} ${subTagClass} ${subActiveClass} ${subHighlightClass}`}
                             >
-                              <Text type={sub.tag === "h1" ? "text5" : "text2"}>
+                              <Text type={sub.tag === "h1" ? "text4" : "text1"}>
                                 <Link
                                   onClick={(e) => {
                                     e.preventDefault?.();

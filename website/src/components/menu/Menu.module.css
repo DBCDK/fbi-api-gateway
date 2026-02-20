@@ -36,6 +36,7 @@
 
 .item.active > p > a {
   color: var(--primary-dark);
+  font-family: var(--font-mono-semibold);
 }
 
 .item a::before {

@@ -2,7 +2,7 @@
 
 ## Submit Order
 
-Submit an automated order on behalf of another user.
+Submit an automated order on behalf of an end user.
 
 <InlineGraphiQL
   query={`mutation example_submitorder($input: NetpunktSubmitOrderInput!) {
@@ -30,7 +30,7 @@ variables={{
   }}
 />
 
-Submit a nonautomated order on behalf of another user.
+Submit a nonautomated order on behalf of an end user.
 
 <InlineGraphiQL
   query={`mutation example_submitorder($input: NetpunktSubmitOrderInput!) {
@@ -60,9 +60,42 @@ variables={{
   }}
 />
 
+## Submit skaf Order
+
+Submit a skaf order on behalf of an end user.
+
+A skaf order doesn't have an PID, the only required field, beside agency info, is title.
+
+<InlineGraphiQL
+  query={`mutation example_submitskaforder($input: NetpunktSkafSubmitOrderInput!) {
+    netpunkt {
+      submitSkafOrder(input: $input, dryRun: true) {
+        status
+        message
+        orderId
+      }
+    }
+
+          }`}
+
+  variables={{
+    input: {
+      title: "Flaskepost fra P",
+      responderId: "100400",
+      pickUpAgencyId: "790900",
+      userParameters: {
+        userId: "0102033690",
+        userAddress: "test",
+        userName: "Flemming test",
+        userMail: "flemminghoimark@gmail.com",
+      },
+    },
+  }}
+/>
+
 ## Submit remit Order
 
-Create an interlibrary loan based on an enduser loan.
+Create an interlibrary loan based on an end user loan.
 
 The only difference between an order and a remit order, is the originalOrderId field.
 
