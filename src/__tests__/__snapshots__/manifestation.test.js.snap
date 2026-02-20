@@ -169,6 +169,10 @@ Object {
           "value": "Dummy 1234567891234",
         },
       ],
+      "illAutomationMaterialGroup": Object {
+        "id": 1,
+        "name": "Dummy materialgroup",
+      },
       "languages": Object {
         "abstract": Array [
           Object {

@@ -310,6 +310,10 @@ export const FAKE_MANIFESTATION_1 = {
     },
   ],
   languages: FAKE_LANGUAGES,
+  illAutomationMaterialGroup: {
+    id: 1,
+    name: "Dummy materialgroup",
+  },
   materialTypes: [FAKE_MATERIALTYPE],
   notes: [FAKE_NOTES],
   ownerWork: FAKE_OWNER_WORK,

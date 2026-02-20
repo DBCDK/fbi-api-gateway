@@ -756,6 +756,11 @@ type Manifestation {
   unit : Unit
 
   """
+  automation material group info
+  """
+  illAutomationMaterialGroup : IllAutomationMaterialGroup
+
+  """
   Identification of the local id of this manifestation
   """
   localId: String
@@ -832,6 +837,17 @@ type SheetMusicCategory {
 type Unit {
   id: String!
   manifestations: [Manifestation!]! @complexity(value: 3)
+}
+
+type IllAutomationMaterialGroup {
+  """
+  The material group (1-9)
+  """
+  id: Int!
+  """
+  The name of the material group
+  """
+  name: String!
 }
 
 type ManifestationTitles {
