@@ -10,40 +10,53 @@ const SMAUG = (accessToken) => {
   return {
     AUTHENTICATED_TOKEN: {
       user: {
+        id: "some-id",
         agency: "710100",
       },
     },
     AUTHENTICATED_BRANCH_TOKEN: {
       user: {
+        id: "some-id",
         agency: "737001", // <-- branch
       },
     },
     NEMLOGIN_AUTHENTICATED_TOKEN: {
       user: {
+        id: "some-id",
         agency: "",
       },
     },
     FFU_AUTHENTICATED_TOKEN: {
       user: {
+        id: "some-id",
         agency: "800010",
       },
     },
     DATASYNC_AUTHENTICATED_TOKEN: {
       user: {
+        id: "some-id",
         agency: "872960",
       },
     },
     // Nordjyske Gymnasiebiblioteker (Selvstændigt opfattende bibliotek på branchId fremfor agencyId)
     FFU_BRANCH_INDEPENDENT_TOKEN: {
       user: {
+        id: "some-id",
         agency: "872100",
       },
     },
     // Token for connected user (FFU & Folk) which has loggedIn by an FFU branch
     FFU_BRANCH_AUTHENTICATED_TOKEN: {
       user: {
+        id: "some-id",
         agency: "800021",
       },
+    },
+    IDP_SYSTEM_USER_ANONYMOUS_TOKEN: {
+      user: {
+        agency: "190101",
+      },
+      access: ["idpsystemuser"],
     },
   }[accessToken];
 };
@@ -353,7 +366,7 @@ describe("userinfo", () => {
    * For the FFU BRANCH login, /userinfo will not retrieve the user's connected CULR accounts (only agencyId exist in CULR).
    * Therefore, we perform this check ourselves to ensure that the omittedDataObject matches the actual user data
    */
-  test.only("FFU authenticated user connected to FOLK library (Branch login)", async () => {
+  test("FFU authenticated user connected to FOLK library (Branch login)", async () => {
     const context = {
       ...datasources,
       fetch: () => ({
@@ -450,4 +463,33 @@ describe("userinfo", () => {
 
     expect(result).toMatchSnapshot();
   });
+});
+
+/**
+ * Should get idpSystemUser attribute to true.
+ * This attribute is used for system users which can grant idpRights
+ * on anonymous tokens
+ */
+test("Shuld get idpSystemUser:true for anon token", async () => {
+  const context = {
+    ...datasources,
+    fetch: () => ({
+      body: {
+        attributes: {
+          userId: "@",
+          blocked: false,
+          agencies: [],
+          municipality: null,
+          municipalityAgencyId: null,
+        },
+      },
+    }),
+  };
+
+  const result = await load(
+    { accessToken: "IDP_SYSTEM_USER_ANONYMOUS_TOKEN" },
+    context
+  );
+
+  expect(result).toMatchSnapshot();
 });

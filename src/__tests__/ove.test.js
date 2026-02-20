@@ -21,6 +21,9 @@ test("Denies update when agency lacks permissions", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      profile: {
+        agency: "790900",
+      },
       smaug: {
         agencyId: "790900",
       },
@@ -42,6 +45,9 @@ test("Fails when bibliographicRecordId is missing", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      profile: {
+        agency: "715100",
+      },
       smaug: {
         agencyId: "715100",
       },
@@ -63,6 +69,9 @@ test("Fails when bibliographicRecordId does not exist", async () => {
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      profile: {
+        agency: "715100",
+      },
       smaug: {
         agencyId: "715100",
       },
@@ -84,6 +93,9 @@ test("Succeeds when agency is authorized and bibliographicRecordId is known", as
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      profile: {
+        agency: "715100",
+      },
       smaug: {
         agencyId: "715100",
       },
@@ -106,6 +118,9 @@ test("Succeeds in dryRun mode with valid agency and bibliographicRecordId", asyn
     context: {
       datasources: createMockedDataLoaders(),
       accessToken: "DUMMY_TOKEN",
+      profile: {
+        agency: "715100",
+      },
       smaug: {
         agencyId: "715100",
       },
@@ -136,7 +151,9 @@ test("Succeeds for FBSTest agency regardless of dryRun", async () => {
 
   let result;
   jest.isolateModules(() => {
-    const { performTestQuery: performTestQueryWithMock } = require("../utils/utils");
+    const {
+      performTestQuery: performTestQueryWithMock,
+    } = require("../utils/utils");
     const {
       createMockedDataLoaders: createMockedDataLoadersWithMock,
     } = require("../datasourceLoader");
@@ -151,6 +168,9 @@ test("Succeeds for FBSTest agency regardless of dryRun", async () => {
         accessToken: "DUMMY_TOKEN",
         smaug: {
           agencyId: "877000",
+        },
+        profile: {
+          agency: "877000",
         },
       },
     });

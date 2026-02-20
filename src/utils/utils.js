@@ -22,7 +22,7 @@ export async function performTestQuery({
     }),
     query,
     null,
-    { ...context, profile: { agency: "123456", name: "some-profile" } },
+    { profile: { agency: "123456", name: "some-profile" }, ...context },
     variables
   );
 }

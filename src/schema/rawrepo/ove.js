@@ -5,8 +5,8 @@
 
 import config from "../../config";
 
-  // Locked list from env
-  const lockedAgencyIds = config?.lockedAgencyIds?.list;
+// Locked list from env
+const lockedAgencyIds = config?.lockedAgencyIds?.list;
 
 export const typeDef = `
     extend type Mutation {
@@ -43,10 +43,11 @@ export const resolvers = {
   RawRepo: {
     async updateOveCode(parent, args, context, info) {
       const recordId = args?.bibliographicRecordId;
-      const agencyId = context?.smaug.agencyId;
+      const agencyId = context.profile?.agency;
 
       // Used for systematic fbs-test specific fbi-api - can be removed in future
-      const isFBSTest = lockedAgencyIds?.includes?.("877000") && agencyId === "877000";
+      const isFBSTest =
+        lockedAgencyIds?.includes?.("877000") && agencyId === "877000";
 
       // Return OK for FBSTest dryRun or not - can be removed in future
       if (isFBSTest) {
