@@ -290,6 +290,10 @@ describe("Manifestation", () => {
             type
             value
           }
+          illAutomationMaterialGroup {
+            id
+            name
+          }
           languages {
             notes
             main {
