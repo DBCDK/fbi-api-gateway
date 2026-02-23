@@ -42,6 +42,8 @@ const defaultSettings = {
     "SearchResponse.seriesHit",
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
+    "Manifestation.tableOfContents",
+    "Manifestation.manifestationParts",
   ],
 };
 
@@ -84,7 +86,12 @@ const bibdk = {
     "creatorByDisplay",
   ],
   denyTypes: ["MarcRecord"],
-  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
+  denyFields: [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
+    "Manifestation.tableOfContents",
+    "Manifestation.manifestationParts",
+  ],
 };
 
 /**
