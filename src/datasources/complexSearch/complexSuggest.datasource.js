@@ -3,7 +3,7 @@
  *
  */
 
-import config from "../config";
+import config from "../../config";
 
 const { url, prefix, ttl, teamLabel } = config.datasources.complexsearchsuggest;
 

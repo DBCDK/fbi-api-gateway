@@ -1,15 +1,12 @@
 /**
- * @file complexFacets.datasource.js
- * Internal use only !
- * For getting facets only - endpoint with NO upper for facetLimit
- *
- * mostly a copy of complexSearch.datasource.js - with less arguments and slimmer output
+ * @file complexFacetsWithLimit.datasource.js
+ * For getting facets only - with upper limit for facetLimit
  */
 
-import config from "../config";
+import config from "../../config";
 import { log } from "dbc-node-logger";
 
-const { url, ttl, prefix, teamLabel } = config.datasources.complexFacets;
+const { url, ttl, prefix, teamLabel } = config.datasources.complexsearch;
 
 /**
  * Prefix facets - the enum holds name af the index - here we prefix
@@ -45,14 +42,14 @@ export async function load(
     trackingId: context?.trackingId,
   };
 
-  // TODO service needs to support profile ...
-  const res = await context?.fetch(url, {
+  const res = await context?.fetch(`${url}/facets`, {
     method: "POST",
     body: JSON.stringify(body),
     allowedErrorStatusCodes: [400],
     timeoutMs: 60000,
   });
   const json = res.body;
+  console.log("facets input", body);
 
   if (!res.ok) {
     log.error(
@@ -67,8 +64,13 @@ export async function load(
 
   return {
     errorMessage: json?.errorMessage,
-    hitcount: json?.numFound,
-    facets: json?.facets || [],
+    facets: (json?.facets || []).slice().sort(
+      (() => {
+        const order = new Map(body.facets.map((name, i) => [name, i]));
+        return (a, b) =>
+          (order.get(a?.name) ?? Infinity) - (order.get(b?.name) ?? Infinity);
+      })()
+    ),
   };
 }
 
@@ -76,7 +78,6 @@ export const options = {
   redis: {
     prefix,
     ttl,
-    staleWhileRevalidate: 24 * 60 * 60,
   },
 };
 
