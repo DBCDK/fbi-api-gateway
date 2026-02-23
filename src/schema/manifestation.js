@@ -29,6 +29,13 @@ type CatalogueCodes {
   """
   otherCatalogues: [String!]!
 }
+
+type TableOfContent {
+  heading: String
+  content: String
+  listOfContent: [TableOfContent!]
+}
+  
 type Shelfmark {
   """
   A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935
@@ -194,6 +201,66 @@ type Note {
   """
   urls: [AccessUrl]
 }
+
+enum ManifestationPartTypeEnum {
+  MUSIC_TRACKS
+  SHEET_MUSIC_CONTENT
+  PARTS_OF_BOOK
+  NOT_SPECIFIED @fallback
+}
+type ManifestationPart {
+  """
+  The title of the entry (music track or title of a literary analysis)
+  """
+  title: String!
+
+  """
+  The creator of the music track or literary analysis
+  """
+  creators: [CreatorInterface!]!
+
+  """
+  Classification of this entry (music track or literary analysis)
+  """
+  classifications: [Classification!]!
+
+  """
+  Subjects of this entry (music track or literary analysis)
+  """
+  subjects: [SubjectInterface!]
+
+  """
+  Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
+  """
+  creatorsFromDescription: [String!]!
+  
+  """
+  Contributors from description - additional contributor to this entry
+  """
+  contributorsFromDescription: [String!]!
+  
+  """
+  The playing time for this specific part (i.e. the duration of a music track) 
+  """
+  playingTime: String
+}
+type ManifestationParts {
+  """
+  Heading for the music content note
+  """
+  heading: String
+
+  """
+  The creator and title etc of the individual parts
+  """
+  parts: [ManifestationPart!]!
+
+  """
+  The type of manifestation parts, is this music tracks, book parts etc.
+  """
+  type: ManifestationPartTypeEnum!
+}
+
 type Languages {
   """
   Notes of the languages that describe subtitles, spoken/written (original, dubbed/synchonized), visual interpretation, parallel (notes are written in Danish)
@@ -666,6 +733,11 @@ type Manifestation {
   languages: Languages
 
   """
+  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
+  """
+  manifestationParts: ManifestationParts @deprecated(reason: "Use 'Manifestation.contents' instead expires: 01/11-2025")
+
+  """
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   """
   contents: [ContentsEntity!]
@@ -739,6 +811,11 @@ type Manifestation {
   Information about on which volume this manifestation is in multi volume work
   """
   volume: String
+
+  """
+  Quotation of the manifestation's table of contents or a similar content list
+  """
+  tableOfContents: TableOfContent @deprecated(reason: "Use 'Manifestation.contents' instead expires: 01/11-2025")
 
   """
   Worktypes for this manifestations work
@@ -1057,6 +1134,38 @@ export const resolvers = {
   Identifier: {
     type(parent) {
       return IDENTIFIER_TYPES.has(parent.type) ? parent.type : "NOT_SPECIFIED";
+    },
+  },
+  ManifestationParts: {
+    parts(parent) {
+      return parent?.parts?.filter(
+        (part) => !Object.hasOwn(part.title, "forSearchIndexOnly")
+      );
+    },
+  },
+  ManifestationPart: {
+    title(parent) {
+      return parent?.title?.display || "";
+    },
+    creators(parent) {
+      if (Array.isArray(parent?.creators)) {
+        return parent?.creators;
+      }
+      if (!parent?.creators) {
+        return [];
+      }
+
+      // Handle difference in structure from JED service
+      return [
+        ...parent?.creators?.persons?.map((person) => ({
+          ...person,
+          __typename: "Person",
+        })),
+        ...parent?.creators?.corporations?.map((person) => ({
+          ...person,
+          __typename: "Corporation",
+        })),
+      ];
     },
   },
   Unit: {
