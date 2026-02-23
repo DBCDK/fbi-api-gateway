@@ -54,6 +54,11 @@ export function matchYear(str) {
   return str.match(regex);
 }
 
+/** Prefix facet field names with `facet.` and lowercase them. */
+export function prefixFacets(facets = []) {
+  return facets.map((fac) => `facet.${String(fac).toLowerCase()}`);
+}
+
 export async function fetchAndExpandSeries(parent, context) {
   //first we fetch the series ids
   const { series } = await context.datasources.getLoader("identifyWork").load({

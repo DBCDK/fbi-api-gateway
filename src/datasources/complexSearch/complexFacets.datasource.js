@@ -8,23 +8,9 @@
 
 import config from "../../config";
 import { log } from "dbc-node-logger";
+import { prefixFacets } from "../../utils/utils";
 
 const { url, ttl, prefix, teamLabel } = config.datasources.complexFacets;
-
-/**
- * Prefix facets - the enum holds name af the index - here we prefix
- * with the type of index (facet).
- *
- * @TODO .. this code is duplicate from complexSearch.datasource.js .. fix
- *
- * @param facets
- * @returns {*}
- */
-function prefixFacets(facets) {
-  const mappedfacets = facets.map((fac) => `facet.${fac.toLowerCase()}`);
-
-  return mappedfacets;
-}
 
 /**
  * Search via complex search
