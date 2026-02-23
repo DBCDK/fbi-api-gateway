@@ -26,6 +26,7 @@ export const typeDef = `
     issue: String
     key: String
     latestRequesterNote: String
+    localHoldingsId: String
     orderSystem: String
     orderType: OrderTypeEnum
     originalOrderId: String
