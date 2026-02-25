@@ -34,8 +34,6 @@ Object {
     "SearchResponse.seriesHit",
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
-    "Manifestation.tableOfContents",
-    "Manifestation.manifestationParts",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -91,8 +89,6 @@ Object {
     "SearchResponse.seriesHit",
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
-    "Manifestation.tableOfContents",
-    "Manifestation.manifestationParts",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -140,8 +136,6 @@ Object {
     "SearchResponse.seriesHit",
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
-    "Manifestation.tableOfContents",
-    "Manifestation.manifestationParts",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
@@ -194,8 +188,6 @@ Object {
     "SearchResponse.seriesHit",
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
-    "Manifestation.tableOfContents",
-    "Manifestation.manifestationParts",
   ],
   "denyTypes": Array [
     "CheckOrderPolicy",
