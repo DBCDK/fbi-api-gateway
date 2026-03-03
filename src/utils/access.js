@@ -157,9 +157,7 @@ export async function resolveAccess(manifestation, context) {
   if (parent?.access?.infomediaService?.id) {
     // Check if token has access to INFOMEDIAPRO
     const hasInfomediaProRights = context?.user?.dbcidp?.some(
-      (entry) =>
-        entry.productName === "INFOMEDIANETPUNKT" &&
-        entry.name === "INFOMEDIAPRO"
+      (entry) => entry.name === "INFOMEDIAPRO"
     );
 
     if (
