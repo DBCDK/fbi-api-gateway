@@ -155,19 +155,21 @@ export async function resolveAccess(manifestation, context) {
   });
 
   if (parent?.access?.infomediaService?.id) {
+    // Check if token has access to INFOMEDIAPRO
+    const hasInfomediaProRights = context?.user?.dbcidp?.some(
+      (entry) => entry.name === "INFOMEDIAPRO"
+    );
+
     if (
-      !["politiken", "jyllands-posten"].some((publication) =>
-        parent?.hostPublication?.title?.toLowerCase()?.includes(publication)
-      )
+      parent?.access?.infomediaService?.license === "UNRESTRICTED" ||
+      (parent?.access?.infomediaService?.license === "PROFESSIONALS" &&
+        hasInfomediaProRights)
     ) {
       res.push({
         __typename: "InfomediaService",
         id: parent.access.infomediaService.id,
       });
-    }
-
-    // If this is an omitted online access for politiken or jyllands-posten.
-    else {
+    } else {
       const hasPhysical = parent?.accessTypes?.some(
         (t) => (t?.code ?? "").toUpperCase() === "PHYSICAL"
       );
