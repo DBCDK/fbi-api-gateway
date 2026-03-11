@@ -132,6 +132,10 @@ type AutoIllParamsResponse {
   automationParams: [AutomationParams]  
 }
 
+type AutoIllRequesterParamsResponse {
+  automationParams: [AutomationRequesterParams]
+}
+
 type AutomationParams {
     """
     AgencyId of given provider
@@ -141,7 +145,20 @@ type AutomationParams {
     Ill parameters for given provider
     """
     materials: [Materials]
-  }
+}
+
+type AutomationRequesterParams {
+  """
+  AgencyId of given requester
+  """
+  requester: String
+  """
+  Ill parameters for given provider
+  """
+  materials: [Materials]
+}
+
+
 type Materials {
     """
     Material id (1, 2, 3, 4, 5, 6, 7, 9)
@@ -154,7 +171,11 @@ type Materials {
     """
     Does given provider loan this material ?
     """
-    willProvide: Boolean!    
+    willProvide: Boolean!
+    """
+    Does given requester provide their own materials to ill
+    """
+    willProvideOwn: Boolean
     """    
     Period from acquisition of material to ill loan eg. 60 (days)
     """
@@ -224,6 +245,7 @@ type VipResponse {
   opensearchProfiles(agencyId: String!, profileName: String): OpensearchProfilesResponse! 
 
   autoIll(agencyId: String): AutoIllParamsResponse!
+  autoIllRequester(agencyId: String): AutoIllRequesterParamsResponse!
   """
   Returns a prioritized list of library numbers that the given library should order from.
   """
@@ -606,6 +628,20 @@ export const resolvers = {
 
       const res = await context.datasources
         .getLoader("vipautoIll")
+        .load(args?.agencyId || "", context);
+
+      return { automationParams: res?.automationParams };
+    },
+    async autoIllRequester(parent, args, context, info) {
+      // Check permissions for accessing vip
+      const danbibRead = await danbibReadPermissions(context);
+
+      if (!danbibRead) {
+        return [];
+      }
+
+      const res = await context.datasources
+        .getLoader("vipautoIllRequester")
         .load(args?.agencyId || "", context);
 
       return { automationParams: res?.automationParams };

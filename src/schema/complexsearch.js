@@ -34,7 +34,7 @@ input ComplexSearchFiltersInput {
   """
   Onloan or OnShelf.
   """
-  status: [HoldingsStatusEnum!]
+  status: [CSHoldingsStatusEnum!]
   """
   Id of agency.
   """
@@ -55,9 +55,28 @@ input ComplexSearchFiltersInput {
   Date of first accession
   """
   firstAccessionDate: String
+  """
+  The circulationrule of the item
+  """
+  circulationRule: [String!]
 }
 
+enum CSHoldingsStatusEnum {
+  """
+  Item is physically available at the branch
+  """
+  ONSHELF
 
+  """
+  Item is on loan
+  """
+  ONLOAN
+  
+  """
+  Item is discarded
+  """
+  DISCARDED
+}
 
 enum SortOrderEnum {
   ASC
