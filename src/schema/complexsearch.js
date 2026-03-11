@@ -59,6 +59,10 @@ input ComplexSearchFiltersInput {
   The circulationrule of the item
   """
   circulationRule: [String!]
+  """
+  Boolean to denote whether to include or exclude online holdingsitems
+  """
+  useOnlineHoldings: Boolean 
 }
 
 enum CSHoldingsStatusEnum {
