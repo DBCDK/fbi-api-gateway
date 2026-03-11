@@ -16,6 +16,7 @@ import { resolvers as scalarResolvers } from "graphql-scalars";
 import { log } from "dbc-node-logger";
 
 import drupalSchema from "./schema/external/drupal";
+import bibliotekdkCmsSchema from "./schema/external/bibliotekdkCms";
 import { getFilesRecursive } from "./utils/utils";
 import { wrapResolvers } from "./utils/wrapResolvers";
 
@@ -29,8 +30,8 @@ const { enumFallbackDirectiveTypeDefs, enumFallbackDirectiveTransformer } =
 // Stores the transformed schemas
 const schemaCache = {};
 
-// The external schema (headless Drupal)
-let externalSchema;
+// External schemas mounted into the gateway
+let externalSchemas;
 
 // The internal schema
 let internalSchema = enumFallbackDirectiveTransformer(
@@ -347,15 +348,23 @@ export async function getExecutableSchema({
   const key = JSON.stringify({ hasAccessToken, parsedPermissions });
 
   if (!schemaCache[key]) {
-    // Fetch external Drupal schema (bibdk)
-    if (!externalSchema && loadExternal) {
-      externalSchema = await drupalSchema();
+    if (!externalSchemas && loadExternal) {
+      externalSchemas = [await drupalSchema()];
+
+      // bibliotekdkCms is optional during rollout. If loading fails, we continue without it.
+      try {
+        externalSchemas.push(await bibliotekdkCmsSchema());
+      } catch (error) {
+        log.warn("Could not load bibliotekdkCms external schema", {
+          error: String(error),
+        });
+      }
     }
 
     // Merge external and internal schemas
     const mergedSchema = loadExternal
       ? mergeSchemas({
-          schemas: [externalSchema, internalSchema],
+          schemas: [...externalSchemas, internalSchema],
         })
       : internalSchema;
 
