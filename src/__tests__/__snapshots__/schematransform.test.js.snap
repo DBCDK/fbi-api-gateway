@@ -328,7 +328,6 @@ type Query {
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches: Boolean): Localizations
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
-  relatedSubjects(q: [String!]!, limit: Int): [String!] @deprecated(reason: \\"Use 'Recommendations.subjects' instead expires: 01/03-2025\\")
   inspiration(limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
   series(seriesId: String!): Series
@@ -732,7 +731,7 @@ input ComplexSearchFiltersInput {
   sublocation: [String!]
 
   \\"\\"\\"Onloan or OnShelf.\\"\\"\\"
-  status: [HoldingsStatusEnum!]
+  status: [CSHoldingsStatusEnum!]
 
   \\"\\"\\"Id of agency.\\"\\"\\"
   agencyId: [String!]
@@ -748,6 +747,23 @@ input ComplexSearchFiltersInput {
 
   \\"\\"\\"Date of first accession\\"\\"\\"
   firstAccessionDate: String
+
+  \\"\\"\\"The circulationrule of the item\\"\\"\\"
+  circulationRule: [String!]
+
+  \\"\\"\\"Boolean to denote whether to include or exclude online holdingsitems\\"\\"\\"
+  useOnlineHoldings: Boolean
+}
+
+enum CSHoldingsStatusEnum {
+  \\"\\"\\"Item is physically available at the branch\\"\\"\\"
+  ONSHELF
+
+  \\"\\"\\"Item is on loan\\"\\"\\"
+  ONLOAN
+
+  \\"\\"\\"Item is discarded\\"\\"\\"
+  DISCARDED
 }
 
 enum SortOrderEnum {
@@ -2185,12 +2201,6 @@ type CatalogueCodes {
   otherCatalogues: [String!]!
 }
 
-type TableOfContent {
-  heading: String
-  content: String
-  listOfContent: [TableOfContent!]
-}
-
 type Shelfmark {
   \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
   postfix: String
@@ -2326,51 +2336,6 @@ type Note {
 
   \\"\\"\\"A link and possible link text\\"\\"\\"
   urls: [AccessUrl]
-}
-
-enum ManifestationPartTypeEnum {
-  MUSIC_TRACKS
-  SHEET_MUSIC_CONTENT
-  PARTS_OF_BOOK
-  NOT_SPECIFIED
-}
-
-type ManifestationPart {
-  \\"\\"\\"The title of the entry (music track or title of a literary analysis)\\"\\"\\"
-  title: String!
-
-  \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
-  classifications: [Classification!]!
-
-  \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [SubjectInterface!]
-
-  \\"\\"\\"
-  Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
-  \\"\\"\\"
-  creatorsFromDescription: [String!]!
-
-  \\"\\"\\"Contributors from description - additional contributor to this entry\\"\\"\\"
-  contributorsFromDescription: [String!]!
-
-  \\"\\"\\"
-  The playing time for this specific part (i.e. the duration of a music track) 
-  \\"\\"\\"
-  playingTime: String
-}
-
-type ManifestationParts {
-  \\"\\"\\"Heading for the music content note\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"The creator and title etc of the individual parts\\"\\"\\"
-  parts: [ManifestationPart!]!
-
-  \\"\\"\\"The type of manifestation parts, is this music tracks, book parts etc.\\"\\"\\"
-  type: ManifestationPartTypeEnum!
 }
 
 type Languages {
@@ -2608,9 +2573,6 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
-
-  \\"\\"\\"PEGI age rating for games \\"\\"\\"
   pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
@@ -2751,11 +2713,6 @@ type Manifestation {
   languages: Languages
 
   \\"\\"\\"
-  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
-  \\"\\"\\"
-  manifestationParts: ManifestationParts @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
-
-  \\"\\"\\"
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   \\"\\"\\"
   contents: [ContentsEntity!]
@@ -2814,11 +2771,6 @@ type Manifestation {
   \\"\\"\\"
   volume: String
 
-  \\"\\"\\"
-  Quotation of the manifestation's table of contents or a similar content list
-  \\"\\"\\"
-  tableOfContents: TableOfContent @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
-
   \\"\\"\\"Worktypes for this manifestations work\\"\\"\\"
   workTypes: [WorkTypeEnum!]!
 
@@ -2827,6 +2779,9 @@ type Manifestation {
 
   \\"\\"\\"id of the manifestaion unit\\"\\"\\"
   unit: Unit
+
+  \\"\\"\\"automation material group info\\"\\"\\"
+  illAutomationMaterialGroup: IllAutomationMaterialGroup
 
   \\"\\"\\"Identification of the local id of this manifestation\\"\\"\\"
   localId: String
@@ -2887,6 +2842,14 @@ type SheetMusicCategory {
 type Unit {
   id: String!
   manifestations: [Manifestation!]!
+}
+
+type IllAutomationMaterialGroup {
+  \\"\\"\\"The material group (1-9)\\"\\"\\"
+  id: Int!
+
+  \\"\\"\\"The name of the material group\\"\\"\\"
+  name: String!
 }
 
 type ManifestationTitles {
@@ -3182,6 +3145,11 @@ type Netpunkt {
 
   \\"\\"\\"Submits an order from Netpunkt to OpenOrder on behalf of an end user\\"\\"\\"
   submitOrder(input: NetpunktSubmitOrderInput!, dryRun: Boolean): SubmitOrder
+
+  \\"\\"\\"
+  Submits a skaf order from Netpunkt to OpenOrder on behalf of an end user
+  \\"\\"\\"
+  submitSkafOrder(input: NetpunktSkafSubmitOrderInput!, dryRun: Boolean): SubmitOrder
 }
 
 type CloseOrder {
@@ -3203,6 +3171,7 @@ input NetpunktSubmitOrderInput {
   issue: String
   key: String
   latestRequesterNote: String
+  localHoldingsId: String
   orderSystem: String
   orderType: OrderTypeEnum
   originalOrderId: String
@@ -3224,6 +3193,51 @@ input NetpunktSubmitOrderInput {
   \\"\\"\\"
   responderId: String
   title: String
+  titleOfComponent: String
+  userParameters: SubmitOrderUserParametersInput!
+  verificationReferenceSource: String
+  volume: String
+}
+
+input NetpunktSkafSubmitOrderInput {
+  author: String
+  authorOfComponent: String
+  bibliographicCategory: String
+  callNumber: String
+  copy: Boolean
+  exactEdition: Boolean
+  initials: String
+  isbn: String
+  issn: String
+  issue: String
+  key: String
+  latestRequesterNote: String
+  mediumType: String
+
+  \\"\\"\\"
+  needBeforeDate is required to be iso 8601 dateTime eg. \\"2024-03-15T12:24:32Z\\"
+  \\"\\"\\"
+  needBeforeDate: String
+  orderSystem: String
+  orderType: OrderTypeEnum
+  originalOrderId: String
+  pagination: String
+  pickUpAgencyId: String!
+  pickUpAgencySubdivision: String
+
+  \\"\\"\\"Indicates whether order is allowed to be put in queue\\"\\"\\"
+  placeOnHold: String
+  publicationDate: String
+  publicationDateOfComponent: String
+  requesterId: String
+  requesterInitials: String
+
+  \\"\\"\\"
+  AgencyId of the desired responder for inter library loans. Kept unset if automation is wanted.
+  \\"\\"\\"
+  responderId: String
+  seriesTitelNumber: String
+  title: String!
   titleOfComponent: String
   userParameters: SubmitOrderUserParametersInput!
   verificationReferenceSource: String
@@ -4384,7 +4398,6 @@ input BookMarkInput {
 }
 
 type BookMarkDeleteResponse {
-  IdsDeletedCount: Int! @deprecated(reason: \\"Use 'BookMarkDeleteResponse.idsDeletedCount' instead expires: 01/06-2025\\")
   idsDeletedCount: Int!
 }
 
@@ -4547,9 +4560,21 @@ type AutoIllParamsResponse {
   automationParams: [AutomationParams]
 }
 
+type AutoIllRequesterParamsResponse {
+  automationParams: [AutomationRequesterParams]
+}
+
 type AutomationParams {
   \\"\\"\\"AgencyId of given provider\\"\\"\\"
   provider: String
+
+  \\"\\"\\"Ill parameters for given provider\\"\\"\\"
+  materials: [Materials]
+}
+
+type AutomationRequesterParams {
+  \\"\\"\\"AgencyId of given requester\\"\\"\\"
+  requester: String
 
   \\"\\"\\"Ill parameters for given provider\\"\\"\\"
   materials: [Materials]
@@ -4566,6 +4591,9 @@ type Materials {
 
   \\"\\"\\"Does given provider loan this material ?\\"\\"\\"
   willProvide: Boolean!
+
+  \\"\\"\\"Does given requester provide their own materials to ill\\"\\"\\"
+  willProvideOwn: Boolean
 
   \\"\\"\\"Period from acquisition of material to ill loan eg. 60 (days)\\"\\"\\"
   period: Int!
@@ -4626,6 +4654,7 @@ type VipResponse {
   ): AgencyInfoResponse!
   opensearchProfiles(agencyId: String!, profileName: String): OpensearchProfilesResponse!
   autoIll(agencyId: String): AutoIllParamsResponse!
+  autoIllRequester(agencyId: String): AutoIllRequesterParamsResponse!
 
   \\"\\"\\"
   Returns a prioritized list of library numbers that the given library should order from.
@@ -4852,11 +4881,6 @@ type VipAgency {
 
   \\"\\"\\"Route number.\\"\\"\\"
   routeNumber: String
-
-  \\"\\"\\"
-  ILL service text. Example: \\"https://bibliotek.kk.dk/help/general-info/library-regulations\\".
-  \\"\\"\\"
-  illServiceTxt: String @deprecated(reason: \\"Use correct 'illServiceTekst' instead expires: 01/04-2025\\")
 
   \\"\\"\\"
   THE REAL ILL service tekst. Example: \\"https://bibliotek.kk.dk/help/general-info/library-regulations\\".
@@ -5267,7 +5291,6 @@ type Query {
   infomedia(id: String!): InfomediaResponse!
   refWorks(pids: [String!]!): String!
   ris(pids: [String!]!): String!
-  relatedSubjects(q: [String!]!, limit: Int): [String!] @deprecated(reason: \\"Use 'Recommendations.subjects' instead expires: 01/03-2025\\")
   series(seriesId: String!): Series
   universe(key: String, universeId: String): Universe
 }
@@ -5304,7 +5327,7 @@ input ComplexSearchFiltersInput {
   sublocation: [String!]
 
   \\"\\"\\"Onloan or OnShelf.\\"\\"\\"
-  status: [HoldingsStatusEnum!]
+  status: [CSHoldingsStatusEnum!]
 
   \\"\\"\\"Id of agency.\\"\\"\\"
   agencyId: [String!]
@@ -5320,6 +5343,23 @@ input ComplexSearchFiltersInput {
 
   \\"\\"\\"Date of first accession\\"\\"\\"
   firstAccessionDate: String
+
+  \\"\\"\\"The circulationrule of the item\\"\\"\\"
+  circulationRule: [String!]
+
+  \\"\\"\\"Boolean to denote whether to include or exclude online holdingsitems\\"\\"\\"
+  useOnlineHoldings: Boolean
+}
+
+enum CSHoldingsStatusEnum {
+  \\"\\"\\"Item is physically available at the branch\\"\\"\\"
+  ONSHELF
+
+  \\"\\"\\"Item is on loan\\"\\"\\"
+  ONLOAN
+
+  \\"\\"\\"Item is discarded\\"\\"\\"
+  DISCARDED
 }
 
 enum SortOrderEnum {
@@ -5747,12 +5787,6 @@ type CatalogueCodes {
   otherCatalogues: [String!]!
 }
 
-type TableOfContent {
-  heading: String
-  content: String
-  listOfContent: [TableOfContent!]
-}
-
 type Shelfmark {
   \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
   postfix: String
@@ -5888,51 +5922,6 @@ type Note {
 
   \\"\\"\\"A link and possible link text\\"\\"\\"
   urls: [AccessUrl]
-}
-
-enum ManifestationPartTypeEnum {
-  MUSIC_TRACKS
-  SHEET_MUSIC_CONTENT
-  PARTS_OF_BOOK
-  NOT_SPECIFIED
-}
-
-type ManifestationPart {
-  \\"\\"\\"The title of the entry (music track or title of a literary analysis)\\"\\"\\"
-  title: String!
-
-  \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
-  classifications: [Classification!]!
-
-  \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [SubjectInterface!]
-
-  \\"\\"\\"
-  Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
-  \\"\\"\\"
-  creatorsFromDescription: [String!]!
-
-  \\"\\"\\"Contributors from description - additional contributor to this entry\\"\\"\\"
-  contributorsFromDescription: [String!]!
-
-  \\"\\"\\"
-  The playing time for this specific part (i.e. the duration of a music track) 
-  \\"\\"\\"
-  playingTime: String
-}
-
-type ManifestationParts {
-  \\"\\"\\"Heading for the music content note\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"The creator and title etc of the individual parts\\"\\"\\"
-  parts: [ManifestationPart!]!
-
-  \\"\\"\\"The type of manifestation parts, is this music tracks, book parts etc.\\"\\"\\"
-  type: ManifestationPartTypeEnum!
 }
 
 type Languages {
@@ -6170,9 +6159,6 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
-
-  \\"\\"\\"PEGI age rating for games \\"\\"\\"
   pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
@@ -6313,11 +6299,6 @@ type Manifestation {
   languages: Languages
 
   \\"\\"\\"
-  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
-  \\"\\"\\"
-  manifestationParts: ManifestationParts @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
-
-  \\"\\"\\"
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   \\"\\"\\"
   contents: [ContentsEntity!]
@@ -6376,11 +6357,6 @@ type Manifestation {
   \\"\\"\\"
   volume: String
 
-  \\"\\"\\"
-  Quotation of the manifestation's table of contents or a similar content list
-  \\"\\"\\"
-  tableOfContents: TableOfContent @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
-
   \\"\\"\\"Worktypes for this manifestations work\\"\\"\\"
   workTypes: [WorkTypeEnum!]!
 
@@ -6389,6 +6365,9 @@ type Manifestation {
 
   \\"\\"\\"id of the manifestaion unit\\"\\"\\"
   unit: Unit
+
+  \\"\\"\\"automation material group info\\"\\"\\"
+  illAutomationMaterialGroup: IllAutomationMaterialGroup
 
   \\"\\"\\"Identification of the local id of this manifestation\\"\\"\\"
   localId: String
@@ -6446,6 +6425,14 @@ type SheetMusicCategory {
 type Unit {
   id: String!
   manifestations: [Manifestation!]!
+}
+
+type IllAutomationMaterialGroup {
+  \\"\\"\\"The material group (1-9)\\"\\"\\"
+  id: Int!
+
+  \\"\\"\\"The name of the material group\\"\\"\\"
+  name: String!
 }
 
 type ManifestationTitles {
@@ -7981,12 +7968,6 @@ type CatalogueCodes {
   otherCatalogues: [String!]!
 }
 
-type TableOfContent {
-  heading: String
-  content: String
-  listOfContent: [TableOfContent!]
-}
-
 type Shelfmark {
   \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
   postfix: String
@@ -8122,51 +8103,6 @@ type Note {
 
   \\"\\"\\"A link and possible link text\\"\\"\\"
   urls: [AccessUrl]
-}
-
-enum ManifestationPartTypeEnum {
-  MUSIC_TRACKS
-  SHEET_MUSIC_CONTENT
-  PARTS_OF_BOOK
-  NOT_SPECIFIED
-}
-
-type ManifestationPart {
-  \\"\\"\\"The title of the entry (music track or title of a literary analysis)\\"\\"\\"
-  title: String!
-
-  \\"\\"\\"The creator of the music track or literary analysis\\"\\"\\"
-  creators: [CreatorInterface!]!
-
-  \\"\\"\\"Classification of this entry (music track or literary analysis)\\"\\"\\"
-  classifications: [Classification!]!
-
-  \\"\\"\\"Subjects of this entry (music track or literary analysis)\\"\\"\\"
-  subjects: [SubjectInterface!]
-
-  \\"\\"\\"
-  Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
-  \\"\\"\\"
-  creatorsFromDescription: [String!]!
-
-  \\"\\"\\"Contributors from description - additional contributor to this entry\\"\\"\\"
-  contributorsFromDescription: [String!]!
-
-  \\"\\"\\"
-  The playing time for this specific part (i.e. the duration of a music track) 
-  \\"\\"\\"
-  playingTime: String
-}
-
-type ManifestationParts {
-  \\"\\"\\"Heading for the music content note\\"\\"\\"
-  heading: String
-
-  \\"\\"\\"The creator and title etc of the individual parts\\"\\"\\"
-  parts: [ManifestationPart!]!
-
-  \\"\\"\\"The type of manifestation parts, is this music tracks, book parts etc.\\"\\"\\"
-  type: ManifestationPartTypeEnum!
 }
 
 type Languages {
@@ -8404,9 +8340,6 @@ type Audience {
   players: Players
 
   \\"\\"\\"PEGI age rating for games \\"\\"\\"
-  PEGI: PEGI @deprecated(reason: \\"Use 'Audience.pegi' instead expires: 01/06-2025\\")
-
-  \\"\\"\\"PEGI age rating for games \\"\\"\\"
   pegi: PEGI
 
   \\"\\"\\"Media council age recommendation\\"\\"\\"
@@ -8544,11 +8477,6 @@ type Manifestation {
   languages: Languages
 
   \\"\\"\\"
-  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
-  \\"\\"\\"
-  manifestationParts: ManifestationParts @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
-
-  \\"\\"\\"
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   \\"\\"\\"
   contents: [ContentsEntity!]
@@ -8607,11 +8535,6 @@ type Manifestation {
   \\"\\"\\"
   volume: String
 
-  \\"\\"\\"
-  Quotation of the manifestation's table of contents or a similar content list
-  \\"\\"\\"
-  tableOfContents: TableOfContent @deprecated(reason: \\"Use 'Manifestation.contents' instead expires: 01/11-2025\\")
-
   \\"\\"\\"Worktypes for this manifestations work\\"\\"\\"
   workTypes: [WorkTypeEnum!]!
 
@@ -8620,6 +8543,9 @@ type Manifestation {
 
   \\"\\"\\"id of the manifestaion unit\\"\\"\\"
   unit: Unit
+
+  \\"\\"\\"automation material group info\\"\\"\\"
+  illAutomationMaterialGroup: IllAutomationMaterialGroup
 
   \\"\\"\\"Identification of the local id of this manifestation\\"\\"\\"
   localId: String
@@ -8680,6 +8606,14 @@ type SheetMusicCategory {
 type Unit {
   id: String!
   manifestations: [Manifestation!]!
+}
+
+type IllAutomationMaterialGroup {
+  \\"\\"\\"The material group (1-9)\\"\\"\\"
+  id: Int!
+
+  \\"\\"\\"The name of the material group\\"\\"\\"
+  name: String!
 }
 
 type ManifestationTitles {

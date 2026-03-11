@@ -20,13 +20,13 @@ import { filterDuplicateAgencies, resolveManifestation } from "./utils";
 async function infomedia(context) {
   const user = context?.user;
 
-  // get rights from idp
-  const idpRights = await context.datasources.getLoader("idp").load("");
+  // get allowed agencies from subscribersbyproductname/INFOMEDIA
+  const infomediaRights = await context.datasources.getLoader("idp").load("");
 
   // check if users loggedInAgency has infomedia access
   const loggedInAgencyId = user?.loggedInAgencyId;
 
-  if (loggedInAgencyId && idpRights[loggedInAgencyId]) {
+  if (loggedInAgencyId && infomediaRights[loggedInAgencyId]) {
     return loggedInAgencyId;
   }
 
@@ -38,7 +38,7 @@ async function infomedia(context) {
   const userInfoAccounts = filterDuplicateAgencies(user.agencies);
 
   const hasAccess = userInfoAccounts?.filter(
-    ({ agencyId }) => idpRights[agencyId]
+    ({ agencyId }) => infomediaRights[agencyId]
   );
 
   // check for infomedia access - if any of users agencies subscribes
@@ -155,19 +155,21 @@ export async function resolveAccess(manifestation, context) {
   });
 
   if (parent?.access?.infomediaService?.id) {
+    // Check if token has access to INFOMEDIAPRO
+    const hasInfomediaProRights = context?.user?.dbcidp?.some(
+      (entry) => entry.name === "INFOMEDIAPRO"
+    );
+
     if (
-      !["politiken", "jyllands-posten"].some((publication) =>
-        parent?.hostPublication?.title?.toLowerCase()?.includes(publication)
-      )
+      parent?.access?.infomediaService?.license === "UNRESTRICTED" ||
+      (parent?.access?.infomediaService?.license === "PROFESSIONALS" &&
+        hasInfomediaProRights)
     ) {
       res.push({
         __typename: "InfomediaService",
         id: parent.access.infomediaService.id,
       });
-    }
-
-    // If this is an omitted online access for politiken or jyllands-posten.
-    else {
+    } else {
       const hasPhysical = parent?.accessTypes?.some(
         (t) => (t?.code ?? "").toUpperCase() === "PHYSICAL"
       );

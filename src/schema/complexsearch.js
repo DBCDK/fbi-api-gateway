@@ -34,7 +34,7 @@ input ComplexSearchFiltersInput {
   """
   Onloan or OnShelf.
   """
-  status: [HoldingsStatusEnum!]
+  status: [CSHoldingsStatusEnum!]
   """
   Id of agency.
   """
@@ -55,9 +55,32 @@ input ComplexSearchFiltersInput {
   Date of first accession
   """
   firstAccessionDate: String
+  """
+  The circulationrule of the item
+  """
+  circulationRule: [String!]
+  """
+  Boolean to denote whether to include or exclude online holdingsitems
+  """
+  useOnlineHoldings: Boolean 
 }
 
+enum CSHoldingsStatusEnum {
+  """
+  Item is physically available at the branch
+  """
+  ONSHELF
 
+  """
+  Item is on loan
+  """
+  ONLOAN
+  
+  """
+  Item is discarded
+  """
+  DISCARDED
+}
 
 enum SortOrderEnum {
   ASC
@@ -329,7 +352,7 @@ export const resolvers = {
     },
     async facets(parent, args, context) {
       const res = await context.datasources
-        .getLoader("complexsearch")
+        .getLoader("complexFacetsWithLimit")
         .load(setPost(parent, context, args));
 
       const facetsWithTraceIds = await traceFacets({

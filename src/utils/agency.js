@@ -61,7 +61,7 @@ export async function isFFUAgency(branchId, context) {
 
   const loader = context?.getLoader || context?.datasources?.getLoader;
 
-  const result = (await loader("library").load({ branchId })).result?.[0];
+  const result = (await loader("library").load({ branchId }))?.result?.[0];
 
   // toUpperCase needed for mocked agencies (jest testing)
   return !!(result?.agencyType?.toUpperCase() === "FORSKNINGSBIBLIOTEK");
@@ -83,7 +83,7 @@ export async function isFolkAgency(branchId, context) {
 
   const loader = context?.getLoader || context?.datasources?.getLoader;
 
-  const result = (await loader("library").load({ branchId })).result?.[0];
+  const result = (await loader("library").load({ branchId }))?.result?.[0];
 
   // toUpperCase needed for mocked agencies (jest testing)
   return !!(result?.agencyType?.toUpperCase() === "FOLKEBIBLIOTEK");
@@ -209,7 +209,7 @@ export async function getAgencyIdByBranchId(branchId, context) {
   const loader = context?.getLoader || context?.datasources?.getLoader;
 
   // get AgencyId from used branchId
-  const result = (await loader("library").load({ branchId })).result?.[0];
+  const result = (await loader("library").load({ branchId }))?.result?.[0];
 
   // return agencyId
   const agencyId = result?.agencyId;

@@ -8,26 +8,10 @@ export const itemStatusEnumMap = {
 };
 
 export function checkUserRights(user) {
-  const loggedInAgencyId = user?.loggedInAgencyId;
-  const dbcidp = user?.dbcidp;
-
-  // Missing agencyId for provided user token (e.g. nemlogin)
-  if (!loggedInAgencyId) {
-    return {
-      ok: false,
-      status: "ERROR_INVALID_AGENCY",
-      message:
-        "Invalid token: Missing agencyId. Ensure your login method provides an agencyId.",
-    };
-  }
-
-  // check that user has correct idp rights
-  const rights = dbcidp?.find(
-    (obj) => obj?.agencyId === loggedInAgencyId
-  )?.rights;
+  const idpRights = user?.dbcidp;
 
   // holdingsupdate write access
-  const hasWriteAccess = !!rights?.find(
+  const hasWriteAccess = !!idpRights?.find(
     (obj) => obj.productName === "HOLDINGSUPDATE" && obj.name === "WRITE"
   );
 

@@ -465,8 +465,9 @@ export const resolvers = {
         })(),
       };
 
-      // set users loggedInAgencyId as agencyId
-      const agencyId = context.user?.loggedInAgencyId;
+      // set agencyId, if token is anonymous, loggedInAgencyId will be null
+      const agencyId =
+        context.user?.loggedInAgencyId || context.profile?.agency;
 
       if (dryRun) {
         return {
@@ -501,7 +502,9 @@ export const resolvers = {
         loanRestriction: input?.loanRestriction?.toLowerCase() || "",
       };
 
-      const agencyId = context.user?.loggedInAgencyId;
+      // set agencyId, if token is anonymous, loggedInAgencyId will be null
+      const agencyId =
+        context.user?.loggedInAgencyId || context.profile?.agency;
 
       if (dryRun) {
         return {
@@ -529,7 +532,9 @@ export const resolvers = {
         return { ...status, trackingId };
       }
 
-      const agencyId = context.user?.loggedInAgencyId;
+      // set agencyId, if token is anonymous, loggedInAgencyId will be null
+      const agencyId =
+        context.user?.loggedInAgencyId || context.profile?.agency;
 
       if (dryRun) {
         return {

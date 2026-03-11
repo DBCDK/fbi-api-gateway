@@ -22,7 +22,7 @@ export async function performTestQuery({
     }),
     query,
     null,
-    { ...context, profile: { agency: "123456", name: "some-profile" } },
+    { profile: { agency: "123456", name: "some-profile" }, ...context },
     variables
   );
 }
@@ -52,6 +52,11 @@ const regex = /\d{4}/g;
 
 export function matchYear(str) {
   return str.match(regex);
+}
+
+/** Prefix facet field names with `facet.` and lowercase them. */
+export function prefixFacets(facets = []) {
+  return facets.map((fac) => `facet.${String(fac).toLowerCase()}`);
 }
 
 export async function fetchAndExpandSeries(parent, context) {

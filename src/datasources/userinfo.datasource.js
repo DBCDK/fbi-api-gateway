@@ -22,19 +22,23 @@ export async function load({ accessToken }, context) {
       accessToken,
     });
 
+    const isAuthenticated = smaug?.user?.id;
+
     const isIdpSystemUser = getIsIdpSystemUser({ smaug, user: smaug?.user });
 
     const idpUsed = res.body?.attributes?.idpUsed;
 
     // Set loggedInBranchId (Former loggedInAgencyId)
-    let loggedInBranchId =
-      idpUsed === "nemlogin" && !smaug?.user?.agency
-        ? "190101"
-        : smaug?.user?.agency || null;
+    let loggedInBranchId = null;
 
-    // If user is an IDP system user, we set the loggedInBranchId to the agencyId configured in smaug
-    if (isIdpSystemUser) {
-      loggedInBranchId = smaug?.agencyId;
+    if (isAuthenticated) {
+      // default use smaug config agencyId
+      loggedInBranchId = smaug?.user?.agency || null;
+
+      // Force loggedInBranchId to 190101 for nemlogin users
+      if (idpUsed === "nemlogin" && !smaug?.user?.agency) {
+        loggedInBranchId = "190101";
+      }
     }
 
     // user attributes enriched with loggedInBranchId (from smaug)
@@ -48,10 +52,12 @@ export async function load({ accessToken }, context) {
     // The Smaug "agency" field can now hold both agencyIds and branchIds. Therefore, we ensure that loggedInAgencyId always contains an agencyId.
     // The loggedInBranchId will always contain a branchId, which can also be an agencyId (e.g., main libraries).
     // If branch act as independent, branchId will be set in both loggedInAgencyId and loggedInBranchId
-    attributes.loggedInAgencyId = await getAgencyIdByBranchId(
-      loggedInBranchId,
-      context
-    );
+    if (loggedInBranchId) {
+      attributes.loggedInAgencyId = await getAgencyIdByBranchId(
+        loggedInBranchId,
+        context
+      );
+    }
 
     // This check prevents FFU users from accessing CULR data.
     // FFU Borchk authentication, is not safe enough to expose CULR data.
@@ -87,6 +93,16 @@ export async function load({ accessToken }, context) {
       attributes,
       context
     );
+
+    // rewrite dbcIdp rights
+    if (attributes?.dbcidp) {
+      attributes.dbcidp = attributes?.dbcidp?.[0]?.rights;
+    }
+
+    // remove userId for anonymous tokens
+    if (attributes?.userId === "@") {
+      attributes.userId = null;
+    }
 
     // user data object
     return {

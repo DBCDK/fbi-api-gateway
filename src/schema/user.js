@@ -263,7 +263,6 @@ input BookMarkInput {
 }
 
 type BookMarkDeleteResponse {
-  IdsDeletedCount: Int! @deprecated(reason: "Use 'BookMarkDeleteResponse.idsDeletedCount' instead expires: 01/06-2025")
   idsDeletedCount: Int!
 }
 

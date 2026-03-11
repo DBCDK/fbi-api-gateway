@@ -22,7 +22,6 @@ const defaultSettings = {
     "ris",
     "elba",
     "library",
-    "relatedSubjects",
     "linkCheck",
     "series",
     "universe",
@@ -68,6 +67,7 @@ const bibdk = {
     "user",
     // mutation
     "submitOrder",
+    "submitSkafOrder",
     "closeOrder",
     "submitMultipleOrders",
     "data_collect",
