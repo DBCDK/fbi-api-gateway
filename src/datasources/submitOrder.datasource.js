@@ -73,6 +73,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     key: input.key,
     latestRequesterNote: input.latestRequesterNote,
     localHoldingsId: input.localHoldingsId,
+    mediumType: input.mediumType || "",
     needBeforeDate:
       input.needBeforeDate || input.expires || createNeedBeforeDate(),
     orderSystem: input.orderSystem
@@ -91,6 +92,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     requesterId: input.requesterId,
     requesterInitials: input.requesterInitials,
     responderId: input.responderId,
+    seriesTitleNumber: input.seriesTitleNumber || "",
     serviceRequester: serviceRequester,
     title: input.title,
     titleOfComponent: input.titleOfComponent,
