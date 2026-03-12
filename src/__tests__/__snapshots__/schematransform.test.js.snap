@@ -3219,7 +3219,7 @@ input NetpunktSkafSubmitOrderInput {
   AgencyId of the desired responder for inter library loans. Kept unset if automation is wanted.
   \\"\\"\\"
   responderId: String
-  seriesTitelNumber: String
+  seriesTitleNumber: String
   title: String!
   titleOfComponent: String
   userParameters: SubmitOrderUserParametersInput!
