@@ -61,7 +61,7 @@ export async function load(
 
 export const options = {
   redis: {
-    prefix,
+    prefix: "complexFacetsWithLimit-" + prefix,
     ttl,
   },
 };
