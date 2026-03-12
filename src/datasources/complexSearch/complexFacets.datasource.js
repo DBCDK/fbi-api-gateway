@@ -54,15 +54,13 @@ export async function load(
   return {
     errorMessage: json?.errorMessage,
     hitcount: json?.numFound,
-    facets: (json?.facets || [])
-      .slice()
-      .sort(
-        (() => {
-          const order = new Map(body.facets.map((name, i) => [name, i]));
-          return (a, b) =>
-            (order.get(a?.name) ?? Infinity) - (order.get(b?.name) ?? Infinity);
-        })()
-      ),
+    facets: (json?.facets || []).slice().sort(
+      (() => {
+        const order = new Map(body.facets.map((name, i) => [name, i]));
+        return (a, b) =>
+          (order.get(a?.name) ?? Infinity) - (order.get(b?.name) ?? Infinity);
+      })()
+    ),
   };
 }
 

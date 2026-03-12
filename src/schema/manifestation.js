@@ -1025,10 +1025,6 @@ type ManifestationTitles {
     corporations: [Corporation!]
   }
 
-
-
-
-
   type ContentEntry {
     """
     Top level title of the entry
@@ -1142,6 +1138,9 @@ export const resolvers = {
     },
     pegi(parent) {
       return parent?.PEGI;
+    },
+    audienceGeneral(parent) {
+      return parent?.audienceGeneral || [];
     },
   },
   Identifier: {
@@ -1378,13 +1377,14 @@ export const resolvers = {
     async unit(parent, args, context, info) {
       return parent;
     },
-
     contents(parent, args, context, info) {
       return parent?.contents;
     },
-
     placeOfPublication(parent) {
       return parent?.placeOfPublication ?? [];
+    },
+    genreForm(parent) {
+      return parent?.genreForm || [];
     },
   },
 
