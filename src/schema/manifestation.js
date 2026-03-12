@@ -37,9 +37,30 @@ type Shelfmark {
   postfix: String
 
   """
+  Code for comics, children's picture books and drama
+  """
+  specialMaterialGroup: SpecialMaterialGroup
+
+  """
+  The creator of the manifestation that the material can be located under on the shelf
+  """
+  creator: String
+
+  """
   The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
   """
   shelfmark: String!
+}
+
+type SpecialMaterialGroup {
+  """
+  A code for the type of the special material group
+  """
+  code: String
+  """
+  The code as displayable text
+  """
+  display: String
 }
 
 type UnitDescription {
@@ -496,6 +517,25 @@ type Audience {
   """
   mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
 
+  """
+  Appropriate audience for this manifestation
+  """
+  audienceGeneral: [AudienceGeneral!]!
+}
+
+"""
+A single general audience object containing a subject word and a possible associated language
+"""
+type AudienceGeneral{
+  """
+  Appropriate audience for this manifestation
+  """
+  display: String
+
+  """
+  The associated language of the audience term, if applicable
+  """
+  language: Language
 }
 
 type LevelForAudience {
@@ -776,6 +816,54 @@ type Manifestation {
   The publication status of a catalogued manifestation.
   """
   cataloguedPublicationStatus: CataloguedPublicationStatus
+
+  """
+  The genre and (literary) form of this manifestation
+  """
+  genreForm: [GenreForm!]!
+
+  """
+  The records type of sound recording - excluding music recordings and its material
+  """
+  soundRecording: SoundRecording
+
+  """
+  Code for type of periodical
+  """
+  periodicalType: PeriodicalType
+}
+
+type PeriodicalType {
+  """
+  A code for the type of periodical
+  """
+  code: String
+  """
+  The code as displayable text
+  """
+  display: String
+}
+
+type SoundRecording {
+  """
+  A code for the type of sound recording
+  """
+  code: String
+  """
+  The code as displayable text
+  """
+  display: String
+}
+
+type GenreForm {
+  """
+  The genre/form term
+  """
+  display: String
+  """
+  Language of the genre/form term, if applicable
+  """
+  language: Language
 }
 
 """
@@ -937,10 +1025,6 @@ type ManifestationTitles {
     corporations: [Corporation!]
   }
 
-
-
-
-
   type ContentEntry {
     """
     Top level title of the entry
@@ -1054,6 +1138,9 @@ export const resolvers = {
     },
     pegi(parent) {
       return parent?.PEGI;
+    },
+    audienceGeneral(parent) {
+      return parent?.audienceGeneral || [];
     },
   },
   Identifier: {
@@ -1253,17 +1340,6 @@ export const resolvers = {
         })),
       ];
     },
-
-    // here is a discrepancy with fbi-api and jed-api .. FIX IT when we are allowed to
-    shelfmark(parent, args, context, info) {
-      if (parent?.shelfmark) {
-        return {
-          postfix: parent?.shelfmark?.postfix || "",
-          shelfmark: parent?.shelfmark?.shelfmark || "",
-        };
-      }
-      return null;
-    },
     subjects(parent, args, context, info) {
       return {
         all: Array.isArray(parent?.subjects?.all)
@@ -1290,13 +1366,20 @@ export const resolvers = {
     async unit(parent, args, context, info) {
       return parent;
     },
-
     contents(parent, args, context, info) {
       return parent?.contents;
     },
-
     placeOfPublication(parent) {
       return parent?.placeOfPublication ?? [];
+    },
+    genreForm(parent) {
+      return parent?.genreForm || [];
+    },
+  },
+
+  Shelfmark: {
+    shelfmark(parent) {
+      return parent?.shelfmark || "";
     },
   },
 
