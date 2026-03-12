@@ -3204,7 +3204,7 @@ input NetpunktSkafSubmitOrderInput {
   orderSystem: String
   orderType: OrderTypeEnum
   originalOrderId: String
-  pagination: String
+  pagesOfComponent: String
   pickUpAgencyId: String!
   pickUpAgencySubdivision: String
 
@@ -3224,7 +3224,7 @@ input NetpunktSkafSubmitOrderInput {
   titleOfComponent: String
   userParameters: SubmitOrderUserParametersInput!
   verificationReferenceSource: String
-  volume: String
+  volumeOfComponent: String
 }
 
 enum SubmitOrderStatusEnum {
