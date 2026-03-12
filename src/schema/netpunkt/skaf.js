@@ -34,7 +34,7 @@ export const typeDef = `
     orderSystem: String
     orderType: OrderTypeEnum
     originalOrderId: String
-    pagination: String
+    pagesOfComponent: String
     pickUpAgencyId: String!
     pickUpAgencySubdivision: String
     """
@@ -49,12 +49,12 @@ export const typeDef = `
     AgencyId of the desired responder for inter library loans. Kept unset if automation is wanted.
     """
     responderId: String
-    seriesTitelNumber: String
+    seriesTitleNumber: String
     title: String!
     titleOfComponent: String
     userParameters: SubmitOrderUserParametersInput!
     verificationReferenceSource: String
-    volume: String
+    volumeOfComponent: String
   }
   extend type Netpunkt {
     """

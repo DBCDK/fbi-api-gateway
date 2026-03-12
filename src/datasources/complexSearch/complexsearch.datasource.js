@@ -58,7 +58,7 @@ export const options = {
   // Enable per-request debugging for this datasource when "x-debug: true" is set
   allowDebug: true,
   redis: {
-    prefix,
+    prefix: "facets-" + prefix,
     ttl,
     staleWhileRevalidate: 24 * 60 * 60,
   },
