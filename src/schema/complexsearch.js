@@ -59,6 +59,10 @@ input ComplexSearchFiltersInput {
   The circulationrule of the item
   """
   circulationRule: [String!]
+  """
+  Boolean to denote whether to include or exclude online holdingsitems
+  """
+  useOnlineHoldings: Boolean 
 }
 
 enum CSHoldingsStatusEnum {
@@ -348,7 +352,7 @@ export const resolvers = {
     },
     async facets(parent, args, context) {
       const res = await context.datasources
-        .getLoader("complexsearch")
+        .getLoader("complexFacetsWithLimit")
         .load(setPost(parent, context, args));
 
       const facetsWithTraceIds = await traceFacets({

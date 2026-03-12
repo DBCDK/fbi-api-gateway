@@ -1,37 +1,13 @@
-import config from "../config";
+import config from "../../config";
 import { log } from "dbc-node-logger";
 
 const { url, ttl, prefix, teamLabel } = config.datasources.complexsearch;
 
 /**
- * Prefix facets - the enum holds name af the index - here we prefix
- * with the type of index (facet).
- *
- * @TODO .. is this a good idea ?
- *
- * @param facets
- * @returns {*}
- */
-function prefixFacets(facets) {
-  const mappedfacets = facets.map((fac) => `facet.${fac.toLowerCase()}`);
-  return mappedfacets;
-}
-
-/**
  * Search via complex search
  */
 export async function load(
-  {
-    cql,
-    offset,
-    limit,
-    profile,
-    filters,
-    sort,
-    facets,
-    facetLimit,
-    includeFilteredPids,
-  },
+  { cql, offset, limit, profile, filters, sort },
   context
 ) {
   const body = {
@@ -42,14 +18,11 @@ export async function load(
       profile: profile.name,
     },
     filters: filters,
-    facets: prefixFacets(facets || []),
-    facetLimit: facetLimit,
     trackingId: context?.trackingId,
     includeFilteredPids: true,
     ...(sort && { sort: sort }),
   };
 
-  // TODO service needs to support profile ...
   const res = await context?.fetch(`${url}/cqlquery`, {
     method: "POST",
     body: JSON.stringify(body),
@@ -73,7 +46,6 @@ export async function load(
     errorMessage: json?.errorMessage,
     works: json?.workIds || [],
     hitcount: json?.numFound || 0,
-    facets: json?.facets || [],
     solrQuery: json?.solrQuery || "",
     tokenizerDurationInMs: json?.tokenizerDurationInMs || 0,
     solrExecutionDurationInMs: json?.solrExecutionDurationInMs || 0,
