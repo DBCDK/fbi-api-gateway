@@ -92,7 +92,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     requesterId: input.requesterId,
     requesterInitials: input.requesterInitials,
     responderId: input.responderId,
-    seriesTitleNumber: input.seriesTitleNumber || "",
+    seriesTitelNumber: input.seriesTitleNumber || "",
     serviceRequester: serviceRequester,
     title: input.title,
     titleOfComponent: input.titleOfComponent,
