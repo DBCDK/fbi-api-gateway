@@ -79,6 +79,7 @@ const bibdk = {
     // drupal
     "nodeById",
     "nodeQuery",
+    "bibliotekdkCms",
     "periodica",
     "creatorByViafid",
     "creatorByDisplay",
