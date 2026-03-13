@@ -73,7 +73,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     key: input.key,
     latestRequesterNote: input.latestRequesterNote,
     localHoldingsId: input.localHoldingsId,
-    mediumType: input.mediumType || "",
+    mediumType: input.mediumType,
     needBeforeDate:
       input.needBeforeDate || input.expires || createNeedBeforeDate(),
     orderSystem: input.orderSystem
