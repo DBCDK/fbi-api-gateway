@@ -70,16 +70,26 @@ enum CSHoldingsStatusEnum {
   Item is physically available at the branch
   """
   ONSHELF
-
   """
-  Item is on loan
+  Item is on loan and not available
   """
   ONLOAN
-  
   """
-  Item is discarded
+  Item is discarded by the branch
   """
   DISCARDED
+  """
+  Item is lost by the branch and not available
+  """
+  LOST
+  """
+  Item is not for loan by the branch
+  """
+  NOTFORLOAN
+  """
+  Item is on order by the branch
+  """
+  ONORDER
 }
 
 enum SortOrderEnum {
