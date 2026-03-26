@@ -131,6 +131,15 @@ export default {
       prefix: process.env.BACKEND_PREFIX || "backend-1",
       teamLabel: "febib",
     },
+    bibliotekdkCms: {
+      url:
+        process.env.BIBLIOTEKDK_CMS_URL ||
+        "http://bibliotekdk-cms-staging.febib-staging.svc.cloud.dbc.dk/graphql",
+      ttl: process.env.BIBLIOTEKDK_CMS_TIME_TO_LIVE_SECONDS || 5,
+      prefix:
+        process.env.BIBLIOTEKDK_CMS_PREFIX || "bibliotekdk-cms-1",
+      teamLabel: "febib",
+    },
     borchk: {
       url: process.env.BORCHK_URL || "https://borchk.addi.dk/3.1/",
       prefix: process.env.BORCHK_PREFIX || "borchk-1",
