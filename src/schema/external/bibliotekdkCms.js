@@ -8,6 +8,8 @@ const allowedFields = [
   "articles",
   "notification",
   "notifications",
+  "frontpage",
+  "frontpages",
 ];
 
 export default () =>
