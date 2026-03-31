@@ -37,30 +37,9 @@ type Shelfmark {
   postfix: String
 
   """
-  Code for comics, children's picture books and drama
-  """
-  specialMaterialGroup: SpecialMaterialGroup
-
-  """
-  The creator of the manifestation that the material can be located under on the shelf
-  """
-  creator: String
-
-  """
   The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
   """
   shelfmark: String!
-}
-
-type SpecialMaterialGroup {
-  """
-  A code for the type of the special material group
-  """
-  code: String
-  """
-  The code as displayable text
-  """
-  display: String
 }
 
 type UnitDescription {
@@ -831,6 +810,72 @@ type Manifestation {
   Code for type of periodical
   """
   periodicalType: PeriodicalType
+
+  """
+  Code for bibliographic category
+  """
+  bibliographicCategory: BibliographicCategory
+
+  """
+  Code for comics, children's picture books and drama
+  """
+  specialMaterialGroup: SpecialMaterialGroup
+
+  """
+  The creator of the manifestation that the material can be located under on the shelf
+  """
+  shelfCreator: ShelfCreator
+
+  """
+  Information on music shelving
+  """
+  musicShelf: MusicShelf
+}
+
+type ShelfCreator {
+  """
+  The display name of the creator
+  """
+  display: String
+
+  """
+  The sort version of the creator name
+  """
+  sort: String
+}
+
+type MusicShelf {
+  """
+  The sort version of 'display'
+  """
+  sort: String
+  """
+  The shelf where the material can be found
+  """
+  display: String
+}
+
+type SpecialMaterialGroup {
+  """
+  A code for the type of the special material group
+  """
+  code: String
+  """
+  The code as displayable text
+  """
+  display: String
+}
+
+type BibliographicCategory {
+  """
+  Code for bibliographic category
+  """
+  code: String
+
+  """
+  The code as displayable text
+  """
+  display: String
 }
 
 type PeriodicalType {
