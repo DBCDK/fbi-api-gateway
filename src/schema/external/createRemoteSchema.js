@@ -63,7 +63,9 @@ export default async function createRemoteSchema({
   const executor = createExecutor(url);
   const schema = await introspectSchema(executor);
 
-  const allowedFieldSet = new Set(allowedFields.map((name) => name.trim()).filter(Boolean));
+  const allowedFieldSet = new Set(
+    allowedFields.map((name) => name.trim()).filter(Boolean)
+  );
 
   const filteredSchema = pruneSchema(
     filterSchema({
