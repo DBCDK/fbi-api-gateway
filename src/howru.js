@@ -1,6 +1,6 @@
 /**
- * @file Healthcheck endpoint for alarms only.
- * It is not used to decide when pods should restart.
+ * @file Healthcheck endpoint used for alerting.
+ * It is not used for liveness/readiness or pod restarts.
  */
 import { log } from "dbc-node-logger";
 import _ from "lodash";

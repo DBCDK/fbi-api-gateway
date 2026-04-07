@@ -97,9 +97,6 @@ function graphQLProxy(req, res) {
   res.on("error", drop);
   req.on("error", drop);
   req.on("aborted", drop);
-  req.on("close", () => {
-    if (!req.readableEnded) drop();
-  });
 
   req.pipe(proxy);
 }
