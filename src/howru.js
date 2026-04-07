@@ -1,3 +1,7 @@
+/**
+ * @file Healthcheck endpoint for alarms only.
+ * It is not used to decide when pods should restart.
+ */
 import { log } from "dbc-node-logger";
 import _ from "lodash";
 import config from "./config";
@@ -8,7 +12,7 @@ import { getStats } from "./utils/fetchWithLimit";
 // Create upSince timestamp
 let upSince = new Date();
 
-/** Previous proxy child-unavailable count (updated each howru), for errors vs prevErrors. */
+// Previous proxy child-unavailable count (updated each howru), for errors vs prevErrors.
 let prevProxyChildUnavailableErrors = 0;
 
 // Array of services to check
@@ -78,6 +82,7 @@ async function howru(req, res) {
     0,
     Number.parseInt(String(req.get("x-unavailable-count") ?? "0"), 10) || 0
   );
+  // Same semantics as httpStats: fail when new proxy->child errors happened since last howru.
   const proxyUnavailable = {
     service: "graphql-proxy-child",
     errors: proxyUnavailableErrors,

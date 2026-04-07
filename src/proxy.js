@@ -49,7 +49,9 @@ function graphQLProxy(req, res) {
    * Uses `settled` so a follow-up `error` from `destroy()` does not double-count.
    */
   const unavailable = (err, phase) => {
-    if (settled) return;
+    if (settled) {
+      return;
+    }
     settled = true;
     childUnavailableCount += 1;
     log.error("GraphQL proxy: child unavailable", {
@@ -64,7 +66,9 @@ function graphQLProxy(req, res) {
     } else {
       res.destroy();
     }
-    proxy.destroy();
+    if (proxy) {
+      proxy.destroy();
+    }
   };
 
   /**
@@ -72,9 +76,13 @@ function graphQLProxy(req, res) {
    * It is not a child failure, so no 503 and no counter.
    */
   const drop = () => {
-    if (settled) return;
+    if (settled) {
+      return;
+    }
     settled = true;
-    proxy.destroy();
+    if (proxy) {
+      proxy.destroy();
+    }
   };
 
   proxy = http.request(options, (proxyRes) => {
