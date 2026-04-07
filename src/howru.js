@@ -8,6 +8,9 @@ import { getStats } from "./utils/fetchWithLimit";
 // Create upSince timestamp
 let upSince = new Date();
 
+/** Previous proxy child-unavailable count (updated each howru), for errors vs prevErrors. */
+let prevProxyChildUnavailableErrors = 0;
+
 // Array of services to check
 const services = [
   ...datasources
@@ -71,7 +74,21 @@ async function howru(req, res) {
     ok: service.errors === service.prevErrors,
   }));
 
-  httpStats.forEach((service) => {
+  const proxyUnavailableErrors = Math.max(
+    0,
+    Number.parseInt(String(req.get("x-unavailable-count") ?? "0"), 10) || 0
+  );
+  const proxyUnavailable = {
+    service: "graphql-proxy-child",
+    errors: proxyUnavailableErrors,
+    prevErrors: prevProxyChildUnavailableErrors,
+    ok: proxyUnavailableErrors === prevProxyChildUnavailableErrors,
+  };
+  prevProxyChildUnavailableErrors = proxyUnavailableErrors;
+
+  const statsChecks = [...httpStats, proxyUnavailable];
+
+  statsChecks.forEach((service) => {
     if (!service.ok) {
       ok = false;
       res.status(500);
@@ -79,7 +96,7 @@ async function howru(req, res) {
   });
 
   // Log the datasource names that cause howru to fail
-  [...results, ...httpStats]
+  [...results, ...statsChecks]
     .filter((service) => !service.ok)
     .forEach((service) => {
       log.info("howru service error", {
@@ -92,6 +109,7 @@ async function howru(req, res) {
     upSince,
     services: results,
     httpStats,
+    proxy: proxyUnavailable,
     config: omitDeep(config, omitKeys),
   };
 
