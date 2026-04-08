@@ -274,7 +274,7 @@ export const resolvers = {
         profile: context.profile,
       });
       const workIds =
-        res?.result.map(({ workid }) => workid).filter(Boolean) || [];
+        res?.result?.map(({ workid }) => workid).filter(Boolean) || [];
       if (workIds.length === 0) return null;
 
       const works = await resolveWorksByIds(workIds, context);
@@ -300,7 +300,8 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      const workIds = res?.result?.map(({ workid }) => workid).filter(Boolean);
+      const workIds =
+        res?.result?.map(({ workid }) => workid).filter(Boolean) || [];
       if (!workIds || workIds.length === 0) return null;
 
       const works = await resolveWorksByIds(workIds, context);
@@ -316,7 +317,7 @@ export const resolvers = {
       const seriesById = await context.datasources
         .getLoader("seriesById")
         .load({ seriesId: selectedSeriesId, profile: context.profile });
-      if (!seriesById) return null;
+      if (!seriesById?.seriesTitle) return null;
       return {
         ...seriesById,
         seriesId: selectedSeriesId,
@@ -372,8 +373,11 @@ export const resolvers = {
         .getLoader("simplesearch")
         .load(input);
 
+      const workIds =
+        res?.result?.map(({ workid }) => workid).filter(Boolean) || [];
+
       const expanded = await Promise.all(
-        res.result.map(async ({ workid }) => {
+        workIds.map(async (workid) => {
           const work = await resolveWork({ id: workid }, context);
 
           if (!work) {
