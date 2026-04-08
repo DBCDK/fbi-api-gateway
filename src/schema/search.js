@@ -274,7 +274,7 @@ export const resolvers = {
         profile: context.profile,
       });
       const workIds =
-        res?.result?.map(({ workid }) => workid).filter(Boolean) || [];
+        res?.result?.map(({ workid }) => workid)?.filter(Boolean) || [];
       if (workIds.length === 0) return null;
 
       const works = await resolveWorksByIds(workIds, context);
@@ -301,7 +301,7 @@ export const resolvers = {
       });
 
       const workIds =
-        res?.result?.map(({ workid }) => workid).filter(Boolean) || [];
+        res?.result?.map(({ workid }) => workid)?.filter(Boolean) || [];
       if (!workIds || workIds.length === 0) return null;
 
       const works = await resolveWorksByIds(workIds, context);
@@ -374,7 +374,7 @@ export const resolvers = {
         .load(input);
 
       const workIds =
-        res?.result?.map(({ workid }) => workid).filter(Boolean) || [];
+        res?.result?.map(({ workid }) => workid)?.filter(Boolean) || [];
 
       const expanded = await Promise.all(
         workIds.map(async (workid) => {
