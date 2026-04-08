@@ -341,12 +341,17 @@ export const resolvers = {
 
       // return seriesid if it appears more than 3 times
       const selectedSeriesId = selectPrimarySeriesId(seriesPerWork);
-      if (!selectedSeriesId) return null;
+      if (!selectedSeriesId) {
+        return null;
+      }
 
       const seriesById = await context.datasources
         .getLoader("seriesById")
         .load({ seriesId: selectedSeriesId, profile: context.profile });
-      if (!seriesById) return null;
+
+      if (!seriesById?.seriesTitle) {
+        return null;
+      }
 
       return {
         ...seriesById,

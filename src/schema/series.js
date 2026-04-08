@@ -207,6 +207,12 @@ export const resolvers = {
         .getLoader("seriesById")
         .load({ seriesId: args.seriesId, profile: context.profile });
 
+      // Avoid returning malformed Series objects that would violate
+      // non-nullable Series.title in the schema.
+      if (!seriesById?.seriesTitle) {
+        return null;
+      }
+
       return {
         ...seriesById,
         seriesId: args.seriesId,
