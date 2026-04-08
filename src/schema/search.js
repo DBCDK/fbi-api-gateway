@@ -349,7 +349,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return res?.map(({ query, score }) => ({
+      return (res || []).map(({ query, score }) => ({
         query,
         score,
         traceId: createTraceId(),
