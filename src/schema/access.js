@@ -178,7 +178,7 @@ export const resolvers = {
         .load({ isbn: parent?.isbn });
 
       // Clean and force https
-      return forceHttpsAndStripQa(product?.sampleUri);
+      return forceHttpsAndStripQa(product?.sampleUri) || "";
     },
 
     async format(parent, args, context, info) {

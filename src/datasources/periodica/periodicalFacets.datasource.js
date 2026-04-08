@@ -22,7 +22,7 @@ export async function load(
   const entries = subjectsFacets?.values?.map((entry) => ({
     ...entry,
     term: entry.key,
-  }));
+  })) || [];
 
   entries.sort((a, b) => {
     let valA, valB;
