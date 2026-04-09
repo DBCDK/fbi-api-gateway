@@ -793,7 +793,10 @@ export const resolvers = {
           .getLoader("userDataGetBookMarks")
           .load({ uniqueId, orderBy, agencyId });
 
-        return { result: res?.result || [], hitcount: res?.result?.length || 0 };
+        return {
+          result: res?.result || [],
+          hitcount: res?.result?.length || 0,
+        };
       } catch (error) {
         log.error(
           `Failed to get bookmarks from userData service. Message: ${error.message}`

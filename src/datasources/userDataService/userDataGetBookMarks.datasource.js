@@ -21,6 +21,7 @@ export async function load({ uniqueId, orderBy, agencyId }, context) {
         agencyId: agencyId,
       }),
     });
+
     return bookmarks.body;
   } catch (e) {
     // @TODO log

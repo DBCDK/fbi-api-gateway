@@ -26,6 +26,7 @@ const defaultSettings = {
     "series",
     "universe",
     "mood",
+    "patron", // REMOVE THIS BEFORE MERGE !!!!!!!!!!!!!!!!
   ],
   denyTypes: [
     "CheckOrderPolicy",
