@@ -438,6 +438,20 @@ export async function resolveManifestation(args, context) {
   return { ...m, traceId: createTraceId() };
 }
 
+export async function resolveMaterial(args, context) {
+  const manifestation = await resolveManifestation(args, context);
+  if (manifestation) {
+    return { ...manifestation, traceId: createTraceId() };
+  }
+
+  const work = await resolveWork(args, context);
+  if (work) {
+    return { ...work, traceId: createTraceId() };
+  }
+
+  return null;
+}
+
 /**
  * Take Jed subjects object, and returns FBI-API list of subjects
  */
