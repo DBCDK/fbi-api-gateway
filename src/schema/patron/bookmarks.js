@@ -101,9 +101,9 @@ export const typeDef = `
       status: BookmarksStatusEnum!
 
       """
-      Number of failed bookmark additions (e.g., due to duplicates or validation errors).
+      A list of materials for which bookmark addition failed.
       """
-      failed: Int!
+      failed: [BookmarksFailedItem!]!
     }
 
     type DeleteBookmarksResponse {
@@ -115,13 +115,35 @@ export const typeDef = `
       """
       Number of failed bookmark deletions (e.g., due to non-existent bookmark IDs).
       """
-      failed: Int!
+      failed: [BookmarksFailedItem!]!
+    }
+
+    type BookmarksFailedItem {
+      """
+      The unique identifier for the material for which bookmark addition failed (e.g., a PID or work ID).
+      """
+      materialId: String!
+      """
+      The material for which bookmark addition failed.
+      """
+      material: MaterialUnion
+
+      """
+      The reason why the bookmark addition failed.
+      """
+      reason: FailedBookmarkReasonEnum!
     }
 
     enum BookmarksStatusEnum {
       OK
+      FAILED
       ERROR_UNAUTHENTICATED_TOKEN
-      ERROR
+    }
+
+    enum FailedBookmarkReasonEnum {
+      ALREADY_EXISTS
+      NOT_FOUND
+      UNKNOWN_ERROR
     }
 
     `;
@@ -140,7 +162,6 @@ export const resolvers = {
 
         return {
           result: res?.result || [],
-          hitcount: res?.result?.length || 0,
         };
       } catch (error) {
         log.error(
@@ -161,9 +182,14 @@ export const resolvers = {
       if (!uniqueId) {
         return {
           status: "ERROR_UNAUTHENTICATED_TOKEN",
-          failed: bookmarks.length,
+          failedItems: bookmarks.map(({ materialId }) => ({
+            materialId,
+            reason: "UNKNOWN_ERROR",
+          })),
         };
       }
+
+      const notFound = [];
 
       try {
         const data = await Promise.all(
@@ -173,72 +199,129 @@ export const resolvers = {
             const obj = await resolveMaterial(props, context);
 
             if (obj) {
-              console.log("obj", obj);
-
               return {
                 materialId,
                 workId: obj?.workId,
                 title: obj?.titles?.main?.[0],
                 creator: obj?.creators?.persons?.[0]?.display,
-                materialType: obj?.workTypes?.[0], // THIS prop DOES NOT MAKE SENSE FOR ME?
-                agencyId,
-                clientId,
+                materialType: obj?.materialTypes?.[0]?.specific?.code || null,
+                workType: obj?.workTypes?.[0] || null,
               };
             }
+
+            notFound.push({
+              materialId,
+              reason: "NOT_FOUND",
+            });
           })
         );
 
-        console.log("data", data);
+        // Filter out any null or undefined values from the resolved bookmarks
+        const filteredData = data.filter((item) => item);
 
         // Early return for dry run to avoid unnecessary calls to userData service
         if (dryRun) {
           return {
             status: "OK",
-            failed: 0,
+            failedItems: [],
           };
         }
 
+        //  Add bookmarks to userData service
         const res = await context.datasources
           .getLoader("userDataAddBookmarks")
-          .load({ uniqueId, bookmarks: data });
+          .load({ uniqueId, bookmarks: filteredData, agencyId, clientId });
 
-        return res;
+        // Check the response from userData service to determine if any bookmarks were not added due to already existing or not found
+        const { bookmarksAdded, bookmarksAlreadyExists } = res;
+
+        // If the number of bookmarks added does not match the number of bookmarks requested, determine which ones failed and why
+        if (bookmarks.length !== bookmarksAdded.length) {
+          const alreadyExist = bookmarksAlreadyExists?.map((item) => ({
+            materialId: item.materialId,
+            reason: "ALREADY_EXISTS",
+          }));
+
+          return {
+            status: "FAILED",
+            failedItems: [...notFound, ...alreadyExist],
+          };
+        }
+
+        return { status: "OK", failedItems: [] };
       } catch (error) {
-        // @TODO log
         log.error(
           `Failed to add bookmark to userData service. Message: ${error.message}`
         );
-        return { bookMarkId: 0 };
+        return {
+          status: "FAILED",
+          failedItems: bookmarks.map(({ materialId }) => ({
+            materialId,
+            reason: "UNKNOWN_ERROR",
+          })),
+        };
       }
     },
     async deleteBookmarks(parent, args, context, info) {
-      const user = context?.user;
+      const uniqueId = context?.user?.uniqueId;
+      const { dryRun = false, ids = [] } = args;
+
+      if (!uniqueId) {
+        return {
+          status: "ERROR_UNAUTHENTICATED_TOKEN",
+          failedItems: ids.map((id) => ({
+            materialId: String(id),
+            reason: "UNKNOWN_ERROR",
+          })),
+        };
+      }
 
       try {
-        const uniqueId = user?.uniqueId;
-
-        if (!uniqueId) {
-          throw new Error("Not authorized");
-        }
-
-        if (isCPRNumber(uniqueId)) {
-          throw new Error("User not found in CULR");
+        if (dryRun) {
+          return { status: "OK", failedItems: [] };
         }
 
         const res = await context.datasources
           .getLoader("userDataDeleteBookmark")
-          .load({ uniqueId, bookmarkIds: args.bookmarkIds });
+          .load({ uniqueId, bookmarkIds: ids });
 
-        return res;
+        console.log("########## deleteBookmarks res", res);
+
+        const deletedCount = res?.IdsDeletedCount ?? 0;
+        const requestedCount = ids.length;
+
+        if (deletedCount !== requestedCount) {
+          return {
+            status: "FAILED",
+            failedItems: ids.map((id) => ({
+              materialId: String(id),
+              reason: "UNKNOWN_ERROR",
+            })),
+          };
+        }
+
+        return {
+          status: "OK",
+          failedItems: [],
+        };
       } catch (error) {
         log.error(
           `Failed to delete bookmark in userData service. Message: ${error.message}`
         );
-        return 0;
+        return {
+          status: "FAILED",
+          failedItems: ids.map((id) => ({
+            materialId: String(id),
+            reason: "UNKNOWN_ERROR",
+          })),
+        };
       }
     },
   },
   Bookmarks: {
+    hitcount(parent) {
+      return parent?.result?.length || 0;
+    },
     items(parent, args, context, info) {
       const {
         application,
@@ -307,6 +390,45 @@ export const resolvers = {
         return "BIBLIOTEKDK";
       } else {
         return "STUDIESOEG";
+      }
+    },
+  },
+
+  AddBookmarksResponse: {
+    async status(parent, args, context, info) {
+      if (parent.status) {
+        return parent.status;
+      }
+    },
+    async failed(parent, args, context, info) {
+      return parent.failedItems || [];
+    },
+  },
+  DeleteBookmarksResponse: {
+    async status(parent, args, context, info) {
+      if (parent.status) {
+        return parent.status;
+      }
+    },
+    async failed(parent, args, context, info) {
+      return parent.failedItems || [];
+    },
+  },
+
+  BookmarksFailedItem: {
+    async material(parent, args, context, info) {
+      console.log("########## parent.material", parent);
+
+      const materialId = parent.materialId;
+      const isWork = materialId?.startsWith("work-of:");
+      const props = isWork ? { id: materialId } : { pid: materialId };
+      const material = await resolveMaterial(props, context);
+
+      return material;
+    },
+    async reason(parent, args, context, info) {
+      if (parent.reason) {
+        return parent.reason;
       }
     },
   },

@@ -17,6 +17,8 @@ export async function load({ uniqueId, bookmarks, agencyId }, context) {
       body: JSON.stringify({ smaugUserId: uniqueId, bookmarks, agencyId }),
     });
 
+    console.log("res", res);
+
     return res.body;
   } catch (e) {
     console.error(e, "ERROR");
