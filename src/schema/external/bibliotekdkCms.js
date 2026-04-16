@@ -10,6 +10,8 @@ const allowedFields = [
   "notifications",
   "frontpage",
   "frontpages",
+  "helpText",
+  "helpTexts",
 ];
 
 export default () =>
