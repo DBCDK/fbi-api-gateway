@@ -83,6 +83,7 @@ const bibdk = {
     "periodica",
     "creatorByViafid",
     "creatorByDisplay",
+    "patron",
   ],
   denyTypes: ["MarcRecord"],
   denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
