@@ -81,6 +81,7 @@ Object {
     "universe",
     "mood",
     "submitOrder",
+    "patron",
   ],
   "denyFields": Array [
     "HoldingsItem.reservable",
