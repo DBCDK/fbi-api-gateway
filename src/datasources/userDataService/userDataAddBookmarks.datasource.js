@@ -6,7 +6,10 @@ const { url, teamLabel } = config.datasources.userdata;
  *
  * bookmarks {materialType: string, materialId: string}
  */
-export async function load({ uniqueId, bookmarks, agencyId }, context) {
+export async function load(
+  { uniqueId, bookmarks, agencyId, clientId, key, application },
+  context
+) {
   const endpoint = url + "bookmark/add";
   try {
     const res = await context.fetch(endpoint, {
@@ -14,10 +17,15 @@ export async function load({ uniqueId, bookmarks, agencyId }, context) {
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify({ smaugUserId: uniqueId, bookmarks, agencyId }),
+      body: JSON.stringify({
+        smaugUserId: uniqueId,
+        bookmarks,
+        agencyId,
+        clientId,
+        key,
+        application,
+      }),
     });
-
-    console.log("res", res);
 
     return res.body;
   } catch (e) {

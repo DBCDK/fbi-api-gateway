@@ -4,11 +4,16 @@
  */
 
 import { log } from "dbc-node-logger";
-import {
-  resolveManifestation,
-  resolveMaterial,
-  resolveWork,
-} from "../../utils/utils";
+import { resolveMaterial } from "../../utils/utils";
+
+// Helper function to determine overall status based on individual item statuses
+function getOverallStatus(items = []) {
+  if (items.length === 0) return "OK";
+  const allOk = items.every((d) => d.status === "OK");
+  if (allOk) return "OK";
+  const allFailed = items.every((d) => d.status !== "OK");
+  return allFailed ? "FAILED" : "PARTIALLY_FAILED";
+}
 
 export const typeDef = `
     extend type Patron {
@@ -37,9 +42,14 @@ export const typeDef = `
         hitcount: Int!
 
         """
+        The overall status of the bookmarks
+        """
+        status: BookmarksOverallStatusEnum!
+
+        """
         The list of bookmarks for the patron
         """
-        items(application: BookmarksApplicationEnum, orderBy: OrderBookmarksByEnum offset: Int limit: PaginationLimitScalar): [BookmarkItem!]!
+        items(orderBy: OrderBookmarksByEnum offset: Int limit: PaginationLimitScalar): [BookmarkItem!]!
     }
 
     type BookmarkItem {
@@ -59,7 +69,7 @@ export const typeDef = `
         createdAt: DateTimeScalar!
 
         """
-        The source of the bookmark
+        The application the bookmark belongs to
         """
         application: BookmarksApplicationEnum!
     }
@@ -79,12 +89,10 @@ export const typeDef = `
         TITLE_DESC
     }
 
-    """
-    The source of the bookmark, indicating which system it was created in.
-    """
     enum BookmarksApplicationEnum {
         BIBLIOTEKDK
         STUDIESOEG
+        UNKNOWN
     }
 
     input BookmarksInput {
@@ -98,76 +106,94 @@ export const typeDef = `
       """
       The unique identifier for the newly created bookmark.
       """
-      status: BookmarksStatusEnum!
+      status: BookmarksOverallStatusEnum!
 
       """
       A list of materials for which bookmark addition failed.
       """
-      failed: [BookmarksFailedItem!]!
+      items: [BookmarksStatusItem!]!
     }
 
     type DeleteBookmarksResponse {
       """
       The number of bookmarks that were successfully deleted.
       """
-      status: BookmarksStatusEnum!
+      status: BookmarksOverallStatusEnum!
       
       """
       Number of failed bookmark deletions (e.g., due to non-existent bookmark IDs).
       """
-      failed: [BookmarksFailedItem!]!
+      items: [BookmarksStatusItem!]!
     }
 
-    type BookmarksFailedItem {
+    type BookmarksStatusItem {
+      """
+      Status of the bookmark addition or deletion attempt for a specific material.
+      """
+      status: BookmarksStatusEnum!
+
+      """
+      The unique identifier for the bookmark that was attempted to be added or deleted.
+      """
+      id: Int
+
       """
       The unique identifier for the material for which bookmark addition failed (e.g., a PID or work ID).
       """
-      materialId: String!
+      materialId: String
       """
       The material for which bookmark addition failed.
       """
       material: MaterialUnion
+    }
 
-      """
-      The reason why the bookmark addition failed.
-      """
-      reason: FailedBookmarkReasonEnum!
+    enum BookmarksOverallStatusEnum {
+      OK
+      FAILED
+      PARTIALLY_FAILED
+      ERROR_UNAUTHENTICATED_TOKEN
+      ERROR_MISSING_CLIENT_CONFIGURATION
     }
 
     enum BookmarksStatusEnum {
       OK
       FAILED
-      ERROR_UNAUTHENTICATED_TOKEN
-    }
-
-    enum FailedBookmarkReasonEnum {
       ALREADY_EXISTS
       NOT_FOUND
       UNKNOWN_ERROR
     }
-
     `;
 
 export const resolvers = {
   Patron: {
     async bookmarks(parent, args, context, info) {
       const uniqueId = context?.user?.uniqueId;
-      const agencyId = context?.profile?.agency; // studiesøg/bibliotek.dk filtered bookmarks
+      const agencyId = context?.profile?.agency;
+      const key = context?.smaug?.gateway?.bookmarks?.key;
+      const application = context?.smaug?.gateway?.bookmarks?.app;
       const orderBy = "CREATEDAT";
 
       try {
+        if (!key || !application) {
+          return {
+            result: [],
+            status: "ERROR_MISSING_CLIENT_CONFIGURATION",
+          };
+        }
+
         const res = await context.datasources
           .getLoader("userDataGetBookMarks")
-          .load({ uniqueId, orderBy, agencyId });
+          .load({ uniqueId, orderBy, agencyId, key, application });
 
         return {
           result: res?.result || [],
+          status: "OK",
         };
       } catch (error) {
         log.error(
           `Failed to get bookmarks from userData service. Message: ${error.message}`
         );
-        return { result: [], hitcount: 0 };
+        return { result: [], status: "FAILED" };
       }
     },
   },
@@ -176,133 +202,189 @@ export const resolvers = {
       const uniqueId = context?.user?.uniqueId;
       const agencyId = context.profile.agency;
       const clientId = context?.smaug?.app?.clientId;
+      const key = context?.smaug?.gateway?.bookmarks?.key;
+      const application = context?.smaug?.gateway?.bookmarks?.app;
 
       const { dryRun = false, bookmarks = [] } = args;
 
       if (!uniqueId) {
         return {
           status: "ERROR_UNAUTHENTICATED_TOKEN",
-          failedItems: bookmarks.map(({ materialId }) => ({
+          items: bookmarks.map(({ materialId }) => ({
             materialId,
-            reason: "UNKNOWN_ERROR",
+            status: "FAILED",
           })),
         };
       }
 
-      const notFound = [];
+      if (!key || !application) {
+        return {
+          status: "ERROR_MISSING_CLIENT_CONFIGURATION",
+          items: bookmarks.map(({ materialId }) => ({
+            materialId,
+            status: "FAILED",
+          })),
+        };
+      }
 
       try {
-        const data = await Promise.all(
+        const resolved = await Promise.all(
           bookmarks.map(async ({ materialId }) => {
             const isWork = materialId?.startsWith("work-of:");
             const props = isWork ? { id: materialId } : { pid: materialId };
             const obj = await resolveMaterial(props, context);
 
-            if (obj) {
-              return {
-                materialId,
-                workId: obj?.workId,
-                title: obj?.titles?.main?.[0],
-                creator: obj?.creators?.persons?.[0]?.display,
-                materialType: obj?.materialTypes?.[0]?.specific?.code || null,
-                workType: obj?.workTypes?.[0] || null,
-              };
-            }
-
-            notFound.push({
-              materialId,
-              reason: "NOT_FOUND",
-            });
+            return { materialId, obj };
           })
         );
 
-        // Filter out any null or undefined values from the resolved bookmarks
-        const filteredData = data.filter((item) => item);
+        const items = resolved.map(({ materialId, obj }) => ({
+          materialId,
+          status: obj ? "OK" : "NOT_FOUND",
+        }));
+
+        const data = resolved
+          .filter(({ obj }) => obj)
+          .map(({ materialId, obj }) => ({
+            materialId,
+            workId: obj?.workId,
+            title: obj?.titles?.main?.[0],
+            creator: obj?.creators?.persons?.[0]?.display,
+            materialType: obj?.materialTypes?.[0]?.specific?.code || null,
+            workType: obj?.workTypes?.[0] || null,
+          }));
 
         // Early return for dry run to avoid unnecessary calls to userData service
         if (dryRun) {
           return {
-            status: "OK",
-            failedItems: [],
+            status: getOverallStatus(items),
+            items,
           };
         }
 
         //  Add bookmarks to userData service
         const res = await context.datasources
           .getLoader("userDataAddBookmarks")
-          .load({ uniqueId, bookmarks: filteredData, agencyId, clientId });
+          .load({
+            uniqueId,
+            bookmarks: data,
+            agencyId,
+            clientId,
+            key,
+            application,
+          });
 
         // Check the response from userData service to determine if any bookmarks were not added due to already existing or not found
-        const { bookmarksAdded, bookmarksAlreadyExists } = res;
+        const payload = res?.body || res;
+        const { bookmarksAdded = [], bookmarksAlreadyExists = [] } = payload;
 
-        // If the number of bookmarks added does not match the number of bookmarks requested, determine which ones failed and why
-        if (bookmarks.length !== bookmarksAdded.length) {
-          const alreadyExist = bookmarksAlreadyExists?.map((item) => ({
-            materialId: item.materialId,
-            reason: "ALREADY_EXISTS",
-          }));
+        const itemsWithService = items.map((item) => {
+          if (item.status !== "OK") return item;
 
-          return {
-            status: "FAILED",
-            failedItems: [...notFound, ...alreadyExist],
-          };
-        }
+          const existingBookmark = bookmarksAlreadyExists.find(
+            (b) => b.materialId === item.materialId
+          );
+          if (existingBookmark) {
+            return {
+              ...item,
+              id: existingBookmark.bookmarkId || existingBookmark.id || null,
+              status: "ALREADY_EXISTS",
+            };
+          }
 
-        return { status: "OK", failedItems: [] };
+          const addedBookmark = bookmarksAdded.find(
+            (b) => b.materialId === item.materialId
+          );
+          if (addedBookmark) {
+            return {
+              ...item,
+              id: addedBookmark.bookmarkId || addedBookmark.id || null,
+            };
+          }
+
+          return { ...item, status: "UNKNOWN_ERROR" };
+        });
+
+        return {
+          status: getOverallStatus(itemsWithService),
+          items: itemsWithService,
+        };
       } catch (error) {
         log.error(
           `Failed to add bookmark to userData service. Message: ${error.message}`
         );
         return {
           status: "FAILED",
-          failedItems: bookmarks.map(({ materialId }) => ({
+          items: bookmarks.map(({ materialId }) => ({
             materialId,
-            reason: "UNKNOWN_ERROR",
+            status: "UNKNOWN_ERROR",
           })),
         };
       }
     },
     async deleteBookmarks(parent, args, context, info) {
       const uniqueId = context?.user?.uniqueId;
+      const agencyId = context?.profile?.agency;
+      const key = context?.smaug?.gateway?.bookmarks?.key;
+      const application = context?.smaug?.gateway?.bookmarks?.app;
       const { dryRun = false, ids = [] } = args;
 
       if (!uniqueId) {
         return {
           status: "ERROR_UNAUTHENTICATED_TOKEN",
-          failedItems: ids.map((id) => ({
-            materialId: String(id),
-            reason: "UNKNOWN_ERROR",
+          items: ids.map((id) => ({
+            id,
+            status: "FAILED",
+          })),
+        };
+      }
+
+      if (!key || !application) {
+        return {
+          status: "ERROR_MISSING_CLIENT_CONFIGURATION",
+          items: ids.map((id) => ({
+            id,
+            status: "FAILED",
           })),
         };
       }
 
       try {
         if (dryRun) {
-          return { status: "OK", failedItems: [] };
-        }
-
-        const res = await context.datasources
-          .getLoader("userDataDeleteBookmark")
-          .load({ uniqueId, bookmarkIds: ids });
-
-        console.log("########## deleteBookmarks res", res);
-
-        const deletedCount = res?.IdsDeletedCount ?? 0;
-        const requestedCount = ids.length;
-
-        if (deletedCount !== requestedCount) {
           return {
-            status: "FAILED",
-            failedItems: ids.map((id) => ({
-              materialId: String(id),
-              reason: "UNKNOWN_ERROR",
+            status: "OK",
+            items: ids.map((id) => ({
+              id,
+              status: "OK",
             })),
           };
         }
 
+        const res = await context.datasources
+          .getLoader("userDataDeleteBookmark")
+          .load({ uniqueId, bookmarkIds: ids, agencyId, key, application });
+
+        const deletedCount = res?.IdsDeletedCount ?? 0;
+        const requestedCount = ids.length;
+
+        const allDeleted = deletedCount === requestedCount;
+        const nothingDeleted = deletedCount === 0;
+
+        const items = ids.map((id) => ({
+          id,
+          status: allDeleted ? "OK" : "UNKNOWN_ERROR",
+        }));
+
+        let status = "PARTIALLY_FAILED";
+        if (nothingDeleted) {
+          status = "FAILED";
+        } else if (allDeleted) {
+          status = "OK";
+        }
+
         return {
-          status: "OK",
-          failedItems: [],
+          status,
+          items,
         };
       } catch (error) {
         log.error(
@@ -310,9 +392,9 @@ export const resolvers = {
         );
         return {
           status: "FAILED",
-          failedItems: ids.map((id) => ({
-            materialId: String(id),
-            reason: "UNKNOWN_ERROR",
+          items: ids.map((id) => ({
+            id,
+            status: "UNKNOWN_ERROR",
           })),
         };
       }
@@ -322,30 +404,13 @@ export const resolvers = {
     hitcount(parent) {
       return parent?.result?.length || 0;
     },
+    status(parent) {
+      return parent?.status || "OK";
+    },
     items(parent, args, context, info) {
-      const {
-        application,
-        orderBy = "CREATEDAT_DESC",
-        offset = 0,
-        limit = 10,
-      } = args;
+      const { orderBy = "CREATEDAT_DESC", offset = 0, limit = 10 } = args;
 
-      let filteredItems = parent.result || [];
-
-      if (application) {
-        const agencyIdToSourceMap = {
-          190101: "BIBLIOTEKDK",
-          190102: "STUDIESOEG",
-        };
-
-        filteredItems = filteredItems.filter((item) => {
-          const itemSource =
-            item.application || agencyIdToSourceMap[item.agencyId];
-          return itemSource === application;
-        });
-      }
-
-      const sortedItems = [...filteredItems].sort((a, b) => {
+      const sortedItems = [...(parent.result || [])].sort((a, b) => {
         switch (orderBy) {
           case "CREATEDAT_ASC":
             return new Date(a.createdAt) - new Date(b.createdAt);
@@ -378,19 +443,30 @@ export const resolvers = {
 
       return await resolveMaterial(props, context);
     },
-
     application(parent) {
-      // Does not exist in database yet, but if it did, we would return it here
-      if (parent.application) {
+      if (parent?.application) {
         return parent.application;
       }
 
-      // fallabck to old agencyId field for backwards compatibility until we have source in database
-      if (parent.agencyId === "190101") {
+      // Get application from agency as fallback for older bookmarks that don't have application field
+      if (parent?.agencyId === "190101") {
         return "BIBLIOTEKDK";
-      } else {
+      }
+
+      const studeSogAgencies = [
+        "872960",
+        "874260",
+        "872320",
+        "875140",
+        "861640",
+        "872600",
+      ];
+
+      if (studeSogAgencies.includes(parent?.agencyId)) {
         return "STUDIESOEG";
       }
+
+      return "UNKNOWN";
     },
   },
 
@@ -400,8 +476,8 @@ export const resolvers = {
         return parent.status;
       }
     },
-    async failed(parent, args, context, info) {
-      return parent.failedItems || [];
+    async items(parent, args, context, info) {
+      return parent.items || [];
     },
   },
   DeleteBookmarksResponse: {
@@ -410,26 +486,22 @@ export const resolvers = {
         return parent.status;
       }
     },
-    async failed(parent, args, context, info) {
-      return parent.failedItems || [];
+    async items(parent, args, context, info) {
+      return parent.items || [];
     },
   },
 
-  BookmarksFailedItem: {
+  BookmarksStatusItem: {
     async material(parent, args, context, info) {
-      console.log("########## parent.material", parent);
-
       const materialId = parent.materialId;
+      if (!materialId) {
+        return null;
+      }
       const isWork = materialId?.startsWith("work-of:");
       const props = isWork ? { id: materialId } : { pid: materialId };
       const material = await resolveMaterial(props, context);
 
       return material;
-    },
-    async reason(parent, args, context, info) {
-      if (parent.reason) {
-        return parent.reason;
-      }
     },
   },
 

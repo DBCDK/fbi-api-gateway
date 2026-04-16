@@ -8,7 +8,7 @@ export const typeDef = `
       """
       Retrieves information about the patron, such as bookmarks, holds, and loans.
       """
-      patron: Patron
+      patron: Patron 
     }
 
     type Patron
