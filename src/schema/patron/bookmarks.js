@@ -1,19 +1,15 @@
 /**
- * @file This file handles
+ * @file This file handles "patron" requests, specifically related to bookmarks.
  *
  */
 
 import { log } from "dbc-node-logger";
 import { resolveMaterial } from "../../utils/utils";
-
-// Helper function to determine overall status based on individual item statuses
-function getOverallStatus(items = []) {
-  if (items.length === 0) return "OK";
-  const allOk = items.every((d) => d.status === "OK");
-  if (allOk) return "OK";
-  const allFailed = items.every((d) => d.status !== "OK");
-  return allFailed ? "FAILED" : "PARTIALLY_FAILED";
-}
+import {
+  normalizeBookmarkId,
+  getOverallStatus,
+  parseLegacyBookmarkId,
+} from "./utils";
 
 export const typeDef = `
     extend type Patron {
@@ -27,12 +23,12 @@ export const typeDef = `
         """
         Adds one or more bookmarks for the patron. If a bookmark already exists, it will be ignored.
         """
-        addBookmarks(bookmarks: [BookmarksInput!]! dryRun: Boolean): AddBookmarksResponse
+        addBookmarks(bookmarks: [BookmarksInput!]! dryRun: Boolean): AddBookmarksResponse!
 
         """
         Deletes one or more bookmarks for the patron. If a bookmark does not exist, it will be ignored.
         """
-        deleteBookmarks(ids: [Int!]! dryRun: Boolean): DeleteBookmarksResponse
+        deleteBookmarks(ids: [String!]! dryRun: Boolean): DeleteBookmarksResponse!
     }
 
     type Bookmarks {
@@ -56,12 +52,17 @@ export const typeDef = `
         """
         The unique identifier for the bookmark
         """
-        id: Int!
+        id: String!
 
         """
-        The bibliographic record identifier associated with the bookmark
+        The bibliographic record associated with the bookmark, if it can still be resolved.
         """
-        material: MaterialUnion!
+        material: MaterialUnion
+
+        """
+        Stored metadata captured when the bookmark was created.
+        """
+        snapshot: BookmarkSnapshot
 
         """
         creation date of the bookmark
@@ -72,6 +73,38 @@ export const typeDef = `
         The application the bookmark belongs to
         """
         application: BookmarksApplicationEnum!
+    }
+
+    type BookmarkSnapshot {
+      """
+      Stored material id from when the bookmark was created.
+      """
+      materialId: String
+
+      """
+      Stored work id from when the bookmark was created.
+      """
+      workId: String
+
+      """
+      Stored title from when the bookmark was created.
+      """
+      title: String
+
+      """
+      Stored creator from when the bookmark was created.
+      """
+      creator: String
+
+      """
+      Stored material type from when the bookmark was created.
+      """
+      materialType: String
+
+      """
+      Stored work type from when the bookmark was created.
+      """
+      workType: String
     }
 
     """
@@ -104,7 +137,7 @@ export const typeDef = `
 
     type AddBookmarksResponse {
       """
-      The unique identifier for the newly created bookmark.
+      The overall status of the bookmark addition operation.
       """
       status: BookmarksOverallStatusEnum!
 
@@ -116,7 +149,7 @@ export const typeDef = `
 
     type DeleteBookmarksResponse {
       """
-      The number of bookmarks that were successfully deleted.
+      The overall status of the bookmark deletion operation.
       """
       status: BookmarksOverallStatusEnum!
       
@@ -135,7 +168,7 @@ export const typeDef = `
       """
       The unique identifier for the bookmark that was attempted to be added or deleted.
       """
-      id: Int
+      id: String
 
       """
       The unique identifier for the material for which bookmark addition failed (e.g., a PID or work ID).
@@ -174,6 +207,13 @@ export const resolvers = {
       const orderBy = "CREATEDAT";
 
       try {
+        if (!uniqueId) {
+          return {
+            result: [],
+            status: "ERROR_UNAUTHENTICATED_TOKEN",
+          };
+        }
+
         if (!key || !application) {
           return {
             result: [],
@@ -185,8 +225,26 @@ export const resolvers = {
           .getLoader("userDataGetBookMarks")
           .load({ uniqueId, orderBy, agencyId, key, application });
 
+        const result = (res?.result || []).filter((bookmark) => {
+          const bookmarkId = normalizeBookmarkId(
+            bookmark?.bookmarkId ?? bookmark?.id
+          );
+
+          if (bookmarkId) {
+            return true;
+          }
+
+          log.error("Ignoring bookmark without id from userData service", {
+            materialId: bookmark?.materialId,
+            createdAt: bookmark?.createdAt,
+            agencyId: bookmark?.agencyId,
+          });
+
+          return false;
+        });
+
         return {
-          result: res?.result || [],
+          result,
           status: "OK",
         };
       } catch (error) {
@@ -200,7 +258,7 @@ export const resolvers = {
   PatronMutation: {
     async addBookmarks(parent, args, context, info) {
       const uniqueId = context?.user?.uniqueId;
-      const agencyId = context.profile.agency;
+      const agencyId = context?.profile?.agency;
       const clientId = context?.smaug?.app?.clientId;
       const key = context?.smaug?.gateway?.bookmarks?.key;
       const application = context?.smaug?.gateway?.bookmarks?.app;
@@ -257,7 +315,7 @@ export const resolvers = {
         // Early return for dry run to avoid unnecessary calls to userData service
         if (dryRun) {
           return {
-            status: getOverallStatus(items),
+            status: getOverallStatus(items, ["OK", "ALREADY_EXISTS"]),
             items,
           };
         }
@@ -287,7 +345,9 @@ export const resolvers = {
           if (existingBookmark) {
             return {
               ...item,
-              id: existingBookmark.bookmarkId || existingBookmark.id || null,
+              id: normalizeBookmarkId(
+                existingBookmark.bookmarkId || existingBookmark.id
+              ),
               status: "ALREADY_EXISTS",
             };
           }
@@ -298,7 +358,9 @@ export const resolvers = {
           if (addedBookmark) {
             return {
               ...item,
-              id: addedBookmark.bookmarkId || addedBookmark.id || null,
+              id: normalizeBookmarkId(
+                addedBookmark.bookmarkId || addedBookmark.id
+              ),
             };
           }
 
@@ -306,7 +368,7 @@ export const resolvers = {
         });
 
         return {
-          status: getOverallStatus(itemsWithService),
+          status: getOverallStatus(itemsWithService, ["OK", "ALREADY_EXISTS"]),
           items: itemsWithService,
         };
       } catch (error) {
@@ -350,35 +412,70 @@ export const resolvers = {
       }
 
       try {
+        // Delete still uses legacy integer ids downstream for now.
+        const parsedIds = ids.map((id) => ({
+          id,
+          parsedId: parseLegacyBookmarkId(id),
+        }));
+        const invalidIds = parsedIds.filter(
+          ({ parsedId }) => parsedId === null
+        );
+        const invalidIdSet = new Set(invalidIds.map(({ id }) => id));
+        const validIds = parsedIds
+          .filter(({ parsedId }) => parsedId !== null)
+          .map(({ parsedId }) => parsedId);
+
         if (dryRun) {
+          const items = ids.map((id) => ({
+            id,
+            status: invalidIdSet.has(id) ? "FAILED" : "OK",
+          }));
+
           return {
-            status: "OK",
+            status: getOverallStatus(items),
+            items,
+          };
+        }
+
+        if (validIds.length === 0) {
+          return {
+            status: "FAILED",
             items: ids.map((id) => ({
               id,
-              status: "OK",
+              status: "FAILED",
             })),
           };
         }
 
         const res = await context.datasources
           .getLoader("userDataDeleteBookmark")
-          .load({ uniqueId, bookmarkIds: ids, agencyId, key, application });
+          .load({
+            uniqueId,
+            bookmarkIds: validIds,
+            agencyId,
+            key,
+            application,
+          });
 
         const deletedCount = res?.IdsDeletedCount ?? 0;
-        const requestedCount = ids.length;
+        const requestedCount = validIds.length;
 
         const allDeleted = deletedCount === requestedCount;
         const nothingDeleted = deletedCount === 0;
 
-        const items = ids.map((id) => ({
-          id,
-          status: allDeleted ? "OK" : "UNKNOWN_ERROR",
-        }));
+        const validStatus = allDeleted ? "OK" : "UNKNOWN_ERROR";
+        const items = ids.map((id) => {
+          return {
+            id,
+            status: invalidIdSet.has(id) ? "FAILED" : validStatus,
+          };
+        });
 
+        // Invalid ids should still surface as item failures even if other deletes succeed.
         let status = "PARTIALLY_FAILED";
-        if (nothingDeleted) {
+        if (nothingDeleted && invalidIds.length === 0) {
           status = "FAILED";
-        } else if (allDeleted) {
+        } else if (allDeleted && invalidIds.length === 0) {
           status = "OK";
         }
 
@@ -434,7 +531,28 @@ export const resolvers = {
   },
   BookmarkItem: {
     id(parent) {
-      return parent.bookmarkId;
+      return normalizeBookmarkId(parent.bookmarkId ?? parent.id);
+    },
+    snapshot(parent) {
+      if (
+        !parent?.materialId &&
+        !parent?.workId &&
+        !parent?.title &&
+        !parent?.creator &&
+        !parent?.materialType &&
+        !parent?.workType
+      ) {
+        return null;
+      }
+
+      return {
+        materialId: parent?.materialId || null,
+        workId: parent?.workId || null,
+        title: parent?.title || null,
+        creator: parent?.creator || null,
+        materialType: parent?.materialType || null,
+        workType: parent?.workType || null,
+      };
     },
     async material(parent, args, context, info) {
       const materialId = parent?.materialId;
@@ -453,7 +571,7 @@ export const resolvers = {
         return "BIBLIOTEKDK";
       }
 
-      const studeSogAgencies = [
+      const studiesoegAgencyIds = [
         "872960",
         "874260",
         "872320",
@@ -462,32 +580,11 @@ export const resolvers = {
         "872600",
       ];
 
-      if (studeSogAgencies.includes(parent?.agencyId)) {
+      if (studiesoegAgencyIds.includes(parent?.agencyId)) {
         return "STUDIESOEG";
       }
 
       return "UNKNOWN";
-    },
-  },
-
-  AddBookmarksResponse: {
-    async status(parent, args, context, info) {
-      if (parent.status) {
-        return parent.status;
-      }
-    },
-    async items(parent, args, context, info) {
-      return parent.items || [];
-    },
-  },
-  DeleteBookmarksResponse: {
-    async status(parent, args, context, info) {
-      if (parent.status) {
-        return parent.status;
-      }
-    },
-    async items(parent, args, context, info) {
-      return parent.items || [];
     },
   },
 

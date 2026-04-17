@@ -6,7 +6,7 @@
 export const typeDef = `
     extend type Query {
       """
-      Retrieves information about the patron, such as bookmarks, holds, and loans.
+      Retrieves information about the patron, such as bookmarks, reservations, and loans.
       """
       patron: Patron 
     }

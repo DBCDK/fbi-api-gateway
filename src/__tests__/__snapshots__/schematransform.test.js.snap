@@ -247,7 +247,7 @@ type Query {
   ors: OrsQuery!
 
   \\"\\"\\"
-  Retrieves information about the patron, such as bookmarks, holds, and loans.
+  Retrieves information about the patron, such as bookmarks, reservations, and loans.
   \\"\\"\\"
   patron: Patron
 
@@ -3596,12 +3596,12 @@ type PatronMutation {
   \\"\\"\\"
   Adds one or more bookmarks for the patron. If a bookmark already exists, it will be ignored.
   \\"\\"\\"
-  addBookmarks(bookmarks: [BookmarksInput!]!, dryRun: Boolean): AddBookmarksResponse
+  addBookmarks(bookmarks: [BookmarksInput!]!, dryRun: Boolean): AddBookmarksResponse!
 
   \\"\\"\\"
   Deletes one or more bookmarks for the patron. If a bookmark does not exist, it will be ignored.
   \\"\\"\\"
-  deleteBookmarks(ids: [Int!]!, dryRun: Boolean): DeleteBookmarksResponse
+  deleteBookmarks(ids: [String!]!, dryRun: Boolean): DeleteBookmarksResponse!
 }
 
 type Bookmarks {
@@ -3617,16 +3617,41 @@ type Bookmarks {
 
 type BookmarkItem {
   \\"\\"\\"The unique identifier for the bookmark\\"\\"\\"
-  id: Int!
+  id: String!
 
-  \\"\\"\\"The bibliographic record identifier associated with the bookmark\\"\\"\\"
-  material: MaterialUnion!
+  \\"\\"\\"
+  The bibliographic record associated with the bookmark, if it can still be resolved.
+  \\"\\"\\"
+  material: MaterialUnion
+
+  \\"\\"\\"Stored metadata captured when the bookmark was created.\\"\\"\\"
+  snapshot: BookmarkSnapshot
 
   \\"\\"\\"creation date of the bookmark\\"\\"\\"
   createdAt: DateTime!
 
   \\"\\"\\"The application the bookmark belongs to\\"\\"\\"
   application: BookmarksApplicationEnum!
+}
+
+type BookmarkSnapshot {
+  \\"\\"\\"Stored material id from when the bookmark was created.\\"\\"\\"
+  materialId: String
+
+  \\"\\"\\"Stored work id from when the bookmark was created.\\"\\"\\"
+  workId: String
+
+  \\"\\"\\"Stored title from when the bookmark was created.\\"\\"\\"
+  title: String
+
+  \\"\\"\\"Stored creator from when the bookmark was created.\\"\\"\\"
+  creator: String
+
+  \\"\\"\\"Stored material type from when the bookmark was created.\\"\\"\\"
+  materialType: String
+
+  \\"\\"\\"Stored work type from when the bookmark was created.\\"\\"\\"
+  workType: String
 }
 
 \\"\\"\\"Union type for different material types that can be bookmarked\\"\\"\\"
@@ -3654,7 +3679,7 @@ input BookmarksInput {
 }
 
 type AddBookmarksResponse {
-  \\"\\"\\"The unique identifier for the newly created bookmark.\\"\\"\\"
+  \\"\\"\\"The overall status of the bookmark addition operation.\\"\\"\\"
   status: BookmarksOverallStatusEnum!
 
   \\"\\"\\"A list of materials for which bookmark addition failed.\\"\\"\\"
@@ -3662,7 +3687,7 @@ type AddBookmarksResponse {
 }
 
 type DeleteBookmarksResponse {
-  \\"\\"\\"The number of bookmarks that were successfully deleted.\\"\\"\\"
+  \\"\\"\\"The overall status of the bookmark deletion operation.\\"\\"\\"
   status: BookmarksOverallStatusEnum!
 
   \\"\\"\\"
@@ -3680,7 +3705,7 @@ type BookmarksStatusItem {
   \\"\\"\\"
   The unique identifier for the bookmark that was attempted to be added or deleted.
   \\"\\"\\"
-  id: Int
+  id: String
 
   \\"\\"\\"
   The unique identifier for the material for which bookmark addition failed (e.g., a PID or work ID).
