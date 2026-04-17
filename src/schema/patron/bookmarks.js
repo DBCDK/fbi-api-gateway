@@ -81,30 +81,30 @@ export const typeDef = `
     }
 
     type BookmarkSnapshot {
-      """
-      Stored work id from when the bookmark was created.
-      """
-      workId: String
+        """
+        Stored work id from when the bookmark was created.
+        """
+        workId: String
 
-      """
-      Stored title from when the bookmark was created.
-      """
-      title: String
+        """
+        Stored title from when the bookmark was created.
+        """
+        title: String
 
-      """
-      Stored creator from when the bookmark was created.
-      """
-      creator: String
+        """
+        Stored creator from when the bookmark was created.
+        """
+        creator: String
 
-      """
-      Stored material type from when the bookmark was created.
-      """
-      materialType: String
+        """
+        Stored material type from when the bookmark was created.
+        """
+        materialType: String
 
-      """
-      Stored work type from when the bookmark was created.
-      """
-      workType: String
+        """
+        Stored work type from when the bookmark was created.
+        """
+        workType: String
     }
 
     """
