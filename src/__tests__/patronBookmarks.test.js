@@ -134,13 +134,18 @@ describe("Patron bookmarks", () => {
         workType: "work",
       })
     ).toEqual({
-      materialId: "pid:123",
       workId: "work-of:123",
       title: "Stored title",
       creator: "Stored creator",
       materialType: "BOOK",
       workType: "work",
     });
+  });
+
+  test("BookmarkItem.materialId exposes stored material id on item level", () => {
+    expect(resolvers.BookmarkItem.materialId({ materialId: "pid:123" })).toBe(
+      "pid:123"
+    );
   });
 
   test("addBookmarks dryRun reports partial failure when one material is missing", async () => {

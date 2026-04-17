@@ -55,6 +55,11 @@ export const typeDef = `
         id: String!
 
         """
+        The unique identifier for the material this bookmark points to.
+        """
+        materialId: String
+
+        """
         The bibliographic record associated with the bookmark, if it can still be resolved.
         """
         material: MaterialUnion
@@ -76,11 +81,6 @@ export const typeDef = `
     }
 
     type BookmarkSnapshot {
-      """
-      Stored material id from when the bookmark was created.
-      """
-      materialId: String
-
       """
       Stored work id from when the bookmark was created.
       """
@@ -533,6 +533,9 @@ export const resolvers = {
     id(parent) {
       return normalizeBookmarkId(parent.bookmarkId ?? parent.id);
     },
+    materialId(parent) {
+      return parent?.materialId || null;
+    },
     snapshot(parent) {
       if (
         !parent?.materialId &&
@@ -546,7 +549,6 @@ export const resolvers = {
       }
 
       return {
-        materialId: parent?.materialId || null,
         workId: parent?.workId || null,
         title: parent?.title || null,
         creator: parent?.creator || null,
