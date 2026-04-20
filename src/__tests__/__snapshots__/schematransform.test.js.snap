@@ -3619,6 +3619,9 @@ type BookmarkItem {
   \\"\\"\\"The unique identifier for the bookmark\\"\\"\\"
   id: String!
 
+  \\"\\"\\"The unique identifier for the material this bookmark points to.\\"\\"\\"
+  materialId: String
+
   \\"\\"\\"
   The bibliographic record associated with the bookmark, if it can still be resolved.
   \\"\\"\\"
@@ -3635,9 +3638,6 @@ type BookmarkItem {
 }
 
 type BookmarkSnapshot {
-  \\"\\"\\"Stored material id from when the bookmark was created.\\"\\"\\"
-  materialId: String
-
   \\"\\"\\"Stored work id from when the bookmark was created.\\"\\"\\"
   workId: String
 
