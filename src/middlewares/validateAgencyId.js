@@ -12,8 +12,6 @@ export function validateAgencyId(req, res, next) {
 
   const explicitAgencyId = req.params?.agencyId;
 
-  console.log("#################", { alwaysRequireAgencyId, explicitAgencyId });
-
   // If agencyId is required in params but not provided, reject immediately
   if (alwaysRequireAgencyId && !explicitAgencyId) {
     return res.status(400).send({
