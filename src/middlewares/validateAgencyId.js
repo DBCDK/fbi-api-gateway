@@ -6,6 +6,22 @@ export function validateAgencyId(req, res, next) {
     return next();
   }
 
+  // If smaug configuration explicitly requires agencyId in params
+  const alwaysRequireAgencyId =
+    req.smaug?.gateway?.agency?.alwaysRequireAgencyId === true;
+
+  const explicitAgencyId = req.params?.agencyId;
+
+  console.log("#################", { alwaysRequireAgencyId, explicitAgencyId });
+
+  // If agencyId is required in params but not provided, reject immediately
+  if (alwaysRequireAgencyId && !explicitAgencyId) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: "agencyId must be provided in request path",
+    });
+  }
+
   const selectedAgencyId = req?.profile?.agency;
   const defaultAgencyId = req.smaug?.agencyId;
   const gatewaySettings = req.smaug?.gateway;
