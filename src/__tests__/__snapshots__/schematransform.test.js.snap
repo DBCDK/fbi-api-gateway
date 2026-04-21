@@ -188,6 +188,9 @@ type Mutation {
   submitOrder(input: SubmitOrderInput!, dryRun: Boolean): SubmitOrder
   submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
 
+  \\"\\"\\"Updates patron information, such as adding or removing bookmarks.\\"\\"\\"
+  patron: PatronMutation
+
   \\"\\"\\"
   Represents the overall reservability status across all items according to the Cicero API (booking allowed).
   \\"\\"\\"
@@ -242,6 +245,11 @@ type Query {
   marc: Marc!
   mood: MoodQueries!
   ors: OrsQuery!
+
+  \\"\\"\\"
+  Retrieves information about the patron, such as bookmarks, reservations, and loans.
+  \\"\\"\\"
+  patron: Patron
 
   \\"\\"\\"Access to various types of recommendations.\\"\\"\\"
   recommendations: Recommendations!
@@ -3575,6 +3583,153 @@ type OrsQuery {
   Method to retrieve sender and receiver information from ORS based on an itemId.
   \\"\\"\\"
   itemOrder(itemId: String!): ItemIdResponse!
+}
+
+type Patron {
+  \\"\\"\\"
+  Retrieves the list of bookmarks for the patron, including pagination and sorting options.
+  \\"\\"\\"
+  bookmarks: Bookmarks!
+}
+
+type PatronMutation {
+  \\"\\"\\"
+  Adds one or more bookmarks for the patron. If a bookmark already exists, it will be ignored.
+  \\"\\"\\"
+  addBookmarks(bookmarks: [BookmarksInput!]!, dryRun: Boolean): AddBookmarksResponse!
+
+  \\"\\"\\"
+  Deletes one or more bookmarks for the patron. If a bookmark does not exist, it will be ignored.
+  \\"\\"\\"
+  deleteBookmarks(ids: [String!]!, dryRun: Boolean): DeleteBookmarksResponse!
+}
+
+type Bookmarks {
+  \\"\\"\\"The total number of bookmarks for the patron\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"The overall status of the bookmarks\\"\\"\\"
+  status: BookmarksOverallStatusEnum!
+
+  \\"\\"\\"The list of bookmarks for the patron\\"\\"\\"
+  items(orderBy: OrderBookmarksByEnum, offset: Int, limit: PaginationLimitScalar): [BookmarkItem!]!
+}
+
+type BookmarkItem {
+  \\"\\"\\"The unique identifier for the bookmark\\"\\"\\"
+  id: String!
+
+  \\"\\"\\"The unique identifier for the material this bookmark points to.\\"\\"\\"
+  materialId: String
+
+  \\"\\"\\"
+  The bibliographic record associated with the bookmark, if it can still be resolved.
+  \\"\\"\\"
+  material: MaterialUnion
+
+  \\"\\"\\"Stored metadata captured when the bookmark was created.\\"\\"\\"
+  snapshot: BookmarkSnapshot
+
+  \\"\\"\\"creation date of the bookmark\\"\\"\\"
+  createdAt: DateTime!
+
+  \\"\\"\\"The application the bookmark belongs to\\"\\"\\"
+  application: BookmarksApplicationEnum!
+}
+
+type BookmarkSnapshot {
+  \\"\\"\\"Stored work id from when the bookmark was created.\\"\\"\\"
+  workId: String
+
+  \\"\\"\\"Stored title from when the bookmark was created.\\"\\"\\"
+  title: String
+
+  \\"\\"\\"Stored creator from when the bookmark was created.\\"\\"\\"
+  creator: String
+
+  \\"\\"\\"Stored material type from when the bookmark was created.\\"\\"\\"
+  materialType: String
+
+  \\"\\"\\"Stored work type from when the bookmark was created.\\"\\"\\"
+  workType: String
+}
+
+\\"\\"\\"Union type for different material types that can be bookmarked\\"\\"\\"
+union MaterialUnion = Work | Manifestation
+
+\\"\\"\\"Enum for sorting bookmarks\\"\\"\\"
+enum OrderBookmarksByEnum {
+  CREATEDAT_ASC
+  CREATEDAT_DESC
+  TITLE_ASC
+  TITLE_DESC
+}
+
+enum BookmarksApplicationEnum {
+  BIBLIOTEKDK
+  STUDIESOEG
+  UNKNOWN
+}
+
+input BookmarksInput {
+  \\"\\"\\"
+  The unique identifier for the material being bookmarked (e.g., a PID or work ID).
+  \\"\\"\\"
+  materialId: String!
+}
+
+type AddBookmarksResponse {
+  \\"\\"\\"The overall status of the bookmark addition operation.\\"\\"\\"
+  status: BookmarksOverallStatusEnum!
+
+  \\"\\"\\"A list of materials for which bookmark addition failed.\\"\\"\\"
+  items: [BookmarksStatusItem!]!
+}
+
+type DeleteBookmarksResponse {
+  \\"\\"\\"The overall status of the bookmark deletion operation.\\"\\"\\"
+  status: BookmarksOverallStatusEnum!
+
+  \\"\\"\\"
+  Number of failed bookmark deletions (e.g., due to non-existent bookmark IDs).
+  \\"\\"\\"
+  items: [BookmarksStatusItem!]!
+}
+
+type BookmarksStatusItem {
+  \\"\\"\\"
+  Status of the bookmark addition or deletion attempt for a specific material.
+  \\"\\"\\"
+  status: BookmarksStatusEnum!
+
+  \\"\\"\\"
+  The unique identifier for the bookmark that was attempted to be added or deleted.
+  \\"\\"\\"
+  id: String
+
+  \\"\\"\\"
+  The unique identifier for the material for which bookmark addition failed (e.g., a PID or work ID).
+  \\"\\"\\"
+  materialId: String
+
+  \\"\\"\\"The material for which bookmark addition failed.\\"\\"\\"
+  material: MaterialUnion
+}
+
+enum BookmarksOverallStatusEnum {
+  OK
+  FAILED
+  PARTIALLY_FAILED
+  ERROR_UNAUTHENTICATED_TOKEN
+  ERROR_MISSING_CLIENT_CONFIGURATION
+}
+
+enum BookmarksStatusEnum {
+  OK
+  FAILED
+  ALREADY_EXISTS
+  NOT_FOUND
+  UNKNOWN_ERROR
 }
 
 type RawRepo {

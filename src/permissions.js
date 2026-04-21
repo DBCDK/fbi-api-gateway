@@ -83,6 +83,7 @@ const bibdk = {
     "periodica",
     "creatorByViafid",
     "creatorByDisplay",
+    "patron",
   ],
   denyTypes: ["MarcRecord"],
   denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
@@ -111,7 +112,11 @@ export default {
     denyFields: [...defaultSettings.denyFields],
   },
   ddbcms: {
-    allowRootFields: [...defaultSettings.allowRootFields, "submitOrder"],
+    allowRootFields: [
+      ...defaultSettings.allowRootFields,
+      "submitOrder",
+      "patron",
+    ],
     denyTypes: [...defaultSettings.denyTypes, "WorkReview"],
     denyFields: [...defaultSettings.denyFields],
   },
