@@ -1,16 +1,18 @@
-.top {
+.header {
   /* observer hack */
   top: -1px;
 
   position: relative;
-
   z-index: 99;
-  padding: var(--pt1) 0;
   background-color: var(--white);
   border-bottom: 4px solid var(--primary-dark);
-
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.25);
   transition-duration: 0.2s;
+}
+
+.header > div:global(.container-fluid) {
+  padding-top: var(--pt1);
+  padding-bottom: var(--pt1);
 }
 
 .left {
@@ -34,7 +36,7 @@
   color: white;
 }
 
-.top.index .history {
+.header.index .history {
   display: none;
 }
 
@@ -107,38 +109,38 @@
 
 /* documentation */
 
-.top.documentation {
+.header.documentation {
   position: sticky;
 }
 
-.top.documentation.sticky {
+.header.documentation.sticky {
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
 }
 
 /* schema */
 
-.top.schema {
+.header.schema {
   position: sticky;
 }
 
-.top.schema.sticky {
+.header.schema.sticky {
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
 }
 
 /* index */
-.top.index {
+.header.index {
   border-bottom: none;
 }
 
-.top.index .profiles {
+.header.index .profiles {
   display: none;
 }
 
-.top.index .token {
+.header.index .token {
   display: none;
 }
 
-.top .logo a:hover {
+.header .logo a:hover {
   color: var(--primary-dark);
 }
 
@@ -188,7 +190,7 @@
     display: none;
   }
 
-  .top.index .history {
+  .header.index .history {
     display: block;
   }
 }
@@ -197,10 +199,10 @@
 * Dark mode
 */
 
-:global(body.dark) .top {
+:global(body.dark) .header {
   background-color: var(--dark);
 }
-:global(body.dark) .top.index {
+:global(body.dark) .header.index {
   background-color: var(--dark-light);
 }
 :global(body.dark) .token,
@@ -216,7 +218,7 @@
 }
 
 /* pride border theme*/
-:global(body.pride) .top:not(.index) .border {
+:global(body.pride) .header:not(.index) .border {
   content: "";
   background: linear-gradient(
     90deg,
@@ -240,7 +242,7 @@
 }
 
 /* pride border theme*/
-:global(body.future) .top:not(.index) .border {
+:global(body.future) .header:not(.index) .border {
   content: "";
   background: linear-gradient(
     75deg,
@@ -257,10 +259,10 @@
   left: 0;
 }
 
-:global(body.dark) .top:not(.index) .border {
+:global(body.dark) .header:not(.index) .border {
   display: none;
 }
 
-:global(body.dark) .top:not(.index) {
+:global(body.dark) .header:not(.index) {
   border-bottom: 4px solid var(--text-light);
 }

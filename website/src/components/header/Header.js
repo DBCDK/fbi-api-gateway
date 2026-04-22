@@ -19,6 +19,7 @@ import Modal, { Pages } from "@/components/modal";
 
 import styles from "./Header.module.css";
 import Settings from "@/components/settings";
+import Top from "../top";
 
 export default function Header() {
   const router = useRouter();
@@ -64,9 +65,10 @@ export default function Header() {
 
   return (
     <header
-      className={`${styles.top} ${stickyClass} ${indexStyles} ${documentationStyles} ${schemaStyles}`}
+      className={`${styles.header} ${stickyClass} ${indexStyles} ${documentationStyles} ${schemaStyles}`}
       ref={elRef}
     >
+      <Top className={styles.top} />
       <Container fluid>
         <Row>
           <Col className={styles.left}>
@@ -116,7 +118,7 @@ export default function Header() {
 
           <Col className={styles.middle}>
             {!isIndex && <Token className={styles.token} compact />}
-            <Profile className={styles.profiles} />
+            {/* <Profile className={styles.profiles} /> */}
             <History className={styles.history} />
           </Col>
         </Row>

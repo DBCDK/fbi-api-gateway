@@ -1,0 +1,10 @@
+.top {
+  background-color: var(--divider);
+  min-height: 32px;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
