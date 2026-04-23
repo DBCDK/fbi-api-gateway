@@ -1,9 +1,10 @@
 .dropdown {
   position: relative;
+  width: 100%;
 }
 
 .toggle {
-  width: 230px;
+  width: 100%;
   min-height: var(--pt5);
   display: flex;
   align-items: center;
@@ -29,7 +30,7 @@
   white-space: nowrap;
   font-size: calc(var(--pt2) - (var(--pt05) / 2));
   font-family: var(--font-mono-semibold);
-  margin-left: var(--pt2);
+  margin: 0 var(--pt2);
   transition-duration: 0.2s;
 }
 
@@ -37,7 +38,8 @@
 .toggle:focus-visible .value,
 .dropdown:focus-within .value {
   font-family: var(--font-mono-semibold);
-  transform: translateX(var(--pt1));
+  transform: translateX(calc(var(--pt1) * -1));
+  color: var(--primary);
 }
 
 .input {
@@ -84,7 +86,7 @@
 }
 
 .menu {
-  width: 100%;
+  width: calc(100% + var(--pt4));
   margin-top: 0 !important;
   padding: 0;
   border: 0;
@@ -94,7 +96,7 @@
   overflow: hidden;
   position: absolute !important;
   top: 0 !important;
-  left: 0 !important;
+  left: calc(var(--pt2) * -1) !important;
   transform: none !important;
   z-index: 100;
   transform-origin: top left;
@@ -117,15 +119,27 @@
   padding: var(--pt05) 0;
   max-height: calc(var(--pt6) * 5);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .item {
+  display: block;
+  width: 100%;
   padding: var(--pt1) var(--pt3);
   color: var(--text-dark) !important;
   font-size: calc(var(--pt2) - (var(--pt05) / 2));
   background: transparent !important;
   font-family: var(--font-mono);
   cursor: pointer;
+}
+
+.itemContent {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .item:hover,

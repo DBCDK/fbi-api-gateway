@@ -1,4 +1,5 @@
 .dropdown {
+  width: 180px;
   margin-left: var(--pt2);
 }
 

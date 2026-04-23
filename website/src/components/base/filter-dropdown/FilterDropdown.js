@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 
 import styles from "./FilterDropdown.module.css";
 
-const CustomToggle = forwardRef(({ children, onClick }, ref) => (
+const CustomToggle = forwardRef(({ children, onClick, title }, ref) => (
   <button
     ref={ref}
     type="button"
@@ -18,7 +18,9 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
       }
     }}
   >
-    <span className={styles.value}>{children}</span>
+    <span className={styles.value} title={title}>
+      {children}
+    </span>
     <span className={styles.chevron} aria-hidden="true">
       ▾
     </span>
@@ -92,6 +94,8 @@ export default function FilterDropdown({
   onSelect,
   itemToString = defaultItemToString,
   selectedItemToString = itemToString,
+  itemTitle = itemToString,
+  selectedItemTitle = selectedItemToString,
   renderItem,
   itemKey = defaultItemKey,
   filterPlaceholder = "Filter options ...",
@@ -207,7 +211,11 @@ export default function FilterDropdown({
       show={isOpen}
       onToggle={(nextShow) => setIsOpen(nextShow)}
     >
-      <Dropdown.Toggle as={CustomToggle} id={id}>
+      <Dropdown.Toggle
+        as={CustomToggle}
+        id={id}
+        title={selectedItemTitle(selectedItem)}
+      >
         {selectedItemToString(selectedItem)}
       </Dropdown.Toggle>
 
@@ -236,6 +244,7 @@ export default function FilterDropdown({
         {filteredItems.map((item, index) => {
           const key = itemKey(item);
           const label = itemToString(item);
+          const title = itemTitle(item);
           const isSelected = itemKey(item) === itemKey(selectedItem);
 
           return (
@@ -255,7 +264,9 @@ export default function FilterDropdown({
                 listRef.current[index] = node;
               }}
             >
-              {renderItem ? renderItem(item) : label}
+              <span className={styles.itemContent} title={title}>
+                {renderItem ? renderItem(item) : label}
+              </span>
             </Dropdown.Item>
           );
         })}
