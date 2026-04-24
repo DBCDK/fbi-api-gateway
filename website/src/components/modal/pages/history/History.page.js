@@ -89,6 +89,7 @@ function ExpandButton({ onClick, open }) {
 function Item({
   token,
   profile,
+  agency,
   note: _note,
   timestamp,
   inUse,
@@ -233,7 +234,7 @@ function Item({
               maxLength="50"
               placeholder={open ? " Some token note ..." : false}
               onChange={(e) => setNote(e.target.value)}
-              onBlur={() => setHistoryItem({ token, profile, note })}
+              onBlur={() => setHistoryItem({ token, profile, agency, note })}
             />
           </div>
 
@@ -448,7 +449,7 @@ function Item({
               className={styles.use}
               disabled={hasValidationError}
               size="small"
-              onClick={() => setSelectedToken(token, profile)}
+              onClick={() => setSelectedToken(token, profile, agency)}
               primary
             >
               {inUse ? "I'm in use" : "Use"}

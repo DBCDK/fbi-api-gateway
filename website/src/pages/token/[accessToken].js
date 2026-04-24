@@ -20,7 +20,7 @@ export default function TokenPage() {
     if (typeof accessToken === "string") {
       // If token is already owned we set token with the profile already used
       const item = getHistoryItem(accessToken);
-      setSelectedToken(accessToken, item?.profile);
+      setSelectedToken(accessToken, item?.profile, item?.agency);
       router.replace("/documentation");
     }
   }, [isClient, accessToken, setSelectedToken, router]);
