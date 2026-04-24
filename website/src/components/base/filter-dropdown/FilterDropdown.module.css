@@ -1,6 +1,6 @@
 .dropdown {
   position: relative;
-  width: 100%;
+  min-width: 0;
 }
 
 .toggle {
@@ -37,7 +37,7 @@
 .toggle:hover .value,
 .toggle:focus-visible .value,
 .dropdown:focus-within .value {
-  font-family: var(--font-mono-semibold);
+  font-family: var(--font-mono-bold);
   transform: translateX(calc(var(--pt1) * -1));
   color: var(--primary);
 }
@@ -63,12 +63,20 @@
   color: var(--text-light);
 }
 
+:global(body.dark) .input::placeholder {
+  color: var(--text-dark);
+}
+
 .menuInputWrap {
-  min-height: var(--pt4);
+  height: var(--pt4);
   display: flex;
   align-items: center;
   background: var(--white);
   border-bottom: 1px solid var(--divider);
+}
+
+:global(body.dark) .menuInputWrap {
+  border-bottom: 1px solid var(--text-light);
 }
 
 .menuLabel {
@@ -76,6 +84,17 @@
   color: var(--text-light);
   font-family: var(--font-mono-medium);
   font-size: calc(var(--pt2) - var(--pt1) / 2);
+  position: relative;
+  z-index: 1;
+  transition: box-shadow 160ms ease;
+}
+
+:global(body.dark) .menuLabel {
+  color: var(--text-dark);
+}
+
+.menuLabelScrolled {
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
 }
 
 .chevron {
@@ -120,6 +139,25 @@
   max-height: calc(var(--pt6) * 5);
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--divider) transparent;
+}
+
+.list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: var(--divider);
+  border-radius: var(--pt05);
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+  background: var(--divider-dark);
 }
 
 .item {
@@ -143,7 +181,10 @@
 }
 
 .item:hover,
-.item:focus-visible {
+.item:focus-visible,
+.highlighted,
+.highlighted:hover,
+.highlighted:focus-visible {
   background: var(--divider) !important;
   color: var(--text-dark) !important;
   outline: none;
@@ -155,9 +196,29 @@
   color: var(--primary) !important;
 }
 
-.highlighted {
-  background: var(--divider) !important;
-  color: var(--text-dark) !important;
+:global(body.dark) .item:hover,
+:global(body.dark) .item:focus-visible,
+:global(body.dark) .highlighted,
+:global(body.dark) .highlighted:hover,
+:global(body.dark) .highlighted:focus-visible {
+  background: var(--text-light) !important;
+  color: var(--dark) !important;
+}
+
+:global(body.dark) .item:global(.active) {
+  border-left: 2px solid var(--text-light);
+}
+
+:global(body.dark) .list {
+  scrollbar-color: var(--divider-dark) transparent;
+}
+
+:global(body.dark) .list::-webkit-scrollbar-thumb {
+  background: var(--divider-dark);
+}
+
+:global(body.dark) .list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-light);
 }
 
 .empty {
@@ -165,6 +226,14 @@
   color: var(--text-light);
   font-family: var(--font-mono);
   font-size: calc(var(--pt2) - (var(--pt05) / 2));
+}
+
+:global(body.dark) .chevron,
+:global(body.dark) .toggle,
+:global(body.dark) .toggle:hover .value,
+:global(body.dark) .toggle:focus-visible .value,
+:global(body.dark) .dropdown:focus-within .value {
+  color: var(--dark);
 }
 
 @keyframes dropdown-menu-in {

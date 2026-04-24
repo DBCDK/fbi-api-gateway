@@ -65,7 +65,7 @@ export default function Agencies({ id = "agencies-dropdown", className = "" }) {
   const hasAgencies = agencyItems.length > 0;
 
   const isValidSelectedAgency = agencyItems.some(
-    (item) => item.value === selectedToken?.agency,
+    (item) => item.value === selectedToken?.agency
   );
 
   const fallbackAgency = agencyItems[0]?.value ?? null;
@@ -89,6 +89,8 @@ export default function Agencies({ id = "agencies-dropdown", className = "" }) {
     return null;
   }
 
+  console.log("#### agencyItems", agencies, agencyItems, selectedAgency);
+
   return (
     <FilterDropdown
       id={id}
@@ -105,9 +107,7 @@ export default function Agencies({ id = "agencies-dropdown", className = "" }) {
         <span className={styles.itemLabel}>
           <span>{item?.value || ""}</span>
           {item?.isDefault && (
-            <span className={styles.defaultBadge}>
-              Default
-            </span>
+            <span className={styles.defaultBadge}>Default</span>
           )}
         </span>
       )}

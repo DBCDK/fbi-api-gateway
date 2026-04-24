@@ -43,6 +43,7 @@ const CustomMenu = forwardRef(
       listProps,
       filterPlaceholder,
       menuLabel,
+      hasScrolledList,
       noResultsLabel,
       hasItems,
     },
@@ -64,7 +65,15 @@ const CustomMenu = forwardRef(
           {...inputProps}
         />
       </div>
-      {menuLabel && <div className={styles.menuLabel}>{menuLabel}</div>}
+      {menuLabel && (
+        <div
+          className={`${styles.menuLabel} ${
+            hasScrolledList ? styles.menuLabelScrolled : ""
+          }`}
+        >
+          {menuLabel}
+        </div>
+      )}
       {hasItems ? (
         <ul className={styles.list} {...listProps}>
           {children}
@@ -106,23 +115,33 @@ export default function FilterDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const [filterValue, setFilterValue] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [hasScrolledList, setHasScrolledList] = useState(false);
   const inputRef = useRef(null);
   const listRef = useRef([]);
+  const menuListRef = useRef(null);
+  const previousIsOpenRef = useRef(false);
+  const previousSelectedItemKeyRef = useRef(null);
   const listboxId = useId();
 
   const filteredItems = items.filter((item) => {
     const label = itemToString(item).toLowerCase();
     return !filterValue || label.includes(filterValue.trim().toLowerCase());
   });
+  const selectedItemKeyValue =
+    selectedItem === undefined || selectedItem === null
+      ? null
+      : itemKey(selectedItem);
 
   useEffect(() => {
     if (isOpen) {
       requestAnimationFrame(() => {
         inputRef.current?.focus();
+        setHasScrolledList((menuListRef.current?.scrollTop ?? 0) > 0);
       });
     } else {
       setFilterValue("");
       setActiveIndex(-1);
+      setHasScrolledList(false);
     }
   }, [isOpen]);
 
@@ -131,35 +150,58 @@ export default function FilterDropdown({
 
     if (!filteredItems.length) {
       setActiveIndex(-1);
+      previousIsOpenRef.current = isOpen;
+      previousSelectedItemKeyRef.current = selectedItemKeyValue;
       return;
     }
 
     const selectedIndex = filteredItems.findIndex(
       (item) => itemKey(item) === itemKey(selectedItem),
     );
+    const didOpen = isOpen && !previousIsOpenRef.current;
+    const didSelectedItemChange =
+      previousSelectedItemKeyRef.current !== selectedItemKeyValue;
 
     setActiveIndex((currentIndex) => {
+      if (didOpen || didSelectedItemChange) {
+        return selectedIndex >= 0 ? selectedIndex : 0;
+      }
+
       if (currentIndex >= 0 && currentIndex < filteredItems.length) {
         return currentIndex;
       }
 
       return selectedIndex >= 0 ? selectedIndex : 0;
     });
-  }, [filteredItems, itemKey, selectedItem]);
+
+    previousIsOpenRef.current = isOpen;
+    previousSelectedItemKeyRef.current = selectedItemKeyValue;
+  }, [filteredItems, isOpen, itemKey, selectedItem, selectedItemKeyValue]);
 
   useEffect(() => {
-    if (activeIndex < 0) {
+    if (!isOpen || activeIndex < 0) {
       return;
     }
 
-    listRef.current[activeIndex]?.scrollIntoView({
-      block: "nearest",
+    requestAnimationFrame(() => {
+      listRef.current[activeIndex]?.scrollIntoView({
+        block: "nearest",
+      });
+      setHasScrolledList((menuListRef.current?.scrollTop ?? 0) > 0);
     });
-  }, [activeIndex]);
+  }, [activeIndex, isOpen, filteredItems.length]);
+
+  useEffect(() => {
+    setHasScrolledList((menuListRef.current?.scrollTop ?? 0) > 0);
+  }, [filteredItems.length]);
 
   const handleSelect = (item) => {
     onSelect?.(item);
     setIsOpen(false);
+  };
+
+  const handleListScroll = (event) => {
+    setHasScrolledList(event.currentTarget.scrollTop > 0);
   };
 
   const handleInputKeyDown = (event) => {
@@ -226,6 +268,7 @@ export default function FilterDropdown({
         inputRef={inputRef}
         filterPlaceholder={filterPlaceholder}
         menuLabel={menuLabel}
+        hasScrolledList={hasScrolledList}
         noResultsLabel={noResultsLabel}
         hasItems={filteredItems.length > 0}
         inputProps={{
@@ -239,6 +282,8 @@ export default function FilterDropdown({
         listProps={{
           id: listboxId,
           role: "listbox",
+          ref: menuListRef,
+          onScroll: handleListScroll,
         }}
       >
         {filteredItems.map((item, index) => {

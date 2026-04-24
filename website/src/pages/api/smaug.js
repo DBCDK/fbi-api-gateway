@@ -38,7 +38,6 @@ async function getProfiles(agency) {
  */
 const selectConfigurations = (data) => {
   const permissions = parseClientPermissions({ smaug: data });
-
   return {
     displayName: data.displayName,
     logoColor: data.logoColor,

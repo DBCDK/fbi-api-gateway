@@ -8,3 +8,7 @@
   align-items: center;
   justify-content: flex-end;
 }
+
+:global(body.dark) .top {
+  background-color: var(--text-light);
+}
