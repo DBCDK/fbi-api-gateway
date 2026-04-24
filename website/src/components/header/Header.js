@@ -70,7 +70,7 @@ export default function Header() {
     >
       <Top className={styles.top} />
       <Container fluid>
-        <Row>
+        <Row className={styles.row}>
           <Col className={styles.left}>
             <Title className={styles.logo}>
               <span>
@@ -85,40 +85,45 @@ export default function Header() {
             </Title>
           </Col>
 
-          <Col as="nav" className={styles.links}>
-            <Text type="text5" className={styles.link}>
-              <Link href="/documentation">Docs</Link>
-            </Text>
-            <Text type="text5" className={styles.link}>
-              <Link href="/graphiql" disabled={!isValidToken}>
-                GraphiQL
-              </Link>
-            </Text>
-            <Text type="text5" className={styles.link}>
-              <Link href="/voyager" disabled={!isValidToken}>
-                Voyager
-              </Link>
-            </Text>
-            <Text type="text5" className={`${styles.link} ${styles.more}`}>
-              <Link onClick={() => setShow(true)}>More</Link>
-            </Text>
-            <Text type="text5" className={`${styles.link} ${styles.download}`}>
-              <Link href="/schema" disabled={!isValidToken}>
-                Schema
-              </Link>
-            </Text>
-            {(isTemp || isFuture) && (
-              <Text type="text5" className={`${styles.link} ${styles.changes}`}>
-                <Link href="/changes" disabled={!isValidToken}>
-                  [Changes]
+          <Col className={styles.right}>
+            <nav className={styles.links}>
+              <Text type="text5" className={styles.link}>
+                <Link href="/documentation">Docs</Link>
+              </Text>
+              <Text type="text5" className={styles.link}>
+                <Link href="/graphiql" disabled={!isValidToken}>
+                  GraphiQL
                 </Link>
               </Text>
-            )}
-          </Col>
-
-          <Col className={styles.middle}>
+              <Text type="text5" className={styles.link}>
+                <Link href="/voyager" disabled={!isValidToken}>
+                  Voyager
+                </Link>
+              </Text>
+              <Text type="text5" className={`${styles.link} ${styles.more}`}>
+                <Link onClick={() => setShow(true)}>More</Link>
+              </Text>
+              <Text
+                type="text5"
+                className={`${styles.link} ${styles.download}`}
+              >
+                <Link href="/schema" disabled={!isValidToken}>
+                  Schema
+                </Link>
+              </Text>
+              {(isTemp || isFuture) && (
+                <Text
+                  type="text5"
+                  className={`${styles.link} ${styles.changes}`}
+                >
+                  <Link href="/changes" disabled={!isValidToken}>
+                    [Changes]
+                  </Link>
+                </Text>
+              )}
+            </nav>
+            <span />
             {!isIndex && <Token className={styles.token} compact />}
-            {/* <Profile className={styles.profiles} /> */}
             <History className={styles.history} />
           </Col>
         </Row>

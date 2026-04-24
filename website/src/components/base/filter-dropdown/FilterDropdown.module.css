@@ -5,7 +5,7 @@
 
 .toggle {
   width: 100%;
-  min-height: var(--pt5);
+  min-height: var(--pt4);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -44,7 +44,7 @@
 
 .input {
   flex: 1;
-  min-height: var(--pt5);
+  min-height: var(--pt4);
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -64,7 +64,7 @@
 }
 
 .menuInputWrap {
-  min-height: var(--pt5);
+  min-height: var(--pt4);
   display: flex;
   align-items: center;
   background: var(--white);

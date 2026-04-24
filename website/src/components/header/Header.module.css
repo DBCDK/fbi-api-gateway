@@ -1,6 +1,8 @@
 .header {
   /* observer hack */
   top: -1px;
+  --header-right-max: 992px;
+  --header-left-size: clamp(250px, calc(100% - var(--header-right-max)), 300px);
 
   position: relative;
   z-index: 99;
@@ -15,13 +17,37 @@
   padding-bottom: var(--pt1);
 }
 
-.left {
-  flex-grow: 99;
+.row {
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
-.middle {
+.left {
+  flex: 0 1 var(--header-left-size);
+  width: var(--header-left-size);
+  min-width: 250px;
+  max-width: 300px;
+}
+
+.left:global(.col) {
+  flex: 0 1 var(--header-left-size);
+  min-width: 250px;
+  max-width: 300px;
+  width: var(--header-left-size);
+}
+
+.right {
   display: flex;
+  flex: 1 1 var(--header-right-max);
+  width: auto;
+  min-width: 0;
+  max-width: 992px;
+  margin-left: auto;
   align-items: center;
+}
+
+.right > span {
+  margin-left: auto;
 }
 
 .token {
@@ -84,7 +110,11 @@
 
 .links {
   display: flex;
+  min-width: 0;
   align-self: center;
+
+  /* container margin compensation - for alignment */
+  margin-left: calc(var(--pt3) * -1);
 }
 
 .links .link {
@@ -156,7 +186,6 @@
 
 .settings {
   display: flex;
-
   position: fixed;
   right: 0;
   bottom: 15vh;
@@ -174,6 +203,7 @@
 @media screen and (max-width: 1200px) {
   .links {
     padding: 0;
+    width: 100%;
   }
 
   .links .link {
@@ -183,6 +213,7 @@
   .links .link.more {
     display: block;
     padding: 0;
+    margin-left: auto;
   }
 
   .token,
