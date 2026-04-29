@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Container, Row, Col } from "react-bootstrap";
 import { MDXRemote } from "next-mdx-remote";
@@ -48,32 +48,35 @@ export default function Docs() {
   const { selectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
 
-  // const containerRef = useRef(null);
   const [containerRef, setContainerRef] = useState();
 
   // Only include docs usable by the selected token
-  const accessibleDocs = docs?.filter((doc) => {
-    let state = false;
+  const accessibleDocs = useMemo(
+    () =>
+      docs?.filter((doc) => {
+        let state = false;
 
-    // return all
-    if (configuration?.permissions?.admin) {
-      state = true;
-    }
-    // return all public docs
-    if (doc.name.includes("public")) {
-      state = true;
-    }
-    const splitName = doc.name.split(".");
-    // return client allowed docs
-    if (
-      configuration?.permissions?.allowRootFields?.includes(
-        splitName[splitName.length - 1]
-      )
-    ) {
-      state = true;
-    }
-    return state;
-  });
+        // return all
+        if (configuration?.permissions?.admin) {
+          state = true;
+        }
+        // return all public docs
+        if (doc.name.includes("public")) {
+          state = true;
+        }
+        const splitName = doc.name.split(".");
+        // return client allowed docs
+        if (
+          configuration?.permissions?.allowRootFields?.includes(
+            splitName[splitName.length - 1]
+          )
+        ) {
+          state = true;
+        }
+        return state;
+      }) || [],
+    [docs, configuration?.permissions]
+  );
 
   return (
     <>

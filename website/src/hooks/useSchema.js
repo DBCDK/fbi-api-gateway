@@ -2,22 +2,44 @@
 import useSWR from "swr";
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql";
 import useStorage from "./useStorage";
+import useConfiguration from "./useConfiguration";
+import { buildGraphQLPath } from "@/utils/graphqlPath";
 
 /**
- * Build the GraphQL endpoint from window.origin + selected profile.
+ * Build the GraphQL endpoint from window.origin + selected agency + profile.
  * - Calls hooks unconditionally (rules-of-hooks safe)
  * - SSR-safe: returns null when window is not available yet
  */
 export function useGraphQLUrl(origin) {
   const { selectedToken } = useStorage(); // ✅ hook always called
-  const profile = selectedToken?.profile ?? "default";
-  const encodedProfile = encodeURIComponent(profile);
+  const { configuration } = useConfiguration(selectedToken);
+  const hasConfiguration = Object.keys(configuration || {}).length > 0;
+  const agency = selectedToken?.agency ?? null;
+  const defaultAgency = configuration?.defaultAgency ?? null;
+  const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId === true;
+  const profile = selectedToken?.profile ?? null;
+
+  if (
+    selectedToken?.token &&
+    agency &&
+    !hasConfiguration &&
+    !alwaysRequireAgencyId
+  ) {
+    return null;
+  }
+
+  const path = buildGraphQLPath({
+    agency,
+    defaultAgency,
+    alwaysRequireAgencyId,
+    profile,
+  });
 
   // SSR: no window → no base URL yet
   const base =
     origin ?? (typeof window !== "undefined" ? window.location.origin : "");
 
-  return base ? `${base}/${encodedProfile}/graphql` : null;
+  return base && path ? `${base}${path}` : null;
 }
 
 /**

@@ -38,15 +38,17 @@ async function getProfiles(agency) {
  */
 const selectConfigurations = (data) => {
   const permissions = parseClientPermissions({ smaug: data });
-
+  const agencies = data.gateway?.agencies?.ids;
   return {
     displayName: data.displayName,
     logoColor: data.logoColor,
     clientId: data.app?.clientId,
     userId: data.user?.id,
     uniqueId: data.user?.uniqueId,
-    permissions: data.agencyId && permissions,
+    permissions,
     agency: data.agencyId,
+    agencies,
+    alwaysRequireAgencyId: data.gateway?.agency?.alwaysRequireAgencyId || false,
     expires: data.expires,
   };
 };
@@ -66,6 +68,10 @@ async function getConfiguration(token) {
  */
 export default async function handler(req, res) {
   const token = req.query.token;
+  const selectedAgency =
+    typeof req.query.agency === "string" && req.query.agency
+      ? req.query.agency
+      : null;
 
   if (!token) {
     // Missing token -> throw bad request
@@ -80,6 +86,9 @@ export default async function handler(req, res) {
     case 200: {
       const smaug_data = await smaug_response.json();
       const configuration = selectConfigurations(smaug_data);
+      const fallbackAgency = configuration.agencies?.[0] || null;
+      const profileAgency =
+        selectedAgency || configuration.agency || fallbackAgency;
 
       // add to result
       result = { ...configuration };
@@ -93,20 +102,27 @@ export default async function handler(req, res) {
         }
       }
 
-      if (configuration.agency) {
+      if (profileAgency) {
         // Get Search Profiles from vipcore
-        const vipcore_response = await getProfiles(configuration.agency);
+        const vipcore_response = await getProfiles(profileAgency);
 
         if (vipcore_response.status === 200) {
           const vipcore_data = await vipcore_response.json();
           const profiles = selectProfiles(vipcore_data);
 
           // add to result
-          result = { ...result, profiles };
+          result = {
+            ...result,
+            agency: profileAgency,
+            defaultAgency: configuration.agency,
+            profiles,
+          };
         } else {
           // No profiles found for agencyId
           result = {
             ...result,
+            agency: profileAgency,
+            defaultAgency: configuration.agency,
             profiles: ["none"],
           };
         }

@@ -60,11 +60,11 @@ export default function CurlButton({ className }) {
     if (submitting) {
       // Run if no curl parse errors found
       if (!hasError) {
-        // submitted curl params + profile and token
-        const { data: params, token, profile } = json;
+        // submitted curl params + agency/profile and token
+        const { data: params, token, agency, profile } = json;
 
         updateInitialParams({ ...params });
-        token && profile && setSelectedToken(token, profile);
+        token && profile && setSelectedToken(token, profile, agency);
 
         // Run if no empty query
         if (!hasEmptyQuery) {

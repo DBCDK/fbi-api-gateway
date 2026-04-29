@@ -1,0 +1,26 @@
+.dropdown {
+  width: 180px;
+  margin-left: var(--pt2);
+}
+
+.itemLabel {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pt05);
+}
+
+.defaultBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--pt05);
+  min-height: calc(var(--pt2) + var(--pt05));
+  border-radius: var(--pt05);
+  background: var(--divider);
+  color: var(--text-light);
+  font-family: var(--font-mono-medium);
+  font-size: calc(var(--pt2) - var(--pt1) / 2);
+  line-height: 1;
+  white-space: nowrap;
+}
