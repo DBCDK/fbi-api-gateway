@@ -7,7 +7,7 @@ const { url, ttl, prefix, teamLabel } = config.datasources.complexsearch;
  * Search via complex search
  */
 export async function load(
-  { cql, offset, limit, profile, filters, cqlfilters, sort },
+  { cql, offset, limit, profile, filters, cqlfilter, sort },
   context
 ) {
   const body = {
@@ -18,7 +18,7 @@ export async function load(
       profile: profile.name,
     },
     filters: filters,
-    cqlfilters: cqlfilters,
+    cqlfilter: cqlfilter,
     trackingId: context?.trackingId,
     includeFilteredPids: true,
     ...(sort && { sort: sort }),
