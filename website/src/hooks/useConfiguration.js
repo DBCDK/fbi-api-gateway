@@ -26,7 +26,20 @@ const fetcher = async (url) => {
 };
 
 export default function useConfiguration(props) {
-  const url = `/api/smaug?token=${props?.token?.replace(/test.*:/, "")}`;
+  const token = props?.token?.replace(/test.*:/, "");
+  const agency = props?.agency;
+  const params = new URLSearchParams();
+
+  if (token) {
+    params.set("token", token);
+  }
+
+  if (agency) {
+    params.set("agency", agency);
+  }
+
+  const query = params.toString();
+  const url = query ? `/api/smaug?${query}` : null;
   const isValid = isToken(props?.token);
 
   const { data, error } = useSWR(isValid && url, fetcher, {

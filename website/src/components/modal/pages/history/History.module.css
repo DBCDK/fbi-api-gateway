@@ -411,6 +411,11 @@
 }
 
 .item .agencies .list {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.item .agencies .list .listItem {
   display: inline-block;
   margin: var(--pt1) var(--pt1) 0 0;
   background-color: var(--divider);

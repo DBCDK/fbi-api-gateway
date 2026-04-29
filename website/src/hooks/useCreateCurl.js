@@ -10,6 +10,10 @@ export function useCreateCurl({ token, query, variables }) {
 
   useEffect(() => {
     const generateCurl = () => {
+      if (!url) {
+        return null;
+      }
+
       const curl_vars = variables?.replace?.(/\s+/g, " ") || "{}";
       const curl_query = JSON.stringify(query?.replace(/\s+/g, " ")) || "";
 

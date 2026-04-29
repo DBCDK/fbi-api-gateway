@@ -2,6 +2,7 @@ import { Row, Col } from "react-bootstrap";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
+import { hasAvailableAgency } from "@/utils/configuration";
 
 import Token from "@/components/token";
 import Profile from "@/components/profile";
@@ -30,7 +31,7 @@ function Menu({ modal, context }) {
     selectedToken &&
     configuration &&
     Object?.keys(configuration).length &&
-    configuration.agency;
+    hasAvailableAgency(configuration);
 
   const isTemp = theme === "temp";
   const isFuture = theme === "future";

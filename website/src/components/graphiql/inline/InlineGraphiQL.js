@@ -255,10 +255,6 @@ export default function Wrap(props) {
   const [query, setQuery] = useState(initialQuery);
   const [variables, setVariables] = useState(initialVariabels);
 
-  useEffect(() => {
-    setShow(false);
-  }, [selectedToken]);
-
   if (!show || !schema) {
     return <DummyContainer inView={() => setShow(true)} />;
   }

@@ -7,13 +7,13 @@ import Col from "react-bootstrap/Col";
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 import useTheme from "@/hooks/useTheme";
+import { hasAvailableAgency } from "@/utils/configuration";
 
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 import History from "@/components/history";
 import Token from "@/components/token";
-import Profile from "@/components/profile";
 
 import Modal, { Pages } from "@/components/modal";
 
@@ -46,7 +46,7 @@ export default function Header() {
     selectedToken &&
     configuration &&
     Object?.keys(configuration).length &&
-    configuration.agency;
+    hasAvailableAgency(configuration);
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";

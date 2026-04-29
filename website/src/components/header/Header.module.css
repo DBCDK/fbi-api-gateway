@@ -46,6 +46,10 @@
   align-items: center;
 }
 
+.header.index .right {
+  max-width: min-content;
+}
+
 .right > span {
   margin-left: auto;
 }

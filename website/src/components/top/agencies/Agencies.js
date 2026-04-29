@@ -3,26 +3,12 @@ import { useEffect } from "react";
 import FilterDropdown from "@/components/base/filter-dropdown";
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
+import { getAvailableAgencies, hasAvailableAgency } from "@/utils/configuration";
 
 import styles from "./Agencies.module.css";
 
-function normalizeAgencies(agencies) {
-  if (Array.isArray(agencies)) {
-    return agencies;
-  }
-
-  if (typeof agencies === "string") {
-    return [agencies];
-  }
-
-  return [];
-}
-
 function buildAgencyItems({ agencies, agencyId }) {
-  const items = normalizeAgencies(agencies)
-    .filter(Boolean)
-    .map((agency) => String(agency))
-    .filter((agency, index, array) => array.indexOf(agency) === index)
+  const items = getAvailableAgencies({ agencies })
     .map((agency) => ({
       value: agency,
       isDefault: false,
@@ -53,13 +39,13 @@ export default function Agencies({ id = "agencies-dropdown", className = "" }) {
   const { selectedToken, setSelectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
 
-  const isToken = selectedToken?.token && configuration?.agency;
-  const agencyId = configuration?.agency;
+  const isToken = selectedToken?.token && hasAvailableAgency(configuration);
+  const defaultAgencyId = configuration?.defaultAgency || null;
   const agencies = configuration?.agencies;
 
   const agencyItems = buildAgencyItems({
     agencies,
-    agencyId,
+    agencyId: defaultAgencyId,
   });
 
   const hasAgencies = agencyItems.length > 0;
@@ -88,8 +74,6 @@ export default function Agencies({ id = "agencies-dropdown", className = "" }) {
   if (!(isToken && hasAgencies && selectedAgency)) {
     return null;
   }
-
-  console.log("#### agencyItems", agencies, agencyItems, selectedAgency);
 
   return (
     <FilterDropdown

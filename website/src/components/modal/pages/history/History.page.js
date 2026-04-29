@@ -10,6 +10,7 @@ import useConfiguration from "@/hooks/useConfiguration";
 import useUser from "@/hooks/useUser";
 
 import { dateConverter, timeConverter, daysBetween } from "@/components/utils";
+import { hasAvailableAgency } from "@/utils/configuration";
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 
@@ -109,7 +110,11 @@ function Item({
   const clientId = configuration?.clientId;
   const isAuthenticated = user?.isAuthenticated;
   const hasCulrAccount = user?.hasCulrUniqueId;
-  const missingConfiguration = !profile || !configuration?.agency;
+
+  const agencyIdsList = configuration?.agencies;
+  const defaultAgencyId = configuration?.defaultAgency;
+
+  const missingConfiguration = !profile || !hasAvailableAgency(configuration);
   const submitted = {
     date: dateConverter(timestamp),
     time: timeConverter(timestamp),
@@ -283,9 +288,9 @@ function Item({
 
             <div className={styles.details}>
               <div>
-                <Text type="text4">Agency</Text>
+                <Text type="text4">Default AgencyId</Text>
                 <Text type="text1">
-                  {configuration?.agency || "Missing 😵‍💫"}
+                  {defaultAgencyId || "Not set"}
                 </Text>
               </div>
               <div>
@@ -295,6 +300,25 @@ function Item({
                 </Text>
               </div>
             </div>
+
+            {agencyIdsList?.length > 0 && (
+              <div className={styles.agencies}>
+                <Text type="text4">
+                  Client agencies ({agencyIdsList.length})
+                </Text>
+                <div className={styles.list}>
+                  {agencyIdsList?.map((agencyId, i) => {
+                    return (
+                      <div key={`${agencyId}-${i}`} className={styles.listItem}>
+                        <Text as="span" type="text1">
+                          {agencyId}
+                        </Text>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {isAuthenticated && <hr className={styles.divider} />}
@@ -341,16 +365,23 @@ function Item({
 
               {agencies?.length > 0 && (
                 <div className={styles.agencies}>
-                  <Text type="text4">Token user agencies</Text>
-                  {agencies?.map((agencyId, i) => {
-                    return (
-                      <div key={`${agencyId}-${i}`} className={styles.list}>
-                        <Text as="span" type="text1">
-                          {agencyId}
-                        </Text>
-                      </div>
-                    );
-                  })}
+                  <Text type="text4">
+                    Token user agencies ({agencies.length})
+                  </Text>
+                  <div className={styles.list}>
+                    {agencies?.map((agencyId, i) => {
+                      return (
+                        <div
+                          key={`${agencyId}-${i}`}
+                          className={styles.listItem}
+                        >
+                          <Text as="span" type="text1">
+                            {agencyId}
+                          </Text>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>

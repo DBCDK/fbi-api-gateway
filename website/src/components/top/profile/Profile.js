@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import FilterDropdown from "@/components/base/filter-dropdown";
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
+import { hasAvailableAgency } from "@/utils/configuration";
 
 import styles from "./Profile.module.css";
 
@@ -10,7 +11,7 @@ export default function Profile({ id = "dropdown", className = "" }) {
   const { selectedToken, setSelectedToken } = useStorage();
   const { configuration } = useConfiguration(selectedToken);
 
-  const isToken = selectedToken?.token && configuration?.agency;
+  const isToken = selectedToken?.token && hasAvailableAgency(configuration);
   const hasProfile = selectedToken?.profile;
   const hasProfiles = configuration?.profiles;
 
