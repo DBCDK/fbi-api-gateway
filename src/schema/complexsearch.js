@@ -62,7 +62,17 @@ input ComplexSearchFiltersInput {
   """
   Boolean to denote whether to include or exclude online holdingsitems
   """
-  useOnlineHoldings: Boolean 
+  useOnlineHoldings: Boolean
+}
+
+"""
+CQL based filters. Mutually exclusive with ComplexSearchFiltersInput.
+"""
+input ComplexSearchCQLFiltersInput {
+  """
+  A CQL expression used to filter the search result.
+  """
+  CQLFilterQuery: String
 }
 
 enum CSHoldingsStatusEnum {
@@ -231,6 +241,7 @@ function setPost(parent, context, args) {
     cql: parent.cql,
     profile: context.profile,
     filters: parent.filters,
+    cqlfilters: parent.cqlfilters,
     facets: parent?.facets?.facets,
     facetLimit: parent?.facets?.facetLimit,
     includeFilteredPids: parent?.includeFilteredPids || false,
