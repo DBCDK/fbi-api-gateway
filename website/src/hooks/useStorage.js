@@ -30,10 +30,15 @@ export default function useStorage() {
     { fallbackData: null }
   );
 
-  const setSelectedToken = (token, profile) => {
+  const setSelectedToken = (token, profile, agency) => {
     if (!isBrowser || !isToken(token)) return;
 
-    const value = { token, profile };
+    const current = selectedToken?.token === token ? selectedToken : {};
+    const value = {
+      token,
+      profile: profile === undefined ? current?.profile ?? null : profile,
+      agency: agency === undefined ? current?.agency ?? null : agency,
+    };
     try {
       sessionStorage.setItem("selectedToken", JSON.stringify(value));
     } catch {}
@@ -49,7 +54,10 @@ export default function useStorage() {
     mutateSelectedToken(null, false);
   };
 
-  const setHistoryItem = ({ token, profile, note: _note }, shallow = true) => {
+  const setHistoryItem = (
+    { token, profile, agency, note: _note },
+    shallow = true
+  ) => {
     if (!isBrowser || !isToken(token)) return;
 
     const timestamp = Date.now();
@@ -64,14 +72,15 @@ export default function useStorage() {
         copy[index] = {
           ...existing,
           profile,
+          agency,
           note,
         };
       } else {
-        copy.unshift({ token, profile, note, timestamp });
+        copy.unshift({ token, profile, agency, note, timestamp });
       }
     } else {
       copy = copy.filter((obj) => obj.token !== token);
-      copy.unshift({ token, profile, note, timestamp });
+      copy.unshift({ token, profile, agency, note, timestamp });
     }
 
     const sliced = copy.slice(0, 10);

@@ -26,18 +26,33 @@ const fetcher = async (url) => {
 };
 
 export default function useConfiguration(props) {
-  const url = `/api/smaug?token=${props?.token?.replace(/test.*:/, "")}`;
+  const token = props?.token?.replace(/test.*:/, "");
+  const agency = props?.agency;
   const isValid = isToken(props?.token);
+  const baseUrl = token ? `/api/smaug?token=${token}` : null;
+  const agencyUrl =
+    token && agency ? `/api/smaug?token=${token}&agency=${agency}` : null;
 
-  const { data, error } = useSWR(isValid && url, fetcher, {
-    fallback: { config: {}, status: null, statusCode: null },
-  });
+  const { data: baseData, error: baseError } = useSWR(
+    isValid && baseUrl,
+    fetcher
+  );
+
+  const { data: agencyData, error: agencyError } = useSWR(
+    isValid && agencyUrl,
+    fetcher
+  );
+
+  const data = agencyData || baseData;
+  const error = agencyError || baseError;
+  const isLoadingBase = isValid && !baseData && !baseError;
+  const isLoadingAgency = Boolean(agencyUrl) && !agencyData && !agencyError;
 
   return (
     {
       configuration: data?.config,
       status: data?.status,
-      isLoading: !data && !error && isValid,
+      isLoading: isLoadingBase || isLoadingAgency,
     } || {}
   );
 }

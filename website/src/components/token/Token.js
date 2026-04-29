@@ -6,6 +6,7 @@ import Overlay from "@/components/base/overlay";
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 import useUser from "@/hooks/useUser";
+import { hasAvailableAgency } from "@/utils/configuration";
 
 import Button from "@/components/base/button";
 import Text from "@/components/base/text";
@@ -56,7 +57,7 @@ export default function Token({
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
 
   const hasMissingConfigError =
-    !selectedToken?.profile || !configuration?.agency;
+    !selectedToken?.profile || !hasAvailableAgency(configuration);
 
   const hasValidationError =
     selectedToken?.token && !isLoading && status !== "OK";

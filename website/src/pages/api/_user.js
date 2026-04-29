@@ -1,4 +1,5 @@
 import fetch from "isomorphic-unfetch";
+import { buildGraphQLPath } from "@/utils/graphqlPath";
 
 const query = `
 query User_Details {
@@ -26,8 +27,15 @@ query User_Details {
   }
 }`;
 
-async function graphQL({ token, profile }) {
-  return await fetch(`http://localhost:3000/${profile}/graphql`, {
+async function graphQL({ token, agency, profile }) {
+  const path = buildGraphQLPath({
+    agency,
+    defaultAgency: null,
+    alwaysRequireAgencyId: false,
+    profile,
+  });
+
+  return await fetch(`http://localhost:3000${path}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,14 +49,14 @@ async function graphQL({ token, profile }) {
  * Handle smaug endpoint req and res
  */
 export default async function handler(req, res) {
-  const { token, profile } = req.query;
+  const { token, agency, profile } = req.query;
 
   if (!token || !profile) {
     // Missing params -> throw bad request
     return res.status(400).send({});
   }
 
-  const response = await graphQL({ token, profile });
+  const response = await graphQL({ token, agency, profile });
   const parsed = await response.json();
 
   if (parsed.errors?.length > 0) {

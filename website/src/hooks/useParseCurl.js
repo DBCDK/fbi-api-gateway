@@ -7,6 +7,7 @@ const parseCurl = (curlCommand) => {
     method: "GET", // Default HTTP method
     headers: {},
     data: null,
+    agency: null,
     profile: null,
     token: null,
   };
@@ -20,7 +21,7 @@ const parseCurl = (curlCommand) => {
   const headerPattern = /(-H|--header)\s+"([^"]+)"/g;
   const dataPattern = /(-d|--data|--data-raw|--data-binary)\s+'([^']+)'/;
   const urlPattern = /(http[^\s]+)/;
-  const profilePattern = /(?<=\/)[^\/]+(?=\/graphql)/;
+  const pathPattern = /https?:\/\/[^/\s]+\/([^?\s]+?)\/graphql/;
   const tokenPattern = /(?<=Authorization:\s?bearer\s)[A-Za-z0-9]+/;
 
   // Match the HTTP method
@@ -53,11 +54,21 @@ const parseCurl = (curlCommand) => {
     result.url = urlMatch[1];
   }
 
-  // Match the Profile
-  const profileMatch = curlCommand?.match?.(profilePattern);
+  // Match agency/profile from path.
+  const pathMatch = curlCommand?.match?.(pathPattern);
 
-  if (profileMatch) {
-    result.profile = profileMatch[0];
+  if (pathMatch) {
+    const segments = pathMatch[1]
+      .split("/")
+      .map((segment) => decodeURIComponent(segment))
+      .filter(Boolean);
+
+    if (segments.length >= 2) {
+      result.agency = segments[segments.length - 2];
+      result.profile = segments[segments.length - 1];
+    } else if (segments.length === 1) {
+      result.profile = segments[0];
+    }
   }
 
   // Match the Token

@@ -10,6 +10,7 @@ import useConfiguration from "@/hooks/useConfiguration";
 import useUser from "@/hooks/useUser";
 
 import { dateConverter, timeConverter, daysBetween } from "@/components/utils";
+import { hasAvailableAgency } from "@/utils/configuration";
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 
@@ -89,6 +90,7 @@ function ExpandButton({ onClick, open }) {
 function Item({
   token,
   profile,
+  agency,
   note: _note,
   timestamp,
   inUse,
@@ -108,7 +110,13 @@ function Item({
   const clientId = configuration?.clientId;
   const isAuthenticated = user?.isAuthenticated;
   const hasCulrAccount = user?.hasCulrUniqueId;
-  const missingConfiguration = !profile || !configuration?.agency;
+
+  const agencyIdsList = configuration?.agencies;
+  const defaultAgencyId = configuration?.defaultAgency;
+
+  const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId;
+
+  const missingConfiguration = !profile || !hasAvailableAgency(configuration);
   const submitted = {
     date: dateConverter(timestamp),
     time: timeConverter(timestamp),
@@ -233,7 +241,7 @@ function Item({
               maxLength="50"
               placeholder={open ? " Some token note ..." : false}
               onChange={(e) => setNote(e.target.value)}
-              onBlur={() => setHistoryItem({ token, profile, note })}
+              onBlur={() => setHistoryItem({ token, profile, agency, note })}
             />
           </div>
 
@@ -282,10 +290,8 @@ function Item({
 
             <div className={styles.details}>
               <div>
-                <Text type="text4">Agency</Text>
-                <Text type="text1">
-                  {configuration?.agency || "Missing 😵‍💫"}
-                </Text>
+                <Text type="text4">Default AgencyId</Text>
+                <Text type="text1">{defaultAgencyId || "None"}</Text>
               </div>
               <div>
                 <Text type="text4">Profile</Text>
@@ -294,6 +300,32 @@ function Item({
                 </Text>
               </div>
             </div>
+
+            <div className={styles.alwaysRequireAgencyId}>
+              <Text type="text4">AgencyId required in URL</Text>
+              <Text type="text1">
+                {alwaysRequireAgencyId?.toString() || "false"}
+              </Text>
+            </div>
+
+            {agencyIdsList?.length > 0 && (
+              <div className={styles.agencies}>
+                <Text type="text4">
+                  Client agencies ({agencyIdsList.length})
+                </Text>
+                <div className={styles.list}>
+                  {agencyIdsList?.map((agencyId, i) => {
+                    return (
+                      <div key={`${agencyId}-${i}`} className={styles.listItem}>
+                        <Text as="span" type="text1">
+                          {agencyId}
+                        </Text>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {isAuthenticated && <hr className={styles.divider} />}
@@ -340,16 +372,23 @@ function Item({
 
               {agencies?.length > 0 && (
                 <div className={styles.agencies}>
-                  <Text type="text4">Token user agencies</Text>
-                  {agencies?.map((agencyId, i) => {
-                    return (
-                      <div key={`${agencyId}-${i}`} className={styles.list}>
-                        <Text as="span" type="text1">
-                          {agencyId}
-                        </Text>
-                      </div>
-                    );
-                  })}
+                  <Text type="text4">
+                    Token user agencies ({agencies.length})
+                  </Text>
+                  <div className={styles.list}>
+                    {agencies?.map((agencyId, i) => {
+                      return (
+                        <div
+                          key={`${agencyId}-${i}`}
+                          className={styles.listItem}
+                        >
+                          <Text as="span" type="text1">
+                            {agencyId}
+                          </Text>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -448,7 +487,7 @@ function Item({
               className={styles.use}
               disabled={hasValidationError}
               size="small"
-              onClick={() => setSelectedToken(token, profile)}
+              onClick={() => setSelectedToken(token, profile, agency)}
               primary
             >
               {inUse ? "I'm in use" : "Use"}
