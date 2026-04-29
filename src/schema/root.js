@@ -195,7 +195,7 @@ function translateFilters(filters) {
     values.forEach((value) => {
       // Find a translation for a given value, (could be 'Dansk')
       const found = filterTranslations?.find(
-        ([key, translation]) => translation.da === value
+        ([key, translation]) => translation.da === value,
       );
 
       // Push the key for the filter (could be 'dan' if filter was 'Dansk')
@@ -288,7 +288,7 @@ export const resolvers = {
             });
 
             return m;
-          })
+          }),
         );
       } else if (args.pid) {
         return Promise.all(
@@ -301,7 +301,7 @@ export const resolvers = {
             });
 
             return m;
-          })
+          }),
         );
       }
       return [];
@@ -313,7 +313,7 @@ export const resolvers = {
             const work = await resolveWork({ id }, context);
             context?.dataHub?.createWorkEvent({ input: { id }, work });
             return work;
-          })
+          }),
         );
       } else if (args.faust) {
         return Promise.all(
@@ -321,7 +321,7 @@ export const resolvers = {
             const work = await resolveWork({ faust }, context);
             context?.dataHub?.createWorkEvent({ input: { faust }, work });
             return work;
-          })
+          }),
         );
       } else if (args.pid) {
         return Promise.all(
@@ -329,7 +329,7 @@ export const resolvers = {
             const work = await resolveWork({ pid }, context);
             context?.dataHub?.createWorkEvent({ input: { pid }, work });
             return work;
-          })
+          }),
         );
       } else if (args.oclc) {
         return Promise.all(
@@ -337,7 +337,7 @@ export const resolvers = {
             const work = await resolveWork({ oclc }, context);
             context?.dataHub?.createWorkEvent({ input: { oclc }, work });
             return work;
-          })
+          }),
         );
       }
       return [];
@@ -365,7 +365,7 @@ export const resolvers = {
     async search(parent, args, context, info) {
       if (Object.keys(args.q).length === 0) {
         throw new GraphQLError(
-          "The Q argument must include one of the following fields: 'all', 'creator', 'subject', or 'title'"
+          "The Q argument must include one of the following fields: 'all', 'creator', 'subject', or 'title'",
         );
       }
 
@@ -378,17 +378,21 @@ export const resolvers = {
     },
     async complexSearch(parent, args, context, info) {
       if (args.filters && args.cqlfilters) {
-        throw new GraphQLError(
-          "The 'filters' and 'cqlfilters' arguments are mutually exclusive — provide only one."
-        );
+        return {
+          "hitcount": 0,
+          "works": [],
+          "errorMessage": "The 'filters' and 'cqlfilters' arguments are mutually exclusive — provide only one.",
+        };
       }
       return args;
     },
     async complexFacets(parent, args, context, info) {
       if (args.filters && args.cqlfilters) {
-        throw new GraphQLError(
-          "The 'filters' and 'cqlfilters' arguments are mutually exclusive — provide only one."
-        );
+        return {
+          "hitcount": 0,
+          "works": [],
+          "errorMessage": "The 'filters' and 'cqlfilters' arguments are mutually exclusive — provide only one.",
+        };
       }
       return args;
     },
