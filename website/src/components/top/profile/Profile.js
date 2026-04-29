@@ -52,7 +52,7 @@ export default function Profile({ id = "dropdown", className = "" }) {
       selectedItem={selectedProfile}
       onSelect={(profile) => setSelectedToken(selectedToken?.token, profile)}
       filterPlaceholder="Filter profiles ..."
-      menuLabel="Search Profiles"
+      menuLabel="Profiles"
       noResultsLabel="No profiles found"
     />
   );

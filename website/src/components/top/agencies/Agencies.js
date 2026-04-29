@@ -3,16 +3,18 @@ import { useEffect } from "react";
 import FilterDropdown from "@/components/base/filter-dropdown";
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
-import { getAvailableAgencies, hasAvailableAgency } from "@/utils/configuration";
+import {
+  getAvailableAgencies,
+  hasAvailableAgency,
+} from "@/utils/configuration";
 
 import styles from "./Agencies.module.css";
 
 function buildAgencyItems({ agencies, agencyId }) {
-  const items = getAvailableAgencies({ agencies })
-    .map((agency) => ({
-      value: agency,
-      isDefault: false,
-    }));
+  const items = getAvailableAgencies({ agencies }).map((agency) => ({
+    value: agency,
+    isDefault: false,
+  }));
 
   if (agencyId) {
     const existingIndex = items.findIndex((item) => item.value === agencyId);
@@ -96,7 +98,7 @@ export default function Agencies({ id = "agencies-dropdown", className = "" }) {
         </span>
       )}
       filterPlaceholder="Filter agencies ..."
-      menuLabel="Search Agencies"
+      menuLabel="Agencies"
       noResultsLabel="No agencies found"
     />
   );

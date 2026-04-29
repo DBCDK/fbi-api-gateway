@@ -413,6 +413,15 @@
 .item .agencies .list {
   max-height: 100px;
   overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: var(--pt05);
+  scrollbar-width: thin;
+  scrollbar-color: var(--divider) transparent;
+}
+
+:global(body.dark) .item .agencies .listItem {
+  background-color: var(--dark-light);
+  color: var(--text-dark);
 }
 
 .item .agencies .list .listItem {
@@ -460,17 +469,9 @@
   }
 }
 
-/* 
-* scrollbar
-*/
-
-.item .agencies .list .branches::-webkit-scrollbar {
-  display: none;
-}
-
 /* width */
 .item.expanded .content .collapsed::-webkit-scrollbar,
-.item .agencies .list .branches::-webkit-scrollbar {
+.item .agencies .list::-webkit-scrollbar {
   display: block;
   width: var(--pt1);
   height: var(--pt1);
@@ -478,7 +479,7 @@
 
 /* Track */
 .item.expanded .content .collapsed::-webkit-scrollbar-track,
-.item .agencies .list .branches::-webkit-scrollbar-track {
+.item .agencies .list::-webkit-scrollbar-track {
   background: transparent;
 }
 
@@ -487,8 +488,8 @@
   background: var(--divider);
   border-radius: var(--pt05);
 }
-.item .agencies .list .branches::-webkit-scrollbar-thumb {
-  background: var(--primary);
+.item .agencies .list::-webkit-scrollbar-thumb {
+  background: var(--divider);
   border-radius: var(--pt05);
 }
 
@@ -496,8 +497,8 @@
 .item.expanded .content .collapsed::-webkit-scrollbar-thumb:hover {
   background: var(--divider-dark);
 }
-.item .agencies .list .branches::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-dark);
+.item .agencies .list::-webkit-scrollbar-thumb:hover {
+  background: var(--divider-dark);
 }
 
 /* 
@@ -531,6 +532,18 @@
   background-color: var(--dark);
 }
 
+:global(body.dark) .item .agencies .list {
+  scrollbar-color: var(--divider-dark) transparent;
+}
+
+:global(body.dark) .item .agencies .list::-webkit-scrollbar-thumb {
+  background: var(--divider-dark);
+}
+
+:global(body.dark) .item .agencies .list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-light);
+}
+
 :global(body.dark) .item.removed .content {
   background-color: var(--dark-light);
 }
@@ -557,9 +570,4 @@
     rgba(255, 255, 255, 0)
   );
   opacity: 0.5;
-}
-
-:global(body.dark) .item .agencies .list {
-  background-color: var(--dark-light);
-  color: var(--text-dark);
 }

@@ -289,9 +289,7 @@ function Item({
             <div className={styles.details}>
               <div>
                 <Text type="text4">Default AgencyId</Text>
-                <Text type="text1">
-                  {defaultAgencyId || "Not set"}
-                </Text>
+                <Text type="text1">{defaultAgencyId || "None"}</Text>
               </div>
               <div>
                 <Text type="text4">Profile</Text>
