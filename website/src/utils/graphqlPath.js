@@ -28,6 +28,10 @@ export function buildGraphQLPath({
     return null;
   }
 
+  if (alwaysRequireAgencyId && !agency) {
+    return null;
+  }
+
   const encodedProfile = encodeURIComponent(profile);
 
   if (

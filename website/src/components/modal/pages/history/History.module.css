@@ -416,7 +416,7 @@
   overflow-x: hidden;
   padding-right: var(--pt05);
   scrollbar-width: thin;
-  scrollbar-color: var(--divider) transparent;
+  scrollbar-color: var(--text-light) transparent;
 }
 
 :global(body.dark) .item .agencies .listItem {
@@ -473,8 +473,8 @@
 .item.expanded .content .collapsed::-webkit-scrollbar,
 .item .agencies .list::-webkit-scrollbar {
   display: block;
-  width: var(--pt1);
-  height: var(--pt1);
+  width: 8px;
+  height: 8px;
 }
 
 /* Track */
@@ -489,8 +489,8 @@
   border-radius: var(--pt05);
 }
 .item .agencies .list::-webkit-scrollbar-thumb {
-  background: var(--divider);
-  border-radius: var(--pt05);
+  background: var(--text-light);
+  border-radius: 999px;
 }
 
 /* Handle on hover */
@@ -498,7 +498,7 @@
   background: var(--divider-dark);
 }
 .item .agencies .list::-webkit-scrollbar-thumb:hover {
-  background: var(--divider-dark);
+  background: var(--text-dark);
 }
 
 /* 

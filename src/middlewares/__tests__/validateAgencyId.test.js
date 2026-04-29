@@ -53,7 +53,7 @@ describe("Test validateAgencyId", () => {
   test("should respond with 400 when alwaysRequireAgencyId is true and agencyId is missing from params", async () => {
     req.params = {};
     req.profile.agency = "default-agency";
-    req.smaug.gateway.agency.alwaysRequireAgencyId = true;
+    req.smaug.gateway.agencies.alwaysRequireAgencyId = true;
 
     await validateAgencyId(req, res, next);
 
@@ -68,7 +68,7 @@ describe("Test validateAgencyId", () => {
   test("should call next when alwaysRequireAgencyId is true and agencyId is provided in params", async () => {
     req.params = { agencyId: "agency1" };
     req.profile.agency = "agency1";
-    req.smaug.gateway.agency.alwaysRequireAgencyId = true;
+    req.smaug.gateway.agencies.alwaysRequireAgencyId = true;
 
     await validateAgencyId(req, res, next);
 

@@ -114,6 +114,8 @@ function Item({
   const agencyIdsList = configuration?.agencies;
   const defaultAgencyId = configuration?.defaultAgency;
 
+  const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId;
+
   const missingConfiguration = !profile || !hasAvailableAgency(configuration);
   const submitted = {
     date: dateConverter(timestamp),
@@ -297,6 +299,13 @@ function Item({
                   {profile || "None 😵‍💫"} {profile === "none" && "⚠️"}
                 </Text>
               </div>
+            </div>
+
+            <div className={styles.alwaysRequireAgencyId}>
+              <Text type="text4">AgencyId required in URL</Text>
+              <Text type="text1">
+                {alwaysRequireAgencyId?.toString() || "false"}
+              </Text>
             </div>
 
             {agencyIdsList?.length > 0 && (

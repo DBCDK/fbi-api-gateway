@@ -8,7 +8,7 @@ export function validateAgencyId(req, res, next) {
 
   // If smaug configuration explicitly requires agencyId in params
   const alwaysRequireAgencyId =
-    req.smaug?.gateway?.agency?.alwaysRequireAgencyId === true;
+    req.smaug?.gateway?.agencies?.alwaysRequireAgencyId === true;
 
   const explicitAgencyId = req.params?.agencyId;
 

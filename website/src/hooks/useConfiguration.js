@@ -35,28 +35,24 @@ export default function useConfiguration(props) {
 
   const { data: baseData, error: baseError } = useSWR(
     isValid && baseUrl,
-    fetcher,
-    {
-      fallbackData: { config: {}, status: null, statusCode: null },
-    }
+    fetcher
   );
 
   const { data: agencyData, error: agencyError } = useSWR(
     isValid && agencyUrl,
-    fetcher,
-    {
-      fallbackData: null,
-    }
+    fetcher
   );
 
   const data = agencyData || baseData;
   const error = agencyError || baseError;
+  const isLoadingBase = isValid && !baseData && !baseError;
+  const isLoadingAgency = Boolean(agencyUrl) && !agencyData && !agencyError;
 
   return (
     {
       configuration: data?.config,
       status: data?.status,
-      isLoading: !data && !error && isValid,
+      isLoading: isLoadingBase || isLoadingAgency,
     } || {}
   );
 }

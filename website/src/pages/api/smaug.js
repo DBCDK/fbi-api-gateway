@@ -48,7 +48,8 @@ const selectConfigurations = (data) => {
     permissions,
     agency: data.agencyId,
     agencies,
-    alwaysRequireAgencyId: data.gateway?.agency?.alwaysRequireAgencyId || false,
+    alwaysRequireAgencyId:
+      data.gateway?.agencies?.alwaysRequireAgencyId || false,
     expires: data.expires,
   };
 };
