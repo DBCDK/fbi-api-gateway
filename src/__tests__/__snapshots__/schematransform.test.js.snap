@@ -259,13 +259,13 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCodeEnum): [Work]!
   search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, cqlfilters: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService!
 
   \\"\\"\\"
   ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
   \\"\\"\\"
-  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
+  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, cqlfilters: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
     q: String!
@@ -761,6 +761,12 @@ input ComplexSearchFiltersInput {
 
   \\"\\"\\"Boolean to denote whether to include or exclude online holdingsitems\\"\\"\\"
   useOnlineHoldings: Boolean
+}
+
+\\"\\"\\"CQL based filters. Mutually exclusive with ComplexSearchFiltersInput.\\"\\"\\"
+input ComplexSearchCQLFiltersInput {
+  \\"\\"\\"A CQL expression used to filter the search result.\\"\\"\\"
+  CQLFilterQuery: String
 }
 
 enum CSHoldingsStatusEnum {
@@ -5507,7 +5513,7 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCodeEnum): [Work]!
   search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, cqlfilters: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService!
   localSuggest(
     \\"\\"\\"The query to get suggestions from\\"\\"\\"
@@ -5608,6 +5614,12 @@ input ComplexSearchFiltersInput {
 
   \\"\\"\\"Boolean to denote whether to include or exclude online holdingsitems\\"\\"\\"
   useOnlineHoldings: Boolean
+}
+
+\\"\\"\\"CQL based filters. Mutually exclusive with ComplexSearchFiltersInput.\\"\\"\\"
+input ComplexSearchCQLFiltersInput {
+  \\"\\"\\"A CQL expression used to filter the search result.\\"\\"\\"
+  CQLFilterQuery: String
 }
 
 enum CSHoldingsStatusEnum {

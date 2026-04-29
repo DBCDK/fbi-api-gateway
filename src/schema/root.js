@@ -40,12 +40,12 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCodeEnum): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, cqlfilters: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
   """
   ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
   """
-  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
+  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, cqlfilters: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
 
   localSuggest(
     """
@@ -195,7 +195,7 @@ function translateFilters(filters) {
     values.forEach((value) => {
       // Find a translation for a given value, (could be 'Dansk')
       const found = filterTranslations?.find(
-        ([key, translation]) => translation.da === value
+        ([key, translation]) => translation.da === value,
       );
 
       // Push the key for the filter (could be 'dan' if filter was 'Dansk')
@@ -288,7 +288,7 @@ export const resolvers = {
             });
 
             return m;
-          })
+          }),
         );
       } else if (args.pid) {
         return Promise.all(
@@ -301,7 +301,7 @@ export const resolvers = {
             });
 
             return m;
-          })
+          }),
         );
       }
       return [];
@@ -313,7 +313,7 @@ export const resolvers = {
             const work = await resolveWork({ id }, context);
             context?.dataHub?.createWorkEvent({ input: { id }, work });
             return work;
-          })
+          }),
         );
       } else if (args.faust) {
         return Promise.all(
@@ -321,7 +321,7 @@ export const resolvers = {
             const work = await resolveWork({ faust }, context);
             context?.dataHub?.createWorkEvent({ input: { faust }, work });
             return work;
-          })
+          }),
         );
       } else if (args.pid) {
         return Promise.all(
@@ -329,7 +329,7 @@ export const resolvers = {
             const work = await resolveWork({ pid }, context);
             context?.dataHub?.createWorkEvent({ input: { pid }, work });
             return work;
-          })
+          }),
         );
       } else if (args.oclc) {
         return Promise.all(
@@ -337,7 +337,7 @@ export const resolvers = {
             const work = await resolveWork({ oclc }, context);
             context?.dataHub?.createWorkEvent({ input: { oclc }, work });
             return work;
-          })
+          }),
         );
       }
       return [];
@@ -365,7 +365,7 @@ export const resolvers = {
     async search(parent, args, context, info) {
       if (Object.keys(args.q).length === 0) {
         throw new GraphQLError(
-          "The Q argument must include one of the following fields: 'all', 'creator', 'subject', or 'title'"
+          "The Q argument must include one of the following fields: 'all', 'creator', 'subject', or 'title'",
         );
       }
 
@@ -377,9 +377,23 @@ export const resolvers = {
       return args;
     },
     async complexSearch(parent, args, context, info) {
+      if (args.filters && args.cqlfilters) {
+        return {
+          "hitcount": 0,
+          "works": [],
+          "errorMessage": "The 'filters' and 'cqlfilters' arguments are mutually exclusive — provide only one.",
+        };
+      }
       return args;
     },
     async complexFacets(parent, args, context, info) {
+      if (args.filters && args.cqlfilters) {
+        return {
+          "hitcount": 0,
+          "works": [],
+          "errorMessage": "The 'filters' and 'cqlfilters' arguments are mutually exclusive — provide only one.",
+        };
+      }
       return args;
     },
     async linkCheck(parent, args, context, info) {
