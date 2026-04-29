@@ -78,25 +78,10 @@ export default function Docs() {
     [docs, configuration?.permissions]
   );
 
-  const docsAccessKey = useMemo(() => {
-    const allowedFields =
-      configuration?.permissions?.allowRootFields?.join(",") || "";
-
-    return [
-      configuration?.permissions?.admin ? "admin" : "client",
-      allowedFields,
-      accessibleDocs.map((doc) => doc.name).join("|"),
-    ].join("::");
-  }, [
-    accessibleDocs,
-    configuration?.permissions?.admin,
-    configuration?.permissions?.allowRootFields,
-  ]);
-
   return (
     <>
       <Header />
-      <Container fluid key={docsAccessKey}>
+      <Container fluid>
         <Row className={styles.wrap}>
           <Col className={styles.menu}>
             <Menu docs={accessibleDocs} containerRef={containerRef} />
