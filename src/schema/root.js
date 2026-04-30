@@ -40,12 +40,12 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCodeEnum): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, cqlfilters: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, cqlfilter: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
   """
   ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
   """
-  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, cqlfilters: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
+  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, cqlfilter: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
 
   localSuggest(
     """
@@ -377,21 +377,21 @@ export const resolvers = {
       return args;
     },
     async complexSearch(parent, args, context, info) {
-      if (args.filters && args.cqlfilters) {
+      if (args.filters && args.cqlfilter) {
         return {
           "hitcount": 0,
           "works": [],
-          "errorMessage": "The 'filters' and 'cqlfilters' arguments are mutually exclusive — provide only one.",
+          "errorMessage": "The 'filters' and 'cqlfilter' arguments are mutually exclusive — provide only one.",
         };
       }
       return args;
     },
     async complexFacets(parent, args, context, info) {
-      if (args.filters && args.cqlfilters) {
+      if (args.filters && args.cqlfilter) {
         return {
           "hitcount": 0,
           "works": [],
-          "errorMessage": "The 'filters' and 'cqlfilters' arguments are mutually exclusive — provide only one.",
+          "errorMessage": "The 'filters' and 'cqlfilter' arguments are mutually exclusive — provide only one.",
         };
       }
       return args;

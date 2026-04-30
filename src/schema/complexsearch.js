@@ -72,7 +72,7 @@ input ComplexSearchCQLFiltersInput {
   """
   A CQL expression used to filter the search result.
   """
-  CQLFilterQuery: String
+  cqlfilterquery: String
 }
 
 enum CSHoldingsStatusEnum {
@@ -241,7 +241,7 @@ function setPost(parent, context, args) {
     cql: parent.cql,
     profile: context.profile,
     filters: parent.filters,
-    cqlfilters: parent.cqlfilters,
+    cqlfilter: parent.cqlfilter,
     facets: parent?.facets?.facets,
     facetLimit: parent?.facets?.facetLimit,
     includeFilteredPids: parent?.includeFilteredPids || false,
