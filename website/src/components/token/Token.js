@@ -55,9 +55,11 @@ export default function Token({
   const hasCulrAccount = user?.hasCulrUniqueId;
 
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
+  const effectiveProfile =
+    selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
 
   const hasMissingConfigError =
-    !selectedToken?.profile || !hasAvailableAgency(configuration);
+    !effectiveProfile || !hasAvailableAgency(configuration);
 
   const hasValidationError =
     selectedToken?.token && !isLoading && status !== "OK";

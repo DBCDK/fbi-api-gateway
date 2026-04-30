@@ -17,7 +17,7 @@ export function useGraphQLUrl(origin) {
   const agency = selectedToken?.agency ?? null;
   const defaultAgency = configuration?.defaultAgency ?? null;
   const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId === true;
-  const profile = selectedToken?.profile ?? null;
+  const profile = selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
 
   if (
     selectedToken?.token &&

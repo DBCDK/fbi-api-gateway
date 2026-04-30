@@ -272,7 +272,13 @@ export default function Wrap(props) {
       body: JSON.stringify({ query, variables }),
       credentials: "same-origin",
     });
-    return data.json().catch(() => data.text());
+    const body = await data.text();
+
+    try {
+      return JSON.parse(body);
+    } catch {
+      return body;
+    }
   };
 
   return (
