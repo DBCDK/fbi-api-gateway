@@ -102,7 +102,13 @@ export default function Wrap() {
       credentials: "same-origin",
     });
 
-    return data.json().catch((e) => data?.text(e));
+    const body = await data.text();
+
+    try {
+      return JSON.parse(body);
+    } catch {
+      return body;
+    }
   };
 
   function onEditQuery(newQuery) {

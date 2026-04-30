@@ -13,7 +13,7 @@ const { url, ttl, prefix, teamLabel } = config.datasources.complexsearch;
  * Search via complex search
  */
 export async function load(
-  { cql, profile, filters, cqlfilters, facets, facetLimit },
+  { cql, profile, filters, cqlfilter, facets, facetLimit },
   context
 ) {
   const body = {
@@ -23,7 +23,7 @@ export async function load(
       profile: profile.name,
     },
     filters: filters,
-    cqlfilters: cqlfilters,
+    cqlfilter: cqlfilter,
     facets: prefixFacets(facets || []),
     facetLimit: facetLimit,
     trackingId: context?.trackingId,
