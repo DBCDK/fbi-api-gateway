@@ -95,6 +95,46 @@ function defaultItemKey(item) {
   return String(item ?? "");
 }
 
+function getFilterMatchRank(label, normalizedFilterValue) {
+  if (!normalizedFilterValue) {
+    return 0;
+  }
+
+  if (label === normalizedFilterValue) {
+    return 0;
+  }
+
+  if (label.startsWith(normalizedFilterValue)) {
+    return 1;
+  }
+
+  return 2;
+}
+
+function renderHighlightedLabel(label, normalizedFilterValue) {
+  if (!normalizedFilterValue) {
+    return label;
+  }
+
+  const matchIndex = label.toLowerCase().indexOf(normalizedFilterValue);
+
+  if (matchIndex < 0) {
+    return label;
+  }
+
+  const matchEndIndex = matchIndex + normalizedFilterValue.length;
+
+  return (
+    <>
+      {label.slice(0, matchIndex)}
+      <strong className={styles.match}>
+        {label.slice(matchIndex, matchEndIndex)}
+      </strong>
+      {label.slice(matchEndIndex)}
+    </>
+  );
+}
+
 export default function FilterDropdown({
   id = "dropdown",
   className = "",
@@ -122,11 +162,33 @@ export default function FilterDropdown({
   const previousIsOpenRef = useRef(false);
   const previousSelectedItemKeyRef = useRef(null);
   const listboxId = useId();
+  const normalizedFilterValue = filterValue.trim().toLowerCase();
 
-  const filteredItems = items.filter((item) => {
-    const label = itemToString(item).toLowerCase();
-    return !filterValue || label.includes(filterValue.trim().toLowerCase());
-  });
+  const filteredItems = items
+    .filter((item) => {
+      const label = itemToString(item).toLowerCase();
+      return !normalizedFilterValue || label.includes(normalizedFilterValue);
+    })
+    .sort((leftItem, rightItem) => {
+      if (!normalizedFilterValue) {
+        return 0;
+      }
+
+      const leftLabel = itemToString(leftItem).toLowerCase();
+      const rightLabel = itemToString(rightItem).toLowerCase();
+      const rankDifference =
+        getFilterMatchRank(leftLabel, normalizedFilterValue) -
+        getFilterMatchRank(rightLabel, normalizedFilterValue);
+
+      if (rankDifference !== 0) {
+        return rankDifference;
+      }
+
+      const leftMatchIndex = leftLabel.indexOf(normalizedFilterValue);
+      const rightMatchIndex = rightLabel.indexOf(normalizedFilterValue);
+
+      return leftMatchIndex - rightMatchIndex;
+    });
   const selectedItemKeyValue =
     selectedItem === undefined || selectedItem === null
       ? null
@@ -291,6 +353,10 @@ export default function FilterDropdown({
           const label = itemToString(item);
           const title = itemTitle(item);
           const isSelected = itemKey(item) === itemKey(selectedItem);
+          const highlightedLabel = renderHighlightedLabel(
+            label,
+            normalizedFilterValue,
+          );
 
           return (
             <Dropdown.Item
@@ -310,7 +376,9 @@ export default function FilterDropdown({
               }}
             >
               <span className={styles.itemContent} title={title}>
-                {renderItem ? renderItem(item) : label}
+                {renderItem
+                  ? renderItem(item, { label, highlightedLabel })
+                  : highlightedLabel}
               </span>
             </Dropdown.Item>
           );

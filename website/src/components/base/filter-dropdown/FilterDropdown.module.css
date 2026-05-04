@@ -180,6 +180,10 @@
   white-space: nowrap;
 }
 
+.match {
+  font-family: var(--font-mono-bold);
+}
+
 .item:hover,
 .item:focus-visible,
 .highlighted,
