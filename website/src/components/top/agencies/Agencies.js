@@ -89,9 +89,9 @@ export default function Agencies({ id = "agencies-dropdown", className = "" }) {
       itemKey={(item) => item.value}
       itemToString={(item) => item?.value || ""}
       selectedItemToString={(item) => item?.value || ""}
-      renderItem={(item) => (
+      renderItem={(item, { highlightedLabel }) => (
         <span className={styles.itemLabel}>
-          <span>{item?.value || ""}</span>
+          <span>{highlightedLabel}</span>
           {item?.isDefault && (
             <span className={styles.defaultBadge}>Default</span>
           )}
