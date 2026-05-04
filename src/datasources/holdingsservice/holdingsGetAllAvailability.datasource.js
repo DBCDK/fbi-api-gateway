@@ -20,7 +20,8 @@ export async function load({ pid, role = "bibdk" }, context) {
   }
 
   const query = `?pid=${encodeURIComponent(pid)}&role=${encodeURIComponent(role)}`;
-  const res = await context.fetch(`${url}getAllAvailability${query}`, {
+  const baseUrl = url.replace(/\/?$/, "/");
+  const res = await context.fetch(`${baseUrl}allAvailability${query}`, {
     method: "GET",
     headers: { accept: "application/json" },
   });

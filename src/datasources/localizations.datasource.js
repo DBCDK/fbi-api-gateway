@@ -76,7 +76,7 @@ export async function load({ pids, localizationsRole }, context) {
   try {
     const baseUrl = url.replace(/\/?$/, "/");
     const response = await context.fetch(
-      baseUrl + "v1/holdings-status/localizations",
+      baseUrl + "localizations",
       {
         method: "POST",
         headers: {
