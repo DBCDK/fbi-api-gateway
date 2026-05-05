@@ -2,27 +2,13 @@ import config from "../config";
 import { log } from "dbc-node-logger";
 
 const { url, prefix, teamLabel } = config.datasources.holdingsservice;
-
-function unwrapValue(value) {
-  if (value && typeof value === "object" && "$" in value) {
-    return value.$;
-  }
-
-  return value;
-}
-
-function getErrorType(error) {
-  const errorMessage = error?.errorMessage;
-
-  if (typeof errorMessage === "string") {
-    return errorMessage;
-  }
-
-  return errorMessage?.value || "";
-}
+const DETAILED_HOLDINGS_CONFIGURATION_ERRORS = [
+  "error_in_library_configuration",
+  "error_getting_library_configuration",
+];
 
 function normalizeBranchId(responderId) {
-  return String(unwrapValue(responderId) || "")
+  return String(responderId || "")
     .toUpperCase()
     .replace("DK", "")
     .replace("-", "");
@@ -35,7 +21,7 @@ function parseResponse(details, agencyId) {
   if (errors.length > 0) {
     for (const value of errors) {
       localholdings.push({
-        localHoldingsId: unwrapValue(value?.bibliographicRecordId) || "none",
+        localHoldingsId: value?.bibliographicRecordId || "none",
         willLend: "false",
         expectedDelivery: "never",
       });
@@ -50,20 +36,16 @@ function parseResponse(details, agencyId) {
 
     localholdings.push({
       branchId: normalizeBranchId(value?.responderId),
-      localHoldingsId: unwrapValue(firstHoldingItem?.localItemId) || "",
-      willLend: unwrapValue(firstHoldingItem?.policy) || "",
-      expectedDelivery: unwrapValue(firstHoldingItem?.expectedDelivery) || "",
-      policy: unwrapValue(firstHoldingItem?.policy),
+      localHoldingsId: firstHoldingItem?.localItemId || "",
+      willLend: firstHoldingItem?.policy || "",
+      expectedDelivery: firstHoldingItem?.expectedDelivery || "",
+      policy: firstHoldingItem?.policy,
     });
   }
 
   return {
     supportDetailedHoldings: !errors.some((error) =>
-      [
-        "LIBRARY_CONFIGURATION_ERROR",
-        "error_in_library_configuration",
-        "error_getting_library_configuration",
-      ].includes(getErrorType(error))
+      DETAILED_HOLDINGS_CONFIGURATION_ERRORS.includes(error?.errorMessage?.value)
     ),
     branchId: agencyId,
     holdingstatus: localholdings,

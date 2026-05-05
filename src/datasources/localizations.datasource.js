@@ -2,26 +2,8 @@ import config from "../config";
 import { log } from "dbc-node-logger";
 
 const { url, prefix, teamLabel } = config.datasources.holdingsservice;
-
-/*
-.. This one was used for old datasource ... it prepends a pid with 870970-basis .. but why oh why ..
-keep it for now - a pid which is actually a faust might show up and this function will be justified
-function checkpids(pids) {
-  const prepend = "870970-basis:";
-  const fullPids = [];
-  pids.forEach((pid) => {
-    if (pid.indexOf(":") === -1) {
-      // prepend with 870970-basis
-      fullPids.push(prepend + pid);
-    } else {
-      fullPids.push(pid);
-    }
-  });
-  return fullPids;
-}
-*/
 export function parseResponse(localizations) {
-  let count = localizations?.[0]?.agency?.length;
+  const count = localizations?.[0]?.agency?.length;
   const agencies = localizations?.[0]?.agency;
 
   if (count > 0) {
@@ -53,10 +35,9 @@ export function parseResponse(localizations) {
   }
 }
 
-// TODO - holdingsitems
 export async function load({ pids, localizationsRole }, context) {
   const body = {
-    agencyId: 870970,
+    agencyId: "870970",
     pid: pids,
     mergePids: true,
   };
