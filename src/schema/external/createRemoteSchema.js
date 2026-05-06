@@ -5,7 +5,7 @@ import {
   WrapType,
 } from "@graphql-tools/wrap";
 import { filterSchema, pruneSchema } from "@graphql-tools/utils";
-import { print } from "graphql";
+import { buildClientSchema, print } from "graphql";
 import { fetch } from "../../utils/fetchWorker";
 
 // Forward GraphQL query operations to a remote endpoint.
@@ -53,15 +53,19 @@ function capitalise(str) {
  * @param {string} namespace     - Used as both the query field name (e.g. "bibliotekdkCms")
  *                                 and the type-name prefix (e.g. "BibliotekdkCms").
  * @param {string[]} allowedFields - Query fields to expose from the remote schema.
+ * @param {object} schemaSnapshot - Optional introspection result to use instead of fetching schema.
  */
 export default async function createRemoteSchema({
   url,
   namespace,
   allowedFields = [],
+  schemaSnapshot,
 }) {
   const typeNamePrefix = capitalise(namespace);
   const executor = createExecutor(url);
-  const schema = await introspectSchema(executor);
+  const schema = schemaSnapshot
+    ? buildClientSchema(schemaSnapshot.data)
+    : await introspectSchema(executor);
 
   const allowedFieldSet = new Set(
     allowedFields.map((name) => name.trim()).filter(Boolean)
