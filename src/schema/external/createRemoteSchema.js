@@ -64,7 +64,7 @@ export default async function createRemoteSchema({
   const typeNamePrefix = capitalise(namespace);
   const executor = createExecutor(url);
   const schema = schemaSnapshot
-    ? buildClientSchema(schemaSnapshot.data)
+    ? buildClientSchema(schemaSnapshot.data || schemaSnapshot)
     : await introspectSchema(executor);
 
   const allowedFieldSet = new Set(
