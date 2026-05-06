@@ -342,6 +342,7 @@ async function loadBibliotekdkCmsSchema() {
   const retryDelays = [0, 1000, 3000];
   let lastError;
 
+  //try to load the remote schema. Tries 3 times. If all fails, it uses local pre-loaded schema.
   for (let attempt = 0; attempt < retryDelays.length; attempt++) {
     const delay = retryDelays[attempt];
     if (delay) {
@@ -366,6 +367,7 @@ async function loadBibliotekdkCmsSchema() {
     error: String(lastError),
   });
 
+  // Use the local schema snapshot if the remote schema is not available.
   return localBibliotekdkCmsSchema();
 }
 

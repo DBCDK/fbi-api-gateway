@@ -23,6 +23,9 @@ const schemaOptions = {
 
 export default () => createRemoteSchema(schemaOptions);
 
+/**
+ * Used if the remote schema is not available.
+ */
 export const localSchema = () =>
   createRemoteSchema({
     ...schemaOptions,
