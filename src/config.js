@@ -177,7 +177,7 @@ export default {
     holdingsitems2: {
       url:
         process.env.HOLDINGSITEMS_2_URL ||
-        "http://holdings-items-2-service.fbstest.svc.cloud.dbc.dk/api/v1/holdings",
+        "http://holdings-items-2-service.cisterne.svc.cloud.dbc.dk/api/v1/holdings",
       teamLabel: "de-team",
     },
     fbiinfo: {
