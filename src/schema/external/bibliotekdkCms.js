@@ -1,6 +1,8 @@
 import config from "../../config";
 import createRemoteSchema from "./createRemoteSchema";
-// Add allowed bibliotekdkCms query fields here. Other query fields from the remote schema are not exposed.
+// Pre-loaded local schema snapshot of bibliotekdkCms graphql schema.
+import schemaSnapshot from "./bibliotekdkCmsSchema.json";
+// Add allowed bibliotekdkCms query fields here. Other query fields from the schema are not exposed.
 const allowedFields = [
   "faq",
   "faqs",
@@ -14,9 +16,20 @@ const allowedFields = [
   "helpTexts",
 ];
 
-export default () =>
+const schemaOptions = {
+  url: config.datasources.bibliotekdkCms.url,
+  namespace: "bibliotekdkCms",
+  allowedFields,
+};
+
+//remote schema
+export const remoteBibliotekdkCmsSchema = () => createRemoteSchema(schemaOptions);
+
+/**
+ * Local pre-loaded bibliotekdkCms schema snapshot.
+ */
+export const bibliotekdkCmsSchema = () =>
   createRemoteSchema({
-    url: config.datasources.bibliotekdkCms.url,
-    namespace: "bibliotekdkCms",
-    allowedFields: allowedFields,
+    ...schemaOptions,
+    schemaSnapshot,
   });
