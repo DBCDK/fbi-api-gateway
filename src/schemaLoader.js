@@ -16,9 +16,7 @@ import { resolvers as scalarResolvers } from "graphql-scalars";
 import { log } from "dbc-node-logger";
 
 import drupalSchema from "./schema/external/drupal";
-import bibliotekdkCmsSchema, {
-  localSchema as localBibliotekdkCmsSchema,
-} from "./schema/external/bibliotekdkCms";
+import { bibliotekdkCmsSchema } from "./schema/external/bibliotekdkCms";
 import { getFilesRecursive } from "./utils/utils";
 import { wrapResolvers } from "./utils/wrapResolvers";
 
@@ -334,43 +332,6 @@ export function schemaLoader() {
   return { typeDefs: mergeTypeDefs(allTypeDefs), resolvers: allResolvers };
 }
 
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function loadBibliotekdkCmsSchema() {
-  const retryDelays = [0, 1000, 3000];
-  let lastError;
-
-  //try to load the remote schema. Tries 3 times. If all fails, it uses local pre-loaded schema.
-  for (let attempt = 0; attempt < retryDelays.length; attempt++) {
-    const delay = retryDelays[attempt];
-    if (delay) {
-      await wait(delay);
-    }
-
-    try {
-      return await bibliotekdkCmsSchema();
-    } catch (error) {
-      lastError = error;
-
-      if (attempt < retryDelays.length - 1) {
-        log.warn("Retrying bibliotekdkCms external schema load", {
-          attempt: attempt + 1,
-          error: String(error),
-        });
-      }
-    }
-  }
-
-  log.warn("Using local bibliotekdkCms schema snapshot", {
-    error: String(lastError),
-  });
-
-  // Use the local schema snapshot if the remote schema is not available.
-  return localBibliotekdkCmsSchema();
-}
-
 /**
  * Gets an executable schema that is transformed
  * according to the permissions of the smaug client.
@@ -392,9 +353,9 @@ export async function getExecutableSchema({
 
       // bibliotekdkCms is optional during rollout. If loading fails, we continue without it.
       try {
-        externalSchemas.push(await loadBibliotekdkCmsSchema());
+        externalSchemas.push(await bibliotekdkCmsSchema());
       } catch (error) {
-        log.warn("Could not load bibliotekdkCms external schema", {
+        log.warn("Could not load bibliotekdkCms schema", {
           error: String(error),
         });
       }
