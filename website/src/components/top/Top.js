@@ -3,13 +3,15 @@ import Profile from "./profile";
 import Agencies from "./agencies";
 import Styles from "./Top.module.css";
 import { useRouter } from "next/router";
+import useStorage from "@/hooks/useStorage";
 
 export default function Top() {
   const router = useRouter();
+  const { selectedToken } = useStorage();
 
   const isIndex = router.pathname === "/";
 
-  if (isIndex) {
+  if (isIndex || !selectedToken?.token) {
     return null;
   }
 

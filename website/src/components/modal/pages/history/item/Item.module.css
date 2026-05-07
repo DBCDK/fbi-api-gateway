@@ -1,0 +1,424 @@
+/* Base */
+
+.item {
+  padding: 0;
+  width: 100%;
+  height: 175px;
+  margin-bottom: var(--pt2);
+  transition-duration: 0.3s;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  width: 100%;
+  height: 175px;
+  padding: var(--pt2);
+  z-index: 1;
+  transition:
+    top 0.3s,
+    height 0.2s,
+    width 0.3s,
+    margin 0.3s,
+    box-shadow 0.3s,
+    border-width 0.2s,
+    z-index 0s linear 0.3s;
+  border-top: 2px solid transparent;
+  background-color: var(--white);
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.collapsed {
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.2s,
+    padding 0.2s linear 0s;
+}
+
+.display {
+  padding-bottom: var(--pt1);
+}
+
+.display p {
+  transition:
+    font-size 0.25s,
+    color 0.25s linear 0s;
+}
+
+.authentication,
+.display .culr,
+.display .note {
+  font-size: 11px;
+  color: var(--text-light);
+  letter-spacing: 0.6px;
+}
+
+.authentication span,
+.submitted span,
+.expires span,
+.heading p,
+.item .content .note label,
+.item .content .note input,
+:is(.item.expired, .item.removed) .display p:last-child {
+  font-size: 12px;
+}
+
+.authentication span {
+  position: relative;
+}
+
+.authentication span i {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-style: normal;
+  font-size: 8px;
+}
+
+.display .note {
+  margin-top: var(--pt3);
+}
+
+.item .content .note input {
+  display: inline-block;
+  width: 90%;
+  margin: var(--pt2) 0 0 0;
+  border: 0;
+  line-height: 20px;
+  color: var(--text-light);
+  font-family: var(--font-mono-regular);
+}
+
+.item .content .note label {
+  display: inline-block;
+  width: 0;
+  opacity: 0;
+  transition:
+    margin 0.3s,
+    width 0.3s;
+}
+
+.content .note input:focus::placeholder {
+  color: transparent;
+}
+
+.display .culr {
+  margin-top: var(--pt2);
+}
+
+.missingConfigWarn {
+  margin: var(--pt1) 0;
+  color: var(--error);
+}
+
+.collapsed > div,
+.collapsed .user > div {
+  color: var(--text);
+  margin-bottom: var(--pt1);
+  margin-top: var(--pt1);
+}
+
+.submitted span,
+.expires span {
+  color: var(--text-light);
+  letter-spacing: 0.6px;
+  font-family: var(--font-mono-regular);
+}
+
+.expires > div {
+  display: flex;
+  align-items: center;
+}
+
+.expires .indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: var(--pt1);
+}
+
+.indicator.expire-less-than-5-days {
+  background-color: var(--error);
+}
+
+.indicator.expire-less-than-15-days {
+  background-color: var(--warning-dark);
+}
+
+.indicator.expire-more-or-eq-to-15-days {
+  background-color: var(--success-dark);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt1);
+}
+
+.details > div {
+  width: 100%;
+}
+
+.item.missingConfig .clientId ~ .details > div p:last-child {
+  color: var(--error);
+  font-family: var(--font-mono-semibold);
+}
+
+.user {
+  margin-top: var(--pt1);
+}
+
+.item .content .bottom {
+  margin-top: auto;
+}
+
+.item .content .buttons {
+  display: flex;
+  margin-top: auto;
+  padding-top: var(--pt2);
+  justify-content: flex-end;
+}
+
+.item .content .buttons .use {
+  margin-left: var(--pt1);
+}
+
+.item.inUse .content .buttons .use {
+  background-color: var(--primary-dark);
+  color: var(--text-dark);
+}
+
+.item.inUse .content .buttons .use:hover,
+.item.inUse .content .buttons .use:focus-visible {
+  background-color: var(--text-dark);
+  color: var(--white);
+}
+
+.divider {
+  margin: var(--pt2) 0;
+}
+
+.item:is(.expired, .removed) .display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-light);
+}
+
+.item:is(.expired, .removed) .display div {
+  text-align: center;
+}
+
+.item:is(.expired, .removed) .display p:last-child {
+  margin-top: var(--pt05);
+}
+
+.item.removed .content {
+  background-color: var(--divider);
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.item.removed .bottom {
+  display: none;
+}
+
+/* State */
+
+.item.expire-less-than-5-days .content {
+  border-color: var(--error);
+}
+
+.item.expire-less-than-15-days .content {
+  border-color: var(--warning-dark);
+}
+
+.item.expire-more-or-eq-to-15-days .content {
+  border-color: var(--success-dark);
+}
+
+.item.expanded .content {
+  width: calc(100% + var(--pt4));
+  height: calc(100vh - 53px);
+  margin: 0 calc(var(--pt2) * -1);
+  z-index: 2;
+  transition:
+    top 0.3s,
+    height 0.3s,
+    width 0.3s,
+    margin 0.3s,
+    box-shadow 0.3s,
+    border-width 0.2s,
+    z-index 0s linear 0s;
+  border-width: 4px;
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+}
+
+.item.expanded .collapsed {
+  max-height: 100vh;
+  margin-bottom: var(--pt2);
+  padding: 0 0 var(--pt2);
+  overflow-y: auto;
+  transition:
+    max-height 0.3s,
+    padding 0.2s linear 0s;
+}
+
+.item.expanded .display {
+  margin: 0 calc(var(--pt2) * -1);
+  padding: var(--pt2);
+  z-index: 1;
+  transition: box-shadow 0.3s;
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+}
+
+.item.expanded.scrolled .display {
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
+}
+
+.item.expanded .display :is(.note, .culr),
+.item.expanded .missingConfigWarn {
+  display: none;
+}
+
+.item.expanded .content .note input {
+  margin: var(--pt2) 0 0 var(--pt1);
+  transition: margin 0.3s;
+}
+
+.item.expanded .content .note label {
+  width: 16px;
+  opacity: unset;
+}
+
+.item.expanded .divider {
+  width: calc(100% + var(--pt8));
+  margin-left: calc(var(--pt4) * -1);
+}
+
+.item.missingConfig .display .note {
+  display: none;
+}
+
+.item.isLoading {
+  display: inline-block;
+  position: relative;
+  height: 175px;
+  overflow: hidden;
+  pointer-events: none;
+  cursor: default;
+  background-color: #dddbdd;
+}
+
+.item.isLoading::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+  content: "";
+}
+
+/* Scrollbars */
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.item.expanded .content .collapsed::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
+
+.item.expanded .content .collapsed::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.item.expanded .content .collapsed::-webkit-scrollbar-thumb {
+  background: var(--divider);
+  border-radius: var(--pt05);
+}
+
+.item.expanded .content .collapsed::-webkit-scrollbar-thumb:hover {
+  background: var(--divider-dark);
+}
+
+/* Dark mode */
+
+:global(body.dark) .item .content .buttons .use,
+:global(body.dark) .item.inUse .content .buttons .use {
+  background-color: var(--dark-light);
+  color: var(--text-dark);
+}
+
+:global(body.dark) .item .content .buttons .use:is(:hover, :focus-visible),
+:global(body.dark)
+  .item.inUse
+  .content
+  .buttons
+  .use:is(:hover, :focus-visible) {
+  background-color: var(--text-dark);
+}
+
+:global(body.dark) .item .note input {
+  background-color: var(--dark);
+}
+
+:global(body.dark) .item.removed .content {
+  background-color: var(--dark-light);
+}
+
+:global(body.dark) .item hr {
+  border-color: var(--dark);
+}
+
+:global(body.dark) .item.isLoading {
+  background-color: var(--dark);
+}
+
+:global(body.dark) .item.expired .use {
+  background-color: var(--dark-light) !important;
+  color: var(--text-light) !important;
+  border: none;
+}
+
+:global(body.dark) .item.isLoading::after {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.1) 20%,
+    rgba(255, 255, 255, 0.05) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  opacity: 0.5;
+}
+
+/* Breakpoints */
+
+@media (min-width: 480px) {
+  .details {
+    flex-direction: row;
+  }
+
+  .details > div {
+    width: 50%;
+  }
+}
