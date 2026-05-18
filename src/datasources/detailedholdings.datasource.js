@@ -2,10 +2,12 @@ import config from "../config";
 import { log } from "dbc-node-logger";
 
 const { url, prefix, teamLabel } = config.datasources.holdingsservice;
-const DETAILED_HOLDINGS_CONFIGURATION_ERRORS = [
+const DETAILED_HOLDINGS_CONFIGURATION_ERRORS = new Set([
+  "LIBRARY_CONFIGURATION_ERROR",
+  "VIPCORE_ERROR",
   "error_in_library_configuration",
   "error_getting_library_configuration",
-];
+]);
 
 function normalizeBranchId(responderId) {
   return String(responderId || "")
@@ -45,7 +47,9 @@ function parseResponse(details, agencyId) {
 
   return {
     supportDetailedHoldings: !errors.some((error) =>
-      DETAILED_HOLDINGS_CONFIGURATION_ERRORS.includes(error?.errorMessage?.value)
+      DETAILED_HOLDINGS_CONFIGURATION_ERRORS.has(
+        String(error?.errorMessage?.value ?? error?.errorMessage ?? "")
+      )
     ),
     branchId: agencyId,
     holdingstatus: localholdings,
