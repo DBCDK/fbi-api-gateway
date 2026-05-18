@@ -33,9 +33,14 @@ body {
 
 body {
   /* primary */
-  --primary-light: #f8bbd0;
-  --primary: #f48fb1;
-  --primary-dark: #f06292;
+  /* --primary-light: #f8bbd0; */
+  /* --primary: #f48fb1;
+  --primary-dark: #f06292; */
+
+  /* primary */
+  --primary-light: #f48fb1;
+  --primary: #f06292;
+  --primary-dark: #fb4281;
 
   /* secondary */
   --secondary-light: #b3e5fc;

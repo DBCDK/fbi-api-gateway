@@ -21,6 +21,7 @@ export default function Modal({
           <Offcanvas.Title>{title}</Offcanvas.Title>
         </Offcanvas.Header>
       )}
+
       <Offcanvas.Body id="modal" className={styles.body}>
         {children}
       </Offcanvas.Body>

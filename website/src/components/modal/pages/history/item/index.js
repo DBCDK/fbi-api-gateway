@@ -1,2 +1,2 @@
-export { ItemIsLoading } from "./ItemContent";
+export { ItemIsLoading } from "./Item";
 export { default } from "./Item";

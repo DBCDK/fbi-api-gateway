@@ -21,17 +21,9 @@ export function History({ onClick, compact, disabled, className = "" }) {
         onClick={() => setShow(true)}
         secondary
       >
-        {/* <span>✏️</span> */}
         <span>🔐</span>
-        {/* <span>⚙️</span> */}
-        {/* <span>🗝️</span> */}
       </Button>
-      <Modal
-        show={show}
-        onHide={() => setShow(false)}
-        title="Your configurations"
-        className={styles.modal}
-      >
+      <Modal show={show} onHide={() => setShow(false)} className={styles.modal}>
         <Pages.History modal={{ isVisible: show }} />
       </Modal>
     </>

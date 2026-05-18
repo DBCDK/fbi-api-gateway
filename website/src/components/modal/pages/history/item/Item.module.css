@@ -6,6 +6,7 @@
   height: 175px;
   margin-bottom: var(--pt2);
   transition-duration: 0.3s;
+  position: relative;
 }
 
 .content {
