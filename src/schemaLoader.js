@@ -316,7 +316,7 @@ export function schemaLoader() {
 
   // Require typeDefs and resolvers
   files.forEach((file) => {
-    if (!file.path.endsWith(".js")) {
+    if (!file.path.endsWith(".js") || file.path.includes("/schema/scripts/")) {
       return;
     }
     const { typeDef, resolvers } = require(file.path);
