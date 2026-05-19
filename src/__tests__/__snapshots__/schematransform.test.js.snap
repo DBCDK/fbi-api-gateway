@@ -167,7 +167,7 @@ type Mutation {
   bibdk: BibdkMutate!
   culr: CulrMutate!
   elba: ElbaServices!
-  holdingsItems: HoldingsItems!
+  holdingsItems: HoldingsItemsMutation!
 
   \\"\\"\\"
   Order digital article through Digital Article Service
@@ -240,6 +240,7 @@ type Query {
   creatorByDisplay(display: String!): CreatorInfo
   culr: CulrQuery!
   debug: Debug
+  holdingsItems: HoldingsItemsQuery!
 
   \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
   marc: Marc!
@@ -1701,7 +1702,18 @@ type HelpResponse {
   result: [HelpRow!]!
 }
 
-type HoldingsItems {
+type HoldingsItemsQuery {
+  \\"\\"\\"Retrieves all holdings for a given bibliographic record.\\"\\"\\"
+  holdingsByBibliographicRecord(
+    \\"\\"\\"Library number identifying the agency.\\"\\"\\"
+    agencyId: String
+
+    \\"\\"\\"Bibliographic record ID (faust number).\\"\\"\\"
+    bibliographicRecordId: String!
+  ): HoldingsItemsQueryResponse!
+}
+
+type HoldingsItemsMutation {
   \\"\\"\\"
   Updates all holdings for a given bibliographic record.
   Non-referenced issues/items are removed, and items may be moved between records.
@@ -1817,6 +1829,12 @@ input ItemInput {
   \\"\\"\\"Human-readable text describing the sub-location within the location.\\"\\"\\"
   subLocation: String!
 
+  \\"\\"\\"Section within the location.\\"\\"\\"
+  section: String
+
+  \\"\\"\\"Float group for the item.\\"\\"\\"
+  floatGroup: String
+
   \\"\\"\\"Human-readable text describing the rules for lending.\\"\\"\\"
   circulationRule: String!
 
@@ -1886,6 +1904,12 @@ input ItemWithIssueInput {
   \\"\\"\\"Human-readable text describing the sub-location within the location.\\"\\"\\"
   subLocation: String!
 
+  \\"\\"\\"Section within the location.\\"\\"\\"
+  section: String
+
+  \\"\\"\\"Float group for the item.\\"\\"\\"
+  floatGroup: String
+
   \\"\\"\\"Human-readable text describing the rules for lending.\\"\\"\\"
   circulationRule: String!
 
@@ -1945,6 +1969,13 @@ type HoldingsItemsStatus {
   trackingId: String
 }
 
+type HoldingsItemsQueryResponse {
+  ok: Boolean!
+  message: String!
+  holdings: HoldingsItemsCompleteExport
+  trackingId: String
+}
+
 \\"\\"\\"Represents the status of an operation related to holdings items.\\"\\"\\"
 enum HoldingsItemsStatusEnum {
   \\"\\"\\"The operation completed successfully.\\"\\"\\"
@@ -1961,6 +1992,41 @@ enum HoldingsItemsStatusEnum {
 
   \\"\\"\\"The operation failed due to lack of authorisation.\\"\\"\\"
   ERROR_NO_AUTHORISATION
+}
+
+type HoldingsItemsCompleteExport {
+  agencyId: Int!
+  bibliographicRecordId: String!
+  version: String!
+  firstAccessionDate: String
+  note: String
+  issues: [HoldingsItemsIssueWithItems!]
+  online: Boolean
+}
+
+type HoldingsItemsIssueWithItems {
+  issueId: String!
+  issueText: String!
+  expectedDelivery: String
+  readyForLoan: Int
+  items: [HoldingsItemsItem!]
+}
+
+type HoldingsItemsItem {
+  itemId: String!
+  branch: String!
+  branchId: Int!
+  department: String!
+  location: String!
+  subLocation: String!
+  section: String
+  floatGroup: String
+  circulationRule: String!
+  accessionDate: String!
+  loanRestriction: LoanRestrictionEnum
+  status: ItemStatusEnum
+  lastLoanDate: String
+  ownerAgencyId: Int
 }
 
 enum InfomediaErrorEnum {

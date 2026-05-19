@@ -6,11 +6,32 @@ import { checkUserRights, itemStatusEnumMap } from "../utils/holdings";
 
 export const typeDef = `
 
-extend type Mutation {
-  holdingsItems: HoldingsItems!
+extend type Query {
+  holdingsItems: HoldingsItemsQuery!
 }
 
-type HoldingsItems {
+extend type Mutation {
+  holdingsItems: HoldingsItemsMutation!
+}
+
+type HoldingsItemsQuery {
+  """
+  Retrieves all holdings for a given bibliographic record.
+  """
+  holdingsByBibliographicRecord(
+    """
+    Library number identifying the agency.
+    """
+    agencyId: String
+
+    """
+    Bibliographic record ID (faust number).
+    """
+    bibliographicRecordId: String!
+  ): HoldingsItemsQueryResponse!
+}
+
+type HoldingsItemsMutation {
   """
   Updates all holdings for a given bibliographic record.
   Non-referenced issues/items are removed, and items may be moved between records.
@@ -191,6 +212,16 @@ input ItemInput {
   subLocation: String!
 
   """
+  Section within the location.
+  """
+  section: String
+
+  """
+  Float group for the item.
+  """
+  floatGroup: String
+
+  """
   Human-readable text describing the rules for lending.
   """
   circulationRule: String!
@@ -297,6 +328,16 @@ input ItemWithIssueInput {
   subLocation: String!
 
   """
+  Section within the location.
+  """
+  section: String
+
+  """
+  Float group for the item.
+  """
+  floatGroup: String
+
+  """
   Human-readable text describing the rules for lending.
   """
   circulationRule: String!
@@ -387,6 +428,13 @@ type HoldingsItemsStatus {
   trackingId: String
 }
 
+type HoldingsItemsQueryResponse {
+  ok: Boolean!
+  message: String!
+  holdings: HoldingsItemsCompleteExport
+  trackingId: String
+}
+
 """
 Represents the status of an operation related to holdings items.
 """
@@ -416,16 +464,135 @@ enum HoldingsItemsStatusEnum {
   """
   ERROR_NO_AUTHORISATION
 }
+
+type HoldingsItemsCompleteExport {
+  agencyId: Int!
+  bibliographicRecordId: String!
+  version: String!
+  firstAccessionDate: String
+  note: String
+  issues: [HoldingsItemsIssueWithItems!]
+  online: Boolean
+}
+
+type HoldingsItemsIssueWithItems {
+  issueId: String!
+  issueText: String!
+  expectedDelivery: String
+  readyForLoan: Int
+  items: [HoldingsItemsItem!]
+}
+
+type HoldingsItemsItem {
+  itemId: String!
+  branch: String!
+  branchId: Int!
+  department: String!
+  location: String!
+  subLocation: String!
+  section: String
+  floatGroup: String
+  circulationRule: String!
+  accessionDate: String!
+  loanRestriction: LoanRestrictionEnum
+  status: ItemStatusEnum
+  lastLoanDate: String
+  ownerAgencyId: Int
+}
 `;
 
+const itemStatusServiceToEnumMap = Object.fromEntries(
+  Object.entries(itemStatusEnumMap).map(([enumValue, serviceValue]) => [
+    serviceValue,
+    enumValue,
+  ])
+);
+
+function mapHoldingsItemsResponse(response) {
+  const issues = Object.entries(response?.issues || {}).map(
+    ([issueId, issueValue]) => ({
+      issueId,
+      issueText: issueValue?.issueText,
+      expectedDelivery: issueValue?.expectedDelivery || null,
+      readyForLoan: issueValue?.readyForLoan ?? null,
+      items: Object.entries(issueValue?.items || {}).map(([itemId, item]) => ({
+        itemId,
+        ...item,
+        loanRestriction: item?.loanRestriction?.toUpperCase() || null,
+        status: itemStatusServiceToEnumMap[item?.status] || null,
+      })),
+    })
+  );
+
+  return {
+    ...response,
+    bibliographicRecordId: String(response?.bibliographicRecordId || ""),
+    firstAccessionDate: response?.firstAccessionDate || null,
+    note: response?.note || null,
+    online: response?.online ?? null,
+    issues,
+  };
+}
+
 export const resolvers = {
+  Query: {
+    async holdingsItems(parent, args, context, info) {
+      return {};
+    },
+  },
   Mutation: {
     async holdingsItems(parent, args, context, info) {
       return {};
     },
   },
 
-  HoldingsItems: {
+  HoldingsItemsQuery: {
+    async holdingsByBibliographicRecord(parent, args, context, info) {
+      const { bibliographicRecordId } = args;
+
+      // set request uuid as trackingId
+      const trackingId = context?.datasources?.stats?.uuid;
+
+      // check if user attached to token has access rights
+      const status = checkUserRights(context.user);
+      if (!status.ok) {
+        return {
+          ok: false,
+          message: status.message,
+          holdings: null,
+          trackingId,
+        };
+      }
+
+      // set agencyId, if token is anonymous, loggedInAgencyId will be null
+      const agencyId =
+        args.agencyId ||
+        context.user?.loggedInAgencyId ||
+        context.profile?.agency;
+
+      const response = await context.datasources
+        .getLoader("retrieveHoldingsItems")
+        .load({ agencyId, bibliographicRecordId, trackingId });
+
+      if (response?.status !== "OK") {
+        return {
+          ok: false,
+          message: response?.message || "unknown error occured",
+          holdings: null,
+          trackingId,
+        };
+      }
+
+      return {
+        ok: true,
+        message: "ok",
+        holdings: mapHoldingsItemsResponse(response),
+        trackingId,
+      };
+    },
+  },
+
+  HoldingsItemsMutation: {
     async updateAllHoldingsItems(parent, args, context, info) {
       const { input, bibliographicRecordId, dryRun = false } = args;
 
