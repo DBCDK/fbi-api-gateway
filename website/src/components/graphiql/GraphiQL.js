@@ -9,6 +9,7 @@ import {
 } from "@graphiql/react";
 import { GraphiQLInterface } from "graphiql";
 import Header from "@/components/header";
+import Spinner from "@/components/base/spinner";
 import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useExecute from "@/hooks/useExecute";
@@ -18,6 +19,8 @@ import ComplexityButton from "./buttons/complexity";
 import CurlButton from "./buttons/curl";
 
 import styles from "./GraphiQL.module.css";
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export function GraphiQL({
   onEditQuery,
@@ -32,7 +35,7 @@ export function GraphiQL({
     nonNull: true,
   });
   const prettifyEditors = usePrettifyEditors();
-  const tab = tabs[activeTabIndex];
+  const tab = tabs?.[activeTabIndex] || null;
 
   const { execute } = settings;
 
@@ -42,18 +45,22 @@ export function GraphiQL({
   }, []);
 
   useEffect(() => {
-    if (isReady && !tab.response && tab.query && !isFetching) {
-      if (execute === "auto") {
-        try {
-          prettifyEditors();
-          run();
-        } catch (err) {}
-      }
+    if (!isReady || !tab || isFetching || execute !== "auto") {
+      return;
+    }
+
+    if (!tab.response && tab.query) {
+      try {
+        prettifyEditors();
+        run();
+      } catch (err) {}
     }
   }, [tab, isReady, execute, isFetching, prettifyEditors, run]);
 
   useEffect(() => {
-    onTabChange(tabs[activeTabIndex]);
+    if (tab) {
+      onTabChange(tab);
+    }
   }, [activeTabIndex, onTabChange, tabs]);
 
   return (
@@ -72,9 +79,10 @@ export function GraphiQL({
 
 export default function Wrap() {
   const { selectedToken } = useStorage();
-  const { schema } = useSchema(selectedToken);
+  const { schema, isLoading: isSchemaLoading } = useSchema(selectedToken);
   const { execute } = useExecute();
   const url = useGraphQLUrl();
+  const urlRef = useRef(url);
   const router = useRouter();
   const { params, initialParams } = useQuery();
 
@@ -85,11 +93,38 @@ export default function Wrap() {
     setInit(true);
   }, []);
 
+  useEffect(() => {
+    urlRef.current = url;
+  }, [url]);
+
+  async function waitForGraphQLEndpoint() {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      if (urlRef.current) {
+        return urlRef.current;
+      }
+
+      await sleep(150);
+    }
+
+    return null;
+  }
+
   const fetcher = async ({ query, variables = {} }) => {
     if (!selectedToken?.token) {
       return { statusCode: 403, message: "Unauthorized" };
     }
-    const data = await fetch(url, {
+    const endpoint = await waitForGraphQLEndpoint();
+
+    if (!endpoint) {
+      return {
+        errors: [
+          {
+            message: "GraphiQL is still preparing the GraphQL endpoint. Please try again.",
+          },
+        ],
+      };
+    }
+    const data = await fetch(endpoint, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -122,6 +157,10 @@ export default function Wrap() {
   }
 
   function onTabChange({ query: newQuery, variables: newVariables }) {
+    if (typeof newQuery === "undefined" && typeof newVariables === "undefined") {
+      return;
+    }
+
     // current params
     const { query, variables } = params;
     // updated params
@@ -164,14 +203,41 @@ export default function Wrap() {
     return null;
   }
 
+  if (selectedToken?.token && (!url || isSchemaLoading)) {
+    return (
+      <div className={styles.graphiql}>
+        <Header />
+        <div
+          style={{
+            minHeight: "60vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            gap: "1rem",
+          }}
+        >
+          <Spinner />
+          <div>Preparing GraphiQL…</div>
+        </div>
+      </div>
+    );
+  }
+
+  const graphiqlParams = initialParams || {
+    query: "",
+    variables: "",
+    operationName: undefined,
+  };
+
   return (
     <GraphiQLProvider
       fetcher={fetcher}
       schema={schema}
       schemaDescription={true}
-      query={initialParams.query}
-      variables={initialParams.variables}
-      operationName={initialParams.operationName}
+      query={graphiqlParams.query}
+      variables={graphiqlParams.variables}
+      operationName={graphiqlParams.operationName}
     >
       <GraphiQL
         toolbar={{
@@ -184,7 +250,7 @@ export default function Wrap() {
             />,
             <QueryDepthButton
               className={styles.depthButton}
-              query={params.query || initialParams.query}
+              query={params.query || graphiqlParams.query}
               key="query-depth-btn"
             />,
           ],

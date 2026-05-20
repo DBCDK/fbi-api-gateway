@@ -1,6 +1,7 @@
 import useSWR from "swr";
 
 const KEY_NAME = "graphiql:execute";
+const isBrowser = typeof window !== "undefined";
 
 const ENUM_VALUES = {
   manual: "manual",
@@ -14,7 +15,18 @@ const ENUM_VALUES = {
 export default function useExecute() {
   const { data: execute, mutate } = useSWR(
     KEY_NAME,
-    (key) => localStorage.getItem(key) || "auto"
+    (key) => {
+      if (!isBrowser) {
+        return "auto";
+      }
+
+      try {
+        return localStorage.getItem(key) || "auto";
+      } catch {
+        return "auto";
+      }
+    },
+    { fallbackData: "auto" }
   );
 
   /**
@@ -23,7 +35,11 @@ export default function useExecute() {
   function setExecute(value) {
     if (ENUM_VALUES[value]) {
       // store
-      localStorage.setItem(KEY_NAME, value);
+      if (isBrowser) {
+        try {
+          localStorage.setItem(KEY_NAME, value);
+        } catch {}
+      }
       // mutate
       mutate(value);
     }
