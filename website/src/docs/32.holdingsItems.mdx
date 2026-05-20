@@ -6,7 +6,7 @@ The `status` enum values can be one of following:
 
 <DescribeEnum name="HoldingsItemsStatusEnum" />
 
-## Retrieve
+## Retrieve all
 
 Retrieves all holdings for a given bibliographic record.
 
@@ -20,6 +20,7 @@ Retrieves all holdings for a given bibliographic record.
         ) {
           ok
           message
+          trackingId
           holdings {
             agencyId
             bibliographicRecordId

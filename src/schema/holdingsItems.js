@@ -440,6 +440,11 @@ type HoldingsItemsQueryResponse {
   message: String!
 
   """
+  Optional tracking ID for debugging or log tracking.
+  """
+  trackingId: String
+
+  """
   Retrieved holdings for the bibliographic record.
   """
   holdings: HoldingsItemsCompleteExport
@@ -672,6 +677,7 @@ export const resolvers = {
         return {
           ok: false,
           message: status.message,
+          trackingId,
           holdings: null,
         };
       }
@@ -690,6 +696,7 @@ export const resolvers = {
         return {
           ok: false,
           message: response?.message || "unknown error occured",
+          trackingId,
           holdings: null,
         };
       }
@@ -697,6 +704,7 @@ export const resolvers = {
       return {
         ok: true,
         message: "ok",
+        trackingId,
         holdings: mapHoldingsItemsResponse(response),
       };
     },

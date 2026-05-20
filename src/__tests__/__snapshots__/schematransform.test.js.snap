@@ -1976,6 +1976,9 @@ type HoldingsItemsQueryResponse {
   \\"\\"\\"Human-readable message about the result.\\"\\"\\"
   message: String!
 
+  \\"\\"\\"Optional tracking ID for debugging or log tracking.\\"\\"\\"
+  trackingId: String
+
   \\"\\"\\"Retrieved holdings for the bibliographic record.\\"\\"\\"
   holdings: HoldingsItemsCompleteExport
 }
