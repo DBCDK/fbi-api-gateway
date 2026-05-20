@@ -7,7 +7,7 @@ import config from "../../config";
 import { buildPath } from "./utils";
 
 const url = config.datasources.holdingsitems2.url;
-const { teamLabel } = config.datasources.holdingsitems2;
+const teamLabel = config.datasources.holdingsitems2.teamLabel;
 
 /**
  *
@@ -21,7 +21,6 @@ const { teamLabel } = config.datasources.holdingsitems2;
  * @returns {object}
  */
 export async function load(props, context) {
-  // build underlaying service url with path and query params
   const path = buildPath(url, props);
 
   const res = await context?.fetch(path, {
@@ -33,11 +32,8 @@ export async function load(props, context) {
   });
 
   return {
-    // fallback
     ok: false,
     message: "unknown error occured",
-
-    // service status
     status: res.status === 200 ? "OK" : "ERROR",
     ...res?.body,
   };
