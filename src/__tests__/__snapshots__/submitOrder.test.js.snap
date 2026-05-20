@@ -25,10 +25,7 @@ Object {
 exports[`submitorder fails if a user is not authenticated, and a incorrect/wrong userId is provided 1`] = `
 Object {
   "data": Object {
-    "submitOrder": Object {
-      "orderId": null,
-      "status": "UNKNOWN_USER",
-    },
+    "submitOrder": null,
   },
 }
 `;
