@@ -432,7 +432,6 @@ type HoldingsItemsQueryResponse {
   ok: Boolean!
   message: String!
   holdings: HoldingsItemsCompleteExport
-  trackingId: String
 }
 
 """
@@ -513,7 +512,7 @@ function mapHoldingsItemsResponse(response) {
     ([issueId, issueValue]) => ({
       issueId,
       issueText: issueValue?.issueText,
-      expectedDelivery: issueValue?.expectedDelivery || null,
+      expectedDelivery: issueValue?.expectedDelivery ?? null,
       readyForLoan: issueValue?.readyForLoan ?? null,
       items: Object.entries(issueValue?.items || {}).map(([itemId, item]) => ({
         itemId,
@@ -527,8 +526,10 @@ function mapHoldingsItemsResponse(response) {
   return {
     ...response,
     bibliographicRecordId: String(response?.bibliographicRecordId || ""),
-    firstAccessionDate: response?.firstAccessionDate || null,
-    note: response?.note || null,
+    // Temporary fallback until the service returns `version` consistently as documented.
+    version: response?.version || response?.modified || "",
+    firstAccessionDate: response?.firstAccessionDate ?? null,
+    note: response?.note ?? null,
     online: response?.online ?? null,
     issues,
   };
@@ -560,7 +561,6 @@ export const resolvers = {
           ok: false,
           message: status.message,
           holdings: null,
-          trackingId,
         };
       }
 
@@ -579,7 +579,6 @@ export const resolvers = {
           ok: false,
           message: response?.message || "unknown error occured",
           holdings: null,
-          trackingId,
         };
       }
 
@@ -587,7 +586,6 @@ export const resolvers = {
         ok: true,
         message: "ok",
         holdings: mapHoldingsItemsResponse(response),
-        trackingId,
       };
     },
   },

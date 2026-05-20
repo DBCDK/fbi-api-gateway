@@ -1,10 +1,64 @@
 # HoldingsItems
 
-Mutation fields for adding, removing and updating holdings-items
+Query and mutation fields for retrieving, adding, removing and updating holdings-items
 
 The `status` enum values can be one of following:
 
 <DescribeEnum name="HoldingsItemsStatusEnum" />
+
+## Retrieve
+
+Retrieves all holdings for a given bibliographic record.
+
+<InlineGraphiQL
+  query={`
+    query Example_HoldingsByBibliographicRecord($agencyId: String!, $bibliographicRecordId: String!) {
+      holdingsItems {
+        holdingsByBibliographicRecord(
+          agencyId: $agencyId
+          bibliographicRecordId: $bibliographicRecordId
+        ) {
+          ok
+          message
+          holdings {
+            agencyId
+            bibliographicRecordId
+            version
+            firstAccessionDate
+            note
+            online
+            issues {
+              issueId
+              issueText
+              expectedDelivery
+              readyForLoan
+              items {
+                itemId
+                branch
+                branchId
+                department
+                location
+                subLocation
+                section
+                floatGroup
+                circulationRule
+                accessionDate
+                loanRestriction
+                status
+                lastLoanDate
+                ownerAgencyId
+              }
+            }
+          }
+        }
+      }
+    }
+`}
+  variables={{
+    agencyId: "715100",
+    bibliographicRecordId: "51701763",
+  }}
+/>
 
 ## Update all
 
@@ -47,6 +101,8 @@ Bibliographic record id is translated according to supersedes rules.
               department: "Adult",
               location: "Audio Books",
               subLocation: "CD",
+              section: "A",
+              floatGroup: "music-floor",
               circulationRule: "Standard Loan",
               accessionDate: "2024-01-04",
               loanRestriction: "B",
@@ -98,6 +154,8 @@ If the bibliographic record does not exist, a bad request response is given.
       department: "Adult",
       location: "Audio Books",
       subLocation: "CD",
+      section: "A",
+      floatGroup: "music-floor",
       circulationRule: "Standard Loan",
       accessionDate: "2024-01-04",
       loanRestriction: "A",

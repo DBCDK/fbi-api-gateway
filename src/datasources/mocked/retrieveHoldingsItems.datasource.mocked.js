@@ -5,7 +5,7 @@ export async function load({ agencyId, bibliographicRecordId }) {
       ok: true,
       agencyId: 715100,
       bibliographicRecordId: 51068432,
-      version: "2024-01-04T12:45:01.333Z",
+      modified: "2024-01-04T12:45:01.333Z",
       firstAccessionDate: "2024-01-04",
       note: "Mock note",
       online: false,
@@ -29,6 +29,40 @@ export async function load({ agencyId, bibliographicRecordId }) {
               status: "OnShelf",
               lastLoanDate: "2024-01-10",
               ownerAgencyId: 715100,
+            },
+          },
+        },
+      },
+    };
+  }
+
+  if (agencyId === "877000" && bibliographicRecordId === "51701763") {
+    return {
+      status: "OK",
+      ok: true,
+      agencyId: 877000,
+      bibliographicRecordId: 51701763,
+      version: "2025-12-12T07:52:24.687Z",
+      firstAccessionDate: "2015-06-02",
+      note: "",
+      online: false,
+      issues: {
+        "": {
+          issueText: "",
+          readyForLoan: 0,
+          items: {
+            "5058092640": {
+              branch: "Hasseris",
+              branchId: 785107,
+              department: "Børn",
+              location: "Børn",
+              subLocation: "",
+              circulationRule: "Standard",
+              accessionDate: "2015-06-02",
+              loanRestriction: "",
+              status: "OnLoan",
+              ownerAgencyId: 785100,
+              lastLoanDate: "2025-12-05",
             },
           },
         },

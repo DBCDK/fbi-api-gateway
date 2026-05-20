@@ -1973,7 +1973,6 @@ type HoldingsItemsQueryResponse {
   ok: Boolean!
   message: String!
   holdings: HoldingsItemsCompleteExport
-  trackingId: String
 }
 
 \\"\\"\\"Represents the status of an operation related to holdings items.\\"\\"\\"
