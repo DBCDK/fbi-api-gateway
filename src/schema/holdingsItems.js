@@ -6,11 +6,32 @@ import { checkUserRights, itemStatusEnumMap } from "../utils/holdings";
 
 export const typeDef = `
 
-extend type Mutation {
-  holdingsItems: HoldingsItems!
+extend type Query {
+  holdingsItems: HoldingsItemsQuery!
 }
 
-type HoldingsItems {
+extend type Mutation {
+  holdingsItems: HoldingsItemsMutation!
+}
+
+type HoldingsItemsQuery {
+  """
+  Retrieves all holdings for a given bibliographic record.
+  """
+  holdingsByBibliographicRecord(
+    """
+    Library number identifying the agency.
+    """
+    agencyId: String
+
+    """
+    Bibliographic record ID (faust number).
+    """
+    bibliographicRecordId: String!
+  ): HoldingsItemsQueryResponse!
+}
+
+type HoldingsItemsMutation {
   """
   Updates all holdings for a given bibliographic record.
   Non-referenced issues/items are removed, and items may be moved between records.
@@ -191,6 +212,16 @@ input ItemInput {
   subLocation: String!
 
   """
+  Section within the location.
+  """
+  section: String
+
+  """
+  Float group for the item.
+  """
+  floatGroup: String
+
+  """
   Human-readable text describing the rules for lending.
   """
   circulationRule: String!
@@ -297,6 +328,16 @@ input ItemWithIssueInput {
   subLocation: String!
 
   """
+  Section within the location.
+  """
+  section: String
+
+  """
+  Float group for the item.
+  """
+  floatGroup: String
+
+  """
   Human-readable text describing the rules for lending.
   """
   circulationRule: String!
@@ -387,6 +428,28 @@ type HoldingsItemsStatus {
   trackingId: String
 }
 
+type HoldingsItemsQueryResponse {
+  """
+  Indicates if the operation was successful.
+  """
+  ok: Boolean!
+
+  """
+  Human-readable message about the result.
+  """
+  message: String!
+
+  """
+  Optional tracking ID for debugging or log tracking.
+  """
+  trackingId: String
+
+  """
+  Retrieved holdings for the bibliographic record.
+  """
+  holdings: HoldingsItemsCompleteExport
+}
+
 """
 Represents the status of an operation related to holdings items.
 """
@@ -416,16 +479,238 @@ enum HoldingsItemsStatusEnum {
   """
   ERROR_NO_AUTHORISATION
 }
+
+type HoldingsItemsCompleteExport {
+  """
+  Identifying the agencyId that owns this.
+  """
+  agencyId: Int!
+
+  """
+  Bibliographic record ID (faust number).
+  """
+  bibliographicRecordId: String!
+
+  """
+  When this structure was exported in ISO-8601 format with timezone Z.
+  """
+  version: String!
+
+  """
+  When the first item for this material was acquired, in ISO-8601 format.
+  """
+  firstAccessionDate: String
+
+  """
+  Notes about the bibliographic item.
+  """
+  note: String
+
+  """
+  Issues associated with the bibliographic record.
+  """
+  issues: [HoldingsItemsIssueWithItems!]
+
+  """
+  Whether online access for this bibliographic item is available.
+  """
+  online: Boolean
+}
+
+type HoldingsItemsIssueWithItems {
+  """
+  Identifier for a material, usually a barcode.
+  """
+  issueId: String!
+
+  """
+  The text describing the issue.
+  """
+  issueText: String!
+
+  """
+  When an item is expected to be available for loan, in ISO-8601 format.
+  """
+  expectedDelivery: String
+
+  """
+  Number of items ready to be lent out. If 0, expectedDelivery must be set.
+  """
+  readyForLoan: Int
+
+  """
+  Items associated with this issue.
+  """
+  items: [HoldingsItemsItem!]
+}
+
+type HoldingsItemsItem {
+  """
+  Identifier for a material, usually a barcode.
+  """
+  itemId: String!
+
+  """
+  Human-readable text describing the branch.
+  """
+  branch: String!
+
+  """
+  Identifying number of the branch.
+  """
+  branchId: Int!
+
+  """
+  Human-readable text describing the department within the branch.
+  """
+  department: String!
+
+  """
+  Human-readable text describing the location within the department.
+  """
+  location: String!
+
+  """
+  Human-readable text describing the sub-location within the location.
+  """
+  subLocation: String!
+
+  """
+  Section within the location.
+  """
+  section: String
+
+  """
+  Float group for the item.
+  """
+  floatGroup: String
+
+  """
+  Human-readable text describing the rules for lending.
+  """
+  circulationRule: String!
+
+  """
+  When the item was acquired, in ISO-8601 format.
+  """
+  accessionDate: String!
+
+  """
+  Rule for lending according to DanMarc 096r.
+  """
+  loanRestriction: LoanRestrictionEnum
+
+  """
+  The status of the item (e.g., OnShelf, OnLoan, etc.).
+  """
+  status: ItemStatusEnum
+
+  """
+  When this item was last lent, in ISO-8601 format.
+  """
+  lastLoanDate: String
+
+  """
+  Identifying the agencyId that owns this, if temporarily part of the library (ILL loan).
+  """
+  ownerAgencyId: Int
+}
 `;
 
+const itemStatusServiceToEnumMap = Object.fromEntries(
+  Object.entries(itemStatusEnumMap).map(([enumValue, serviceValue]) => [
+    serviceValue,
+    enumValue,
+  ])
+);
+
+function mapHoldingsItemsResponse(response) {
+  const issues = Object.entries(response?.issues || {}).map(
+    ([issueId, issueValue]) => ({
+      issueId,
+      issueText: issueValue?.issueText,
+      expectedDelivery: issueValue?.expectedDelivery ?? null,
+      readyForLoan: issueValue?.readyForLoan ?? null,
+      items: Object.entries(issueValue?.items || {}).map(([itemId, item]) => ({
+        itemId,
+        ...item,
+        loanRestriction: item?.loanRestriction?.toUpperCase() || null,
+        status: itemStatusServiceToEnumMap[item?.status] || null,
+      })),
+    })
+  );
+
+  return {
+    ...response,
+    bibliographicRecordId: String(response?.bibliographicRecordId || ""),
+    // Temporary fallback until the service returns `version` consistently as documented.
+    version: response?.version || response?.modified || "",
+    firstAccessionDate: response?.firstAccessionDate ?? null,
+    note: response?.note ?? null,
+    online: response?.online ?? null,
+    issues,
+  };
+}
+
 export const resolvers = {
+  Query: {
+    async holdingsItems(parent, args, context, info) {
+      return {};
+    },
+  },
   Mutation: {
     async holdingsItems(parent, args, context, info) {
       return {};
     },
   },
 
-  HoldingsItems: {
+  HoldingsItemsQuery: {
+    async holdingsByBibliographicRecord(parent, args, context, info) {
+      const { bibliographicRecordId } = args;
+
+      // set request uuid as trackingId
+      const trackingId = context?.datasources?.stats?.uuid;
+
+      // check if user attached to token has access rights
+      const status = checkUserRights(context.user);
+      if (!status.ok) {
+        return {
+          ok: false,
+          message: status.message,
+          trackingId,
+          holdings: null,
+        };
+      }
+
+      // set agencyId, if token is anonymous, loggedInAgencyId will be null
+      const agencyId =
+        args.agencyId ||
+        context.user?.loggedInAgencyId ||
+        context.profile?.agency;
+
+      const response = await context.datasources
+        .getLoader("retrieveHoldingsItems")
+        .load({ agencyId, bibliographicRecordId, trackingId });
+
+      if (response?.status !== "OK") {
+        return {
+          ok: false,
+          message: response?.message || "unknown error occured",
+          trackingId,
+          holdings: null,
+        };
+      }
+
+      return {
+        ok: true,
+        message: "ok",
+        trackingId,
+        holdings: mapHoldingsItemsResponse(response),
+      };
+    },
+  },
+
+  HoldingsItemsMutation: {
     async updateAllHoldingsItems(parent, args, context, info) {
       const { input, bibliographicRecordId, dryRun = false } = args;
 
