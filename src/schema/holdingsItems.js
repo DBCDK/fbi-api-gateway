@@ -435,6 +435,11 @@ type HoldingsItemsQueryResponse {
   ok: Boolean!
 
   """
+  Status code, represented as an ENUM value.
+  """
+  status: HoldingsItemsStatusEnum!
+
+  """
   Human-readable message about the result.
   """
   message: String!
@@ -676,6 +681,7 @@ export const resolvers = {
       if (!status.ok) {
         return {
           ok: false,
+          status: status.status,
           message: status.message,
           trackingId,
           holdings: null,
@@ -695,6 +701,7 @@ export const resolvers = {
       if (response?.status !== "OK") {
         return {
           ok: false,
+          status: response?.status || "ERROR",
           message: response?.message || "unknown error occured",
           trackingId,
           holdings: null,
@@ -703,6 +710,7 @@ export const resolvers = {
 
       return {
         ok: true,
+        status: "OK",
         message: "ok",
         trackingId,
         holdings: mapHoldingsItemsResponse(response),
