@@ -1973,6 +1973,9 @@ type HoldingsItemsQueryResponse {
   \\"\\"\\"Indicates if the operation was successful.\\"\\"\\"
   ok: Boolean!
 
+  \\"\\"\\"Status code, represented as an ENUM value.\\"\\"\\"
+  status: HoldingsItemsStatusEnum!
+
   \\"\\"\\"Human-readable message about the result.\\"\\"\\"
   message: String!
 

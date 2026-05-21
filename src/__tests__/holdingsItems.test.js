@@ -3,16 +3,17 @@ import { performTestQuery } from "../utils/utils";
 
 const query = `
   query($agencyId: String!, $bibliographicRecordId: String!) {
-    holdingsItems {
-      holdingsByBibliographicRecord(
-        agencyId: $agencyId
-        bibliographicRecordId: $bibliographicRecordId
-      ) {
-        ok
-        message
-        holdings {
-          agencyId
-          bibliographicRecordId
+      holdingsItems {
+        holdingsByBibliographicRecord(
+          agencyId: $agencyId
+          bibliographicRecordId: $bibliographicRecordId
+        ) {
+          ok
+          status
+          message
+          holdings {
+            agencyId
+            bibliographicRecordId
           version
           firstAccessionDate
           note
@@ -63,6 +64,7 @@ test("retrieves holdingsItems data for a bibliographic record", async () => {
 
   expect(result?.data?.holdingsItems?.holdingsByBibliographicRecord).toEqual({
     ok: true,
+    status: "OK",
     message: "ok",
     holdings: {
       agencyId: 715100,
@@ -119,6 +121,7 @@ test("returns error when user lacks holdingsItems permissions", async () => {
 
   expect(result?.data?.holdingsItems?.holdingsByBibliographicRecord).toEqual({
     ok: false,
+    status: "ERROR_NO_AUTHORISATION",
     message: "Access denied: You do not have the required permissions.",
     holdings: null,
   });
@@ -142,6 +145,7 @@ test("returns error when holdingsItems service cannot find the record", async ()
 
   expect(result?.data?.holdingsItems?.holdingsByBibliographicRecord).toEqual({
     ok: false,
+    status: "ERROR",
     message: "Record not found",
     holdings: null,
   });
@@ -165,6 +169,7 @@ test("preserves empty string values from holdingsItems service response", async 
 
   expect(result?.data?.holdingsItems?.holdingsByBibliographicRecord).toEqual({
     ok: true,
+    status: "OK",
     message: "ok",
     holdings: {
       agencyId: 877000,
