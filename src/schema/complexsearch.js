@@ -60,6 +60,14 @@ input ComplexSearchFiltersInput {
   """
   circulationRule: [String!]
   """
+  The section which the item belongs to
+  """
+  section: [String!]
+  """
+  The floatgroup of the item
+  """
+  floatGroup: [String!]
+  """
   Boolean to denote whether to include or exclude online holdingsitems
   """
   useOnlineHoldings: Boolean
