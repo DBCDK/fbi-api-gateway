@@ -244,7 +244,7 @@
 
 .item.expanded .content {
   width: calc(100% + var(--pt4));
-  height: calc(100vh - 53px);
+  height: calc(100vh);
   margin: 0 calc(var(--pt2) * -1);
   z-index: 2;
   transition:

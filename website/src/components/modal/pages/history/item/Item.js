@@ -121,7 +121,7 @@ function ItemContent({
   }, [isScrolled]);
 
   const itemOffsetTop = elRef.current?.offsetTop || 0;
-  const contentTop = open ? containerScrollY - itemOffsetTop + 2 : 0;
+  const contentTop = open ? containerScrollY - itemOffsetTop : 0;
 
   return (
     <div

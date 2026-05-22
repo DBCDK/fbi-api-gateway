@@ -3,7 +3,7 @@
 }
 
 .top {
-  height: 130px;
+  height: 110px;
   padding: var(--pt2);
 
   display: flex;
@@ -11,6 +11,11 @@
   align-items: flex-start;
   position: relative;
   overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+.top.expanded {
+  height: 126px;
 }
 
 .title {
@@ -77,6 +82,69 @@
   padding: var(--pt6) var(--pt2) var(--pt2) var(--pt2);
 }
 
+.form {
+  display: flex;
+  align-items: center;
+}
+
+.top.expanded .form {
+  margin-top: var(--pt2);
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: 0;
+  color: var(--white);
+  padding: var(--pt1);
+  border-radius: var(--pt05);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.submit:hover,
+.submit:focus-visible {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.submit:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.submitGlyph {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+}
+
+.submitGlyph::before,
+.submitGlyph::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 2px;
+  border-radius: 999px;
+  background-color: currentColor;
+  transform-origin: center;
+}
+
+.submitGlyph::before {
+  transform: translate(-20%, -185%) rotate(45deg);
+}
+
+.submitGlyph::after {
+  transform: translate(-20%, 85%) rotate(-45deg);
+}
+
 .input {
   width: 0;
   padding: 0;
@@ -92,7 +160,6 @@
 .top.expanded .input {
   width: 100%;
   padding: var(--pt1);
-  margin-top: var(--pt2);
 
   transition: width 0.45s ease;
 }

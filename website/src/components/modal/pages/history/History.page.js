@@ -32,6 +32,11 @@ function History({ modal }) {
   const [isAddExpanded, setIsAddExpanded] = useState(false);
   const [filter, setFilter] = useState("");
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    alert("Vrinsk!");
+  }
+
   // update history on modal close
   useEffect(() => {
     if (!modal.isVisible) {
@@ -68,7 +73,7 @@ function History({ modal }) {
           {isAddExpanded ? "Add new application" : "Your applications"}
         </Text>
 
-        <Text type="text1" className={styles.text}>
+        <Text type="text0" className={styles.text}>
           Add <strong>clientId</strong> or <strong>token</strong> to connect
           your app
         </Text>
@@ -97,11 +102,20 @@ function History({ modal }) {
                 <Text type="text4">Add</Text>
               </span>
             </Button>
-            <input
-              className={styles.input}
-              placeholder="Drop clientId og token to connect ..."
-              onChange={(e) => setFilter(e.target.value)}
-            />
+            <form className={styles.form} onSubmit={(e) => handleSubmit(e)}>
+              <input
+                className={styles.input}
+                placeholder="Drop clientId og token to connect ..."
+                onChange={(e) => setFilter(e.target.value)}
+              />
+              <button
+                className={styles.submit}
+                type="submit"
+                disabled={!filter || filter === ""}
+              >
+                <span className={styles.submitGlyph} aria-hidden="true" />
+              </button>
+            </form>
           </div>
         </div>
       </Col>
