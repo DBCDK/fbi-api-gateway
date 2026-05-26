@@ -19,7 +19,10 @@ import { createSigner } from "fast-jwt";
 
 const { url, secret, teamLabel } = config.datasources.defaultforsider;
 
-const signSync = createSigner({ key: secret });
+const signSync = createSigner({
+  key: secret,
+  noTimestamp: true,
+});
 
 function parseResponse(key) {
   try {
