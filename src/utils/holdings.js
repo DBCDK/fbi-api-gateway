@@ -1,3 +1,8 @@
+export const localizationsRoles = {
+  BIBDK: "bibdk",
+  DANBIB: "danbib",
+};
+
 export const itemStatusEnumMap = {
   DISCARDED: "Discarded",
   LOST: "Lost",

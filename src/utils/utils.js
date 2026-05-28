@@ -5,6 +5,7 @@ import { log } from "dbc-node-logger";
 
 import config from "../config";
 import { isFFUAgency } from "./agency";
+import { localizationsRoles } from "./holdings";
 
 import { createTraceId } from "./trace";
 
@@ -706,13 +707,29 @@ export async function resolveLocalizations(args, context) {
   const pids =
     isPartOfManifestation?.length > 0 ? isPartOfManifestation : args.pids;
 
+  const smaugLocalizationsRole = context?.smaug?.gateway?.localizationsRole;
+  let localizationsRole;
+
+  if (typeof smaugLocalizationsRole === "undefined") {
+    localizationsRole = localizationsRoles.BIBDK;
+  } else if (smaugLocalizationsRole === localizationsRoles.BIBDK) {
+    localizationsRole = localizationsRoles.BIBDK;
+  } else if (smaugLocalizationsRole !== null) {
+    localizationsRole = localizationsRoles.DANBIB;
+  }
+
   // get localizations from openholdingstatus
   const localizationsRes = await context.datasources
     .getLoader("localizations")
     .load({
       pids: pids,
-      localizationsRole: context?.smaug?.gateway?.localizationsRole,
+      localizationsRole,
     });
+
+  if (localizationsRole === localizationsRoles.DANBIB) {
+    // Pass through the localizationsRes for Danbib
+    return localizationsRes;
+  }
 
   const realAgenciesMap = {};
   for (let i = 0; i < localizationsRes?.agencies?.length || 0; i++) {
