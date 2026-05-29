@@ -2,19 +2,23 @@
  * @file Shows a history of the used tokens
  */
 
-import { useState, useEffect } from "react";
-import { Col, Offcanvas, Row } from "react-bootstrap";
+import { useState, useEffect, useRef } from "react";
+import { Col, Row } from "react-bootstrap";
 
 import useStorage from "@/hooks/useStorage";
+import useCredentialResolve from "@/hooks/useCredentialResolve";
+import { detectCredentialType } from "@/utils/credentials";
 
+import Overlay from "@/components/base/overlay";
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
-import Input from "@/components/base/input";
 
 import { isEqual } from "@/components/utils";
 import HistoryItem from "./item";
 
 import styles from "./History.module.css";
+
+const MIN_PENDING_DURATION_MS = 1000;
 
 /**
  * The Component function
@@ -26,18 +30,275 @@ import styles from "./History.module.css";
  */
 
 function History({ modal }) {
-  const { history, selectedToken } = useStorage();
+  const {
+    history,
+    selectedToken,
+    setHistoryItem,
+    setSelectedToken,
+    removeHistoryItem,
+  } =
+    useStorage();
+  const { resolveCredential } = useCredentialResolve();
   const [state, setState] = useState(history);
   const [isScrolled, setIsScrolled] = useState(null);
   const [isAddExpanded, setIsAddExpanded] = useState(false);
   const [filter, setFilter] = useState("");
+  const [inputError, setInputError] = useState("");
+  const containerRef = useRef(null);
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    alert("Vrinsk!");
+  function getEntryIdentifier(entry) {
+    if (!entry) {
+      return null;
+    }
+
+    return entry.clientId
+      ? `client:${entry.clientId}`
+      : entry.id || entry.token || null;
   }
 
-  // update history on modal close
+  function isTransientEntry(entry) {
+    return Boolean(
+      entry?.isPending ||
+        entry?.status === "ERROR" ||
+        entry?.status === "INVALID"
+    );
+  }
+
+  function createPendingEntry(value) {
+    const normalizedValue = typeof value === "string" ? value.trim() : "";
+    const type = detectCredentialType(normalizedValue);
+
+    if (!type) {
+      return null;
+    }
+
+    return {
+      id: `${type}:${normalizedValue}`,
+      type,
+      token: type === "token" ? normalizedValue : null,
+      clientId: type === "client" ? normalizedValue : null,
+      isEntering: true,
+      timestamp: Date.now(),
+      note: "",
+      message:
+        type === "client"
+          ? "Resolving client configuration..."
+          : "Validating token...",
+      isPending: true,
+    };
+  }
+
+  function createErroredEntry(value, message) {
+    const normalizedValue = typeof value === "string" ? value.trim() : "";
+    const type = detectCredentialType(normalizedValue);
+
+    if (!type) {
+      return null;
+    }
+
+    return {
+      id: `${type}:${normalizedValue}`,
+      type,
+      token: type === "token" ? normalizedValue : null,
+      clientId: type === "client" ? normalizedValue : null,
+      timestamp: Date.now(),
+      note: "",
+      status: type === "token" ? "INVALID" : "ERROR",
+      message: message || "Credential could not be resolved",
+    };
+  }
+
+  function syncStateWithEntry(entry) {
+    const identifier = getEntryIdentifier(entry);
+
+    if (!identifier) {
+      return;
+    }
+
+    setState((current) => {
+      const filtered = current.filter((item) => {
+        const itemIdentifier = getEntryIdentifier(item);
+        return itemIdentifier !== identifier;
+      });
+
+      return [entry, ...filtered].slice(0, 10);
+    });
+  }
+
+  function removeStateEntry(entry) {
+    const identifier = getEntryIdentifier(entry);
+
+    if (!identifier) {
+      return;
+    }
+
+    setState((current) =>
+      current.filter((item) => {
+        const itemIdentifier = getEntryIdentifier(item);
+        return itemIdentifier !== identifier;
+      })
+    );
+  }
+
+  function markStateEntryAsRemoving(entry) {
+    const identifier = getEntryIdentifier(entry);
+
+    if (!identifier) {
+      return;
+    }
+
+    setState((current) =>
+      current.map((item) => {
+        const itemIdentifier = getEntryIdentifier(item);
+
+        if (itemIdentifier !== identifier) {
+          return item;
+        }
+
+        return {
+          ...item,
+          isRemoving: true,
+        };
+      })
+    );
+  }
+
+  function handleRemoveEntry(entry) {
+    markStateEntryAsRemoving(entry);
+
+    window.setTimeout(() => {
+      removeHistoryItem(entry);
+      removeStateEntry(entry);
+    }, 280);
+  }
+
+  async function ensurePendingDuration(startedAt) {
+    if (!startedAt) {
+      return;
+    }
+
+    const elapsed = Date.now() - startedAt;
+    const remaining = MIN_PENDING_DURATION_MS - elapsed;
+
+    if (remaining > 0) {
+      await new Promise((resolve) => setTimeout(resolve, remaining));
+    }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setInputError("");
+    const inputType = detectCredentialType(filter);
+
+    if (!inputType) {
+      setInputError("🧐 Invalid input");
+      return;
+    }
+
+    if (inputType === "client") {
+      const normalizedClientId = filter.trim();
+      const existingEntry = history?.find?.(
+        (item) => item?.clientId === normalizedClientId
+      );
+
+      if (existingEntry) {
+        setHistoryItem(existingEntry, false);
+        syncStateWithEntry(existingEntry);
+
+        if (existingEntry.token) {
+          setSelectedToken(
+            existingEntry.token,
+            existingEntry.profile,
+            existingEntry.agency,
+            {
+              id: existingEntry.id,
+              type: existingEntry.type,
+              clientId: existingEntry.clientId,
+            }
+          );
+        }
+
+        setFilter("");
+        return;
+      }
+    }
+
+    const pendingEntry = createPendingEntry(filter);
+    const pendingStartedAt = pendingEntry ? Date.now() : null;
+
+    if (pendingEntry) {
+      syncStateWithEntry(pendingEntry);
+    }
+
+    const response = await resolveCredential({
+      value: filter,
+    });
+
+    if (response?.safeEntry) {
+      await ensurePendingDuration(pendingStartedAt);
+
+      if (pendingEntry) {
+        removeStateEntry(pendingEntry);
+      }
+
+      setHistoryItem(response.safeEntry, false);
+      syncStateWithEntry(response.safeEntry);
+
+      if (response.safeEntry.token) {
+        setSelectedToken(
+          response.safeEntry.token,
+          response.safeEntry.profile,
+          response.safeEntry.agency,
+          {
+            id: response.safeEntry.id,
+            type: response.safeEntry.type,
+            clientId: response.safeEntry.clientId,
+          }
+        );
+      }
+
+      setFilter("");
+      if (response.safeEntry.type !== "client") {
+        setIsAddExpanded(false);
+      }
+      return;
+    }
+
+    if (pendingEntry) {
+      await ensurePendingDuration(pendingStartedAt);
+
+      const erroredEntry = createErroredEntry(
+        filter,
+        response?.message || "Credential could not be resolved"
+      );
+
+      if (erroredEntry) {
+        syncStateWithEntry(erroredEntry);
+      } else {
+        removeStateEntry(pendingEntry);
+      }
+    }
+  }
+
+  useEffect(() => {
+    setState((current) => {
+      const transientEntries = current.filter((entry) => {
+        if (!isTransientEntry(entry)) {
+          return false;
+        }
+
+        const identifier = getEntryIdentifier(entry);
+
+        return !history.some(
+          (historyEntry) => getEntryIdentifier(historyEntry) === identifier
+        );
+      });
+
+      return [...transientEntries, ...history].slice(0, 10);
+    });
+  }, [history]);
+
+  // reset local view when modal closes
   useEffect(() => {
     if (!modal.isVisible) {
       setTimeout(() => setState(history), 200);
@@ -102,11 +363,20 @@ function History({ modal }) {
                 <Text type="text4">Add</Text>
               </span>
             </Button>
-            <form className={styles.form} onSubmit={(e) => handleSubmit(e)}>
+            <form
+              ref={containerRef}
+              className={styles.form}
+              onSubmit={(e) => handleSubmit(e)}
+            >
               <input
                 className={styles.input}
                 placeholder="Drop clientId og token to connect ..."
-                onChange={(e) => setFilter(e.target.value)}
+                value={filter}
+                autoComplete="off"
+                onChange={(e) => {
+                  setFilter(e.target.value);
+                  setInputError("");
+                }}
               />
               <button
                 className={styles.submit}
@@ -116,6 +386,16 @@ function History({ modal }) {
                 <span className={styles.submitGlyph} aria-hidden="true" />
               </button>
             </form>
+            <Overlay
+              className={styles.overlay}
+              show={Boolean(inputError)}
+              container={containerRef}
+              popperConfig={{
+                strategy: "fixed",
+              }}
+            >
+              <Text type="text2">{inputError}</Text>
+            </Overlay>
           </div>
         </div>
       </Col>
@@ -124,9 +404,10 @@ function History({ modal }) {
         {state?.map((h, i) => {
           return (
             <HistoryItem
-              key={`${h.token}-${i}`}
+              key={h.id || `${h.token}-${i}`}
               isVisible={modal.isVisible}
               inUse={isEqual(selectedToken, h)}
+              onRemoveRequest={handleRemoveEntry}
               {...h}
             />
           );

@@ -18,7 +18,7 @@
 }
 
 .modal {
-  background-color: var(--divider);
+  background-color: var(--white);
   --bs-offcanvas-padding-y: 0;
   --bs-offcanvas-padding-x: 0;
 }

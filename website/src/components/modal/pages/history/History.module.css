@@ -6,12 +6,15 @@
   height: 110px;
   padding: var(--pt2);
 
+  background-color: var(--divider);
+
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   position: relative;
   overflow: hidden;
   transition: height 0.3s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .top.expanded {
@@ -49,11 +52,11 @@
   left: var(--pt2);
   z-index: 1;
   transition:
-    top 0.3s ease,
-    right 0.3s ease,
-    bottom 0.3s ease,
-    left 0.3s ease,
-    border-radius 0.3s ease;
+    top 0.4s ease,
+    right 0.4s ease,
+    bottom 0.4s ease,
+    left 0.4s ease,
+    border-radius 0.4s ease;
 
   background-color: var(--primary-dark);
   border-radius: 99px;
@@ -63,10 +66,17 @@
 .top.expanded .addContainer {
   top: 0;
   right: 0;
-  bottom: var(--pt2);
+  bottom: 0;
   left: 0;
   z-index: 1;
   border-radius: 0;
+
+  transition:
+    top 0.3s ease,
+    right 0.3s ease,
+    bottom 0.3s ease,
+    left 0.3s ease,
+    border-radius 0.3s ease;
 }
 
 .wrap {
@@ -122,6 +132,21 @@
   display: inline-block;
   width: 14px;
   height: 14px;
+  opacity: 0;
+
+  transform: translateX(100px);
+  transition:
+    transform 0.2s ease 0s,
+    opacity 0.2s ease 0s;
+}
+
+.top.expanded .submitGlyph {
+  transform: translateX(0);
+  opacity: 1;
+
+  transition:
+    transform 0.2s ease 0.25s,
+    opacity 0.2s ease 0.25s;
 }
 
 .submitGlyph::before,
@@ -145,23 +170,36 @@
   transform: translate(-20%, 85%) rotate(-45deg);
 }
 
+.overlay {
+  max-width: min(320px, calc(100vw - var(--pt4)));
+  background-color: var(--primary-light) !important;
+  z-index: 2000 !important;
+}
+
 .input {
   width: 0;
   padding: 0;
+  margin-top: var(--pt1);
 
   border: 0;
   border-bottom: 1px solid var(--white);
   background-color: transparent;
   color: var(--white);
+  opacity: 0;
 
-  transition: width 0.2s ease;
+  transition:
+    width 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .top.expanded .input {
   width: 100%;
   padding: var(--pt1);
+  opacity: 1;
 
-  transition: width 0.45s ease;
+  transition:
+    width 0.45s ease,
+    opacity 0.2s ease;
 }
 
 .input::placeholder {
@@ -297,7 +335,8 @@
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: center;
-  padding: 0 var(--pt2);
+  padding: var(--pt2) var(--pt2) 0 var(--pt2);
+  background-color: var(--white);
 }
 
 .list.noConfigurations {

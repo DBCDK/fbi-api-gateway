@@ -38,6 +38,11 @@ export default {
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 20000,
   fastLaneEnabled: process.env.FASTLANE_ENABLED == "1" ? true : false,
+  credentials: {
+    disableInternalNetworkCheck: ["1", "true", "yes"].includes(
+      String(process.env.DISABLE_INTERNAL_NETWORK_CHECK).toLowerCase()
+    ),
+  },
   testUser: {
     clientId: process.env.TEST_USER_CLIENT_ID,
     clientSecret: process.env.TEST_USER_CLIENT_SECRET,

@@ -20,6 +20,8 @@ import Modal, { Pages } from "@/components/modal";
 import styles from "./Header.module.css";
 import Settings from "@/components/settings";
 import Top from "../top";
+import useUser from "@/hooks/useUser";
+import More from "../more";
 
 export default function Header() {
   const router = useRouter();
@@ -42,11 +44,16 @@ export default function Header() {
   const { configuration } = useConfiguration(selectedToken);
   const { icon, theme } = useTheme();
 
+  const { user } = useUser(selectedToken);
+
   const isValidToken =
     selectedToken &&
     configuration &&
     Object?.keys(configuration).length &&
     hasAvailableAgency(configuration);
+
+  const displayName = configuration?.displayName;
+  const isAuthenticated = user?.isAuthenticated;
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
@@ -100,9 +107,6 @@ export default function Header() {
                   Voyager
                 </Link>
               </Text>
-              <Text type="text5" className={`${styles.link} ${styles.more}`}>
-                <Link onClick={() => setShow(true)}>More</Link>
-              </Text>
               <Text
                 type="text5"
                 className={`${styles.link} ${styles.download}`}
@@ -123,11 +127,25 @@ export default function Header() {
               )}
             </nav>
             <span />
-            {!isIndex && <Token className={styles.token} compact />}
+
+            {!isIndex && selectedToken && (
+              <div className={styles.info}>
+                <div>
+                  <Text type="text4">{displayName}</Text>
+                </div>
+                <div>
+                  <Text type="text0">
+                    {isAuthenticated ? "Authenticated" : "Anonymous"}
+                  </Text>
+                </div>
+              </div>
+            )}
+
             <History className={styles.history} />
           </Col>
         </Row>
         <Settings className={styles.settings} />
+        <More className={styles.more} onClick={() => setShow(true)} />
       </Container>
 
       <div className={styles.border} />

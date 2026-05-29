@@ -1,4 +1,5 @@
 import fetch from "isomorphic-unfetch";
+import { useEffect, useRef } from "react";
 import useSWR from "swr";
 
 import { isToken } from "@/components/utils";
@@ -21,12 +22,36 @@ const fetcher = async (url) => {
 export default function useUser(props) {
   const { configuration } = useConfiguration(props);
   const profile = props?.profile ?? configuration?.profiles?.[0] ?? null;
-  const url = `/api/user?token=${props?.token}&profile=${profile}`;
+  const entryId = props?.id || null;
   const isValid = isToken(props?.token);
+  const params = new URLSearchParams();
+
+  if (entryId) {
+    params.set("entryId", entryId);
+  } else if (props?.token) {
+    params.set("token", props.token);
+  }
+
+  if (profile) {
+    params.set("profile", profile);
+  }
+
+  const url = entryId
+    ? `/api/credentials/user?${params.toString()}`
+    : `/api/user?token=${props?.token}&profile=${profile}`;
 
   const { data, error } = useSWR(isValid && url, fetcher, {
     fallback: {},
   });
+  const previousDataRef = useRef(null);
 
-  return { user: data, isLoading: !data && !error && isValid } || {};
+  useEffect(() => {
+    if (data && Object.keys(data).length > 0) {
+      previousDataRef.current = data;
+    }
+  }, [data]);
+
+  const stableData = data || previousDataRef.current;
+
+  return { user: stableData, isLoading: !data && !error && isValid } || {};
 }

@@ -1,0 +1,83 @@
+.collapsed {
+  composes: collapsed from "../Item.module.css";
+}
+
+.note {
+  composes: note from "../Item.module.css";
+}
+
+.divider {
+  composes: divider from "../Item.module.css";
+}
+
+.user {
+  composes: user from "../Item.module.css";
+}
+
+.heading {
+  composes: heading from "../Item.module.css";
+}
+
+.submitted {
+  composes: submitted from "../Item.module.css";
+}
+
+.expires {
+  composes: expires from "../Item.module.css";
+}
+
+.indicator {
+  composes: indicator from "../Item.module.css";
+}
+
+.token {
+  composes: token from "../Item.module.css";
+}
+
+.clientId {
+  composes: clientId from "../Item.module.css";
+}
+
+.details {
+  composes: details from "../Item.module.css";
+}
+
+.alwaysRequireAgencyId {
+  composes: alwaysRequireAgencyId from "../Item.module.css";
+}
+
+.name {
+  composes: name from "../Item.module.css";
+}
+
+.mail {
+  composes: mail from "../Item.module.css";
+}
+
+.municipalityAgencyId {
+  composes: municipalityAgencyId from "../Item.module.css";
+}
+
+.isCPRValidated {
+  composes: isCPRValidated from "../Item.module.css";
+}
+
+.culr {
+  composes: culr from "../Item.module.css";
+}
+
+.loggedInBranchId {
+  composes: loggedInBranchId from "../Item.module.css";
+}
+
+.loggedInAgencyId {
+  composes: loggedInAgencyId from "../Item.module.css";
+}
+
+.i {
+  composes: i from "../Item.module.css";
+}
+
+.hasOmittedCulrUniqueId {
+  composes: hasOmittedCulrUniqueId from "../Item.module.css";
+}

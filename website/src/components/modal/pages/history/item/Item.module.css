@@ -5,7 +5,11 @@
   width: 100%;
   height: 175px;
   margin-bottom: var(--pt2);
-  transition-duration: 0.3s;
+  transition:
+    height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    margin-bottom 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.24s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
 }
 
@@ -219,13 +223,36 @@
 }
 
 .item.removed .content {
-  background-color: var(--divider);
   box-shadow: none;
-  border-color: transparent;
+  border-color: transparent !important;
 }
 
 .item.removed .bottom {
   display: none;
+}
+
+.item.removing {
+  height: 0;
+  margin-bottom: 0;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.985);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.item.removing .content {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.99);
+  box-shadow: 0px 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.item.reveal .content {
+  animation: item-reveal 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.item.entering {
+  transform-origin: top center;
+  animation: item-enter 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* State */
@@ -315,6 +342,21 @@
   background-color: #dddbdd;
 }
 
+.loadingMeta {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt1);
+  padding: var(--pt2);
+}
+
+.loadingMeta p:last-child {
+  color: var(--text-light);
+  font-family: var(--font-mono-regular);
+  word-break: break-word;
+}
+
 .item.isLoading::after {
   position: absolute;
   top: 0;
@@ -340,6 +382,36 @@
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
+  }
+}
+
+@keyframes item-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+    box-shadow: 0px 12px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes item-enter {
+  0% {
+    height: 0;
+    margin-bottom: 0;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.985);
+  }
+
+  100% {
+    height: 175px;
+    margin-bottom: var(--pt2);
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

@@ -3,6 +3,7 @@ import Spinner from "react-bootstrap/Spinner";
 
 import Overlay from "@/components/base/overlay";
 
+import useCredentialResolve from "@/hooks/useCredentialResolve";
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 import useUser from "@/hooks/useUser";
@@ -21,7 +22,13 @@ export default function Token({
   compact,
 }) {
   // useToken custom hook
-  const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
+  const {
+    selectedToken,
+    setSelectedToken,
+    removeSelectedToken,
+    setHistoryItem,
+  } = useStorage();
+  const { resolveCredential } = useCredentialResolve();
   const { configuration, status, isLoading } = useConfiguration(selectedToken);
   const { user } = useUser(selectedToken);
 
@@ -31,6 +38,7 @@ export default function Token({
     display: false,
     focus: false,
   });
+  const [resolveError, setResolveError] = useState("");
 
   // update token input value if changed after render (swr update)
   useEffect(() => {
@@ -82,7 +90,38 @@ export default function Token({
   const _errorIsNotVerified =
     hasValidationError && status === "ERROR" && "🤔 Error validating token!";
 
-  const hasError = _errorToken || _errorMissingConfig || hasValidationError;
+  const hasError =
+    _errorToken || _errorMissingConfig || hasValidationError || resolveError;
+
+  async function handleResolveToken() {
+    if (!state.value) {
+      return;
+    }
+
+    setResolveError("");
+    const response = await resolveCredential({
+      value: state.value,
+    });
+
+    if (!response?.safeEntry?.token) {
+      setResolveError(response?.message || "🧐 This token is invalid!");
+      return;
+    }
+
+    setHistoryItem(response.safeEntry, false);
+    setSelectedToken(
+      response.safeEntry.token,
+      response.safeEntry.profile,
+      response.safeEntry.agency,
+      {
+        id: response.safeEntry.id,
+        type: response.safeEntry.type,
+        clientId: response.safeEntry.clientId,
+      }
+    );
+    onSubmit?.(response.safeEntry.token);
+    onChange?.(response.safeEntry.token);
+  }
 
   // custom class'
   const compactSize = compact ? styles.compact : "";
@@ -101,9 +140,9 @@ export default function Token({
         setState({ ...state, focus: true });
       }}
       className={`${styles.form} ${compactSize} ${className}`}
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        onSubmit?.(state.value);
+        await handleResolveToken();
         inputRef?.current?.blur();
       }}
     >
@@ -142,13 +181,11 @@ export default function Token({
           placeholder="Drop token here ..."
           autoComplete="off"
           onBlur={() => {
-            // state.value && setToken(state.value);
-            // onSubmit?.(state.value);
             setState({ ...state, focus: false });
           }}
           onChange={(e) => {
             const value = e.target.value;
-            value && setSelectedToken(value, null);
+            setResolveError("");
             onChange?.(value);
             setState({ ...state, value });
           }}
@@ -181,7 +218,8 @@ export default function Token({
             _errorExpired ||
             _errorMissingConfig ||
             _errorInvalid ||
-            _errorIsNotVerified}
+            _errorIsNotVerified ||
+            resolveError}
         </Text>
       </Overlay>
     </form>

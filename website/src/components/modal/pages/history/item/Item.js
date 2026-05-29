@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 
 import useConfiguration from "@/hooks/useConfiguration";
+import useCredentialConfiguration from "@/hooks/useCredentialConfiguration";
+import useCredentialResolve from "@/hooks/useCredentialResolve";
+import useCredentialUser from "@/hooks/useCredentialUser";
 import useStorage from "@/hooks/useStorage";
 import useUser from "@/hooks/useUser";
 
@@ -9,8 +12,9 @@ import { hasAvailableAgency } from "@/utils/configuration";
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 
-import AgencyList from "./agency-list/AgencyList";
 import ExpandButton from "./expand-button/ExpandButton";
+import ItemClientSecretForm from "./item-client-secret-form";
+import ItemExpandedDetails from "./item-expanded-details";
 import styles from "./Item.module.css";
 
 function getExpirationClass(date) {
@@ -29,49 +33,74 @@ function getExpirationClass(date) {
   return "";
 }
 
+function hasData(value) {
+  return Boolean(value && Object.keys(value).length > 0);
+}
+
 function ItemContent({
+  id,
+  type = "token",
   token,
+  clientId: initialClientId,
   profile,
   agency,
   note: initialNote,
   timestamp,
   inUse,
-  configuration,
-  user,
+  configuration = {},
+  user = {},
   configurationStatus,
+  requiresClientSecret = false,
+  hasClientSecret = false,
+  message,
+  reveal = false,
+  isEntering = false,
+  isRemoving = false,
+  onRemoveRequest,
+  mutateCredentialConfiguration,
+  mutateCredentialUser,
 }) {
   const { setSelectedToken, setHistoryItem, removeHistoryItem } = useStorage();
+  const { resolveCredential } = useCredentialResolve();
 
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
   const [isScrolled, setIsScrolled] = useState(null);
   const [note, setNote] = useState(initialNote);
+  const [clientSecret, setClientSecret] = useState("");
+  const [clientSecretError, setClientSecretError] = useState("");
   const [containerScrollY, setContainerScrollY] = useState(0);
 
   const displayName = configuration?.displayName;
-  const clientId = configuration?.clientId;
+  const clientId = configuration?.clientId || initialClientId;
   const isAuthenticated = user?.isAuthenticated;
   const hasCulrAccount = user?.hasCulrUniqueId;
 
-  const agencyIdsList = configuration?.agencies;
-  const defaultAgencyId = configuration?.defaultAgency;
-  const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId;
-
-  const missingConfiguration = !profile || !hasAvailableAgency(configuration);
   const submitted = {
     date: dateConverter(timestamp),
     time: timeConverter(timestamp),
   };
 
-  const expires = {
-    date: dateConverter(configuration?.expires),
-    time: timeConverter(configuration?.expires),
-  };
-
-  const hasValidationError = configurationStatus !== "OK";
-
-  const agencies = user?.agencies;
-  const hasOmittedCulrData = user?.omittedCulrData;
+  const needsClientSecret =
+    requiresClientSecret || configurationStatus === "CLIENT_SECRET_REQUIRED";
+  const shouldShowInlineClientSecretForm = needsClientSecret;
+  const shouldShowExpandedClientSecretForm =
+    type === "client" && !needsClientSecret && !hasClientSecret;
+  const canExpand = !needsClientSecret;
+  const hasValidationError =
+    configurationStatus !== "OK" &&
+    configurationStatus !== "CLIENT_SECRET_REQUIRED";
+  const missingConfiguration =
+    !needsClientSecret && (!profile || !hasAvailableAgency(configuration));
+  const expires = configuration?.expires
+    ? {
+        date: dateConverter(configuration?.expires),
+        time: timeConverter(configuration?.expires),
+      }
+    : {
+        date: "Not resolved yet",
+        time: "",
+      };
 
   const inUseClass = inUse ? styles.inUse : "";
   const expiredClass = hasValidationError ? styles.expired : "";
@@ -79,6 +108,9 @@ function ItemContent({
   const exapandedClass = open ? styles.expanded : "";
   const exapandedClassGlobal = open ? "expanded" : "";
   const removedClass = removed ? styles.removed : "";
+  const removingClass = isRemoving ? styles.removing : "";
+  const enteringClass = isEntering ? styles.entering : "";
+  const revealClass = reveal ? styles.reveal : "";
 
   const expireStatusClass = getExpirationClass(configuration?.expires);
   const isScrolledClass = isScrolled ? styles.scrolled : "";
@@ -123,10 +155,48 @@ function ItemContent({
   const itemOffsetTop = elRef.current?.offsetTop || 0;
   const contentTop = open ? containerScrollY - itemOffsetTop : 0;
 
+  async function handleResolveWithClientSecret() {
+    setClientSecretError("");
+    const response = await resolveCredential({
+      value: clientId,
+      clientSecret,
+      entryId: id,
+      agency,
+    });
+
+    if (!response?.safeEntry?.token) {
+      setClientSecretError(
+        response?.message || "Could not validate clientSecret"
+      );
+      return;
+    }
+
+    setHistoryItem(
+      {
+        ...response.safeEntry,
+        note,
+      },
+      false
+    );
+    setSelectedToken(
+      response.safeEntry.token,
+      response.safeEntry.profile,
+      response.safeEntry.agency,
+      {
+        id: response.safeEntry.id,
+        type: response.safeEntry.type,
+        clientId: response.safeEntry.clientId,
+      }
+    );
+    mutateCredentialConfiguration?.();
+    mutateCredentialUser?.();
+    setClientSecret("");
+  }
+
   return (
     <div
       ref={elRef}
-      className={`${styles.item} ${expiredClass} ${expireStatusClass} ${inUseClass} ${exapandedClass} ${exapandedClassGlobal} ${isScrolledClass} ${missingConfigClass} ${removedClass}`}
+      className={`${styles.item} ${expiredClass} ${expireStatusClass} ${inUseClass} ${exapandedClass} ${exapandedClassGlobal} ${isScrolledClass} ${missingConfigClass} ${removedClass} ${removingClass} ${enteringClass} ${revealClass}`}
     >
       <div
         className={styles.content}
@@ -140,27 +210,39 @@ function ItemContent({
               {removed ? (
                 <Text type="text4">This token was removed 🗑️</Text>
               ) : (
-                (configurationStatus === "INVALID" && (
-                  <Text type="text4">This token is invalid 🧐</Text>
-                )) ||
-                (configurationStatus === "EXPIRED" && (
-                  <Text type="text4">This token is expired 😔</Text>
-                )) || <Text type="text4">Error validating token 🤔</Text>
+                <Text type="text4">
+                  {message ||
+                    (configurationStatus === "INVALID" &&
+                      "This token is invalid 🧐") ||
+                    (configurationStatus === "EXPIRED" &&
+                      "This token is expired 😔") ||
+                    "Error validating token 🤔"}
+                </Text>
               )}
-              <Text type="text1">{token}</Text>
+              <Text type="text1">{token || clientId}</Text>
             </div>
           ) : (
             <>
-              <Text type={open ? "text6" : "text4"}>{displayName}</Text>
-
-              <Text className={styles.authentication}>
-                {`This token is ${
-                  isAuthenticated ? "AUTHENTICATED" : "ANONYMOUS"
-                }`}
-                {isAuthenticated && (
-                  <span> 🧑 {!hasCulrAccount && <i>⚠️</i>}</span>
-                )}
+              <Text type={open ? "text6" : "text4"}>
+                {displayName || clientId}
               </Text>
+
+              {!needsClientSecret && token && (
+                <Text className={styles.authentication}>
+                  {`This token is ${
+                    isAuthenticated ? "AUTHENTICATED" : "ANONYMOUS"
+                  }`}
+                  {isAuthenticated && (
+                    <span> 🧑 {!hasCulrAccount && <i>⚠️</i>}</span>
+                  )}
+                </Text>
+              )}
+
+              {needsClientSecret && (
+                <Text className={styles.authentication}>
+                  {message || "ClientSecret is required before token exchange."}
+                </Text>
+              )}
 
               {missingConfiguration && (
                 <Text type="text4" className={styles.missingConfigWarn}>
@@ -168,228 +250,52 @@ function ItemContent({
                 </Text>
               )}
 
-              <ExpandButton onClick={() => setOpen(!open)} open={open} />
+              {canExpand && (
+                <ExpandButton onClick={() => setOpen(!open)} open={open} />
+              )}
 
               {note && <Text className={styles.note}>{note}</Text>}
             </>
           )}
         </div>
-        <div className={styles.collapsed} ref={scrollRef}>
-          <div className={styles.note}>
-            <label htmlFor={`input-note-${token}`}>✏️</label>
-            <input
-              id={`input-note-${token}`}
-              value={note}
-              disabled={!open}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.keyCode === 13) {
-                  const el = document.getElementById(`input-note-${token}`);
-                  el.blur();
-                }
-              }}
-              autoComplete="off"
-              maxLength="50"
-              placeholder={open ? " Some token note ..." : false}
-              onChange={(e) => setNote(e.target.value)}
-              onBlur={() => setHistoryItem({ token, profile, agency, note })}
-            />
-          </div>
-
-          <hr className={styles.divider} />
-
-          <div className={styles.user}>
-            <div className={styles.heading}>
-              <Text type="text1">Token details</Text>
-            </div>
-
-            <div className={styles.submitted}>
-              <Text type="text4">Submitted at</Text>
-              <Text type="text1">
-                {submitted.date} <span>{submitted.time}</span>
-              </Text>
-            </div>
-
-            <div className={styles.expires}>
-              <Text type="text4">Expiration date</Text>
-              <div>
-                <i className={`${styles.indicator} ${expireStatusClass}`} />
-                <Text type="text1">
-                  {expires.date}
-                  <span>{expires.time}</span>
-                </Text>
-              </div>
-            </div>
-
-            <div className={styles.token}>
-              <Text type="text4">Access token</Text>
-              <Text type="text1">{token}</Text>
-            </div>
-          </div>
-
-          <hr className={styles.divider} />
-
-          <div className={styles.user}>
-            <div className={styles.heading}>
-              <Text type="text1">Client details</Text>
-            </div>
-
-            <div className={styles.clientId}>
-              <Text type="text4">ClientID</Text>
-              <Text type="text1">{clientId}</Text>
-            </div>
-
-            <div className={styles.details}>
-              <div>
-                <Text type="text4">Default AgencyId</Text>
-                <Text type="text1">{defaultAgencyId || "None"}</Text>
-              </div>
-              <div>
-                <Text type="text4">Profile</Text>
-                <Text type="text1">
-                  {profile || "None 😵‍💫"} {profile === "none" && "⚠️"}
-                </Text>
-              </div>
-            </div>
-
-            <div className={styles.alwaysRequireAgencyId}>
-              <Text type="text4">AgencyId required in URL</Text>
-              <Text type="text1">
-                {alwaysRequireAgencyId?.toString() || "false"}
-              </Text>
-            </div>
-
-            {agencyIdsList?.length > 0 && (
-              <AgencyList
-                title={`Client agencies (${agencyIdsList.length})`}
-                items={agencyIdsList}
-              />
-            )}
-          </div>
-
-          {isAuthenticated && <hr className={styles.divider} />}
-
-          {isAuthenticated && (
-            <div className={styles.user}>
-              <div className={styles.heading}>
-                <Text type="text1">User informations</Text>
-              </div>
-
-              {user?.name && (
-                <div className={styles.name}>
-                  <Text type="text4">Name</Text>
-                  <Text type="text1">{user?.name}</Text>
-                </div>
-              )}
-              {user?.mail && (
-                <div className={styles.mail}>
-                  <Text type="text4">Mail</Text>
-                  <Text type="text1">{user?.mail}</Text>
-                </div>
-              )}
-
-              {user?.municipalityAgencyId && (
-                <div className={styles.municipalityAgencyId}>
-                  <Text type="text4">MunicipalityAgencyId</Text>
-                  <Text type="text1">{user?.municipalityAgencyId}</Text>
-                </div>
-              )}
-
-              <div className={styles.details}>
-                <div className={styles.isCPRValidated}>
-                  <Text type="text4">IsCPRValidated</Text>
-                  <Text type="text1">{user?.isCPRValidated.toString()}</Text>
-                </div>
-
-                <div className={styles.culr}>
-                  <Text type="text4">HasCulrUniqueId</Text>
-                  <Text type="text1">{`${hasCulrAccount.toString()} ${
-                    !hasCulrAccount ? " ⚠️" : ""
-                  }`}</Text>
-                </div>
-              </div>
-
-              {agencies?.length > 0 && (
-                <AgencyList
-                  title={`Token user agencies (${agencies.length})`}
-                  items={agencies}
-                />
-              )}
-            </div>
-          )}
-
-          {isAuthenticated && <hr className={styles.divider} />}
-
-          {isAuthenticated && (
-            <div className={styles.user}>
-              <div className={styles.heading}>
-                <Text type="text1">Login details</Text>
-              </div>
-
-              <div className={styles.details}>
-                {user?.loggedInBranchId && (
-                  <div className={styles.loggedInBranchId}>
-                    <Text type="text4">LoggedInBranchId</Text>
-                    <Text type="text1">{user?.loggedInBranchId}</Text>
-                  </div>
-                )}
-                {user?.loggedInAgencyId && (
-                  <div className={styles.loggedInAgencyId}>
-                    <Text type="text4">LoggedInAgencyId</Text>
-                    <Text type="text1">{user?.loggedInAgencyId}</Text>
-                  </div>
-                )}
-              </div>
-              {user?.identityProviderUsed && (
-                <div className={styles.i}>
-                  <Text type="text4">IdentityProviderUsed</Text>
-                  <Text type="text1">{user?.identityProviderUsed}</Text>
-                </div>
-              )}
-            </div>
-          )}
-
-          {hasOmittedCulrData && <hr className={styles.divider} />}
-
-          {hasOmittedCulrData && (
-            <div className={styles.user}>
-              <div className={styles.heading}>
-                <Text type="text1">Omitted Culr data</Text>
-              </div>
-
-              <div className={styles.details}>
-                <div className={styles.hasOmittedCulrUniqueId}>
-                  <Text type="text4">UniqueId</Text>
-                  <Text type="text1">
-                    {hasOmittedCulrData?.hasOmittedCulrUniqueId.toString()}
-                  </Text>
-                </div>
-
-                <div className={styles.culr}>
-                  <Text type="text4">Accounts</Text>
-                  <Text type="text1">
-                    {hasOmittedCulrData?.hasOmittedCulrAccounts.toString()}
-                  </Text>
-                </div>
-              </div>
-
-              <div className={styles.details}>
-                <div className={styles.isCPRValidated}>
-                  <Text type="text4">Municipality</Text>
-                  <Text type="text1">
-                    {hasOmittedCulrData?.hasOmittedCulrMunicipality.toString()}
-                  </Text>
-                </div>
-
-                <div className={styles.culr}>
-                  <Text type="text4">MunicipalityAgencyId</Text>
-                  <Text type="text1">
-                    {hasOmittedCulrData?.hasOmittedCulrMunicipalityAgencyId.toString()}
-                  </Text>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        {shouldShowInlineClientSecretForm && (
+          <ItemClientSecretForm
+            clientSecret={clientSecret}
+            clientSecretError={clientSecretError}
+            setClientSecret={setClientSecret}
+            showDivider={false}
+            showAction={false}
+          />
+        )}
+        <ItemExpandedDetails
+          id={id}
+          type={type}
+          token={token}
+          clientId={clientId}
+          profile={profile}
+          agency={agency}
+          note={note}
+          open={open}
+          scrollRef={scrollRef}
+          submitted={submitted}
+          expires={expires}
+          expireStatusClass={expireStatusClass}
+          configuration={configuration}
+          user={user}
+          needsClientSecret={needsClientSecret}
+          hasCulrAccount={hasCulrAccount}
+          message={message}
+          setNote={setNote}
+          setHistoryItem={setHistoryItem}
+          clientSecret={clientSecret}
+          clientSecretError={clientSecretError}
+          setClientSecret={setClientSecret}
+          requiresClientSecret={requiresClientSecret}
+          hasClientSecret={hasClientSecret}
+          configurationStatus={configurationStatus}
+          showClientSecretForm={shouldShowExpandedClientSecretForm}
+          onClientSecretSubmit={handleResolveWithClientSecret}
+        />
         <div className={styles.bottom}>
           <hr />
           <div className={styles.buttons}>
@@ -397,8 +303,15 @@ function ItemContent({
               className={styles.remove}
               size="small"
               onClick={() => {
-                removeHistoryItem(token, profile);
                 setOpen(false);
+                const entry = { id, token, clientId };
+
+                if (onRemoveRequest) {
+                  onRemoveRequest(entry);
+                  return;
+                }
+
+                removeHistoryItem(entry);
                 const delay = open ? 500 : 0;
                 setTimeout(() => setRemoved(true), delay);
               }}
@@ -408,12 +321,29 @@ function ItemContent({
             </Button>
             <Button
               className={styles.use}
-              disabled={hasValidationError}
+              disabled={
+                needsClientSecret ? !clientSecret : hasValidationError || !token
+              }
               size="small"
-              onClick={() => setSelectedToken(token, profile, agency)}
+              onClick={() => {
+                if (needsClientSecret) {
+                  handleResolveWithClientSecret();
+                  return;
+                }
+
+                setSelectedToken(token, profile, agency, {
+                  id,
+                  type,
+                  clientId,
+                });
+              }}
               primary
             >
-              {inUse ? "I'm in use" : "Use"}
+              {needsClientSecret
+                ? "Update and use"
+                : inUse
+                  ? "I'm in use"
+                  : "Use"}
             </Button>
           </div>
         </div>
@@ -422,24 +352,100 @@ function ItemContent({
   );
 }
 
-export function ItemIsLoading() {
-  return <div className={`${styles.item} ${styles.isLoading}`} />;
+export function ItemIsLoading({
+  label = "",
+  type = "client",
+  isEntering = false,
+}) {
+  return (
+    <div
+      className={`${styles.item} ${styles.isLoading} ${
+        isEntering ? styles.entering : ""
+      }`}
+    >
+      <div className={styles.loadingMeta}></div>
+    </div>
+  );
 }
 
 function Item(props) {
-  const { configuration, status, isLoading } = useConfiguration(props);
-  const { user } = useUser(props);
+  const [isReveal, setIsReveal] = useState(false);
+  const wasPendingRef = useRef(props.isPending === true);
+  const isClientEntry = props.type === "client";
 
-  if (isLoading) {
-    return <ItemIsLoading />;
+  useEffect(() => {
+    if (wasPendingRef.current && !props.isPending) {
+      setIsReveal(true);
+      const timeout = setTimeout(() => setIsReveal(false), 320);
+      wasPendingRef.current = false;
+      return () => clearTimeout(timeout);
+    }
+
+    wasPendingRef.current = props.isPending === true;
+    return undefined;
+  }, [props.isPending]);
+
+  const {
+    configuration: tokenConfiguration,
+    status: tokenStatus,
+    isLoading: tokenIsLoading,
+  } = useConfiguration(props);
+  const { user: tokenUser } = useUser(props);
+
+  const {
+    configuration: credentialConfiguration,
+    status: credentialStatus,
+    isLoading: credentialIsLoading,
+    mutate: mutateCredentialConfiguration,
+  } = useCredentialConfiguration({
+    id: props.id,
+    token: props.token,
+    agency: props.agency,
+    lookupByEntryId: isClientEntry,
+  });
+  const { user: credentialUser, mutate: mutateCredentialUser } =
+    useCredentialUser({
+      id: props.id,
+      token: props.token,
+      lookupByEntryId: isClientEntry,
+    });
+
+  const resolvedConfiguration = isClientEntry
+    ? credentialConfiguration
+    : tokenConfiguration;
+  const resolvedUser = isClientEntry ? credentialUser : tokenUser;
+
+  const configuration = hasData(resolvedConfiguration)
+    ? resolvedConfiguration
+    : props.configuration || {};
+
+  const user = hasData(resolvedUser) ? resolvedUser : props.user || {};
+
+  const configurationStatus = isClientEntry
+    ? credentialStatus || props.status || "OK"
+    : tokenStatus || props.status || "OK";
+
+  const isLoading = isClientEntry ? credentialIsLoading : tokenIsLoading;
+
+  if (props.isPending || (isLoading && (props.token || isClientEntry))) {
+    return (
+      <ItemIsLoading
+        type={props.type}
+        label={props.clientId || props.token || ""}
+        isEntering={props.isEntering}
+      />
+    );
   }
 
   return (
     <ItemContent
       {...props}
+      reveal={isReveal}
       user={user}
       configuration={configuration}
-      configurationStatus={status}
+      configurationStatus={configurationStatus}
+      mutateCredentialConfiguration={mutateCredentialConfiguration}
+      mutateCredentialUser={mutateCredentialUser}
     />
   );
 }
