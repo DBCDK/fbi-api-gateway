@@ -33,6 +33,7 @@ export async function load({ pid, role = "bibdk" }, context) {
 }
 
 export const options = {
+  allowDebug: true,
   redis: {
     prefix,
     ttl,
