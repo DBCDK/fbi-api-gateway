@@ -218,16 +218,9 @@ export const resolvers = {
       return {};
     },
     async ris(parent, args, context, info) {
-      const ris = await context.datasources.getLoader("ris").load({
+      return context.datasources.getLoader("ris").load({
         pids: args.pids,
       });
-
-      /**
-       * Temporary fix until openformat handles multiple pids
-       * Add newline after "ER  -" to correct format
-       */
-      const formated = ris.replaceAll("ER  -", "ER  -\n");
-      return formated;
     },
     async refWorks(parent, args, context, info) {
       const ref = await context.datasources
