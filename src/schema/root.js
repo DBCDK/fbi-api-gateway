@@ -135,6 +135,12 @@ type Query {
   """
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches:Boolean): Localizations @complexity(value: 35, multipliers: ["pids"])
   refWorks(pids: [String!]!): String!
+  """
+  Returns bibliographic records formatted as RIS reference data for one or more manifestation pids.
+  When multiple pids are provided, each RIS record is separated by a newline.
+  Records are returned in the same order as the provided pids.
+  If a pid is not found, it is omitted from the response.
+  """
   ris(pids: [String!]!): String!
   inspiration(limit: Int): Inspiration! 
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
