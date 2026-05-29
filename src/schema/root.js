@@ -218,9 +218,13 @@ export const resolvers = {
       return {};
     },
     async ris(parent, args, context, info) {
-      return context.datasources.getLoader("ris").load({
-        pids: args.pids,
-      });
+      const risRecords = await Promise.all(
+        args.pids.map((pid) =>
+          context.datasources.getLoader("ris").load({ pid })
+        )
+      );
+
+      return risRecords.filter(Boolean).join("\n");
     },
     async refWorks(parent, args, context, info) {
       const ref = await context.datasources
