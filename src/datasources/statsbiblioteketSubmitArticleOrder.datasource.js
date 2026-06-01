@@ -136,6 +136,7 @@ export function testLoad() {
 
 export const options = {
   external: true,
+  allowDebug: true,
 };
 
 export { teamLabel };
