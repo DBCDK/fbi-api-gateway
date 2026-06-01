@@ -123,6 +123,7 @@ export async function load(params, context) {
 
   log.error("Elba: Periodica article order failed", {
     error: JSON.stringify(res),
+    params,
   });
   return {
     status: "ERROR_PID_NOT_RESERVABLE",
