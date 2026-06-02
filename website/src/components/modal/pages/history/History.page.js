@@ -7,6 +7,7 @@ import { Col, Row } from "react-bootstrap";
 
 import useStorage from "@/hooks/useStorage";
 import useCredentialResolve from "@/hooks/useCredentialResolve";
+import useInternalNetworkCheck from "@/hooks/useInternalNetworkCheck";
 import { detectCredentialType } from "@/utils/credentials";
 
 import Overlay from "@/components/base/overlay";
@@ -39,12 +40,16 @@ function History({ modal }) {
   } =
     useStorage();
   const { resolveCredential } = useCredentialResolve();
+  const { internalNetworkCheck } = useInternalNetworkCheck();
   const [state, setState] = useState(history);
   const [isScrolled, setIsScrolled] = useState(null);
   const [isAddExpanded, setIsAddExpanded] = useState(false);
   const [filter, setFilter] = useState("");
   const [inputError, setInputError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [refreshCycle, setRefreshCycle] = useState(0);
   const containerRef = useRef(null);
+  const previousModalVisibleRef = useRef(modal.isVisible);
 
   function getEntryIdentifier(entry) {
     if (!entry) {
@@ -85,6 +90,17 @@ function History({ modal }) {
           ? "Resolving client configuration..."
           : "Validating token...",
       isPending: true,
+    };
+  }
+
+  function withCurrentNetworkSetting(entry) {
+    if (!entry) {
+      return entry;
+    }
+
+    return {
+      ...entry,
+      networkSetting: internalNetworkCheck,
     };
   }
 
@@ -187,6 +203,11 @@ function History({ modal }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
     setInputError("");
     const inputType = detectCredentialType(filter);
 
@@ -202,36 +223,50 @@ function History({ modal }) {
       );
 
       if (existingEntry) {
-        setHistoryItem(existingEntry, false);
-        syncStateWithEntry(existingEntry);
+        // Re-resolve existing clients without an attached clientSecret so they
+        // can pick up the current network setting instead of stale state.
+        if (existingEntry.clientSecret || existingEntry.hasClientSecret) {
+          const nextEntry = withCurrentNetworkSetting(existingEntry);
 
-        if (existingEntry.token) {
-          setSelectedToken(
-            existingEntry.token,
-            existingEntry.profile,
-            existingEntry.agency,
-            {
-              id: existingEntry.id,
-              type: existingEntry.type,
-              clientId: existingEntry.clientId,
-            }
-          );
+          setHistoryItem(nextEntry, false);
+          syncStateWithEntry(nextEntry);
+
+          if (nextEntry.token) {
+            setSelectedToken(
+              nextEntry.token,
+              nextEntry.profile,
+              nextEntry.agency,
+              {
+                id: nextEntry.id,
+                type: nextEntry.type,
+                clientId: nextEntry.clientId,
+              }
+            );
+          }
+
+          setFilter("");
+          return;
         }
-
-        setFilter("");
-        return;
       }
     }
 
     const pendingEntry = createPendingEntry(filter);
     const pendingStartedAt = pendingEntry ? Date.now() : null;
+    const normalizedClientId = inputType === "client" ? filter.trim() : null;
+    const existingEntry =
+      inputType === "client"
+        ? history?.find?.((item) => item?.clientId === normalizedClientId) || null
+        : null;
 
     if (pendingEntry) {
       syncStateWithEntry(pendingEntry);
     }
 
+    setIsSubmitting(true);
+
     const response = await resolveCredential({
       value: filter,
+      entryId: existingEntry?.id || undefined,
     });
 
     if (response?.safeEntry) {
@@ -241,18 +276,20 @@ function History({ modal }) {
         removeStateEntry(pendingEntry);
       }
 
-      setHistoryItem(response.safeEntry, false);
-      syncStateWithEntry(response.safeEntry);
+      const nextEntry = withCurrentNetworkSetting(response.safeEntry);
 
-      if (response.safeEntry.token) {
+      setHistoryItem(nextEntry, false);
+      syncStateWithEntry(nextEntry);
+
+      if (nextEntry.token) {
         setSelectedToken(
-          response.safeEntry.token,
-          response.safeEntry.profile,
-          response.safeEntry.agency,
+          nextEntry.token,
+          nextEntry.profile,
+          nextEntry.agency,
           {
-            id: response.safeEntry.id,
-            type: response.safeEntry.type,
-            clientId: response.safeEntry.clientId,
+            id: nextEntry.id,
+            type: nextEntry.type,
+            clientId: nextEntry.clientId,
           }
         );
       }
@@ -278,7 +315,23 @@ function History({ modal }) {
         removeStateEntry(pendingEntry);
       }
     }
+
+    setIsSubmitting(false);
   }
+
+  useEffect(() => {
+    if (isSubmitting && !state.some((entry) => entry?.isPending)) {
+      setIsSubmitting(false);
+    }
+  }, [isSubmitting, state]);
+
+  useEffect(() => {
+    if (modal.isVisible && !previousModalVisibleRef.current) {
+      setRefreshCycle((current) => current + 1);
+    }
+
+    previousModalVisibleRef.current = modal.isVisible;
+  }, [modal.isVisible]);
 
   useEffect(() => {
     setState((current) => {
@@ -381,7 +434,8 @@ function History({ modal }) {
               <button
                 className={styles.submit}
                 type="submit"
-                disabled={!filter || filter === ""}
+                disabled={!filter || filter === "" || isSubmitting}
+                aria-busy={isSubmitting}
               >
                 <span className={styles.submitGlyph} aria-hidden="true" />
               </button>
@@ -406,6 +460,7 @@ function History({ modal }) {
             <HistoryItem
               key={h.id || `${h.token}-${i}`}
               isVisible={modal.isVisible}
+              refreshCycle={refreshCycle}
               inUse={isEqual(selectedToken, h)}
               onRemoveRequest={handleRemoveEntry}
               {...h}

@@ -23,6 +23,12 @@
   --bs-offcanvas-padding-x: 0;
 }
 
+.errorOverlay {
+  z-index: 99;
+  margin-top: calc(var(--pt05) * -1);
+  background-color: var(--primary-light);
+}
+
 /* 
 * Dark mode
 */

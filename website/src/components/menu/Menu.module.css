@@ -4,7 +4,7 @@
   top: 132px;
   position: sticky;
   list-style: none;
-  padding: var(--pt2) 0;
+  padding: 0 0 var(--pt2) 0;
 
   /* scroll */
   height: 85vh;

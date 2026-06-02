@@ -5,6 +5,8 @@
 import fetch from "isomorphic-unfetch";
 import { useEffect, useRef } from "react";
 import useSWR from "swr";
+import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
+import useInternalNetworkCheck from "./useInternalNetworkCheck";
 
 const STATUS_MAP = {
   200: "OK",
@@ -15,7 +17,10 @@ const STATUS_MAP = {
 };
 
 const fetcher = async (url) => {
-  const response = await fetch(url, { method: "GET" });
+  const response = await fetch(url, {
+    method: "GET",
+    headers: getCredentialRequestHeaders(),
+  });
   const status = response.status;
   const body = await response.json().catch(() => ({}));
 
@@ -40,6 +45,7 @@ export default function useCredentialConfiguration({
   agency = null,
   lookupByEntryId = false,
 } = {}) {
+  const { internalNetworkCheck } = useInternalNetworkCheck();
   const token = rawToken?.replace?.(/test.*:/, "");
   const entryId = id || null;
 
@@ -59,6 +65,10 @@ export default function useCredentialConfiguration({
 
   if (agency) {
     params.set("agency", agency);
+  }
+
+  if (lookupByEntryId === true && entryId) {
+    params.set("networkCheck", internalNetworkCheck);
   }
 
   const url = hasLookupTarget

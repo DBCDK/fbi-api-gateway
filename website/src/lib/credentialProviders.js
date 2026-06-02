@@ -15,6 +15,7 @@ import {
   _hasCulrDataSync,
   getAgencyIdByBranchId,
 } from "../../../src/utils/agency";
+import { DISABLE_INTERNAL_NETWORK_CHECK_HEADER } from "../utils/credentialSettings";
 
 const { authenticationUser, authenticationGroup, authenticationPassword } =
   config.datasources.openorder;
@@ -49,13 +50,7 @@ export function getRequestIp(req) {
     .replace(/^for=/i, "");
 }
 
-export function isInternalRequest(req) {
-  if (config.credentials?.disableInternalNetworkCheck) {
-    return false;
-  }
-
-  const ip = getRequestIp(req);
-
+export function isInternalIp(ip) {
   if (!ip) {
     return false;
   }
@@ -75,6 +70,27 @@ export function isInternalRequest(req) {
     ip.startsWith("fc") ||
     ip.startsWith("fd")
   );
+}
+
+export function isInternalRequest(req, options = {}) {
+  const { ignoreDisableOverride = false } = options;
+  const headerValue = req?.headers?.[DISABLE_INTERNAL_NETWORK_CHECK_HEADER];
+  const disableInternalNetworkCheck =
+    headerValue === "true" ||
+    headerValue === "1" ||
+    config.credentials?.disableInternalNetworkCheck;
+
+  if (!ignoreDisableOverride && disableInternalNetworkCheck) {
+    return false;
+  }
+
+  const ip = getRequestIp(req);
+
+  if (!ip) {
+    return false;
+  }
+
+  return isInternalIp(ip);
 }
 
 export async function getUserinfo(token) {
@@ -303,11 +319,18 @@ export function selectProfiles(data) {
 export function selectConfiguration(data) {
   const permissions = parseClientPermissions({ smaug: data });
   const agencies = data.gateway?.agencies?.ids;
+  const grants = Array.isArray(data?.app?.grants)
+    ? data.app.grants
+    : Array.isArray(data?.grants)
+      ? data.grants
+      : [];
 
   return {
     displayName: data.displayName,
     logoColor: data.logoColor,
     clientId: data.app?.clientId,
+    grants,
+    supportsRefreshToken: grants.includes("refresh_token"),
     userId: data.user?.id,
     uniqueId: data.user?.uniqueId,
     permissions,

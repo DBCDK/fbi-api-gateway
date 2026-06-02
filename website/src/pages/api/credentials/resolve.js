@@ -22,11 +22,14 @@ function buildSafeEntry({
   token = null,
   clientId = null,
   hasClientSecret = false,
+  hasRefreshToken = false,
+  supportsRefreshToken = false,
   configuration = {},
   user = {},
   requiresClientSecret = false,
   status = "OK",
   network = null,
+  reasonCode = null,
   message = null,
 }) {
   return {
@@ -35,6 +38,9 @@ function buildSafeEntry({
     token,
     clientId: clientId || configuration?.clientId || null,
     hasClientSecret,
+    hasRefreshToken,
+    supportsRefreshToken:
+      supportsRefreshToken || Boolean(configuration?.supportsRefreshToken),
     profile: configuration?.profiles?.[0] || null,
     agency: configuration?.agency || null,
     note: "",
@@ -42,6 +48,7 @@ function buildSafeEntry({
     requiresClientSecret,
     status,
     network,
+    reasonCode,
     message,
     configuration,
     user,
@@ -72,7 +79,7 @@ async function respondWithClientSecretRequired({
   clientId,
   entryId,
   network,
-  message,
+  reasonCode,
 }) {
   const detectedIp = getRequestIp(req);
   logCredentialDebug("CLIENT_SECRET_REQUIRED", {
@@ -80,7 +87,7 @@ async function respondWithClientSecretRequired({
     entryId: entryId || `client:${clientId}`,
     network,
     detectedIp,
-    message,
+    reasonCode,
   });
   const sessionEntry = await upsertCredentialSessionEntry(
     { req, res },
@@ -105,9 +112,9 @@ async function respondWithClientSecretRequired({
       requiresClientSecret: true,
       status: "CLIENT_SECRET_REQUIRED",
       network,
-      message,
+      reasonCode,
     }),
-    message,
+    reasonCode,
   });
 }
 
@@ -190,6 +197,10 @@ export default async function handler(req, res) {
         type: "token",
         token: normalizedValue,
         hasClientSecret: Boolean(clientSecret),
+        hasRefreshToken: Boolean(refreshToken),
+        supportsRefreshToken: Boolean(
+          configurationResponse.body?.supportsRefreshToken
+        ),
         configuration: configurationResponse.body,
         user: userResponse.body || {},
         status: "OK",
@@ -203,6 +214,10 @@ export default async function handler(req, res) {
           token: normalizedValue,
           clientId: clientId || configurationResponse.body.clientId,
           hasClientSecret: Boolean(clientSecret),
+          hasRefreshToken: Boolean(refreshToken),
+          supportsRefreshToken: Boolean(
+            configurationResponse.body?.supportsRefreshToken
+          ),
           clientSecret: clientSecret || null,
           refreshToken: refreshToken || null,
           tokenType: tokenType || "Bearer",
@@ -276,6 +291,10 @@ export default async function handler(req, res) {
             token: accessToken,
             clientId: normalizedValue,
             hasClientSecret: false,
+            hasRefreshToken: Boolean(tokenResolution.refreshToken),
+            supportsRefreshToken: Boolean(
+              configurationResponse.body?.supportsRefreshToken
+            ),
             configuration: configurationResponse.body,
             user: userResponse.body || {},
             requiresClientSecret: false,
@@ -290,6 +309,10 @@ export default async function handler(req, res) {
               type: "client",
               clientId: normalizedValue,
               hasClientSecret: false,
+              hasRefreshToken: Boolean(tokenResolution.refreshToken),
+              supportsRefreshToken: Boolean(
+                configurationResponse.body?.supportsRefreshToken
+              ),
               network,
               requiresClientSecret: false,
               token: accessToken,
@@ -319,10 +342,10 @@ export default async function handler(req, res) {
         clientId: normalizedValue,
         entryId,
         network,
-        message:
+        reasonCode:
           network === "internal"
-            ? "Automatic token exchange failed. Enter clientSecret manually."
-            : "⚠️ ClientSecret is required",
+            ? "CLIENT_SECRET_AUTO_EXCHANGE_FAILED"
+            : "CLIENT_SECRET_REQUIRED",
       });
     }
 
@@ -384,6 +407,8 @@ export default async function handler(req, res) {
       token: accessToken,
       clientId: normalizedValue,
       hasClientSecret: true,
+      hasRefreshToken: Boolean(tokenResolution.refreshToken),
+      supportsRefreshToken: Boolean(configurationResponse.body?.supportsRefreshToken),
       configuration: configurationResponse.body,
       user: userResponse.body || {},
       requiresClientSecret: false,
@@ -398,6 +423,8 @@ export default async function handler(req, res) {
         type: "client",
         clientId: normalizedValue,
         hasClientSecret: true,
+        hasRefreshToken: Boolean(tokenResolution.refreshToken),
+        supportsRefreshToken: Boolean(configurationResponse.body?.supportsRefreshToken),
         clientSecret,
         network,
         requiresClientSecret: false,

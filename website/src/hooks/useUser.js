@@ -3,11 +3,13 @@ import { useEffect, useRef } from "react";
 import useSWR from "swr";
 
 import { isToken } from "@/components/utils";
+import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
 import useConfiguration from "./useConfiguration";
 
 const fetcher = async (url) => {
   const response = await fetch(url, {
     method: "GET",
+    headers: getCredentialRequestHeaders(),
   });
 
   if (response.status !== 200) {

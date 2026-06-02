@@ -4,10 +4,14 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 import Mode from "./mode";
 import Execute from "./execute";
+import Network from "./network";
+import useCredentialNetwork from "@/hooks/useCredentialNetwork";
 
 import styles from "./Settings.module.css";
 
 export default function Settings({ className = "" }) {
+  const { isInternal } = useCredentialNetwork();
+
   return (
     <Dropdown
       className={`${styles.wrap} ${className}`}
@@ -34,6 +38,7 @@ export default function Settings({ className = "" }) {
       <Dropdown.Menu className={styles.menu}>
         <Execute className={styles.item} />
         <Mode className={styles.item} />
+        {isInternal && <Network className={styles.item} />}
       </Dropdown.Menu>
     </Dropdown>
   );

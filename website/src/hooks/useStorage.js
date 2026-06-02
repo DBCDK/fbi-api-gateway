@@ -174,8 +174,6 @@ export default function useStorage() {
   const removeHistoryItem = (tokenOrEntry) => {
     if (!isBrowser) return;
 
-    const removedToken =
-      typeof tokenOrEntry === "string" ? tokenOrEntry : tokenOrEntry?.token;
     const identifier =
       typeof tokenOrEntry === "string"
         ? getHistoryIdentifier(
@@ -195,7 +193,7 @@ export default function useStorage() {
     } catch {}
     mutateHistory(newHistory, false);
 
-    if (selectedToken?.token === removedToken) {
+    if (matchesHistoryEntry(selectedToken, tokenOrEntry || {})) {
       removeSelectedToken();
     }
   };

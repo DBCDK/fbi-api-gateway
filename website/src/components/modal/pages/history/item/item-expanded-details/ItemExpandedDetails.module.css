@@ -1,83 +1,175 @@
 .collapsed {
-  composes: collapsed from "../Item.module.css";
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.2s,
+    padding 0.2s linear 0s;
 }
 
-.note {
-  composes: note from "../Item.module.css";
+:global(.expanded) .collapsed {
+  max-height: 100vh;
+  margin-bottom: var(--pt2);
+  padding: 0 0 var(--pt2);
+  overflow-y: auto;
+  transition:
+    max-height 0.3s,
+    padding 0.2s linear 0s;
 }
 
 .divider {
-  composes: divider from "../Item.module.css";
+  margin: var(--pt2) 0;
+}
+
+:global(.expanded) .divider {
+  width: calc(100% + var(--pt8));
+  margin-left: calc(var(--pt4) * -1);
+}
+
+:global(.expanded) .collapsed::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
+
+:global(.expanded) .collapsed::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:global(.expanded) .collapsed::-webkit-scrollbar-thumb {
+  background: var(--divider);
+  border-radius: var(--pt05);
+}
+
+:global(.expanded) .collapsed::-webkit-scrollbar-thumb:hover {
+  background: var(--divider-dark);
 }
 
 .user {
-  composes: user from "../Item.module.css";
+  margin-top: var(--pt1);
 }
 
-.heading {
-  composes: heading from "../Item.module.css";
+.heading p {
+  font-size: 12px;
 }
 
-.submitted {
-  composes: submitted from "../Item.module.css";
+.submitted,
+.expires,
+.token,
+.refreshToken,
+.clientId,
+.alwaysRequireAgencyId,
+.clientNote,
+.name,
+.mail,
+.municipalityAgencyId,
+.isCPRValidated,
+.culr,
+.loggedInBranchId,
+.loggedInAgencyId,
+.hasOmittedCulrUniqueId,
+.user > div {
+  color: var(--text);
+  margin-top: var(--pt1);
+  margin-bottom: var(--pt1);
 }
 
-.expires {
-  composes: expires from "../Item.module.css";
+.submitted span,
+.expires span {
+  color: var(--text-light);
+  letter-spacing: 0.6px;
+  font-size: 12px;
+  font-family: var(--font-mono-regular);
+}
+
+.expires > div {
+  display: flex;
+  align-items: center;
 }
 
 .indicator {
-  composes: indicator from "../Item.module.css";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: var(--pt1);
 }
 
-.token {
-  composes: token from "../Item.module.css";
+.indicator.expire-less-than-5-days {
+  background-color: var(--error);
 }
 
-.clientId {
-  composes: clientId from "../Item.module.css";
+.indicator.expire-less-than-15-days {
+  background-color: var(--warning-dark);
+}
+
+.indicator.expire-more-or-eq-to-15-days {
+  background-color: var(--success-dark);
 }
 
 .details {
-  composes: details from "../Item.module.css";
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt1);
 }
 
-.alwaysRequireAgencyId {
-  composes: alwaysRequireAgencyId from "../Item.module.css";
+.details > div {
+  width: 100%;
 }
 
-.name {
-  composes: name from "../Item.module.css";
+:global(.missingConfig) .clientId ~ .details > div p:last-child {
+  color: var(--error);
+  font-family: var(--font-mono-semibold);
 }
 
-.mail {
-  composes: mail from "../Item.module.css";
+.fieldRow {
+  display: flex;
+  align-items: center;
+  gap: var(--pt1);
+  margin-top: var(--pt1);
 }
 
-.municipalityAgencyId {
-  composes: municipalityAgencyId from "../Item.module.css";
+.fieldIcon {
+  flex: 0 0 auto;
+  font-size: 16px;
+  line-height: 1;
 }
 
-.isCPRValidated {
-  composes: isCPRValidated from "../Item.module.css";
+.clientNote input {
+  width: 100%;
+  padding: var(--pt1);
+  border: 0;
+  background-color: transparent;
+  color: var(--dark);
+  font-family: var(--font-mono-regular);
 }
 
-.culr {
-  composes: culr from "../Item.module.css";
+.clientNote input::placeholder {
+  color: var(--dark);
+  opacity: 0.7;
 }
 
-.loggedInBranchId {
-  composes: loggedInBranchId from "../Item.module.css";
+.clientNote input:focus {
+  outline: none;
 }
 
-.loggedInAgencyId {
-  composes: loggedInAgencyId from "../Item.module.css";
+.clientNote input:focus::placeholder {
+  color: transparent;
+}
+
+.attachments {
+  margin-top: var(--pt2);
 }
 
 .i {
-  composes: i from "../Item.module.css";
+  font-style: italic;
 }
 
-.hasOmittedCulrUniqueId {
-  composes: hasOmittedCulrUniqueId from "../Item.module.css";
+@media (min-width: 480px) {
+  .details {
+    flex-direction: row;
+  }
+
+  .details > div {
+    width: 50%;
+  }
 }

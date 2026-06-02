@@ -5,9 +5,14 @@
 import fetch from "isomorphic-unfetch";
 import { useEffect, useRef } from "react";
 import useSWR from "swr";
+import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
+import useInternalNetworkCheck from "./useInternalNetworkCheck";
 
 const fetcher = async (url) => {
-  const response = await fetch(url, { method: "GET" });
+  const response = await fetch(url, {
+    method: "GET",
+    headers: getCredentialRequestHeaders(),
+  });
   const status = response.status;
 
   if (response.status !== 200) {
@@ -29,6 +34,7 @@ export default function useCredentialUser({
   token: rawToken = null,
   lookupByEntryId = false,
 } = {}) {
+  const { internalNetworkCheck } = useInternalNetworkCheck();
   const token = rawToken?.replace?.(/test.*:/, "");
   const entryId = id || null;
 
@@ -44,6 +50,10 @@ export default function useCredentialUser({
   } else if (entryId) {
     params.set("entryId", entryId);
     hasLookupTarget = true;
+  }
+
+  if (lookupByEntryId === true && entryId) {
+    params.set("networkCheck", internalNetworkCheck);
   }
 
   const url = hasLookupTarget

@@ -1,5 +1,3 @@
-/* Base */
-
 .item {
   padding: 0;
   width: 100%;
@@ -34,14 +32,6 @@
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
 }
 
-.collapsed {
-  max-height: 0;
-  overflow: hidden;
-  transition:
-    max-height 0.2s,
-    padding 0.2s linear 0s;
-}
-
 .display {
   padding-bottom: var(--pt1);
 }
@@ -53,25 +43,15 @@
 }
 
 .authentication,
-.display .culr,
-.display .note {
+.note {
   font-size: 11px;
   color: var(--text-light);
   letter-spacing: 0.6px;
 }
 
-.authentication span,
-.submitted span,
-.expires span,
-.heading p,
-.item .content .note label,
-.item .content .note input,
-:is(.item.expired, .item.removed) .display p:last-child {
-  font-size: 12px;
-}
-
 .authentication span {
   position: relative;
+  font-size: 12px;
 }
 
 .authentication span i {
@@ -82,35 +62,18 @@
   font-size: 8px;
 }
 
-.display .note {
-  margin-top: var(--pt3);
-}
-
-.item .content .note input {
-  display: inline-block;
-  width: 90%;
-  margin: var(--pt2) 0 0 0;
+.inlineAction {
+  padding: 0;
   border: 0;
-  line-height: 20px;
-  color: var(--text-light);
-  font-family: var(--font-mono-regular);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
-.item .content .note label {
-  display: inline-block;
-  width: 0;
-  opacity: 0;
-  transition:
-    margin 0.3s,
-    width 0.3s;
-}
-
-.content .note input:focus::placeholder {
-  color: transparent;
-}
-
-.display .culr {
-  margin-top: var(--pt2);
+.note {
+  margin-top: var(--pt3);
 }
 
 .missingConfigWarn {
@@ -118,95 +81,128 @@
   color: var(--error);
 }
 
-.collapsed > div,
-.collapsed .user > div {
-  color: var(--text);
-  margin-bottom: var(--pt1);
-  margin-top: var(--pt1);
-}
-
-.submitted span,
-.expires span {
-  color: var(--text-light);
-  letter-spacing: 0.6px;
-  font-family: var(--font-mono-regular);
-}
-
-.expires > div {
-  display: flex;
-  align-items: center;
-}
-
-.expires .indicator {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-right: var(--pt1);
-}
-
-.indicator.expire-less-than-5-days {
-  background-color: var(--error);
-}
-
-.indicator.expire-less-than-15-days {
-  background-color: var(--warning-dark);
-}
-
-.indicator.expire-more-or-eq-to-15-days {
-  background-color: var(--success-dark);
-}
-
-.details {
-  display: flex;
-  flex-direction: column;
-  gap: var(--pt1);
-}
-
-.details > div {
-  width: 100%;
-}
-
-.item.missingConfig .clientId ~ .details > div p:last-child {
-  color: var(--error);
-  font-family: var(--font-mono-semibold);
-}
-
-.user {
-  margin-top: var(--pt1);
-}
-
-.item .content .bottom {
+.bottom {
   margin-top: auto;
 }
 
-.item .content .buttons {
+.buttons {
   display: flex;
   margin-top: auto;
   padding-top: var(--pt2);
   justify-content: flex-end;
+  align-items: center;
+  gap: var(--pt1);
 }
 
-.item .content .buttons .use {
-  margin-left: var(--pt1);
+.removeSlot {
+  position: relative;
+  width: var(--pt15);
+  height: var(--pt5);
 }
 
-.item.inUse .content .buttons .use {
+.use {
+  margin-left: 0;
+}
+
+.remove,
+.removeConfirmActions {
+  position: absolute;
+  inset: 0;
+  transition:
+    opacity 180ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.remove {
+  width: 100%;
+}
+
+.removeVisible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.removeHidden {
+  opacity: 0;
+  transform: scale(0.92);
+  pointer-events: none;
+}
+
+.confirmVisible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.confirmHidden {
+  opacity: 0;
+  transform: scale(1.08);
+  pointer-events: none;
+}
+
+.removeConfirmActions {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--divider);
+  border-radius: 25px;
+  overflow: hidden;
+}
+
+.removeConfirmButton,
+.removeCancelButton {
+  min-width: 0 !important;
+  width: 50%;
+  padding: 0;
+  border-radius: 25px;
+  font-size: 16px;
+  background-color: transparent !important;
+  transform: scale(0.96);
+  transition:
+    background-color 160ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.removeCancelButton {
+  border-bottom-right-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  transition-delay: 0ms;
+}
+
+.removeConfirmButton {
+  border-bottom-left-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  transition-delay: 45ms;
+}
+
+.confirmVisible .removeCancelButton,
+.confirmVisible .removeConfirmButton {
+  transform: scale(1);
+}
+
+.removeConfirmButton:hover,
+.removeConfirmButton:focus-visible {
+  /* background-color: var(--success-dark) !important; */
+  background-color: var(--text-dark) !important;
+}
+
+.removeCancelButton:hover,
+.removeCancelButton:focus-visible {
+  /* background-color: var(--error) !important; */
+  background-color: var(--text-dark) !important;
+}
+
+.inUse .content .use {
   background-color: var(--primary-dark);
   color: var(--text-dark);
 }
 
-.item.inUse .content .buttons .use:hover,
-.item.inUse .content .buttons .use:focus-visible {
+.inUse .content .use:hover,
+.inUse .content .use:focus-visible {
   background-color: var(--text-dark);
   color: var(--white);
 }
 
-.divider {
-  margin: var(--pt2) 0;
-}
-
-.item:is(.expired, .removed) .display {
+.expired .display,
+.removed .display {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,24 +210,27 @@
   color: var(--text-light);
 }
 
-.item:is(.expired, .removed) .display div {
+.expired .display div,
+.removed .display div {
   text-align: center;
 }
 
-.item:is(.expired, .removed) .display p:last-child {
+.expired .display p:last-child,
+.removed .display p:last-child {
   margin-top: var(--pt05);
+  font-size: 12px;
 }
 
-.item.removed .content {
+.removed .content {
   box-shadow: none;
   border-color: transparent !important;
 }
 
-.item.removed .bottom {
+.removed .bottom {
   display: none;
 }
 
-.item.removing {
+.removing {
   height: 0;
   margin-bottom: 0;
   opacity: 0;
@@ -240,36 +239,34 @@
   overflow: hidden;
 }
 
-.item.removing .content {
+.removing .content {
   opacity: 0;
   transform: translateY(-6px) scale(0.99);
   box-shadow: 0px 10px 24px rgba(15, 23, 42, 0.08);
 }
 
-.item.reveal .content {
+.reveal .content {
   animation: item-reveal 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.item.entering {
+.entering {
   transform-origin: top center;
   animation: item-enter 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* State */
-
-.item.expire-less-than-5-days .content {
+.expire-less-than-5-days .content {
   border-color: var(--error);
 }
 
-.item.expire-less-than-15-days .content {
+.expire-less-than-15-days .content {
   border-color: var(--warning-dark);
 }
 
-.item.expire-more-or-eq-to-15-days .content {
+.expire-more-or-eq-to-15-days .content {
   border-color: var(--success-dark);
 }
 
-.item.expanded .content {
+.expanded .content {
   width: calc(100% + var(--pt4));
   height: calc(100vh);
   margin: 0 calc(var(--pt2) * -1);
@@ -286,17 +283,7 @@
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
-.item.expanded .collapsed {
-  max-height: 100vh;
-  margin-bottom: var(--pt2);
-  padding: 0 0 var(--pt2);
-  overflow-y: auto;
-  transition:
-    max-height 0.3s,
-    padding 0.2s linear 0s;
-}
-
-.item.expanded .display {
+.expanded .display {
   margin: 0 calc(var(--pt2) * -1);
   padding: var(--pt2);
   z-index: 1;
@@ -304,31 +291,16 @@
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
-.item.expanded.scrolled .display {
+.expanded .display.displayScrolled {
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
 }
 
-.item.expanded .display :is(.note, .culr),
-.item.expanded .missingConfigWarn {
+.expanded .display :is(.note),
+.expanded .missingConfigWarn {
   display: none;
 }
 
-.item.expanded .content .note input {
-  margin: var(--pt2) 0 0 var(--pt1);
-  transition: margin 0.3s;
-}
-
-.item.expanded .content .note label {
-  width: 16px;
-  opacity: unset;
-}
-
-.item.expanded .divider {
-  width: calc(100% + var(--pt8));
-  margin-left: calc(var(--pt4) * -1);
-}
-
-.item.missingConfig .display .note {
+.missingConfig .display .note {
   display: none;
 }
 
@@ -415,62 +387,8 @@
   }
 }
 
-.item.expanded .content .collapsed::-webkit-scrollbar {
-  display: block;
-  width: 8px;
-  height: 8px;
-}
-
-.item.expanded .content .collapsed::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.item.expanded .content .collapsed::-webkit-scrollbar-thumb {
-  background: var(--divider);
-  border-radius: var(--pt05);
-}
-
-.item.expanded .content .collapsed::-webkit-scrollbar-thumb:hover {
-  background: var(--divider-dark);
-}
-
-/* Dark mode */
-
-:global(body.dark) .item .content .buttons .use,
-:global(body.dark) .item.inUse .content .buttons .use {
-  background-color: var(--dark-light);
-  color: var(--text-dark);
-}
-
-:global(body.dark) .item .content .buttons .use:is(:hover, :focus-visible),
-:global(body.dark)
-  .item.inUse
-  .content
-  .buttons
-  .use:is(:hover, :focus-visible) {
-  background-color: var(--text-dark);
-}
-
-:global(body.dark) .item .note input {
-  background-color: var(--dark);
-}
-
-:global(body.dark) .item.removed .content {
-  background-color: var(--dark-light);
-}
-
-:global(body.dark) .item hr {
-  border-color: var(--dark);
-}
-
 :global(body.dark) .item.isLoading {
   background-color: var(--dark);
-}
-
-:global(body.dark) .item.expired .use {
-  background-color: var(--dark-light) !important;
-  color: var(--text-light) !important;
-  border: none;
 }
 
 :global(body.dark) .item.isLoading::after {
@@ -484,14 +402,27 @@
   opacity: 0.5;
 }
 
-/* Breakpoints */
+:global(body.dark) .content .use,
+:global(body.dark) .inUse .content .use {
+  background-color: var(--dark-light);
+  color: var(--text-dark);
+}
 
-@media (min-width: 480px) {
-  .details {
-    flex-direction: row;
-  }
+:global(body.dark) .content .use:is(:hover, :focus-visible),
+:global(body.dark) .inUse .content .use:is(:hover, :focus-visible) {
+  background-color: var(--text-dark);
+}
 
-  .details > div {
-    width: 50%;
-  }
+:global(body.dark) .removed .content {
+  background-color: var(--dark-light);
+}
+
+:global(body.dark) .item hr {
+  border-color: var(--dark);
+}
+
+:global(body.dark) .expired .use {
+  background-color: var(--dark-light) !important;
+  color: var(--text-light) !important;
+  border: none;
 }

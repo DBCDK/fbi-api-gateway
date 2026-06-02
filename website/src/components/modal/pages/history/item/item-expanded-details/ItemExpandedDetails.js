@@ -9,83 +9,37 @@ import ItemClientSecretForm from "../item-client-secret-form";
 import styles from "./ItemExpandedDetails.module.css";
 
 export default function ItemExpandedDetails({
-  id,
-  type,
-  token,
-  clientId,
-  profile,
-  agency,
-  note,
-  open,
-  scrollRef,
-  submitted,
-  expires,
-  expireStatusClass,
-  configuration,
-  user,
-  needsClientSecret,
-  hasCulrAccount,
-  message,
-  setNote,
-  setHistoryItem,
-  clientSecret,
-  clientSecretError,
-  setClientSecret,
-  requiresClientSecret,
-  hasClientSecret = false,
-  configurationStatus,
-  showClientSecretForm = false,
-  onClientSecretSubmit,
+  item,
+  ui,
+  form,
+  actions,
 }) {
+  const {
+    id,
+    type,
+    token,
+    clientId,
+    profile,
+    note,
+    configuration,
+    user,
+    hasCulrAccount,
+    submitted,
+    expires,
+    expireStatus,
+  } = item;
+  const { open, scrollRef, showExpandedClientSecretForm } = ui;
+  const { clientSecret, clientSecretError, clientSecretInputId } = form;
   const agencyIdsList = configuration?.agencies;
   const defaultAgencyId = configuration?.defaultAgency;
   const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId;
   const isAuthenticated = user?.isAuthenticated;
   const agencies = user?.agencies;
   const hasOmittedCulrData = user?.omittedCulrData;
+  const noteInputId = `input-note-${id || token || clientId}`;
 
   return (
     <div className={styles.collapsed} ref={scrollRef}>
-      <div className={styles.note}>
-        <label htmlFor={`input-note-${id || token || clientId}`}>✏️</label>
-        <input
-          id={`input-note-${id || token || clientId}`}
-          value={note}
-          disabled={!open}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.keyCode === 13) {
-              const el = document.getElementById(
-                `input-note-${id || token || clientId}`
-              );
-              el.blur();
-            }
-          }}
-          autoComplete="off"
-          maxLength="50"
-          placeholder={open ? " Some token note ..." : false}
-          onChange={(e) => setNote(e.target.value)}
-          onBlur={() =>
-            setHistoryItem({
-              id,
-              type,
-              token,
-              clientId,
-              profile,
-              agency,
-              note,
-              configuration,
-              user,
-              requiresClientSecret,
-              hasClientSecret,
-              status: configurationStatus,
-              message,
-            })
-          }
-        />
-      </div>
-
-      <hr className={styles.divider} />
-
       <div className={styles.user}>
         <div className={styles.heading}>
           <Text type="text1">Token details</Text>
@@ -101,7 +55,11 @@ export default function ItemExpandedDetails({
         <div className={styles.expires}>
           <Text type="text4">Expiration date</Text>
           <div>
-            <i className={`${styles.indicator} ${expireStatusClass}`} />
+            <i
+              className={`${styles.indicator} ${
+                expireStatus ? styles[expireStatus] : ""
+              }`}
+            />
             <Text type="text1">
               {expires.date}
               <span>{expires.time}</span>
@@ -156,13 +114,51 @@ export default function ItemExpandedDetails({
           />
         )}
 
-        {showClientSecretForm && (
-          <ItemClientSecretForm
-            clientSecret={clientSecret}
-            clientSecretError={clientSecretError}
-            setClientSecret={setClientSecret}
-            onSubmit={onClientSecretSubmit}
-          />
+        {showExpandedClientSecretForm && (
+          <>
+            <hr className={styles.divider} />
+
+            <div className={styles.attachments}>
+              <div className={styles.heading}>
+                <Text type="text1">Client attachments</Text>
+              </div>
+
+              <div className={styles.clientNote}>
+                <Text type="text4">Client note</Text>
+                <div className={styles.fieldRow}>
+                  <span className={styles.fieldIcon} aria-hidden="true">
+                    📝
+                  </span>
+                  <input
+                    id={noteInputId}
+                    value={note}
+                    disabled={!open}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.keyCode === 13) {
+                        const el = document.getElementById(noteInputId);
+                        el.blur();
+                      }
+                    }}
+                    autoComplete="off"
+                    maxLength="50"
+                    placeholder={open ? "Add client note ..." : false}
+                    onChange={(e) => actions.setNote(e.target.value)}
+                    onBlur={() => actions.saveNote()}
+                  />
+                </div>
+              </div>
+
+              {showExpandedClientSecretForm && (
+                <ItemClientSecretForm
+                  inputId={clientSecretInputId}
+                  clientSecret={clientSecret}
+                  clientSecretError={clientSecretError}
+                  setClientSecret={actions.setClientSecret}
+                  showAction={false}
+                />
+              )}
+            </div>
+          </>
         )}
       </div>
 
@@ -240,7 +236,7 @@ export default function ItemExpandedDetails({
             )}
           </div>
           {user?.identityProviderUsed && (
-            <div className={styles.i}>
+            <div>
               <Text type="text4">IdentityProviderUsed</Text>
               <Text type="text1">{user?.identityProviderUsed}</Text>
             </div>

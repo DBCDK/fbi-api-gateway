@@ -41,7 +41,7 @@ export default function Header() {
   }, [elRef]);
 
   const { selectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const { configuration, status, isLoading } = useConfiguration(selectedToken);
   const { icon, theme } = useTheme();
 
   const { user } = useUser(selectedToken);
@@ -51,6 +51,9 @@ export default function Header() {
     configuration &&
     Object?.keys(configuration).length &&
     hasAvailableAgency(configuration);
+
+  const hasValidationError =
+    selectedToken?.token && !isLoading && status !== "OK";
 
   const displayName = configuration?.displayName;
   const isAuthenticated = user?.isAuthenticated;
@@ -128,7 +131,7 @@ export default function Header() {
             </nav>
             <span />
 
-            {!isIndex && selectedToken && (
+            {!isIndex && selectedToken && !isLoading && !hasValidationError && (
               <div className={styles.info}>
                 <div>
                   <Text type="text4">{displayName}</Text>

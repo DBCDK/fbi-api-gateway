@@ -77,5 +77,12 @@ export default async function handler(req, res) {
         configurationResponse.body?.clientId ||
         null,
       resolvedType: resolved.entry?.type || null,
+      resolvedHasClientSecret: Boolean(resolved.entry?.hasClientSecret),
+      resolvedHasRefreshToken: Boolean(
+        resolved.entry?.hasRefreshToken || resolved.entry?.refreshToken
+      ),
+      resolvedSupportsRefreshToken: Boolean(
+        configurationResponse.body?.supportsRefreshToken
+      ),
     });
 }

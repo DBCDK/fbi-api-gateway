@@ -3,7 +3,9 @@ import { useEffect, useRef } from "react";
 import useSWR from "swr";
 
 import { isToken } from "@/components/utils";
+import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
 import useStorage from "./useStorage";
+import useInternalNetworkCheck from "./useInternalNetworkCheck";
 
 const STATUS_MAP = {
   200: "OK",
@@ -16,6 +18,7 @@ const STATUS_MAP = {
 const fetcher = async (url) => {
   const response = await fetch(url, {
     method: "GET",
+    headers: getCredentialRequestHeaders(),
   });
 
   const status = response.status;
@@ -35,6 +38,7 @@ const fetcher = async (url) => {
 
 export default function useConfiguration(props) {
   const { setHistoryItem, setSelectedToken } = useStorage();
+  const { internalNetworkCheck } = useInternalNetworkCheck();
   const token = props?.token?.replace(/test.*:/, "");
   const agency = props?.agency;
   const entryId = props?.id || null;
@@ -49,6 +53,9 @@ export default function useConfiguration(props) {
   }
   if (agency) {
     credentialParams.set("agency", agency);
+  }
+  if (entryId) {
+    credentialParams.set("networkCheck", internalNetworkCheck);
   }
 
   const baseUrl = usesCredentialEndpoint
@@ -74,6 +81,11 @@ export default function useConfiguration(props) {
     fetcher
   );
 
+  const requestKey = [
+    entryId || token || "",
+    agency || "",
+    usesCredentialEndpoint ? internalNetworkCheck : "",
+  ].join(":");
   const data = agencyData || baseData;
   const error = agencyError || baseError;
   const isLoadingBase = isValid && !baseData && !baseError;
@@ -81,12 +93,24 @@ export default function useConfiguration(props) {
   const previousDataRef = useRef(null);
 
   useEffect(() => {
-    if (data?.config && Object.keys(data.config).length > 0) {
-      previousDataRef.current = data;
+    if (!isValid) {
+      previousDataRef.current = null;
+      return;
     }
-  }, [data]);
 
-  const stableData = data || previousDataRef.current;
+    if (data?.config && Object.keys(data.config).length > 0) {
+      previousDataRef.current = {
+        key: requestKey,
+        data,
+      };
+    }
+  }, [data, isValid, requestKey]);
+
+  const stableData = isValid
+    ? data || (previousDataRef.current?.key === requestKey
+        ? previousDataRef.current.data
+        : null)
+    : null;
 
   useEffect(() => {
     const resolvedToken = stableData?.config?.resolvedToken;
@@ -100,6 +124,13 @@ export default function useConfiguration(props) {
       type: stableData?.config?.resolvedType || props?.type || "token",
       token: resolvedToken,
       clientId: stableData?.config?.resolvedClientId || props?.clientId || null,
+      hasClientSecret:
+        stableData?.config?.resolvedHasClientSecret ?? props?.hasClientSecret,
+      hasRefreshToken:
+        stableData?.config?.resolvedHasRefreshToken ?? props?.hasRefreshToken,
+      supportsRefreshToken:
+        stableData?.config?.resolvedSupportsRefreshToken ??
+        props?.supportsRefreshToken,
       profile: props?.profile,
       agency: props?.agency,
       configuration: stableData?.config,
@@ -114,13 +145,19 @@ export default function useConfiguration(props) {
     entryId,
     props?.agency,
     props?.clientId,
+    props?.hasClientSecret,
+    props?.hasRefreshToken,
     props?.profile,
+    props?.supportsRefreshToken,
     props?.token,
     props?.type,
     setHistoryItem,
     setSelectedToken,
     stableData?.config,
     stableData?.config?.resolvedClientId,
+    stableData?.config?.resolvedHasClientSecret,
+    stableData?.config?.resolvedHasRefreshToken,
+    stableData?.config?.resolvedSupportsRefreshToken,
     stableData?.config?.resolvedToken,
     stableData?.config?.resolvedType,
     usesCredentialEndpoint,

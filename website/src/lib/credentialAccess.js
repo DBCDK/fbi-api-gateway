@@ -5,6 +5,7 @@
 import {
   getAccessTokenForClient,
   refreshAccessToken,
+  isInternalRequest,
 } from "./credentialProviders";
 import { upsertCredentialSessionEntry } from "./credentialSession";
 
@@ -22,7 +23,13 @@ function isTokenStillValid(entry) {
   return entry.expiresAt - Date.now() > EXPIRY_BUFFER_MS;
 }
 
-async function persistTokenState(ctx, entryId, entry, tokenState) {
+async function persistTokenState(
+  ctx,
+  entryId,
+  entry,
+  tokenState,
+  network = entry?.network || null
+) {
   const nextEntry = await upsertCredentialSessionEntry(ctx, entryId, {
     ...entry,
     token: tokenState.token,
@@ -30,6 +37,7 @@ async function persistTokenState(ctx, entryId, entry, tokenState) {
     tokenType: tokenState.tokenType || entry?.tokenType || "Bearer",
     expiresAt: tokenState.expiresAt || null,
     requiresClientSecret: false,
+    network,
   });
 
   return nextEntry;
@@ -76,14 +84,6 @@ export async function resolveCredentialAccessToken({
     }
   }
 
-  if (entry.requiresClientSecret && !entry.clientSecret) {
-    return {
-      status: 428,
-      entry,
-      token: null,
-    };
-  }
-
   if (!entry.clientId) {
     return {
       status: entry.requiresClientSecret ? 428 : 401,
@@ -92,23 +92,35 @@ export async function resolveCredentialAccessToken({
     };
   }
 
+  const resolvedNetwork = req
+    ? isInternalRequest(req)
+      ? "internal"
+      : "external"
+    : entry.network || null;
+  const preferredNetwork = entry.clientSecret ? entry.network || null : null;
+
   const tokenState = await getAccessTokenForClient({
     clientId: entry.clientId,
     clientSecret: entry.clientSecret || null,
-    network: entry.network || null,
+    network: preferredNetwork,
     req,
   });
 
   if (tokenState.status !== 200 || !tokenState.token) {
     return {
-      status:
-        tokenState.status === 428 || entry.requiresClientSecret ? 428 : 401,
+      status: tokenState.status === 428 ? 428 : 401,
       entry,
       token: null,
     };
   }
 
-  const nextEntry = await persistTokenState(ctx, entryId, entry, tokenState);
+  const nextEntry = await persistTokenState(
+    ctx,
+    entryId,
+    entry,
+    tokenState,
+    resolvedNetwork
+  );
 
   return {
     status: 200,

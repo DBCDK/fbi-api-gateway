@@ -2,7 +2,9 @@
  * @file Client-side hook for resolving a user-entered token or clientId
  * through the credential API and returning the normalized server response.
  */
+import { useCallback } from "react";
 import fetch from "isomorphic-unfetch";
+import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
 
 export default function useCredentialResolve() {
   function maskValue(value, visible = 6) {
@@ -31,94 +33,125 @@ export default function useCredentialResolve() {
     return normalized;
   }
 
-  async function resolveCredential({
-    value,
-    clientId,
-    clientSecret,
-    refreshToken,
-    tokenType,
-    expiresAt,
-    expiresIn,
-    entryId,
-    agency,
-  }) {
-    console.groupCollapsed(
-      `%c[credentials][client] resolve`,
-      "color:#d97706;font-weight:bold;"
-    );
-    console.info("request", {
-      valuePreview: maskValue(value),
+  const resolveCredential = useCallback(
+    async function resolveCredential({
+      value,
       clientId,
-      hasClientSecret: Boolean(clientSecret),
-      hasRefreshToken: Boolean(refreshToken),
-      tokenType: tokenType || null,
-      expiresAt: expiresAt || null,
-      expiresIn: expiresIn || null,
-      entryId: entryId || null,
-      agency: agency || null,
-    });
-
-    const response = await fetch("/api/credentials/resolve", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        value,
+      clientSecret,
+      refreshToken,
+      tokenType,
+      expiresAt,
+      expiresIn,
+      entryId,
+      agency,
+    }) {
+      console.groupCollapsed(
+        `%c[credentials][client] resolve`,
+        "color:#d97706;font-weight:bold;"
+      );
+      console.info("request", {
+        valuePreview: maskValue(value),
         clientId,
-        clientSecret,
-        refreshToken,
-        tokenType,
-        expiresAt,
-        expiresIn,
-        entryId,
-        agency,
-      }),
-    });
+        hasClientSecret: Boolean(clientSecret),
+        hasRefreshToken: Boolean(refreshToken),
+        tokenType: tokenType || null,
+        expiresAt: expiresAt || null,
+        expiresIn: expiresIn || null,
+        entryId: entryId || null,
+        agency: agency || null,
+      });
 
-    const rawBody = await response.text().catch(() => "");
-    let body = {};
+      let response;
 
-    try {
-      body = rawBody ? JSON.parse(rawBody) : {};
-    } catch {
-      body = {};
-    }
+      try {
+        response = await fetch("/api/credentials/resolve", {
+          method: "POST",
+          headers: {
+            ...getCredentialRequestHeaders({
+              "Content-Type": "application/json",
+            }),
+          },
+          body: JSON.stringify({
+            value,
+            clientId,
+            clientSecret,
+            refreshToken,
+            tokenType,
+            expiresAt,
+            expiresIn,
+            entryId,
+            agency,
+          }),
+        });
+      } catch (error) {
+        const result = {
+          ok: false,
+          statusCode: 0,
+          statusText: "FETCH_FAILED",
+          rawBody: "",
+          status: "FETCH_FAILED",
+          message: error?.message || "Failed to fetch",
+        };
 
-    const result = {
-      ok: response.ok,
-      statusCode: response.status,
-      statusText: response.statusText,
-      rawBody,
-      message:
-        body?.message ||
-        (response.ok
-          ? ""
-          : getFallbackMessage(rawBody, response.statusText)),
-      ...body,
-    };
+        console.info("response", {
+          ok: result.ok,
+          statusCode: result.statusCode,
+          status: result.status,
+          message: result.message,
+          network: null,
+          detectedIp: null,
+          safeEntry: null,
+        });
+        console.groupEnd();
 
-    console.info("response", {
-      ok: result.ok,
-      statusCode: result.statusCode,
-      status: result.status,
-      message: result.message,
-      network: result.network || null,
-      detectedIp: result.detectedIp || null,
-      safeEntry: result.safeEntry
-        ? {
-            id: result.safeEntry.id,
-            type: result.safeEntry.type,
-            clientId: result.safeEntry.clientId,
-            tokenPreview: maskValue(result.safeEntry.token),
-            requiresClientSecret: result.safeEntry.requiresClientSecret,
-          }
-        : null,
-    });
-    console.groupEnd();
+        return result;
+      }
 
-    return result;
-  }
+      const rawBody = await response.text().catch(() => "");
+      let body = {};
+
+      try {
+        body = rawBody ? JSON.parse(rawBody) : {};
+      } catch {
+        body = {};
+      }
+
+      const result = {
+        ok: response.ok,
+        statusCode: response.status,
+        statusText: response.statusText,
+        rawBody,
+        message:
+          body?.message ||
+          (response.ok
+            ? ""
+            : getFallbackMessage(rawBody, response.statusText)),
+        ...body,
+      };
+
+      console.info("response", {
+        ok: result.ok,
+        statusCode: result.statusCode,
+        status: result.status,
+        message: result.message,
+        network: result.network || null,
+        detectedIp: result.detectedIp || null,
+        safeEntry: result.safeEntry
+          ? {
+              id: result.safeEntry.id,
+              type: result.safeEntry.type,
+              clientId: result.safeEntry.clientId,
+              tokenPreview: maskValue(result.safeEntry.token),
+              requiresClientSecret: result.safeEntry.requiresClientSecret,
+            }
+          : null,
+      });
+      console.groupEnd();
+
+      return result;
+    },
+    []
+  );
 
   return { resolveCredential };
 }

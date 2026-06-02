@@ -11,21 +11,51 @@ export default function ItemClientSecretForm({
   clientSecret = "",
   clientSecretError = "",
   setClientSecret,
-  showDivider = true,
+  inputId,
+  actionLabel = "Update & Use",
   showAction = true,
+  inlineWarning = false,
   onSubmit = null,
 }) {
   return (
     <>
-      {showDivider && <hr className={styles.divider} />}
-      <div className={styles.clientId}>
-        <Text type="text4">ClientSecret</Text>
-        <input
-          type="password"
-          value={clientSecret}
-          placeholder="Enter clientSecret ..."
-          onChange={(e) => setClientSecret(e.target.value)}
-        />
+      <div
+        className={`${styles.clientId} ${
+          inlineWarning ? styles.inlineWarning : ""
+        }`}
+      >
+        {inlineWarning ? (
+          <>
+            <span className={styles.warningIcon} aria-hidden="true">
+              ⚠️
+            </span>
+            <input
+              id={inputId}
+              type="password"
+              className={styles.warningInput}
+              value={clientSecret}
+              placeholder="Enter clientSecret ..."
+              onChange={(e) => setClientSecret(e.target.value)}
+            />
+          </>
+        ) : (
+          <>
+            <Text type="text4">ClientSecret</Text>
+            <div className={styles.fieldRow}>
+              <span className={styles.fieldIcon} aria-hidden="true">
+                🔑
+              </span>
+              <input
+                id={inputId}
+                type="password"
+                className={styles.fieldInput}
+                value={clientSecret}
+                placeholder="Enter clientSecret ..."
+                onChange={(e) => setClientSecret(e.target.value)}
+              />
+            </div>
+          </>
+        )}
       </div>
       {showAction && (
         <div className={styles.buttons}>
@@ -35,7 +65,7 @@ export default function ItemClientSecretForm({
             disabled={!clientSecret}
             onClick={onSubmit}
           >
-            Update and use
+            {actionLabel}
           </Button>
         </div>
       )}
