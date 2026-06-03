@@ -21,11 +21,17 @@ const fetcher = async (url) => {
   return res.user;
 };
 
-export default function useUser(props) {
-  const { configuration } = useConfiguration(props);
+export default function useUser(
+  props,
+  { enabled = true, syncResolvedToken = true } = {}
+) {
+  const { configuration } = useConfiguration(props, {
+    enabled,
+    syncResolvedToken,
+  });
   const profile = props?.profile ?? configuration?.profiles?.[0] ?? null;
   const entryId = props?.id || null;
-  const isValid = isToken(props?.token);
+  const isValid = enabled && isToken(props?.token);
   const params = new URLSearchParams();
 
   if (entryId) {

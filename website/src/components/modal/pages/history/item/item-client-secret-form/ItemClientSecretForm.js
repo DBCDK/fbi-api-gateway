@@ -27,14 +27,15 @@ export default function ItemClientSecretForm({
         {inlineWarning ? (
           <>
             <span className={styles.warningIcon} aria-hidden="true">
-              ⚠️
+              {/* ⚠️ */}
+              🤫
             </span>
             <input
               id={inputId}
               type="password"
               className={styles.warningInput}
               value={clientSecret}
-              placeholder="Enter clientSecret ..."
+              placeholder="Enter client secret ..."
               onChange={(e) => setClientSecret(e.target.value)}
             />
           </>
@@ -43,14 +44,15 @@ export default function ItemClientSecretForm({
             <Text type="text4">ClientSecret</Text>
             <div className={styles.fieldRow}>
               <span className={styles.fieldIcon} aria-hidden="true">
-                🔑
+                {/* 🔑 */}
+                🤫
               </span>
               <input
                 id={inputId}
                 type="password"
                 className={styles.fieldInput}
                 value={clientSecret}
-                placeholder="Enter clientSecret ..."
+                placeholder="Enter client secret ..."
                 onChange={(e) => setClientSecret(e.target.value)}
               />
             </div>

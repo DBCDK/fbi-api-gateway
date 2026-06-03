@@ -9,23 +9,50 @@ import useInternalNetworkCheck from "@/hooks/useInternalNetworkCheck";
 import useStorage from "@/hooks/useStorage";
 import useUser from "@/hooks/useUser";
 
-import { dateConverter, timeConverter, daysBetween } from "@/components/utils";
+import { dateConverter, timeConverter } from "@/components/utils";
 import { hasAvailableAgency } from "@/utils/configuration";
 
-function getExpirationStatus(date) {
-  const days = daysBetween(date, new Date());
+function getCredentialHealthStatus({
+  isExternalNetwork = false,
+  hasClientSecret = false,
+  hasRefreshToken = false,
+  hasWorkingToken = false,
+  requiresManualSecret = false,
+  expiresAt = null,
+}) {
+  if (requiresManualSecret) {
+    return "health-critical";
+  }
 
-  if (days < 5) {
-    return "expire-less-than-5-days";
-  }
-  if (days < 15) {
-    return "expire-less-than-15-days";
-  }
-  if (days >= 15) {
-    return "expire-more-or-eq-to-15-days";
+  const canAutoRenew =
+    !isExternalNetwork || hasClientSecret || hasRefreshToken;
+
+  if (canAutoRenew) {
+    return "health-safe";
   }
 
-  return "";
+  if (!hasWorkingToken) {
+    return "health-critical";
+  }
+
+  if (!expiresAt) {
+    return "health-warning";
+  }
+
+  const expiresAtTimestamp = new Date(expiresAt).getTime();
+
+  if (!Number.isFinite(expiresAtTimestamp)) {
+    return "health-warning";
+  }
+
+  const hoursUntilExpiration =
+    (expiresAtTimestamp - Date.now()) / (1000 * 60 * 60);
+
+  if (hoursUntilExpiration <= 24) {
+    return "health-critical";
+  }
+
+  return "health-warning";
 }
 
 function hasData(value) {
@@ -38,14 +65,14 @@ function getClientSecretMessage(reasonCode, fallbackMessage) {
   }
 
   if (reasonCode === "CLIENT_SECRET_AUTO_EXCHANGE_FAILED") {
-    return "Automatic token exchange failed. Enter clientSecret manually.";
+    return "Automatic token exchange failed. Enter secret manually.";
   }
 
   if (reasonCode === "CLIENT_SECRET_REQUIRED") {
-    return "ClientSecret is required";
+    return "Secret is required";
   }
 
-  return "ClientSecret is required before token exchange.";
+  return "Secret is required before token exchange";
 }
 
 export default function useHistoryItemController(props) {
@@ -59,13 +86,19 @@ export default function useHistoryItemController(props) {
   const [clientSecretError, setClientSecretError] = useState("");
   const [containerScrollY, setContainerScrollY] = useState(0);
   const [shouldFocusClientSecret, setShouldFocusClientSecret] = useState(false);
+  const [isUseButtonHovered, setIsUseButtonHovered] = useState(false);
 
   const wasPendingRef = useRef(props.isPending === true);
   const elRef = useRef();
   const scrollRef = useRef();
   const isClientEntry = props.type === "client";
 
-  const { setSelectedToken, setHistoryItem, removeHistoryItem } = useStorage();
+  const {
+    setSelectedToken,
+    removeSelectedToken,
+    setHistoryItem,
+    removeHistoryItem,
+  } = useStorage();
   const { resolveCredential } = useCredentialResolve();
   const { attachClientSecret } = useCredentialClientSecret();
   const { internalNetworkCheck } = useInternalNetworkCheck();
@@ -74,8 +107,14 @@ export default function useHistoryItemController(props) {
     configuration: tokenConfiguration,
     status: tokenStatus,
     isLoading: tokenIsLoading,
-  } = useConfiguration(props);
-  const { user: tokenUser } = useUser(props);
+  } = useConfiguration(props, {
+    enabled: !isClientEntry,
+    syncResolvedToken: false,
+  });
+  const { user: tokenUser } = useUser(props, {
+    enabled: !isClientEntry,
+    syncResolvedToken: false,
+  });
 
   const {
     configuration: credentialConfiguration,
@@ -93,6 +132,7 @@ export default function useHistoryItemController(props) {
       id: props.id,
       token: props.token,
       lookupByEntryId: isClientEntry,
+      enabled: !isClientEntry || credentialStatus === "OK",
     });
 
   useEffect(() => {
@@ -210,7 +250,6 @@ export default function useHistoryItemController(props) {
     configurationStatus !== "CLIENT_SECRET_REQUIRED";
   const hasWorkingToken = Boolean(token) && !hasValidationError;
   const shouldPromptForGlobalClientSecret =
-    props.type === "client" &&
     isGlobalNetworkSelected &&
     Boolean(clientId) &&
     hasWorkingToken &&
@@ -235,7 +274,17 @@ export default function useHistoryItemController(props) {
         date: "Not resolved yet",
         time: "",
       };
-  const expireStatus = getExpirationStatus(configuration?.expires);
+  const expireStatus = getCredentialHealthStatus({
+    isExternalNetwork: isGlobalNetworkSelected,
+    hasClientSecret: hasAttachedClientSecret,
+    hasRefreshToken:
+      configuration?.resolvedHasRefreshToken ??
+      props.hasRefreshToken ??
+      false,
+    hasWorkingToken,
+    requiresManualSecret: needsClientSecret,
+    expiresAt: configuration?.expires || null,
+  });
 
   const itemOffsetTop = elRef.current?.offsetTop || 0;
   const contentTop = open ? containerScrollY - itemOffsetTop : 0;
@@ -243,7 +292,9 @@ export default function useHistoryItemController(props) {
     needsClientSecret || clientSecret
       ? "Update & Use"
       : props.inUse
-        ? "I'm in use"
+        ? isUseButtonHovered
+          ? "Don't use"
+          : "I'm in use"
         : "Use";
   const isUseDisabled = needsClientSecret
     ? !clientSecret
@@ -252,8 +303,14 @@ export default function useHistoryItemController(props) {
       : hasValidationError || !token;
   const statusMessage =
     props.message ||
-    (configurationStatus === "INVALID" && "This token is invalid 🧐") ||
-    (configurationStatus === "EXPIRED" && "This token is expired 😔") ||
+    (configurationStatus === "INVALID" &&
+      (isClientEntry
+        ? "This client could not be validated 🧐"
+        : "This token is invalid 🧐")) ||
+    (configurationStatus === "EXPIRED" &&
+      (isClientEntry
+        ? "This client could not be renewed 😔"
+        : "This token is expired 😔")) ||
     "Error validating token 🤔";
   const clientSecretMessage = getClientSecretMessage(
     props.reasonCode,
@@ -311,7 +368,8 @@ export default function useHistoryItemController(props) {
         id: response.safeEntry.id,
         type: response.safeEntry.type,
         clientId: response.safeEntry.clientId,
-      }
+      },
+      { reorderHistory: false }
     );
     mutateCredentialConfiguration?.();
     mutateCredentialUser?.();
@@ -350,7 +408,8 @@ export default function useHistoryItemController(props) {
           id: response.safeEntry.id,
           type: response.safeEntry.type,
           clientId: response.safeEntry.clientId,
-        }
+        },
+        { reorderHistory: false }
       );
     }
 
@@ -361,6 +420,11 @@ export default function useHistoryItemController(props) {
   }
 
   async function handleUseAction() {
+    if (props.inUse) {
+      removeSelectedToken();
+      return;
+    }
+
     if (needsClientSecret) {
       await handleResolveWithClientSecret();
       return;
@@ -374,11 +438,17 @@ export default function useHistoryItemController(props) {
       }
     }
 
-    setSelectedToken(token, profile, agency, {
-      id: props.id,
-      type: props.type,
-      clientId,
-    });
+    setSelectedToken(
+      token,
+      profile,
+      agency,
+      {
+        id: props.id,
+        type: props.type,
+        clientId,
+      },
+      { reorderHistory: false }
+    );
   }
 
   function handleRemoveAction() {
@@ -423,6 +493,7 @@ export default function useHistoryItemController(props) {
       isEntering: props.isEntering,
       isRemoving: props.isRemoving,
       displayName: configuration?.displayName,
+      logoColor: configuration?.logoColor || null,
       statusMessage,
       clientSecretMessage,
       hasCulrAccount,
@@ -464,6 +535,7 @@ export default function useHistoryItemController(props) {
       confirmRemove: handleRemoveAction,
       useCredential: handleUseAction,
       focusClientSecret,
+      setUseButtonHovered: setIsUseButtonHovered,
     },
   };
 }

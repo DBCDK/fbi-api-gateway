@@ -36,13 +36,16 @@ const fetcher = async (url) => {
   return { config, statusCode: 200, status: "OK" };
 };
 
-export default function useConfiguration(props) {
+export default function useConfiguration(
+  props,
+  { enabled = true, syncResolvedToken = true } = {}
+) {
   const { setHistoryItem, setSelectedToken } = useStorage();
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const token = props?.token?.replace(/test.*:/, "");
   const agency = props?.agency;
   const entryId = props?.id || null;
-  const isValid = isToken(props?.token);
+  const isValid = enabled && isToken(props?.token);
   const usesCredentialEndpoint = Boolean(entryId);
 
   const credentialParams = new URLSearchParams();
@@ -115,7 +118,12 @@ export default function useConfiguration(props) {
   useEffect(() => {
     const resolvedToken = stableData?.config?.resolvedToken;
 
-    if (!usesCredentialEndpoint || !resolvedToken || resolvedToken === props?.token) {
+    if (
+      !syncResolvedToken ||
+      !usesCredentialEndpoint ||
+      !resolvedToken ||
+      resolvedToken === props?.token
+    ) {
       return;
     }
 
@@ -160,6 +168,7 @@ export default function useConfiguration(props) {
     stableData?.config?.resolvedSupportsRefreshToken,
     stableData?.config?.resolvedToken,
     stableData?.config?.resolvedType,
+    syncResolvedToken,
     usesCredentialEndpoint,
   ]);
 

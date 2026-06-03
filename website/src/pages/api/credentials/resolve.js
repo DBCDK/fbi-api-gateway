@@ -17,6 +17,22 @@ function getType(value) {
   return detectCredentialType(value);
 }
 
+function getCredentialEntryId({ type, token = null, clientId = null }) {
+  if (clientId) {
+    return `client:${clientId}`;
+  }
+
+  if (type === "token" && token) {
+    return `token:${token}`;
+  }
+
+  if (type === "client" && clientId) {
+    return `client:${clientId}`;
+  }
+
+  return null;
+}
+
 function buildSafeEntry({
   type,
   token = null,
@@ -32,11 +48,17 @@ function buildSafeEntry({
   reasonCode = null,
   message = null,
 }) {
+  const effectiveClientId = clientId || configuration?.clientId || null;
+
   return {
-    id: `${type}:${type === "token" ? token : clientId}`,
+    id: getCredentialEntryId({
+      type,
+      token,
+      clientId: effectiveClientId,
+    }),
     type,
     token,
-    clientId: clientId || configuration?.clientId || null,
+    clientId: effectiveClientId,
     hasClientSecret,
     hasRefreshToken,
     supportsRefreshToken:
@@ -71,6 +93,15 @@ function logCredentialDebug(step, details = {}) {
   const timestamp = new Date().toISOString();
   console.info(`\n[credentials][resolve][${timestamp}] ${step}`);
   console.info(details);
+}
+
+function toExpiresAt(value) {
+  if (!value || typeof value !== "string") {
+    return null;
+  }
+
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 async function respondWithClientSecretRequired({
@@ -172,18 +203,37 @@ export default async function handler(req, res) {
 
   try {
     if (type === "token") {
+      const network = isInternalRequest(req) ? "internal" : "external";
       const configurationResponse = await buildConfigurationResponse(
         normalizedValue,
         agency
       );
       const userResponse = await buildUserResponse(normalizedValue);
+      const resolvedClientId =
+        configurationResponse.body?.clientId || clientId || null;
+      const resolvedExpiresAt =
+        expiresAt ||
+        (Number.isFinite(normalizedExpiresIn) && normalizedExpiresIn > 0
+          ? Date.now() + normalizedExpiresIn * 1000
+          : toExpiresAt(configurationResponse.body?.expires));
+      const canonicalType = resolvedClientId ? "client" : "token";
+      const canonicalEntryId =
+        entryId ||
+        getCredentialEntryId({
+          type: canonicalType,
+          token: normalizedValue,
+          clientId: resolvedClientId,
+        });
 
       logCredentialDebug("TOKEN_VALIDATED", {
         tokenPreview: maskValue(normalizedValue),
         configurationStatus: configurationResponse.status,
         userStatus: userResponse.status,
-        resolvedClientId:
-          configurationResponse.body?.clientId || clientId || null,
+        resolvedClientId,
+        canonicalType,
+        canonicalEntryId,
+        resolvedExpiresAt,
+        network,
       });
 
       if (configurationResponse.status !== 200) {
@@ -194,8 +244,9 @@ export default async function handler(req, res) {
       }
 
       const safeEntry = buildSafeEntry({
-        type: "token",
+        type: canonicalType,
         token: normalizedValue,
+        clientId: resolvedClientId,
         hasClientSecret: Boolean(clientSecret),
         hasRefreshToken: Boolean(refreshToken),
         supportsRefreshToken: Boolean(
@@ -204,15 +255,16 @@ export default async function handler(req, res) {
         configuration: configurationResponse.body,
         user: userResponse.body || {},
         status: "OK",
+        network,
       });
 
       const sessionEntry = await upsertCredentialSessionEntry(
         { req, res },
-        entryId || `token:${normalizedValue}`,
+        canonicalEntryId,
         {
-          type: "token",
+          type: canonicalType,
           token: normalizedValue,
-          clientId: clientId || configurationResponse.body.clientId,
+          clientId: resolvedClientId,
           hasClientSecret: Boolean(clientSecret),
           hasRefreshToken: Boolean(refreshToken),
           supportsRefreshToken: Boolean(
@@ -221,13 +273,23 @@ export default async function handler(req, res) {
           clientSecret: clientSecret || null,
           refreshToken: refreshToken || null,
           tokenType: tokenType || "Bearer",
-          expiresAt:
-            expiresAt ||
-            (Number.isFinite(normalizedExpiresIn) && normalizedExpiresIn > 0
-              ? Date.now() + normalizedExpiresIn * 1000
-              : null),
+          network,
+          expiresAt: resolvedExpiresAt,
         }
       );
+
+      logCredentialDebug("TOKEN_ENTRY_PERSISTED", {
+        submittedType: "token",
+        sessionEntryId: sessionEntry?.id || canonicalEntryId,
+        safeEntryId: safeEntry.id,
+        safeEntryType: safeEntry.type,
+        tokenPreview: maskValue(normalizedValue),
+        resolvedClientId: safeEntry.clientId || null,
+        supportsRefreshToken: safeEntry.supportsRefreshToken,
+        hasRefreshToken: safeEntry.hasRefreshToken,
+        expiresAt: sessionEntry?.expiresAt || resolvedExpiresAt || null,
+        network,
+      });
 
       return res.status(200).send({
         status: "OK",
@@ -321,6 +383,18 @@ export default async function handler(req, res) {
               expiresAt: tokenResolution.expiresAt || null,
             }
           );
+
+          logCredentialDebug("CLIENT_ENTRY_PERSISTED_WITHOUT_SECRET", {
+            submittedType: "client",
+            sessionEntryId:
+              sessionEntry?.id || entryId || `client:${normalizedValue}`,
+            safeEntryId: safeEntry.id,
+            clientId: normalizedValue,
+            tokenPreview: maskValue(accessToken),
+            hasRefreshToken: safeEntry.hasRefreshToken,
+            expiresAt: sessionEntry?.expiresAt || null,
+            network,
+          });
 
           return res.status(200).send({
             status: "OK",
@@ -434,6 +508,18 @@ export default async function handler(req, res) {
         expiresAt: tokenResolution.expiresAt || null,
       }
     );
+
+    logCredentialDebug("CLIENT_ENTRY_PERSISTED_WITH_SECRET", {
+      submittedType: "client",
+      sessionEntryId:
+        sessionEntry?.id || entryId || `client:${normalizedValue}`,
+      safeEntryId: safeEntry.id,
+      clientId: normalizedValue,
+      tokenPreview: maskValue(accessToken),
+      hasRefreshToken: safeEntry.hasRefreshToken,
+      expiresAt: sessionEntry?.expiresAt || null,
+      network,
+    });
 
     return res.status(200).send({
       status: "OK",

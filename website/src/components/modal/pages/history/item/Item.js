@@ -7,6 +7,25 @@ import ItemExpandedDetails from "./item-expanded-details";
 import useHistoryItemController from "./useHistoryItemController";
 import styles from "./Item.module.css";
 
+function getReadableTextColor(hex) {
+  if (typeof hex !== "string") {
+    return null;
+  }
+
+  const normalized = hex.trim().replace("#", "");
+
+  if (!/^[0-9a-fA-F]{6}$/.test(normalized)) {
+    return null;
+  }
+
+  const r = parseInt(normalized.slice(0, 2), 16);
+  const g = parseInt(normalized.slice(2, 4), 16);
+  const b = parseInt(normalized.slice(4, 6), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  return brightness > 155 ? "#111111" : "#ffffff";
+}
+
 function HistoryItemView({ item, ui, form, actions }) {
   const expireStatusClass = item.expireStatus ? styles[item.expireStatus] : "";
   const expiredClass = ui.hasValidationError ? styles.expired : "";
@@ -23,6 +42,13 @@ function HistoryItemView({ item, ui, form, actions }) {
   const removingClass = item.isRemoving ? styles.removing : "";
   const enteringClass = item.isEntering ? styles.entering : "";
   const revealClass = ui.reveal ? styles.reveal : "";
+  const expandedDisplayStyle =
+    ui.open && item.logoColor
+      ? {
+          backgroundColor: item.logoColor,
+          color: getReadableTextColor(item.logoColor) || undefined,
+        }
+      : undefined;
 
   return (
     <div
@@ -39,11 +65,12 @@ function HistoryItemView({ item, ui, form, actions }) {
           className={`${styles.display} ${
             ui.open && ui.isScrolled ? styles.displayScrolled : ""
           }`}
+          style={expandedDisplayStyle}
         >
           {ui.removed || ui.hasValidationError ? (
             <div>
               <Text type="text4">
-                {ui.removed ? "This token was removed 🗑️" : item.statusMessage}
+                {ui.removed ? "This client was removed 🗑️" : item.statusMessage}
               </Text>
               <Text type="text1">{item.token || item.clientId}</Text>
             </div>
@@ -55,7 +82,7 @@ function HistoryItemView({ item, ui, form, actions }) {
 
               {!ui.needsClientSecret && item.token && (
                 <Text className={styles.authentication}>
-                  {`This token is ${
+                  {`Resolved token is ${
                     item.user?.isAuthenticated ? "AUTHENTICATED" : "ANONYMOUS"
                   }`}
                   {item.user?.isAuthenticated && (
@@ -72,23 +99,24 @@ function HistoryItemView({ item, ui, form, actions }) {
 
               {!ui.needsClientSecret &&
                 ui.shouldPromptForGlobalClientSecret &&
+                !ui.open &&
                 !ui.showInlineClientSecretForm && (
                   <Text className={styles.authentication}>
-                    This token will need a{" "}
+                    Add a{" "}
                     <button
                       type="button"
                       className={styles.inlineAction}
                       onClick={actions.focusClientSecret}
                     >
-                      clientSecret
+                      secret
                     </button>{" "}
-                    to renew on <i>External</i> network 🌍
+                    for automatic renewal 🤫
                   </Text>
                 )}
 
-              {ui.missingConfiguration && (
-                <Text type="text4" className={styles.missingConfigWarn}>
-                  Client has missing configuration 😵‍💫
+              {!ui.open && ui.missingConfiguration && (
+                <Text className={styles.authentication}>
+                  Missing client configuration 😵‍💫
                 </Text>
               )}
 
@@ -123,12 +151,14 @@ function HistoryItemView({ item, ui, form, actions }) {
         />
 
         <div className={styles.bottom}>
-          {!ui.needsClientSecret && <hr />}
+          <hr />
           <div className={styles.buttons}>
             <div className={styles.removeSlot}>
               <Button
                 className={`${styles.remove} ${
-                  ui.isConfirmingRemove ? styles.removeHidden : styles.removeVisible
+                  ui.isConfirmingRemove
+                    ? styles.removeHidden
+                    : styles.removeVisible
                 }`}
                 size="small"
                 onClick={actions.requestRemove}
@@ -168,6 +198,10 @@ function HistoryItemView({ item, ui, form, actions }) {
               disabled={ui.isUseDisabled}
               size="small"
               onClick={actions.useCredential}
+              onMouseEnter={() => actions.setUseButtonHovered(true)}
+              onMouseLeave={() => actions.setUseButtonHovered(false)}
+              onFocus={() => actions.setUseButtonHovered(true)}
+              onBlur={() => actions.setUseButtonHovered(false)}
               primary
             >
               {ui.useButtonLabel}

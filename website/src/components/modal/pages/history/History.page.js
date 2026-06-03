@@ -51,6 +51,10 @@ function History({ modal }) {
   const containerRef = useRef(null);
   const previousModalVisibleRef = useRef(modal.isVisible);
 
+  function logHistoryDebug(step, details = {}) {
+    console.info(`[credentials][history] ${step}`, details);
+  }
+
   function getEntryIdentifier(entry) {
     if (!entry) {
       return null;
@@ -269,6 +273,21 @@ function History({ modal }) {
       entryId: existingEntry?.id || undefined,
     });
 
+    logHistoryDebug("submit resolved", {
+      submittedType: inputType,
+      requestedEntryId: existingEntry?.id || null,
+      requestedClientId: existingEntry?.clientId || normalizedClientId || null,
+      responseStatus: response?.status || null,
+      safeEntryId: response?.safeEntry?.id || null,
+      safeEntryType: response?.safeEntry?.type || null,
+      safeEntryClientId: response?.safeEntry?.clientId || null,
+      safeEntryTokenPreview:
+        typeof response?.safeEntry?.token === "string"
+          ? `${response.safeEntry.token.slice(0, 6)}...`
+          : null,
+      requiresClientSecret: response?.safeEntry?.requiresClientSecret ?? null,
+    });
+
     if (response?.safeEntry) {
       await ensurePendingDuration(pendingStartedAt);
 
@@ -277,6 +296,18 @@ function History({ modal }) {
       }
 
       const nextEntry = withCurrentNetworkSetting(response.safeEntry);
+
+      logHistoryDebug("persisting resolved entry", {
+        submittedType: inputType,
+        nextEntryId: nextEntry.id || null,
+        nextEntryType: nextEntry.type || null,
+        nextEntryClientId: nextEntry.clientId || null,
+        nextEntryTokenPreview:
+          typeof nextEntry.token === "string"
+            ? `${nextEntry.token.slice(0, 6)}...`
+            : null,
+        networkSetting: nextEntry.networkSetting || null,
+      });
 
       setHistoryItem(nextEntry, false);
       syncStateWithEntry(nextEntry);
@@ -295,7 +326,7 @@ function History({ modal }) {
       }
 
       setFilter("");
-      if (response.safeEntry.type !== "client") {
+      if (inputType !== "client") {
         setIsAddExpanded(false);
       }
       return;
@@ -330,8 +361,16 @@ function History({ modal }) {
       setRefreshCycle((current) => current + 1);
     }
 
+    if (
+      !modal.isVisible &&
+      previousModalVisibleRef.current &&
+      selectedToken?.token
+    ) {
+      setHistoryItem(selectedToken, false);
+    }
+
     previousModalVisibleRef.current = modal.isVisible;
-  }, [modal.isVisible]);
+  }, [modal.isVisible, selectedToken, setHistoryItem]);
 
   useEffect(() => {
     setState((current) => {

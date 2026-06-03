@@ -48,12 +48,29 @@ export async function resolveCredentialAccessToken({
   entryId,
   entry,
   req,
+  skipTokenReuse = false,
 }) {
   if (!entry) {
     return { status: 404, entry: null, token: null };
   }
 
-  if (isTokenStillValid(entry)) {
+  console.info("[credentials][access] resolve start", {
+    entryId,
+    type: entry?.type || null,
+    clientId: entry?.clientId || null,
+    hasToken: Boolean(entry?.token),
+    hasRefreshToken: Boolean(entry?.refreshToken),
+    hasClientSecret: Boolean(entry?.clientSecret),
+    expiresAt: entry?.expiresAt || null,
+    skipTokenReuse,
+  });
+
+  if (!skipTokenReuse && isTokenStillValid(entry)) {
+    console.info("[credentials][access] reusing stored token", {
+      entryId,
+      clientId: entry?.clientId || null,
+      expiresAt: entry?.expiresAt || null,
+    });
     return {
       status: 200,
       entry,
@@ -66,6 +83,14 @@ export async function resolveCredentialAccessToken({
       clientId: entry.clientId,
       clientSecret: entry.clientSecret,
       refreshToken: entry.refreshToken,
+    });
+
+    console.info("[credentials][access] refresh token attempt", {
+      entryId,
+      clientId: entry.clientId,
+      status: refreshedTokenState.status,
+      hasToken: Boolean(refreshedTokenState.token),
+      expiresAt: refreshedTokenState.expiresAt || null,
     });
 
     if (refreshedTokenState.status === 200 && refreshedTokenState.token) {
@@ -104,6 +129,18 @@ export async function resolveCredentialAccessToken({
     clientSecret: entry.clientSecret || null,
     network: preferredNetwork,
     req,
+  });
+
+  console.info("[credentials][access] client token attempt", {
+    entryId,
+    clientId: entry.clientId,
+    preferredNetwork,
+    resolvedNetwork,
+    status: tokenState.status,
+    grantTypeUsed: tokenState.grantTypeUsed || null,
+    hasToken: Boolean(tokenState.token),
+    expiresAt: tokenState.expiresAt || null,
+    clientSecretUsed: tokenState.clientSecretUsed ?? null,
   });
 
   if (tokenState.status !== 200 || !tokenState.token) {

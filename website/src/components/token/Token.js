@@ -8,6 +8,7 @@ import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 import useUser from "@/hooks/useUser";
 import { hasAvailableAgency } from "@/utils/configuration";
+import { detectCredentialType } from "@/utils/credentials";
 
 import Button from "@/components/base/button";
 import Text from "@/components/base/text";
@@ -65,21 +66,21 @@ export default function Token({
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
   const effectiveProfile =
     selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
-
-  const hasMissingConfigError =
-    !effectiveProfile || !hasAvailableAgency(configuration);
-
   const hasValidationError =
     selectedToken?.token && !isLoading && status !== "OK";
 
   // Error messages
-  const _errorToken = !selectedToken?.token && "🧐 This token is invalid!";
+  const inputType = detectCredentialType(state.value);
+  const _errorToken =
+    !selectedToken?.token &&
+    !inputType &&
+    "🧐 Input must be a token or a clientId!";
 
-  const _errorMissingConfig =
+  const hasMissingConfigurationWarning =
     !isLoading &&
     !hasValidationError &&
-    hasMissingConfigError &&
-    "😵‍💫 Missing client configuration!";
+    selectedToken?.token &&
+    (!effectiveProfile || !hasAvailableAgency(configuration));
 
   const _errorExpired =
     hasValidationError && status === "EXPIRED" && "😔 This token is expired!";
@@ -90,8 +91,7 @@ export default function Token({
   const _errorIsNotVerified =
     hasValidationError && status === "ERROR" && "🤔 Error validating token!";
 
-  const hasError =
-    _errorToken || _errorMissingConfig || hasValidationError || resolveError;
+  const hasError = _errorToken || hasValidationError || resolveError;
 
   async function handleResolveToken() {
     if (!state.value) {
@@ -104,7 +104,9 @@ export default function Token({
     });
 
     if (!response?.safeEntry?.token) {
-      setResolveError(response?.message || "🧐 This token is invalid!");
+      setResolveError(
+        response?.message || "🧐 Input must be a valid token or clientId!"
+      );
       return;
     }
 
@@ -154,7 +156,7 @@ export default function Token({
             <Text type="text4" title={`${configuration?.displayName}`}>
               {isAuthenticated && (
                 <span
-                  title={`Authenticated token ${
+                  title={`Authenticated client access ${
                     !hasCulrAccount ? "- user does not exist in CULR" : ""
                   }`}
                 >
@@ -163,6 +165,12 @@ export default function Token({
               )}{" "}
               {`${configuration?.displayName}`}
             </Text>
+            {hasMissingConfigurationWarning && (
+              <Text type="text1">
+                Client configuration is partial. Continue from History if you
+                need to adjust agency/profile.
+              </Text>
+            )}
           </div>
         )}
 
@@ -173,12 +181,12 @@ export default function Token({
         )}
 
         <input
-          aria-label="inputfield for access token"
+          aria-label="inputfield for access token or clientId"
           ref={inputRef}
           id={id}
           className={styles.input}
           value={state.value}
-          placeholder="Drop token here ..."
+          placeholder="Drop token or clientId here ..."
           autoComplete="off"
           onBlur={() => {
             setState({ ...state, focus: false });
@@ -216,7 +224,6 @@ export default function Token({
         <Text type="text2">
           {_errorToken ||
             _errorExpired ||
-            _errorMissingConfig ||
             _errorInvalid ||
             _errorIsNotVerified ||
             resolveError}

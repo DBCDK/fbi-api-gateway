@@ -199,7 +199,9 @@ export default async function handler(req, res) {
   user.isCPRValidated =
     attributes.idpUsed === "nemlogin" || hasCPRValidatedAccount;
 
-  const account = attributes.agencies?.find?.((agency) => agency.userIdType === "CPR");
+  const account = attributes.agencies?.find?.(
+    (agency) => agency.userIdType === "CPR"
+  );
 
   const userstatusResponse = await getOpenUserStatus({
     loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,

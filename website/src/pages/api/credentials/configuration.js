@@ -10,6 +10,28 @@ function getEntryId(req) {
   return typeof req.query.entryId === "string" ? req.query.entryId : null;
 }
 
+function buildResolvedConfigurationPayload({
+  req,
+  resolved,
+  configurationResponse,
+}) {
+  return {
+    ...(configurationResponse.body || {}),
+    resolvedToken: resolved.token,
+    resolvedEntryId: resolved.entry?.id || getEntryId(req),
+    resolvedClientId:
+      resolved.entry?.clientId || configurationResponse.body?.clientId || null,
+    resolvedType: resolved.entry?.type || null,
+    resolvedHasClientSecret: Boolean(resolved.entry?.hasClientSecret),
+    resolvedHasRefreshToken: Boolean(
+      resolved.entry?.hasRefreshToken || resolved.entry?.refreshToken
+    ),
+    resolvedSupportsRefreshToken: Boolean(
+      configurationResponse.body?.supportsRefreshToken
+    ),
+  };
+}
+
 async function resolveAccessToken(req) {
   const token = typeof req.query.token === "string" ? req.query.token : null;
 
@@ -37,6 +59,70 @@ async function resolveAccessToken(req) {
   });
 }
 
+async function retryExpiredCredentialEntry({
+  req,
+  resolved,
+  selectedAgency,
+}) {
+  if (!resolved?.entry?.clientId || !resolved?.entry?.id) {
+    console.info("[credentials][configuration] retry skipped", {
+      entryId: resolved?.entry?.id || null,
+      clientId: resolved?.entry?.clientId || null,
+      reason: "missing_entry_identity",
+    });
+    return null;
+  }
+
+  console.info("[credentials][configuration] retry start", {
+    entryId: resolved.entry.id,
+    clientId: resolved.entry.clientId,
+    selectedAgency,
+    previousTokenPreview:
+      typeof resolved.token === "string" ? `${resolved.token.slice(0, 6)}...` : null,
+  });
+
+  const refreshed = await resolveCredentialAccessToken({
+    ctx: { req, res: req.res },
+    entryId: resolved.entry.id,
+    entry: resolved.entry,
+    req,
+    skipTokenReuse: true,
+  });
+
+  console.info("[credentials][configuration] retry token result", {
+    entryId: resolved.entry.id,
+    clientId: resolved.entry.clientId,
+    status: refreshed.status,
+    hasToken: Boolean(refreshed.token),
+    refreshedTokenPreview:
+      typeof refreshed.token === "string"
+        ? `${refreshed.token.slice(0, 6)}...`
+        : null,
+  });
+
+  if (refreshed.status !== 200 || !refreshed.token) {
+    return {
+      resolved: refreshed,
+      configurationResponse: null,
+    };
+  }
+
+  const configurationResponse = await buildConfigurationResponse(
+    refreshed.token,
+    selectedAgency
+  );
+
+  console.info("[credentials][configuration] retry validation result", {
+    entryId: resolved.entry.id,
+    clientId: resolved.entry.clientId,
+    configurationStatus: configurationResponse.status,
+  });
+
+  return {
+    resolved: refreshed,
+    configurationResponse,
+  };
+}
 export default async function handler(req, res) {
   const selectedAgency =
     typeof req.query.agency === "string" && req.query.agency
@@ -62,27 +148,55 @@ export default async function handler(req, res) {
     selectedAgency
   );
 
+  console.info("[credentials][configuration] initial validation result", {
+    entryId: resolved.entry?.id || getEntryId(req),
+    clientId: resolved.entry?.clientId || null,
+    configurationStatus: configurationResponse.status,
+    tokenPreview:
+      typeof resolved.token === "string" ? `${resolved.token.slice(0, 6)}...` : null,
+  });
+
   if (configurationResponse.status !== 200) {
-    return res.status(configurationResponse.status).send({});
+    const retried = await retryExpiredCredentialEntry({
+      req,
+      resolved,
+      selectedAgency,
+    });
+
+    if (retried?.resolved?.status === 428) {
+      return res.status(428).send({
+        status: "CLIENT_SECRET_REQUIRED",
+        network: retried.resolved.entry?.network || null,
+        clientId: retried.resolved.entry?.clientId || null,
+      });
+    }
+
+    if (retried?.configurationResponse?.status === 200) {
+      return res.status(200).send(
+        buildResolvedConfigurationPayload({
+          req,
+          resolved: retried.resolved,
+          configurationResponse: retried.configurationResponse,
+        })
+      );
+    }
+
+    return res
+      .status(
+        retried?.configurationResponse?.status ||
+          retried?.resolved?.status ||
+          configurationResponse.status
+      )
+      .send({});
   }
 
   return res
     .status(200)
-    .send({
-      ...(configurationResponse.body || {}),
-      resolvedToken: resolved.token,
-      resolvedEntryId: resolved.entry?.id || getEntryId(req),
-      resolvedClientId:
-        resolved.entry?.clientId ||
-        configurationResponse.body?.clientId ||
-        null,
-      resolvedType: resolved.entry?.type || null,
-      resolvedHasClientSecret: Boolean(resolved.entry?.hasClientSecret),
-      resolvedHasRefreshToken: Boolean(
-        resolved.entry?.hasRefreshToken || resolved.entry?.refreshToken
-      ),
-      resolvedSupportsRefreshToken: Boolean(
-        configurationResponse.body?.supportsRefreshToken
-      ),
-    });
+    .send(
+      buildResolvedConfigurationPayload({
+        req,
+        resolved,
+        configurationResponse,
+      })
+    );
 }

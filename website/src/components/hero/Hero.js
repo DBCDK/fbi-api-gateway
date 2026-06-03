@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useRouter } from "next/router";
 
 import useStorage from "@/hooks/useStorage";
 import useConfiguration from "@/hooks/useConfiguration";
 import useTheme from "@/hooks/useTheme";
+import { detectCredentialType } from "@/utils/credentials";
 
 import Title from "@/components/base/title";
 import Token from "@/components/token";
@@ -21,9 +23,10 @@ import Future from "./future";
 
 export default function Hero({ className = "" }) {
   const router = useRouter();
+  const [inputValue, setInputValue] = useState("");
 
   const { selectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const { configuration, status, isLoading } = useConfiguration(selectedToken);
   const { theme } = useTheme();
 
   const isChristmas = theme === "christmas";
@@ -32,8 +35,13 @@ export default function Hero({ className = "" }) {
   const isHalloween = theme === "halloween";
   const isFuture = theme === "future";
 
-  const inputIsValid =
-    selectedToken && configuration && Object?.keys(configuration).length;
+  const hasResolvedCredential =
+    Boolean(selectedToken?.token) &&
+    !isLoading &&
+    status === "OK" &&
+    Boolean(configuration?.displayName);
+  const hasValidInput = Boolean(detectCredentialType(inputValue));
+  const inputIsValid = hasResolvedCredential || hasValidInput;
 
   return (
     <section className={`${styles.hero} ${className}`} id="hero">
@@ -49,7 +57,7 @@ export default function Hero({ className = "" }) {
           <Col>
             <Title className={styles.title}>
               <Label for="token-input">
-                Drop your token here to get started
+                Connect your application to get started
               </Label>
             </Title>
           </Col>
@@ -57,7 +65,16 @@ export default function Hero({ className = "" }) {
 
         <Row className={styles.row}>
           <Col>
-            <Token id="token-input" className={styles.token} />
+            <Token
+              id="token-input"
+              className={styles.token}
+              onChange={setInputValue}
+              onSubmit={() => {
+                router.push({
+                  pathname: "/documentation",
+                });
+              }}
+            />
             <History className={styles.history} />
           </Col>
         </Row>
@@ -69,11 +86,6 @@ export default function Hero({ className = "" }) {
               type="submit"
               disabled={!inputIsValid}
               form="token-input-form"
-              onClick={() => {
-                router.push({
-                  pathname: "/documentation",
-                });
-              }}
               secondary
             >
               Go!

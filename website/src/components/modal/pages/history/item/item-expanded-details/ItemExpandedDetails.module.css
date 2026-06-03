@@ -9,7 +9,7 @@
 :global(.expanded) .collapsed {
   max-height: 100vh;
   margin-bottom: var(--pt2);
-  padding: 0 0 var(--pt2);
+  padding: var(--pt2) 0 var(--pt2);
   overflow-y: auto;
   transition:
     max-height 0.3s,
@@ -94,15 +94,15 @@
   margin-right: var(--pt1);
 }
 
-.indicator.expire-less-than-5-days {
+.indicator.health-critical {
   background-color: var(--error);
 }
 
-.indicator.expire-less-than-15-days {
+.indicator.health-warning {
   background-color: var(--warning-dark);
 }
 
-.indicator.expire-more-or-eq-to-15-days {
+.indicator.health-safe {
   background-color: var(--success-dark);
 }
 
@@ -125,7 +125,6 @@
   display: flex;
   align-items: center;
   gap: var(--pt1);
-  margin-top: var(--pt1);
 }
 
 .fieldIcon {

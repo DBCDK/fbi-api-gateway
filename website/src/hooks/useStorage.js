@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { toCredentialId } from "@/utils/credentials";
 
 const isBrowser = typeof window !== "undefined";
 
@@ -20,6 +21,9 @@ const isToken = (token) => {
 const getHistoryIdentifier = ({ id, token, clientId }) =>
   clientId ? `client:${clientId}` : id || token || null;
 
+export const getCanonicalId = ({ id, type, token, clientId }) =>
+  id || toCredentialId({ type, token, clientId }) || null;
+
 const matchesHistoryEntry = (left = {}, right = {}) => {
   const leftIdentifier = getHistoryIdentifier(left);
   const rightIdentifier = getHistoryIdentifier(right);
@@ -40,6 +44,19 @@ const normalizeHistory = (items = []) =>
     if (existingIndex === -1) {
       acc.push(item);
       return acc;
+    }
+
+    if (typeof window !== "undefined") {
+      console.info("[credentials][storage] normalize merge", {
+        incomingId: item?.id || null,
+        incomingType: item?.type || null,
+        incomingClientId: item?.clientId || null,
+        incomingTokenPreview:
+          typeof item?.token === "string" ? `${item.token.slice(0, 6)}...` : null,
+        existingId: acc[existingIndex]?.id || null,
+        existingType: acc[existingIndex]?.type || null,
+        existingClientId: acc[existingIndex]?.clientId || null,
+      });
     }
 
     acc[existingIndex] = {
@@ -69,9 +86,16 @@ export default function useStorage() {
     { fallbackData: null }
   );
 
-  const setSelectedToken = (token, profile, agency, metadata = null) => {
+  const setSelectedToken = (
+    token,
+    profile,
+    agency,
+    metadata = null,
+    options = {}
+  ) => {
     if (!isBrowser || !isToken(token)) return;
 
+    const { reorderHistory = true } = options;
     const current = selectedToken?.token === token ? selectedToken : {};
     const historyItem =
       metadata?.id || metadata?.clientId
@@ -81,11 +105,20 @@ export default function useStorage() {
       token,
       profile: profile === undefined ? current?.profile ?? null : profile,
       agency: agency === undefined ? current?.agency ?? null : agency,
-      id:
-        metadata?.id ??
-        historyItem?.id ??
-        current?.id ??
-        null,
+      id: getCanonicalId({
+        id: metadata?.id ?? historyItem?.id ?? current?.id ?? null,
+        type:
+          metadata?.type ??
+          historyItem?.type ??
+          current?.type ??
+          null,
+        token,
+        clientId:
+          metadata?.clientId ??
+          historyItem?.clientId ??
+          current?.clientId ??
+          null,
+      }),
       type:
         metadata?.type ??
         historyItem?.type ??
@@ -100,8 +133,19 @@ export default function useStorage() {
     try {
       sessionStorage.setItem("selectedToken", JSON.stringify(value));
     } catch {}
+    console.info("[credentials][storage] setSelectedToken", {
+      id: value.id || null,
+      type: value.type || null,
+      clientId: value.clientId || null,
+      tokenPreview: `${token.slice(0, 6)}...`,
+      profile: value.profile || null,
+      agency: value.agency || null,
+      reorderHistory,
+    });
     mutateSelectedToken(value, false);
-    setHistoryItem(value, false);
+    if (reorderHistory) {
+      setHistoryItem(value, false);
+    }
   };
 
   const removeSelectedToken = () => {
@@ -118,26 +162,37 @@ export default function useStorage() {
   ) => {
     if (!isBrowser) return;
 
-    const identifier = getHistoryIdentifier({ token, ...rest });
+    const nextRest = {
+      ...rest,
+      id: getCanonicalId({
+        id: rest?.id || null,
+        type: rest?.type || null,
+        token,
+        clientId: rest?.clientId || null,
+      }),
+    };
 
-    if (!identifier || (!isToken(token) && !rest.clientId)) return;
+    const identifier = getHistoryIdentifier({ token, ...nextRest });
+
+    if (!identifier || (!isToken(token) && !nextRest.clientId)) return;
 
     const timestamp = Date.now();
     const existing = history?.find((obj) =>
-      matchesHistoryEntry(obj, { token, ...rest })
+      matchesHistoryEntry(obj, { token, ...nextRest })
     );
     const note = typeof _note === "string" ? _note : existing?.note || "";
+    const operation = shallow && existing ? "update" : "insert";
 
     let copy = [...history];
 
     if (shallow) {
       const index = history?.findIndex((obj) =>
-        matchesHistoryEntry(obj, { token, ...rest })
+        matchesHistoryEntry(obj, { token, ...nextRest })
       );
       if (index !== -1) {
         copy[index] = {
           ...existing,
-          ...rest,
+          ...nextRest,
           profile,
           agency,
           note,
@@ -149,18 +204,20 @@ export default function useStorage() {
           agency,
           note,
           timestamp,
-          ...rest,
+          ...nextRest,
         });
       }
     } else {
-      copy = copy.filter((obj) => !matchesHistoryEntry(obj, { token, ...rest }));
+      copy = copy.filter((obj) =>
+        !matchesHistoryEntry(obj, { token, ...nextRest })
+      );
       copy.unshift({
         token,
         profile,
         agency,
         note,
         timestamp,
-        ...rest,
+        ...nextRest,
       });
     }
 
@@ -168,6 +225,15 @@ export default function useStorage() {
     try {
       localStorage.setItem("history", JSON.stringify(sliced));
     } catch {}
+    console.info("[credentials][storage] setHistoryItem", {
+      operation,
+      id: nextRest?.id || null,
+      type: nextRest?.type || null,
+      clientId: nextRest?.clientId || null,
+      tokenPreview: typeof token === "string" ? `${token.slice(0, 6)}...` : null,
+      historySize: sliced.length,
+      matchedExistingId: existing?.id || null,
+    });
     mutateHistory(sliced, false);
   };
 

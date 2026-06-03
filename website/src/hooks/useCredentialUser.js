@@ -33,6 +33,7 @@ export default function useCredentialUser({
   id = null,
   token: rawToken = null,
   lookupByEntryId = false,
+  enabled = true,
 } = {}) {
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const token = rawToken?.replace?.(/test.*:/, "");
@@ -56,7 +57,7 @@ export default function useCredentialUser({
     params.set("networkCheck", internalNetworkCheck);
   }
 
-  const url = hasLookupTarget
+  const url = enabled && hasLookupTarget
     ? `/api/credentials/user?${params.toString()}`
     : null;
   const { data, error, mutate } = useSWR(url, fetcher, {
