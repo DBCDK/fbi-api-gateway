@@ -33,6 +33,20 @@ export default function useCredentialResolve() {
     return normalized;
   }
 
+  function getResponseMessage(body, response, rawBody) {
+    if (body?.message) {
+      return body.message;
+    }
+
+    if (body?.status === "CLIENT_SECRET_REQUIRED") {
+      return "Secret is required before token exchange";
+    }
+
+    return response.ok
+      ? ""
+      : getFallbackMessage(rawBody, response.statusText);
+  }
+
   const resolveCredential = useCallback(
     async function resolveCredential({
       value,
@@ -121,11 +135,7 @@ export default function useCredentialResolve() {
         statusCode: response.status,
         statusText: response.statusText,
         rawBody,
-        message:
-          body?.message ||
-          (response.ok
-            ? ""
-            : getFallbackMessage(rawBody, response.statusText)),
+        message: getResponseMessage(body, response, rawBody),
         ...body,
       };
 

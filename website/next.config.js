@@ -1,5 +1,10 @@
 const path = require("path");
 
+const redisEnabled = ["1", "true", "yes"].includes(
+  String(process.env.REDIS_ENABLED).toLowerCase()
+);
+const defaultMaxClientEntries = redisEnabled ? 10 : 5;
+
 module.exports = {
   reactStrictMode: true,
   i18n: {
@@ -8,6 +13,8 @@ module.exports = {
   },
   publicRuntimeConfig: {
     theme: process.env.WEBSITE_THEME || "default",
+    maxClientEntries:
+      process.env.MAX_CLIENT_ENTRIES || String(defaultMaxClientEntries),
   },
   async redirects() {
     return [

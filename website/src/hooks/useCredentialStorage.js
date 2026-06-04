@@ -1,12 +1,11 @@
 import useSWR from "swr";
 
 import { normalizeCredentialEntry } from "@/utils/credentials";
+import { MAX_CLIENT_ENTRIES } from "@/utils/clientEntries";
 
 const isBrowser = typeof window !== "undefined";
-const HISTORY_KEY = "credentialHistory";
-const SELECTED_KEY = "selectedCredential";
-const LEGACY_HISTORY_KEY = "history";
-const LEGACY_SELECTED_KEY = "selectedToken";
+const APPLICATIONS_KEY = "credentialApplications";
+const SELECTED_APPLICATION_KEY = "selectedCredentialApplication";
 
 const safeGetItem = (storage, key, fallback = null) => {
   try {
@@ -22,15 +21,7 @@ function getInitialHistory() {
     return [];
   }
 
-  const current = safeGetItem(localStorage, HISTORY_KEY, null);
-  if (current) {
-    return current;
-  }
-
-  const legacy = safeGetItem(localStorage, LEGACY_HISTORY_KEY, []);
-  return legacy
-    .map((entry) => normalizeCredentialEntry({ ...entry, type: "token" }))
-    .filter(Boolean);
+  return safeGetItem(localStorage, APPLICATIONS_KEY, []) || [];
 }
 
 function getInitialSelectedCredential() {
@@ -38,31 +29,25 @@ function getInitialSelectedCredential() {
     return null;
   }
 
-  const current = safeGetItem(sessionStorage, SELECTED_KEY, null);
-  if (current) {
-    return current;
-  }
-
-  const legacy = safeGetItem(sessionStorage, LEGACY_SELECTED_KEY, null);
-  return legacy ? normalizeCredentialEntry({ ...legacy, type: "token" }) : null;
+  return safeGetItem(sessionStorage, SELECTED_APPLICATION_KEY, null);
 }
 
 export default function useCredentialStorage() {
   const { data: history = [], mutate: mutateHistory } = useSWR(
-    HISTORY_KEY,
+    APPLICATIONS_KEY,
     getInitialHistory,
     { fallbackData: [] }
   );
 
   const { data: selectedCredential, mutate: mutateSelectedCredential } = useSWR(
-    SELECTED_KEY,
+    SELECTED_APPLICATION_KEY,
     getInitialSelectedCredential,
     { fallbackData: null }
   );
 
   const persistHistory = (nextHistory) => {
     try {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(nextHistory));
+      localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(nextHistory));
     } catch {}
     mutateHistory(nextHistory, false);
   };
@@ -70,9 +55,12 @@ export default function useCredentialStorage() {
   const persistSelectedCredential = (entry) => {
     try {
       if (!entry) {
-        sessionStorage.removeItem(SELECTED_KEY);
+        sessionStorage.removeItem(SELECTED_APPLICATION_KEY);
       } else {
-        sessionStorage.setItem(SELECTED_KEY, JSON.stringify(entry));
+        sessionStorage.setItem(
+          SELECTED_APPLICATION_KEY,
+          JSON.stringify(entry)
+        );
       }
     } catch {}
 
@@ -130,7 +118,7 @@ export default function useCredentialStorage() {
       copy.unshift(entry);
     }
 
-    const sliced = copy.slice(0, 10);
+    const sliced = copy.slice(0, MAX_CLIENT_ENTRIES);
     persistHistory(sliced);
     return entry;
   };

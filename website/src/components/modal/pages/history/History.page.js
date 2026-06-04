@@ -8,6 +8,7 @@ import { Col, Row } from "react-bootstrap";
 import useStorage from "@/hooks/useStorage";
 import useCredentialResolve from "@/hooks/useCredentialResolve";
 import useInternalNetworkCheck from "@/hooks/useInternalNetworkCheck";
+import { MAX_CLIENT_ENTRIES } from "@/utils/clientEntries";
 import { detectCredentialType } from "@/utils/credentials";
 
 import Overlay from "@/components/base/overlay";
@@ -37,8 +38,7 @@ function History({ modal }) {
     setHistoryItem,
     setSelectedToken,
     removeHistoryItem,
-  } =
-    useStorage();
+  } = useStorage();
   const { resolveCredential } = useCredentialResolve();
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const [state, setState] = useState(history);
@@ -49,6 +49,7 @@ function History({ modal }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [refreshCycle, setRefreshCycle] = useState(0);
   const containerRef = useRef(null);
+  const inputRef = useRef(null);
   const previousModalVisibleRef = useRef(modal.isVisible);
 
   function logHistoryDebug(step, details = {}) {
@@ -141,7 +142,7 @@ function History({ modal }) {
         return itemIdentifier !== identifier;
       });
 
-      return [entry, ...filtered].slice(0, 10);
+      return [entry, ...filtered].slice(0, MAX_CLIENT_ENTRIES);
     });
   }
 
@@ -259,8 +260,14 @@ function History({ modal }) {
     const normalizedClientId = inputType === "client" ? filter.trim() : null;
     const existingEntry =
       inputType === "client"
-        ? history?.find?.((item) => item?.clientId === normalizedClientId) || null
-        : null;
+        ? history?.find?.((item) => item?.clientId === normalizedClientId) ||
+          null
+        : history?.find?.((item) => item?.token === filter.trim()) || null;
+
+    if (!existingEntry && (history?.length || 0) >= MAX_CLIENT_ENTRIES) {
+      setInputError(`Max ${MAX_CLIENT_ENTRIES} applications.`);
+      return;
+    }
 
     if (pendingEntry) {
       syncStateWithEntry(pendingEntry);
@@ -313,16 +320,11 @@ function History({ modal }) {
       syncStateWithEntry(nextEntry);
 
       if (nextEntry.token) {
-        setSelectedToken(
-          nextEntry.token,
-          nextEntry.profile,
-          nextEntry.agency,
-          {
-            id: nextEntry.id,
-            type: nextEntry.type,
-            clientId: nextEntry.clientId,
-          }
-        );
+        setSelectedToken(nextEntry.token, nextEntry.profile, nextEntry.agency, {
+          id: nextEntry.id,
+          type: nextEntry.type,
+          clientId: nextEntry.clientId,
+        });
       }
 
       setFilter("");
@@ -386,13 +388,34 @@ function History({ modal }) {
         );
       });
 
-      return [...transientEntries, ...history].slice(0, 10);
+      return [...transientEntries, ...history].slice(0, MAX_CLIENT_ENTRIES);
     });
   }, [history]);
+
+  useEffect(() => {
+    if (!isAddExpanded) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, [isAddExpanded]);
+
+  useEffect(() => {
+    if (modal.isVisible && modal.openAddOnShow) {
+      setIsAddExpanded(true);
+    }
+  }, [modal.isVisible, modal.openAddOnShow]);
 
   // reset local view when modal closes
   useEffect(() => {
     if (!modal.isVisible) {
+      setIsAddExpanded(false);
+      setFilter("");
+      setInputError("");
       setTimeout(() => setState(history), 200);
     }
   }, [modal.isVisible, history]);
@@ -436,6 +459,7 @@ function History({ modal }) {
           onClick={() => setIsAddExpanded(false)}
           className={styles.closeIcon}
           aria-label="Close add application"
+          tabIndex={isAddExpanded ? 0 : -1}
         >
           <span className={styles.closeGlyph} aria-hidden="true" />
         </button>
@@ -449,6 +473,7 @@ function History({ modal }) {
               primary
               size="small"
               onClick={() => setIsAddExpanded(true)}
+              tabIndex={isAddExpanded ? "-1" : "0"}
             >
               <span className={styles.addButtonContent}>
                 <span className={styles.plusIcon} aria-hidden="true" />
@@ -461,10 +486,12 @@ function History({ modal }) {
               onSubmit={(e) => handleSubmit(e)}
             >
               <input
+                ref={inputRef}
                 className={styles.input}
                 placeholder="Drop clientId og token to connect ..."
                 value={filter}
                 autoComplete="off"
+                tabIndex={isAddExpanded ? 0 : -1}
                 onChange={(e) => {
                   setFilter(e.target.value);
                   setInputError("");
@@ -475,6 +502,7 @@ function History({ modal }) {
                 type="submit"
                 disabled={!filter || filter === "" || isSubmitting}
                 aria-busy={isSubmitting}
+                tabIndex={isAddExpanded ? 0 : -1}
               >
                 <span className={styles.submitGlyph} aria-hidden="true" />
               </button>

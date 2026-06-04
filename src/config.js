@@ -1,16 +1,18 @@
 import { getStringArray } from "./utils/env.js";
 
+const isTruthy = (value) =>
+  ["1", "true", "yes"].includes(String(value).toLowerCase());
+
+const redisEnabled = isTruthy(process.env.REDIS_ENABLED);
+const defaultMaxClientEntries = redisEnabled ? 10 : 5;
+
 export default {
   app: {
     id: process.env.APP_ID || "bibliotekdk-next-api",
   },
   port: process.env.PORT || 3000,
-  allowDebug: ["1", "true", "yes"].includes(
-    String(process.env.ALLOW_DEBUG).toLowerCase()
-  ),
-  enableCpuUsagePerRequest: ["1", "true", "yes"].includes(
-    String(process.env.ENABLE_CPU_USAGE_PER_REQUEST).toLowerCase()
-  ),
+  allowDebug: isTruthy(process.env.ALLOW_DEBUG),
+  enableCpuUsagePerRequest: isTruthy(process.env.ENABLE_CPU_USAGE_PER_REQUEST),
   query: {
     maxDepth: process.env.MAX_QUERY_DEPTH
       ? parseInt(process.env.MAX_QUERY_DEPTH, 10)
@@ -39,9 +41,12 @@ export default {
   fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 20000,
   fastLaneEnabled: process.env.FASTLANE_ENABLED == "1" ? true : false,
   credentials: {
-    disableInternalNetworkCheck: ["1", "true", "yes"].includes(
-      String(process.env.DISABLE_INTERNAL_NETWORK_CHECK).toLowerCase()
+    disableInternalNetworkCheck: isTruthy(
+      process.env.DISABLE_INTERNAL_NETWORK_CHECK
     ),
+    maxClientEntries: process.env.MAX_CLIENT_ENTRIES
+      ? parseInt(process.env.MAX_CLIENT_ENTRIES, 10)
+      : defaultMaxClientEntries,
   },
   testUser: {
     clientId: process.env.TEST_USER_CLIENT_ID,
@@ -245,9 +250,7 @@ export default {
         "frontend-staging-redis-cluster.platform-redis.svc.cloud.dbc.dk",
       port: process.env.REDIS_PORT || "6379",
       prefix: process.env.REDIS_PREFIX || "bibdk-api-4",
-      enabled: ["1", "true", "yes"].includes(
-        String(process.env.REDIS_ENABLED).toLowerCase()
-      ),
+      enabled: redisEnabled,
       teamLabel: "febib",
     },
     simplesearch: {

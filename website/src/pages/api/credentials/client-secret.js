@@ -5,6 +5,7 @@
 import {
   buildConfigurationResponse,
   buildUserResponse,
+  getAccessTokenForClient,
 } from "../../../lib/credentialProviders";
 import {
   getCredentialSessionEntry,
@@ -53,7 +54,7 @@ export default async function handler(req, res) {
   if (!entryId || !clientSecret) {
     return res.status(400).send({
       status: "INVALID_CLIENT_SECRET_INPUT",
-      message: "ClientSecret input is required",
+      message: "Client secret input is required",
     });
   }
 
@@ -73,16 +74,31 @@ export default async function handler(req, res) {
     });
   }
 
-  const nextEntry = await upsertCredentialSessionEntry(
-    { req, res },
-    entryId,
-    {
-      ...sessionEntry,
-      clientSecret,
-      hasClientSecret: true,
-      requiresClientSecret: false,
-    }
-  );
+  const network = sessionEntry.network || null;
+  const tokenResolution = await getAccessTokenForClient({
+    clientId: sessionEntry.clientId,
+    clientSecret,
+    network,
+    req,
+  });
+
+  if (tokenResolution.status !== 200 || !tokenResolution.token) {
+    return res.status(401).send({
+      status: "CLIENT_CREDENTIALS_INVALID",
+      message: "Secret could not be validated",
+    });
+  }
+
+  const nextEntry = await upsertCredentialSessionEntry({ req, res }, entryId, {
+    ...sessionEntry,
+    token: tokenResolution.token,
+    refreshToken: tokenResolution.refreshToken || null,
+    tokenType: tokenResolution.tokenType || sessionEntry.tokenType || "Bearer",
+    expiresAt: tokenResolution.expiresAt || null,
+    clientSecret,
+    hasClientSecret: true,
+    requiresClientSecret: false,
+  });
 
   const entry = {
     ...nextEntry,

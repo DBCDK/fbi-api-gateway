@@ -42,13 +42,13 @@ function HistoryItemView({ item, ui, form, actions }) {
   const removingClass = item.isRemoving ? styles.removing : "";
   const enteringClass = item.isEntering ? styles.entering : "";
   const revealClass = ui.reveal ? styles.reveal : "";
-  const expandedDisplayStyle =
-    ui.open && item.logoColor
-      ? {
-          backgroundColor: item.logoColor,
-          color: getReadableTextColor(item.logoColor) || undefined,
-        }
-      : undefined;
+  const expandedHeaderColor = item.logoColor || "var(--divider)";
+  const expandedDisplayStyle = ui.open
+    ? {
+        backgroundColor: expandedHeaderColor,
+        color: getReadableTextColor(item.logoColor) || undefined,
+      }
+    : undefined;
 
   return (
     <div
@@ -73,6 +73,12 @@ function HistoryItemView({ item, ui, form, actions }) {
                 {ui.removed ? "This client was removed 🗑️" : item.statusMessage}
               </Text>
               <Text type="text1">{item.token || item.clientId}</Text>
+              {!ui.removed && ui.canExpand && (
+                <ExpandButton
+                  onClick={() => actions.setOpen(!ui.open)}
+                  open={ui.open}
+                />
+              )}
             </div>
           ) : (
             <>
@@ -115,7 +121,9 @@ function HistoryItemView({ item, ui, form, actions }) {
                 )}
 
               {!ui.open && ui.missingConfiguration && (
-                <Text className={styles.authentication}>
+                <Text
+                  className={`${styles.authentication} ${styles.missingConfigText}`}
+                >
                   Missing client configuration 😵‍💫
                 </Text>
               )}
@@ -162,6 +170,7 @@ function HistoryItemView({ item, ui, form, actions }) {
                 }`}
                 size="small"
                 onClick={actions.requestRemove}
+                tabIndex={ui.isConfirmingRemove ? "-1" : "0"}
                 secondary
               >
                 Remove
@@ -177,6 +186,7 @@ function HistoryItemView({ item, ui, form, actions }) {
                   className={styles.removeCancelButton}
                   size="small"
                   onClick={actions.cancelRemove}
+                  tabIndex={ui.isConfirmingRemove ? "0" : "-1"}
                   secondary
                   aria-label="Cancel remove"
                 >
@@ -186,6 +196,7 @@ function HistoryItemView({ item, ui, form, actions }) {
                   className={styles.removeConfirmButton}
                   size="small"
                   onClick={actions.confirmRemove}
+                  tabIndex={ui.isConfirmingRemove ? "0" : "-1"}
                   secondary
                   aria-label="Confirm remove"
                 >

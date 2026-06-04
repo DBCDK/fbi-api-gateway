@@ -10,15 +10,17 @@ import styles from "./ItemClientSecretForm.module.css";
 export default function ItemClientSecretForm({
   clientSecret = "",
   clientSecretError = "",
+  clientSecretStatus = "",
   setClientSecret,
+  onEnter = null,
   inputId,
-  actionLabel = "Update & Use",
   showAction = true,
   inlineWarning = false,
   onSubmit = null,
+  hideLabel = false,
 }) {
   return (
-    <>
+    <div className={styles.formBlock}>
       <div
         className={`${styles.clientId} ${
           inlineWarning ? styles.inlineWarning : ""
@@ -35,13 +37,19 @@ export default function ItemClientSecretForm({
               type="password"
               className={styles.warningInput}
               value={clientSecret}
-              placeholder="Enter client secret ..."
+              placeholder="Some client secret ..."
               onChange={(e) => setClientSecret(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && onEnter) {
+                  e.preventDefault();
+                  onEnter();
+                }
+              }}
             />
           </>
         ) : (
           <>
-            <Text type="text4">ClientSecret</Text>
+            {!hideLabel && <Text type="text4">Client secret</Text>}
             <div className={styles.fieldRow}>
               <span className={styles.fieldIcon} aria-hidden="true">
                 {/* 🔑 */}
@@ -52,13 +60,37 @@ export default function ItemClientSecretForm({
                 type="password"
                 className={styles.fieldInput}
                 value={clientSecret}
-                placeholder="Enter client secret ..."
+                placeholder="Some client secret ..."
                 onChange={(e) => setClientSecret(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && onEnter) {
+                    e.preventDefault();
+                    onEnter();
+                  }
+                }}
               />
             </div>
           </>
         )}
       </div>
+      {(clientSecretError || clientSecretStatus) && (
+        <div
+          className={`${styles.feedback} ${
+            inlineWarning ? styles.feedbackInline : ""
+          }`}
+        >
+          {clientSecretError && (
+            <Text type="text1" className={styles.error}>
+              {clientSecretError}
+            </Text>
+          )}
+          {clientSecretStatus && (
+            <Text type="text1" className={styles.status}>
+              {clientSecretStatus}
+            </Text>
+          )}
+        </div>
+      )}
       {showAction && (
         <div className={styles.buttons}>
           <Button
@@ -67,11 +99,10 @@ export default function ItemClientSecretForm({
             disabled={!clientSecret}
             onClick={onSubmit}
           >
-            {actionLabel}
+            Update & Use
           </Button>
         </div>
       )}
-      {clientSecretError && <Text type="text1">{clientSecretError}</Text>}
-    </>
+    </div>
   );
 }

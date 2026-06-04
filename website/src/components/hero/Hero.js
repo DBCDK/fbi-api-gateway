@@ -11,6 +11,7 @@ import Title from "@/components/base/title";
 import Token from "@/components/token";
 import Button from "@/components/base/button";
 import Label from "@/components/base/label";
+import Text from "@/components/base/text";
 import History from "@/components/history";
 
 import Christmas from "./christmas";
@@ -24,6 +25,8 @@ import Future from "./future";
 export default function Hero({ className = "" }) {
   const router = useRouter();
   const [inputValue, setInputValue] = useState("");
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyOpenMode, setHistoryOpenMode] = useState("default");
 
   const { selectedToken } = useStorage();
   const { configuration, status, isLoading } = useConfiguration(selectedToken);
@@ -40,8 +43,21 @@ export default function Hero({ className = "" }) {
     !isLoading &&
     status === "OK" &&
     Boolean(configuration?.displayName);
-  const hasValidInput = Boolean(detectCredentialType(inputValue));
+  const hasValidInput = detectCredentialType(inputValue) === "token";
   const inputIsValid = hasResolvedCredential || hasValidInput;
+
+  function handleOpenClientConnect() {
+    setHistoryOpenMode("add");
+    setShowHistory(true);
+  }
+
+  function handleShowHistoryChange(nextShow) {
+    setShowHistory(nextShow);
+
+    if (!nextShow) {
+      setHistoryOpenMode("default");
+    }
+  }
 
   return (
     <section className={`${styles.hero} ${className}`} id="hero">
@@ -65,17 +81,35 @@ export default function Hero({ className = "" }) {
 
         <Row className={styles.row}>
           <Col>
-            <Token
-              id="token-input"
-              className={styles.token}
-              onChange={setInputValue}
-              onSubmit={() => {
-                router.push({
-                  pathname: "/documentation",
-                });
-              }}
+            <div className={styles.inputGroup}>
+              <Token
+                id="token-input"
+                className={styles.token}
+                onChange={setInputValue}
+                allowClientId={false}
+                onSubmit={() => {
+                  router.push({
+                    pathname: "/documentation",
+                  });
+                }}
+              />
+              <Text type="text1" className={styles.help}>
+                No token? Connect with a clientId{" "}
+                <button
+                  type="button"
+                  className={styles.helpLink}
+                  onClick={handleOpenClientConnect}
+                >
+                  here!
+                </button>
+              </Text>
+            </div>
+            <History
+              className={styles.history}
+              show={showHistory}
+              onShowChange={handleShowHistoryChange}
+              openAddOnShow={historyOpenMode === "add"}
             />
-            <History className={styles.history} />
           </Col>
         </Row>
 

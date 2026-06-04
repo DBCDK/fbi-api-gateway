@@ -81,14 +81,21 @@ export default function useHistoryItemController(props) {
   const [removed, setRemoved] = useState(false);
   const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
   const [isScrolled, setIsScrolled] = useState(null);
-  const [note, setNote] = useState(props.note);
+  const [savedNote, setSavedNote] = useState(props.note || "");
+  const [note, setNote] = useState(props.note || "");
+  const [isEditingNote, setIsEditingNote] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
   const [clientSecretError, setClientSecretError] = useState("");
+  const [clientSecretStatus, setClientSecretStatus] = useState("");
+  const [isEditingClientSecret, setIsEditingClientSecret] = useState(false);
   const [containerScrollY, setContainerScrollY] = useState(0);
   const [shouldFocusClientSecret, setShouldFocusClientSecret] = useState(false);
+  const [shouldFocusNote, setShouldFocusNote] = useState(false);
   const [isUseButtonHovered, setIsUseButtonHovered] = useState(false);
+  const [isRehydratingSession, setIsRehydratingSession] = useState(false);
 
   const wasPendingRef = useRef(props.isPending === true);
+  const rehydratedSessionKeyRef = useRef(null);
   const elRef = useRef();
   const scrollRef = useRef();
   const isClientEntry = props.type === "client";
@@ -115,6 +122,12 @@ export default function useHistoryItemController(props) {
     enabled: !isClientEntry,
     syncResolvedToken: false,
   });
+  const shouldSkipCredentialLookup =
+    isClientEntry &&
+    props.requiresClientSecret === true &&
+    internalNetworkCheck === "disabled" &&
+    props.hasClientSecret !== true &&
+    !props.token;
 
   const {
     configuration: credentialConfiguration,
@@ -126,6 +139,7 @@ export default function useHistoryItemController(props) {
     token: props.token,
     agency: props.agency,
     lookupByEntryId: isClientEntry,
+    enabled: !shouldSkipCredentialLookup,
   });
   const { user: credentialUser, mutate: mutateCredentialUser } =
     useCredentialUser({
@@ -215,6 +229,162 @@ export default function useHistoryItemController(props) {
     return () => clearTimeout(timeout);
   }, [open, props.id, shouldFocusClientSecret]);
 
+  useEffect(() => {
+    if (!open || !shouldFocusNote) {
+      return undefined;
+    }
+
+    const focusInput = () => {
+      const input = document.getElementById(
+        `input-note-${props.id || props.token || props.clientId}`
+      );
+
+      if (input) {
+        input.focus();
+        setShouldFocusNote(false);
+      }
+    };
+
+    const timeout = setTimeout(focusInput, 0);
+
+    return () => clearTimeout(timeout);
+  }, [open, props.clientId, props.id, props.token, shouldFocusNote]);
+
+  useEffect(() => {
+    if (!open) {
+      setIsEditingNote(false);
+      setNote(savedNote);
+      setIsEditingClientSecret(false);
+      setClientSecret("");
+      setClientSecretError("");
+      setClientSecretStatus("");
+    }
+  }, [open, savedNote]);
+
+  useEffect(() => {
+    const nextNote = props.note || "";
+    setSavedNote(nextNote);
+
+    if (!isEditingNote) {
+      setNote(nextNote);
+    }
+  }, [isEditingNote, props.note]);
+
+  useEffect(() => {
+    const sessionLookupFailed = isClientEntry && credentialStatus === "EXPIRED";
+    const rehydrationValue =
+      internalNetworkCheck === "enabled" && props.clientId
+        ? props.clientId
+        : props.token || props.clientId || null;
+    const rehydrationKey = `${props.id || ""}:${internalNetworkCheck}:${rehydrationValue || ""}`;
+
+    if (!sessionLookupFailed || !rehydrationValue || !props.id) {
+      return undefined;
+    }
+
+    if (rehydratedSessionKeyRef.current === rehydrationKey) {
+      return undefined;
+    }
+
+    rehydratedSessionKeyRef.current = rehydrationKey;
+    let isCancelled = false;
+
+    async function rehydrateMissingSessionEntry() {
+      setIsRehydratingSession(true);
+      console.info("[credentials][history-item] rehydrating missing session entry", {
+        entryId: props.id,
+        clientId: props.clientId || null,
+        hasToken: Boolean(props.token),
+        networkCheck: internalNetworkCheck,
+        rehydrationType: rehydrationValue === props.clientId ? "client" : "token",
+      });
+
+      try {
+        const response = await resolveCredential({
+          value: rehydrationValue,
+          entryId: props.id,
+          agency: props.agency,
+        });
+
+        if (isCancelled) {
+          return;
+        }
+
+        if (response?.safeEntry) {
+          setHistoryItem(
+            {
+              ...response.safeEntry,
+              note: props.note || "",
+            },
+            false
+          );
+
+          if (props.inUse && response.safeEntry.token) {
+            setSelectedToken(
+              response.safeEntry.token,
+              response.safeEntry.profile,
+              response.safeEntry.agency,
+              {
+                id: response.safeEntry.id,
+                type: response.safeEntry.type,
+                clientId: response.safeEntry.clientId,
+              },
+              { reorderHistory: false }
+            );
+          }
+
+          mutateCredentialConfiguration?.();
+          mutateCredentialUser?.();
+          return;
+        }
+
+        setHistoryItem(
+          {
+            id: props.id,
+            type: props.type,
+            token: props.token,
+            clientId: props.clientId,
+            note: props.note || "",
+            status:
+              response?.status === "CLIENT_SECRET_REQUIRED"
+                ? "CLIENT_SECRET_REQUIRED"
+                : response?.statusCode === 404
+                  ? "EXPIRED"
+                  : "ERROR",
+            message:
+              response?.message || "Could not restore application session",
+          },
+          false
+        );
+      } finally {
+        if (!isCancelled) {
+          setIsRehydratingSession(false);
+        }
+      }
+    }
+
+    rehydrateMissingSessionEntry();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [
+    credentialStatus,
+    internalNetworkCheck,
+    isClientEntry,
+    mutateCredentialConfiguration,
+    mutateCredentialUser,
+    props.agency,
+    props.clientId,
+    props.id,
+    props.inUse,
+    props.note,
+    props.token,
+    resolveCredential,
+    setHistoryItem,
+    setSelectedToken,
+  ]);
+
   const resolvedConfiguration = isClientEntry
     ? credentialConfiguration
     : tokenConfiguration;
@@ -255,8 +425,12 @@ export default function useHistoryItemController(props) {
     hasWorkingToken &&
     !hasAttachedClientSecret;
   const showInlineClientSecretForm = !open && needsClientSecret;
+  const showExpandedClientSecretSection = Boolean(clientId);
   const showExpandedClientSecretForm =
-    Boolean(clientId) && !hasAttachedClientSecret;
+    Boolean(clientId) && (!hasAttachedClientSecret || isEditingClientSecret);
+  const canManageAttachedClientSecret =
+    Boolean(clientId) && hasAttachedClientSecret && !needsClientSecret;
+  const hasPendingNoteChanges = note !== savedNote;
   const canExpand = !needsClientSecret;
   const missingConfiguration =
     !needsClientSecret && (!profile || !hasAvailableAgency(configuration));
@@ -289,7 +463,7 @@ export default function useHistoryItemController(props) {
   const itemOffsetTop = elRef.current?.offsetTop || 0;
   const contentTop = open ? containerScrollY - itemOffsetTop : 0;
   const useButtonLabel =
-    needsClientSecret || clientSecret
+    needsClientSecret || clientSecret || hasPendingNoteChanges || isEditingNote
       ? "Update & Use"
       : props.inUse
         ? isUseButtonHovered
@@ -301,6 +475,10 @@ export default function useHistoryItemController(props) {
     : shouldPromptForGlobalClientSecret
       ? !clientSecret && (hasValidationError || !token)
       : hasValidationError || !token;
+  const clientSecretMessage = getClientSecretMessage(
+    props.reasonCode,
+    props.message
+  );
   const statusMessage =
     props.message ||
     (configurationStatus === "INVALID" &&
@@ -312,10 +490,6 @@ export default function useHistoryItemController(props) {
         ? "This client could not be renewed 😔"
         : "This token is expired 😔")) ||
     "Error validating token 🤔";
-  const clientSecretMessage = getClientSecretMessage(
-    props.reasonCode,
-    props.message
-  );
 
   function persistHistoryItem(nextValues = {}) {
     setHistoryItem({
@@ -337,8 +511,15 @@ export default function useHistoryItemController(props) {
     });
   }
 
+  function persistNoteChanges() {
+    persistHistoryItem();
+    setSavedNote(note);
+    setIsEditingNote(false);
+  }
+
   async function handleResolveWithClientSecret() {
     setClientSecretError("");
+    setClientSecretStatus("");
     const response = await resolveCredential({
       value: clientId,
       clientSecret,
@@ -373,12 +554,16 @@ export default function useHistoryItemController(props) {
     );
     mutateCredentialConfiguration?.();
     mutateCredentialUser?.();
+    setSavedNote(note);
+    setIsEditingNote(false);
     setClientSecret("");
+    setClientSecretStatus("Client secret validated and saved.");
     return true;
   }
 
   async function handleAttachClientSecret() {
     setClientSecretError("");
+    setClientSecretStatus("");
 
     const response = await attachClientSecret({
       entryId: props.id,
@@ -415,12 +600,19 @@ export default function useHistoryItemController(props) {
 
     mutateCredentialConfiguration?.();
     mutateCredentialUser?.();
+    setSavedNote(note);
+    setIsEditingNote(false);
     setClientSecret("");
+    setIsEditingClientSecret(false);
+    setClientSecretStatus("Client secret updated and validated.");
     return true;
   }
 
   async function handleUseAction() {
-    if (props.inUse) {
+    const hasPendingUpdates =
+      Boolean(clientSecret) || isEditingNote || hasPendingNoteChanges;
+
+    if (props.inUse && !hasPendingUpdates) {
       removeSelectedToken();
       return;
     }
@@ -436,6 +628,10 @@ export default function useHistoryItemController(props) {
       if (!didAttachClientSecret) {
         return;
       }
+    }
+
+    if (isEditingNote || hasPendingNoteChanges) {
+      persistNoteChanges();
     }
 
     setSelectedToken(
@@ -468,12 +664,65 @@ export default function useHistoryItemController(props) {
 
   function focusClientSecret() {
     setOpen(true);
+    setIsEditingClientSecret(true);
+    setClientSecretError("");
+    setClientSecretStatus("");
     setShouldFocusClientSecret(true);
+  }
+
+  function handleClientSecretChange(value) {
+    setClientSecret(value);
+
+    if (clientSecretError) {
+      setClientSecretError("");
+    }
+
+    if (clientSecretStatus) {
+      setClientSecretStatus("");
+    }
+  }
+
+  function handleNoteChange(value) {
+    setNote(value);
+
+    if (value !== savedNote) {
+      setIsEditingNote(true);
+      return;
+    }
+
+    setIsEditingNote(false);
+  }
+
+  function startEditingClientSecret() {
+    setIsEditingClientSecret(true);
+    setClientSecret("");
+    setClientSecretError("");
+    setClientSecretStatus("");
+    setShouldFocusClientSecret(true);
+  }
+
+  function cancelEditingClientSecret() {
+    setIsEditingClientSecret(false);
+    setClientSecret("");
+    setClientSecretError("");
+    setClientSecretStatus("");
+  }
+
+  function startEditingNote() {
+    setIsEditingNote(true);
+    setShouldFocusNote(true);
+  }
+
+  function cancelEditingNote() {
+    setIsEditingNote(false);
+    setNote(savedNote);
   }
 
   return {
     isLoadingView:
-      props.isPending || (isLoading && (Boolean(props.token) || isClientEntry)),
+      props.isPending ||
+      isRehydratingSession ||
+      (isLoading && (Boolean(props.token) || isClientEntry)),
     item: {
       id: props.id,
       type: props.type || "token",
@@ -482,6 +731,7 @@ export default function useHistoryItemController(props) {
       profile,
       agency,
       note,
+      savedNote,
       inUse: props.inUse,
       configuration,
       user,
@@ -514,7 +764,11 @@ export default function useHistoryItemController(props) {
       hasValidationError,
       shouldPromptForGlobalClientSecret,
       showInlineClientSecretForm,
+      showExpandedClientSecretSection,
       showExpandedClientSecretForm,
+      canManageAttachedClientSecret,
+      isEditingClientSecret,
+      isEditingNote,
       useButtonLabel,
       isUseDisabled,
       scrollRef,
@@ -523,18 +777,22 @@ export default function useHistoryItemController(props) {
     form: {
       clientSecret,
       clientSecretError,
+      clientSecretStatus,
       clientSecretInputId: `client-secret-${props.id}`,
     },
     actions: {
       setOpen,
-      setNote,
-      setClientSecret,
-      saveNote: persistHistoryItem,
+      setNote: handleNoteChange,
+      setClientSecret: handleClientSecretChange,
       requestRemove: () => setIsConfirmingRemove(true),
       cancelRemove: () => setIsConfirmingRemove(false),
       confirmRemove: handleRemoveAction,
       useCredential: handleUseAction,
       focusClientSecret,
+      startEditingClientSecret,
+      cancelEditingClientSecret,
+      startEditingNote,
+      cancelEditingNote,
       setUseButtonHovered: setIsUseButtonHovered,
     },
   };

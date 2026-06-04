@@ -1,4 +1,4 @@
-const { getCanonicalId } = require("../useStorage");
+const { getCanonicalId, getHistoryIdentifier } = require("../useStorage");
 
 describe("getCanonicalId", () => {
   test("prefers an existing id when present", () => {
@@ -21,5 +21,19 @@ describe("getCanonicalId", () => {
         clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
       })
     ).toBe("client:15804e47-4ffe-43a6-9adf-7176f0b5ba52");
+  });
+
+  test("returns null for empty or null entries", () => {
+    expect(getCanonicalId(null)).toBeNull();
+    expect(getCanonicalId(undefined)).toBeNull();
+    expect(getCanonicalId({})).toBeNull();
+  });
+});
+
+describe("getHistoryIdentifier", () => {
+  test("returns null for empty or null entries", () => {
+    expect(getHistoryIdentifier(null)).toBeNull();
+    expect(getHistoryIdentifier(undefined)).toBeNull();
+    expect(getHistoryIdentifier({})).toBeNull();
   });
 });

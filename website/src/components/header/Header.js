@@ -12,6 +12,7 @@ import { hasAvailableAgency } from "@/utils/configuration";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
+import Overlay from "@/components/base/overlay";
 import History from "@/components/history";
 import Token from "@/components/token";
 
@@ -26,6 +27,7 @@ import More from "../more";
 export default function Header() {
   const router = useRouter();
   const elRef = useRef();
+  const infoRef = useRef(null);
   const [isSticky, setIsSticky] = useState(false);
   const [show, setShow] = useState(false);
 
@@ -54,6 +56,13 @@ export default function Header() {
 
   const hasValidationError =
     selectedToken?.token && !isLoading && status !== "OK";
+  const effectiveProfile =
+    selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
+  const hasMissingClientConfiguration =
+    Boolean(selectedToken?.token) &&
+    !isLoading &&
+    status === "OK" &&
+    (!effectiveProfile || !hasAvailableAgency(configuration));
 
   const displayName = configuration?.displayName;
   const isAuthenticated = user?.isAuthenticated;
@@ -132,7 +141,12 @@ export default function Header() {
             <span />
 
             {!isIndex && selectedToken && !isLoading && !hasValidationError && (
-              <div className={styles.info}>
+              <div
+                ref={infoRef}
+                className={`${styles.info} ${
+                  hasMissingClientConfiguration ? styles.infoWarning : ""
+                }`}
+              >
                 <div>
                   <Text type="text4">{displayName}</Text>
                 </div>
@@ -143,6 +157,14 @@ export default function Header() {
                 </div>
               </div>
             )}
+            <Overlay
+              className={styles.infoOverlay}
+              show={Boolean(hasMissingClientConfiguration)}
+              container={infoRef}
+              placement="bottom"
+            >
+              <Text type="text1">Missing client configuration 😵‍💫</Text>
+            </Overlay>
 
             <History className={styles.history} />
           </Col>

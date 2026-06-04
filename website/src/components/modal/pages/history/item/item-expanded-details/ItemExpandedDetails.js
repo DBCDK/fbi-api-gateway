@@ -8,12 +8,7 @@ import AgencyList from "../agency-list/AgencyList";
 import ItemClientSecretForm from "../item-client-secret-form";
 import styles from "./ItemExpandedDetails.module.css";
 
-export default function ItemExpandedDetails({
-  item,
-  ui,
-  form,
-  actions,
-}) {
+export default function ItemExpandedDetails({ item, ui, form, actions }) {
   const {
     id,
     type,
@@ -21,15 +16,30 @@ export default function ItemExpandedDetails({
     clientId,
     profile,
     note,
+    savedNote,
     configuration,
     user,
     hasCulrAccount,
+    hasClientSecret,
     submitted,
     expires,
     expireStatus,
   } = item;
-  const { open, scrollRef, showExpandedClientSecretForm } = ui;
-  const { clientSecret, clientSecretError, clientSecretInputId } = form;
+  const {
+    open,
+    scrollRef,
+    showExpandedClientSecretSection,
+    showExpandedClientSecretForm,
+    canManageAttachedClientSecret,
+    isEditingClientSecret,
+    isEditingNote,
+  } = ui;
+  const {
+    clientSecret,
+    clientSecretError,
+    clientSecretStatus,
+    clientSecretInputId,
+  } = form;
   const agencyIdsList = configuration?.agencies;
   const defaultAgencyId = configuration?.defaultAgency;
   const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId;
@@ -39,10 +49,177 @@ export default function ItemExpandedDetails({
   const noteInputId = `input-note-${id || token || clientId}`;
 
   return (
-    <div className={styles.collapsed} ref={scrollRef}>
+    <div
+      className={styles.collapsed}
+      ref={scrollRef}
+      aria-hidden={!open}
+      inert={!open ? "" : undefined}
+    >
       <div className={styles.user}>
         <div className={styles.heading}>
-          <Text type="text1">Token details</Text>
+          <Text type="text1">Client details</Text>
+        </div>
+
+        <div className={styles.clientId}>
+          <Text type="text4">ClientID</Text>
+          <Text type="text1">{clientId}</Text>
+        </div>
+
+        <div className={styles.details}>
+          <div>
+            <Text type="text4">Default AgencyId</Text>
+            <Text type="text1">{defaultAgencyId || "None ⚠️"}</Text>
+          </div>
+          <div>
+            <Text type="text4">Profile</Text>
+            <Text type="text1">{profile || "None ⚠️"}</Text>
+          </div>
+        </div>
+
+        <div className={styles.alwaysRequireAgencyId}>
+          <Text type="text4">AgencyId required in URL</Text>
+          <Text type="text1">
+            {alwaysRequireAgencyId?.toString() || "false"}
+          </Text>
+        </div>
+
+        {agencyIdsList?.length > 0 && (
+          <AgencyList
+            title={`Client agencies (${agencyIdsList.length})`}
+            items={agencyIdsList}
+          />
+        )}
+
+        {showExpandedClientSecretSection && (
+          <>
+            <hr className={styles.divider} />
+
+            <div className={styles.attachments}>
+              <div className={styles.heading}>
+                <Text type="text1">Client attachments</Text>
+              </div>
+
+              {canManageAttachedClientSecret && (
+                <div className={styles.clientSecretSummary}>
+                  <Text type="text4">Client secret</Text>
+                  <div className={styles.secretSummaryRow}>
+                    {isEditingClientSecret ? (
+                      <div className={styles.secretInlineForm}>
+                        <ItemClientSecretForm
+                          inputId={clientSecretInputId}
+                          clientSecret={clientSecret}
+                          clientSecretError={clientSecretError}
+                          clientSecretStatus={clientSecretStatus}
+                          setClientSecret={actions.setClientSecret}
+                          onEnter={actions.useCredential}
+                          showAction={false}
+                          hideLabel
+                        />
+                      </div>
+                    ) : (
+                      <Text type="text1">************</Text>
+                    )}
+                    <button
+                      type="button"
+                      className={styles.secretAction}
+                      aria-label={
+                        isEditingClientSecret
+                          ? "Cancel editing secret"
+                          : "Edit secret"
+                      }
+                      title={
+                        isEditingClientSecret
+                          ? "Cancel editing secret"
+                          : "Edit secret"
+                      }
+                      onClick={
+                        isEditingClientSecret
+                          ? actions.cancelEditingClientSecret
+                          : actions.startEditingClientSecret
+                      }
+                    >
+                      {isEditingClientSecret ? "❌" : "✏️"}
+                    </button>
+                  </div>
+                  {clientSecretStatus && (
+                    <Text type="text1">{clientSecretStatus}</Text>
+                  )}
+                </div>
+              )}
+
+              {showExpandedClientSecretForm &&
+                !canManageAttachedClientSecret && (
+                  <ItemClientSecretForm
+                    inputId={clientSecretInputId}
+                    clientSecret={clientSecret}
+                    clientSecretError={clientSecretError}
+                    clientSecretStatus={clientSecretStatus}
+                    setClientSecret={actions.setClientSecret}
+                    onEnter={actions.useCredential}
+                    showAction={false}
+                  />
+                )}
+
+              <div className={styles.clientNote}>
+                <Text type="text4">Client note</Text>
+                <div className={styles.noteSummaryRow}>
+                  {isEditingNote || !savedNote ? (
+                    <div className={styles.noteInlineEditor}>
+                      <div className={styles.fieldRow}>
+                        <span className={styles.fieldIcon} aria-hidden="true">
+                          {/* 📝 */}
+                          📄
+                        </span>
+                        <input
+                          id={noteInputId}
+                          value={note}
+                          autoComplete="off"
+                          maxLength="50"
+                          placeholder={open ? "Some client note ..." : false}
+                          onChange={(e) => actions.setNote(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              actions.useCredential();
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <Text type="text1">{savedNote}</Text>
+                  )}
+                  {(savedNote || isEditingNote) && (
+                    <button
+                      type="button"
+                      className={styles.secretAction}
+                      aria-label={
+                        isEditingNote ? "Cancel editing note" : "Edit note"
+                      }
+                      title={
+                        isEditingNote ? "Cancel editing note" : "Edit note"
+                      }
+                      onClick={
+                        isEditingNote
+                          ? actions.cancelEditingNote
+                          : actions.startEditingNote
+                      }
+                    >
+                      {isEditingNote ? "❌" : "✏️"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      <hr className={styles.divider} />
+
+      <div className={styles.user}>
+        <div className={styles.heading}>
+          <Text type="text1">Resolved token details</Text>
         </div>
 
         <div className={styles.submitted}>
@@ -73,93 +250,6 @@ export default function ItemExpandedDetails({
           </Text>
           <Text type="text1">{token || "Not resolved yet"}</Text>
         </div>
-      </div>
-
-      <hr className={styles.divider} />
-
-      <div className={styles.user}>
-        <div className={styles.heading}>
-          <Text type="text1">Client details</Text>
-        </div>
-
-        <div className={styles.clientId}>
-          <Text type="text4">ClientID</Text>
-          <Text type="text1">{clientId}</Text>
-        </div>
-
-        <div className={styles.details}>
-          <div>
-            <Text type="text4">Default AgencyId</Text>
-            <Text type="text1">{defaultAgencyId || "None"}</Text>
-          </div>
-          <div>
-            <Text type="text4">Profile</Text>
-            <Text type="text1">
-              {profile || "None 😵‍💫"} {profile === "none" && "⚠️"}
-            </Text>
-          </div>
-        </div>
-
-        <div className={styles.alwaysRequireAgencyId}>
-          <Text type="text4">AgencyId required in URL</Text>
-          <Text type="text1">
-            {alwaysRequireAgencyId?.toString() || "false"}
-          </Text>
-        </div>
-
-        {agencyIdsList?.length > 0 && (
-          <AgencyList
-            title={`Client agencies (${agencyIdsList.length})`}
-            items={agencyIdsList}
-          />
-        )}
-
-        {showExpandedClientSecretForm && (
-          <>
-            <hr className={styles.divider} />
-
-            <div className={styles.attachments}>
-              <div className={styles.heading}>
-                <Text type="text1">Client attachments</Text>
-              </div>
-
-              <div className={styles.clientNote}>
-                <Text type="text4">Client note</Text>
-                <div className={styles.fieldRow}>
-                  <span className={styles.fieldIcon} aria-hidden="true">
-                    📝
-                  </span>
-                  <input
-                    id={noteInputId}
-                    value={note}
-                    disabled={!open}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.keyCode === 13) {
-                        const el = document.getElementById(noteInputId);
-                        el.blur();
-                      }
-                    }}
-                    autoComplete="off"
-                    maxLength="50"
-                    placeholder={open ? "Add client note ..." : false}
-                    onChange={(e) => actions.setNote(e.target.value)}
-                    onBlur={() => actions.saveNote()}
-                  />
-                </div>
-              </div>
-
-              {showExpandedClientSecretForm && (
-                <ItemClientSecretForm
-                  inputId={clientSecretInputId}
-                  clientSecret={clientSecret}
-                  clientSecretError={clientSecretError}
-                  setClientSecret={actions.setClientSecret}
-                  showAction={false}
-                />
-              )}
-            </div>
-          </>
-        )}
       </div>
 
       {isAuthenticated && token && <hr className={styles.divider} />}

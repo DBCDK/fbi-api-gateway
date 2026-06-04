@@ -73,6 +73,10 @@
 .info {
   margin-right: var(--pt1);
   flex: 0 0 auto;
+  border-radius: var(--pt1);
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .info > div {
@@ -83,6 +87,13 @@
 
 .info > div:last-child p {
   font-style: italic;
+}
+
+.infoWarning {
+}
+
+.infoOverlay {
+  z-index: 99;
 }
 
 .more {

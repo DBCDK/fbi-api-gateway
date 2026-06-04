@@ -15,7 +15,7 @@ import {
 
 const COOKIE_NAME = "fbi_credentials_session";
 const BACKUP_COOKIE_NAME = "fbi_credentials_backup";
-const MAX_SERVER_ENTRIES = 5;
+const MAX_SERVER_ENTRIES = config.credentials?.maxClientEntries || 10;
 const ONE_WEEK_IN_SECONDS = 60 * 60 * 24 * 7;
 const REDIS_PREFIX = "credential_session";
 
@@ -62,11 +62,27 @@ function unseal(value) {
   return JSON.parse(decrypted.toString("utf8"));
 }
 
+function sanitizeSessionEntry(entry = {}) {
+  return {
+    type: entry.type || "client",
+    token: entry.token || null,
+    clientId: entry.clientId || null,
+    clientSecret: entry.clientSecret || null,
+    refreshToken: entry.refreshToken || null,
+    tokenType: entry.tokenType || null,
+    expiresAt: entry.expiresAt || null,
+    network: entry.network || null,
+    requiresClientSecret: Boolean(entry.requiresClientSecret),
+    updatedAt: entry.updatedAt || Date.now(),
+  };
+}
+
 function getEntries(session) {
   return Object.fromEntries(
     Object.entries(session?.entries || {})
       .sort(([, a], [, b]) => (b?.updatedAt || 0) - (a?.updatedAt || 0))
       .slice(0, MAX_SERVER_ENTRIES)
+      .map(([entryId, entry]) => [entryId, sanitizeSessionEntry(entry)])
   );
 }
 
@@ -307,8 +323,19 @@ export async function upsertCredentialSessionEntry(ctx, entryId, nextEntry) {
 }
 
 export async function getCredentialSessionEntry(ctx, entryId) {
-  const { session } = await getCredentialSession(ctx);
-  return session.entries?.[entryId] || null;
+  const { sessionId, session } = await getCredentialSession(ctx);
+  const entry = session.entries?.[entryId] || null;
+
+  if (!entry) {
+    console.info("[credentials][session] entry lookup miss", {
+      entryId,
+      sessionId,
+      entryCount: Object.keys(session.entries || {}).length,
+      availableEntryIds: Object.keys(session.entries || {}),
+    });
+  }
+
+  return entry;
 }
 
 export async function removeCredentialSessionEntry(ctx, entryId) {

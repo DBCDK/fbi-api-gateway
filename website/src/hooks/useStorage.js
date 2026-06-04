@@ -1,7 +1,10 @@
 import useSWR from "swr";
 import { toCredentialId } from "@/utils/credentials";
+import { MAX_CLIENT_ENTRIES } from "@/utils/clientEntries";
 
 const isBrowser = typeof window !== "undefined";
+const APPLICATIONS_KEY = "credentialApplications";
+const SELECTED_APPLICATION_KEY = "selectedCredentialApplication";
 
 const safeGetItem = (storage, key, fallback = null) => {
   try {
@@ -18,11 +21,15 @@ const isToken = (token) => {
   return stripped.length === 40;
 };
 
-const getHistoryIdentifier = ({ id, token, clientId }) =>
-  clientId ? `client:${clientId}` : id || token || null;
+export const getHistoryIdentifier = (entry = {}) => {
+  const { id, token, clientId } = entry || {};
+  return clientId ? `client:${clientId}` : id || token || null;
+};
 
-export const getCanonicalId = ({ id, type, token, clientId }) =>
-  id || toCredentialId({ type, token, clientId }) || null;
+export const getCanonicalId = (entry = {}) => {
+  const { id, type, token, clientId } = entry || {};
+  return id || toCredentialId({ type, token, clientId }) || null;
+};
 
 const matchesHistoryEntry = (left = {}, right = {}) => {
   const leftIdentifier = getHistoryIdentifier(left);
@@ -74,14 +81,14 @@ const normalizeHistory = (items = []) =>
 
 export default function useStorage() {
   const { data: history = [], mutate: mutateHistory } = useSWR(
-    "history",
+    APPLICATIONS_KEY,
     (key) =>
       isBrowser ? normalizeHistory(safeGetItem(localStorage, key, [])) : [],
     { fallbackData: [] }
   );
 
   const { data: selectedToken, mutate: mutateSelectedToken } = useSWR(
-    "selectedToken",
+    SELECTED_APPLICATION_KEY,
     (key) => (isBrowser ? safeGetItem(sessionStorage, key, null) : null),
     { fallbackData: null }
   );
@@ -131,7 +138,7 @@ export default function useStorage() {
         null,
     };
     try {
-      sessionStorage.setItem("selectedToken", JSON.stringify(value));
+      sessionStorage.setItem(SELECTED_APPLICATION_KEY, JSON.stringify(value));
     } catch {}
     console.info("[credentials][storage] setSelectedToken", {
       id: value.id || null,
@@ -151,7 +158,7 @@ export default function useStorage() {
   const removeSelectedToken = () => {
     if (!isBrowser) return;
     try {
-      sessionStorage.removeItem("selectedToken");
+      sessionStorage.removeItem(SELECTED_APPLICATION_KEY);
     } catch {}
     mutateSelectedToken(null, false);
   };
@@ -221,9 +228,9 @@ export default function useStorage() {
       });
     }
 
-    const sliced = normalizeHistory(copy).slice(0, 10);
+    const sliced = normalizeHistory(copy).slice(0, MAX_CLIENT_ENTRIES);
     try {
-      localStorage.setItem("history", JSON.stringify(sliced));
+      localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(sliced));
     } catch {}
     console.info("[credentials][storage] setHistoryItem", {
       operation,
@@ -255,7 +262,7 @@ export default function useStorage() {
       (obj) => !matchesHistoryEntry(obj, tokenOrEntry || {})
     );
     try {
-      localStorage.setItem("history", JSON.stringify(newHistory));
+      localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(newHistory));
     } catch {}
     mutateHistory(newHistory, false);
 

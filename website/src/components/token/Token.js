@@ -21,6 +21,8 @@ export default function Token({
   onSubmit,
   onChange,
   compact,
+  onRequiresClientSecret,
+  allowClientId = true,
 }) {
   // useToken custom hook
   const {
@@ -71,10 +73,12 @@ export default function Token({
 
   // Error messages
   const inputType = detectCredentialType(state.value);
+  const acceptsCurrentInput =
+    inputType === "token" || (allowClientId && inputType === "client");
   const _errorToken =
     !selectedToken?.token &&
-    !inputType &&
-    "🧐 Input must be a token or a clientId!";
+    (state.value ? !acceptsCurrentInput : !inputType) &&
+    `🧐 Input must be ${allowClientId ? "a token or a clientId" : "a token"}!`;
 
   const hasMissingConfigurationWarning =
     !isLoading &&
@@ -93,15 +97,44 @@ export default function Token({
 
   const hasError = _errorToken || hasValidationError || resolveError;
 
-  async function handleResolveToken() {
-    if (!state.value) {
+  async function handleResolveToken(nextValue = state.value, options = {}) {
+    const { shouldSubmit = true } = options;
+
+    if (!nextValue) {
+      return;
+    }
+
+    const nextInputType = detectCredentialType(nextValue);
+    const acceptsNextInput =
+      nextInputType === "token" ||
+      (allowClientId && nextInputType === "client");
+
+    if (!acceptsNextInput) {
+      setResolveError(
+        `🧐 Input must be ${allowClientId ? "a valid token or clientId" : "a valid token"}!`
+      );
       return;
     }
 
     setResolveError("");
     const response = await resolveCredential({
-      value: state.value,
+      value: nextValue,
     });
+
+    if (response?.safeEntry?.status === "CLIENT_SECRET_REQUIRED") {
+      setHistoryItem(response.safeEntry, false);
+      removeSelectedToken();
+
+      if (nextInputType === "client" && onRequiresClientSecret) {
+        onRequiresClientSecret?.(response.safeEntry);
+        return;
+      }
+
+      setResolveError(
+        "Secret is required before token exchange. Open the application in the list to continue."
+      );
+      return;
+    }
 
     if (!response?.safeEntry?.token) {
       setResolveError(
@@ -121,7 +154,9 @@ export default function Token({
         clientId: response.safeEntry.clientId,
       }
     );
-    onSubmit?.(response.safeEntry.token);
+    if (shouldSubmit) {
+      onSubmit?.(response.safeEntry.token);
+    }
     onChange?.(response.safeEntry.token);
   }
 
@@ -163,14 +198,8 @@ export default function Token({
                   🧑 {!hasCulrAccount && <i>⚠️</i>}
                 </span>
               )}{" "}
-              {`${configuration?.displayName}`}
+              {`${configuration?.displayName} ${hasMissingConfigurationWarning ? "⚠️" : ""}`}
             </Text>
-            {hasMissingConfigurationWarning && (
-              <Text type="text1">
-                Client configuration is partial. Continue from History if you
-                need to adjust agency/profile.
-              </Text>
-            )}
           </div>
         )}
 
@@ -181,12 +210,16 @@ export default function Token({
         )}
 
         <input
-          aria-label="inputfield for access token or clientId"
+          aria-label={`inputfield for access ${allowClientId ? "token or clientId" : "token"}`}
           ref={inputRef}
           id={id}
           className={styles.input}
           value={state.value}
-          placeholder="Drop token or clientId here ..."
+          placeholder={
+            allowClientId
+              ? "Drop token or clientId here ..."
+              : "Drop token here ..."
+          }
           autoComplete="off"
           onBlur={() => {
             setState({ ...state, focus: false });
@@ -196,6 +229,24 @@ export default function Token({
             setResolveError("");
             onChange?.(value);
             setState({ ...state, value });
+          }}
+          onPaste={(e) => {
+            const pastedValue = e.clipboardData?.getData("text")?.trim();
+
+            if (detectCredentialType(pastedValue) !== "token") {
+              return;
+            }
+
+            e.preventDefault();
+            setResolveError("");
+            onChange?.(pastedValue);
+            setState((current) => ({
+              ...current,
+              value: pastedValue,
+            }));
+            window.setTimeout(() => {
+              handleResolveToken(pastedValue, { shouldSubmit: false });
+            }, 0);
           }}
         />
         <Button

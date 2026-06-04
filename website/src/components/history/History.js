@@ -12,15 +12,32 @@ import Text from "@/components/base/text";
 
 import styles from "./History.module.css";
 
-export function History({ onClick, compact, disabled, className = "" }) {
-  const [show, setShow] = useState(false);
+export function History({
+  onClick,
+  compact,
+  disabled,
+  className = "",
+  show: controlledShow,
+  onShowChange,
+  openAddOnShow = false,
+}) {
+  const [uncontrolledShow, setUncontrolledShow] = useState(false);
   const buttonRef = useRef(null);
   const { selectedToken } = useStorage();
   const { status, isLoading } = useConfiguration(selectedToken);
   const compactClass = compact ? styles.compact : "";
+  const show = controlledShow ?? uncontrolledShow;
 
   const hasValidationError =
     selectedToken?.token && !isLoading && status !== "OK";
+
+  function handleShowChange(nextShow) {
+    onShowChange?.(nextShow);
+
+    if (controlledShow === undefined) {
+      setUncontrolledShow(nextShow);
+    }
+  }
 
   return (
     <>
@@ -28,7 +45,7 @@ export function History({ onClick, compact, disabled, className = "" }) {
         elRef={buttonRef}
         className={`${styles.history} ${compactClass} ${className}`}
         disabled={disabled}
-        onClick={() => setShow(true)}
+        onClick={() => handleShowChange(true)}
         secondary
       >
         <span>🔐</span>
@@ -41,8 +58,17 @@ export function History({ onClick, compact, disabled, className = "" }) {
       >
         <Text type="text1">Validation Error 😵‍💫</Text>
       </Overlay>
-      <Modal show={show} onHide={() => setShow(false)} className={styles.modal}>
-        <Pages.History modal={{ isVisible: show }} />
+      <Modal
+        show={show}
+        onHide={() => handleShowChange(false)}
+        className={styles.modal}
+      >
+        <Pages.History
+          modal={{
+            isVisible: show,
+            openAddOnShow,
+          }}
+        />
       </Modal>
     </>
   );

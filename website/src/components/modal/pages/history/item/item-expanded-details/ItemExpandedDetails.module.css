@@ -118,7 +118,6 @@
 
 :global(.missingConfig) .clientId ~ .details > div p:last-child {
   color: var(--error);
-  font-family: var(--font-mono-semibold);
 }
 
 .fieldRow {
@@ -157,6 +156,71 @@
 
 .attachments {
   margin-top: var(--pt2);
+}
+
+.clientSecretSummary {
+  color: var(--text);
+  margin-top: var(--pt1);
+  margin-bottom: var(--pt1);
+}
+
+.secretSummaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pt2);
+}
+
+.secretInlineForm {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.noteSummaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pt2);
+}
+
+.noteSummaryRow > :first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.noteInlineEditor {
+  min-width: 0;
+}
+
+.secretAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--text-dark);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 260ms ease,
+    background-color 260ms ease,
+    border-color 260ms ease;
+}
+
+.secretAction:hover,
+.secretAction:focus-visible {
+  background-color: var(--text-dark);
+  border-color: var(--text-light);
+}
+
+.secretAction:focus-visible {
+  outline: 2px solid var(--text-light);
+  outline-offset: 2px;
 }
 
 .i {
