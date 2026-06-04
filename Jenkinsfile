@@ -79,7 +79,13 @@ pipeline {
             }
         }
         stage('Push to Artifactory') {
-            when { anyOf { branch 'master'; branch 'future' } }
+            when {
+                anyOf {
+                    branch 'master'
+                    branch 'future'
+                    branch pattern: '.*feature.*', comparator: 'REGEXP'
+                }
+            }
 
             steps {
                 script {
