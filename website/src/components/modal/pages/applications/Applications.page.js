@@ -1,5 +1,5 @@
 /**
- * @file Shows a history of the used tokens
+ * @file Shows the connected applications and credentials
  */
 
 import { useState, useEffect, useRef } from "react";
@@ -8,7 +8,7 @@ import { Col, Row } from "react-bootstrap";
 import useStorage from "@/hooks/useStorage";
 import useCredentialResolve from "@/hooks/useCredentialResolve";
 import useInternalNetworkCheck from "@/hooks/useInternalNetworkCheck";
-import { MAX_CLIENT_ENTRIES } from "@/utils/clientEntries";
+import { MAX_CLIENT_ENTRIES as MAX_APPLICATION_ENTRIES } from "@/utils/clientEntries";
 import { detectCredentialType } from "@/utils/credentials";
 
 import Overlay from "@/components/base/overlay";
@@ -16,9 +16,9 @@ import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 
 import { isEqual } from "@/components/utils";
-import HistoryItem from "./item";
+import ApplicationItem from "./item";
 
-import styles from "./History.module.css";
+import styles from "./Applications.module.css";
 
 const MIN_PENDING_DURATION_MS = 1000;
 
@@ -31,17 +31,17 @@ const MIN_PENDING_DURATION_MS = 1000;
  * @returns {component}
  */
 
-function History({ modal }) {
+function ApplicationsPage({ modal }) {
   const {
-    history,
+    applications,
     selectedToken,
-    setHistoryItem,
+    setApplicationEntry,
     setSelectedToken,
-    removeHistoryItem,
+    removeApplicationEntry,
   } = useStorage();
   const { resolveCredential } = useCredentialResolve();
   const { internalNetworkCheck } = useInternalNetworkCheck();
-  const [state, setState] = useState(history);
+  const [state, setState] = useState(applications);
   const [isScrolled, setIsScrolled] = useState(null);
   const [isAddExpanded, setIsAddExpanded] = useState(false);
   const [filter, setFilter] = useState("");
@@ -52,8 +52,8 @@ function History({ modal }) {
   const inputRef = useRef(null);
   const previousModalVisibleRef = useRef(modal.isVisible);
 
-  function logHistoryDebug(step, details = {}) {
-    console.info(`[credentials][history] ${step}`, details);
+  function logApplicationsDebug(step, details = {}) {
+    console.info(`[credentials][applications] ${step}`, details);
   }
 
   function getEntryIdentifier(entry) {
@@ -142,7 +142,7 @@ function History({ modal }) {
         return itemIdentifier !== identifier;
       });
 
-      return [entry, ...filtered].slice(0, MAX_CLIENT_ENTRIES);
+      return [entry, ...filtered].slice(0, MAX_APPLICATION_ENTRIES);
     });
   }
 
@@ -188,7 +188,7 @@ function History({ modal }) {
     markStateEntryAsRemoving(entry);
 
     window.setTimeout(() => {
-      removeHistoryItem(entry);
+      removeApplicationEntry(entry);
       removeStateEntry(entry);
     }, 280);
   }
@@ -223,7 +223,7 @@ function History({ modal }) {
 
     if (inputType === "client") {
       const normalizedClientId = filter.trim();
-      const existingEntry = history?.find?.(
+      const existingEntry = applications?.find?.(
         (item) => item?.clientId === normalizedClientId
       );
 
@@ -233,7 +233,7 @@ function History({ modal }) {
         if (existingEntry.clientSecret || existingEntry.hasClientSecret) {
           const nextEntry = withCurrentNetworkSetting(existingEntry);
 
-          setHistoryItem(nextEntry, false);
+          setApplicationEntry(nextEntry, false);
           syncStateWithEntry(nextEntry);
 
           if (nextEntry.token) {
@@ -260,12 +260,15 @@ function History({ modal }) {
     const normalizedClientId = inputType === "client" ? filter.trim() : null;
     const existingEntry =
       inputType === "client"
-        ? history?.find?.((item) => item?.clientId === normalizedClientId) ||
+        ? applications?.find?.((item) => item?.clientId === normalizedClientId) ||
           null
-        : history?.find?.((item) => item?.token === filter.trim()) || null;
+        : applications?.find?.((item) => item?.token === filter.trim()) || null;
 
-    if (!existingEntry && (history?.length || 0) >= MAX_CLIENT_ENTRIES) {
-      setInputError(`Max ${MAX_CLIENT_ENTRIES} applications.`);
+    if (
+      !existingEntry &&
+      (applications?.length || 0) >= MAX_APPLICATION_ENTRIES
+    ) {
+      setInputError(`Max ${MAX_APPLICATION_ENTRIES} applications.`);
       return;
     }
 
@@ -280,7 +283,7 @@ function History({ modal }) {
       entryId: existingEntry?.id || undefined,
     });
 
-    logHistoryDebug("submit resolved", {
+    logApplicationsDebug("submit resolved", {
       submittedType: inputType,
       requestedEntryId: existingEntry?.id || null,
       requestedClientId: existingEntry?.clientId || normalizedClientId || null,
@@ -304,7 +307,7 @@ function History({ modal }) {
 
       const nextEntry = withCurrentNetworkSetting(response.safeEntry);
 
-      logHistoryDebug("persisting resolved entry", {
+      logApplicationsDebug("persisting resolved entry", {
         submittedType: inputType,
         nextEntryId: nextEntry.id || null,
         nextEntryType: nextEntry.type || null,
@@ -316,7 +319,7 @@ function History({ modal }) {
         networkSetting: nextEntry.networkSetting || null,
       });
 
-      setHistoryItem(nextEntry, false);
+      setApplicationEntry(nextEntry, false);
       syncStateWithEntry(nextEntry);
 
       if (nextEntry.token) {
@@ -368,11 +371,11 @@ function History({ modal }) {
       previousModalVisibleRef.current &&
       selectedToken?.token
     ) {
-      setHistoryItem(selectedToken, false);
+      setApplicationEntry(selectedToken, false);
     }
 
     previousModalVisibleRef.current = modal.isVisible;
-  }, [modal.isVisible, selectedToken, setHistoryItem]);
+  }, [modal.isVisible, selectedToken, setApplicationEntry]);
 
   useEffect(() => {
     setState((current) => {
@@ -383,14 +386,17 @@ function History({ modal }) {
 
         const identifier = getEntryIdentifier(entry);
 
-        return !history.some(
-          (historyEntry) => getEntryIdentifier(historyEntry) === identifier
+        return !applications.some(
+          (applicationEntry) => getEntryIdentifier(applicationEntry) === identifier
         );
       });
 
-      return [...transientEntries, ...history].slice(0, MAX_CLIENT_ENTRIES);
+      return [...transientEntries, ...applications].slice(
+        0,
+        MAX_APPLICATION_ENTRIES
+      );
     });
-  }, [history]);
+  }, [applications]);
 
   useEffect(() => {
     if (!isAddExpanded) {
@@ -416,24 +422,24 @@ function History({ modal }) {
       setIsAddExpanded(false);
       setFilter("");
       setInputError("");
-      setTimeout(() => setState(history), 200);
+      setTimeout(() => setState(applications), 200);
     }
-  }, [modal.isVisible, history]);
+  }, [modal.isVisible, applications]);
 
   useEffect(() => {
     function handleScroll(e) {
       const isTop = e.target.scrollTop === 0;
-      if (isTop !== isScrolled) {
-        setIsScrolled(!isTop);
-      }
+      setIsScrolled((current) => (current === !isTop ? current : !isTop));
     }
 
     const body = document.getElementById("modal");
 
     if (body) {
       body.addEventListener("scroll", handleScroll, { passive: true });
-      () => body.removeEventListener("scroll", handleScroll);
+
+      return () => body.removeEventListener("scroll", handleScroll);
     }
+    return undefined;
   }, []);
 
   const isScrolledClass = isScrolled ? "scrolled" : "";
@@ -524,7 +530,7 @@ function History({ modal }) {
         {!state?.length && <span>You have no applications yet 🥹</span>}
         {state?.map((h, i) => {
           return (
-            <HistoryItem
+            <ApplicationItem
               key={h.id || `${h.token}-${i}`}
               isVisible={modal.isVisible}
               refreshCycle={refreshCycle}
@@ -539,4 +545,4 @@ function History({ modal }) {
   );
 }
 
-export default History;
+export default ApplicationsPage;

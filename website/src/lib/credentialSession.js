@@ -12,6 +12,11 @@ import {
   set as setRedis,
   del as delRedis,
 } from "../../../src/datasources/redis.datasource";
+import {
+  buildSessionEntriesFromBackupClientIds,
+  listBackupClientIds,
+  sanitizeCredentialSessionEntry,
+} from "./credentialApplications";
 
 const COOKIE_NAME = "fbi_credentials_session";
 const BACKUP_COOKIE_NAME = "fbi_credentials_backup";
@@ -31,17 +36,24 @@ console.info("[credentials][session] storage mode configured", {
 });
 
 function getKey() {
-  const secret =
-    process.env.WEBSITE_CREDENTIALS_SECRET ||
-    process.env.APP_ID ||
-    "fbi-api-gateway-dev-secret";
+  const secret = process.env.WEBSITE_CREDENTIALS_SECRET || process.env.APP_ID;
+
+  if (!secret) {
+    return null;
+  }
 
   return crypto.createHash("sha256").update(secret).digest();
 }
 
 function seal(value) {
+  const key = getKey();
+
+  if (!key) {
+    return null;
+  }
+
   const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv("aes-256-gcm", getKey(), iv);
+  const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
   const encrypted = Buffer.concat([
     cipher.update(JSON.stringify(value), "utf8"),
     cipher.final(),
@@ -52,6 +64,12 @@ function seal(value) {
 }
 
 function unseal(value) {
+  const key = getKey();
+
+  if (!key) {
+    return null;
+  }
+
   const [ivValue, tagValue, encryptedValue] = String(value || "").split(".");
 
   if (!ivValue || !tagValue || !encryptedValue) {
@@ -60,7 +78,7 @@ function unseal(value) {
 
   const decipher = crypto.createDecipheriv(
     "aes-256-gcm",
-    getKey(),
+    key,
     Buffer.from(ivValue, "base64url")
   );
   decipher.setAuthTag(Buffer.from(tagValue, "base64url"));
@@ -73,48 +91,45 @@ function unseal(value) {
   return JSON.parse(decrypted.toString("utf8"));
 }
 
-function sanitizeSessionEntry(entry = {}) {
-  return {
-    type: entry.type || "client",
-    token: entry.token || null,
-    clientId: entry.clientId || null,
-    clientSecret: entry.clientSecret || null,
-    refreshToken: entry.refreshToken || null,
-    tokenType: entry.tokenType || null,
-    expiresAt: entry.expiresAt || null,
-    network: entry.network || null,
-    requiresClientSecret: Boolean(entry.requiresClientSecret),
-    updatedAt: entry.updatedAt || Date.now(),
-  };
-}
-
 function getEntries(session) {
   return Object.fromEntries(
     Object.entries(session?.entries || {})
       .sort(([, a], [, b]) => (b?.updatedAt || 0) - (a?.updatedAt || 0))
       .slice(0, MAX_SERVER_ENTRIES)
-      .map(([entryId, entry]) => [entryId, sanitizeSessionEntry(entry)])
+      .map(([entryId, entry]) => [entryId, sanitizeCredentialSessionEntry(entry)])
   );
 }
 
-function getBackupEntries(session) {
-  return Object.fromEntries(
-    Object.entries(session?.entries || {})
-      .filter(([, entry]) => entry?.clientId && entry?.clientSecret)
-      .sort(([, a], [, b]) => (b?.updatedAt || 0) - (a?.updatedAt || 0))
-      .slice(0, MAX_SERVER_ENTRIES)
-      .map(([entryId, entry]) => [
-        entryId,
-        {
-          type: entry.type || "client",
-          clientId: entry.clientId,
-          clientSecret: entry.clientSecret || null,
-          network: entry.network || null,
-          requiresClientSecret: Boolean(entry.requiresClientSecret),
-          updatedAt: entry.updatedAt || Date.now(),
-        },
-      ])
-  );
+function getBackupClientIds(session) {
+  return listBackupClientIds(session?.entries || {}).slice(0, MAX_SERVER_ENTRIES);
+}
+
+function normalizeBackupSession(rawBackup = null) {
+  if (!rawBackup) {
+    return null;
+  }
+
+  if (Array.isArray(rawBackup?.clientIds)) {
+    return {
+      entries: buildSessionEntriesFromBackupClientIds(rawBackup.clientIds),
+    };
+  }
+
+  if (Array.isArray(rawBackup)) {
+    return {
+      entries: buildSessionEntriesFromBackupClientIds(rawBackup),
+    };
+  }
+
+  if (rawBackup?.entries && !Array.isArray(rawBackup.entries)) {
+    const clientIds = listBackupClientIds(rawBackup.entries);
+
+    return {
+      entries: buildSessionEntriesFromBackupClientIds(clientIds),
+    };
+  }
+
+  return null;
 }
 
 function usesServerSideStorage() {
@@ -140,19 +155,42 @@ function getCookieOptions() {
 }
 
 function setBackupCookie(ctx, session) {
-  const backupEntries = getBackupEntries(session);
+  const clientIds = getBackupClientIds(session);
+  const sealedValue = seal({ clientIds });
 
-  if (Object.keys(backupEntries).length === 0) {
+  if (clientIds.length === 0) {
+    console.info("[credentials][session] backup cookie cleared due to empty client list");
     destroyCookie(ctx, BACKUP_COOKIE_NAME, {
       path: "/",
     });
     return;
   }
 
+  if (!sealedValue) {
+    console.info(
+      "[credentials][session] backup cookie not set because no sealing key is configured",
+      {
+        hasWebsiteCredentialsSecret: Boolean(
+          process.env.WEBSITE_CREDENTIALS_SECRET
+        ),
+        hasAppId: Boolean(process.env.APP_ID),
+        clientIds,
+      }
+    );
+    destroyCookie(ctx, BACKUP_COOKIE_NAME, {
+      path: "/",
+    });
+    return;
+  }
+
+  console.info("[credentials][session] backup cookie updated", {
+    clientIds,
+  });
+
   setCookie(
     ctx,
     BACKUP_COOKIE_NAME,
-    seal({ entries: backupEntries }),
+    sealedValue,
     getCookieOptions()
   );
 }
@@ -162,12 +200,22 @@ function getBackupSession(ctx) {
   const raw = cookies[BACKUP_COOKIE_NAME];
 
   if (!raw) {
+    console.info("[credentials][session] backup cookie missing");
     return null;
   }
 
   try {
-    return unseal(raw) || null;
+    const normalizedBackup = normalizeBackupSession(unseal(raw)) || null;
+
+    console.info("[credentials][session] backup cookie loaded", {
+      hasBackupSession: Boolean(normalizedBackup),
+      entryCount: Object.keys(normalizedBackup?.entries || {}).length,
+      entryIds: Object.keys(normalizedBackup?.entries || {}),
+    });
+
+    return normalizedBackup;
   } catch {
+    console.info("[credentials][session] backup cookie could not be parsed");
     return null;
   }
 }
@@ -212,10 +260,17 @@ async function restoreRedisSession(ctx, sessionId = null, session = null) {
   };
 
   if (Object.keys(restoredSession.entries).length === 0) {
+    console.info("[credentials][session] restore skipped due to empty backup");
     return { sessionId: null, session: { entries: {} } };
   }
 
   const effectiveSessionId = sessionId || getSessionId(ctx) || createSessionId();
+  console.info("[credentials][session] restoring session from backup", {
+    previousSessionId: sessionId,
+    restoredSessionId: effectiveSessionId,
+    entryCount: Object.keys(restoredSession.entries).length,
+    entryIds: Object.keys(restoredSession.entries),
+  });
   await setRedisSession(effectiveSessionId, restoredSession);
   setSessionIdCookie(ctx, effectiveSessionId);
   setBackupCookie(ctx, restoredSession);
@@ -238,8 +293,14 @@ export async function getCredentialSession(ctx) {
     });
 
     if (!raw) {
+      console.info(
+        "[credentials][session] session cookie missing, attempting backup restore"
+      );
       const backupSession = getBackupSession(ctx);
       if (!backupSession) {
+        console.info(
+          "[credentials][session] no backup available for missing session cookie"
+        );
         return { sessionId: null, session: { entries: {} } };
       }
 
@@ -267,9 +328,15 @@ export async function getCredentialSession(ctx) {
     const backupSession = getBackupSession(ctx);
 
     if (!backupSession) {
+      console.info(
+        "[credentials][session] redis session empty and no backup available"
+      );
       return { sessionId: null, session: { entries: {} } };
     }
 
+    console.info(
+      "[credentials][session] redis session empty, attempting backup restore"
+    );
     return await restoreRedisSession(ctx, raw, backupSession);
   }
 
@@ -304,7 +371,16 @@ export async function setCredentialSession(ctx, session, sessionId = null) {
     return effectiveSessionId;
   }
 
-  setCookie(ctx, COOKIE_NAME, seal(normalizedSession), getCookieOptions());
+  const sealedValue = seal(normalizedSession);
+
+  if (!sealedValue) {
+    destroyCookie(ctx, COOKIE_NAME, {
+      path: "/",
+    });
+    return null;
+  }
+
+  setCookie(ctx, COOKIE_NAME, sealedValue, getCookieOptions());
   return null;
 }
 

@@ -63,17 +63,18 @@ const useInternalNetworkCheck =
 const useStorage = require("@/hooks/useStorage").default;
 const useUser = require("@/hooks/useUser").default;
 
-const useHistoryItemController = require("./useHistoryItemController").default;
+const useApplicationItemController =
+  require("./useApplicationItemController").default;
 
-describe("useHistoryItemController session rehydration", () => {
+describe("useApplicationItemController session rehydration", () => {
   let container;
   let root;
   let controller;
   let resolveCredential;
-  let setHistoryItem;
+  let setApplicationEntry;
 
   function Harness(props) {
-    controller = useHistoryItemController(props);
+    controller = useApplicationItemController(props);
     return null;
   }
 
@@ -98,7 +99,7 @@ describe("useHistoryItemController session rehydration", () => {
         agency: "190101",
       },
     });
-    setHistoryItem = jest.fn();
+    setApplicationEntry = jest.fn();
 
     useConfiguration.mockReturnValue({
       configuration: {},
@@ -127,8 +128,8 @@ describe("useHistoryItemController session rehydration", () => {
     useStorage.mockReturnValue({
       setSelectedToken: jest.fn(),
       removeSelectedToken: jest.fn(),
-      setHistoryItem,
-      removeHistoryItem: jest.fn(),
+      setApplicationEntry,
+      removeApplicationEntry: jest.fn(),
     });
     useUser.mockReturnValue({
       user: {},
@@ -143,7 +144,7 @@ describe("useHistoryItemController session rehydration", () => {
     document.getElementById("modal")?.remove();
   });
 
-  test("recreates a missing server-side client entry from local history data", async () => {
+  test("recreates a missing server-side client entry from application backup data", async () => {
     await act(async () => {
       root.render(
         React.createElement(Harness, {
@@ -164,7 +165,7 @@ describe("useHistoryItemController session rehydration", () => {
       entryId: "client:2b25816b-6034-452d-9e10-b2e6c55f0f23",
       agency: "190101",
     });
-    expect(setHistoryItem).toHaveBeenCalledWith(
+    expect(setApplicationEntry).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "client:2b25816b-6034-452d-9e10-b2e6c55f0f23",
         clientId: "2b25816b-6034-452d-9e10-b2e6c55f0f23",
@@ -196,7 +197,7 @@ describe("useHistoryItemController session rehydration", () => {
       );
     });
 
-    expect(setHistoryItem).toHaveBeenCalledWith(
+    expect(setApplicationEntry).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "client:204936c7-d008-4d90-884b-0134a9918c3d",
         status: "ERROR",

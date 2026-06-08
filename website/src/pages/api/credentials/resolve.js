@@ -9,6 +9,7 @@ import {
   getRequestIp,
   isInternalRequest,
 } from "../../../lib/credentialProviders";
+import { buildApplicationEntry } from "../../../lib/credentialApplications";
 import { upsertCredentialSessionEntry } from "../../../lib/credentialSession";
 import { detectCredentialType } from "../../../utils/credentials";
 import config from "../../../../../src/config.js";
@@ -51,27 +52,29 @@ function buildSafeEntry({
   const effectiveClientId = clientId || configuration?.clientId || null;
 
   return {
-    id: getCredentialEntryId({
-      type,
-      token,
-      clientId: effectiveClientId,
-    }),
-    type,
-    token,
-    clientId: effectiveClientId,
-    hasClientSecret,
-    hasRefreshToken,
-    supportsRefreshToken:
-      supportsRefreshToken || Boolean(configuration?.supportsRefreshToken),
-    profile: configuration?.profiles?.[0] || null,
-    agency: configuration?.agency || null,
-    note: "",
-    timestamp: Date.now(),
-    requiresClientSecret,
-    status,
-    network,
-    reasonCode,
-    message,
+    ...buildApplicationEntry(
+      getCredentialEntryId({
+        type,
+        token,
+        clientId: effectiveClientId,
+      }),
+      {
+        type,
+        token,
+        clientId: effectiveClientId,
+        clientSecret: hasClientSecret ? "__attached__" : null,
+        refreshToken: hasRefreshToken ? "__attached__" : null,
+        supportsRefreshToken:
+          supportsRefreshToken || Boolean(configuration?.supportsRefreshToken),
+        profile: configuration?.profiles?.[0] || null,
+        agency: configuration?.agency || null,
+        requiresClientSecret,
+        status,
+        network,
+        reasonCode,
+        message,
+      }
+    ),
     configuration,
     user,
   };
@@ -128,6 +131,8 @@ async function respondWithClientSecretRequired({
       clientId,
       network,
       requiresClientSecret: true,
+      status: "CLIENT_SECRET_REQUIRED",
+      reasonCode,
     }
   );
 
@@ -275,6 +280,9 @@ export default async function handler(req, res) {
           tokenType: tokenType || "Bearer",
           network,
           expiresAt: resolvedExpiresAt,
+          profile: configurationResponse.body?.profiles?.[0] || null,
+          agency: configurationResponse.body?.agency || null,
+          status: "OK",
         }
       );
 
@@ -381,6 +389,9 @@ export default async function handler(req, res) {
               refreshToken: tokenResolution.refreshToken || null,
               tokenType: tokenResolution.tokenType || "Bearer",
               expiresAt: tokenResolution.expiresAt || null,
+              profile: configurationResponse.body?.profiles?.[0] || null,
+              agency: configurationResponse.body?.agency || null,
+              status: "OK",
             }
           );
 
@@ -506,6 +517,9 @@ export default async function handler(req, res) {
         refreshToken: tokenResolution.refreshToken || null,
         tokenType: tokenResolution.tokenType || "Bearer",
         expiresAt: tokenResolution.expiresAt || null,
+        profile: configurationResponse.body?.profiles?.[0] || null,
+        agency: configurationResponse.body?.agency || null,
+        status: "OK",
       }
     );
 

@@ -12,7 +12,7 @@ import Token from "@/components/token";
 import Button from "@/components/base/button";
 import Label from "@/components/base/label";
 import Text from "@/components/base/text";
-import History from "@/components/history";
+import Applications from "@/components/applications";
 
 import Christmas from "./christmas";
 import Chicken from "./chicken";
@@ -25,8 +25,8 @@ import Future from "./future";
 export default function Hero({ className = "" }) {
   const router = useRouter();
   const [inputValue, setInputValue] = useState("");
-  const [showHistory, setShowHistory] = useState(false);
-  const [historyOpenMode, setHistoryOpenMode] = useState("default");
+  const [showApplications, setShowApplications] = useState(false);
+  const [applicationsOpenMode, setApplicationsOpenMode] = useState("default");
 
   const { selectedToken } = useStorage();
   const { configuration, status, isLoading } = useConfiguration(selectedToken);
@@ -47,15 +47,15 @@ export default function Hero({ className = "" }) {
   const inputIsValid = hasResolvedCredential || hasValidInput;
 
   function handleOpenClientConnect() {
-    setHistoryOpenMode("add");
-    setShowHistory(true);
+    setApplicationsOpenMode("add");
+    setShowApplications(true);
   }
 
-  function handleShowHistoryChange(nextShow) {
-    setShowHistory(nextShow);
+  function handleShowApplicationsChange(nextShow) {
+    setShowApplications(nextShow);
 
     if (!nextShow) {
-      setHistoryOpenMode("default");
+      setApplicationsOpenMode("default");
     }
   }
 
@@ -104,11 +104,11 @@ export default function Hero({ className = "" }) {
                 </button>
               </Text>
             </div>
-            <History
+            <Applications
               className={styles.history}
-              show={showHistory}
-              onShowChange={handleShowHistoryChange}
-              openAddOnShow={historyOpenMode === "add"}
+              show={showApplications}
+              onShowChange={handleShowApplicationsChange}
+              openAddOnShow={applicationsOpenMode === "add"}
             />
           </Col>
         </Row>

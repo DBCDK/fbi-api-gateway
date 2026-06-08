@@ -10,6 +10,7 @@ import {
   isInternalRequest,
   refreshAccessToken,
 } from "../../../lib/credentialProviders";
+import { buildApplicationEntry } from "../../../lib/credentialApplications";
 import {
   getCredentialSessionEntry,
   upsertCredentialSessionEntry,
@@ -23,22 +24,18 @@ function buildSafeEntry({
   refreshToken,
 }) {
   return {
-    id: entry.id,
-    type: entry.type || "client",
-    token,
-    clientId: entry.clientId || configuration?.clientId || null,
-    hasClientSecret: Boolean(entry.clientSecret),
-    hasRefreshToken: Boolean(refreshToken),
-    supportsRefreshToken: Boolean(configuration?.supportsRefreshToken),
-    profile: configuration?.profiles?.[0] || null,
-    agency: configuration?.agency || null,
-    note: "",
-    timestamp: Date.now(),
-    requiresClientSecret: Boolean(entry.requiresClientSecret),
-    status: "OK",
-    network: entry.network || null,
-    reasonCode: null,
-    message: null,
+    ...buildApplicationEntry(entry.id, {
+      ...entry,
+      token,
+      refreshToken,
+      clientId: entry.clientId || configuration?.clientId || null,
+      supportsRefreshToken: Boolean(configuration?.supportsRefreshToken),
+      profile: configuration?.profiles?.[0] || null,
+      agency: configuration?.agency || null,
+      status: "OK",
+      reasonCode: null,
+      message: null,
+    }),
     configuration,
     user,
   };
@@ -127,6 +124,9 @@ export default async function handler(req, res) {
         configurationResponse.body?.supportsRefreshToken
       ),
       requiresClientSecret: false,
+      profile: configurationResponse.body?.profiles?.[0] || sessionEntry.profile || null,
+      agency: configurationResponse.body?.agency || sessionEntry.agency || null,
+      status: "OK",
     }
   );
 

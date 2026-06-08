@@ -10,6 +10,7 @@ import {
 import { upsertCredentialSessionEntry } from "./credentialSession";
 
 const EXPIRY_BUFFER_MS = 15 * 1000;
+const inflightCredentialResolutions = new Map();
 
 function isTokenStillValid(entry) {
   if (!entry?.token) {
@@ -43,41 +44,12 @@ async function persistTokenState(
   return nextEntry;
 }
 
-export async function resolveCredentialAccessToken({
+async function resolveFreshToken({
   ctx,
   entryId,
   entry,
   req,
-  skipTokenReuse = false,
 }) {
-  if (!entry) {
-    return { status: 404, entry: null, token: null };
-  }
-
-  console.info("[credentials][access] resolve start", {
-    entryId,
-    type: entry?.type || null,
-    clientId: entry?.clientId || null,
-    hasToken: Boolean(entry?.token),
-    hasRefreshToken: Boolean(entry?.refreshToken),
-    hasClientSecret: Boolean(entry?.clientSecret),
-    expiresAt: entry?.expiresAt || null,
-    skipTokenReuse,
-  });
-
-  if (!skipTokenReuse && isTokenStillValid(entry)) {
-    console.info("[credentials][access] reusing stored token", {
-      entryId,
-      clientId: entry?.clientId || null,
-      expiresAt: entry?.expiresAt || null,
-    });
-    return {
-      status: 200,
-      entry,
-      token: entry.token,
-    };
-  }
-
   if (entry.refreshToken && entry.clientId && entry.clientSecret) {
     const refreshedTokenState = await refreshAccessToken({
       clientId: entry.clientId,
@@ -164,4 +136,64 @@ export async function resolveCredentialAccessToken({
     entry: nextEntry,
     token: tokenState.token,
   };
+}
+
+export async function resolveCredentialAccessToken({
+  ctx,
+  entryId,
+  entry,
+  req,
+  skipTokenReuse = false,
+}) {
+  if (!entry) {
+    return { status: 404, entry: null, token: null };
+  }
+
+  console.info("[credentials][access] resolve start", {
+    entryId,
+    type: entry?.type || null,
+    clientId: entry?.clientId || null,
+    hasToken: Boolean(entry?.token),
+    hasRefreshToken: Boolean(entry?.refreshToken),
+    hasClientSecret: Boolean(entry?.clientSecret),
+    expiresAt: entry?.expiresAt || null,
+    skipTokenReuse,
+  });
+
+  if (!skipTokenReuse && isTokenStillValid(entry)) {
+    console.info("[credentials][access] reusing stored token", {
+      entryId,
+      clientId: entry?.clientId || null,
+      expiresAt: entry?.expiresAt || null,
+    });
+    return {
+      status: 200,
+      entry,
+      token: entry.token,
+    };
+  }
+
+  const inflightKey = `${entryId}:${entry?.expiresAt || "expired"}`;
+  const inflightResolution = inflightCredentialResolutions.get(inflightKey);
+
+  if (inflightResolution) {
+    console.info("[credentials][access] joining inflight renew", {
+      entryId,
+      clientId: entry?.clientId || null,
+    });
+    return await inflightResolution;
+  }
+
+  const resolutionPromise = resolveFreshToken({
+    ctx,
+    entryId,
+    entry,
+    req,
+  }).finally(() => {
+    inflightCredentialResolutions.delete(inflightKey);
+  });
+
+  inflightCredentialResolutions.set(inflightKey, resolutionPromise);
+
+  return await resolutionPromise;
 }

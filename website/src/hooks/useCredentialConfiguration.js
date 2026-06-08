@@ -8,6 +8,15 @@ import useSWR from "swr";
 import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
 import useInternalNetworkCheck from "./useInternalNetworkCheck";
 
+const TOKEN_REFRESH_BUFFER_MS = 20 * 1000;
+const scheduledItemRefreshes = new Map();
+
+function getRefreshDeadline(config = {}) {
+  return Number.isFinite(config?.resolvedExpiresAt)
+    ? config.resolvedExpiresAt
+    : null;
+}
+
 const STATUS_MAP = {
   200: "OK",
   401: "INVALID",
@@ -85,6 +94,60 @@ export default function useCredentialConfiguration({
   }, [data]);
 
   const stableData = data || previousDataRef.current;
+
+  useEffect(() => {
+    if (!lookupByEntryId) {
+      return undefined;
+    }
+
+    const refreshDeadline = getRefreshDeadline(stableData?.config);
+
+    if (!refreshDeadline) {
+      scheduledItemRefreshes.delete(url);
+      return undefined;
+    }
+
+    const delay = Math.max(
+      refreshDeadline - Date.now() - TOKEN_REFRESH_BUFFER_MS,
+      0
+    );
+    const existing = scheduledItemRefreshes.get(url);
+
+    if (existing && existing.refreshDeadline === refreshDeadline) {
+      return undefined;
+    }
+
+    if (existing?.timeout) {
+      window.clearTimeout(existing.timeout);
+    }
+
+    console.info("[credentials][item] auto-refresh scheduled", {
+      entryId,
+      refreshDeadline,
+      delay,
+    });
+    const timeout = window.setTimeout(() => {
+      console.info("[credentials][item] auto-refresh fired", {
+        entryId,
+      });
+      scheduledItemRefreshes.delete(url);
+      mutate?.();
+    }, delay);
+
+    scheduledItemRefreshes.set(url, {
+      refreshDeadline,
+      timeout,
+    });
+
+    return () => {
+      const current = scheduledItemRefreshes.get(url);
+
+      if (current?.timeout === timeout) {
+        window.clearTimeout(timeout);
+        scheduledItemRefreshes.delete(url);
+      }
+    };
+  }, [entryId, lookupByEntryId, mutate, stableData?.config, url]);
 
   return {
     configuration: stableData?.config || {},

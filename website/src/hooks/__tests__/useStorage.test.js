@@ -1,4 +1,8 @@
-const { getCanonicalId, getHistoryIdentifier } = require("../useStorage");
+const {
+  getCanonicalId,
+  getHistoryIdentifier,
+  shouldClearSelectedTokenAfterRemoval,
+} = require("../useStorage");
 
 describe("getCanonicalId", () => {
   test("prefers an existing id when present", () => {
@@ -35,5 +39,66 @@ describe("getHistoryIdentifier", () => {
     expect(getHistoryIdentifier(null)).toBeNull();
     expect(getHistoryIdentifier(undefined)).toBeNull();
     expect(getHistoryIdentifier({})).toBeNull();
+  });
+});
+
+describe("shouldClearSelectedTokenAfterRemoval", () => {
+  test("clears the selected token when removing the active client entry", () => {
+    const selectedToken = {
+      id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      type: "client",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      token: "bbbbbb6d19e0a22d32e93bf3cc2b0b6202399e7f",
+    };
+
+    const removedEntry = {
+      id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      type: "client",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      token: "aaaaaa6d19e0a22d32e93bf3cc2b0b6202399e7f",
+    };
+
+    expect(
+      shouldClearSelectedTokenAfterRemoval(selectedToken, removedEntry, [])
+    ).toBe(true);
+  });
+
+  test("keeps the selected token when removing a different application", () => {
+    const selectedToken = {
+      id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      type: "client",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      token: "bbbbbb6d19e0a22d32e93bf3cc2b0b6202399e7f",
+    };
+
+    const removedEntry = {
+      id: "client:204936c7-d008-4d90-884b-0134a9918c3d",
+      type: "client",
+      clientId: "204936c7-d008-4d90-884b-0134a9918c3d",
+      token: "cccccc6d19e0a22d32e93bf3cc2b0b6202399e7f",
+    };
+
+    const remainingApplications = [selectedToken];
+
+    expect(
+      shouldClearSelectedTokenAfterRemoval(
+        selectedToken,
+        removedEntry,
+        remainingApplications
+      )
+    ).toBe(false);
+  });
+
+  test("clears the selected token when applications sync returns no matching entry", () => {
+    const selectedToken = {
+      id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      type: "client",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      token: "bbbbbb6d19e0a22d32e93bf3cc2b0b6202399e7f",
+    };
+
+    expect(
+      shouldClearSelectedTokenAfterRemoval(selectedToken, null, [])
+    ).toBe(true);
   });
 });

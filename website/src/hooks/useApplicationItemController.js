@@ -75,7 +75,7 @@ function getClientSecretMessage(reasonCode, fallbackMessage) {
   return "Secret is required before token exchange";
 }
 
-export default function useHistoryItemController(props) {
+export default function useApplicationItemController(props) {
   const [isReveal, setIsReveal] = useState(false);
   const [open, setOpen] = useState(false);
   const [removed, setRemoved] = useState(false);
@@ -103,8 +103,8 @@ export default function useHistoryItemController(props) {
   const {
     setSelectedToken,
     removeSelectedToken,
-    setHistoryItem,
-    removeHistoryItem,
+    setApplicationEntry,
+    removeApplicationEntry,
   } = useStorage();
   const { resolveCredential } = useCredentialResolve();
   const { attachClientSecret } = useCredentialClientSecret();
@@ -291,7 +291,7 @@ export default function useHistoryItemController(props) {
 
     async function rehydrateMissingSessionEntry() {
       setIsRehydratingSession(true);
-      console.info("[credentials][history-item] rehydrating missing session entry", {
+      console.info("[credentials][application-item] rehydrating missing session entry", {
         entryId: props.id,
         clientId: props.clientId || null,
         hasToken: Boolean(props.token),
@@ -311,7 +311,7 @@ export default function useHistoryItemController(props) {
         }
 
         if (response?.safeEntry) {
-          setHistoryItem(
+          setApplicationEntry(
             {
               ...response.safeEntry,
               note: props.note || "",
@@ -329,7 +329,7 @@ export default function useHistoryItemController(props) {
                 type: response.safeEntry.type,
                 clientId: response.safeEntry.clientId,
               },
-              { reorderHistory: false }
+              { reorderApplications: false }
             );
           }
 
@@ -338,7 +338,7 @@ export default function useHistoryItemController(props) {
           return;
         }
 
-        setHistoryItem(
+        setApplicationEntry(
           {
             id: props.id,
             type: props.type,
@@ -381,7 +381,7 @@ export default function useHistoryItemController(props) {
     props.note,
     props.token,
     resolveCredential,
-    setHistoryItem,
+    setApplicationEntry,
     setSelectedToken,
   ]);
 
@@ -491,8 +491,8 @@ export default function useHistoryItemController(props) {
         : "This token is expired 😔")) ||
     "Error validating token 🤔";
 
-  function persistHistoryItem(nextValues = {}) {
-    setHistoryItem({
+  function persistApplicationEntry(nextValues = {}) {
+    setApplicationEntry({
       id: props.id,
       type: props.type,
       token,
@@ -512,7 +512,7 @@ export default function useHistoryItemController(props) {
   }
 
   function persistNoteChanges() {
-    persistHistoryItem();
+    persistApplicationEntry();
     setSavedNote(note);
     setIsEditingNote(false);
   }
@@ -534,7 +534,7 @@ export default function useHistoryItemController(props) {
       return false;
     }
 
-    setHistoryItem(
+    setApplicationEntry(
       {
         ...response.safeEntry,
         note,
@@ -550,7 +550,7 @@ export default function useHistoryItemController(props) {
         type: response.safeEntry.type,
         clientId: response.safeEntry.clientId,
       },
-      { reorderHistory: false }
+      { reorderApplications: false }
     );
     mutateCredentialConfiguration?.();
     mutateCredentialUser?.();
@@ -576,7 +576,7 @@ export default function useHistoryItemController(props) {
       return false;
     }
 
-    setHistoryItem(
+    setApplicationEntry(
       {
         ...response.safeEntry,
         note,
@@ -594,7 +594,7 @@ export default function useHistoryItemController(props) {
           type: response.safeEntry.type,
           clientId: response.safeEntry.clientId,
         },
-        { reorderHistory: false }
+        { reorderApplications: false }
       );
     }
 
@@ -643,7 +643,7 @@ export default function useHistoryItemController(props) {
         type: props.type,
         clientId,
       },
-      { reorderHistory: false }
+      { reorderApplications: false }
     );
   }
 
@@ -657,7 +657,7 @@ export default function useHistoryItemController(props) {
       return;
     }
 
-    removeHistoryItem(entry);
+    removeApplicationEntry(entry);
     const delay = open ? 500 : 0;
     setTimeout(() => setRemoved(true), delay);
   }

@@ -10,9 +10,9 @@ import Button from "@/components/base/button";
 import Overlay from "@/components/base/overlay";
 import Text from "@/components/base/text";
 
-import styles from "./History.module.css";
+import styles from "./Applications.module.css";
 
-export function History({
+export function Applications({
   onClick,
   compact,
   disabled,
@@ -63,7 +63,7 @@ export function History({
         onHide={() => handleShowChange(false)}
         className={styles.modal}
       >
-        <Pages.History
+        <Pages.Applications
           modal={{
             isVisible: show,
             openAddOnShow,
@@ -75,11 +75,11 @@ export function History({
 }
 
 export default function Wrap(props) {
-  const { history } = useStorage();
-  const hasValidTokens = !!history?.filter((obj) => isToken(obj.token)).length;
+  const { applications } = useStorage();
+  const hasValidTokens = !!applications?.filter((obj) => isToken(obj.token)).length;
 
   return (
-    <History
+    <Applications
       {...props}
       // disabled={!hasValidTokens}
     />

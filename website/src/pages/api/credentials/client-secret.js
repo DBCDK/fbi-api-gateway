@@ -7,6 +7,7 @@ import {
   buildUserResponse,
   getAccessTokenForClient,
 } from "../../../lib/credentialProviders";
+import { buildApplicationEntry } from "../../../lib/credentialApplications";
 import {
   getCredentialSessionEntry,
   upsertCredentialSessionEntry,
@@ -14,22 +15,16 @@ import {
 
 function buildSafeEntry({ entry, configuration = {}, user = {} }) {
   return {
-    id: entry.id,
-    type: entry.type || "client",
-    token: entry.token || null,
-    clientId: entry.clientId || configuration?.clientId || null,
-    hasClientSecret: Boolean(entry.clientSecret),
-    hasRefreshToken: Boolean(entry.refreshToken),
-    supportsRefreshToken: Boolean(configuration?.supportsRefreshToken),
-    profile: configuration?.profiles?.[0] || null,
-    agency: configuration?.agency || null,
-    note: "",
-    timestamp: Date.now(),
-    requiresClientSecret: Boolean(entry.requiresClientSecret),
-    status: "OK",
-    network: entry.network || null,
-    reasonCode: null,
-    message: null,
+    ...buildApplicationEntry(entry.id, {
+      ...entry,
+      clientId: entry.clientId || configuration?.clientId || null,
+      supportsRefreshToken: Boolean(configuration?.supportsRefreshToken),
+      profile: configuration?.profiles?.[0] || null,
+      agency: configuration?.agency || null,
+      status: "OK",
+      reasonCode: null,
+      message: null,
+    }),
     configuration,
     user,
   };
@@ -96,8 +91,10 @@ export default async function handler(req, res) {
     tokenType: tokenResolution.tokenType || sessionEntry.tokenType || "Bearer",
     expiresAt: tokenResolution.expiresAt || null,
     clientSecret,
-    hasClientSecret: true,
     requiresClientSecret: false,
+    profile: selectedAgency || sessionEntry.profile || null,
+    agency: selectedAgency || sessionEntry.agency || null,
+    status: "OK",
   });
 
   const entry = {
@@ -122,6 +119,15 @@ export default async function handler(req, res) {
     if (userResponse.status === 200) {
       user = userResponse.body || {};
     }
+  }
+
+  if (configuration?.profiles?.[0] || configuration?.agency) {
+    await upsertCredentialSessionEntry({ req, res }, entryId, {
+      profile: configuration?.profiles?.[0] || nextEntry.profile || null,
+      agency: configuration?.agency || nextEntry.agency || null,
+      supportsRefreshToken: Boolean(configuration?.supportsRefreshToken),
+      status: "OK",
+    });
   }
 
   return res.status(200).send({

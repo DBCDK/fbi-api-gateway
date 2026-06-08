@@ -1,9 +1,12 @@
+import { useEffect } from "react";
 import useSWR from "swr";
-import { toCredentialId } from "@/utils/credentials";
-import { MAX_CLIENT_ENTRIES } from "@/utils/clientEntries";
+
+import useApplications, {
+  getApplicationIdentifier,
+  getCanonicalApplicationId,
+} from "./useApplications";
 
 const isBrowser = typeof window !== "undefined";
-const APPLICATIONS_KEY = "credentialApplications";
 const SELECTED_APPLICATION_KEY = "selectedCredentialApplication";
 
 const safeGetItem = (storage, key, fallback = null) => {
@@ -21,19 +24,12 @@ const isToken = (token) => {
   return stripped.length === 40;
 };
 
-export const getHistoryIdentifier = (entry = {}) => {
-  const { id, token, clientId } = entry || {};
-  return clientId ? `client:${clientId}` : id || token || null;
-};
+export const getHistoryIdentifier = getApplicationIdentifier;
+export const getCanonicalId = getCanonicalApplicationId;
 
-export const getCanonicalId = (entry = {}) => {
-  const { id, type, token, clientId } = entry || {};
-  return id || toCredentialId({ type, token, clientId }) || null;
-};
-
-const matchesHistoryEntry = (left = {}, right = {}) => {
-  const leftIdentifier = getHistoryIdentifier(left);
-  const rightIdentifier = getHistoryIdentifier(right);
+const matchesApplicationEntry = (left = {}, right = {}) => {
+  const leftIdentifier = getApplicationIdentifier(left);
+  const rightIdentifier = getApplicationIdentifier(right);
 
   return (
     (leftIdentifier && rightIdentifier && leftIdentifier === rightIdentifier) ||
@@ -42,50 +38,51 @@ const matchesHistoryEntry = (left = {}, right = {}) => {
   );
 };
 
-const normalizeHistory = (items = []) =>
-  items.reduce((acc, item) => {
-    const existingIndex = acc.findIndex((entry) =>
-      matchesHistoryEntry(entry, item)
+export const shouldClearSelectedTokenAfterRemoval = (
+  selectedToken,
+  removedEntry,
+  applications = []
+) => {
+  if (!selectedToken) {
+    return false;
+  }
+
+  const selectedIdentifier = getApplicationIdentifier(selectedToken);
+  const selectedCanonicalId = getCanonicalApplicationId(selectedToken);
+  const removedIdentifier =
+    typeof removedEntry === "string"
+      ? removedEntry
+      : getApplicationIdentifier(removedEntry || {}) ||
+        getCanonicalApplicationId(removedEntry || {});
+
+  if (
+    matchesApplicationEntry(selectedToken, removedEntry || {}) ||
+    (selectedIdentifier && selectedIdentifier === removedIdentifier) ||
+    (selectedCanonicalId && selectedCanonicalId === removedIdentifier)
+  ) {
+    return true;
+  }
+
+  return !applications.some((item) => {
+    const itemIdentifier = getApplicationIdentifier(item);
+    const itemCanonicalId = getCanonicalApplicationId(item);
+
+    return (
+      matchesApplicationEntry(item, selectedToken) ||
+      (selectedIdentifier && itemIdentifier === selectedIdentifier) ||
+      (selectedCanonicalId && itemCanonicalId === selectedCanonicalId)
     );
-
-    if (existingIndex === -1) {
-      acc.push(item);
-      return acc;
-    }
-
-    if (typeof window !== "undefined") {
-      console.info("[credentials][storage] normalize merge", {
-        incomingId: item?.id || null,
-        incomingType: item?.type || null,
-        incomingClientId: item?.clientId || null,
-        incomingTokenPreview:
-          typeof item?.token === "string" ? `${item.token.slice(0, 6)}...` : null,
-        existingId: acc[existingIndex]?.id || null,
-        existingType: acc[existingIndex]?.type || null,
-        existingClientId: acc[existingIndex]?.clientId || null,
-      });
-    }
-
-    acc[existingIndex] = {
-      ...item,
-      ...acc[existingIndex],
-      ...item,
-      note:
-        typeof item?.note === "string"
-          ? item.note
-          : acc[existingIndex]?.note || "",
-    };
-
-    return acc;
-  }, []);
+  });
+};
 
 export default function useStorage() {
-  const { data: history = [], mutate: mutateHistory } = useSWR(
-    APPLICATIONS_KEY,
-    (key) =>
-      isBrowser ? normalizeHistory(safeGetItem(localStorage, key, [])) : [],
-    { fallbackData: [] }
-  );
+  const {
+    applications,
+    hasFetchedApplications,
+    setApplicationItem,
+    removeApplicationItem,
+    getApplicationItem,
+  } = useApplications();
 
   const { data: selectedToken, mutate: mutateSelectedToken } = useSWR(
     SELECTED_APPLICATION_KEY,
@@ -102,38 +99,40 @@ export default function useStorage() {
   ) => {
     if (!isBrowser || !isToken(token)) return;
 
-    const { reorderHistory = true } = options;
+    const { reorderApplications = true, reorderHistory } = options;
+    const shouldReorderApplications =
+      reorderHistory === undefined ? reorderApplications : reorderHistory;
     const current = selectedToken?.token === token ? selectedToken : {};
-    const historyItem =
+    const applicationItem =
       metadata?.id || metadata?.clientId
         ? null
-        : history?.find?.((item) => item?.token === token) || null;
+        : applications?.find?.((item) => item?.token === token) || null;
     const value = {
       token,
       profile: profile === undefined ? current?.profile ?? null : profile,
       agency: agency === undefined ? current?.agency ?? null : agency,
-      id: getCanonicalId({
-        id: metadata?.id ?? historyItem?.id ?? current?.id ?? null,
+      id: getCanonicalApplicationId({
+        id: metadata?.id ?? applicationItem?.id ?? current?.id ?? null,
         type:
           metadata?.type ??
-          historyItem?.type ??
+          applicationItem?.type ??
           current?.type ??
           null,
         token,
         clientId:
           metadata?.clientId ??
-          historyItem?.clientId ??
+          applicationItem?.clientId ??
           current?.clientId ??
           null,
       }),
       type:
         metadata?.type ??
-        historyItem?.type ??
+        applicationItem?.type ??
         current?.type ??
         null,
       clientId:
         metadata?.clientId ??
-        historyItem?.clientId ??
+        applicationItem?.clientId ??
         current?.clientId ??
         null,
     };
@@ -147,11 +146,11 @@ export default function useStorage() {
       tokenPreview: `${token.slice(0, 6)}...`,
       profile: value.profile || null,
       agency: value.agency || null,
-      reorderHistory,
+      reorderApplications: shouldReorderApplications,
     });
     mutateSelectedToken(value, false);
-    if (reorderHistory) {
-      setHistoryItem(value, false);
+    if (shouldReorderApplications) {
+      setApplicationEntry(value, false);
     }
   };
 
@@ -163,15 +162,38 @@ export default function useStorage() {
     mutateSelectedToken(null, false);
   };
 
-  const setHistoryItem = (
+  useEffect(() => {
+    if (!isBrowser || !hasFetchedApplications || !selectedToken) {
+      return;
+    }
+
+    if (
+      !shouldClearSelectedTokenAfterRemoval(selectedToken, null, applications)
+    ) {
+      return;
+    }
+
+    console.info(
+      "[credentials][storage] clearing stale selected token after applications sync",
+      {
+        selectedId: selectedToken?.id || null,
+        selectedClientId: selectedToken?.clientId || null,
+        applicationCount: applications.length,
+      }
+    );
+
+    removeSelectedToken();
+  }, [applications, hasFetchedApplications, selectedToken]);
+
+  const setApplicationEntry = (
     { token, profile, agency, note: _note, ...rest },
     shallow = true
   ) => {
-    if (!isBrowser) return;
+    if (!isBrowser) return null;
 
     const nextRest = {
       ...rest,
-      id: getCanonicalId({
+      id: getCanonicalApplicationId({
         id: rest?.id || null,
         type: rest?.type || null,
         token,
@@ -179,108 +201,102 @@ export default function useStorage() {
       }),
     };
 
-    const identifier = getHistoryIdentifier({ token, ...nextRest });
+    const identifier = getApplicationIdentifier({ token, ...nextRest });
 
-    if (!identifier || (!isToken(token) && !nextRest.clientId)) return;
+    if (!identifier || (!isToken(token) && !nextRest.clientId)) return null;
 
-    const timestamp = Date.now();
-    const existing = history?.find((obj) =>
-      matchesHistoryEntry(obj, { token, ...nextRest })
+    const existing = applications?.find((obj) =>
+      matchesApplicationEntry(obj, { token, ...nextRest })
     );
     const note = typeof _note === "string" ? _note : existing?.note || "";
     const operation = shallow && existing ? "update" : "insert";
 
-    let copy = [...history];
-
-    if (shallow) {
-      const index = history?.findIndex((obj) =>
-        matchesHistoryEntry(obj, { token, ...nextRest })
-      );
-      if (index !== -1) {
-        copy[index] = {
-          ...existing,
-          ...nextRest,
-          profile,
-          agency,
-          note,
-        };
-      } else {
-        copy.unshift({
-          token,
-          profile,
-          agency,
-          note,
-          timestamp,
-          ...nextRest,
-        });
-      }
-    } else {
-      copy = copy.filter((obj) =>
-        !matchesHistoryEntry(obj, { token, ...nextRest })
-      );
-      copy.unshift({
-        token,
-        profile,
-        agency,
-        note,
-        timestamp,
-        ...nextRest,
-      });
-    }
-
-    const sliced = normalizeHistory(copy).slice(0, MAX_CLIENT_ENTRIES);
-    try {
-      localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(sliced));
-    } catch {}
-    console.info("[credentials][storage] setHistoryItem", {
+    console.info("[credentials][storage] setApplicationEntry", {
       operation,
       id: nextRest?.id || null,
       type: nextRest?.type || null,
       clientId: nextRest?.clientId || null,
       tokenPreview: typeof token === "string" ? `${token.slice(0, 6)}...` : null,
-      historySize: sliced.length,
+      applicationCount: applications.length,
       matchedExistingId: existing?.id || null,
     });
-    mutateHistory(sliced, false);
+
+    return setApplicationItem(
+      {
+        token,
+        profile,
+        agency,
+        note,
+        ...nextRest,
+      },
+      shallow
+    );
   };
 
-  const removeHistoryItem = (tokenOrEntry) => {
+  const removeApplicationEntry = (tokenOrEntry) => {
     if (!isBrowser) return;
 
     const identifier =
       typeof tokenOrEntry === "string"
-        ? getHistoryIdentifier(
-            history?.find?.((obj) => obj.token === tokenOrEntry) || {
+        ? getApplicationIdentifier(
+            applications?.find?.((obj) => obj.token === tokenOrEntry) || {
               token: tokenOrEntry,
             }
           )
-        : getHistoryIdentifier(tokenOrEntry || {});
+        : getApplicationIdentifier(tokenOrEntry || {});
 
     if (!identifier) return;
 
-    const newHistory = history?.filter(
-      (obj) => !matchesHistoryEntry(obj, tokenOrEntry || {})
-    );
-    try {
-      localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(newHistory));
-    } catch {}
-    mutateHistory(newHistory, false);
+    const nextApplications = (applications || []).filter((item) => {
+      const itemIdentifier = getApplicationIdentifier(item);
+      return itemIdentifier !== identifier && item.id !== identifier;
+    });
 
-    if (matchesHistoryEntry(selectedToken, tokenOrEntry || {})) {
+    removeApplicationItem(identifier);
+
+    if (
+      shouldClearSelectedTokenAfterRemoval(
+        selectedToken,
+        tokenOrEntry || identifier,
+        nextApplications
+      )
+    ) {
+      console.info("[credentials][storage] clearing stale selected token", {
+        selectedId: selectedToken?.id || null,
+        selectedClientId: selectedToken?.clientId || null,
+        removedIdentifier: identifier,
+        remainingApplications: nextApplications.length,
+      });
       removeSelectedToken();
     }
   };
 
-  const getHistoryItem = (token) => {
-    if (!isBrowser || !isToken(token)) return null;
-    return history?.find((obj) => obj.token === token) || null;
+  const getApplicationEntry = (tokenOrEntry) => {
+    if (typeof tokenOrEntry === "string" && isToken(tokenOrEntry)) {
+      return applications?.find((obj) => obj.token === tokenOrEntry) || null;
+    }
+
+    const identifier =
+      typeof tokenOrEntry === "string"
+        ? tokenOrEntry
+        : getApplicationIdentifier(tokenOrEntry || {});
+
+    return getApplicationItem(identifier);
   };
+
+  const setHistoryItem = setApplicationEntry;
+  const getHistoryItem = getApplicationEntry;
+  const removeHistoryItem = removeApplicationEntry;
 
   return {
     selectedToken,
     setSelectedToken,
     removeSelectedToken,
-    history,
+    history: applications,
+    applications,
+    setApplicationEntry,
+    getApplicationEntry,
+    removeApplicationEntry,
     setHistoryItem,
     getHistoryItem,
     removeHistoryItem,

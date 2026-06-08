@@ -13,7 +13,7 @@ import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 import Overlay from "@/components/base/overlay";
-import History from "@/components/history";
+import Applications from "@/components/applications";
 import Token from "@/components/token";
 
 import Modal, { Pages } from "@/components/modal";
@@ -166,7 +166,7 @@ export default function Header() {
               <Text type="text1">Missing client configuration 😵‍💫</Text>
             </Overlay>
 
-            <History className={styles.history} />
+            <Applications className={styles.history} />
           </Col>
         </Row>
         <Settings className={styles.settings} />

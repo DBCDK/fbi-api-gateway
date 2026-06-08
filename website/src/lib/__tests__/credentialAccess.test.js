@@ -80,4 +80,53 @@ describe("resolveCredentialAccessToken", () => {
       })
     );
   });
+
+  test("deduplicates concurrent renewals for the same expired credential entry", async () => {
+    let resolveTokenExchange;
+    getAccessTokenForClient.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveTokenExchange = resolve;
+        })
+    );
+
+    const sharedArgs = {
+      ctx: { req: { headers: {}, socket: {} }, res: {} },
+      entryId: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      entry: {
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        type: "client",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        token: "expired-token",
+        expiresAt: Date.now() - 1000,
+        clientSecret: null,
+        refreshToken: null,
+        network: "internal",
+      },
+      req: { headers: {}, socket: {} },
+    };
+
+    const first = resolveCredentialAccessToken(sharedArgs);
+    const second = resolveCredentialAccessToken(sharedArgs);
+
+    expect(getAccessTokenForClient).toHaveBeenCalledTimes(1);
+
+    resolveTokenExchange({
+      status: 200,
+      token: "renewed-token",
+      refreshToken: null,
+      tokenType: "Bearer",
+      expiresAt: Date.now() + 60000,
+      expiresIn: 60,
+      grantTypeUsed: "password",
+      clientSecretUsed: false,
+    });
+
+    const [firstResult, secondResult] = await Promise.all([first, second]);
+
+    expect(getAccessTokenForClient).toHaveBeenCalledTimes(1);
+    expect(upsertCredentialSessionEntry).toHaveBeenCalledTimes(1);
+    expect(firstResult.token).toBe("renewed-token");
+    expect(secondResult.token).toBe("renewed-token");
+  });
 });

@@ -4,7 +4,7 @@ import Button from "@/components/base/button";
 import ExpandButton from "./expand-button/ExpandButton";
 import ItemClientSecretForm from "./item-client-secret-form";
 import ItemExpandedDetails from "./item-expanded-details";
-import useHistoryItemController from "./useHistoryItemController";
+import useApplicationItemController from "@/hooks/useApplicationItemController";
 import styles from "./Item.module.css";
 
 function getReadableTextColor(hex) {
@@ -26,7 +26,7 @@ function getReadableTextColor(hex) {
   return brightness > 155 ? "#111111" : "#ffffff";
 }
 
-function HistoryItemView({ item, ui, form, actions }) {
+function ApplicationItemView({ item, ui, form, actions }) {
   const expireStatusClass = item.expireStatus ? styles[item.expireStatus] : "";
   const expiredClass = ui.hasValidationError ? styles.expired : "";
   const inUseClass = item.inUse ? styles.inUse : "";
@@ -237,13 +237,13 @@ export function ItemIsLoading({ isEntering = false }) {
 }
 
 function Item(props) {
-  const controller = useHistoryItemController(props);
+  const controller = useApplicationItemController(props);
 
   if (controller.isLoadingView) {
     return <ItemIsLoading isEntering={props.isEntering} />;
   }
 
-  return <HistoryItemView {...controller} />;
+  return <ApplicationItemView {...controller} />;
 }
 
 export default Item;

@@ -10,7 +10,7 @@ function getEntryId(req) {
   return typeof req.query.entryId === "string" ? req.query.entryId : null;
 }
 
-function buildResolvedConfigurationPayload({
+export function buildResolvedConfigurationPayload({
   req,
   resolved,
   configurationResponse,
@@ -22,13 +22,16 @@ function buildResolvedConfigurationPayload({
     resolvedClientId:
       resolved.entry?.clientId || configurationResponse.body?.clientId || null,
     resolvedType: resolved.entry?.type || null,
-    resolvedHasClientSecret: Boolean(resolved.entry?.hasClientSecret),
+    resolvedHasClientSecret: Boolean(
+      resolved.entry?.hasClientSecret || resolved.entry?.clientSecret
+    ),
     resolvedHasRefreshToken: Boolean(
       resolved.entry?.hasRefreshToken || resolved.entry?.refreshToken
     ),
     resolvedSupportsRefreshToken: Boolean(
       configurationResponse.body?.supportsRefreshToken
     ),
+    resolvedExpiresAt: resolved.entry?.expiresAt || null,
   };
 }
 
@@ -65,11 +68,6 @@ async function retryExpiredCredentialEntry({
   selectedAgency,
 }) {
   if (!resolved?.entry?.clientId || !resolved?.entry?.id) {
-    console.info("[credentials][configuration] retry skipped", {
-      entryId: resolved?.entry?.id || null,
-      clientId: resolved?.entry?.clientId || null,
-      reason: "missing_entry_identity",
-    });
     return null;
   }
 

@@ -1,5 +1,5 @@
 /**
- * @file Form for attaching a refresh token to a credential history entry when
+ * @file Form for attaching a refresh token to a credential application entry when
  * the client supports refresh-token based renewal.
  */
 import Text from "@/components/base/text";

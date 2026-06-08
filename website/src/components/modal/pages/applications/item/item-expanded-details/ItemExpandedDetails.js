@@ -1,5 +1,5 @@
 /**
- * @file Expanded content for a history item, including note editing, token and
+ * @file Expanded content for an application item, including note editing, token and
  * client details, optional clientSecret entry, and user/login metadata.
  */
 import Text from "@/components/base/text";

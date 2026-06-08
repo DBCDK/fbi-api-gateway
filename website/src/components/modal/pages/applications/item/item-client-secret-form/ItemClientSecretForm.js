@@ -1,5 +1,5 @@
 /**
- * @file Form for attaching a clientSecret to a client history entry and
+ * @file Form for attaching a clientSecret to a client application entry and
  * resolving a fresh token from the server-side credential flow.
  */
 import Text from "@/components/base/text";

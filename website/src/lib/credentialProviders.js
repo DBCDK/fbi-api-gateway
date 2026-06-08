@@ -55,20 +55,28 @@ export function isInternalIp(ip) {
     return false;
   }
 
+  const normalizedIp = String(ip).trim().toLowerCase();
+  const ipv4Match = normalizedIp.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+
+  if (ipv4Match) {
+    const octets = ipv4Match.slice(1).map((value) => Number.parseInt(value, 10));
+
+    if (octets.some((value) => value < 0 || value > 255)) {
+      return false;
+    }
+
+    return (
+      octets[0] === 10 ||
+      octets[0] === 127 ||
+      (octets[0] === 192 && octets[1] === 168) ||
+      (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31)
+    );
+  }
+
   return (
-    ip === "::1" ||
-    ip === "127.0.0.1" ||
-    ip.startsWith("10.") ||
-    ip.startsWith("192.168.") ||
-    ip.startsWith("172.16.") ||
-    ip.startsWith("172.17.") ||
-    ip.startsWith("172.18.") ||
-    ip.startsWith("172.19.") ||
-    ip.startsWith("172.2") ||
-    ip.startsWith("172.30.") ||
-    ip.startsWith("172.31.") ||
-    ip.startsWith("fc") ||
-    ip.startsWith("fd")
+    normalizedIp === "::1" ||
+    normalizedIp.startsWith("fc") ||
+    normalizedIp.startsWith("fd")
   );
 }
 

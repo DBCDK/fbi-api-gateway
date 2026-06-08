@@ -7,6 +7,25 @@ import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
 import useStorage from "./useStorage";
 import useInternalNetworkCheck from "./useInternalNetworkCheck";
 
+const TOKEN_REFRESH_BUFFER_MS = 20 * 1000;
+const scheduledClientRefreshes = new Map();
+const syncedResolvedTokens = new Map();
+
+function getRefreshDeadline(config = {}, { usesCredentialEndpoint = false } = {}) {
+  if (usesCredentialEndpoint) {
+    return Number.isFinite(config?.resolvedExpiresAt)
+      ? config.resolvedExpiresAt
+      : null;
+  }
+
+  if (typeof config?.expires === "string") {
+    const parsed = Date.parse(config.expires);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
 const STATUS_MAP = {
   200: "OK",
   404: "EXPIRED",
@@ -40,7 +59,7 @@ export default function useConfiguration(
   props,
   { enabled = true, syncResolvedToken = true } = {}
 ) {
-  const { setHistoryItem, setSelectedToken } = useStorage();
+  const { setApplicationEntry, setSelectedToken } = useStorage();
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const token = props?.token?.replace(/test.*:/, "");
   const agency = props?.agency;
@@ -74,12 +93,12 @@ export default function useConfiguration(
       ? `/api/smaug?token=${token}&agency=${agency}`
       : null;
 
-  const { data: baseData, error: baseError } = useSWR(
+  const { data: baseData, error: baseError, mutate: mutateBase } = useSWR(
     isValid && baseUrl,
     fetcher
   );
 
-  const { data: agencyData, error: agencyError } = useSWR(
+  const { data: agencyData, error: agencyError, mutate: mutateAgency } = useSWR(
     isValid && agencyUrl,
     fetcher
   );
@@ -116,6 +135,74 @@ export default function useConfiguration(
     : null;
 
   useEffect(() => {
+    if (!usesCredentialEndpoint) {
+      return undefined;
+    }
+
+    const refreshDeadline = getRefreshDeadline(stableData?.config, {
+      usesCredentialEndpoint,
+    });
+
+    if (!refreshDeadline) {
+      scheduledClientRefreshes.delete(requestKey);
+      return undefined;
+    }
+
+    const delay = Math.max(
+      refreshDeadline - Date.now() - TOKEN_REFRESH_BUFFER_MS,
+      0
+    );
+    const existing = scheduledClientRefreshes.get(requestKey);
+
+    if (existing && existing.refreshDeadline === refreshDeadline) {
+      return undefined;
+    }
+
+    if (existing?.timeout) {
+      window.clearTimeout(existing.timeout);
+    }
+
+    console.info("[credentials][client] auto-refresh scheduled", {
+      entryId,
+      clientId: props?.clientId || stableData?.config?.resolvedClientId || null,
+      refreshDeadline,
+      delay,
+    });
+
+    const timeout = window.setTimeout(() => {
+      console.info("[credentials][client] auto-refresh fired", {
+        entryId,
+        clientId: props?.clientId || stableData?.config?.resolvedClientId || null,
+      });
+      scheduledClientRefreshes.delete(requestKey);
+      mutateBase?.();
+      mutateAgency?.();
+    }, delay);
+
+    scheduledClientRefreshes.set(requestKey, {
+      refreshDeadline,
+      timeout,
+    });
+
+    return () => {
+      const current = scheduledClientRefreshes.get(requestKey);
+
+      if (current?.timeout === timeout) {
+        window.clearTimeout(timeout);
+        scheduledClientRefreshes.delete(requestKey);
+      }
+    };
+  }, [
+    entryId,
+    mutateAgency,
+    mutateBase,
+    props?.clientId,
+    requestKey,
+    stableData?.config,
+    usesCredentialEndpoint,
+  ]);
+
+  useEffect(() => {
     const resolvedToken = stableData?.config?.resolvedToken;
 
     if (
@@ -127,7 +214,19 @@ export default function useConfiguration(
       return;
     }
 
-    setHistoryItem({
+    const syncKey = [
+      requestKey,
+      resolvedToken,
+      stableData?.config?.resolvedExpiresAt || "",
+    ].join(":");
+
+    if (syncedResolvedTokens.get(requestKey) === syncKey) {
+      return;
+    }
+
+    syncedResolvedTokens.set(requestKey, syncKey);
+
+    setApplicationEntry({
       id: entryId,
       type: stableData?.config?.resolvedType || props?.type || "token",
       token: resolvedToken,
@@ -159,7 +258,8 @@ export default function useConfiguration(
     props?.supportsRefreshToken,
     props?.token,
     props?.type,
-    setHistoryItem,
+    requestKey,
+    setApplicationEntry,
     setSelectedToken,
     stableData?.config,
     stableData?.config?.resolvedClientId,
