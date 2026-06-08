@@ -48,6 +48,10 @@
   margin-top: var(--pt1);
 }
 
+.heading {
+  margin: var(--pt1) 0;
+}
+
 .heading p {
   font-size: 12px;
 }

@@ -18,6 +18,17 @@ const BACKUP_COOKIE_NAME = "fbi_credentials_backup";
 const MAX_SERVER_ENTRIES = config.credentials?.maxClientEntries || 10;
 const ONE_WEEK_IN_SECONDS = 60 * 60 * 24 * 7;
 const REDIS_PREFIX = "credential_session";
+const SERVER_SIDE_STORAGE_ENABLED =
+  config.datasources.redis.enabled === true ||
+  config.datasources.redis.enabled === "true";
+
+console.info("[credentials][session] storage mode configured", {
+  storageMode: SERVER_SIDE_STORAGE_ENABLED ? "redis" : "cookie",
+  redisEnabled: SERVER_SIDE_STORAGE_ENABLED,
+  redisHost: config.datasources.redis.host,
+  redisPrefix: config.datasources.redis.prefix,
+  maxEntries: MAX_SERVER_ENTRIES,
+});
 
 function getKey() {
   const secret =
@@ -107,10 +118,7 @@ function getBackupEntries(session) {
 }
 
 function usesServerSideStorage() {
-  return (
-    config.datasources.redis.enabled === true ||
-    config.datasources.redis.enabled === "true"
-  );
+  return SERVER_SIDE_STORAGE_ENABLED;
 }
 
 function createSessionId() {
@@ -223,6 +231,12 @@ export async function getCredentialSession(ctx) {
   const raw = cookies[COOKIE_NAME];
 
   if (usesServerSideStorage()) {
+    console.info("[credentials][session] using redis-backed session storage", {
+      hasSessionCookie: Boolean(raw),
+      hasBackupCookie: Boolean(cookies[BACKUP_COOKIE_NAME]),
+      sessionId: raw && !raw.includes(".") ? raw : null,
+    });
+
     if (!raw) {
       const backupSession = getBackupSession(ctx);
       if (!backupSession) {
@@ -280,6 +294,10 @@ export async function setCredentialSession(ctx, session, sessionId = null) {
 
   if (usesServerSideStorage()) {
     const effectiveSessionId = sessionId || getSessionId(ctx) || createSessionId();
+    console.info("[credentials][session] persisting session to redis", {
+      sessionId: effectiveSessionId,
+      entryCount: Object.keys(normalizedSession.entries || {}).length,
+    });
     await setRedisSession(effectiveSessionId, normalizedSession);
     setSessionIdCookie(ctx, effectiveSessionId);
     setBackupCookie(ctx, normalizedSession);

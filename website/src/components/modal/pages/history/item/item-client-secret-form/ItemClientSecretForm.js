@@ -80,12 +80,12 @@ export default function ItemClientSecretForm({
           }`}
         >
           {clientSecretError && (
-            <Text type="text1" className={styles.error}>
+            <Text type="text0" className={styles.error}>
               {clientSecretError}
             </Text>
           )}
           {clientSecretStatus && (
-            <Text type="text1" className={styles.status}>
+            <Text type="text0" className={styles.status}>
               {clientSecretStatus}
             </Text>
           )}
