@@ -49,8 +49,20 @@
   padding-top: var(--pt2);
 }
 
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .go {
-  margin-top: var(--pt2);
+  margin-top: var(--pt1);
+  margin-right: 60px; /* Application component kompensation */
+}
+
+.goSpinner {
+  vertical-align: center;
+  margin-bottom: 2px;
 }
 
 .title,
@@ -59,11 +71,35 @@
   align-self: center;
 }
 
+.help {
+  color: var(--text-light);
+  margin-top: var(--pt1);
+}
+
+.helpLink {
+  border: 0;
+  padding: 0;
+  font: inherit;
+  line-height: inherit;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.helpLink:hover,
+.helpLink:focus-visible {
+  opacity: 0.85;
+}
+
 .history {
   margin-left: var(--pt1);
+  margin-top: var(--pt1);
 }
 
 .title,
+.help,
 .history,
 .token,
 .go {
@@ -126,6 +162,9 @@
 
 /* selected dark theme */
 :global(body.dark) .title {
+  color: var(--text-dark);
+}
+:global(body.dark) .help {
   color: var(--text-dark);
 }
 :global(body.dark) .go,

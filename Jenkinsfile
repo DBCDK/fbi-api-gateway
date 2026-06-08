@@ -41,7 +41,7 @@ pipeline {
                             sonarOptions += " -Dsonar.newCode.referenceBranch=master"
                         }
 
-                        sonarOptions += " -Dsonar.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
+                        sonarOptions += " -Dsonar.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts,**/.next/**"
                         sonarOptions += " -Dsonar.test.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
                         sonarOptions += " -Dsonar.coverage.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
 

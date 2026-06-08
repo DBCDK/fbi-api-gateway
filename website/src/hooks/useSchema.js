@@ -79,6 +79,7 @@ export default function useSchema(token, _url) {
     if (res.status !== 200) return {};
 
     const json = await res.json();
+
     // If data is missing, keep shape predictable
     if (!json?.data) return { schema: null, schemaStr: null, json };
 

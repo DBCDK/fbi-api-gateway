@@ -1,6 +1,13 @@
+import { useEffect } from "react";
 import useSWR from "swr";
 
+import useApplications, {
+  getApplicationIdentifier,
+  getCanonicalApplicationId,
+} from "./useApplications";
+
 const isBrowser = typeof window !== "undefined";
+const SELECTED_APPLICATION_KEY = "selectedCredentialApplication";
 
 const safeGetItem = (storage, key, fallback = null) => {
   try {
@@ -17,103 +24,274 @@ const isToken = (token) => {
   return stripped.length === 40;
 };
 
-export default function useStorage() {
-  const { data: history = [], mutate: mutateHistory } = useSWR(
-    "history",
-    (key) => (isBrowser ? safeGetItem(localStorage, key, []) : []),
-    { fallbackData: [] }
+export const getHistoryIdentifier = getApplicationIdentifier;
+export const getCanonicalId = getCanonicalApplicationId;
+
+const matchesApplicationEntry = (left = {}, right = {}) => {
+  const leftIdentifier = getApplicationIdentifier(left);
+  const rightIdentifier = getApplicationIdentifier(right);
+
+  return (
+    (leftIdentifier && rightIdentifier && leftIdentifier === rightIdentifier) ||
+    (left.clientId && right.clientId && left.clientId === right.clientId) ||
+    (left.token && right.token && left.token === right.token)
   );
+};
+
+export const matchesSelectedCredentialIdentity = (
+  selectedToken = {},
+  token,
+  metadata = null
+) => {
+  if (!selectedToken) {
+    return false;
+  }
+
+  return (
+    selectedToken?.token === token ||
+    (metadata?.clientId &&
+      selectedToken?.clientId &&
+      selectedToken.clientId === metadata.clientId) ||
+    (metadata?.id && selectedToken?.id && selectedToken.id === metadata.id)
+  );
+};
+
+export const shouldClearSelectedTokenAfterRemoval = (
+  selectedToken,
+  removedEntry,
+  applications = []
+) => {
+  if (!selectedToken) {
+    return false;
+  }
+
+  const selectedIdentifier = getApplicationIdentifier(selectedToken);
+  const selectedCanonicalId = getCanonicalApplicationId(selectedToken);
+  const removedIdentifier =
+    typeof removedEntry === "string"
+      ? removedEntry
+      : getApplicationIdentifier(removedEntry || {}) ||
+        getCanonicalApplicationId(removedEntry || {});
+
+  if (
+    matchesApplicationEntry(selectedToken, removedEntry || {}) ||
+    (selectedIdentifier && selectedIdentifier === removedIdentifier) ||
+    (selectedCanonicalId && selectedCanonicalId === removedIdentifier)
+  ) {
+    return true;
+  }
+
+  return !applications.some((item) => {
+    const itemIdentifier = getApplicationIdentifier(item);
+    const itemCanonicalId = getCanonicalApplicationId(item);
+
+    return (
+      matchesApplicationEntry(item, selectedToken) ||
+      (selectedIdentifier && itemIdentifier === selectedIdentifier) ||
+      (selectedCanonicalId && itemCanonicalId === selectedCanonicalId)
+    );
+  });
+};
+
+export default function useStorage() {
+  const {
+    applications,
+    hasFetchedApplications,
+    setApplicationItem,
+    removeApplicationItem,
+    getApplicationItem,
+  } = useApplications();
 
   const { data: selectedToken, mutate: mutateSelectedToken } = useSWR(
-    "selectedToken",
+    SELECTED_APPLICATION_KEY,
     (key) => (isBrowser ? safeGetItem(sessionStorage, key, null) : null),
     { fallbackData: null }
   );
 
-  const setSelectedToken = (token, profile, agency) => {
+  const setSelectedToken = (
+    token,
+    profile,
+    agency,
+    metadata = null,
+    options = {}
+  ) => {
     if (!isBrowser || !isToken(token)) return;
 
-    const current = selectedToken?.token === token ? selectedToken : {};
+    const { reorderApplications = true, reorderHistory } = options;
+    const shouldReorderApplications =
+      reorderHistory === undefined ? reorderApplications : reorderHistory;
+    const current = matchesSelectedCredentialIdentity(
+      selectedToken,
+      token,
+      metadata
+    )
+      ? selectedToken
+      : {};
+    const applicationItem =
+      metadata?.id || metadata?.clientId
+        ? null
+        : applications?.find?.((item) => item?.token === token) || null;
     const value = {
       token,
       profile: profile === undefined ? current?.profile ?? null : profile,
       agency: agency === undefined ? current?.agency ?? null : agency,
+      id: getCanonicalApplicationId({
+        id: metadata?.id ?? applicationItem?.id ?? current?.id ?? null,
+        type:
+          metadata?.type ??
+          applicationItem?.type ??
+          current?.type ??
+          null,
+        token,
+        clientId:
+          metadata?.clientId ??
+          applicationItem?.clientId ??
+          current?.clientId ??
+          null,
+      }),
+      type:
+        metadata?.type ??
+        applicationItem?.type ??
+        current?.type ??
+        null,
+      clientId:
+        metadata?.clientId ??
+        applicationItem?.clientId ??
+        current?.clientId ??
+        null,
+      hasClientSecret:
+        metadata?.hasClientSecret ??
+        applicationItem?.hasClientSecret ??
+        current?.hasClientSecret ??
+        false,
     };
     try {
-      sessionStorage.setItem("selectedToken", JSON.stringify(value));
+      sessionStorage.setItem(SELECTED_APPLICATION_KEY, JSON.stringify(value));
     } catch {}
     mutateSelectedToken(value, false);
-    setHistoryItem(value, false);
+    if (shouldReorderApplications) {
+      setApplicationEntry(value, false);
+    }
   };
 
   const removeSelectedToken = () => {
     if (!isBrowser) return;
     try {
-      sessionStorage.removeItem("selectedToken");
+      sessionStorage.removeItem(SELECTED_APPLICATION_KEY);
     } catch {}
     mutateSelectedToken(null, false);
   };
 
-  const setHistoryItem = (
-    { token, profile, agency, note: _note },
-    shallow = true
-  ) => {
-    if (!isBrowser || !isToken(token)) return;
-
-    const timestamp = Date.now();
-    const existing = history?.find((obj) => obj.token === token);
-    const note = typeof _note === "string" ? _note : existing?.note || "";
-
-    let copy = [...history];
-
-    if (shallow) {
-      const index = history?.findIndex((obj) => obj.token === token);
-      if (index !== -1) {
-        copy[index] = {
-          ...existing,
-          profile,
-          agency,
-          note,
-        };
-      } else {
-        copy.unshift({ token, profile, agency, note, timestamp });
-      }
-    } else {
-      copy = copy.filter((obj) => obj.token !== token);
-      copy.unshift({ token, profile, agency, note, timestamp });
+  useEffect(() => {
+    if (!isBrowser || !hasFetchedApplications || !selectedToken) {
+      return;
     }
 
-    const sliced = copy.slice(0, 10);
-    try {
-      localStorage.setItem("history", JSON.stringify(sliced));
-    } catch {}
-    mutateHistory(sliced, false);
+    if (
+      !shouldClearSelectedTokenAfterRemoval(selectedToken, null, applications)
+    ) {
+      return;
+    }
+
+    removeSelectedToken();
+  }, [applications, hasFetchedApplications, selectedToken]);
+
+  const setApplicationEntry = (
+    { token, profile, agency, note: _note, ...rest },
+    shallow = true
+  ) => {
+    if (!isBrowser) return null;
+
+    const nextRest = {
+      ...rest,
+      id: getCanonicalApplicationId({
+        id: rest?.id || null,
+        type: rest?.type || null,
+        token,
+        clientId: rest?.clientId || null,
+      }),
+    };
+
+    const identifier = getApplicationIdentifier({ token, ...nextRest });
+
+    if (!identifier || (!isToken(token) && !nextRest.clientId)) return null;
+
+    const existing = applications?.find((obj) =>
+      matchesApplicationEntry(obj, { token, ...nextRest })
+    );
+    const note = typeof _note === "string" ? _note : existing?.note || "";
+
+    return setApplicationItem(
+      {
+        token,
+        profile,
+        agency,
+        note,
+        ...nextRest,
+      },
+      shallow
+    );
   };
 
-  const removeHistoryItem = (token) => {
-    if (!isBrowser || !isToken(token)) return;
+  const removeApplicationEntry = (tokenOrEntry) => {
+    if (!isBrowser) return;
 
-    const newHistory = history?.filter((obj) => obj.token !== token);
-    try {
-      localStorage.setItem("history", JSON.stringify(newHistory));
-    } catch {}
-    mutateHistory(newHistory, false);
+    const identifier =
+      typeof tokenOrEntry === "string"
+        ? getApplicationIdentifier(
+            applications?.find?.((obj) => obj.token === tokenOrEntry) || {
+              token: tokenOrEntry,
+            }
+          )
+        : getApplicationIdentifier(tokenOrEntry || {});
 
-    if (selectedToken?.token === token) {
+    if (!identifier) return;
+
+    const nextApplications = (applications || []).filter((item) => {
+      const itemIdentifier = getApplicationIdentifier(item);
+      return itemIdentifier !== identifier && item.id !== identifier;
+    });
+
+    removeApplicationItem(identifier);
+
+    if (
+      shouldClearSelectedTokenAfterRemoval(
+        selectedToken,
+        tokenOrEntry || identifier,
+        nextApplications
+      )
+    ) {
       removeSelectedToken();
     }
   };
 
-  const getHistoryItem = (token) => {
-    if (!isBrowser || !isToken(token)) return null;
-    return history?.find((obj) => obj.token === token) || null;
+  const getApplicationEntry = (tokenOrEntry) => {
+    if (typeof tokenOrEntry === "string" && isToken(tokenOrEntry)) {
+      return applications?.find((obj) => obj.token === tokenOrEntry) || null;
+    }
+
+    const identifier =
+      typeof tokenOrEntry === "string"
+        ? tokenOrEntry
+        : getApplicationIdentifier(tokenOrEntry || {});
+
+    return getApplicationItem(identifier);
   };
+
+  const setHistoryItem = setApplicationEntry;
+  const getHistoryItem = getApplicationEntry;
+  const removeHistoryItem = removeApplicationEntry;
 
   return {
     selectedToken,
     setSelectedToken,
     removeSelectedToken,
-    history,
+    history: applications,
+    applications,
+    hasFetchedApplications,
+    setApplicationEntry,
+    getApplicationEntry,
+    removeApplicationEntry,
     setHistoryItem,
     getHistoryItem,
     removeHistoryItem,

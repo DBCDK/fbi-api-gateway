@@ -1,0 +1,346 @@
+.configurations {
+  margin: 0;
+}
+
+.top {
+  height: 110px;
+  padding: var(--pt2);
+
+  background-color: var(--divider);
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+  transition: height 0.3s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.top.expanded {
+  height: 126px;
+}
+
+.title {
+  color: var(--text-light);
+  z-index: 2;
+
+  transition: color 0.3s ease;
+}
+
+.top.expanded .title {
+  color: var(--white);
+}
+
+.text {
+  display: none;
+  color: var(--white);
+  position: relative;
+  z-index: 2;
+  margin-top: var(--pt05);
+}
+
+.top.expanded .text {
+  display: block;
+}
+
+.addContainer {
+  position: absolute;
+  top: calc(100% - var(--pt2) - var(--pt5));
+  right: calc(100% - var(--pt2) - var(--pt15));
+  bottom: var(--pt2);
+  left: var(--pt2);
+  z-index: 1;
+  transition:
+    top 0.4s ease,
+    right 0.4s ease,
+    bottom 0.4s ease,
+    left 0.4s ease,
+    border-radius 0.4s ease;
+
+  background-color: var(--primary-dark);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.top.expanded .addContainer {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  border-radius: 0;
+
+  transition:
+    top 0.3s ease,
+    right 0.3s ease,
+    bottom 0.3s ease,
+    left 0.3s ease,
+    border-radius 0.3s ease;
+}
+
+.wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+
+  padding: 0;
+}
+
+.top.expanded .wrap {
+  padding: var(--pt6) var(--pt2) var(--pt2) var(--pt2);
+}
+
+.form {
+  display: flex;
+  align-items: center;
+}
+
+.top.expanded .form {
+  margin-top: var(--pt2);
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: 0;
+  color: var(--white);
+  padding: var(--pt1);
+  border-radius: var(--pt05);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.submit:hover,
+.submit:focus-visible {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.submit:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.submitGlyph {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+
+  transform: translateX(100px);
+  transition:
+    transform 0.2s ease 0s,
+    opacity 0.2s ease 0s;
+}
+
+.top.expanded .submitGlyph {
+  transform: translateX(0);
+  opacity: 1;
+
+  transition:
+    transform 0.2s ease 0.25s,
+    opacity 0.2s ease 0.25s;
+}
+
+.submitGlyph::before,
+.submitGlyph::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 2px;
+  border-radius: 999px;
+  background-color: currentColor;
+  transform-origin: center;
+}
+
+.submitGlyph::before {
+  transform: translate(-20%, -185%) rotate(45deg);
+}
+
+.submitGlyph::after {
+  transform: translate(-20%, 85%) rotate(-45deg);
+}
+
+.overlay {
+  max-width: min(320px, calc(100vw - var(--pt4)));
+  background-color: var(--primary-light) !important;
+  z-index: 2000 !important;
+}
+
+.input {
+  width: 0;
+  padding: 0;
+  margin-top: var(--pt1);
+
+  border: 0;
+  border-bottom: 1px solid var(--white);
+  background-color: transparent;
+  color: var(--white);
+  opacity: 0;
+
+  transition:
+    width 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.top.expanded .input {
+  width: 100%;
+  padding: var(--pt1);
+  opacity: 1;
+
+  transition:
+    width 0.45s ease,
+    opacity 0.2s ease;
+}
+
+.input::placeholder {
+  color: var(--white);
+  opacity: 0.7;
+}
+
+.add {
+  background-color: var(--primary-dark) !important;
+  color: var(--white) !important;
+  position: relative;
+  z-index: 2;
+}
+
+.top.expanded .add {
+  display: none;
+}
+
+.add:hover,
+.add:focus-visible {
+  background-color: var(--dark) !important;
+}
+
+.addButtonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pt1);
+}
+
+.closeIcon {
+  position: absolute;
+  top: var(--pt1);
+  right: var(--pt1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pt5);
+  height: var(--pt5);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--white);
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.top.expanded .closeIcon {
+  opacity: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.closeIcon:hover,
+.closeIcon:focus-visible {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.closeIcon:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.closeGlyph {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+}
+
+.closeGlyph::before,
+.closeGlyph::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 2px;
+  border-radius: 999px;
+  background-color: currentColor;
+  transform-origin: center;
+}
+
+.closeGlyph::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.closeGlyph::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.plusIcon {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+.plusIcon::before,
+.plusIcon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: currentColor;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.plusIcon::after {
+  background-color: white;
+}
+
+.plusIcon::before {
+  width: 10px;
+  height: 2px;
+}
+
+.plusIcon::after {
+  width: 2px;
+  height: 10px;
+}
+
+.list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding: var(--pt2) var(--pt2) 0 var(--pt2);
+  background-color: var(--white);
+}
+
+.list.noConfigurations {
+  height: 100%;
+  text-align: center;
+  color: var(--text-light);
+}

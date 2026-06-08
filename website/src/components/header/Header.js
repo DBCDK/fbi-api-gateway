@@ -12,7 +12,8 @@ import { hasAvailableAgency } from "@/utils/configuration";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Link from "@/components/base/link";
-import History from "@/components/history";
+import Overlay from "@/components/base/overlay";
+import Applications from "@/components/applications";
 import Token from "@/components/token";
 
 import Modal, { Pages } from "@/components/modal";
@@ -20,10 +21,13 @@ import Modal, { Pages } from "@/components/modal";
 import styles from "./Header.module.css";
 import Settings from "@/components/settings";
 import Top from "../top";
+import useUser from "@/hooks/useUser";
+import More from "../more";
 
 export default function Header() {
   const router = useRouter();
   const elRef = useRef();
+  const infoRef = useRef(null);
   const [isSticky, setIsSticky] = useState(false);
   const [show, setShow] = useState(false);
 
@@ -39,14 +43,29 @@ export default function Header() {
   }, [elRef]);
 
   const { selectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const { configuration, status, isLoading } = useConfiguration(selectedToken);
   const { icon, theme } = useTheme();
+
+  const { user } = useUser(selectedToken);
 
   const isValidToken =
     selectedToken &&
     configuration &&
     Object?.keys(configuration).length &&
     hasAvailableAgency(configuration);
+
+  const hasValidationError =
+    selectedToken?.token && !isLoading && status !== "OK";
+  const effectiveProfile =
+    selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
+  const hasMissingClientConfiguration =
+    Boolean(selectedToken?.token) &&
+    !isLoading &&
+    status === "OK" &&
+    (!effectiveProfile || !hasAvailableAgency(configuration));
+
+  const displayName = configuration?.displayName;
+  const isAuthenticated = user?.isAuthenticated;
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
@@ -100,9 +119,6 @@ export default function Header() {
                   Voyager
                 </Link>
               </Text>
-              <Text type="text5" className={`${styles.link} ${styles.more}`}>
-                <Link onClick={() => setShow(true)}>More</Link>
-              </Text>
               <Text
                 type="text5"
                 className={`${styles.link} ${styles.download}`}
@@ -123,11 +139,38 @@ export default function Header() {
               )}
             </nav>
             <span />
-            {!isIndex && <Token className={styles.token} compact />}
-            <History className={styles.history} />
+
+            {!isIndex && selectedToken && !isLoading && !hasValidationError && (
+              <div
+                ref={infoRef}
+                className={`${styles.info} ${
+                  hasMissingClientConfiguration ? styles.infoWarning : ""
+                }`}
+              >
+                <div>
+                  <Text type="text4">{displayName}</Text>
+                </div>
+                <div>
+                  <Text type="text0">
+                    {isAuthenticated ? "Authenticated" : "Anonymous"}
+                  </Text>
+                </div>
+              </div>
+            )}
+            <Overlay
+              className={styles.infoOverlay}
+              show={Boolean(hasMissingClientConfiguration)}
+              container={infoRef}
+              placement="bottom"
+            >
+              <Text type="text1">Missing client configuration 😵‍💫</Text>
+            </Overlay>
+
+            <Applications className={styles.history} />
           </Col>
         </Row>
         <Settings className={styles.settings} />
+        <More className={styles.more} onClick={() => setShow(true)} />
       </Container>
 
       <div className={styles.border} />

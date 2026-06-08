@@ -45,8 +45,19 @@ let server;
 //prometheus endpoint for monitoring
 const prometheusApp = express();
 prometheusApp.get("/metrics", metricsHandler);
-prometheusApp.listen(9599, () => {
+const prometheusServer = prometheusApp.listen(9599, () => {
   log.info(`Running metrics endpoint at http://localhost:9599/metrics`);
+});
+
+prometheusServer.on("error", (error) => {
+  if (error?.code === "EADDRINUSE") {
+    log.warn("Metrics endpoint already running, skipping local metrics bind", {
+      port: 9599,
+    });
+    return;
+  }
+
+  throw error;
 });
 
 // //old endpoint.TODO: expose this in the new port

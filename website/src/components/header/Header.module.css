@@ -13,8 +13,8 @@
 }
 
 .header > div:global(.container-fluid) {
-  padding-top: var(--pt1);
-  padding-bottom: var(--pt1);
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 .row {
@@ -70,9 +70,43 @@
   display: none;
 }
 
+.info {
+  margin-right: var(--pt1);
+  flex: 0 0 auto;
+  border-radius: var(--pt1);
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.info > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.info > div:last-child p {
+  font-style: italic;
+}
+
+.infoWarning {
+}
+
+.infoOverlay {
+  z-index: 99;
+}
+
+.more {
+  position: fixed;
+  right: var(--pt2);
+  bottom: var(--pt2);
+}
+
 .history {
-  max-height: var(--pt5);
-  max-width: var(--pt5);
+  max-height: var(--pt4);
+  max-width: var(--pt4);
+
+  flex: 0 0 auto;
 
   box-sizing: content-box;
   padding: 0;
@@ -82,8 +116,9 @@
 
 .history span {
   /* icon size */
-  font-size: 16px;
-  line-height: var(--pt5);
+  font-size: 14px;
+  padding-bottom: 2px;
+  padding-left: 2px;
 }
 
 .history:hover,
@@ -127,10 +162,6 @@
 
 .links .link:last-child {
   padding: 0;
-}
-
-.links .link.more {
-  display: none;
 }
 
 .links .link.changes a {
@@ -191,16 +222,28 @@
 .settings {
   display: flex;
   position: fixed;
-  right: 0;
-  bottom: 15vh;
+
   padding: var(--pt2);
   z-index: 1;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .settings {
+    right: 0;
+    bottom: 15vh;
+    display: block;
+  }
 }
 
 @media (min-width: 1200px) {
   .settings {
     top: 65vh;
     bottom: unset;
+  }
+
+  .more {
+    display: none !important;
   }
 }
 
@@ -212,12 +255,6 @@
 
   .links .link {
     display: none;
-  }
-
-  .links .link.more {
-    display: block;
-    padding: 0;
-    margin-left: auto;
   }
 
   .token,
