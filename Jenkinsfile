@@ -83,6 +83,7 @@ pipeline {
                 anyOf {
                     branch 'master'
                     branch 'future'
+                    branch 'prod'
                     branch pattern: '.*feature.*', comparator: 'REGEXP'
                 }
             }
