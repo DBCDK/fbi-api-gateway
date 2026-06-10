@@ -104,7 +104,6 @@ type Query {
   Get recommendations
   """
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
-  help(q: String!, language: LanguageCodeEnum): HelpResponse
   branches(
     agencyid: String, 
     branchId: String, 
@@ -351,10 +350,6 @@ export const resolvers = {
         return e.message;
       }
     },
-    async help(parent, args, context, info) {
-      return { ...args };
-    },
-
     async work(parent, args, context, info) {
       const work = await resolveWork(args, context);
 

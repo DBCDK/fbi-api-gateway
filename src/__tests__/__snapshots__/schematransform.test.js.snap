@@ -305,7 +305,6 @@ type Query {
 
   \\"\\"\\"Get recommendations\\"\\"\\"
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-  help(q: String!, language: LanguageCodeEnum): HelpResponse
   branches(
     agencyid: String
     branchId: String
@@ -1694,18 +1693,6 @@ type Work {
 
   \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
   manifestations: Manifestations!
-}
-
-type HelpRow {
-  nid: Int!
-  group: String!
-  orgTitle: String!
-  title: String!
-  body: String!
-}
-
-type HelpResponse {
-  result: [HelpRow!]!
 }
 
 type HoldingsItemsQuery {
@@ -7946,25 +7933,2300 @@ exports[`limited access to root fields 1`] = `
 \\"\\"\\"Complexity directive to evaluate query complexity \\"\\"\\"
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
+enum AccessTypeCodeEnum {
+  PHYSICAL
+  ONLINE
+  UNKNOWN
+}
+
+enum AccessUrlTypeEnum {
+  IMAGE
+  OTHER
+  RESOURCE
+  SAMPLE
+  TABLE_OF_CONTENTS
+  THUMBNAIL
+}
+
+enum LinkStatusEnum {
+  BROKEN
+  GONE
+  INVALID
+  OK
+}
+
+type AccessType {
+  display: String!
+  code: AccessTypeCodeEnum!
+}
+
+type Ereol {
+  \\"\\"\\"
+  The origin, e.g. \\"Ereolen\\" or \\"Ereolen Go\\"
+  \\"\\"\\"
+  origin: String!
+
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
+  url: String!
+
+  \\"\\"\\"
+  Is this a manifestation that always can be loaned on ereolen.dk even if you've run out of loans this month
+  \\"\\"\\"
+  canAlwaysBeLoaned: Boolean!
+
+  \\"\\"\\"Notes for the resource\\"\\"\\"
+  note: String
+}
+
+type AccessUrl {
+  \\"\\"\\"
+  The origin, e.g. \\"DBC Webarkiv\\"
+  \\"\\"\\"
+  origin: String!
+
+  \\"\\"\\"Description/type of URL\\"\\"\\"
+  urlText: String
+
+  \\"\\"\\"The url where manifestation is located\\"\\"\\"
+  url: String!
+
+  \\"\\"\\"Notes for the resource\\"\\"\\"
+  note: String
+
+  \\"\\"\\"If the resource requires login\\"\\"\\"
+  loginRequired: Boolean!
+
+  \\"\\"\\"The type of content that can be found at this URL\\"\\"\\"
+  type: AccessUrlTypeEnum
+
+  \\"\\"\\"Status from linkcheck\\"\\"\\"
+  status: LinkStatusEnum!
+}
+
+type InterLibraryLoan {
+  \\"\\"\\"Is true when manifestation can be borrowed via ill\\"\\"\\"
+  loanIsPossible: Boolean!
+
+  \\"\\"\\"Is newly added - nice to know if there are no localizations\\"\\"\\"
+  accessNew: Boolean!
+}
+
+type InfomediaService {
+  \\"\\"\\"
+  Infomedia ID which can be used to fetch article through Infomedia Service
+  \\"\\"\\"
+  id: String!
+}
+
+type DigitalArticleService {
+  \\"\\"\\"
+  Issn which can be used to order article through Digital Article Service
+  \\"\\"\\"
+  issn: String!
+}
+
+type Publizon {
+  \\"\\"\\"
+  URL to the material on the public library's website, built from the agency's lookupUrl and the manifestation workId. Defaults to the logged-in user's municipality agency.
+  \\"\\"\\"
+  agencyUrl(agencyId: String): String
+
+  \\"\\"\\"
+  URL of the sample provided by Publizon (Pubhub), typically a preview
+  of the e-book or audiobook content.
+  \\"\\"\\"
+  sample: String!
+
+  \\"\\"\\"The file format of the Publizon resource (e.g., \\"epub\\", \\"mp3\\").\\"\\"\\"
+  format: String
+
+  \\"\\"\\"The file size of the resource in bytes, if available.\\"\\"\\"
+  fileSizeInBytes: Int
+
+  \\"\\"\\"The total duration of the resource in seconds, if available.\\"\\"\\"
+  durationInSeconds: Int
+}
+
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
+
 type Query {
-  help(q: String!, language: LanguageCodeEnum): HelpResponse
+  branches(
+    agencyid: String
+    branchId: String
+    language: LanguageCodeEnum
+    q: String
+    offset: Int
+    limit: PaginationLimitScalar
+    statuses: [LibraryStatusEnum]
+    bibdkExcludeBranches: Boolean
+    agencyTypes: [AgencyTypeEnum!]
+
+    \\"\\"\\"
+    When set to true, search results where pickupAllowed is false will be moved to the bottom of the result list. 
+    This allows users to prioritize items that are available for pickup (pickupAllowed: true) while still including all results.
+    
+    Default is false
+    \\"\\"\\"
+    sortPickupAllowed: Boolean
+  ): BranchResult!
 }
 
-type HelpRow {
-  nid: Int!
-  group: String!
-  orgTitle: String!
-  title: String!
-  body: String!
+enum OrderPossibleReasonEnum {
+  OWNED_ACCEPTED
+  NOT_OWNED_ILL_LOC
+  OWNED_WRONG_MEDIUM_TYPE
+  NOT_OWNED_WRONG_ILL_MEDIUM_TYPE
+  NOT_OWNED_NO_ILL_LOC
+  OWNED_OWN_CATALOGUE
+  NOT_OWNED_ACCEPTED_BY_CONSORTIA
+  INTERNAL_ERROR
 }
 
-type HelpResponse {
-  result: [HelpRow!]!
+type CheckOrderPolicy {
+  lookUpUrls: [String!]!
+  lookUpUrl: String
+  orderPossible: Boolean
+  orderPossibleReason: OrderPossibleReasonEnum
+}
+
+type HoldingsResponse {
+  \\"\\"\\"
+  Represents the overall reservability status across all items according to the Cicero API (booking allowed).
+  \\"\\"\\"
+  reservable: Boolean
+  status: HoldingsResponseStatusEnum!
+
+  \\"\\"\\"
+  Expected return date for the material at agency level
+  
+  Is only set if no branches in agency have the material ON_SHELF
+  \\"\\"\\"
+  expectedAgencyReturnDate: String
+
+  \\"\\"\\"Expected return date for the material at branch level\\"\\"\\"
+  expectedBranchReturnDate: String
+
+  \\"\\"\\"Items on the shelf at the branch (actual copies)\\"\\"\\"
+  items: [HoldingsItem!]
+
+  \\"\\"\\"
+  A list of items that belong to branches that are not visible or accessible in the system.
+  These branches, such as book storage facilities or off-site repositories, are not listed
+  for end-users, but their items can still be requested or accessed.
+  \\"\\"\\"
+  unlistedBranchItems: [HoldingsItem!]
+
+  \\"\\"\\"Url to local site, where holding details may be found\\"\\"\\"
+  lookupUrl: String
+
+  \\"\\"\\"Urls to local site - one for each identifier\\"\\"\\"
+  lookupUrls: [String!]
+
+  \\"\\"\\"
+  The number of items owned by the agency.
+  Returns null if it is unknown
+  \\"\\"\\"
+  ownedByAgency: Int
+}
+
+type HoldingsItem {
+  \\"\\"\\"
+  Indicates whether the item can be reserved according to the Cicero API (booking allowed).
+  \\"\\"\\"
+  reservable: Boolean
+
+  \\"\\"\\"The manifestation of the holdingsitem\\"\\"\\"
+  manifestation: Manifestation
+  branchName: String
+  status: ItemStatusEnum
+  department: String
+  location: String
+  subLocation: String
+  loanRestriction: HoldingsItemLoanRestrictionEnum
+}
+
+type CoverDetails {
+  url: String
+  width: Int
+  height: Int
+}
+
+type Cover {
+  detail_117: String
+  detail_207: String
+  detail_42: String
+  detail_500: String
+  thumbnail: String
+  detail: String
+  origin: String
+  xSmall: CoverDetails
+  small: CoverDetails
+  medium: CoverDetails
+  large: CoverDetails
+  original: CoverDetails
+}
+
+type FbiInfoImage {
+  url: String
+  width: Int
+  height: Int
+}
+
+type FbiInfoImages {
+  xSmall: FbiInfoImage
+  small: FbiInfoImage
+  medium: FbiInfoImage
+  large: FbiInfoImage
+  original: FbiInfoImage
+}
+
+type CreatorImage {
+  \\"\\"\\"Url to creator image. Width 800px\\"\\"\\"
+  small: String
+
+  \\"\\"\\"Url to creator image. Width 1200px\\"\\"\\"
+  medium: String
+
+  \\"\\"\\"Url to creator image. Width 1800px\\"\\"\\"
+  large: String
+  attributionText: String
+}
+
+\\"\\"\\"Contains info that is generated by AI\\"\\"\\"
+type GeneratedContentPerson {
+  \\"\\"\\"AI generated summary\\"\\"\\"
+  summary: GeneratedContent
+
+  \\"\\"\\"AI short generated summary\\"\\"\\"
+  shortSummary: GeneratedContent
+
+  \\"\\"\\"
+  A summary generated from work count, workYears, often used topics etc.
+  Is null, when shortSummary exists
+  \\"\\"\\"
+  dataSummary: GeneratedContent
+
+  \\"\\"\\"The most often used topics of the creator\\"\\"\\"
+  topSubjects: [String!]
+
+  \\"\\"\\"
+  Estimated start year of the creator's primary publication period.
+  
+  Calculated from the distribution of publication years for the creator's works
+  by finding the earliest year in the main cluster of publications. This helps
+  filter out obvious outliers (e.g. mis-registered years or single late reprints).
+  
+  Represents the start of the period where the creator is primarily published
+  in the catalogue data, and may not correspond to the creator's actual historical
+  debut or lifetime.
+  \\"\\"\\"
+  primaryPublicationPeriodStartYear: Int
+}
+
+type GeneratedContent {
+  \\"\\"\\"Content generated by AI\\"\\"\\"
+  text: String!
+
+  \\"\\"\\"
+  A disclaimer that can be shown to the user, when the content is generated by AI. 
+  May contain info about the source of the content.
+  \\"\\"\\"
+  disclaimer: String
+}
+
+type Forfatterweb {
+  image: FbiInfoImages
+  url: String
+}
+
+type Wikidata {
+  education: [String!]
+  image: CreatorImage
+  nationality: String
+  occupation: [String!]
+  wikidataId: String
+  description: String
+  awards: [String!]
+}
+
+type CreatorInfo {
+  display: String!
+  firstName: String
+  lastName: String
+  viafid: String
+  wikidata(language: LanguageCodeEnum): Wikidata
+  generated: GeneratedContentPerson
+  forfatterweb: Forfatterweb
+}
+
+type Translation {
+  \\"\\"\\"
+  Translation in plural form, e.g. forfattere, komponister, instruktører etc.
+  \\"\\"\\"
+  plural: String!
+
+  \\"\\"\\"Translation in singular form, e.g. forfatter, komponist, instruktør\\"\\"\\"
+  singular: String!
+}
+
+type Role {
+  \\"\\"\\"
+  The code for the type of creator or contributor, e.g. 'aut' for author, 'ill' for illustrator etc
+  \\"\\"\\"
+  functionCode: String!
+
+  \\"\\"\\"
+  The type of creator/contributor as text in singular and plural in Danish, e.g. forfatter/forfattere, komponist/komponister etc
+  \\"\\"\\"
+  function: Translation!
+}
+
+type Person implements SubjectInterface & CreatorInterface {
+  \\"\\"\\"The person's whole name in normal order\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"The person's full name inverted\\"\\"\\"
+  nameSort: String!
+
+  \\"\\"\\"First name of the person\\"\\"\\"
+  firstName: String
+
+  \\"\\"\\"Last name of the person\\"\\"\\"
+  lastName: String
+
+  \\"\\"\\"Birth year of the person\\"\\"\\"
+  birthYear: String
+
+  \\"\\"\\"A roman numeral added to the person, like Christian IV\\"\\"\\"
+  romanNumeral: String
+
+  \\"\\"\\"Added information about the person, like Henri, konge af Frankrig\\"\\"\\"
+  attributeToName: String
+
+  \\"\\"\\"Creator aliases, creators behind used pseudonym\\"\\"\\"
+  aliases: [Person!]!
+
+  \\"\\"\\"
+  A list of which kinds of contributions this person made to this creation
+  \\"\\"\\"
+  roles: [Role!]!
+  type: SubjectTypeEnum!
+  language: Language
+  local: Boolean
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+
+  \\"\\"\\"
+  Additional enriched metadata about the creator.
+  
+  Aggregates information from multiple internal and external sources
+  (for example authority data, knowledge bases, generated content and
+  partner services). The exact fields available on CreatorInfo may
+  evolve over time as new data sources are added.
+  \\"\\"\\"
+  enriched: CreatorInfo
+}
+
+type Corporation implements SubjectInterface & CreatorInterface {
+  \\"\\"\\"The full corporation or conference name\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"The full corporation or conference name to sort after\\"\\"\\"
+  nameSort: String!
+
+  \\"\\"\\"Main corporation or conference\\"\\"\\"
+  main: String
+
+  \\"\\"\\"Sub corporation or conference/meeting\\"\\"\\"
+  sub: String
+
+  \\"\\"\\"
+  Location or jurisdiction of the corporation or conference, like Københavns Kommune, Statistisk Kontor
+  \\"\\"\\"
+  location: String
+
+  \\"\\"\\"Year of the conference\\"\\"\\"
+  year: String
+
+  \\"\\"\\"Number of the conference\\"\\"\\"
+  number: String
+
+  \\"\\"\\"
+  Added information about the corporation, like M. Folmer Andersen (firma)
+  \\"\\"\\"
+  attributeToName: String
+
+  \\"\\"\\"
+  A list of which kinds of contributions this corporation made to this creation
+  \\"\\"\\"
+  roles: [Role!]!
+  type: SubjectTypeEnum!
+  language: Language
+  local: Boolean
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+}
+
+interface CreatorInterface {
+  \\"\\"\\"Name of the creator\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Name of the creator which can be used to sort after \\"\\"\\"
+  nameSort: String!
+
+  \\"\\"\\"
+  A list of which kinds of contributions this creator made to this creation
+  \\"\\"\\"
+  roles: [Role!]!
+
+  \\"\\"\\"VIAF identifier of the creator\\"\\"\\"
+  viafid: String
+}
+
+enum HoldingsResponseStatusEnum {
+  \\"\\"\\"The material is on the shelf at this branch\\"\\"\\"
+  ON_SHELF
+
+  \\"\\"\\"
+  The material is on the shelf at this branch, but is not for loan (available for in-house use only)
+  \\"\\"\\"
+  ON_SHELF_NOT_FOR_LOAN
+
+  \\"\\"\\"The material is not on the shelf at this branch\\"\\"\\"
+  NOT_ON_SHELF
+
+  \\"\\"\\"The material is not owned by the agency\\"\\"\\"
+  NOT_OWNED
+
+  \\"\\"\\"The material is not found\\"\\"\\"
+  UNKNOWN_MATERIAL
+
+  \\"\\"\\"
+  No status is given by the branch, hence we don't know if the material
+  is on the shelf
+  \\"\\"\\"
+  UNKNOWN_STATUS
+}
+
+\\"\\"\\"Represents loan restrictions for an item\\"\\"\\"
+enum HoldingsItemLoanRestrictionEnum {
+  A
+  B
+  C
+  D
+  E
+  F
+
+  \\"\\"\\"
+  Indicates that the material can only be loaned to the library's own users and is not available for interlibrary loan
+  \\"\\"\\"
+  G
+}
+
+type Branch {
+  holdings(pids: [String]): HoldingsResponse
+
+  \\"\\"\\"Whether this branch's agency supports borrowerCheck\\"\\"\\"
+  borrowerCheck: Boolean!
+  culrDataSync: Boolean!
+  agencyName: String
+  autoIll: AutomationParams!
+  agencyId: String!
+
+  \\"\\"\\"
+  Some independent branches is collected under a pseudo agencyId, This agencyId is removed by FBI-API but instead stored in this field
+  \\"\\"\\"
+  _agencyId: String
+  branchId: String!
+  agencyType: AgencyTypeEnum!
+  name: String!
+  openingHours: String
+  openingHoursUrl: String
+  postalAddress: String
+  postalCode: String
+  userParameters: [UserParameter!]!
+  orderPolicy(pid: String, pids: [String!]!): CheckOrderPolicy
+  city: String
+  pickupAllowed: Boolean!
+  highlights: [Highlight!]!
+  debug: MinisearchDebug
+  infomediaAccess: Boolean!
+  digitalCopyAccess: Boolean!
+  userStatusUrl: String
+  holdingStatus(pids: [String]): DetailedHoldings
+  branchWebsiteUrl: String
+  branchCatalogueUrl: String
+  lookupUrl: String
+  branchPhone: String
+  branchEmail: String
+
+  \\"\\"\\"branchType is type of library branch. \\"\\"\\"
+  branchType: String!
+
+  \\"\\"\\"Checks if the library temporarilyClosed\\"\\"\\"
+  temporarilyClosed: Boolean!
+
+  \\"\\"\\"If the library is temporarilyClosed, a message might be shown here\\"\\"\\"
+  temporarilyClosedReason: String
+
+  \\"\\"\\"
+  If the branch type is 'bogbus', this field may contain a list of locations that the bus visits
+  \\"\\"\\"
+  mobileLibraryLocations: [String!]
+}
+
+type Lamp {
+  color: String
+  message: String
+}
+
+type DetailedHoldings {
+  count: Int!
+  branchId: String
+  expectedDelivery: String
+  agencyHoldings: [AgencyHolding]
+  holdingItems: [Status]
+  lamp: Lamp
+}
+
+type AgencyHolding {
+  localisationPid: String
+  localIdentifier: String
+  agencyId: String
+}
+
+type Status {
+  branch: String
+  branchId: String
+  willLend: String
+  expectedDelivery: String
+  localHoldingsId: String
+  circulationRule: String
+  department: String
+  issueId: String
+  issueText: String
+  location: String
+  note: String
+  readyForLoan: String
+  status: String
+  subLocation: String
+}
+
+\\"\\"\\"A periodica that contains all its issues and subjects\\"\\"\\"
+type Periodical {
+  \\"\\"\\"Info about articles in this periodical\\"\\"\\"
+  articles: PeriodicalArticlesResponse!
+
+  \\"\\"\\"All issues in this periodical\\"\\"\\"
+  issues(filters: PeriodicalIssueFilterInput): PeriodicalEntriesResponse!
+}
+
+type PeriodicalFacetResponse {
+  \\"\\"\\"Total number of matching items\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"Facet entries\\"\\"\\"
+  entries(offset: Int, limit: Int): [FacetValue!]
+}
+
+\\"\\"\\"Metadata about articles in a periodical\\"\\"\\"
+type PeriodicalArticlesResponse {
+  \\"\\"\\"Total number of articles in the periodical\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"First article (e.g. chronologically)\\"\\"\\"
+  first: Work
+
+  \\"\\"\\"Last article (e.g. most recent)\\"\\"\\"
+  last: Work
+}
+
+\\"\\"\\"Response containing all issues of a periodical\\"\\"\\"
+type PeriodicalEntriesResponse {
+  \\"\\"\\"Total number of issues in periodical\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"List of issues\\"\\"\\"
+  entries(offset: Int, limit: Int): [PeriodicalIssue!]!
+
+  \\"\\"\\"Subjects aggregated from articles in the issues\\"\\"\\"
+  subjects: PeriodicalFacetResponse!
+
+  \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
+  publicationYears: PeriodicalFacetResponse!
+
+  \\"\\"\\"Publication years aggregated from articles in the issues\\"\\"\\"
+  publicationMonths: PeriodicalFacetResponse!
+}
+
+\\"\\"\\"A single issue of a periodical\\"\\"\\"
+type PeriodicalIssue {
+  \\"\\"\\"Display name of the issue (e.g. \\"2023, nr. 2\\")\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Number of works/articles in the issue\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"List of works/articles in this issue\\"\\"\\"
+  works(offset: Int, limit: Int): [Work!]!
+}
+
+\\"\\"\\"An article similar to another, with shared subjects\\"\\"\\"
+type SimilarPeriodicalArticleEntry {
+  \\"\\"\\"Subjects shared with the reference article\\"\\"\\"
+  sharedSubjects: [String!]!
+
+  \\"\\"\\"The similar article\\"\\"\\"
+  work: Work!
+}
+
+type PeriodicalArticle {
+  \\"\\"\\"Is set when this is work is the actual periodica\\"\\"\\"
+  parentPeriodical: Work
+
+  \\"\\"\\"is set when this work is an article in an issue of a periodica\\"\\"\\"
+  parentIssue: PeriodicalIssue
+
+  \\"\\"\\"Articles in same periodica that are similar in terms of subjects\\"\\"\\"
+  similarArticles: [SimilarPeriodicalArticleEntry!]
+}
+
+input PeriodicalIssueFilterInput {
+  subjects: [String!]
+  publicationYears: [String!]
+  publicationMonths: [String!]
+}
+
+union WorkExtensionUnion = Periodical | PeriodicalArticle
+
+type Work {
+  \\"\\"\\"Contains either a Periodical or a PeriodicalArticle\\"\\"\\"
+  extendedWork: WorkExtensionUnion
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this work.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
+  Unique identification of the work based on work-presentation id e.g work-of:870970-basis:54029519
+  \\"\\"\\"
+  workId: String!
+  titles: WorkTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]
+
+  \\"\\"\\"Creators\\"\\"\\"
+  creators: [CreatorInterface!]!
+
+  \\"\\"\\"DK5 main entry for this work\\"\\"\\"
+  dk5MainEntry: DK5MainEntry
+
+  \\"\\"\\"
+  Overall literary category/genre of this work. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"Date of latest publication\\"\\"\\"
+  latestPublicationDate: String
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Series for this work\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"
+  Literary/movie universes this work is part of, e.g. Wizarding World, Marvel Universe
+  \\"\\"\\"
+  universes: [Universe!]!
+
+  \\"\\"\\"Subjects for this work\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this work\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Worktypes for this work - 'none' replaced by 'other'\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"The year this work was originally published or produced\\"\\"\\"
+  workYear: PublicationYear
+
+  \\"\\"\\"The main language(s) of the work's content\\"\\"\\"
+  mainLanguages: [Language!]!
+
+  \\"\\"\\"Details about the manifestations of this work\\"\\"\\"
+  manifestations: Manifestations!
+}
+
+\\"\\"\\"Represents the status of an item.\\"\\"\\"
+enum ItemStatusEnum {
+  \\"\\"\\"The item has been discarded and is no longer available.\\"\\"\\"
+  DISCARDED
+
+  \\"\\"\\"The item is marked as lost.\\"\\"\\"
+  LOST
+
+  \\"\\"\\"The item is not available for loan.\\"\\"\\"
+  NOTFORLOAN
+
+  \\"\\"\\"The item is currently on loan.\\"\\"\\"
+  ONLOAN
+
+  \\"\\"\\"The item is on order but not yet available.\\"\\"\\"
+  ONORDER
+
+  \\"\\"\\"The item is available on the shelf.\\"\\"\\"
+  ONSHELF
 }
 
 enum LanguageCodeEnum {
   DA
   EN
+}
+
+enum LibraryStatusEnum {
+  SLETTET
+  AKTIVE
+  ALLE
+  USYNLIG
+}
+
+enum VipUserParameterEnum {
+  CPR
+  USERID
+  BARCODE
+  CARDNO
+  CUSTOMID
+  USERDATEOFBIRTH
+  USERNAME
+  USERADDRESS
+  USERMAIL
+  USERTELEPHONE
+}
+
+enum AgencyTypeEnum {
+  ALLE
+  SKOLEBIBLIOTEK
+  FOLKEBIBLIOTEK
+  FORSKNINGSBIBLIOTEK
+  ANDRE
+}
+
+type UserParameter {
+  userParameterType: VipUserParameterEnum!
+  userParameterName: String!
+  parameterRequired: Boolean!
+  description: String
+}
+
+type BranchResult {
+  hitcount: Int!
+  borrowerStatus: BorrowerStatus
+  result: [Branch!]!
+  agencyUrl: String
+}
+
+\\"\\"\\"
+Indicates if user is blocked for a given agency or 
+if user does no longer exist on agency - relevant for FFU biblioteker since they dont update CULR
+\\"\\"\\"
+type BorrowerStatus {
+  allowed: Boolean!
+  statusCode: String!
+}
+
+type Highlight {
+  key: String!
+  value: String!
+}
+
+type MinisearchDebug {
+  score: String
+  terms: [String!]
+  match: [Match!]
+}
+
+type Match {
+  term: String
+  fields: [String!]
+}
+
+type CatalogueCodes {
+  \\"\\"\\"CatalogueCodes from the national registers\\"\\"\\"
+  nationalBibliography: [String!]!
+
+  \\"\\"\\"
+  CatalogueCodes from local bibliographies or catalogues that the manifestation belongs to
+  \\"\\"\\"
+  otherCatalogues: [String!]!
+}
+
+type Shelfmark {
+  \\"\\"\\"A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935\\"\\"\\"
+  postfix: String
+
+  \\"\\"\\"
+  The actual shelfmark - e.g. information about on which shelf in the library this manifestation can be found, e.g. 99.4
+  \\"\\"\\"
+  shelfmark: String!
+}
+
+type UnitDescription {
+  \\"\\"\\"
+  Assemblance of the data from all the other properties, separated by a comma
+  \\"\\"\\"
+  summary: String!
+
+  \\"\\"\\"Technical formats, e.g. Playstation 4, blu-ray\\"\\"\\"
+  numberAndType: String
+
+  \\"\\"\\"
+  Number of pages, tab (books, articles etc.) or playingtime (cd, dvd etc.)
+  \\"\\"\\"
+  extent: String
+
+  \\"\\"\\"
+  Other physical description, eg. illustrations, color or b/w, mono/stereo, rpm
+  \\"\\"\\"
+  additionalDescription: String
+
+  \\"\\"\\"Size of the material unit\\"\\"\\"
+  size: String
+
+  \\"\\"\\"Technical formats, e.g. Playstation 4, blu-ray\\"\\"\\"
+  technicalInformation: String
+}
+
+type PhysicalUnitDescription {
+  \\"\\"\\"
+  A summary of the physical description of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  summaryFull: String
+
+  \\"\\"\\"List of units contained within the material\\"\\"\\"
+  materialUnits: [UnitDescription!]
+
+  \\"\\"\\"Number of pages of the manifestation as number\\"\\"\\"
+  numberOfPages: Int
+
+  \\"\\"\\"Material that comes with the manifestation (bilag)\\"\\"\\"
+  accompanyingMaterial: String
+}
+
+type RelatedPublication {
+  \\"\\"\\"
+  Notes describing the relation of the related periodical/journal/publication
+  \\"\\"\\"
+  heading: String!
+
+  \\"\\"\\"Title of the related periodical/journal\\"\\"\\"
+  title: [String!]!
+
+  \\"\\"\\"Faust of the related publication\\"\\"\\"
+  faust: String
+
+  \\"\\"\\"ISSN of the related periodical/journal/publication\\"\\"\\"
+  issn: String
+
+  \\"\\"\\"ISBN of the related publication\\"\\"\\"
+  isbn: String
+
+  \\"\\"\\"Alle urls of the related publication\\"\\"\\"
+  urls: [String]!
+
+  \\"\\"\\"Note regarding the URL of the related publication\\"\\"\\"
+  urlText: String
+
+  \\"\\"\\"The first URL of the urls in related publications\\"\\"\\"
+  url: String
+}
+
+enum NoteTypeEnum {
+  CONNECTION_TO_OTHER_WORKS
+  DESCRIPTION_OF_MATERIAL
+  DISSERTATION
+  MUSICAL_ENSEMBLE_OR_CAST
+  NOT_SPECIFIED
+  OCCASION_FOR_PUBLICATION
+  ORIGINAL_TITLE
+  ORIGINAL_VERSION
+  REFERENCES
+  RESTRICTIONS_ON_USE
+  TYPE_OF_SCORE
+  FREQUENCY
+  EDITION
+  TECHNICAL_REQUIREMENTS
+  ESTIMATED_PLAYING_TIME_FOR_GAMES
+  EXPECTED_PUBLICATION_DATE
+  WITHDRAWN_PUBLICATION
+  CONTAINS_AI_GENERATED_CONTENT
+}
+
+enum ChildOrAdultCodeEnum {
+  FOR_CHILDREN
+  FOR_ADULTS
+}
+
+type ChildOrAdult {
+  display: String!
+  code: ChildOrAdultCodeEnum!
+}
+
+enum SchoolUseCodeEnum {
+  FOR_SCHOOL_USE
+  FOR_TEACHER
+}
+
+type SchoolUse {
+  display: String!
+  code: SchoolUseCodeEnum!
+}
+
+type Note {
+  \\"\\"\\"
+  The type of note - e.g. note about language, genre etc, NOT_SPECIFIED if not known. 
+  \\"\\"\\"
+  type: NoteTypeEnum!
+
+  \\"\\"\\"Heading before note\\"\\"\\"
+  heading: String
+
+  \\"\\"\\"The actual notes\\"\\"\\"
+  display: [String!]!
+
+  \\"\\"\\"A link and possible link text\\"\\"\\"
+  urls: [AccessUrl]
+}
+
+type Languages {
+  \\"\\"\\"
+  Notes of the languages that describe subtitles, spoken/written (original, dubbed/synchonized), visual interpretation, parallel (notes are written in Danish)
+  \\"\\"\\"
+  notes: [String!]
+
+  \\"\\"\\"Main language of this manifestation\\"\\"\\"
+  main: [Language!]
+
+  \\"\\"\\"Original language of this manifestation\\"\\"\\"
+  original: [Language!]
+
+  \\"\\"\\"
+  Parallel languages of this manifestation, if more languages are printed in the same book
+  \\"\\"\\"
+  parallel: [Language!]
+
+  \\"\\"\\"
+  Spoken language in this manifestation e.g. dubbed/syncronized language in movie
+  \\"\\"\\"
+  spoken: [Language!]
+
+  \\"\\"\\"Subtitles in this manifestation\\"\\"\\"
+  subtitles: [Language!]
+
+  \\"\\"\\"
+  Summary/abstract languages of this manifestation, if the manifestation contains short summaries of the content in another language
+  \\"\\"\\"
+  abstract: [Language!]
+}
+
+enum IdentifierTypeEnum {
+  UPC
+  URI
+  DOI
+  ISBN
+  ISSN
+  ISMN
+  MUSIC
+  MOVIE
+  PUBLIZON
+  NOT_SPECIFIED
+  ORDER_NUMBER
+  BARCODE
+}
+
+type Identifier {
+  \\"\\"\\"The type of identifier\\"\\"\\"
+  type: IdentifierTypeEnum!
+
+  \\"\\"\\"The actual identifier\\"\\"\\"
+  value: String!
+}
+
+type HostPublication {
+  \\"\\"\\"Publication this manifestation can be found in\\"\\"\\"
+  title: String!
+
+  \\"\\"\\"Creator of the host publication if host publication is book\\"\\"\\"
+  creator: String
+
+  \\"\\"\\"Edition statement for the host publication\\"\\"\\"
+  edition: String
+
+  \\"\\"\\"ISSN of the publication this manifestation can be found in\\"\\"\\"
+  issn: String
+
+  \\"\\"\\"ISBN of the publication this manifestation can be found in\\"\\"\\"
+  isbn: String
+
+  \\"\\"\\"The issue of the publication this manifestation can be found in\\"\\"\\"
+  issue: String
+
+  \\"\\"\\"Notes about the publication where this manifestation can be found in\\"\\"\\"
+  notes: [String!]
+
+  \\"\\"\\"The pages in the publication where this manifestation can be found in\\"\\"\\"
+  pages: String
+
+  \\"\\"\\"
+  The publisher of the publication where this manifestation can be found in
+  \\"\\"\\"
+  publisher: String
+
+  \\"\\"\\"Series of the publication this manifestation can be found in\\"\\"\\"
+  series: Series
+
+  \\"\\"\\"
+  The publication year of the publication this manifestation can be found in
+  \\"\\"\\"
+  year: PublicationYear
+
+  \\"\\"\\"All details about the publication this manifestation can be found in\\"\\"\\"
+  summary: String!
+}
+
+type Printing {
+  \\"\\"\\"
+  Properties 'printing' and 'publicationYear' as one string, e.g.: '11. oplag, 2020'
+  \\"\\"\\"
+  summary: String!
+
+  \\"\\"\\"The printing number and name\\"\\"\\"
+  printing: String!
+
+  \\"\\"\\"
+  Publisher of printing when other than the original publisher of the edition (260*b)
+  \\"\\"\\"
+  publisher: String
+
+  \\"\\"\\"A year as displayable text and as number\\"\\"\\"
+  publicationYear: PublicationYear
+}
+
+type PublicationYear {
+  display: String!
+  year: Int
+  endYear: Int
+  frequency: String
+}
+
+type Edition {
+  \\"\\"\\"
+  Properties 'edition', 'contributorsToEdition' and 'publicationYear' as one string, e.g.: '3. udgave, revideret af Hugin Eide, 2005'
+  \\"\\"\\"
+  summary: String!
+
+  \\"\\"\\"A note about this specific edition\\"\\"\\"
+  note: String
+
+  \\"\\"\\"The edition number and name\\"\\"\\"
+  edition: String
+
+  \\"\\"\\"Quotation of contributor statements related to the edition\\"\\"\\"
+  contributors: [String!]!
+
+  \\"\\"\\"A year as displayable text and as number\\"\\"\\"
+  publicationYear: PublicationYear
+}
+
+enum EntryTypeEnum {
+  ADDITIONAL_ENTRY
+  MAIN_ENTRY
+  NATIONAL_BIBLIOGRAPHY_ENTRY
+  NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY
+}
+
+type Classification {
+  \\"\\"\\"The classification code\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"The dk5Heading for the classification (DK5 only)\\"\\"\\"
+  dk5Heading: String
+
+  \\"\\"\\"Descriptive text for the classification code (DK5 only)\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"
+  For DK5 only. The DK5 entry type: main entry, national entry, or additional entry
+  \\"\\"\\"
+  entryType: EntryTypeEnum
+
+  \\"\\"\\"Name of the classification system\\"\\"\\"
+  system: String!
+}
+
+type Players {
+  \\"\\"\\"Number of players interval begin.\\"\\"\\"
+  begin: Int
+
+  \\"\\"\\"Number of players interval end.\\"\\"\\"
+  end: Int
+
+  \\"\\"\\"Display name for the number of players.\\"\\"\\"
+  display: String
+}
+
+type PEGI {
+  \\"\\"\\"Minimum age to play the game. PEGI rating\\"\\"\\"
+  minimumAge: Int
+
+  \\"\\"\\"Display string for PEGI minimum age\\"\\"\\"
+  display: String
+}
+
+type MediaCouncilAgeRestriction {
+  \\"\\"\\"Minimum age\\"\\"\\"
+  minimumAge: Int
+
+  \\"\\"\\"Display string for minimum age\\"\\"\\"
+  display: String
+}
+
+type Audience {
+  \\"\\"\\"Appropriate audience for this manifestation\\"\\"\\"
+  generalAudience: [String!]!
+
+  \\"\\"\\"
+  Range of numbers with either beginning of range or end of range or both e.g. 6-10, 1980-1999
+  \\"\\"\\"
+  ages: [Range!]!
+
+  \\"\\"\\"Appropriate audience as recommended by the library\\"\\"\\"
+  libraryRecommendation: String
+
+  \\"\\"\\"
+  Level of difficulty, illustrations, length, and realism in children's literature
+  \\"\\"\\"
+  levelForChildren8to12: LevelForAudience
+
+  \\"\\"\\"Is this material for children or adults\\"\\"\\"
+  childrenOrAdults: [ChildOrAdult!]!
+
+  \\"\\"\\"
+  Is this material for use in schools (folkeskole/ungdomsuddannelse) or is this material for use in schools by the teacher (folkeskole only)
+  \\"\\"\\"
+  schoolUse: [SchoolUse!]!
+
+  \\"\\"\\"Primary target audience for this manifestation\\"\\"\\"
+  primaryTarget: [String!]!
+
+  \\"\\"\\"
+  LET number of this manifestion, defines the reability level, LET stands for læseegnethedstal
+  \\"\\"\\"
+  let: String
+
+  \\"\\"\\"
+  Lix number of this manifestion, defines the reability level, Lix stands for læsbarhedsindex
+  \\"\\"\\"
+  lix: String
+
+  \\"\\"\\"Number of players in the game.\\"\\"\\"
+  players: Players
+
+  \\"\\"\\"PEGI age rating for games \\"\\"\\"
+  pegi: PEGI
+
+  \\"\\"\\"Media council age recommendation\\"\\"\\"
+  mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
+
+  \\"\\"\\"Appropriate audience for this manifestation\\"\\"\\"
+  audienceGeneral: [AudienceGeneral!]!
+}
+
+\\"\\"\\"
+A single general audience object containing a subject word and a possible associated language
+\\"\\"\\"
+type AudienceGeneral {
+  \\"\\"\\"Appropriate audience for this manifestation\\"\\"\\"
+  display: String
+
+  \\"\\"\\"The associated language of the audience term, if applicable\\"\\"\\"
+  language: Language
+}
+
+type LevelForAudience {
+  \\"\\"\\"Level expressed as integer on a scale from 1 to 5\\"\\"\\"
+  difficulty: Int
+
+  \\"\\"\\"Level expressed as integer on a scale from 1 to 5\\"\\"\\"
+  illustrationsLevel: Int
+
+  \\"\\"\\"Level expressed as integer on a scale from 1 to 5\\"\\"\\"
+  length: Int
+
+  \\"\\"\\"Level expressed as integer on a scale from 1 to 5\\"\\"\\"
+  realisticVsFictional: Int
+}
+
+\\"\\"\\"
+A search hit that encapsulates a matched manifestation from a search query.
+\\"\\"\\"
+type SearchHit {
+  \\"\\"\\"The manifestation that was matched during the search.\\"\\"\\"
+  match: Manifestation
+}
+
+type Manifestations {
+  first: Manifestation!
+  latest: Manifestation!
+  all: [Manifestation!]!
+
+  \\"\\"\\"
+  The best representation of all manifestations. Corresponds to the first element in the bestRepresentations list.
+  \\"\\"\\"
+  bestRepresentation: Manifestation!
+
+  \\"\\"\\"
+  All manifestations sorted after best representation. Newer is better. Records from DBC or KB are considered better. MaterialType.specific 'bog', 'music (cd)', and 'film (dvd)' are also considered better
+  \\"\\"\\"
+  bestRepresentations: [Manifestation!]!
+  mostRelevant: [Manifestation!]!
+
+  \\"\\"\\"
+  A list of manifestations that matched the search query.
+  
+  This field is populated only when a work is retrieved within a search context.
+  Each entry is a SearchHit object representing a manifestation that matched the search criteria.
+  Only one manifestation per unit is returned.
+  \\"\\"\\"
+  searchHits: [SearchHit!]
+}
+
+type Manifestation {
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this manifestation. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"Unique identification of the manifestation e.g 870970-basis:54029519\\"\\"\\"
+  pid: String!
+
+  \\"\\"\\"Different kinds of titles for this work\\"\\"\\"
+  titles: ManifestationTitles!
+
+  \\"\\"\\"Abstract of the entity\\"\\"\\"
+  abstract: [String!]!
+
+  \\"\\"\\"Access type of this manifestation\\"\\"\\"
+  accessTypes: [AccessType!]!
+
+  \\"\\"\\"Different options to access manifestation\\"\\"\\"
+  access: [AccessUnion!]!
+
+  \\"\\"\\"
+  Different kinds of definitions of appropriate audience for this manifestation
+  \\"\\"\\"
+  audience: Audience
+
+  \\"\\"\\"
+  CatalogueCodes divided in codes from the national bibliography and other codes
+  \\"\\"\\"
+  catalogueCodes: CatalogueCodes!
+
+  \\"\\"\\"
+  Classification codes for this manifestation from any classification system
+  \\"\\"\\"
+  classifications: [Classification!]!
+
+  \\"\\"\\"Contributors to the manifestation, actors, illustrators etc\\"\\"\\"
+  contributors: [CreatorInterface!]!
+
+  \\"\\"\\"
+  Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
+  \\"\\"\\"
+  contributorsFromDescription: [String!]!
+
+  \\"\\"\\"Cover for this manifestation\\"\\"\\"
+  cover: Cover!
+
+  \\"\\"\\"
+  Primary creators of the manifestation e.g. authors, directors, musicians etc
+  \\"\\"\\"
+  creators: [CreatorInterface!]!
+
+  \\"\\"\\"
+  Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
+  \\"\\"\\"
+  creatorsFromDescription: [String!]!
+
+  \\"\\"\\"The year for the publication of the first edition for this work \\"\\"\\"
+  dateFirstEdition: PublicationYear
+
+  \\"\\"\\"Edition details for this manifestation\\"\\"\\"
+  edition: Edition
+
+  \\"\\"\\"Details about the latest printing of this manifestation\\"\\"\\"
+  latestPrinting: Printing
+
+  \\"\\"\\"
+  Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  fictionNonfiction: FictionNonfiction
+
+  \\"\\"\\"The genre, (literary) form, type etc. of this manifestation\\"\\"\\"
+  genreAndForm: [String!]!
+
+  \\"\\"\\"Details about the host publications of this manifestation\\"\\"\\"
+  hostPublication: HostPublication
+
+  \\"\\"\\"Identifiers for this manifestation - often used for search indexes\\"\\"\\"
+  identifiers: [Identifier!]!
+
+  \\"\\"\\"Languages in this manifestation\\"\\"\\"
+  languages: Languages
+
+  \\"\\"\\"
+  Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
+  \\"\\"\\"
+  contents: [ContentsEntity!]
+
+  \\"\\"\\"The type of material of the manifestation based on bibliotek.dk types\\"\\"\\"
+  materialTypes: [MaterialType!]!
+
+  \\"\\"\\"Notes about the manifestation\\"\\"\\"
+  notes: [Note!]!
+
+  \\"\\"\\"The work that this manifestation is part of\\"\\"\\"
+  ownerWork: Work!
+
+  \\"\\"\\"
+  Notes about relations to this book/periodical/journal, - like previous names or related journals
+  \\"\\"\\"
+  relatedPublications: [RelatedPublication!]!
+
+  \\"\\"\\"
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  \\"\\"\\"
+  physicalDescription: PhysicalUnitDescription
+
+  \\"\\"\\"Publisher of this manifestion\\"\\"\\"
+  publisher: [String!]!
+
+  \\"\\"\\"The city or place where the item was published\\"\\"\\"
+  placeOfPublication: [String!]!
+
+  \\"\\"\\"
+  The creation date of the record describing this manifestation in the format YYYYMMDD
+  \\"\\"\\"
+  recordCreationDate: String!
+
+  \\"\\"\\"Series for this manifestation\\"\\"\\"
+  series: [Series!]!
+
+  \\"\\"\\"Universes for this manifestation\\"\\"\\"
+  universes: [Universe!]!
+
+  \\"\\"\\"
+  Information about on which shelf in the library this manifestation can be found
+  \\"\\"\\"
+  shelfmark: Shelfmark
+
+  \\"\\"\\"
+  The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
+  \\"\\"\\"
+  source: [String!]!
+
+  \\"\\"\\"Subjects for this manifestation\\"\\"\\"
+  subjects: SubjectContainer!
+
+  \\"\\"\\"
+  Information about on which volume this manifestation is in multi volume work
+  \\"\\"\\"
+  volume: String
+
+  \\"\\"\\"Worktypes for this manifestations work\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"The year this manifestation was originally published or produced\\"\\"\\"
+  workYear: PublicationYear
+
+  \\"\\"\\"id of the manifestaion unit\\"\\"\\"
+  unit: Unit
+
+  \\"\\"\\"automation material group info\\"\\"\\"
+  illAutomationMaterialGroup: IllAutomationMaterialGroup
+
+  \\"\\"\\"Identification of the local id of this manifestation\\"\\"\\"
+  localId: String
+
+  \\"\\"\\"Material that can be identified as sheet music\\"\\"\\"
+  sheetMusicCategories: SheetMusicCategory
+
+  \\"\\"\\"The publication status of a catalogued manifestation.\\"\\"\\"
+  cataloguedPublicationStatus: CataloguedPublicationStatus
+
+  \\"\\"\\"The genre and (literary) form of this manifestation\\"\\"\\"
+  genreForm: [GenreForm!]!
+
+  \\"\\"\\"
+  The records type of sound recording - excluding music recordings and its material
+  \\"\\"\\"
+  soundRecording: SoundRecording
+
+  \\"\\"\\"Code for type of periodical\\"\\"\\"
+  periodicalType: PeriodicalType
+
+  \\"\\"\\"Code for bibliographic category\\"\\"\\"
+  bibliographicCategory: BibliographicCategory
+
+  \\"\\"\\"Code for comics, children's picture books and drama\\"\\"\\"
+  specialMaterialGroup: SpecialMaterialGroup
+
+  \\"\\"\\"
+  The creator of the manifestation that the material can be located under on the shelf
+  \\"\\"\\"
+  shelfCreator: ShelfCreator
+
+  \\"\\"\\"Information on music shelving\\"\\"\\"
+  musicShelf: MusicShelf
+
+  \\"\\"\\"Field for presenting bibliographic records in MARC format\\"\\"\\"
+  marc: MarcRecord
+
+  \\"\\"\\"Relations to other manifestations\\"\\"\\"
+  relations: Relations!
+
+  \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
+  review: ManifestationReview
+}
+
+type ShelfCreator {
+  \\"\\"\\"The display name of the creator\\"\\"\\"
+  display: String
+
+  \\"\\"\\"The sort version of the creator name\\"\\"\\"
+  sort: String
+}
+
+type MusicShelf {
+  \\"\\"\\"The sort version of 'display'\\"\\"\\"
+  sort: String
+
+  \\"\\"\\"The shelf where the material can be found\\"\\"\\"
+  display: String
+}
+
+type SpecialMaterialGroup {
+  \\"\\"\\"A code for the type of the special material group\\"\\"\\"
+  code: String
+
+  \\"\\"\\"The code as displayable text\\"\\"\\"
+  display: String
+}
+
+type BibliographicCategory {
+  \\"\\"\\"Code for bibliographic category\\"\\"\\"
+  code: String
+
+  \\"\\"\\"The code as displayable text\\"\\"\\"
+  display: String
+}
+
+type PeriodicalType {
+  \\"\\"\\"A code for the type of periodical\\"\\"\\"
+  code: String
+
+  \\"\\"\\"The code as displayable text\\"\\"\\"
+  display: String
+}
+
+type SoundRecording {
+  \\"\\"\\"A code for the type of sound recording\\"\\"\\"
+  code: String
+
+  \\"\\"\\"The code as displayable text\\"\\"\\"
+  display: String
+}
+
+type GenreForm {
+  \\"\\"\\"The genre/form term\\"\\"\\"
+  display: String
+
+  \\"\\"\\"Language of the genre/form term, if applicable\\"\\"\\"
+  language: Language
+}
+
+\\"\\"\\"Represents the publication status of a catalogued manifestation.\\"\\"\\"
+enum CataloguedPublicationStatusEnum {
+  \\"\\"\\"New title\\"\\"\\"
+  NT
+
+  \\"\\"\\"New edition\\"\\"\\"
+  NU
+
+  \\"\\"\\"New print run\\"\\"\\"
+  OP
+}
+
+type CataloguedPublicationStatus {
+  \\"\\"\\"The code representing the catalogued publication status.\\"\\"\\"
+  code: CataloguedPublicationStatusEnum!
+
+  \\"\\"\\"The display text corresponding to the publication status code.\\"\\"\\"
+  display: String!
+}
+
+type SheetMusicCategory {
+  \\"\\"\\"The types of instruments material covers\\"\\"\\"
+  instruments: [String!]!
+
+  \\"\\"\\"I this node for exercises\\"\\"\\"
+  forMusicalExercise: Boolean
+
+  \\"\\"\\"The types of choir material covers\\"\\"\\"
+  choirTypes: [String!]!
+
+  \\"\\"\\"The types of chamber music material covers\\"\\"\\"
+  chamberMusicTypes: [String!]!
+
+  \\"\\"\\"The types of orchestra material covers\\"\\"\\"
+  orchestraTypes: [String!]!
+}
+
+type Unit {
+  id: String!
+  manifestations: [Manifestation!]!
+}
+
+type IllAutomationMaterialGroup {
+  \\"\\"\\"The material group (1-9)\\"\\"\\"
+  id: Int!
+
+  \\"\\"\\"The name of the material group\\"\\"\\"
+  name: String!
+}
+
+type ManifestationTitles {
+  \\"\\"\\"The main title(s) of the work\\"\\"\\"
+  main: [String!]!
+
+  \\"\\"\\"The full title(s) of the manifestation including subtitles etc\\"\\"\\"
+  full: [String!]!
+
+  \\"\\"\\"The sorted title of the entity\\"\\"\\"
+  sort: String!
+
+  \\"\\"\\"
+  Alternative titles for this manifestation e.g. a title in a different language
+  \\"\\"\\"
+  alternative: [String!]!
+
+  \\"\\"\\"
+  Information that distinguishes this manifestation from a similar manifestation with same title, e.g. 'illustrated by Ted Kirby'
+  \\"\\"\\"
+  identifyingAddition: String
+
+  \\"\\"\\"
+  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
+  \\"\\"\\"
+  original: [String!]
+
+  \\"\\"\\"
+  Titles (in other languages) parallel to the main 'title' of the manifestation
+  \\"\\"\\"
+  parallel: [String!]!
+
+  \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
+  standard: String
+
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
+
+  \\"\\"\\"Danish translation of the main title\\"\\"\\"
+  translated: [String!]
+
+  \\"\\"\\"detailed title for tv series \\"\\"\\"
+  tvSeries: TvSeries
+}
+
+enum ContentsEntityEnum {
+  ARTICLES
+  CHAPTERS
+  FICTION
+  MUSIC_TRACKS
+  SHEET_MUSIC
+  NOT_SPECIFIED
+}
+
+type ContentEntryTitle {
+  \\"\\"\\"Title of the content entry\\"\\"\\"
+  display: String!
+}
+
+type ContentEntryCreators {
+  \\"\\"\\"Details about a person, name, role etc.\\"\\"\\"
+  persons: [Person!]
+
+  \\"\\"\\"Details about a corporation or conference, name, role, etc.\\"\\"\\"
+  corporations: [Corporation!]
+}
+
+type ContentEntry {
+  \\"\\"\\"Top level title of the entry\\"\\"\\"
+  title: ContentEntryTitle!
+
+  \\"\\"\\"
+  Main creator(s) of the entry i.e. composer (classical music), artist/band (rhythmic music), author (fiction, articles). For music and sheet music always only 1 creator, for articles and fiction possibly more than 1
+  \\"\\"\\"
+  creators: ContentEntryCreators
+
+  \\"\\"\\"
+  Additional 'authors' (lyricists, arrangers, performers/soloists etc.), quoted as strings (including possible author's statement) from the record
+  \\"\\"\\"
+  contributors: [String!]
+
+  \\"\\"\\"Playing time for music tracks, quoted from the record\\"\\"\\"
+  playingTime: String
+
+  \\"\\"\\"
+  Possible entry data (title, creators, contributors, playingtime) subordinate to the entry's top level
+  \\"\\"\\"
+  sublevel: [ContentSublevel!]
+}
+
+type ContentsEntity {
+  \\"\\"\\"Heading for the contents of this entity\\"\\"\\"
+  heading: String!
+
+  \\"\\"\\"
+  ENUM for type of content entries (music tracks, articles, fiction etc.) in this entity
+  \\"\\"\\"
+  type: ContentsEntityEnum!
+
+  \\"\\"\\"
+  Contents text note quoted as it is from the marc field. Used for non-machine-decipherable content notes (un)formatted in only 1 subfield)
+  \\"\\"\\"
+  raw: String
+
+  \\"\\"\\"
+  Content entry with title and possible creator(s), contributors and (for some music and movies) playing time
+  \\"\\"\\"
+  entries: [ContentEntry!]
+}
+
+type ContentSublevelLast {
+  \\"\\"\\"Title subordinate to the title in the entry's top level\\"\\"\\"
+  title: ContentEntryTitle!
+
+  \\"\\"\\"
+  Additional 'authors' (lyricists, arrangers, performers/soloists etc.) related to the title on sublevel 1, quoted as strings (including possible author's statement) from the record
+  \\"\\"\\"
+  contributors: [String!]
+
+  \\"\\"\\"Playing time for music tracks\\"\\"\\"
+  playingTime: String
+}
+
+type ContentSublevel {
+  \\"\\"\\"Title subordinate to the title in the entry's top level\\"\\"\\"
+  title: ContentEntryTitle!
+
+  \\"\\"\\"
+  Additional 'authors' (lyricists, arrangers, performers/soloists etc.) related to the title on sublevel 1, quoted as strings (including possible author's statement) from the record
+  \\"\\"\\"
+  contributors: [String!]
+
+  \\"\\"\\"Playing time for music tracks\\"\\"\\"
+  playingTime: String
+
+  \\"\\"\\"
+  Possible entry data (title, contributors, playingtime) subordinate to the entry's sublevel 1
+  \\"\\"\\"
+  sublevel: [ContentSublevelLast!]
+}
+
+type MarcRecord {
+  \\"\\"\\"The marc record identifier\\"\\"\\"
+  id: String!
+
+  \\"\\"\\"The library agency\\"\\"\\"
+  agencyId: String!
+
+  \\"\\"\\"The bibliographic record identifier\\"\\"\\"
+  bibliographicRecordId: String!
+
+  \\"\\"\\"The MARC record collection content as marcXchange XML string\\"\\"\\"
+  content: String!
+
+  \\"\\"\\"
+  The serialization format of the MARC record content. Defaults to 'marcXchange'
+  \\"\\"\\"
+  contentSerializationFormat: String!
+
+  \\"\\"\\"Flag indicating whether or not the record is deleted\\"\\"\\"
+  deleted: Boolean!
+}
+
+enum GeneralMaterialTypeCodeEnum {
+  ARTICLES
+  AUDIO_BOOKS
+  BOARD_GAMES
+  BOOKS
+  COMICS
+  COMPUTER_GAMES
+  EBOOKS
+  FILMS
+  IMAGE_MATERIALS
+  MUSIC
+  NEWSPAPER_JOURNALS
+  OTHER
+  PODCASTS
+  SHEET_MUSIC
+  TV_SERIES
+}
+
+type Relations {
+  \\"\\"\\"
+  The story of this article is continued in this or these other article(s)
+  \\"\\"\\"
+  continuedIn: [Manifestation!]!
+
+  \\"\\"\\"
+  This story of this article actually started in this or these other article(s)
+  \\"\\"\\"
+  continues: [Manifestation!]!
+
+  \\"\\"\\"The contents of this articles is also discussed in these articles\\"\\"\\"
+  discussedIn: [Manifestation!]!
+
+  \\"\\"\\"The article discusses the content of these articles\\"\\"\\"
+  discusses: [Manifestation!]!
+
+  \\"\\"\\"This story is adapted in this or these movie(s)\\"\\"\\"
+  hasAdaptation: [Manifestation!]!
+
+  \\"\\"\\"The contents of this manifestation is analysed in these manifestations\\"\\"\\"
+  hasAnalysis: [Manifestation!]!
+
+  \\"\\"\\"The creator of this manifestation is portrayed in these manifestations\\"\\"\\"
+  hasCreatorDescription: [Manifestation!]!
+
+  \\"\\"\\"
+  The publisher of this manifestation has made a description of the content
+  \\"\\"\\"
+  hasDescriptionFromPublisher: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
+  hasManuscript: [Manifestation!]!
+
+  \\"\\"\\"
+  This manifestation has a 'materialevurdering' that was originally made for another manifestation, but it is still relevant (e.g. book/ebook)
+  \\"\\"\\"
+  hasReusedReview: [Manifestation!]!
+
+  \\"\\"\\"This manifestation has these reviews\\"\\"\\"
+  hasReview: [Manifestation!]!
+
+  \\"\\"\\"This movie or game has this sound track\\"\\"\\"
+  hasSoundtrack: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this or these books\\"\\"\\"
+  isAdaptationOf: [Manifestation!]!
+
+  \\"\\"\\"This manifestation is an analysis of these manifestations\\"\\"\\"
+  isAnalysisOf: [Manifestation!]!
+
+  \\"\\"\\"
+  This is a description from the original publisher of these manifestations
+  \\"\\"\\"
+  isDescriptionFromPublisherOf: [Manifestation!]!
+
+  \\"\\"\\"This movie is based on this manuscript\\"\\"\\"
+  isManuscriptOf: [Manifestation!]!
+
+  \\"\\"\\"
+  This 'materialevurdering' can also be used to review these relevant manifestations, even though it was originally made for another publication
+  \\"\\"\\"
+  isReusedReviewOf: [Manifestation!]!
+
+  \\"\\"\\"This manifestation is a review of these manifestations\\"\\"\\"
+  isReviewOf: [Manifestation!]!
+
+  \\"\\"\\"This sound track for a game is related to these games\\"\\"\\"
+  isSoundtrackOfGame: [Manifestation!]!
+
+  \\"\\"\\"This sound track for a movie is related to these movies\\"\\"\\"
+  isSoundtrackOfMovie: [Manifestation!]!
+
+  \\"\\"\\"This album has these tracks\\"\\"\\"
+  hasTrack: [Manifestation!]!
+
+  \\"\\"\\"This music track is part of these albums\\"\\"\\"
+  isPartOfAlbum: [Manifestation!]!
+
+  \\"\\"\\"This article or book part can be found in these manifestations\\"\\"\\"
+  isPartOfManifestation: [Manifestation!]!
+}
+
+enum ReviewElementTypeEnum {
+  ABSTRACT
+  ACQUISITION_RECOMMENDATIONS
+  AUDIENCE
+  CONCLUSION
+  DESCRIPTION
+  EVALUATION
+  SIMILAR_MATERIALS
+}
+
+type ReviewElement {
+  content: String
+
+  \\"\\"\\"
+  This is a paragraph containing markup where links to manifestations
+  can be inserted. For instance '\\"Axel Steens nye job minder om [870970-basis:20307021] fra ...'.
+  Relevant manifestations are located in the manifestations field. 
+  \\"\\"\\"
+  contentSubstitute: String
+  heading: String
+
+  \\"\\"\\"
+  Manifestations that can be used to generate and insert links into 'contentSubsitute'.
+  \\"\\"\\"
+  manifestations: [Manifestation]
+  type: ReviewElementTypeEnum
+}
+
+type ManifestationReview {
+  rating: String
+  reviewByLibrarians: [ReviewElement]
+}
+
+\\"\\"\\"An integer in the range from 1 to 100\\"\\"\\"
+scalar PaginationLimitScalar
+
+\\"\\"\\"A facet value consists of a term and a count.\\"\\"\\"
+type FacetValue {
+  \\"\\"\\"Use the key when applying filters\\"\\"\\"
+  key: String!
+
+  \\"\\"\\"A value of a facet field\\"\\"\\"
+  term: String!
+
+  \\"\\"\\"A score indicating relevance\\"\\"\\"
+  score: Int
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this facet value. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  \\"\\"\\"
+  traceId: String!
+}
+
+type SerieWork {
+  \\"\\"\\"The number of work in the series as a number (as text)\\"\\"\\"
+  numberInSeries: String
+
+  \\"\\"\\"Work of a serieWork\\"\\"\\"
+  work: Work!
+
+  \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
+  readThisFirst: Boolean
+
+  \\"\\"\\"
+  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
+  \\"\\"\\"
+  readThisWhenever: Boolean
+}
+
+type Series {
+  \\"\\"\\"The number of members in the series\\"\\"\\"
+  hitcount: Int!
+
+  \\"\\"\\"The title of the series\\"\\"\\"
+  title: String!
+
+  \\"\\"\\"Identifier for the series\\"\\"\\"
+  seriesId: String
+
+  \\"\\"\\"Traceid for tracking\\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"Additional information \\"\\"\\"
+  identifyingAddition: String
+
+  \\"\\"\\"Description of the series\\"\\"\\"
+  description: String
+
+  \\"\\"\\"A alternative title to the main 'title' of the series\\"\\"\\"
+  alternativeTitles: [String!]!
+
+  \\"\\"\\"
+  A parallel title to the main 'title' of the series, in a different language
+  \\"\\"\\"
+  parallelTitles: [String!]!
+
+  \\"\\"\\"The number in the series as text qoutation\\"\\"\\"
+  numberInSeries: String
+
+  \\"\\"\\"Information about whether this work in the series should be read first\\"\\"\\"
+  readThisFirst: Boolean
+
+  \\"\\"\\"
+  Information about whether this work in the series can be read without considering the order of the series, it can be read at any time
+  \\"\\"\\"
+  readThisWhenever: Boolean
+
+  \\"\\"\\"Whether this is a popular series or general series\\"\\"\\"
+  isPopular: Boolean
+
+  \\"\\"\\"WorkTypes for the series\\"\\"\\"
+  workTypes: [String!]!
+
+  \\"\\"\\"MainLanguages of the series\\"\\"\\"
+  mainLanguages: [String!]!
+
+  \\"\\"\\"Members of this serie. \\"\\"\\"
+  members(limit: Int, offset: Int): [SerieWork!]!
+}
+
+interface SubjectInterface {
+  display: String!
+
+  \\"\\"\\"
+  The type of subject - 'location', 'time period' etc., 'topic' if not specific kind of subject term
+  \\"\\"\\"
+  type: SubjectTypeEnum!
+
+  \\"\\"\\"Language of the subject - contains display and isoCode \\"\\"\\"
+  language: Language
+  local: Boolean
+}
+
+type SubjectText implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type TimePeriod implements SubjectInterface {
+  type: SubjectTypeEnum!
+  period: Range!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type Mood implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type NarrativeTechnique implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type Setting implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+}
+
+type SubjectWithRating implements SubjectInterface {
+  type: SubjectTypeEnum!
+  display: String!
+  language: Language
+  local: Boolean
+
+  \\"\\"\\"Expressed as integer on a scale from 1 to 5\\"\\"\\"
+  rating: Int
+}
+
+enum SubjectTypeEnum {
+  TOPIC
+  LOCATION
+  FICTIONAL_CHARACTER
+  LAESEKOMPASSET
+  MEDICAL_SUBJECT_HEADING
+  MUSIC_COUNTRY_OF_ORIGIN
+  MUSIC_TIME_PERIOD
+  MUSICAL_INSTRUMENTATION
+  NATIONAL_AGRICULTURAL_LIBRARY
+  TIME_PERIOD
+  TITLE
+  FILM_NATIONALITY
+  LIBRARY_OF_CONGRESS_SUBJECT_HEADING
+  FICTIONAL_LOCATION
+
+  \\"\\"\\"
+  added for manifestation.parts.creators/person - they get a type from small-rye
+  \\"\\"\\"
+  PERSON
+  CORPORATION
+  MOOD
+  MOOD_CHILDREN
+
+  \\"\\"\\"Subject describing selected topics for children, and a rating.\\"\\"\\"
+  TOPIC_CHILDREN
+  PERSPECTIVE
+  STYLE
+  TEMPO
+  REALITY
+  ENVIRONMENT
+}
+
+type Range {
+  begin: Int
+  end: Int
+  display: String!
+}
+
+type SubjectContainer {
+  \\"\\"\\"All subjects\\"\\"\\"
+  all: [SubjectInterface!]!
+
+  \\"\\"\\"Only DBC verified subjects\\"\\"\\"
+  dbcVerified: [SubjectInterface!]!
+}
+
+union UniverseContentUnion = Work | Series
+
+type Universe {
+  \\"\\"\\"A key that identifies a universe.\\"\\"\\"
+  key: String
+
+  \\"\\"\\"An id that identifies a universe.\\"\\"\\"
+  universeId: String
+
+  \\"\\"\\"
+  A unique identifier for tracking user interactions with this universe.
+  It is generated in the response and should be included in subsequent
+  API calls when this work is selected.
+  \\"\\"\\"
+  traceId: String!
+
+  \\"\\"\\"
+  Literary/movie universe this work is part of e.g. Wizarding World, Marvel Cinematic Universe
+  \\"\\"\\"
+  title: String!
+
+  \\"\\"\\"A alternative title to the main 'title' of the universe\\"\\"\\"
+  alternativeTitles: [String!]
+
+  \\"\\"\\"Description of the universe\\"\\"\\"
+  description: String
+
+  \\"\\"\\"All series within the universe\\"\\"\\"
+  series(limit: Int, offset: Int, workType: WorkTypeEnum): [Series!]!
+
+  \\"\\"\\"All works within the universe but not in any series\\"\\"\\"
+  works(limit: Int, offset: Int, workType: WorkTypeEnum): [Work!]!
+
+  \\"\\"\\"work types that are in this universe\\"\\"\\"
+  workTypes: [WorkTypeEnum!]!
+
+  \\"\\"\\"both series and works in a list\\"\\"\\"
+  content(limit: Int, offset: Int, workType: WorkTypeEnum): UniverseContentResult!
+}
+
+type UniverseContentResult {
+  hitcount: Int!
+  entries: [UniverseContentUnion!]!
+}
+
+type AutomationParams {
+  \\"\\"\\"AgencyId of given provider\\"\\"\\"
+  provider: String
+
+  \\"\\"\\"Ill parameters for given provider\\"\\"\\"
+  materials: [Materials]
+}
+
+type Materials {
+  \\"\\"\\"Material id (1, 2, 3, 4, 5, 6, 7, 9)\\"\\"\\"
+  material: Int!
+
+  \\"\\"\\"
+  Name of materialtype eg. \\"Bøger på dansk\\", \\"Lydmaterialer på bånd\\", osv.
+  \\"\\"\\"
+  name: String!
+
+  \\"\\"\\"Does given provider loan this material ?\\"\\"\\"
+  willProvide: Boolean!
+
+  \\"\\"\\"Does given requester provide their own materials to ill\\"\\"\\"
+  willProvideOwn: Boolean
+
+  \\"\\"\\"Period from acquisition of material to ill loan eg. 60 (days)\\"\\"\\"
+  period: Int!
+}
+
+type Language {
+  \\"\\"\\"Language as displayable text\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"ISO639-2 language code\\"\\"\\"
+  isoCode: String!
+
+  \\"\\"\\"ISO639-1 language code (2 letters)\\"\\"\\"
+  iso639Set1: String!
+
+  \\"\\"\\"ISO639-2 language code (3 letters)\\"\\"\\"
+  iso639Set2: String!
+}
+
+type GeneralMaterialType {
+  \\"\\"\\"
+  code for materialType # @TODO - is this a finite list ?? - and where to get it
+  \\"\\"\\"
+  code: GeneralMaterialTypeCodeEnum!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
+type SpecificMaterialType {
+  \\"\\"\\"code for materialType\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"Ths string to display\\"\\"\\"
+  display: String!
+}
+
+type MaterialType {
+  \\"\\"\\"jed 1.1 - the general materialtype\\"\\"\\"
+  materialTypeGeneral: GeneralMaterialType!
+
+  \\"\\"\\"jed 1.1 - the specific materialtType\\"\\"\\"
+  materialTypeSpecific: SpecificMaterialType!
+}
+
+enum FictionNonfictionCodeEnum {
+  FICTION
+  NONFICTION
+  NOT_SPECIFIED
+}
+
+type FictionNonfiction {
+  \\"\\"\\"
+  Displayable overall category/genre. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  \\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Binary code fiction/nonfiction used for filtering\\"\\"\\"
+  code: FictionNonfictionCodeEnum!
+}
+
+type DK5MainEntry {
+  \\"\\"\\"Displayable main DK5 classification\\"\\"\\"
+  display: String!
+
+  \\"\\"\\"Main DK5 classification code\\"\\"\\"
+  code: String!
+
+  \\"\\"\\"The dk5Heading for the classification\\"\\"\\"
+  dk5Heading: String!
+}
+
+enum WorkTypeEnum {
+  ANALYSIS
+  ARTICLE
+  BOOKDESCRIPTION
+  GAME
+  LITERATURE
+  MAP
+  MOVIE
+  MUSIC
+  OTHER
+  PERIODICA
+  PORTRAIT
+  REVIEW
+  SHEETMUSIC
+  TRACK
+}
+
+type WorkTitles {
+  \\"\\"\\"The main title(s) of the work\\"\\"\\"
+  main: [String!]!
+
+  \\"\\"\\"The full title(s) of the work including subtitles etc\\"\\"\\"
+  full: [String!]!
+
+  \\"\\"\\"Titles (in other languages) parallel to the main 'title' of the work\\"\\"\\"
+  parallel: [String!]!
+
+  \\"\\"\\"The sorted title of the entity\\"\\"\\"
+  sort: String!
+
+  \\"\\"\\"
+  The title of the work that this expression/manifestation is translated from or based on. The original title(s) of a film which has a different distribution title.
+  \\"\\"\\"
+  original: [String!]
+
+  \\"\\"\\"The standard title of the entity, used for music and movies\\"\\"\\"
+  standard: String
+
+  \\"\\"\\"
+  The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
+  \\"\\"\\"
+  titlePlusLanguage: String
+
+  \\"\\"\\"Danish translation of the main title\\"\\"\\"
+  translated: [String!]
+
+  \\"\\"\\"detailed title for tv series \\"\\"\\"
+  tvSeries: TvSeries
+}
+
+type TvSeries {
+  \\"\\"\\"Title of the tv serie\\"\\"\\"
+  title: String
+
+  \\"\\"\\"Dansih translated title of the tv serie\\"\\"\\"
+  danishLaunchTitle: String
+
+  \\"\\"\\"Detailed information about the episode\\"\\"\\"
+  episode: TvSeriesDetails
+
+  \\"\\"\\"Episode titles\\"\\"\\"
+  episodeTitles: [String!]
+
+  \\"\\"\\"Detailed information about the disc\\"\\"\\"
+  disc: TvSeriesDetails
+
+  \\"\\"\\"Detailed information about the season\\"\\"\\"
+  season: TvSeriesDetails
+
+  \\"\\"\\"Detailed information about the volume\\"\\"\\"
+  volume: TvSeriesDetails
+}
+
+type TvSeriesDetails {
+  display: String
+  numbers: [Int!]
 }
 "
 `;
