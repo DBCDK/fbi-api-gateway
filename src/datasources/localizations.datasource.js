@@ -42,30 +42,19 @@ export async function load({ pids, localizationsRole }, context) {
     mergePids: true,
   };
 
-  if (typeof localizationsRole === "undefined") {
-    // Fallback to bibdk when role is undefined
-    body.role = "bibdk";
-  } else if (localizationsRole === "bibdk") {
-    // Role is explicitly set to bibdk
-    body.role = "bibdk";
-  } else if (localizationsRole !== null) {
-    // When role is a string that is not bibdk, we set to danbib
-    // a role explicitly set to null, will not send a role to the service
-    body.role = "danbib";
+  if (localizationsRole !== undefined) {
+    body.role = localizationsRole;
   }
 
   try {
     const baseUrl = url.replace(/\/?$/, "/");
-    const response = await context.fetch(
-      baseUrl + "localizations",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      }
-    );
+    const response = await context.fetch(baseUrl + "localizations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
 
     return parseResponse(response?.body?.localizations);
   } catch (e) {

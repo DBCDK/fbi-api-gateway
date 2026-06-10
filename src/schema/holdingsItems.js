@@ -28,7 +28,7 @@ type HoldingsItemsQuery {
     Bibliographic record ID (faust number).
     """
     bibliographicRecordId: String!
-  ): HoldingsItemsQueryResponse!
+  ): HoldingsByBibliographicRecordResult!
 }
 
 type HoldingsItemsMutation {
@@ -428,7 +428,7 @@ type HoldingsItemsStatus {
   trackingId: String
 }
 
-type HoldingsItemsQueryResponse {
+type HoldingsByBibliographicRecordResult {
   """
   Indicates if the operation was successful.
   """

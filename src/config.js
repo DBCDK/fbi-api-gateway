@@ -123,6 +123,15 @@ export default {
       prefix: process.env.OPENFORMAT_PREFIX || "openformat-1",
       teamLabel: "fbiscrum/de-team",
     },
+    referencePresentation: {
+      url:
+        process.env.REFERENCE_PRESENTATION_URL ||
+        "http://reference-presentation.cisterne.svc.cloud.dbc.dk/api/v1",
+      ttl:
+        process.env.REFERENCE_PRESENTATION_TIME_TO_LIVE_SECONDS || 60 * 10,
+      prefix: process.env.REFERENCE_PRESENTATION_PREFIX || "ref-presentation-2",
+      teamLabel: "de-team",
+    },
     bibliotekdkCms: {
       url:
         process.env.BIBLIOTEKDK_CMS_URL ||

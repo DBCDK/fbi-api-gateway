@@ -79,7 +79,14 @@ pipeline {
             }
         }
         stage('Push to Artifactory') {
-            when { anyOf { branch 'master'; branch 'future' } }
+            when {
+                anyOf {
+                    branch 'master'
+                    branch 'future'
+                    branch 'prod'
+                    branch pattern: '.*feature.*', comparator: 'REGEXP'
+                }
+            }
 
             steps {
                 script {
@@ -90,6 +97,18 @@ pipeline {
                         }
                     }
                 } }
+        }
+
+        stage('Trigger feature deploy reconcile') {
+            when {
+                anyOf {
+                    branch 'master'
+                    branch pattern: '.*feature.*', comparator: 'REGEXP'
+                }
+            }
+            steps {
+                build job: 'fbi-api-gateway/fbi-api-gateway-deploy/features', wait: false
+            }
         }
 
         stage("Update 'staging' version number") {

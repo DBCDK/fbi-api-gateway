@@ -335,6 +335,13 @@ type Query {
   \\"\\"\\"
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches: Boolean): Localizations
   refWorks(pids: [String!]!): String!
+
+  \\"\\"\\"
+  Returns bibliographic records formatted as RIS reference data for one or more manifestation pids.
+  When multiple pids are provided, each RIS record is separated by a newline.
+  Records are returned in the same order as the provided pids.
+  If a pid is not found, it is omitted from the response.
+  \\"\\"\\"
   ris(pids: [String!]!): String!
   inspiration(limit: Int): Inspiration!
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
@@ -1703,7 +1710,7 @@ type HoldingsItemsQuery {
 
     \\"\\"\\"Bibliographic record ID (faust number).\\"\\"\\"
     bibliographicRecordId: String!
-  ): HoldingsItemsQueryResponse!
+  ): HoldingsByBibliographicRecordResult!
 }
 
 type HoldingsItemsMutation {
@@ -1962,7 +1969,7 @@ type HoldingsItemsStatus {
   trackingId: String
 }
 
-type HoldingsItemsQueryResponse {
+type HoldingsByBibliographicRecordResult {
   \\"\\"\\"Indicates if the operation was successful.\\"\\"\\"
   ok: Boolean!
 
@@ -2986,6 +2993,13 @@ type Manifestation {
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+
+  \\"\\"\\"
+  Bibliographic reference data for this manifestation formatted as RIS.
+  When fetching RIS for multiple manifestations, each record is returned on the
+  manifestation. To combine them into a single RIS file, join the records with a newline.
+  \\"\\"\\"
+  ris: String
 }
 
 type ShelfCreator {
@@ -5679,6 +5693,13 @@ type Query {
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
   infomedia(id: String!): InfomediaResponse!
   refWorks(pids: [String!]!): String!
+
+  \\"\\"\\"
+  Returns bibliographic records formatted as RIS reference data for one or more manifestation pids.
+  When multiple pids are provided, each RIS record is separated by a newline.
+  Records are returned in the same order as the provided pids.
+  If a pid is not found, it is omitted from the response.
+  \\"\\"\\"
   ris(pids: [String!]!): String!
   series(seriesId: String!): Series
   universe(key: String, universeId: String): Universe
@@ -6832,6 +6853,13 @@ type Manifestation {
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+
+  \\"\\"\\"
+  Bibliographic reference data for this manifestation formatted as RIS.
+  When fetching RIS for multiple manifestations, each record is returned on the
+  manifestation. To combine them into a single RIS file, join the records with a newline.
+  \\"\\"\\"
+  ris: String
 }
 
 type ShelfCreator {
@@ -11383,6 +11411,13 @@ type Manifestation {
 
   \\"\\"\\"Some review data, if this manifestation is a review\\"\\"\\"
   review: ManifestationReview
+
+  \\"\\"\\"
+  Bibliographic reference data for this manifestation formatted as RIS.
+  When fetching RIS for multiple manifestations, each record is returned on the
+  manifestation. To combine them into a single RIS file, join the records with a newline.
+  \\"\\"\\"
+  ris: String
 }
 
 type ShelfCreator {
