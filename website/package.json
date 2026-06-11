@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": ". ../env.env && PORT=3001 next-remote-watch ./src/docs",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start -p 3001",
     "lint": "next lint",
     "postinstall": "npx --yes @dbcdk/npm-tools@latest verify latest"
@@ -16,9 +16,9 @@
     "graphql-voyager": "^2.1.0",
     "graphql-ws": "^5.16.0",
     "isomorphic-unfetch": "^3.1.0",
-    "lodash": "^4.17.21",
-    "next": "^14.2.25",
-    "next-mdx-remote": "^4.4.1",
+    "lodash": "^4.18.1",
+    "next": "^16.2.9",
+    "next-mdx-remote": "^6.0.0",
     "nookies": "^2.5.2",
     "react": "^18.3.1",
     "react-bootstrap": "^2.5.0",
@@ -29,8 +29,12 @@
     "swr": "^1.2.1"
   },
   "devDependencies": {
-    "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.23",
+    "eslint": "^9.39.0",
+    "eslint-config-next": "^16.2.9",
     "next-remote-watch": "^2.0.0"
+  },
+  "overrides": {
+    "postcss": "^8.5.10",
+    "cookie": "^0.7.0"
   }
 }

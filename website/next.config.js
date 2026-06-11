@@ -2,12 +2,8 @@ const path = require("path");
 
 module.exports = {
   reactStrictMode: true,
-  i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
-  },
-  publicRuntimeConfig: {
-    theme: process.env.WEBSITE_THEME || "default",
+  env: {
+    NEXT_PUBLIC_WEBSITE_THEME: process.env.WEBSITE_THEME || "default",
   },
   async redirects() {
     return [
