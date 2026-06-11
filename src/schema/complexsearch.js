@@ -71,6 +71,14 @@ input ComplexSearchFiltersInput {
   Boolean to denote whether to include or exclude online holdingsitems
   """
   useOnlineHoldings: Boolean
+  """
+  The last loan date of the item
+  """
+  lastloandate: String
+  """
+  The loan restriction of the item, g, a or nothing
+  """
+  loanrestriction: [String!]
 }
 
 """
