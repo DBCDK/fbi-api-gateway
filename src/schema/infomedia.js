@@ -1,4 +1,4 @@
-import { getInfomediaAgencyId } from "../utils/access";
+import { fetchArticle } from "../utils/article";
 
 const errors = [
   "SERVICE_NOT_LICENSED",
@@ -41,24 +41,6 @@ type InfomediaArticle {
 }
 `;
 
-async function fetchArticle(parent, context) {
-  const articleId = parent?.id;
-
-  // users access given agencyId
-  const agencyId = await getInfomediaAgencyId(context);
-
-  if (!agencyId) {
-    return null;
-  }
-
-  const article = await context.datasources.getLoader("infomedia").load({
-    articleId,
-    agencyId: agencyId,
-  });
-
-  return article;
-}
-
 export const resolvers = {
   InfomediaResponse: {
     async error(parent, args, context, info) {
@@ -91,8 +73,32 @@ export const resolvers = {
     },
   },
   InfomediaArticle: {
-    async hedLine(parent) {
-      return parent.hedline;
+    id(parent) {
+      return parent.DOC_ID || parent.id;
+    },
+    headLine(parent) {
+      return parent.HEADLINE || parent.headLine;
+    },
+    subHeadLine(parent) {
+      return parent.SUBHEADLINE || parent.subHeadLine;
+    },
+    byLine(parent) {
+      return parent.BYLINE || parent.byLine;
+    },
+    dateLine(parent) {
+      return parent.PUBLISHING_DATE || parent.dateLine;
+    },
+    paper(parent) {
+      return parent.SOURCE_NAME || parent.paper;
+    },
+    text(parent) {
+      return parent.FULLTEXT || parent.text;
+    },
+    html(parent) {
+      return parent.FULLTEXT_HTML || parent.html;
+    },
+    hedLine(parent) {
+      return  parent.hedline;
     },
   },
 };
