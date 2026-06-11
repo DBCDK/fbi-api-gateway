@@ -96,27 +96,20 @@ export async function isFolkAgency(branchId, context) {
  * @returns {boolean}
  */
 export async function hasCulrDataSync(branchId, context) {
-  /**
-   * Odense Katedralskole, 872960,
-   * Roskilde Gymnasium, 872600
-   * Sorø Akademis Skole, 861640
-   * Slagelse Gymnasium, biblioteket 872320
-   * Greve Gymnasium, Biblioteket 874260
-   * Stenhus Gymnasium, 875140
-   * Sct. Knuds Gymnasium, 871890
-   * Erhvervsakademiet Aarhus, 861160
-   */
-
+  // Check if branch is a FFU library, as these are known to sync data with culr.
   const whitelist = [
     // Gymnasier
-    "872960",
-    "872600",
-    "861640",
-    "872320",
-    "874260",
-    "875140",
-    "871890",
-    "861160",
+    "872960", // Odense Katedralskole
+    "872600", // Roskilde Gymnasium
+    "861640", // Sorø Akademis Skole
+    "872320", // Slagelse Gymnasium biblioteket
+    "874260", // Greve Gymnasium, Biblioteket
+    "875140", // Stenhus Gymnasium
+    "871890", // Sct. Knuds Gymnasium
+    "861160", // Erhvervsakademiet Aarhus
+    "820050", // Aalborg Universitetsbibliotek
+    "820051", // Aalborg Universitetsbibliotek Esbjerg
+    "820052", // Aalborg Universitetsbibliotek København
 
     // Login with mitId, when no library accounts
     "190101",

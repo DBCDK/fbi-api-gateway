@@ -99,6 +99,18 @@ pipeline {
                 } }
         }
 
+        stage('Trigger feature deploy reconcile') {
+            when {
+                anyOf {
+                    branch 'master'
+                    branch pattern: '.*feature.*', comparator: 'REGEXP'
+                }
+            }
+            steps {
+                build job: 'fbi-api-gateway/fbi-api-gateway-deploy/features', wait: false
+            }
+        }
+
         stage("Update 'staging' version number") {
             agent {
                 docker {
