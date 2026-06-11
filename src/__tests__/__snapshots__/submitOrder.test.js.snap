@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`submitorder failed when user is blocked by pickupBranch (Agency) 1`] = `
-Object {
-  "data": Object {
-    "submitOrder": Object {
+{
+  "data": {
+    "submitOrder": {
       "orderId": null,
       "status": "BORCHK_USER_BLOCKED_BY_AGENCY",
     },
@@ -12,9 +12,9 @@ Object {
 `;
 
 exports[`submitorder failed when user is not found on pickupbranch (borchk) 1`] = `
-Object {
-  "data": Object {
-    "submitOrder": Object {
+{
+  "data": {
+    "submitOrder": {
       "orderId": null,
       "status": "UNKNOWN_USER",
     },
@@ -23,17 +23,17 @@ Object {
 `;
 
 exports[`submitorder fails if a user is not authenticated, and a incorrect/wrong userId is provided 1`] = `
-Object {
-  "data": Object {
+{
+  "data": {
     "submitOrder": null,
   },
 }
 `;
 
 exports[`submitorder fails when user is not authenticated, and no userId provided 1`] = `
-Object {
-  "data": Object {
-    "submitOrder": Object {
+{
+  "data": {
+    "submitOrder": {
       "orsId": null,
       "status": "UNKNOWN_USER",
     },
@@ -42,9 +42,9 @@ Object {
 `;
 
 exports[`submitorder succedes when user is authenticated, and no userId provided 1`] = `
-Object {
-  "data": Object {
-    "submitOrder": Object {
+{
+  "data": {
+    "submitOrder": {
       "orderId": "1046910462",
       "status": "NOT_OWNED_ILL_LOC",
     },
@@ -53,9 +53,9 @@ Object {
 `;
 
 exports[`submitorder succedes when user is not authenticated, but userId provided 1`] = `
-Object {
-  "data": Object {
-    "submitOrder": Object {
+{
+  "data": {
+    "submitOrder": {
       "orderId": "1046910462",
       "status": "NOT_OWNED_ILL_LOC",
     },
