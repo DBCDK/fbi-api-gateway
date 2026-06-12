@@ -22,12 +22,14 @@ import Depth from "@/components/depth";
 import Header from "@/components/header";
 import Menu from "@/components/menu";
 import Link from "@/components/base/link";
+import Title from "@/components/base/title";
+import Text from "@/components/base/text";
 import Button from "@/components/base/button/Button";
 import Highlight from "@/components/base/highlight";
 
 import styles from "./Docs.module.css";
 
-// Custom components to be used in MDX
+// Custom components to be used in MDX (passed directly — MDXProvider v2 is incompatible with next-mdx-remote v6)
 const customComponents = {
   InlineGraphiQL,
   DeprecationBox,
@@ -41,6 +43,39 @@ const customComponents = {
   Link,
   Button,
   Highlight,
+  h1: ({ children }) => (
+    <Title type="title6" as="h1">
+      {children}
+    </Title>
+  ),
+  h2: ({ children }) => (
+    <Title type="title4" as="h2">
+      {children}
+    </Title>
+  ),
+  h3: ({ children }) => (
+    <Title type="title7" as="h3">
+      {children}
+    </Title>
+  ),
+  code: ({ children }) => (
+    <code style={{ whiteSpaceCollapse: "preserve" }}>{children}</code>
+  ),
+  p: ({ children }) => <Text type="text2">{children}</Text>,
+  li: ({ children }) => (
+    <li>
+      <Text type="text1">{children}</Text>
+    </li>
+  ),
+  a: ({ children, href }) => (
+    <Link
+      href={href}
+      underline
+      target={href?.startsWith("http") ? "_blank" : "_self"}
+    >
+      {children}
+    </Link>
+  ),
 };
 
 export default function Docs() {
