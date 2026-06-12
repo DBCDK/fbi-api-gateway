@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import useStorage from "./useStorage";
 import { useGraphQLUrl } from "./useSchema";
+import useSelectedCredential from "./credentials/useSelectedCredential";
 
 export function useCreateCurl({ token, query, variables }) {
   const [curl, setCurl] = useState(null);
 
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
   const url = useGraphQLUrl();
 
   useEffect(() => {

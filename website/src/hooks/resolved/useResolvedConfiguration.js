@@ -1,15 +1,14 @@
-import fetch from "isomorphic-unfetch";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import useSWR from "swr";
+import fetch from "isomorphic-unfetch";
 
 import { isToken } from "@/components/utils";
 import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
-import useStorage from "./useStorage";
-import useInternalNetworkCheck from "./useInternalNetworkCheck";
+import useInternalNetworkCheck from "../credentials/useInternalNetworkCheck";
+import useStableSWRData from "../useStableSWRData";
 
 const TOKEN_REFRESH_BUFFER_MS = 20 * 1000;
 const scheduledClientRefreshes = new Map();
-const syncedResolvedTokens = new Map();
 
 function getRefreshDeadline(config = {}, { usesCredentialEndpoint = false } = {}) {
   if (usesCredentialEndpoint) {
@@ -55,11 +54,7 @@ const fetcher = async (url) => {
   return { config, statusCode: 200, status: "OK" };
 };
 
-export default function useConfiguration(
-  props,
-  { enabled = true, syncResolvedToken = true } = {}
-) {
-  const { setApplicationEntry, setSelectedToken } = useStorage();
+export default function useResolvedConfiguration(props, { enabled = true } = {}) {
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const token = props?.token?.replace(/test.*:/, "");
   const agency = props?.agency;
@@ -67,8 +62,10 @@ export default function useConfiguration(
   const isClientEntry =
     props?.type === "client" ||
     (typeof props?.clientId === "string" && Boolean(props.clientId));
-  const isValid = enabled && isToken(props?.token);
   const usesCredentialEndpoint = isClientEntry && Boolean(entryId);
+  const hasValidToken = isToken(props?.token);
+  const hasLookupTarget = usesCredentialEndpoint ? Boolean(entryId) : hasValidToken;
+  const isValid = enabled && hasLookupTarget;
 
   const credentialParams = new URLSearchParams();
   if (entryId) {
@@ -97,12 +94,12 @@ export default function useConfiguration(
       : null;
 
   const { data: baseData, error: baseError, mutate: mutateBase } = useSWR(
-    isValid && baseUrl,
+    baseUrl && isValid ? baseUrl : null,
     fetcher
   );
 
   const { data: agencyData, error: agencyError, mutate: mutateAgency } = useSWR(
-    isValid && agencyUrl,
+    agencyUrl && isValid ? agencyUrl : null,
     fetcher
   );
 
@@ -111,31 +108,19 @@ export default function useConfiguration(
     agency || "",
     usesCredentialEndpoint ? internalNetworkCheck : "",
   ].join(":");
+  const stableKey = [entryId || token || "", agency || ""].join(":");
   const data = agencyData || baseData;
   const error = agencyError || baseError;
   const isLoadingBase = isValid && !baseData && !baseError;
   const isLoadingAgency = Boolean(agencyUrl) && !agencyData && !agencyError;
-  const previousDataRef = useRef(null);
 
-  useEffect(() => {
-    if (!isValid) {
-      previousDataRef.current = null;
-      return;
-    }
-
-    if (data?.config && Object.keys(data.config).length > 0) {
-      previousDataRef.current = {
-        key: requestKey,
-        data,
-      };
-    }
-  }, [data, isValid, requestKey]);
-
-  const stableData = isValid
-    ? data || (previousDataRef.current?.key === requestKey
-        ? previousDataRef.current.data
-        : null)
-    : null;
+  const stableData = useStableSWRData({
+    data,
+    enabled: isValid,
+    cacheKey: stableKey,
+    hasMeaningfulData: (value) =>
+      Boolean(value?.config && Object.keys(value.config).length > 0),
+  });
   const canAutoRefresh = stableData?.config?.resolvedCanAutoRefresh === true;
 
   useEffect(() => {
@@ -186,91 +171,22 @@ export default function useConfiguration(
       }
     };
   }, [
-    entryId,
+    canAutoRefresh,
     mutateAgency,
     mutateBase,
-    props?.clientId,
     requestKey,
-    canAutoRefresh,
     stableData?.config,
-    usesCredentialEndpoint,
-  ]);
-
-  useEffect(() => {
-    const resolvedToken = stableData?.config?.resolvedToken;
-
-    if (
-      !syncResolvedToken ||
-      !usesCredentialEndpoint ||
-      !resolvedToken ||
-      resolvedToken === props?.token
-    ) {
-      return;
-    }
-
-    const syncKey = [
-      requestKey,
-      resolvedToken,
-      stableData?.config?.resolvedExpiresAt || "",
-    ].join(":");
-
-    if (syncedResolvedTokens.get(requestKey) === syncKey) {
-      return;
-    }
-
-    syncedResolvedTokens.set(requestKey, syncKey);
-
-    setApplicationEntry({
-      id: entryId,
-      type: stableData?.config?.resolvedType || props?.type || "token",
-      token: resolvedToken,
-      clientId: stableData?.config?.resolvedClientId || props?.clientId || null,
-      hasClientSecret:
-        stableData?.config?.resolvedHasClientSecret ?? props?.hasClientSecret,
-      hasRefreshToken:
-        stableData?.config?.resolvedHasRefreshToken ?? props?.hasRefreshToken,
-      supportsRefreshToken:
-        stableData?.config?.resolvedSupportsRefreshToken ??
-        props?.supportsRefreshToken,
-      profile: props?.profile,
-      agency: props?.agency,
-      configuration: stableData?.config,
-    });
-
-    setSelectedToken(resolvedToken, props?.profile, props?.agency, {
-      id: entryId,
-      type: stableData?.config?.resolvedType || props?.type || "token",
-      clientId: stableData?.config?.resolvedClientId || props?.clientId || null,
-      hasClientSecret:
-        stableData?.config?.resolvedHasClientSecret ?? props?.hasClientSecret,
-    });
-  }, [
-    entryId,
-    props?.agency,
-    props?.clientId,
-    props?.hasClientSecret,
-    props?.hasRefreshToken,
-    props?.profile,
-    props?.supportsRefreshToken,
-    props?.token,
-    props?.type,
-    requestKey,
-    setApplicationEntry,
-    setSelectedToken,
-    stableData?.config,
-    stableData?.config?.resolvedClientId,
-    stableData?.config?.resolvedHasClientSecret,
-    stableData?.config?.resolvedHasRefreshToken,
-    stableData?.config?.resolvedSupportsRefreshToken,
-    stableData?.config?.resolvedToken,
-    stableData?.config?.resolvedType,
-    syncResolvedToken,
     usesCredentialEndpoint,
   ]);
 
   return {
     configuration: stableData?.config,
     status: stableData?.status,
-    isLoading: isLoadingBase || isLoadingAgency,
+    isLoading: !stableData && (isLoadingBase || isLoadingAgency),
+    mutate: async () => {
+      await Promise.all([mutateBase?.(), mutateAgency?.()].filter(Boolean));
+    },
+    usesCredentialEndpoint,
+    requestKey,
   };
 }

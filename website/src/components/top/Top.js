@@ -3,14 +3,14 @@ import Profile from "./profile";
 import Agencies from "./agencies";
 import Styles from "./Top.module.css";
 import { useRouter } from "next/router";
-import useStorage from "@/hooks/useStorage";
-import useConfiguration from "@/hooks/useConfiguration";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 
 export default function Top() {
   const router = useRouter();
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
 
-  const { status, isLoading } = useConfiguration(selectedToken);
+  const { status, isLoading } = useResolvedConfiguration(selectedToken);
 
   const hasValidationError =
     selectedToken?.token && !isLoading && status !== "OK";

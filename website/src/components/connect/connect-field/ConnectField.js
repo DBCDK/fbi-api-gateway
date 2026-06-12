@@ -18,7 +18,7 @@ export default function ConnectField({
   hasMissingConfigurationWarning,
   isResolvingCredential,
   isLoading,
-  showResolvingMarker,
+  showLoadingSpinner,
   onWrapPointerDown,
   onCredentialChange,
   onCredentialPaste,
@@ -31,30 +31,25 @@ export default function ConnectField({
     credentialValue || secretValue || pendingClient || isResolvingCredential
       ? styles.value
       : styles.empty;
-  const displayState =
-    hasResolvedDisplay || pendingClient ? styles.displayState : "";
-  const resolvedDisplayState = hasResolvedDisplay ? styles.resolvedDisplay : "";
   const focusedState = hasFocus ? styles.focused : "";
   const pendingState = pendingClient ? styles.pending : "";
   const hasSecretValueState =
     pendingClient && secretValue.trim() ? styles.hasSecretValue : "";
-  const resolvingState = isResolvingCredential ? styles.resolving : "";
+  const fieldIsLoading = showLoadingSpinner;
+  const displayState =
+    (hasResolvedDisplay || pendingClient) && !fieldIsLoading
+      ? styles.displayState
+      : "";
+  const resolvedDisplayState =
+    hasResolvedDisplay && !fieldIsLoading ? styles.resolvedDisplay : "";
+  const resolvingState = fieldIsLoading ? styles.resolving : "";
 
   return (
     <div
       className={`${styles.wrap} ${valueState} ${displayState} ${resolvedDisplayState} ${focusedState} ${pendingState} ${hasSecretValueState} ${resolvingState}`}
       onPointerDown={onWrapPointerDown}
     >
-      <ConnectDisplay
-        className={styles.fieldDisplay}
-        pendingClient={pendingClient}
-        hasResolvedDisplay={hasResolvedDisplay}
-        hasFocus={hasFocus}
-        displayName={displayName}
-        hasMissingConfigurationWarning={hasMissingConfigurationWarning}
-      />
-
-      {showResolvingMarker && (
+      {showLoadingSpinner && (
         <div className={styles.resolvingMarker} aria-hidden="true">
           <span className={styles.confirmed}>
             <Spinner animation="border" size="sm" />
@@ -62,20 +57,19 @@ export default function ConnectField({
         </div>
       )}
 
-      {isLoading && !isResolvingCredential && (
-        <div className={styles.spinner}>
-          <Spinner animation="border" size="sm" />
-        </div>
-      )}
+      <ConnectDisplay
+        className={styles.fieldDisplay}
+        pendingClient={fieldIsLoading ? null : pendingClient}
+        hasResolvedDisplay={hasResolvedDisplay && !fieldIsLoading}
+        hasFocus={hasFocus}
+        displayName={displayName}
+        hasMissingConfigurationWarning={hasMissingConfigurationWarning}
+      />
 
       {pendingClient ? (
         <div className={styles.secretField}>
           <div className={styles.secretIcon} aria-hidden="true">
-            {isResolvingCredential ? (
-              <Spinner animation="border" size="sm" />
-            ) : (
-              "🤫"
-            )}
+            {"🤫"}
           </div>
           <input
             ref={inputRef}
@@ -86,7 +80,7 @@ export default function ConnectField({
             value={secretValue}
             placeholder="Add client secret ..."
             autoComplete="off"
-            disabled={isResolvingCredential}
+            disabled={fieldIsLoading}
             onChange={onSecretChange}
             onPaste={onSecretPaste}
           />
@@ -101,7 +95,7 @@ export default function ConnectField({
           value={credentialValue}
           placeholder="Drop token or client id here ..."
           autoComplete="off"
-          disabled={isResolvingCredential}
+          disabled={fieldIsLoading}
           onChange={onCredentialChange}
           onPaste={onCredentialPaste}
         />
@@ -109,7 +103,7 @@ export default function ConnectField({
 
       <Button
         className={styles.clear}
-        disabled={isResolvingCredential}
+        disabled={fieldIsLoading}
         onPointerDown={onClearPointerDown}
         onMouseDown={onClearPointerDown}
         onClick={onClear}

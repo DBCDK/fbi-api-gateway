@@ -3,10 +3,12 @@ import Spinner from "react-bootstrap/Spinner";
 
 import Overlay from "@/components/base/overlay";
 
-import useCredentialResolve from "@/hooks/useCredentialResolve";
-import useStorage from "@/hooks/useStorage";
-import useConfiguration from "@/hooks/useConfiguration";
-import useUser from "@/hooks/useUser";
+import useCredentialResolve from "@/hooks/credentials/useCredentialResolve";
+import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
+import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
+import useUser from "@/hooks/legacy/useUser";
 import { hasAvailableAgency } from "@/utils/configuration";
 import { detectCredentialType } from "@/utils/credentials";
 
@@ -25,14 +27,13 @@ export default function Token({
   allowClientId = true,
 }) {
   // useToken custom hook
-  const {
-    selectedToken,
-    setSelectedToken,
-    removeSelectedToken,
-    setHistoryItem,
-  } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { selectCredential: setSelectedToken, clearSelectedCredential: removeSelectedToken } =
+    useCredentialMutations();
+  const { setCredentialEntry: setHistoryItem } = useCredentialEntries();
   const { resolveCredential } = useCredentialResolve();
-  const { configuration, status, isLoading } = useConfiguration(selectedToken);
+  const { configuration, status, isLoading } =
+    useResolvedConfiguration(selectedToken);
   const { user } = useUser(selectedToken);
 
   // internal state

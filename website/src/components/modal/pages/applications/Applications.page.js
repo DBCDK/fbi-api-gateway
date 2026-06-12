@@ -5,9 +5,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Col, Row } from "react-bootstrap";
 
-import useStorage from "@/hooks/useStorage";
-import useCredentialResolve from "@/hooks/useCredentialResolve";
-import useInternalNetworkCheck from "@/hooks/useInternalNetworkCheck";
+import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
+import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
+import useCredentialResolve from "@/hooks/credentials/useCredentialResolve";
+import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import { MAX_CLIENT_ENTRIES as MAX_APPLICATION_ENTRIES } from "@/utils/clientEntries";
 import { detectCredentialType } from "@/utils/credentials";
 
@@ -32,13 +34,10 @@ const MODAL_CLOSE_REORDER_DELAY_MS = 300;
  */
 
 function ApplicationsPage({ modal }) {
-  const {
-    applications,
-    selectedToken,
-    setApplicationEntry,
-    setSelectedToken,
-    removeApplicationEntry,
-  } = useStorage();
+  const { applications, setCredentialEntry: setApplicationEntry, removeCredentialEntry: removeApplicationEntry } =
+    useCredentialEntries();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { selectCredential: setSelectedToken } = useCredentialMutations();
   const { resolveCredential } = useCredentialResolve();
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const [state, setState] = useState(applications);

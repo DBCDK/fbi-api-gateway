@@ -10,9 +10,9 @@ import {
 
 import { generateCurl } from "@/components/utils";
 
-import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useIntersection from "@/hooks/useIntersection";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
@@ -142,7 +142,7 @@ export function InlineGraphiQL({
 
   const prettifyEditors = usePrettifyEditors();
 
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
   const url = useGraphQLUrl();
 
   const [isReady, setIsReady] = useState(false);
@@ -244,7 +244,7 @@ export function InlineGraphiQL({
 }
 
 export default function Wrap(props) {
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
   const { schema } = useSchema(selectedToken);
   const { execute } = useExecute();
   const url = useGraphQLUrl();

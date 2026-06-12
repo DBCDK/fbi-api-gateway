@@ -3,9 +3,9 @@ import { useMemo, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { MDXRemote } from "next-mdx-remote";
 
-import useConfiguration from "@/hooks/useConfiguration";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
 import useDocuments from "@/hooks/useDocuments";
-import useStorage from "@/hooks/useStorage";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 
 import { InlineGraphiQL } from "@/components/graphiql";
 import { DescribeEnum } from "@/components/schema/describe";
@@ -45,8 +45,8 @@ const customComponents = {
 
 export default function Docs() {
   const { docs } = useDocuments();
-  const { selectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { configuration } = useResolvedConfiguration(selectedToken);
 
   const [containerRef, setContainerRef] = useState();
 

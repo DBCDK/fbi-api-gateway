@@ -4,8 +4,8 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
-import useStorage from "@/hooks/useStorage";
-import useConfiguration from "@/hooks/useConfiguration";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import useTheme from "@/hooks/useTheme";
 import { hasAvailableAgency } from "@/utils/configuration";
 
@@ -21,7 +21,7 @@ import Modal, { Pages } from "@/components/modal";
 import styles from "./Header.module.css";
 import Settings from "@/components/settings";
 import Top from "../top";
-import useUser from "@/hooks/useUser";
+import useUser from "@/hooks/legacy/useUser";
 import More from "../more";
 
 export default function Header() {
@@ -42,8 +42,9 @@ export default function Header() {
     return () => observer.disconnect();
   }, [elRef]);
 
-  const { selectedToken } = useStorage();
-  const { configuration, status, isLoading } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { configuration, status, isLoading } =
+    useResolvedConfiguration(selectedToken);
   const { icon, theme } = useTheme();
 
   const { user } = useUser(selectedToken);

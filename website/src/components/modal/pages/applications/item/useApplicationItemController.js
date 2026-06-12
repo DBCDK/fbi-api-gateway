@@ -1,1 +1,1 @@
-export { default } from "@/hooks/useApplicationItemController";
+export { default } from "@/hooks/controllers/useApplicationItemController";

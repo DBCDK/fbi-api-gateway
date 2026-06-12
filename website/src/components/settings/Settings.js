@@ -5,7 +5,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Mode from "./mode";
 import Execute from "./execute";
 import Network from "./network";
-import useCredentialNetwork from "@/hooks/useCredentialNetwork";
+import useCredentialNetwork from "@/hooks/credentials/useCredentialNetwork";
 
 import styles from "./Settings.module.css";
 

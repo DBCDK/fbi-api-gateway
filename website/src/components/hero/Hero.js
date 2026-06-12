@@ -3,8 +3,8 @@ import { Container, Row, Col } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 import { useRouter } from "next/router";
 
-import useStorage from "@/hooks/useStorage";
-import useConfiguration from "@/hooks/useConfiguration";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import useTheme from "@/hooks/useTheme";
 
 import Title from "@/components/base/title";
@@ -29,8 +29,9 @@ export default function Hero({ className = "" }) {
   const [showApplications, setShowApplications] = useState(false);
   const [applicationsOpenMode, setApplicationsOpenMode] = useState("default");
 
-  const { selectedToken } = useStorage();
-  const { configuration, status, isLoading } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { configuration, status, isLoading } =
+    useResolvedConfiguration(selectedToken);
   const { theme } = useTheme();
 
   const isChristmas = theme === "christmas";

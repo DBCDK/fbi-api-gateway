@@ -4,7 +4,7 @@ import Button from "@/components/base/button";
 import ExpandButton from "./expand-button/ExpandButton";
 import ItemClientSecretForm from "./item-client-secret-form";
 import ItemExpandedDetails from "./item-expanded-details";
-import useApplicationItemController from "@/hooks/useApplicationItemController";
+import useApplicationItemController from "@/hooks/controllers/useApplicationItemController";
 import styles from "./Item.module.css";
 
 function getReadableTextColor(hex) {

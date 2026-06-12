@@ -1,39 +1,34 @@
-jest.mock("@/hooks/useConfiguration", () => ({
+jest.mock("@/hooks/legacy/useConfiguration", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock("@/hooks/useCredentialClientSecret", () => ({
+jest.mock("@/hooks/credentials/useCredentialConfiguration", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock("@/hooks/useCredentialConfiguration", () => ({
+jest.mock("@/hooks/credentials/useCredentialEntries", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock("@/hooks/useCredentialResolve", () => ({
+jest.mock("@/hooks/credentials/useCredentialMutations", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock("@/hooks/useCredentialUser", () => ({
+jest.mock("@/hooks/credentials/useCredentialUser", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock("@/hooks/useInternalNetworkCheck", () => ({
+jest.mock("@/hooks/credentials/useInternalNetworkCheck", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock("@/hooks/useStorage", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-jest.mock("@/hooks/useUser", () => ({
+jest.mock("@/hooks/legacy/useUser", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
@@ -51,20 +46,19 @@ const React = require("react");
 const { act } = React;
 const { createRoot } = require("react-dom/client");
 
-const useConfiguration = require("@/hooks/useConfiguration").default;
-const useCredentialClientSecret =
-  require("@/hooks/useCredentialClientSecret").default;
+const useConfiguration = require("@/hooks/legacy/useConfiguration").default;
 const useCredentialConfiguration =
-  require("@/hooks/useCredentialConfiguration").default;
-const useCredentialResolve = require("@/hooks/useCredentialResolve").default;
-const useCredentialUser = require("@/hooks/useCredentialUser").default;
+  require("@/hooks/credentials/useCredentialConfiguration").default;
+const useCredentialEntries = require("@/hooks/credentials/useCredentialEntries").default;
+const useCredentialMutations =
+  require("@/hooks/credentials/useCredentialMutations").default;
+const useCredentialUser = require("@/hooks/credentials/useCredentialUser").default;
 const useInternalNetworkCheck =
-  require("@/hooks/useInternalNetworkCheck").default;
-const useStorage = require("@/hooks/useStorage").default;
-const useUser = require("@/hooks/useUser").default;
+  require("@/hooks/credentials/useInternalNetworkCheck").default;
+const useUser = require("@/hooks/legacy/useUser").default;
 
 const useApplicationItemController =
-  require("./useApplicationItemController").default;
+  require("../useApplicationItemController").default;
 
 describe("useApplicationItemController session rehydration", () => {
   let container;
@@ -106,17 +100,21 @@ describe("useApplicationItemController session rehydration", () => {
       status: "OK",
       isLoading: false,
     });
-    useCredentialClientSecret.mockReturnValue({
-      attachClientSecret: jest.fn(),
-    });
     useCredentialConfiguration.mockReturnValue({
       configuration: {},
       status: "EXPIRED",
       isLoading: false,
       mutate: jest.fn(),
     });
-    useCredentialResolve.mockReturnValue({
-      resolveCredential,
+    useCredentialEntries.mockReturnValue({
+      setCredentialEntry: setApplicationEntry,
+      removeCredentialEntry: jest.fn(),
+    });
+    useCredentialMutations.mockReturnValue({
+      selectCredential: jest.fn(),
+      clearSelectedCredential: jest.fn(),
+      resolveCredentialValue: resolveCredential,
+      attachCredentialSecret: jest.fn(),
     });
     useCredentialUser.mockReturnValue({
       user: {},
@@ -124,12 +122,6 @@ describe("useApplicationItemController session rehydration", () => {
     });
     useInternalNetworkCheck.mockReturnValue({
       internalNetworkCheck: "enabled",
-    });
-    useStorage.mockReturnValue({
-      setSelectedToken: jest.fn(),
-      removeSelectedToken: jest.fn(),
-      setApplicationEntry,
-      removeApplicationEntry: jest.fn(),
     });
     useUser.mockReturnValue({
       user: {},

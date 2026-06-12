@@ -3,7 +3,7 @@ import ConnectField from "./connect-field";
 import ConnectSteps from "./connect-steps";
 import styles from "./Connect.module.css";
 
-import useConnectController from "@/hooks/useConnectController";
+import useConnectController from "@/hooks/controllers/useConnectController";
 
 export default function Connect(props) {
   const {
@@ -17,8 +17,8 @@ export default function Connect(props) {
     pendingClient,
     configuration,
     isLoading,
+    showLoadingSpinner,
     isResolvingCredential,
-    showResolvingMarker,
     hasResolvedDisplay,
     hasMissingConfigurationWarning,
     hasResolvedClientSecret,
@@ -67,7 +67,7 @@ export default function Connect(props) {
         hasMissingConfigurationWarning={hasMissingConfigurationWarning}
         isResolvingCredential={isResolvingCredential}
         isLoading={isLoading}
-        showResolvingMarker={showResolvingMarker}
+        showLoadingSpinner={showLoadingSpinner}
         onWrapPointerDown={focusActiveInput}
         onCredentialChange={handleCredentialChange}
         onCredentialPaste={handleCredentialPaste}

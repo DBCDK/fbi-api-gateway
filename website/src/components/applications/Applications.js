@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import useStorage from "@/hooks/useStorage";
-import useConfiguration from "@/hooks/useConfiguration";
+import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 
 import { isToken } from "@/components/utils";
 
@@ -23,8 +24,8 @@ export function Applications({
 }) {
   const [uncontrolledShow, setUncontrolledShow] = useState(false);
   const buttonRef = useRef(null);
-  const { selectedToken } = useStorage();
-  const { status, isLoading } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { status, isLoading } = useResolvedConfiguration(selectedToken);
   const compactClass = compact ? styles.compact : "";
   const show = controlledShow ?? uncontrolledShow;
 
@@ -75,7 +76,7 @@ export function Applications({
 }
 
 export default function Wrap(props) {
-  const { applications } = useStorage();
+  const { applications } = useCredentialEntries();
   const hasValidTokens = !!applications?.filter((obj) => isToken(obj.token)).length;
 
   return (

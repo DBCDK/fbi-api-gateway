@@ -10,10 +10,10 @@ import {
 import { GraphiQLInterface } from "graphiql";
 import Header from "@/components/header";
 import Spinner from "@/components/base/spinner";
-import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useExecute from "@/hooks/useExecute";
 import useQuery from "@/hooks/useQuery";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import QueryDepthButton from "./buttons/depth";
 import ComplexityButton from "./buttons/complexity";
 import CurlButton from "./buttons/curl";
@@ -78,7 +78,7 @@ export function GraphiQL({
 }
 
 export default function Wrap() {
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
   const { schema, isLoading: isSchemaLoading } = useSchema(selectedToken);
   const { execute } = useExecute();
   const url = useGraphQLUrl();

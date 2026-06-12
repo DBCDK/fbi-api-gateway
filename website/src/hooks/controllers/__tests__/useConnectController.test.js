@@ -1,0 +1,302 @@
+jest.mock("@/hooks/legacy/useConfiguration", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock("@/hooks/credentials/useCredentialEntries", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock("@/hooks/credentials/useCredentialInputFlow", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock("@/hooks/credentials/useCredentialMutations", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock("@/hooks/credentials/useCredentialNetwork", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock("@/hooks/credentials/useInternalNetworkCheck", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock("@/hooks/credentials/useSelectedCredential", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const React = require("react");
+const { act } = React;
+const { createRoot } = require("react-dom/client");
+
+const useConfiguration = require("@/hooks/legacy/useConfiguration").default;
+const useCredentialEntries = require("@/hooks/credentials/useCredentialEntries").default;
+const useCredentialInputFlow =
+  require("@/hooks/credentials/useCredentialInputFlow").default;
+const useCredentialMutations =
+  require("@/hooks/credentials/useCredentialMutations").default;
+const useCredentialNetwork = require("@/hooks/credentials/useCredentialNetwork").default;
+const useInternalNetworkCheck =
+  require("@/hooks/credentials/useInternalNetworkCheck").default;
+const useSelectedCredential = require("@/hooks/credentials/useSelectedCredential").default;
+
+const useConnectController = require("../useConnectController").default;
+
+describe("useConnectController", () => {
+  let container;
+  let root;
+  let controller;
+  let handleResolveCredential;
+  let handleAttachSecret;
+  let resetCredentialInput;
+  let inputRef;
+
+  function Harness(props) {
+    controller = useConnectController(props);
+    return null;
+  }
+
+  beforeEach(() => {
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+    controller = null;
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    inputRef = {
+      current: {
+        focus: jest.fn(),
+        blur: jest.fn(),
+      },
+    };
+    handleResolveCredential = jest.fn();
+    handleAttachSecret = jest.fn();
+    resetCredentialInput = jest.fn();
+
+    useSelectedCredential.mockReturnValue({
+      selectedCredential: {
+        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        hasClientSecret: true,
+        profile: "bibdk21",
+      },
+    });
+    useCredentialEntries.mockReturnValue({
+      applications: [],
+      hasFetchedApplications: true,
+      setCredentialEntry: jest.fn(),
+    });
+    useCredentialMutations.mockReturnValue({
+      clearSelectedCredential: jest.fn(),
+      resolveCredentialValue: jest.fn(),
+      attachCredentialSecret: jest.fn(),
+      selectCredential: jest.fn(),
+    });
+    useCredentialNetwork.mockReturnValue({
+      isInternal: false,
+      isLoading: false,
+    });
+    useInternalNetworkCheck.mockReturnValue({
+      internalNetworkCheck: "disabled",
+    });
+    useConfiguration.mockReturnValue({
+      configuration: {
+        displayName: "DBC Client",
+        resolvedHasClientSecret: true,
+      },
+      status: "OK",
+      isLoading: false,
+    });
+    useCredentialInputFlow.mockReturnValue({
+      inputRef,
+      credentialValue: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      setCredentialValue: jest.fn(),
+      secretValue: "",
+      setSecretValue: jest.fn(),
+      pendingClient: null,
+      resolveError: "",
+      setResolveError: jest.fn(),
+      resolvingCredential: null,
+      handleResolveCredential,
+      handleAttachSecret,
+      resetCredentialInput,
+    });
+  });
+
+  afterEach(() => {
+    act(() => {
+      root.unmount();
+    });
+    container.remove();
+  });
+
+  test("submits the selected token directly when the credential is already resolved", async () => {
+    const onSubmit = jest.fn();
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit,
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    await act(async () => {
+      await controller.handleFormSubmit({ preventDefault: jest.fn() });
+    });
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f"
+    );
+    expect(handleResolveCredential).not.toHaveBeenCalled();
+    expect(inputRef.current.blur).toHaveBeenCalled();
+  });
+
+  test("marks the form valid when a pending client has a secret value", async () => {
+    const onValidityChange = jest.fn();
+
+    useCredentialInputFlow.mockReturnValue({
+      inputRef,
+      credentialValue: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      setCredentialValue: jest.fn(),
+      secretValue: "super-secret",
+      setSecretValue: jest.fn(),
+      pendingClient: {
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      },
+      resolveError: "",
+      setResolveError: jest.fn(),
+      resolvingCredential: null,
+      handleResolveCredential,
+      handleAttachSecret,
+      resetCredentialInput,
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+          onValidityChange,
+        })
+      );
+    });
+
+    expect(onValidityChange).toHaveBeenCalledWith(true);
+  });
+
+  test("hides client-secret steps on an active internal network", async () => {
+    useCredentialNetwork.mockReturnValue({
+      isInternal: true,
+      isLoading: false,
+    });
+    useInternalNetworkCheck.mockReturnValue({
+      internalNetworkCheck: "enabled",
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    expect(controller.showSteps).toBe(false);
+  });
+
+  test("keeps steps hidden for an already selected credential on external network", async () => {
+    useSelectedCredential.mockReturnValue({
+      selectedCredential: {
+        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        hasClientSecret: false,
+        profile: "bibdk21",
+      },
+    });
+    useConfiguration.mockReturnValue({
+      configuration: {
+        displayName: "DBC Client",
+        resolvedHasClientSecret: false,
+      },
+      status: "OK",
+      isLoading: false,
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    expect(controller.hasResolvedDisplay).toBe(true);
+    expect(controller.hasResolvedClientSecret).toBe(false);
+    expect(controller.showSteps).toBe(false);
+  });
+
+  test("clears focus state while a credential is resolving", async () => {
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    act(() => {
+      controller.handleFormFocusCapture();
+    });
+
+    expect(controller.hasFocus).toBe(true);
+
+    useCredentialInputFlow.mockReturnValue({
+      inputRef,
+      credentialValue: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      setCredentialValue: jest.fn(),
+      secretValue: "",
+      setSecretValue: jest.fn(),
+      pendingClient: null,
+      resolveError: "",
+      setResolveError: jest.fn(),
+      resolvingCredential: {
+        type: "client",
+        value: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      },
+      handleResolveCredential,
+      handleAttachSecret,
+      resetCredentialInput,
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    expect(controller.hasFocus).toBe(false);
+  });
+});
