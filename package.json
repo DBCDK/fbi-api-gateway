@@ -53,7 +53,7 @@
     "promise-limit": "^2.7.0",
     "react-bootstrap": "^2.5.0",
     "undici": "^8.4.1",
-    "uuid": "^11.1.1"
+    "uuid": "11.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",

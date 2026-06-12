@@ -36,6 +36,34 @@ let identifierCounter = 0;
 const INTERNAL_ID_HEADER = "X-internal-id";
 
 /**
+ * Extracts the internal request identifier from undici request headers.
+ * Undici v8 stores headers as a flat [key, value, ...] array; older versions used a raw string.
+ */
+function getInternalIdFromHeaders(headers) {
+  if (Array.isArray(headers)) {
+    for (let i = 0; i < headers.length; i += 2) {
+      if (headers[i]?.toLowerCase() === INTERNAL_ID_HEADER.toLowerCase()) {
+        return parseInt(headers[i + 1], 10);
+      }
+    }
+    return -1;
+  }
+
+  if (typeof headers === "string") {
+    return parseInt(
+      headers
+        .split("\r\n")
+        .find((header) =>
+          header.toLowerCase().startsWith(`${INTERNAL_ID_HEADER.toLowerCase()}:`)
+        )
+        ?.split(": ")?.[1] || -1
+    );
+  }
+
+  return -1;
+}
+
+/**
  * This is called from the main thread
  *
  * It will send job to the worker thread, and the
@@ -92,6 +120,7 @@ if (!isMainThread) {
     .channel("undici:request:create")
     .subscribe(({ request }) => {
       request.timings = { create: performance.now() };
+      request.internalId = getInternalIdFromHeaders(request.headers);
     });
 
   // This message is published right before the first byte of the request is written to the socket.
@@ -122,13 +151,8 @@ if (!isMainThread) {
     const now = performance.now();
     const total = now - request.timings.create;
 
-    // Get identifer from custom header
-    const identifier = parseInt(
-      request.headers
-        .split("\r\n")
-        .find((header) => header.startsWith(INTERNAL_ID_HEADER))
-        ?.replace?.(`${INTERNAL_ID_HEADER}: `, "") || -1
-    );
+    const identifier =
+      request.internalId ?? getInternalIdFromHeaders(request.headers);
 
     // Call resolve with collected timings
     pendingTimingCallbacks[identifier]?.({

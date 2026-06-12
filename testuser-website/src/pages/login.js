@@ -7,7 +7,7 @@ import useTestUser from "@/hooks/useTestUser";
 import { setConfig } from "@/config";
 import { useRouter } from "next/router";
 
-import globalConfig from "../../../src/config";
+import globalConfig from "@api-gateway/config";
 
 export default function TestUserLogin({ config }) {
   setConfig(config);
