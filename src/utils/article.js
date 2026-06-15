@@ -11,7 +11,6 @@ export async function fetchArticle(parent, context) {
     .getLoader("retriever")
     .load({ docId: id });
 
-    // console.log("retrieverArticle",retrieverArticle);
   if (retrieverArticle) {
     return retrieverArticle;
   }

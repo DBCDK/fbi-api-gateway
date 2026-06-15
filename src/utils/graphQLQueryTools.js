@@ -1,5 +1,17 @@
 import { parse } from "graphql";
 
+/**
+ * Recursively checks whether a selection set includes an inline fragment
+ * for the given GraphQL type.
+ *
+ * Named fragment spreads (`...SomeFragment`) are resolved via `fragments`
+ * and searched the same way.
+ *
+ * @param {readonly import("graphql").SelectionNode[]} selections
+ * @param {string} typeName
+ * @param {Record<string, import("graphql").FragmentDefinitionNode>} fragments
+ * @returns {boolean}
+ */
 function hasTypeInSelections(selections, typeName, fragments) {
   for (const selection of selections) {
     if (
