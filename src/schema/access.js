@@ -1,4 +1,5 @@
 import { resolveAccess } from "../utils/access";
+import { isTypeRequested } from "../utils/graphQLQueryTools";
 import { extFromUrl, forceHttpsAndStripQa } from "../utils/publizon";
 
 export const typeDef = `
@@ -100,6 +101,12 @@ type InfomediaService {
   """
   id: String!
 }
+type RetrieverService {
+  """
+  Retriever document ID which can be used to fetch article through Retriever Service
+  """
+  id: String!
+}
 type DigitalArticleService {
   """
   Issn which can be used to order article through Digital Article Service
@@ -135,13 +142,14 @@ type Publizon {
   durationInSeconds: Int
 }
 
-union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon
+union AccessUnion = AccessUrl | Ereol | InterLibraryLoan | InfomediaService | DigitalArticleService | Publizon | RetrieverService
 `;
 
 export const resolvers = {
   Manifestation: {
     async access(parent, args, context, info) {
-      return resolveAccess(parent, context);
+      const includeInfomediaAccess = isTypeRequested(info, "InfomediaService");
+      return resolveAccess(parent, context, { includeInfomediaAccess });
     },
   },
 
