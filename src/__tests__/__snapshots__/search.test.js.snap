@@ -1,55 +1,55 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`search - with all filters and facets 1`] = `
-Object {
-  "data": Object {
-    "search": Object {
-      "facets": Array [
-        Object {
+{
+  "data": {
+    "search": {
+      "facets": [
+        {
           "name": "mainLanguages",
-          "values": Array [
-            Object {
+          "values": [
+            {
               "score": 2252441,
               "term": "Dansk",
             },
-            Object {
+            {
               "score": 611581,
               "term": "Engelsk",
             },
-            Object {
+            {
               "score": 147546,
               "term": "Tysk",
             },
-            Object {
+            {
               "score": 84833,
               "term": "flere sprog",
             },
-            Object {
+            {
               "score": 59599,
               "term": "Svensk",
             },
           ],
         },
-        Object {
+        {
           "name": "materialTypesSpecific",
-          "values": Array [
-            Object {
+          "values": [
+            {
               "score": 1148775,
               "term": "tidsskriftsartikel",
             },
-            Object {
+            {
               "score": 892951,
               "term": "bog",
             },
-            Object {
+            {
               "score": 748565,
               "term": "avisartikel",
             },
-            Object {
+            {
               "score": 223653,
               "term": "artikel",
             },
-            Object {
+            {
               "score": 119305,
               "term": "cd (musik)",
             },
@@ -57,8 +57,8 @@ Object {
         },
       ],
       "hitcount": 1,
-      "works": Array [
-        Object {
+      "works": [
+        {
           "workId": "work-of:870970-basis:53557791",
         },
       ],

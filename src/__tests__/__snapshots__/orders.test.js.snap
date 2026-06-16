@@ -1,15 +1,15 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`submitMultipleOrders 1 succeeds 1 fails 1`] = `
-Object {
-  "data": Object {
-    "submitMultipleOrders": Object {
-      "failedAtCreation": Array [
+{
+  "data": {
+    "submitMultipleOrders": {
+      "failedAtCreation": [
         "work-of:idontexistBog",
       ],
       "ok": false,
       "status": "OK",
-      "successfullyCreated": Array [
+      "successfullyCreated": [
         "work-of:870970-basis:39074184Bog",
       ],
     },
@@ -18,13 +18,13 @@ Object {
 `;
 
 exports[`submitMultipleOrders 2 succeed, we order physical periodica when no title, author or pagenumber is given 1`] = `
-Object {
-  "data": Object {
-    "submitMultipleOrders": Object {
-      "failedAtCreation": Array [],
+{
+  "data": {
+    "submitMultipleOrders": {
+      "failedAtCreation": [],
       "ok": true,
       "status": "OK",
-      "successfullyCreated": Array [
+      "successfullyCreated": [
         "work-of:870970-basis:39074184Bog",
         "work-of:870970-basis:04978617Tidsskrift",
       ],
@@ -34,29 +34,29 @@ Object {
 `;
 
 exports[`submitMultipleOrders all orders fail: unknown pickupBranch 1`] = `
-Object {
-  "data": Object {
-    "submitMultipleOrders": Object {
-      "failedAtCreation": Array [
+{
+  "data": {
+    "submitMultipleOrders": {
+      "failedAtCreation": [
         "work-of:870970-basis:39074184Bog",
         "work-of:870970-basis:04978617Tidsskrift",
       ],
       "ok": false,
       "status": "UNKNOWN_PICKUPAGENCY",
-      "successfullyCreated": Array [],
+      "successfullyCreated": [],
     },
   },
 }
 `;
 
 exports[`submitMultipleOrders succeeds: digital article becomes physical order, if user doesnt have account at homeagency 1`] = `
-Object {
-  "data": Object {
-    "submitMultipleOrders": Object {
-      "failedAtCreation": Array [],
+{
+  "data": {
+    "submitMultipleOrders": {
+      "failedAtCreation": [],
       "ok": true,
       "status": "OK",
-      "successfullyCreated": Array [
+      "successfullyCreated": [
         "work-of:870970-basis:39074184Bog",
         "work-of:870970-basis:04978617Tidsskrift",
       ],
@@ -66,13 +66,13 @@ Object {
 `;
 
 exports[`submitMultipleOrders succeeds: digital article becomes physical order, if users homeagency not subscriber of digital article service 1`] = `
-Object {
-  "data": Object {
-    "submitMultipleOrders": Object {
-      "failedAtCreation": Array [],
+{
+  "data": {
+    "submitMultipleOrders": {
+      "failedAtCreation": [],
       "ok": true,
       "status": "OK",
-      "successfullyCreated": Array [
+      "successfullyCreated": [
         "work-of:870970-basis:39074184Bog",
         "work-of:870970-basis:04978617Tidsskrift",
       ],
@@ -82,13 +82,13 @@ Object {
 `;
 
 exports[`submitMultipleOrders succeeds: user orders a book, a digital article and a physical periodica 1`] = `
-Object {
-  "data": Object {
-    "submitMultipleOrders": Object {
-      "failedAtCreation": Array [],
+{
+  "data": {
+    "submitMultipleOrders": {
+      "failedAtCreation": [],
       "ok": true,
       "status": "OK",
-      "successfullyCreated": Array [
+      "successfullyCreated": [
         "work-of:870970-basis:39074184Bog",
         "work-of:870970-basis:04978617Tidsskrift",
         "work-of:870970-basis:04978617Tidsskrift",
@@ -99,13 +99,13 @@ Object {
 `;
 
 exports[`submitMultipleOrders succeeds: user orders multiple books  1`] = `
-Object {
-  "data": Object {
-    "submitMultipleOrders": Object {
-      "failedAtCreation": Array [],
+{
+  "data": {
+    "submitMultipleOrders": {
+      "failedAtCreation": [],
       "ok": true,
       "status": "OK",
-      "successfullyCreated": Array [
+      "successfullyCreated": [
         "work-of:870970-basis:39074184Bog",
         "work-of:870970-basis:62371455Bog",
       ],
@@ -115,13 +115,13 @@ Object {
 `;
 
 exports[`submitMultipleOrders succeeds: user orders multiple books and digital article 1`] = `
-Object {
-  "data": Object {
-    "submitMultipleOrders": Object {
-      "failedAtCreation": Array [],
+{
+  "data": {
+    "submitMultipleOrders": {
+      "failedAtCreation": [],
       "ok": true,
       "status": "OK",
-      "successfullyCreated": Array [
+      "successfullyCreated": [
         "work-of:870970-basis:39074184Bog",
         "work-of:870970-basis:62371455Bog",
         "work-of:870970-basis:04978617Tidsskrift",

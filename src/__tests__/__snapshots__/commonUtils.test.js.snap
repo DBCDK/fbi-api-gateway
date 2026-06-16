@@ -1,8 +1,8 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Permissions Empty gateway object in smaug configuration gives default permissions 1`] = `
-Object {
-  "allowRootFields": Array [
+{
+  "allowRootFields": [
     "debug",
     "draft",
     "manifestation",
@@ -28,7 +28,7 @@ Object {
     "universe",
     "mood",
   ],
-  "denyFields": Array [
+  "denyFields": [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
     "SearchResponse.creatorHit",
@@ -36,7 +36,7 @@ Object {
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
   ],
-  "denyTypes": Array [
+  "denyTypes": [
     "CheckOrderPolicy",
     "Availability",
     "SEO",
@@ -48,16 +48,16 @@ Object {
 `;
 
 exports[`Permissions Explicitly setting allowRootFields in gateway object in smaug configuration gives those permissions 1`] = `
-Object {
-  "allowRootFields": Array [
+{
+  "allowRootFields": [
     "manifestation",
   ],
 }
 `;
 
 exports[`Permissions Role from gateway object in smaug configuration gives the roles' permissions 1`] = `
-Object {
-  "allowRootFields": Array [
+{
+  "allowRootFields": [
     "debug",
     "draft",
     "manifestation",
@@ -85,7 +85,7 @@ Object {
     "submitOrder",
     "patron",
   ],
-  "denyFields": Array [
+  "denyFields": [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
     "SearchResponse.creatorHit",
@@ -93,7 +93,7 @@ Object {
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
   ],
-  "denyTypes": Array [
+  "denyTypes": [
     "CheckOrderPolicy",
     "Availability",
     "SEO",
@@ -106,8 +106,8 @@ Object {
 `;
 
 exports[`Permissions Unknown role from gateway object in smaug configuration gives default permissions 1`] = `
-Object {
-  "allowRootFields": Array [
+{
+  "allowRootFields": [
     "debug",
     "draft",
     "manifestation",
@@ -133,7 +133,7 @@ Object {
     "universe",
     "mood",
   ],
-  "denyFields": Array [
+  "denyFields": [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
     "SearchResponse.creatorHit",
@@ -141,7 +141,7 @@ Object {
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
   ],
-  "denyTypes": Array [
+  "denyTypes": [
     "CheckOrderPolicy",
     "Availability",
     "SEO",
@@ -153,14 +153,14 @@ Object {
 `;
 
 exports[`Permissions admin set to true in smaug configuration 1`] = `
-Object {
+{
   "admin": true,
 }
 `;
 
 exports[`Permissions no gateway object in smaug configuration gives default permissions 1`] = `
-Object {
-  "allowRootFields": Array [
+{
+  "allowRootFields": [
     "debug",
     "draft",
     "manifestation",
@@ -186,7 +186,7 @@ Object {
     "universe",
     "mood",
   ],
-  "denyFields": Array [
+  "denyFields": [
     "HoldingsItem.reservable",
     "HoldingsResponse.reservable",
     "SearchResponse.creatorHit",
@@ -194,7 +194,7 @@ Object {
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
   ],
-  "denyTypes": Array [
+  "denyTypes": [
     "CheckOrderPolicy",
     "Availability",
     "SEO",
