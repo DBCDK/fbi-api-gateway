@@ -97,9 +97,9 @@ type InfomediaService {
 }
 
 type RetrieverService {
-  \\"\\"\\"
+  """
   Retriever document ID which can be used to fetch article through Retriever Service
-  \\"\\"\\"
+  """
   id: String!
 }
 
@@ -262,7 +262,7 @@ type Query {
   """Access to various types of recommendations."""
   recommendations: Recommendations!
 
-  \\"\\"\\"
+  """
   Fetch a single article from Retriever by its document id.
   
   Retriever is a media monitoring service that provides access to articles from newspapers
@@ -270,9 +270,9 @@ type Query {
   
   Requires an authenticated user with a valid subscription through their municipality of residence.
   Check \`error\` on the response for access or lookup failures.
-  \\"\\"\\"
+  """
   retriever(
-    \\"\\"\\"Retriever document id for the article to fetch.\\"\\"\\"
+    """Retriever document id for the article to fetch."""
     id: String!
   ): RetrieverResponse!
   manifestation(pid: String, faust: String): Manifestation
@@ -797,10 +797,10 @@ input ComplexSearchFiltersInput {
   """Boolean to denote whether to include or exclude online holdingsitems"""
   useOnlineHoldings: Boolean
 
-  \\"\\"\\"The last loan date of the item\\"\\"\\"
+  """The last loan date of the item"""
   lastloandate: String
 
-  \\"\\"\\"The loan restriction of the item, g, a or nothing\\"\\"\\"
+  """The loan restriction of the item, g, a or nothing"""
   loanrestriction: [String!]
 }
 
@@ -4053,9 +4053,9 @@ type Relations {
   isPartOfManifestation: [Manifestation!]!
 }
 
-\\"\\"\\"
+"""
 Error codes returned when an article cannot be fetched or the user is not allowed to access it.
-\\"\\"\\"
+"""
 enum RetrieverErrorEnum {
   SERVICE_NOT_LICENSED
   SERVICE_UNAVAILABLE
@@ -4069,80 +4069,80 @@ enum RetrieverErrorEnum {
   NO_AGENCYID
 }
 
-\\"\\"\\"Response wrapper for a single article lookup.\\"\\"\\"
+"""Response wrapper for a single article lookup."""
 type RetrieverResponse {
-  \\"\\"\\"
+  """
   Present when the article could not be fetched or the user is not allowed to access it.
   When this field is set, \`article\` will be null.
-  \\"\\"\\"
+  """
   error: RetrieverErrorEnum
 
-  \\"\\"\\"
+  """
   The requested article, when available.
   Returns null if \`error\` is set or the article was not found.
-  \\"\\"\\"
+  """
   article: RetrieverArticle
 }
 
-\\"\\"\\"A newspaper or media article.\\"\\"\\"
+"""A newspaper or media article."""
 type RetrieverArticle {
-  \\"\\"\\"
+  """
   Unique document identifier in Retriever (DOC_ID).
   Use this value for subsequent article lookups.
-  \\"\\"\\"
+  """
   id: String!
 
-  \\"\\"\\"Main headline of the article.\\"\\"\\"
+  """Main headline of the article."""
   headline: String
 
-  \\"\\"\\"Secondary headline or deck, when provided by the source.\\"\\"\\"
+  """Secondary headline or deck, when provided by the source."""
   subHeadline: String
 
-  \\"\\"\\"Author or byline credited with the article.\\"\\"\\"
+  """Author or byline credited with the article."""
   byLine: String
 
-  \\"\\"\\"Date and time when the article was published, in ISO 8601 format.\\"\\"\\"
+  """Date and time when the article was published, in ISO 8601 format."""
   publishingDate: String
 
-  \\"\\"\\"
+  """
   Type of media the article was published in, for example \`print\` or \`web\`.
-  \\"\\"\\"
+  """
   mediaType: String
 
-  \\"\\"\\"Page number or page range in the original publication.\\"\\"\\"
+  """Page number or page range in the original publication."""
   pages: String
 
-  \\"\\"\\"Category of the source publication, for example national news media.\\"\\"\\"
+  """Category of the source publication, for example national news media."""
   sourceCategory: String
 
-  \\"\\"\\"Country of the source publication, for example \`Denmark\`.\\"\\"\\"
+  """Country of the source publication, for example \`Denmark\`."""
   sourceCountry: String
 
-  \\"\\"\\"Numeric identifier of the source publication in Retriever.\\"\\"\\"
+  """Numeric identifier of the source publication in Retriever."""
   sourceId: Int
 
-  \\"\\"\\"Name of the source publication, for example a newspaper title.\\"\\"\\"
+  """Name of the source publication, for example a newspaper title."""
   sourceName: String
 
-  \\"\\"\\"Geographic region or regions covered by the source publication.\\"\\"\\"
+  """Geographic region or regions covered by the source publication."""
   sourceRegion: String
 
-  \\"\\"\\"Theme or subject category assigned to the article by Retriever.\\"\\"\\"
+  """Theme or subject category assigned to the article by Retriever."""
   themeCategory: String
 
-  \\"\\"\\"URL to a thumbnail preview image of the article.\\"\\"\\"
+  """URL to a thumbnail preview image of the article."""
   thumbnail: String
 
-  \\"\\"\\"URL to open the article in Retriever.\\"\\"\\"
+  """URL to open the article in Retriever."""
   url: String
 
-  \\"\\"\\"Approximate number of words in the article body.\\"\\"\\"
+  """Approximate number of words in the article body."""
   wordCount: Int
 
-  \\"\\"\\"Full article text as plain text.\\"\\"\\"
+  """Full article text as plain text."""
   fullText: String
 
-  \\"\\"\\"Full article text formatted with simple HTML tags.\\"\\"\\"
+  """Full article text formatted with simple HTML tags."""
   fullTextHtml: String
 }
 
@@ -5737,9 +5737,9 @@ type InfomediaService {
 }
 
 type RetrieverService {
-  \\"\\"\\"
+  """
   Retriever document ID which can be used to fetch article through Retriever Service
-  \\"\\"\\"
+  """
   id: String!
 }
 
@@ -5787,7 +5787,7 @@ type Query {
   """Access to various types of recommendations."""
   recommendations: Recommendations!
 
-  \\"\\"\\"
+  """
   Fetch a single article from Retriever by its document id.
   
   Retriever is a media monitoring service that provides access to articles from newspapers
@@ -5795,9 +5795,9 @@ type Query {
   
   Requires an authenticated user with a valid subscription through their municipality of residence.
   Check \`error\` on the response for access or lookup failures.
-  \\"\\"\\"
+  """
   retriever(
-    \\"\\"\\"Retriever document id for the article to fetch.\\"\\"\\"
+    """Retriever document id for the article to fetch."""
     id: String!
   ): RetrieverResponse!
   manifestation(pid: String, faust: String): Manifestation
@@ -5920,10 +5920,10 @@ input ComplexSearchFiltersInput {
   """Boolean to denote whether to include or exclude online holdingsitems"""
   useOnlineHoldings: Boolean
 
-  \\"\\"\\"The last loan date of the item\\"\\"\\"
+  """The last loan date of the item"""
   lastloandate: String
 
-  \\"\\"\\"The loan restriction of the item, g, a or nothing\\"\\"\\"
+  """The loan restriction of the item, g, a or nothing"""
   loanrestriction: [String!]
 }
 
@@ -7495,9 +7495,9 @@ type Relations {
   isPartOfManifestation: [Manifestation!]!
 }
 
-\\"\\"\\"
+"""
 Error codes returned when an article cannot be fetched or the user is not allowed to access it.
-\\"\\"\\"
+"""
 enum RetrieverErrorEnum {
   SERVICE_NOT_LICENSED
   SERVICE_UNAVAILABLE
@@ -7511,80 +7511,80 @@ enum RetrieverErrorEnum {
   NO_AGENCYID
 }
 
-\\"\\"\\"Response wrapper for a single article lookup.\\"\\"\\"
+"""Response wrapper for a single article lookup."""
 type RetrieverResponse {
-  \\"\\"\\"
+  """
   Present when the article could not be fetched or the user is not allowed to access it.
   When this field is set, \`article\` will be null.
-  \\"\\"\\"
+  """
   error: RetrieverErrorEnum
 
-  \\"\\"\\"
+  """
   The requested article, when available.
   Returns null if \`error\` is set or the article was not found.
-  \\"\\"\\"
+  """
   article: RetrieverArticle
 }
 
-\\"\\"\\"A newspaper or media article.\\"\\"\\"
+"""A newspaper or media article."""
 type RetrieverArticle {
-  \\"\\"\\"
+  """
   Unique document identifier in Retriever (DOC_ID).
   Use this value for subsequent article lookups.
-  \\"\\"\\"
+  """
   id: String!
 
-  \\"\\"\\"Main headline of the article.\\"\\"\\"
+  """Main headline of the article."""
   headline: String
 
-  \\"\\"\\"Secondary headline or deck, when provided by the source.\\"\\"\\"
+  """Secondary headline or deck, when provided by the source."""
   subHeadline: String
 
-  \\"\\"\\"Author or byline credited with the article.\\"\\"\\"
+  """Author or byline credited with the article."""
   byLine: String
 
-  \\"\\"\\"Date and time when the article was published, in ISO 8601 format.\\"\\"\\"
+  """Date and time when the article was published, in ISO 8601 format."""
   publishingDate: String
 
-  \\"\\"\\"
+  """
   Type of media the article was published in, for example \`print\` or \`web\`.
-  \\"\\"\\"
+  """
   mediaType: String
 
-  \\"\\"\\"Page number or page range in the original publication.\\"\\"\\"
+  """Page number or page range in the original publication."""
   pages: String
 
-  \\"\\"\\"Category of the source publication, for example national news media.\\"\\"\\"
+  """Category of the source publication, for example national news media."""
   sourceCategory: String
 
-  \\"\\"\\"Country of the source publication, for example \`Denmark\`.\\"\\"\\"
+  """Country of the source publication, for example \`Denmark\`."""
   sourceCountry: String
 
-  \\"\\"\\"Numeric identifier of the source publication in Retriever.\\"\\"\\"
+  """Numeric identifier of the source publication in Retriever."""
   sourceId: Int
 
-  \\"\\"\\"Name of the source publication, for example a newspaper title.\\"\\"\\"
+  """Name of the source publication, for example a newspaper title."""
   sourceName: String
 
-  \\"\\"\\"Geographic region or regions covered by the source publication.\\"\\"\\"
+  """Geographic region or regions covered by the source publication."""
   sourceRegion: String
 
-  \\"\\"\\"Theme or subject category assigned to the article by Retriever.\\"\\"\\"
+  """Theme or subject category assigned to the article by Retriever."""
   themeCategory: String
 
-  \\"\\"\\"URL to a thumbnail preview image of the article.\\"\\"\\"
+  """URL to a thumbnail preview image of the article."""
   thumbnail: String
 
-  \\"\\"\\"URL to open the article in Retriever.\\"\\"\\"
+  """URL to open the article in Retriever."""
   url: String
 
-  \\"\\"\\"Approximate number of words in the article body.\\"\\"\\"
+  """Approximate number of words in the article body."""
   wordCount: Int
 
-  \\"\\"\\"Full article text as plain text.\\"\\"\\"
+  """Full article text as plain text."""
   fullText: String
 
-  \\"\\"\\"Full article text formatted with simple HTML tags.\\"\\"\\"
+  """Full article text formatted with simple HTML tags."""
   fullTextHtml: String
 }
 
@@ -8329,9 +8329,9 @@ type InfomediaService {
 }
 
 type RetrieverService {
-  \\"\\"\\"
+  """
   Retriever document ID which can be used to fetch article through Retriever Service
-  \\"\\"\\"
+  """
   id: String!
 }
 
