@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import getConfig from "next/config";
 
 /**
  * calculates easter day for a given year
@@ -110,7 +109,7 @@ const holidays = {
  */
 export default function useTheme() {
   const hasDynamic = getHoliday();
-  const hasStatic = getConfig()?.publicRuntimeConfig?.theme || "default";
+  const hasStatic = process.env.NEXT_PUBLIC_WEBSITE_THEME || "default";
 
   // Prioritize the static - but on default - prioritize the dynamic
   const theme = (hasStatic === "default" && hasDynamic) || hasStatic;

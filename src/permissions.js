@@ -18,6 +18,7 @@ const defaultSettings = {
     "recommend",
     "recommendations",
     "infomedia",
+    "retriever",
     "refWorks",
     "ris",
     "elba",

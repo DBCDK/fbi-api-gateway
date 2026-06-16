@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Testuser Error when storing test user without test token 1`] = `
-Object {
-  "data": Object {
-    "test": Object {
+{
+  "data": {
+    "test": {
       "user": "Not a valid test token",
     },
   },
@@ -11,13 +11,13 @@ Object {
 `;
 
 exports[`Testuser can store test user 1`] = `
-Object {
-  "data": Object {
-    "test": Object {
-      "user": Object {
-        "accounts": Array [
-          Object {
-            "agency": Object {
+{
+  "data": {
+    "test": {
+      "user": {
+        "accounts": [
+          {
+            "agency": {
               "agencyId": "716300",
               "agencyName": "Herlev Bibliotek",
             },
@@ -25,10 +25,10 @@ Object {
             "cpr": "0101011234",
             "debt": "100",
             "isMunicipality": true,
-            "uniqueId": "test:469b0831-1eef-5aca-bbe6-f6519fd922c9",
+            "uniqueId": "test:00000000-0000-4000-8000-000000000001",
           },
-          Object {
-            "agency": Object {
+          {
+            "agency": {
               "agencyId": "715100",
               "agencyName": "Ballerup Bibliotekerne",
             },
@@ -36,10 +36,10 @@ Object {
             "cpr": null,
             "debt": null,
             "isMunicipality": false,
-            "uniqueId": "test:ce0da062-c974-5150-9749-252adcd92db7",
+            "uniqueId": "test:00000000-0000-4000-8000-000000000001",
           },
-          Object {
-            "agency": Object {
+          {
+            "agency": {
               "agencyId": "190101",
               "agencyName": "bibliotek.dk",
             },
@@ -47,7 +47,7 @@ Object {
             "cpr": "0101011234",
             "debt": null,
             "isMunicipality": false,
-            "uniqueId": "test:469b0831-1eef-5aca-bbe6-f6519fd922c9",
+            "uniqueId": "test:00000000-0000-4000-8000-000000000001",
           },
         ],
       },
@@ -57,9 +57,9 @@ Object {
 `;
 
 exports[`Testuser parser can parse test token 1`] = `
-Object {
+{
   "accessToken": "d66828f989e1184g0d51g1dcdf9d9985ecdcb6ed",
-  "testUser": Object {
+  "testUser": {
     "key": "kfu",
     "loginAgency": "nemlogin",
   },
@@ -67,13 +67,13 @@ Object {
 `;
 
 exports[`Testuser test user can be fetched 1`] = `
-Object {
-  "data": Object {
-    "test": Object {
-      "user": Object {
-        "accounts": Array [
-          Object {
-            "agency": Object {
+{
+  "data": {
+    "test": {
+      "user": {
+        "accounts": [
+          {
+            "agency": {
               "agencyId": "190101",
               "agencyName": "bibliotek.dk",
             },
@@ -81,7 +81,7 @@ Object {
             "cpr": "0101011234",
             "debt": null,
             "isMunicipality": false,
-            "uniqueId": "test:469b0831-1eef-5aca-bbe6-f6519fd922c9",
+            "uniqueId": "test:00000000-0000-4000-8000-000000000001",
           },
         ],
       },
@@ -91,9 +91,9 @@ Object {
 `;
 
 exports[`Testuser test user is null without test token 1`] = `
-Object {
-  "data": Object {
-    "test": Object {
+{
+  "data": {
+    "test": {
       "user": null,
     },
   },

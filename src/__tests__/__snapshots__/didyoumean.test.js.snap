@@ -1,19 +1,19 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Get 3 results from did you mean service 1`] = `
-Object {
-  "data": Object {
-    "search": Object {
-      "didYouMean": Array [
-        Object {
+{
+  "data": {
+    "search": {
+      "didYouMean": [
+        {
           "query": "Anders Matthesen",
           "score": 1.0312077993008424,
         },
-        Object {
+        {
           "query": "Anders Mathiesen",
           "score": 0.9398803754066467,
         },
-        Object {
+        {
           "query": "Anders Mathiasen",
           "score": 0.9387356948225403,
         },

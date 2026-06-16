@@ -1,81 +1,81 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Manifestation Query all fields 1`] = `
-Object {
-  "data": Object {
-    "manifestation": Object {
-      "abstract": Array [
+{
+  "data": {
+    "manifestation": {
+      "abstract": [
         "Dummy Some abstract ...",
       ],
-      "access": Array [
-        Object {
+      "access": [
+        {
           "__typename": "AccessUrl",
           "origin": "infolink2003.elbo.dk",
           "url": "http://infolink2003.elbo.dk/DVT/dokumenter/doc/15271.pdf",
         },
-        Object {
+        {
           "__typename": "DigitalArticleService",
           "issn": "09021620",
         },
       ],
-      "accessTypes": Array [
-        Object {
+      "accessTypes": [
+        {
           "code": "PHYSICAL",
           "display": "Dummy fysisk",
         },
-        Object {
+        {
           "code": "ONLINE",
           "display": "Dummy online",
         },
       ],
-      "audience": Object {
-        "ages": Array [
-          Object {
+      "audience": {
+        "ages": [
+          {
             "begin": 10,
             "display": "Dummy 10-14",
             "end": 14,
           },
         ],
-        "childrenOrAdults": Array [
-          Object {
+        "childrenOrAdults": [
+          {
             "code": "FOR_CHILDREN",
             "display": "Dummy til børn",
           },
         ],
-        "generalAudience": Array [
+        "generalAudience": [
           "Dummy general audience",
         ],
         "let": "Dummy some let",
         "libraryRecommendation": "Dummy some library recommendation",
         "lix": "Dummy some lix",
-        "primaryTarget": Array [
+        "primaryTarget": [
           "Dummy Some primary target",
         ],
-        "schoolUse": Array [
-          Object {
+        "schoolUse": [
+          {
             "code": "FOR_SCHOOL_USE",
             "display": "Dummy til skolebrug",
           },
         ],
       },
-      "catalogueCodes": Object {
-        "nationalBibliography": Array [
+      "catalogueCodes": {
+        "nationalBibliography": [
           "national_bibliography",
         ],
-        "otherCatalogues": Array [
+        "otherCatalogues": [
           "other_catalogueCodes",
           "even_other_catalogueCodes",
         ],
       },
-      "classifications": Array [
-        Object {
+      "classifications": [
+        {
           "code": "Dummy 86-096",
           "display": "Dummy 86-096, Skønlitteratur",
           "dk5Heading": "Dummy Skønlitteratur",
           "entryType": "NATIONAL_BIBLIOGRAPHY_ENTRY",
           "system": "Dummy DK5",
         },
-        Object {
+        {
           "code": "Dummy 86-096 additional",
           "display": "Dummy 86-096, Skønlitteratur additional",
           "dk5Heading": "Dummy Skønlitteratur additional",
@@ -83,60 +83,60 @@ Object {
           "system": "Dummy DK5 additional",
         },
       ],
-      "contributors": Array [
-        Object {
+      "contributors": [
+        {
           "display": "Dummy Jens Jensen",
           "nameSort": "Dummy Jensen Jens",
         },
       ],
-      "contributorsFromDescription": Array [
+      "contributorsFromDescription": [
         "Dummy på dansk ved Vivi Berendt",
       ],
-      "cover": Object {
+      "cover": {
         "detail": "link-to-960px",
         "detail_117": "link-to-120px",
         "detail_207": "link-to-240px",
         "detail_42": "link-to-120px",
         "detail_500": "link-to-480px",
-        "large": Object {
+        "large": {
           "height": 800,
           "url": "link-to-960px",
           "width": 960,
         },
-        "medium": Object {
+        "medium": {
           "url": "link-to-480px",
         },
-        "small": Object {
+        "small": {
           "url": "link-to-240px",
         },
         "thumbnail": "link-to-120px",
-        "xSmall": Object {
+        "xSmall": {
           "url": "link-to-120px",
         },
       },
-      "creators": Array [
-        Object {
+      "creators": [
+        {
           "display": "Dummy Jens Jensen",
           "nameSort": "Dummy Jensen Jens",
         },
-        Object {
+        {
           "display": "Dummy Some Corporation",
           "nameSort": "Dummy Some Corporation for sorting",
         },
       ],
-      "creatorsFromDescription": Array [
+      "creatorsFromDescription": [
         "Dummy tekst af William Warren",
       ],
-      "dateFirstEdition": Object {
+      "dateFirstEdition": {
         "display": "Dummy first edition",
         "endYear": 1950,
         "frequency": "1",
         "year": 1950,
       },
-      "edition": Object {
-        "contributors": Array [],
+      "edition": {
+        "contributors": [],
         "edition": "Dummy 3. i.e. 2 udgave",
-        "publicationYear": Object {
+        "publicationYear": {
           "display": "Dummy 2005",
           "endYear": null,
           "frequency": null,
@@ -144,113 +144,113 @@ Object {
         },
         "summary": "Dummy 3. i.e. 2 udgave, 2005",
       },
-      "genreAndForm": Array [
+      "genreAndForm": [
         "Dummy some genre",
       ],
-      "hostPublication": Object {
+      "hostPublication": {
         "creator": "Dummy Some Creator",
         "isbn": "Dummy some isbn",
         "issn": "Dummy 1395-7961",
         "issue": "Dummy some issue",
-        "notes": Array [
+        "notes": [
           "Dummy a note",
         ],
         "pages": "Dummy 140-145",
         "publisher": "Dummy Some Publisher",
         "summary": "Dummy Årsskrift / Carlsbergfondet, 2006",
         "title": "Dummy Årsskrift / Carlsbergfondet",
-        "year": Object {
+        "year": {
           "display": "Dummy 2006",
         },
       },
-      "identifiers": Array [
-        Object {
+      "identifiers": [
+        {
           "type": "ISBN",
           "value": "Dummy 1234567891234",
         },
       ],
-      "illAutomationMaterialGroup": Object {
+      "illAutomationMaterialGroup": {
         "id": 1,
         "name": "Dummy materialgroup",
       },
-      "languages": Object {
-        "abstract": Array [
-          Object {
+      "languages": {
+        "abstract": [
+          {
             "display": "Dummy dansk",
             "isoCode": "Dummy dan",
           },
         ],
-        "main": Array [
-          Object {
+        "main": [
+          {
             "display": "Dummy dansk",
             "isoCode": "Dummy dan",
           },
         ],
-        "notes": Array [
+        "notes": [
           "Dummy dansk",
           "dummy english",
           "dummy german",
         ],
-        "original": Array [
-          Object {
+        "original": [
+          {
             "display": "Dummy dansk",
             "isoCode": "Dummy dan",
           },
         ],
-        "parallel": Array [
-          Object {
+        "parallel": [
+          {
             "display": "Dummy dansk",
             "isoCode": "Dummy dan",
           },
         ],
-        "spoken": Array [
-          Object {
+        "spoken": [
+          {
             "display": "Dummy dansk",
             "isoCode": "Dummy dan",
           },
         ],
-        "subtitles": Array [
-          Object {
+        "subtitles": [
+          {
             "display": "Dummy dansk",
             "isoCode": "Dummy dan",
           },
         ],
       },
-      "latestPrinting": Object {
+      "latestPrinting": {
         "printing": "Dummy 11. oplag",
-        "publicationYear": Object {
+        "publicationYear": {
           "display": "Dummy 2020",
         },
         "summary": "Dummy 11. oplag, 2020",
       },
-      "materialTypes": Array [
-        Object {
-          "materialTypeGeneral": Object {
+      "materialTypes": [
+        {
+          "materialTypeGeneral": {
             "code": "AUDIO_BOOKS",
             "display": "Dummy bøger",
           },
-          "materialTypeSpecific": Object {
+          "materialTypeSpecific": {
             "code": "AUDIO_BOOK",
             "display": "Dummy bog",
           },
         },
       ],
-      "notes": Array [
-        Object {
-          "display": Array [
+      "notes": [
+        {
+          "display": [
             "Dummy Indspillet i Ꜳrhus Musikhus 12.-14. juni 2020",
           ],
           "heading": null,
           "type": "NOT_SPECIFIED",
         },
       ],
-      "ownerWork": Object {
+      "ownerWork": {
         "workId": "work-of:870970-basis:26521556",
       },
-      "physicalDescription": Object {
+      "physicalDescription": {
         "accompanyingMaterial": null,
-        "materialUnits": Array [
-          Object {
+        "materialUnits": [
+          {
             "additionalDescription": null,
             "extent": "615 sider",
             "numberAndType": null,
@@ -263,99 +263,99 @@ Object {
         "summaryFull": "615 sider",
       },
       "pid": "870970-basis:26521556",
-      "publisher": Array [
+      "publisher": [
         "Dummy Lægeforeningen",
       ],
-      "relatedPublications": Array [
-        Object {
+      "relatedPublications": [
+        {
           "heading": "Dummy Tidligere titel:",
           "isbn": null,
           "issn": "Dummy 0105-0508",
-          "title": Array [
+          "title": [
             "Dummy Yngre læger",
           ],
           "url": null,
           "urlText": null,
         },
-        Object {
+        {
           "heading": "Dummy Udgave i andet medium: Også på cd-rom",
           "isbn": null,
           "issn": "Dummy 1399-4174",
-          "title": Array [
+          "title": [
             "Dummy Ugeskrift for læger",
           ],
           "url": null,
           "urlText": null,
         },
       ],
-      "series": Array [
-        Object {
+      "series": [
+        {
           "numberInSeries": "Del 1",
           "title": "De syv søstre-serien",
         },
       ],
-      "shelfmark": Object {
+      "shelfmark": {
         "postfix": "Dummy some postfix",
         "shelfmark": "Dummy some shelfmark",
       },
-      "source": Array [
+      "source": [
         "Dummy some source",
       ],
-      "subjects": Object {
-        "all": Array [
-          Object {
+      "subjects": {
+        "all": [
+          {
             "display": "Dummy Some fictional subject",
           },
-          Object {
+          {
             "display": "Dummy 1950-1980",
           },
-          Object {
+          {
             "display": "Dummy Jens Jensen",
           },
-          Object {
+          {
             "display": "Dummy Some Corporation",
           },
         ],
-        "dbcVerified": Array [
-          Object {
+        "dbcVerified": [
+          {
             "display": "Dummy Some fictional subject",
-            "language": Object {
+            "language": {
               "display": "Dummy dansk",
               "isoCode": "dum dan",
             },
           },
-          Object {
+          {
             "display": "Dummy 1950-1980",
           },
-          Object {
+          {
             "display": "Dummy Jens Jensen",
           },
-          Object {
+          {
             "display": "Dummy Some Corporation",
           },
         ],
       },
-      "titles": Object {
-        "alternative": Array [
+      "titles": {
+        "alternative": [
           "Dummy Some Title: Alternative",
         ],
-        "full": Array [
+        "full": [
           "Dummy Some Title: Full",
         ],
         "identifyingAddition": "Dummy Indlæst af Jens Jensen",
-        "main": Array [
+        "main": [
           "Dummy Some Title",
         ],
-        "original": Array [
+        "original": [
           "Dummy Some Title: Original",
         ],
-        "parallel": Array [
+        "parallel": [
           "Dummy Parallel Title 1",
           "Parallel Title 2",
         ],
         "sort": "Dummy Some Title Sort",
         "standard": "Dummy Some Title Standard",
-        "translated": Array [
+        "translated": [
           "Dummy En Oversat Titel",
         ],
       },
@@ -366,9 +366,9 @@ Object {
 `;
 
 exports[`Manifestation fetch by faust 1`] = `
-Object {
-  "data": Object {
-    "manifestation": Object {
+{
+  "data": {
+    "manifestation": {
       "pid": "870970-basis:26521556",
     },
   },
@@ -376,9 +376,9 @@ Object {
 `;
 
 exports[`Manifestation fetch by pid 1`] = `
-Object {
-  "data": Object {
-    "manifestation": Object {
+{
+  "data": {
+    "manifestation": {
       "pid": "870970-basis:26521556",
     },
   },
@@ -386,10 +386,10 @@ Object {
 `;
 
 exports[`Manifestation fetch multi by faust 1`] = `
-Object {
-  "data": Object {
-    "manifestations": Array [
-      Object {
+{
+  "data": {
+    "manifestations": [
+      {
         "pid": "870970-basis:26521556",
       },
     ],
@@ -398,10 +398,10 @@ Object {
 `;
 
 exports[`Manifestation fetch multi by pid 1`] = `
-Object {
-  "data": Object {
-    "manifestations": Array [
-      Object {
+{
+  "data": {
+    "manifestations": [
+      {
         "pid": "870970-basis:26521556",
       },
     ],
