@@ -36,31 +36,44 @@ let identifierCounter = 0;
 const INTERNAL_ID_HEADER = "X-internal-id";
 
 /**
- * Extracts the internal request identifier from undici request headers.
+ * Converts undici request headers to a lookup map.
  * Undici v8 stores headers as a flat [key, value, ...] array; older versions used a raw string.
  */
-function getInternalIdFromHeaders(headers) {
+function createHeaderMap(headers) {
   if (Array.isArray(headers)) {
-    for (let i = 0; i < headers.length; i += 2) {
-      if (headers[i]?.toLowerCase() === INTERNAL_ID_HEADER.toLowerCase()) {
-        return parseInt(headers[i + 1], 10);
-      }
-    }
-    return -1;
-  }
-
-  if (typeof headers === "string") {
-    return parseInt(
+    return Object.fromEntries(
       headers
-        .split("\r\n")
-        .find((header) =>
-          header.toLowerCase().startsWith(`${INTERNAL_ID_HEADER.toLowerCase()}:`)
-        )
-        ?.split(": ")?.[1] || -1
+        .filter((key, index) => index % 2 === 0 && key)
+        .map((key, index) => [key.toLowerCase(), headers[index * 2 + 1]])
     );
   }
 
-  return -1;
+  if (typeof headers === "string") {
+    return Object.fromEntries(
+      headers
+        .split("\r\n")
+        .filter((header) => header.includes(":"))
+        .map((header) => {
+          const separatorIndex = header.indexOf(":");
+          return [
+            header.slice(0, separatorIndex).toLowerCase(),
+            header.slice(separatorIndex + 1).trim(),
+          ];
+        })
+    );
+  }
+
+  return {};
+}
+
+/**
+ * Extracts the internal request identifier from undici request headers.
+ */
+function getInternalIdFromHeaders(headers) {
+  return parseInt(
+    createHeaderMap(headers)[INTERNAL_ID_HEADER.toLowerCase()] || -1,
+    10
+  );
 }
 
 /**
