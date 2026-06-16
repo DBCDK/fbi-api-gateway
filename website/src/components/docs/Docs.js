@@ -29,7 +29,7 @@ import Highlight from "@/components/base/highlight";
 
 import styles from "./Docs.module.css";
 
-// Custom components to be used in MDX (passed directly — MDXProvider v2 is incompatible with next-mdx-remote v6)
+// Custom components to be used in MDX.
 const customComponents = {
   InlineGraphiQL,
   DeprecationBox,

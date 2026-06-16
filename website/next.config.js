@@ -4,12 +4,6 @@ const projectRoot = __dirname;
 const monorepoRoot = path.join(__dirname, "..");
 
 module.exports = {
-  turbopack: {
-    root: projectRoot,
-    resolveAlias: {
-      "@api-gateway": path.join(monorepoRoot, "src"),
-    },
-  },
   ...(process.env.NODE_ENV === "production"
     ? { outputFileTracingRoot: monorepoRoot }
     : {}),
@@ -29,7 +23,7 @@ module.exports = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@api-gateway": path.join(monorepoRoot, "src"),
+      "@fbi-api": path.join(monorepoRoot, "src"),
 
       // The default imports used by Voyager GraphQL may cause errors. These can be resolved by overriding the import paths to point to the root directory.
       "graphql/execution": path.resolve(projectRoot, "node_modules/graphql"),

@@ -5,12 +5,6 @@ const monorepoRoot = path.join(__dirname, "..");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  turbopack: {
-    root: projectRoot,
-    resolveAlias: {
-      "@api-gateway": path.join(monorepoRoot, "src"),
-    },
-  },
   ...(process.env.NODE_ENV === "production"
     ? { outputFileTracingRoot: monorepoRoot }
     : {}),
@@ -20,7 +14,7 @@ const nextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@api-gateway": path.join(monorepoRoot, "src"),
+      "@fbi-api": path.join(monorepoRoot, "src"),
     };
     return config;
   },

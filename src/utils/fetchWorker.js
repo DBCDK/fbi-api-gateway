@@ -164,8 +164,7 @@ if (!isMainThread) {
     const now = performance.now();
     const total = now - request.timings.create;
 
-    const identifier =
-      request.internalId ?? getInternalIdFromHeaders(request.headers);
+    const identifier = request.internalId;
 
     // Call resolve with collected timings
     pendingTimingCallbacks[identifier]?.({
