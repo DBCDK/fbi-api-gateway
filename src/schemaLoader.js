@@ -15,7 +15,6 @@ import { typeDefs as scalarTypeDefs } from "graphql-scalars";
 import { resolvers as scalarResolvers } from "graphql-scalars";
 import { log } from "dbc-node-logger";
 
-import drupalSchema from "./schema/external/drupal";
 import { bibliotekdkCmsSchema } from "./schema/external/bibliotekdkCms";
 import { getFilesRecursive } from "./utils/utils";
 import { wrapResolvers } from "./utils/wrapResolvers";
@@ -349,8 +348,7 @@ export async function getExecutableSchema({
 
   if (!schemaCache[key]) {
     if (!externalSchemas && loadExternal) {
-      externalSchemas = [await drupalSchema()];
-
+      externalSchemas = [];
       // bibliotekdkCms is optional during rollout. If loading fails, we continue without it.
       try {
         externalSchemas.push(await bibliotekdkCmsSchema());

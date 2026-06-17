@@ -326,7 +326,6 @@ type Query {
 
   """Get recommendations"""
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-  help(q: String!, language: LanguageCodeEnum): HelpResponse
   branches(
     agencyid: String
     branchId: String
@@ -1728,18 +1727,6 @@ type Work {
 
   """Details about the manifestations of this work"""
   manifestations: Manifestations!
-}
-
-type HelpRow {
-  nid: Int!
-  group: String!
-  orgTitle: String!
-  title: String!
-  body: String!
-}
-
-type HelpResponse {
-  result: [HelpRow!]!
 }
 
 type HoldingsItemsQuery {
@@ -8215,24 +8202,7 @@ exports[`limited access to root fields 1`] = `
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 type Query {
-  help(q: String!, language: LanguageCodeEnum): HelpResponse
-}
-
-type HelpRow {
-  nid: Int!
-  group: String!
-  orgTitle: String!
-  title: String!
-  body: String!
-}
-
-type HelpResponse {
-  result: [HelpRow!]!
-}
-
-enum LanguageCodeEnum {
-  DA
-  EN
+  monitor(name: String!): String!
 }
 "
 `;
