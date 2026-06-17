@@ -1,6 +1,65 @@
 import { parse } from "graphql";
 
 /**
+ * Recursively checks whether a selection set includes an inline fragment
+ * for the given GraphQL type.
+ *
+ * Named fragment spreads (`...SomeFragment`) are resolved via `fragments`
+ * and searched the same way.
+ *
+ * @param {readonly import("graphql").SelectionNode[]} selections
+ * @param {string} typeName
+ * @param {Record<string, import("graphql").FragmentDefinitionNode>} fragments
+ * @returns {boolean}
+ */
+function hasTypeInSelections(selections, typeName, fragments) {
+  for (const selection of selections) {
+    if (
+      selection.kind === "InlineFragment" &&
+      selection.typeCondition?.name?.value === typeName
+    ) {
+      return true;
+    }
+
+    if (selection.kind === "FragmentSpread") {
+      const fragment = fragments[selection.name.value];
+      if (
+        fragment &&
+        hasTypeInSelections(fragment.selectionSet.selections, typeName, fragments)
+      ) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Check whether the current resolver's selection set includes an inline fragment
+ * for the given GraphQL type.
+ *
+ * Useful for union fields where clients request specific types with
+ * `... on SomeType { ... }`, including when spread via named fragments.
+ *
+ * @param {import("graphql").GraphQLResolveInfo} info
+ * @param {string} typeName
+ * @returns {boolean}
+ *
+ * @example
+ * async access(parent, args, context, info) {
+ *   if (isTypeRequested(info, "InfomediaService")) {
+ *     // client asked for ... on InfomediaService { ... }
+ *   }
+ * }
+ */
+export function isTypeRequested(info, typeName) {
+  const selections = info?.fieldNodes?.[0]?.selectionSet?.selections ?? [];
+
+  return hasTypeInSelections(selections, typeName, info?.fragments ?? {});
+}
+
+/**
  * Parses a GraphQL query with variables, in order to find field aliases
  * and fields with variables.
  * It traverses the GraphQL Abstract Syntax Tree (AST) and returns a map containing the alias path,

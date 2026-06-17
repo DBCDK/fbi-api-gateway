@@ -33,6 +33,8 @@ async function initDocs() {
             },
             // Indicates whether or not to parse the frontmatter from the mdx source
             parseFrontmatter: false,
+            // Docs are author-controlled; allow JSX expression props (query, variables, etc.)
+            blockJS: false,
           }
         ),
       }))

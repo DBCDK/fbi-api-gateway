@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Complexity validation Query complexity validation - Exceed global complexity limit 25000 1`] = `
-Array [
+[
   [GraphQLError: Query is too complex: 70000. Maximum allowed complexity: 25000],
 ]
 `;
 
-exports[`Complexity validation Query complexity validation - OK  1`] = `Array []`;
+exports[`Complexity validation Query complexity validation - OK  1`] = `[]`;
