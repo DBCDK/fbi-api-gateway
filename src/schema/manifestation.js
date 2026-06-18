@@ -573,6 +573,62 @@ type Manifestations {
   searchHits: [SearchHit!]
 }
 
+"""
+Object containing information about selection status
+"""
+type MaterialSelection {
+  """
+  The publication status of the manifestation
+  """
+  cataloguedPublicationStatus: [MaterialSelectionCataloguedPublicationStatus!]!
+
+  """
+  The recommended group (adult, child, school) selected for the manifestation
+  """
+  selectionGroup: [MaterialSelectionSelectionGroup!]!
+
+  """
+  The type of library assessment
+  """
+  librarianAssessment: [MaterialSelectionLibrarianAssessment!]!
+}
+
+enum MaterialSelectionPublicationStatusEnum {
+  NEW_TITLE
+  NEW_EDITION
+  NEW_PRINT
+}
+
+enum MaterialSelectionGroupEnum {
+  ADULT
+  CHILDREN
+  SCHOOL
+}
+
+enum MaterialSelectionLibrarianAssessmentEnum {
+  LITERATURE
+  MOVIE
+  MULTIMEDIA
+}
+
+type MaterialSelectionCataloguedPublicationStatus {
+  type: MaterialSelectionPublicationStatusEnum!
+  searchValues: [String!]!
+  display: String
+}
+
+type MaterialSelectionSelectionGroup {
+  type: MaterialSelectionGroupEnum!
+  searchValues: [String!]!
+  display: String
+}
+
+type MaterialSelectionLibrarianAssessment {
+  type: MaterialSelectionLibrarianAssessmentEnum!
+  searchValues: [String!]!
+  display: String
+}
+
 type Manifestation {
   """
   A unique identifier for tracking user interactions with this manifestation. 
@@ -690,6 +746,11 @@ type Manifestation {
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   """
   contents: [ContentsEntity!]
+
+  """
+  Object containing information about selection status
+  """
+  materialSelection: MaterialSelection
 
   """
   The type of material of the manifestation based on bibliotek.dk types
