@@ -1,5 +1,5 @@
 {
-  "name": "bibliotekdk-next-api",
+  "name": "fbi-api-gateway",
   "version": "1.0.0",
   "description": "API for the future bibliotek.dk",
   "main": "src/index.js",
