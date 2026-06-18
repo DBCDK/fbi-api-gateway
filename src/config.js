@@ -132,14 +132,6 @@ export default {
       prefix: process.env.REFERENCE_PRESENTATION_PREFIX || "ref-presentation-2",
       teamLabel: "de-team",
     },
-    backend: {
-      url:
-        process.env.BACKEND_URL ||
-        "http://bibdk-backend-www-master.febib-prod.svc.cloud.dbc.dk/graphql",
-      ttl: process.env.BACKEND_TIME_TO_LIVE_SECONDS || 5,
-      prefix: process.env.BACKEND_PREFIX || "backend-1",
-      teamLabel: "febib",
-    },
     bibliotekdkCms: {
       url:
         process.env.BIBLIOTEKDK_CMS_URL ||

@@ -56,7 +56,6 @@ const bibdk = {
     "bibdk",
     "monitor",
     "complexFacets",
-    "help",
     "branches",
     "session",
     "localizations",
@@ -77,9 +76,6 @@ const bibdk = {
     "submitSession",
     "deleteSession",
     "users",
-    // drupal
-    "nodeById",
-    "nodeQuery",
     "bibliotekdkCms",
     "periodica",
     "creatorByViafid",

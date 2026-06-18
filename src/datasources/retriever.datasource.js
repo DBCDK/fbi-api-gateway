@@ -17,6 +17,7 @@ export async function load({ docId }, context) {
     },
     body: JSON.stringify({ formatFulltextHtml: true, query: `docID:"${docId}"` }),
     allowedErrorStatusCodes: [400, 401, 403, 404],
+    enableProxy: true,
   });
 
   if (response.status !== 200) {
