@@ -113,6 +113,7 @@ export async function resolveAccess(manifestation, context, { includeInfomediaAc
       entry.url || "",
       context?.user
     );
+    console.log("proxyUrl", entry);
 
     res.push({
       __typename: "AccessUrl",
@@ -122,6 +123,7 @@ export async function resolveAccess(manifestation, context, { includeInfomediaAc
       note: entry.note,
       type: entry.type,
       status: linkStatus(proxyUrl) || "OK",
+      urlText: entry.urlText,
     });
   });
 
