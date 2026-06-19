@@ -58,6 +58,13 @@ export function buildParameters({ userId, input, orderSystem }) {
       ? null
       : input.pids.map((pid) => pid);
 
+  // publicationDateOfComponent may be set for periodical orders. The frontend does not
+  // necessarily know whether the order is handled by ELBA or submitOrder: ELBA expects
+  // publicationYearOfComponent, while submitOrder expects publicationDateOfComponent.
+  // Map either input field to the submitOrder field.
+  const publicationDateOfComponent =
+    input.publicationDateOfComponent || input.publicationYearOfComponent;
+
   // Set order parameters
   const params = {
     author: input.author,
@@ -88,7 +95,7 @@ export function buildParameters({ userId, input, orderSystem }) {
     pidOfPrimaryObject: input.pidOfPrimaryObject,
     placeOnHold: input.placeOnHold,
     publicationDate: input.publicationDate,
-    publicationDateOfComponent: input.publicationDateOfComponent,
+    publicationDateOfComponent,
     requesterId: input.requesterId,
     requesterInitials: input.requesterInitials,
     responderId: input.responderId,

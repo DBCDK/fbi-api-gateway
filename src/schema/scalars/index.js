@@ -1,4 +1,4 @@
-const { GraphQLScalarType } = require("graphql");
+const { GraphQLScalarType, GraphQLError } = require("graphql");
 // require all localizations
 require("dayjs/locale").forEach((el) => {
   require(`dayjs/locale/${el.key}`);
@@ -16,7 +16,7 @@ function inRange(value, min, max) {
   if (intValue >= min && intValue <= max) {
     return intValue;
   }
-  throw new Error(`Must be Integer in range ${min} to ${max}`);
+  throw new GraphQLError(`Must be Integer in range ${min} to ${max}`);
 }
 export const resolvers = {
   PaginationLimitScalar: new GraphQLScalarType({
