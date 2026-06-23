@@ -13,7 +13,7 @@ import Spinner from "@/components/base/spinner";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useExecute from "@/hooks/useExecute";
 import useQuery from "@/hooks/useQuery";
-import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
+import useEffectiveSelectedCredential from "@/hooks/credentials/useEffectiveSelectedCredential";
 import QueryDepthButton from "./buttons/depth";
 import ComplexityButton from "./buttons/complexity";
 import CurlButton from "./buttons/curl";
@@ -78,8 +78,8 @@ export function GraphiQL({
 }
 
 export default function Wrap() {
-  const { selectedCredential: selectedToken } = useSelectedCredential();
-  const { schema, isLoading: isSchemaLoading } = useSchema(selectedToken);
+  const { effectiveCredential } = useEffectiveSelectedCredential();
+  const { schema, isLoading: isSchemaLoading } = useSchema(effectiveCredential);
   const { execute } = useExecute();
   const url = useGraphQLUrl();
   const urlRef = useRef(url);
@@ -110,7 +110,7 @@ export default function Wrap() {
   }
 
   const fetcher = async ({ query, variables = {} }) => {
-    if (!selectedToken?.token) {
+    if (!effectiveCredential?.token) {
       return { statusCode: 403, message: "Unauthorized" };
     }
     const endpoint = await waitForGraphQLEndpoint();
@@ -130,7 +130,7 @@ export default function Wrap() {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `bearer ${selectedToken?.token}`,
+        Authorization: `bearer ${effectiveCredential?.token}`,
         "X-Tracking-Consent": "false",
         "X-Session-Token": "test-session-token",
       },
@@ -204,7 +204,7 @@ export default function Wrap() {
     return null;
   }
 
-  if (selectedToken?.token && (!url || isSchemaLoading)) {
+  if (effectiveCredential?.token && (!url || isSchemaLoading)) {
     return (
       <div className={styles.graphiql}>
         <Header />

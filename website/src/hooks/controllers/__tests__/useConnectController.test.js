@@ -197,6 +197,49 @@ describe("useConnectController", () => {
     expect(onValidityChange).toHaveBeenCalledWith(true);
   });
 
+  test("marks the form valid when a pending client becomes internal", async () => {
+    const onValidityChange = jest.fn();
+
+    useCredentialNetwork.mockReturnValue({
+      isInternal: true,
+      isLoading: false,
+    });
+    useInternalNetworkCheck.mockReturnValue({
+      internalNetworkCheck: "enabled",
+    });
+    useCredentialInputFlow.mockReturnValue({
+      inputRef,
+      credentialValue: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      setCredentialValue: jest.fn(),
+      secretValue: "",
+      setSecretValue: jest.fn(),
+      pendingClient: {
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      },
+      resolveError: "",
+      setResolveError: jest.fn(),
+      resolvingCredential: null,
+      handleResolveCredential,
+      handleAttachSecret,
+      resetCredentialInput,
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+          onValidityChange,
+        })
+      );
+    });
+
+    expect(onValidityChange).toHaveBeenCalledWith(true);
+    expect(controller.pendingClient).toBe(null);
+  });
+
   test("hides client-secret steps on an active internal network", async () => {
     useCredentialNetwork.mockReturnValue({
       isInternal: true,
@@ -252,6 +295,167 @@ describe("useConnectController", () => {
     expect(controller.showSteps).toBe(false);
   });
 
+  test("re-resolves a pending client when switching from external to internal network", async () => {
+    useCredentialInputFlow.mockReturnValue({
+      inputRef,
+      credentialValue: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      setCredentialValue: jest.fn(),
+      secretValue: "",
+      setSecretValue: jest.fn(),
+      pendingClient: {
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      },
+      resolveError: "",
+      setResolveError: jest.fn(),
+      resolvingCredential: null,
+      handleResolveCredential,
+      handleAttachSecret,
+      resetCredentialInput,
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    useCredentialNetwork.mockReturnValue({
+      isInternal: true,
+      isLoading: false,
+    });
+    useInternalNetworkCheck.mockReturnValue({
+      internalNetworkCheck: "enabled",
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    expect(handleResolveCredential).toHaveBeenCalledWith(
+      "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      expect.objectContaining({
+        shouldSubmit: false,
+        onResolvedSelection: expect.any(Function),
+      })
+    );
+  });
+
+  test("re-resolves a selected internal client when switching to external network", async () => {
+    useCredentialNetwork.mockReturnValue({
+      isInternal: true,
+      isLoading: false,
+    });
+    useInternalNetworkCheck.mockReturnValue({
+      internalNetworkCheck: "enabled",
+    });
+    useSelectedCredential.mockReturnValue({
+      selectedCredential: {
+        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        hasClientSecret: false,
+        profile: "bibdk21",
+      },
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    useCredentialNetwork.mockReturnValue({
+      isInternal: false,
+      isLoading: false,
+    });
+    useInternalNetworkCheck.mockReturnValue({
+      internalNetworkCheck: "disabled",
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    expect(handleResolveCredential).toHaveBeenCalledWith(
+      "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      expect.objectContaining({
+        shouldSubmit: false,
+        onResolvedSelection: expect.any(Function),
+      })
+    );
+  });
+
+  test("submits a pending client by re-resolving instead of requiring a secret on internal network", async () => {
+    const onSubmit = jest.fn();
+
+    useCredentialNetwork.mockReturnValue({
+      isInternal: true,
+      isLoading: false,
+    });
+    useInternalNetworkCheck.mockReturnValue({
+      internalNetworkCheck: "enabled",
+    });
+    useCredentialInputFlow.mockReturnValue({
+      inputRef,
+      credentialValue: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      setCredentialValue: jest.fn(),
+      secretValue: "",
+      setSecretValue: jest.fn(),
+      pendingClient: {
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      },
+      resolveError: "",
+      setResolveError: jest.fn(),
+      resolvingCredential: null,
+      handleResolveCredential,
+      handleAttachSecret,
+      resetCredentialInput,
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit,
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    await act(async () => {
+      await controller.handleFormSubmit({ preventDefault: jest.fn() });
+    });
+
+    expect(handleResolveCredential).toHaveBeenCalledWith(
+      "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      expect.objectContaining({
+        shouldSubmit: true,
+      })
+    );
+    expect(handleAttachSecret).not.toHaveBeenCalled();
+  });
+
   test("clears focus state while a credential is resolving", async () => {
     await act(async () => {
       root.render(
@@ -298,5 +502,45 @@ describe("useConnectController", () => {
     });
 
     expect(controller.hasFocus).toBe(false);
+  });
+
+  test("keeps the pasted token visible until token resolving finishes", async () => {
+    useSelectedCredential.mockReturnValue({
+      selectedCredential: {
+        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        hasClientSecret: false,
+        profile: "bibdk21",
+      },
+    });
+    useCredentialInputFlow.mockReturnValue({
+      inputRef,
+      credentialValue: "raw-token-value-that-user-pasted",
+      setCredentialValue: jest.fn(),
+      secretValue: "",
+      setSecretValue: jest.fn(),
+      pendingClient: null,
+      resolveError: "",
+      setResolveError: jest.fn(),
+      resolvingCredential: {
+        type: "token",
+        value: "raw-token-value-that-user-pasted",
+      },
+      handleResolveCredential,
+      handleAttachSecret,
+      resetCredentialInput,
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    expect(controller.credentialValue).toBe("raw-token-value-that-user-pasted");
   });
 });

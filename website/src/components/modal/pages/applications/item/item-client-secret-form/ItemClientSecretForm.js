@@ -10,7 +10,6 @@ import styles from "./ItemClientSecretForm.module.css";
 export default function ItemClientSecretForm({
   clientSecret = "",
   clientSecretError = "",
-  clientSecretStatus = "",
   setClientSecret,
   onEnter = null,
   inputId,
@@ -18,7 +17,29 @@ export default function ItemClientSecretForm({
   inlineWarning = false,
   onSubmit = null,
   hideLabel = false,
+  trailingAction = null,
 }) {
+  const input = (
+    <input
+      id={inputId}
+      type="password"
+      className={inlineWarning ? styles.warningInput : styles.fieldInput}
+      value={clientSecret}
+      placeholder="Some client secret ..."
+      autoComplete="new-password"
+      autoCapitalize="none"
+      autoCorrect="off"
+      spellCheck={false}
+      onChange={(e) => setClientSecret(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && onEnter) {
+          e.preventDefault();
+          onEnter();
+        }
+      }}
+    />
+  );
+
   return (
     <div className={styles.formBlock}>
       <div
@@ -27,68 +48,29 @@ export default function ItemClientSecretForm({
         }`}
       >
         {inlineWarning ? (
-          <>
-            <span className={styles.warningIcon} aria-hidden="true">
-              {/* ⚠️ */}
-              🤫
-            </span>
-            <input
-              id={inputId}
-              type="password"
-              className={styles.warningInput}
-              value={clientSecret}
-              placeholder="Some client secret ..."
-              onChange={(e) => setClientSecret(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && onEnter) {
-                  e.preventDefault();
-                  onEnter();
-                }
-              }}
-            />
-          </>
+          <div className={styles.fieldRow}>
+            {input}
+            {trailingAction}
+          </div>
         ) : (
           <>
             {!hideLabel && <Text type="text4">Client secret</Text>}
             <div className={styles.fieldRow}>
-              <span className={styles.fieldIcon} aria-hidden="true">
-                {/* 🔑 */}
-                🤫
-              </span>
-              <input
-                id={inputId}
-                type="password"
-                className={styles.fieldInput}
-                value={clientSecret}
-                placeholder="Some client secret ..."
-                onChange={(e) => setClientSecret(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && onEnter) {
-                    e.preventDefault();
-                    onEnter();
-                  }
-                }}
-              />
+              {input}
+              {trailingAction}
             </div>
           </>
         )}
       </div>
-      {(clientSecretError || clientSecretStatus) && (
+      {clientSecretError && (
         <div
           className={`${styles.feedback} ${
             inlineWarning ? styles.feedbackInline : ""
           }`}
         >
-          {clientSecretError && (
-            <Text type="text0" className={styles.error}>
-              {clientSecretError}
-            </Text>
-          )}
-          {clientSecretStatus && (
-            <Text type="text0" className={styles.status}>
-              {clientSecretStatus}
-            </Text>
-          )}
+          <Text type="text0" className={styles.error}>
+            {clientSecretError}
+          </Text>
         </div>
       )}
       {showAction && (

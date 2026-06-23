@@ -39,6 +39,7 @@ export default function useApplicationItemController(props) {
     clearSelectedCredential,
     resolveCredentialValue,
     attachCredentialSecret: attachClientSecret,
+    removeCredentialSecret: detachClientSecret,
   } = useCredentialMutations();
   const { internalNetworkCheck } = useInternalNetworkCheck();
 
@@ -122,20 +123,9 @@ export default function useApplicationItemController(props) {
 
   useDeferredElementFocus({
     enabled: open && shouldFocusNote,
-    elementId: `input-note-${props.id || props.token || props.clientId}`,
+    elementId: `input-custom-name-${props.id || props.token || props.clientId}`,
     onFocused: () => setShouldFocusNote(false),
   });
-
-  useEffect(() => {
-    if (!open) {
-      setIsEditingNote(false);
-      setNote(savedNote);
-      setIsEditingClientSecret(false);
-      setClientSecret("");
-      setClientSecretError("");
-      setClientSecretStatus("");
-    }
-  }, [open, savedNote]);
 
   useEffect(() => {
     const nextNote = props.note || "";
@@ -217,14 +207,6 @@ export default function useApplicationItemController(props) {
 
   const itemOffsetTop = elRef.current?.offsetTop || 0;
   const contentTop = open ? containerScrollY - itemOffsetTop : 0;
-  const useButtonLabel =
-    needsClientSecret || clientSecret || hasPendingNoteChanges || isEditingNote
-      ? "Update & Use"
-      : props.inUse
-        ? isUseButtonHovered
-          ? "Don't use"
-          : "I'm in use"
-        : "Use";
   const {
     clientSecretError,
     setClientSecretError,
@@ -232,7 +214,10 @@ export default function useApplicationItemController(props) {
     setClientSecretStatus,
     removed,
     isConfirmingRemove,
+    isUsingCredential,
+    isPendingClientSecretRemoval,
     setIsConfirmingRemove,
+    setIsPendingClientSecretRemoval,
     handleUseAction,
     handleRemoveAction,
     canManageAttachedClientSecret,
@@ -265,6 +250,7 @@ export default function useApplicationItemController(props) {
     clearSelectedCredential,
     selectCredential,
     attachCredentialSecret: attachClientSecret,
+    removeCredentialSecret: detachClientSecret,
     mutateConfiguration: mutateCredentialConfiguration,
     mutateUser: mutateCredentialUser,
     onRemoveRequest: props.onRemoveRequest,
@@ -276,16 +262,50 @@ export default function useApplicationItemController(props) {
     setClientSecret,
   });
 
+  useEffect(() => {
+    if (!open) {
+      setIsEditingNote(false);
+      setNote(savedNote);
+      setIsEditingClientSecret(false);
+      setClientSecret("");
+      setClientSecretError("");
+      setClientSecretStatus("");
+      setIsPendingClientSecretRemoval(false);
+    }
+  }, [
+    open,
+    savedNote,
+    setClientSecretError,
+    setClientSecretStatus,
+    setIsPendingClientSecretRemoval,
+  ]);
+  const useButtonLabel =
+    needsClientSecret ||
+    clientSecret ||
+    hasPendingNoteChanges ||
+    isEditingNote ||
+    isPendingClientSecretRemoval
+      ? "Update & Use"
+      : props.inUse
+        ? isUseButtonHovered
+          ? "Don't use"
+          : "I'm in use"
+        : "Use";
+
   function focusClientSecret() {
     setOpen(true);
     setIsEditingClientSecret(true);
     setClientSecretError("");
     setClientSecretStatus("");
+    setIsPendingClientSecretRemoval(false);
     setShouldFocusClientSecret(true);
   }
 
   function handleClientSecretChange(value) {
     setClientSecret(value);
+    setIsPendingClientSecretRemoval(
+      Boolean(hasAttachedClientSecret) && value.trim() === ""
+    );
 
     if (clientSecretError) {
       setClientSecretError("");
@@ -312,7 +332,17 @@ export default function useApplicationItemController(props) {
     setClientSecret("");
     setClientSecretError("");
     setClientSecretStatus("");
+    setIsPendingClientSecretRemoval(false);
     setShouldFocusClientSecret(true);
+  }
+
+  function prepareClientSecretRemoval() {
+    setIsEditingClientSecret(true);
+    setClientSecret("");
+    setClientSecretError("");
+    setClientSecretStatus("");
+    setIsPendingClientSecretRemoval(true);
+    setShouldFocusClientSecret(false);
   }
 
   function cancelEditingClientSecret() {
@@ -320,6 +350,7 @@ export default function useApplicationItemController(props) {
     setClientSecret("");
     setClientSecretError("");
     setClientSecretStatus("");
+    setIsPendingClientSecretRemoval(false);
   }
 
   function startEditingNote() {
@@ -369,6 +400,8 @@ export default function useApplicationItemController(props) {
       open,
       removed,
       isConfirmingRemove,
+      isUsingCredential,
+      isPendingClientSecretRemoval,
       reveal: isReveal,
       isScrolled,
       contentTop,
@@ -404,6 +437,7 @@ export default function useApplicationItemController(props) {
         setOpen(false);
         handleRemoveAction(open);
       },
+      prepareClientSecretRemoval,
       useCredential: handleUseAction,
       focusClientSecret,
       startEditingClientSecret,

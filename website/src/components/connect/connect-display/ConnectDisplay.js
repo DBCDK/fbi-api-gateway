@@ -32,10 +32,15 @@ export default function ConnectDisplay({
         </Text>
       ) : (
         <Text type="text4" className={styles.resolvedLabel} title={displayName}>
-          <span className={styles.confirmed} aria-hidden="true">
-            ✅
+          <span
+            className={
+              hasMissingConfigurationWarning ? styles.warning : styles.confirmed
+            }
+            aria-hidden="true"
+          >
+            {hasMissingConfigurationWarning ? "⚠️" : "✅"}
           </span>{" "}
-          {`${displayName} ${hasMissingConfigurationWarning ? "⚠️" : ""}`}
+          {displayName}
         </Text>
       )}
     </div>

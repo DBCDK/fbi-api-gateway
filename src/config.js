@@ -137,8 +137,7 @@ export default {
       url:
         process.env.REFERENCE_PRESENTATION_URL ||
         "http://reference-presentation.cisterne.svc.cloud.dbc.dk/api/v1",
-      ttl:
-        process.env.REFERENCE_PRESENTATION_TIME_TO_LIVE_SECONDS || 60 * 10,
+      ttl: process.env.REFERENCE_PRESENTATION_TIME_TO_LIVE_SECONDS || 60 * 10,
       prefix: process.env.REFERENCE_PRESENTATION_PREFIX || "ref-presentation-2",
       teamLabel: "de-team",
     },
@@ -351,7 +350,7 @@ export default {
         process.env.VIP_EXCLUDE_BRANCHES == "1",
       url:
         process.env.VIP_CORE_URL ||
-        "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api",
+        "http://vipcore-nocache.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api", // NOSONAR
       prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
       teamLabel: "fbiscrum",
@@ -380,7 +379,7 @@ export default {
         "http://culrservice-1-7.iscrum-culr-prod.svc.cloud.dbc.dk/1.7/api",
       soap_url:
         process.env.CULR_SOAP_URL ||
-        "https://culr.addi.dk/1.6/CulrWebService?wsdl", // soap version of culr will be removed in future
+        "https://culr.addi.dk/1.7/CulrWebService?wsdl", // soap version of culr will be removed in future
       authenticationUser: process.env.CULR_USER,
       authenticationGroup: process.env.CULR_GROUP,
       authenticationPassword: process.env.CULR_PASSWORD,

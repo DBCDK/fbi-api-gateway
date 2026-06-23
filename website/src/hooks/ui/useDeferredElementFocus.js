@@ -10,17 +10,36 @@ export default function useDeferredElementFocus({
       return undefined;
     }
 
+    let frameId = null;
+    let timeoutId = null;
+    let attempts = 0;
+
     const focusInput = () => {
       const input = document.getElementById(elementId);
 
       if (input) {
         input.focus();
         onFocused?.();
+        return;
+      }
+
+      attempts += 1;
+
+      if (attempts < 8) {
+        frameId = window.requestAnimationFrame(focusInput);
       }
     };
 
-    const timeout = setTimeout(focusInput, 0);
+    timeoutId = window.setTimeout(() => {
+      frameId = window.requestAnimationFrame(focusInput);
+    }, 0);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      window.clearTimeout(timeoutId);
+
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
   }, [elementId, enabled, onFocused]);
 }

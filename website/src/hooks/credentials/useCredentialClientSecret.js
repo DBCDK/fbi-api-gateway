@@ -30,5 +30,26 @@ export default function useCredentialClientSecret() {
     };
   }
 
-  return { attachClientSecret };
+  async function removeClientSecret({ entryId }) {
+    const response = await fetch("/api/credentials/client-secret", {
+      method: "DELETE",
+      headers: getCredentialRequestHeaders({
+        "Content-Type": "application/json",
+      }),
+      body: JSON.stringify({
+        entryId,
+      }),
+    });
+
+    const body = await response.json().catch(() => ({}));
+
+    return {
+      ok: response.ok,
+      statusCode: response.status,
+      statusText: response.statusText,
+      ...body,
+    };
+  }
+
+  return { attachClientSecret, removeClientSecret };
 }

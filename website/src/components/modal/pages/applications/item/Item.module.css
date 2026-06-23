@@ -76,8 +76,35 @@
   cursor: pointer;
 }
 
-.note {
-  margin-top: var(--pt3);
+.inlineSecretAction {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 260ms ease,
+    background-color 260ms ease,
+    color 260ms ease;
+}
+
+.inlineSecretAction:hover,
+.inlineSecretAction:focus-visible {
+  background-color: var(--text-dark);
+}
+
+.inlineSecretAction:focus-visible {
+  outline: 2px solid var(--text-light);
+  outline-offset: 2px;
 }
 
 .missingConfigWarn {
@@ -293,7 +320,7 @@
 
 .expanded .display {
   margin: 0 calc(var(--pt2) * -1);
-  padding: var(--pt2);
+  padding: var(--pt6) var(--pt2) var(--pt4) var(--pt2);
   z-index: 1;
   transition:
     box-shadow 0.3s,
@@ -306,6 +333,7 @@
 .expanded .display button {
   color: inherit;
 }
+
 
 .expanded .display.displayScrolled {
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);

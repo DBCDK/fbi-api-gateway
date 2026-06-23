@@ -233,6 +233,9 @@ export default function Token({
               : "Drop token here ..."
           }
           autoComplete="off"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           onBlur={() => {
             setState({ ...state, focus: false });
           }}

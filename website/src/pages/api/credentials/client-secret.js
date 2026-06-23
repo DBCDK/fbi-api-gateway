@@ -30,25 +30,21 @@ function buildSafeEntry({ entry, configuration = {}, user = {} }) {
 }
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
+  if (req.method !== "POST" && req.method !== "DELETE") {
     return res.status(405).send({});
   }
 
   const entryId =
     typeof req.body?.entryId === "string" ? req.body.entryId : null;
-  const clientSecret =
-    typeof req.body?.clientSecret === "string"
-      ? req.body.clientSecret.trim()
-      : "";
   const selectedAgency =
     typeof req.body?.agency === "string" && req.body.agency
       ? req.body.agency
       : null;
 
-  if (!entryId || !clientSecret) {
+  if (!entryId) {
     return res.status(400).send({
       status: "INVALID_CLIENT_SECRET_INPUT",
-      message: "Client secret input is required",
+      message: "Credential entry input is required",
     });
   }
 
@@ -65,6 +61,41 @@ export default async function handler(req, res) {
     return res.status(400).send({
       status: "CLIENT_ID_REQUIRED",
       message: "Credential entry is missing a clientId",
+    });
+  }
+
+  if (req.method === "DELETE") {
+    const nextEntry = await upsertCredentialSessionEntry({ req, res }, entryId, {
+      ...sessionEntry,
+      clientSecret: null,
+      refreshToken: null,
+      requiresClientSecret: false,
+      status: "OK",
+    });
+
+    const entry = {
+      ...nextEntry,
+      id: entryId,
+    };
+
+    return res.status(200).send({
+      status: "OK",
+      entry,
+      safeEntry: buildSafeEntry({
+        entry,
+      }),
+    });
+  }
+
+  const clientSecret =
+    typeof req.body?.clientSecret === "string"
+      ? req.body.clientSecret.trim()
+      : "";
+
+  if (!clientSecret) {
+    return res.status(400).send({
+      status: "INVALID_CLIENT_SECRET_INPUT",
+      message: "Client secret input is required",
     });
   }
 

@@ -31,7 +31,18 @@
   width: var(--pt5);
   border-radius: 25px;
   background-color: var(--success-light);
-  margin-left: calc(var(--pt1) * -1) !important;
+  margin-left: calc((var(--pt1) + 4px) * -1) !important;
+}
+
+.warning {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--pt5);
+  width: var(--pt5);
+  border-radius: 25px;
+  background-color: var(--warning);
+  margin-left: calc((var(--pt1) + 4px) * -1) !important;
 }
 
 .resolvedLabel {

@@ -61,6 +61,8 @@
 .token,
 .refreshToken,
 .clientId,
+.clientDisplayName,
+.clientOriginalDisplayName,
 .alwaysRequireAgencyId,
 .clientNote,
 .name,
@@ -124,38 +126,56 @@
   color: var(--error);
 }
 
-.fieldRow {
+.nameSummaryRow {
   display: flex;
   align-items: center;
-  gap: var(--pt1);
+  justify-content: space-between;
+  gap: var(--pt2);
 }
 
-.fieldIcon {
-  flex: 0 0 auto;
-  font-size: 16px;
-  line-height: 1;
+.nameValue {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 2rem;
 }
 
-.clientNote input {
+.nameInlineEditor {
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: var(--pt1);
+  min-width: 0;
+  min-height: 2rem;
+}
+
+.nameText {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 2rem;
+}
+
+.nameInput {
+  display: block;
+  width: 100%;
+  min-height: 2rem;
+  padding: 0;
   border: 0;
   background-color: transparent;
   color: var(--dark);
+  font-size: 14px;
   font-family: var(--font-mono-regular);
+  line-height: 20px;
 }
 
-.clientNote input::placeholder {
+.nameInput::placeholder {
   color: var(--dark);
   opacity: 0.7;
 }
 
-.clientNote input:focus {
+.nameInput:focus {
   outline: none;
-}
-
-.clientNote input:focus::placeholder {
-  color: transparent;
 }
 
 .attachments {
@@ -175,33 +195,40 @@
   gap: var(--pt2);
 }
 
-.secretInlineForm {
+.secretValue {
   flex: 1 1 auto;
-  min-width: 0;
-}
-
-.noteSummaryRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--pt2);
+  min-width: 0;
+  min-height: 2rem;
 }
 
-.noteSummaryRow > :first-child {
+.secretInlineForm {
+  display: flex;
+  align-items: center;
+  width: 100%;
   flex: 1 1 auto;
   min-width: 0;
+  min-height: 2rem;
 }
 
-.noteInlineEditor {
-  min-width: 0;
+.secretMask {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 2rem;
 }
 
 .secretAction {
+  position: relative;
+  flex: 0 0 2rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 2rem;
   height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
   padding: 0;
   border-radius: 999px;
   background: var(--white);
@@ -212,7 +239,8 @@
   transition:
     transform 260ms ease,
     background-color 260ms ease,
-    border-color 260ms ease;
+    border-color 260ms ease,
+    color 260ms ease;
 }
 
 .secretAction:hover,

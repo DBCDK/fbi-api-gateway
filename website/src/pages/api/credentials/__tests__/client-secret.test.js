@@ -104,4 +104,39 @@ describe("/api/credentials/client-secret", () => {
       })
     );
   });
+
+  test("removes an attached client secret and keeps the entry available", async () => {
+    const req = {
+      method: "DELETE",
+      body: {
+        entryId: "client:example-client-id",
+      },
+      headers: {},
+      res: {},
+    };
+    const res = createResponse();
+
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(getAccessTokenForClient).not.toHaveBeenCalled();
+    expect(upsertCredentialSessionEntry).toHaveBeenCalledWith(
+      expect.any(Object),
+      "client:example-client-id",
+      expect.objectContaining({
+        clientSecret: null,
+        refreshToken: null,
+        requiresClientSecret: false,
+        status: "OK",
+      })
+    );
+    expect(res.body.safeEntry).toEqual(
+      expect.objectContaining({
+        id: "client:example-client-id",
+        clientId: "example-client-id",
+        hasClientSecret: false,
+        status: "OK",
+      })
+    );
+  });
 });

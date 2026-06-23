@@ -77,7 +77,8 @@ export function Applications({
 
 export default function Wrap(props) {
   const { applications } = useCredentialEntries();
-  const hasValidTokens = !!applications?.filter((obj) => isToken(obj.token)).length;
+  const hasValidTokens = !!applications?.filter((obj) => isToken(obj.token))
+    .length;
 
   return (
     <Applications

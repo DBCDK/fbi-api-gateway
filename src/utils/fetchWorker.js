@@ -21,6 +21,7 @@
 import { Worker, isMainThread, parentPort } from "worker_threads";
 import { fetch as undiciFetch, ProxyAgent, Agent } from "undici";
 import diagnosticsChannel from "diagnostics_channel";
+import { log } from "dbc-node-logger";
 import config from "../config";
 
 // Object for keeping track of pending requests
@@ -34,6 +35,8 @@ let identifierCounter = 0;
 
 // Header name that we use to attach identifier to a HTTP request
 const INTERNAL_ID_HEADER = "X-internal-id";
+const PENDING_REQUEST_WARN_MS = 15 * 1000;
+const PENDING_REQUEST_LOG_PREFIX = "PENDING_REQUEST_DEBUG";
 
 /**
  * This is called from the main thread
@@ -44,6 +47,7 @@ const INTERNAL_ID_HEADER = "X-internal-id";
  */
 export function fetch(url, options = {}) {
   const identifier = identifierCounter++;
+  const method = options.method || "GET";
 
   if (!options.headers) {
     options.headers = {};
@@ -53,8 +57,26 @@ export function fetch(url, options = {}) {
   options.headers[INTERNAL_ID_HEADER] = identifier;
 
   return new Promise((resolve, reject) => {
+    const startedAt = Date.now();
+    const pendingWarningTimeout = setTimeout(() => {
+      log.warn(`${PENDING_REQUEST_LOG_PREFIX} request still pending`, {
+        identifier,
+        method,
+        url,
+        pendingCount: Object.keys(pendingRequests).length,
+        durationMs: Date.now() - startedAt,
+      });
+    }, PENDING_REQUEST_WARN_MS);
+
     // Store the resolve and reject functions with the identifier
-    pendingRequests[identifier] = { resolve, reject };
+    pendingRequests[identifier] = {
+      resolve,
+      reject,
+      url,
+      method,
+      startedAt,
+      pendingWarningTimeout,
+    };
 
     // Sending a message to the worker thread to initiate the fetch
     worker.postMessage({ url, options, identifier });
@@ -71,13 +93,63 @@ if (isMainThread) {
 
   // Listening for messages from the worker thread
   worker.on("message", (obj) => {
+    const pendingRequest = pendingRequests[obj.identifier];
+
+    if (!pendingRequest) {
+      log.warn(`${PENDING_REQUEST_LOG_PREFIX} resolved unknown request`, {
+        identifier: obj.identifier,
+        status: obj.status || null,
+      });
+      return;
+    }
+
     // Lookup pending request, and resolve it with the object
     // sent from the worker thread.
     // This will resolve a promise created in the fetch function
-    pendingRequests[obj.identifier].resolve(obj);
+    clearTimeout(pendingRequest.pendingWarningTimeout);
+    pendingRequest.resolve(obj);
 
     // Clean up request
     delete pendingRequests[obj.identifier];
+  });
+
+  worker.on("error", (error) => {
+    const identifiers = Object.keys(pendingRequests);
+
+    log.error(`${PENDING_REQUEST_LOG_PREFIX} worker thread error`, {
+      message: error?.message || String(error),
+      pendingCount: identifiers.length,
+    });
+
+    identifiers.forEach((identifier) => {
+      const pendingRequest = pendingRequests[identifier];
+
+      clearTimeout(pendingRequest.pendingWarningTimeout);
+      pendingRequest.reject(error);
+      delete pendingRequests[identifier];
+    });
+  });
+
+  worker.on("exit", (code) => {
+    if (code === 0) {
+      return;
+    }
+
+    const identifiers = Object.keys(pendingRequests);
+
+    log.error(`${PENDING_REQUEST_LOG_PREFIX} worker thread exited unexpectedly`, {
+      code,
+      pendingCount: identifiers.length,
+    });
+
+    identifiers.forEach((identifier) => {
+      const pendingRequest = pendingRequests[identifier];
+      const error = new Error(`fetchWorker exited with code ${code}`);
+
+      clearTimeout(pendingRequest.pendingWarningTimeout);
+      pendingRequest.reject(error);
+      delete pendingRequests[identifier];
+    });
   });
 }
 

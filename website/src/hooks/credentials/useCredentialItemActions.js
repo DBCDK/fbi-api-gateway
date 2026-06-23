@@ -22,6 +22,7 @@ export default function useCredentialItemActions({
   clearSelectedCredential,
   selectCredential,
   attachCredentialSecret,
+  removeCredentialSecret,
   mutateConfiguration,
   mutateUser,
   onRemoveRequest,
@@ -36,6 +37,9 @@ export default function useCredentialItemActions({
   const [clientSecretStatus, setClientSecretStatus] = useState("");
   const [removed, setRemoved] = useState(false);
   const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
+  const [isUsingCredential, setIsUsingCredential] = useState(false);
+  const [isPendingClientSecretRemoval, setIsPendingClientSecretRemoval] =
+    useState(false);
 
   const persistApplicationEntry = useCallback(
     (nextValues = {}) => {
@@ -91,6 +95,7 @@ export default function useCredentialItemActions({
       clientSecret,
       agency,
       note,
+      preservePosition: true,
     });
 
     if (!response?.safeEntry) {
@@ -104,7 +109,8 @@ export default function useCredentialItemActions({
     setIsEditingNote(false);
     setClientSecret("");
     setIsEditingClientSecret(false);
-    setClientSecretStatus("Client secret updated and validated.");
+    setIsPendingClientSecretRemoval(false);
+    setClientSecretStatus("validated");
     return true;
   }, [
     agency,
@@ -117,48 +123,103 @@ export default function useCredentialItemActions({
     setClientSecret,
     setIsEditingClientSecret,
     setIsEditingNote,
+    setIsPendingClientSecretRemoval,
+    setSavedNote,
+  ]);
+
+  const handleRemoveClientSecret = useCallback(async () => {
+    setClientSecretError("");
+    setClientSecretStatus("");
+
+    const response = await removeCredentialSecret({
+      entryId: entry.id,
+      note,
+      preservePosition: true,
+    });
+
+    if (!response?.safeEntry) {
+      setClientSecretError(response?.message || "Could not remove clientSecret");
+      return false;
+    }
+
+    mutateConfiguration?.();
+    mutateUser?.();
+    setSavedNote(note);
+    setIsEditingNote(false);
+    setClientSecret("");
+    setIsEditingClientSecret(false);
+    setIsPendingClientSecretRemoval(false);
+    return true;
+  }, [
+    entry.id,
+    mutateConfiguration,
+    mutateUser,
+    note,
+    removeCredentialSecret,
+    setClientSecret,
+    setIsEditingClientSecret,
+    setIsEditingNote,
+    setIsPendingClientSecretRemoval,
     setSavedNote,
   ]);
 
   const handleUseAction = useCallback(async () => {
+    if (isUsingCredential) {
+      return;
+    }
+
+    setIsUsingCredential(true);
+
     const hasPendingNoteChanges = note !== savedNote;
     const hasPendingUpdates =
-      Boolean(clientSecret) || isEditingNote || hasPendingNoteChanges;
+      Boolean(clientSecret) ||
+      isEditingNote ||
+      hasPendingNoteChanges ||
+      isPendingClientSecretRemoval;
 
-    if (isInUse && !hasPendingUpdates) {
-      clearSelectedCredential();
-      return;
-    }
-
-    if (needsClientSecret) {
-      await handleAttachClientSecret();
-      return;
-    }
-
-    if (clientSecret) {
-      const didAttachClientSecret = await handleAttachClientSecret();
-
-      if (!didAttachClientSecret) {
+    try {
+      if (isInUse && !hasPendingUpdates) {
+        clearSelectedCredential();
         return;
       }
-    }
 
-    if (isEditingNote || hasPendingNoteChanges) {
-      persistNoteChanges();
-    }
+      if (needsClientSecret) {
+        await handleAttachClientSecret();
+        return;
+      }
 
-    selectCredential(
-      token,
-      profile,
-      agency,
-      {
-        id: entry.id,
-        type: entry.type,
-        clientId,
-        hasClientSecret: hasAttachedClientSecret,
-      },
-      { reorderApplications: false }
-    );
+      if (isPendingClientSecretRemoval && !clientSecret) {
+        await handleRemoveClientSecret();
+        return;
+      }
+
+      if (clientSecret) {
+        const didAttachClientSecret = await handleAttachClientSecret();
+
+        if (!didAttachClientSecret) {
+          return;
+        }
+      }
+
+      if (isEditingNote || hasPendingNoteChanges) {
+        persistNoteChanges();
+      }
+
+      selectCredential(
+        token,
+        profile,
+        agency,
+        {
+          id: entry.id,
+          type: entry.type,
+          clientId,
+          hasClientSecret: hasAttachedClientSecret,
+        },
+        { reorderApplications: false }
+      );
+    } finally {
+      setIsUsingCredential(false);
+    }
   }, [
     agency,
     clearSelectedCredential,
@@ -168,8 +229,11 @@ export default function useCredentialItemActions({
     entry.type,
     hasAttachedClientSecret,
     handleAttachClientSecret,
+    handleRemoveClientSecret,
     isEditingNote,
     isInUse,
+    isPendingClientSecretRemoval,
+    isUsingCredential,
     needsClientSecret,
     note,
     persistNoteChanges,
@@ -203,15 +267,21 @@ export default function useCredentialItemActions({
     setClientSecretStatus,
     removed,
     isConfirmingRemove,
+    isUsingCredential,
+    isPendingClientSecretRemoval,
     setIsConfirmingRemove,
+    setIsPendingClientSecretRemoval,
     setRemoved,
     persistNoteChanges,
     handleAttachClientSecret,
     handleUseAction,
+    handleRemoveClientSecret,
     handleRemoveAction,
     isUseDisabled: needsClientSecret
       ? !clientSecret
-      : shouldPromptForGlobalClientSecret
+      : isPendingClientSecretRemoval
+        ? hasValidationError || !token
+        : shouldPromptForGlobalClientSecret
         ? !clientSecret && (hasValidationError || !token)
         : hasValidationError || !token,
     canManageAttachedClientSecret:

@@ -167,7 +167,7 @@ export default function Header() {
               <Text type="text1">Missing client configuration 😵‍💫</Text>
             </Overlay>
 
-            <Applications className={styles.history} />
+            {!isIndex && <Applications className={styles.history} />}
           </Col>
         </Row>
         <Settings className={styles.settings} />

@@ -70,7 +70,7 @@ export default function useCredentialInputFlow({
           normalizedClientId
         );
 
-        if (existingEntry?.hasClientSecret) {
+        if (existingEntry?.token) {
           setResolveError("");
           setPendingClient(null);
           setCredentialEntry(existingEntry, false);

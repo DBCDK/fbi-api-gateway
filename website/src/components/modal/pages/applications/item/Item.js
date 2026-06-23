@@ -1,3 +1,5 @@
+import Spinner from "react-bootstrap/Spinner";
+
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
 
@@ -50,6 +52,8 @@ function ApplicationItemView({ item, ui, form, actions }) {
       }
     : undefined;
   const shouldShowBottomRemove = ui.open || (item.type === "client" && !ui.canExpand);
+  const resolvedDisplayName =
+    item.savedNote || item.displayName || item.clientId;
 
   function renderRemoveActions(className = "") {
     return (
@@ -128,7 +132,7 @@ function ApplicationItemView({ item, ui, form, actions }) {
           ) : (
             <>
               <Text type={ui.open ? "text6" : "text4"}>
-                {item.displayName || item.clientId}
+                {resolvedDisplayName}
               </Text>
 
               {!ui.needsClientSecret && item.token && (
@@ -179,8 +183,6 @@ function ApplicationItemView({ item, ui, form, actions }) {
                   open={ui.open}
                 />
               )}
-
-              {item.note && <Text className={styles.note}>{item.note}</Text>}
             </>
           )}
         </div>
@@ -191,6 +193,21 @@ function ApplicationItemView({ item, ui, form, actions }) {
             clientSecret={form.clientSecret}
             clientSecretError={form.clientSecretError}
             setClientSecret={actions.setClientSecret}
+            trailingAction={
+              <button
+                type="button"
+                className={styles.inlineSecretAction}
+                aria-label={form.clientSecret ? "Clear draft secret" : "Edit secret"}
+                title={form.clientSecret ? "Clear draft secret" : "Edit secret"}
+                onClick={
+                  form.clientSecret
+                    ? () => actions.setClientSecret("")
+                    : actions.focusClientSecret
+                }
+              >
+                {form.clientSecret ? "❌" : "✏️"}
+              </button>
+            }
             inlineWarning
             showAction={false}
           />
@@ -209,16 +226,21 @@ function ApplicationItemView({ item, ui, form, actions }) {
             {shouldShowBottomRemove && renderRemoveActions()}
             <Button
               className={styles.use}
-              disabled={ui.isUseDisabled}
+              disabled={ui.isUseDisabled || ui.isUsingCredential}
               size="small"
               onClick={actions.useCredential}
               onMouseEnter={() => actions.setUseButtonHovered(true)}
               onMouseLeave={() => actions.setUseButtonHovered(false)}
               onFocus={() => actions.setUseButtonHovered(true)}
               onBlur={() => actions.setUseButtonHovered(false)}
+              aria-busy={ui.isUsingCredential}
               primary
             >
-              {ui.useButtonLabel}
+              {ui.isUsingCredential ? (
+                <Spinner animation="border" size="sm" />
+              ) : (
+                ui.useButtonLabel
+              )}
             </Button>
           </div>
         </div>

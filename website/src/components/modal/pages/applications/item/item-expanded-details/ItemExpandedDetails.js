@@ -14,13 +14,13 @@ export default function ItemExpandedDetails({ item, ui, form, actions }) {
     type,
     token,
     clientId,
-    profile,
+    displayName,
     note,
     savedNote,
+    profile,
     configuration,
     user,
     hasCulrAccount,
-    hasClientSecret,
     submitted,
     expires,
     expireStatus,
@@ -34,19 +34,36 @@ export default function ItemExpandedDetails({ item, ui, form, actions }) {
     isEditingClientSecret,
     isEditingNote,
   } = ui;
-  const {
-    clientSecret,
-    clientSecretError,
-    clientSecretStatus,
-    clientSecretInputId,
-  } = form;
+  const { clientSecret, clientSecretError, clientSecretInputId } = form;
   const agencyIdsList = configuration?.agencies;
   const defaultAgencyId = configuration?.defaultAgency;
   const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId;
   const isAuthenticated = user?.isAuthenticated;
   const agencies = user?.agencies;
   const hasOmittedCulrData = user?.omittedCulrData;
-  const noteInputId = `input-note-${id || token || clientId}`;
+  const customNameInputId = `input-custom-name-${id || token || clientId}`;
+  const hasCustomDisplayName =
+    typeof savedNote === "string" &&
+    savedNote.trim() &&
+    savedNote.trim() !== displayName;
+  const showValidatedClientSecretAction =
+    canManageAttachedClientSecret && !isEditingClientSecret;
+  const secretActionLabel = isEditingClientSecret
+    ? "Cancel editing secret"
+    : showValidatedClientSecretAction
+      ? "Remove validated secret"
+      : "Edit secret";
+  const handleSecretAction = isEditingClientSecret
+    ? actions.cancelEditingClientSecret
+    : showValidatedClientSecretAction
+      ? actions.prepareClientSecretRemoval
+      : actions.startEditingClientSecret;
+  const draftSecretActionLabel = clientSecret
+    ? "Clear draft secret"
+    : "Edit secret";
+  const handleDraftSecretAction = clientSecret
+    ? () => actions.setClientSecret("")
+    : actions.startEditingClientSecret;
 
   return (
     <div
@@ -60,19 +77,149 @@ export default function ItemExpandedDetails({ item, ui, form, actions }) {
           <Text type="text1">Client details</Text>
         </div>
 
+        <div className={styles.clientDisplayName}>
+          <Text type="text4">Display Name</Text>
+          <div className={styles.nameSummaryRow}>
+            <div className={styles.nameValue}>
+              {isEditingNote ? (
+                <div className={styles.nameInlineEditor}>
+                  <input
+                    id={customNameInputId}
+                    className={styles.nameInput}
+                    value={note}
+                    autoComplete="off"
+                    autoCapitalize="words"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    maxLength="50"
+                    placeholder="Custom client name ..."
+                    onChange={(e) => actions.setNote(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        actions.useCredential();
+                      }
+                    }}
+                  />
+                </div>
+              ) : (
+                <Text as="span" type="text1" className={styles.nameText}>
+                  {savedNote || displayName || "Unknown ⚠️"}
+                </Text>
+              )}
+            </div>
+            <button
+              type="button"
+              className={styles.secretAction}
+              aria-label={
+                isEditingNote
+                  ? "Cancel editing custom name"
+                  : "Edit custom name"
+              }
+              title={
+                isEditingNote
+                  ? "Cancel editing custom name"
+                  : "Edit custom name"
+              }
+              onClick={
+                isEditingNote
+                  ? actions.cancelEditingNote
+                  : actions.startEditingNote
+              }
+            >
+              {isEditingNote ? "❌" : "✏️"}
+            </button>
+          </div>
+        </div>
+
+        {hasCustomDisplayName && (
+          <div className={styles.clientOriginalDisplayName}>
+            <Text type="text4">Original Display Name</Text>
+            <Text type="text1">{displayName || "Unknown ⚠️"}</Text>
+          </div>
+        )}
+
         <div className={styles.clientId}>
           <Text type="text4">ClientID</Text>
           <Text type="text1">{clientId}</Text>
         </div>
 
+        {showExpandedClientSecretSection && (
+          <>
+            {canManageAttachedClientSecret && (
+              <div className={styles.clientSecretSummary}>
+                <Text type="text4">Client secret</Text>
+                <div className={styles.secretSummaryRow}>
+                  <div className={styles.secretValue}>
+                    {isEditingClientSecret ? (
+                      <div className={styles.secretInlineForm}>
+                        <ItemClientSecretForm
+                          inputId={clientSecretInputId}
+                          clientSecret={clientSecret}
+                          clientSecretError={clientSecretError}
+                          setClientSecret={actions.setClientSecret}
+                          onEnter={actions.useCredential}
+                          showAction={false}
+                          hideLabel
+                        />
+                      </div>
+                    ) : (
+                      <Text as="span" type="text1" className={styles.secretMask}>
+                        ************
+                      </Text>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.secretAction}
+                    aria-label={secretActionLabel}
+                    title={secretActionLabel}
+                    onClick={handleSecretAction}
+                  >
+                    {isEditingClientSecret ? (
+                      "❌"
+                    ) : showValidatedClientSecretAction ? (
+                      "✏️"
+                    ) : (
+                      "✏️"
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {showExpandedClientSecretForm && !canManageAttachedClientSecret && (
+              <ItemClientSecretForm
+                inputId={clientSecretInputId}
+                clientSecret={clientSecret}
+                clientSecretError={clientSecretError}
+                setClientSecret={actions.setClientSecret}
+                onEnter={actions.useCredential}
+                showAction={false}
+                trailingAction={
+                  <button
+                    type="button"
+                    className={styles.secretAction}
+                    aria-label={draftSecretActionLabel}
+                    title={draftSecretActionLabel}
+                    onClick={handleDraftSecretAction}
+                  >
+                    {clientSecret ? "❌" : "✏️"}
+                  </button>
+                }
+              />
+            )}
+          </>
+        )}
+
         <div className={styles.details}>
           <div>
             <Text type="text4">Default AgencyId</Text>
-            <Text type="text1">{defaultAgencyId || "None ⚠️"}</Text>
+            <Text type="text1">{defaultAgencyId || "Not set ⚠️"}</Text>
           </div>
           <div>
             <Text type="text4">Profile</Text>
-            <Text type="text1">{profile || "None ⚠️"}</Text>
+            <Text type="text1">{profile || "Not set ⚠️"}</Text>
           </div>
         </div>
 
@@ -88,130 +235,6 @@ export default function ItemExpandedDetails({ item, ui, form, actions }) {
             title={`Client agencies (${agencyIdsList.length})`}
             items={agencyIdsList}
           />
-        )}
-
-        {showExpandedClientSecretSection && (
-          <>
-            <hr className={styles.divider} />
-
-            <div className={styles.attachments}>
-              <div className={styles.heading}>
-                <Text type="text1">Client attachments</Text>
-              </div>
-
-              {canManageAttachedClientSecret && (
-                <div className={styles.clientSecretSummary}>
-                  <Text type="text4">Client secret</Text>
-                  <div className={styles.secretSummaryRow}>
-                    {isEditingClientSecret ? (
-                      <div className={styles.secretInlineForm}>
-                        <ItemClientSecretForm
-                          inputId={clientSecretInputId}
-                          clientSecret={clientSecret}
-                          clientSecretError={clientSecretError}
-                          clientSecretStatus={clientSecretStatus}
-                          setClientSecret={actions.setClientSecret}
-                          onEnter={actions.useCredential}
-                          showAction={false}
-                          hideLabel
-                        />
-                      </div>
-                    ) : (
-                      <Text type="text1">************</Text>
-                    )}
-                    <button
-                      type="button"
-                      className={styles.secretAction}
-                      aria-label={
-                        isEditingClientSecret
-                          ? "Cancel editing secret"
-                          : "Edit secret"
-                      }
-                      title={
-                        isEditingClientSecret
-                          ? "Cancel editing secret"
-                          : "Edit secret"
-                      }
-                      onClick={
-                        isEditingClientSecret
-                          ? actions.cancelEditingClientSecret
-                          : actions.startEditingClientSecret
-                      }
-                    >
-                      {isEditingClientSecret ? "❌" : "✏️"}
-                    </button>
-                  </div>
-                  {clientSecretStatus && (
-                    <Text type="text1">{clientSecretStatus}</Text>
-                  )}
-                </div>
-              )}
-
-              {showExpandedClientSecretForm &&
-                !canManageAttachedClientSecret && (
-                  <ItemClientSecretForm
-                    inputId={clientSecretInputId}
-                    clientSecret={clientSecret}
-                    clientSecretError={clientSecretError}
-                    clientSecretStatus={clientSecretStatus}
-                    setClientSecret={actions.setClientSecret}
-                    onEnter={actions.useCredential}
-                    showAction={false}
-                  />
-                )}
-
-              <div className={styles.clientNote}>
-                <Text type="text4">Client note</Text>
-                <div className={styles.noteSummaryRow}>
-                  {isEditingNote || !savedNote ? (
-                    <div className={styles.noteInlineEditor}>
-                      <div className={styles.fieldRow}>
-                        <span className={styles.fieldIcon} aria-hidden="true">
-                          {/* 📝 */}
-                          📄
-                        </span>
-                        <input
-                          id={noteInputId}
-                          value={note}
-                          autoComplete="off"
-                          maxLength="50"
-                          placeholder={open ? "Some client note ..." : false}
-                          onChange={(e) => actions.setNote(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              actions.useCredential();
-                            }
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <Text type="text1">{savedNote}</Text>
-                  )}
-                  {(savedNote || isEditingNote) && (
-                    <button
-                      type="button"
-                      className={styles.secretAction}
-                      aria-label={
-                        isEditingNote ? "Cancel editing note" : "Edit note"
-                      }
-                      title={
-                        isEditingNote ? "Cancel editing note" : "Edit note"
-                      }
-                      onClick={
-                        isEditingNote
-                          ? actions.cancelEditingNote
-                          : actions.startEditingNote
-                      }
-                    >
-                      {isEditingNote ? "❌" : "✏️"}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </>
         )}
       </div>
 

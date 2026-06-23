@@ -111,6 +111,43 @@ function ApplicationsPage({ modal }) {
     );
   }
 
+  function mergeApplicationsIntoCurrentOrder(current, nextApplications) {
+    const nextByIdentifier = new Map(
+      nextApplications.map((entry) => [getEntryIdentifier(entry), entry])
+    );
+    const transientEntries = current.filter((entry) => {
+      if (!isTransientEntry(entry)) {
+        return false;
+      }
+
+      const identifier = getEntryIdentifier(entry);
+      return !nextByIdentifier.has(identifier);
+    });
+    const preservedEntries = current
+      .map((entry) => {
+        const identifier = getEntryIdentifier(entry);
+
+        if (!identifier || isTransientEntry(entry)) {
+          return null;
+        }
+
+        return nextByIdentifier.get(identifier) || null;
+      })
+      .filter(Boolean);
+    const preservedIdentifiers = new Set(
+      preservedEntries.map((entry) => getEntryIdentifier(entry))
+    );
+    const newEntries = nextApplications.filter((entry) => {
+      const identifier = getEntryIdentifier(entry);
+      return identifier && !preservedIdentifiers.has(identifier);
+    });
+
+    return [...transientEntries, ...preservedEntries, ...newEntries].slice(
+      0,
+      MAX_APPLICATION_ENTRIES
+    );
+  }
+
   function createPendingEntry(value) {
     const normalizedValue = typeof value === "string" ? value.trim() : "";
     const type = detectCredentialType(normalizedValue);
@@ -402,6 +439,10 @@ function ApplicationsPage({ modal }) {
 
   useEffect(() => {
     setState((current) => {
+      if (modal.isVisible) {
+        return mergeApplicationsIntoCurrentOrder(current, applications);
+      }
+
       const transientEntries = current.filter((entry) => {
         if (!isTransientEntry(entry)) {
           return false;
@@ -419,7 +460,7 @@ function ApplicationsPage({ modal }) {
         MAX_APPLICATION_ENTRIES
       );
     });
-  }, [applications]);
+  }, [applications, modal.isVisible]);
 
   useEffect(() => {
     if (!isAddExpanded) {
@@ -520,6 +561,9 @@ function ApplicationsPage({ modal }) {
                 placeholder="Drop clientId og token to connect ..."
                 value={filter}
                 autoComplete="off"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 tabIndex={isAddExpanded ? 0 : -1}
                 onChange={(e) => {
                   setFilter(e.target.value);

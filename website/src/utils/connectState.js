@@ -88,7 +88,9 @@ export function getConnectState({
   const showPendingClientMessage = pendingClient && !resolveError;
   const showReadyMessage = hasResolvedDisplay && !pendingClient;
   const effectiveCredentialValue =
-    pendingClient
+    resolvingCredential?.type === "token"
+      ? credentialValue
+      : pendingClient
       ? credentialValue
       : selectedCredential?.clientId ||
         selectedCredential?.token ||

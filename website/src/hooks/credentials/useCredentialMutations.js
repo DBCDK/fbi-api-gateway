@@ -49,7 +49,7 @@ function buildSelectedCredentialValue({
 
 export default function useCredentialMutations() {
   const { resolveCredential } = useCredentialResolve();
-  const { attachClientSecret } = useCredentialClientSecret();
+  const { attachClientSecret, removeClientSecret } = useCredentialClientSecret();
   const { attachRefreshToken } = useCredentialRefreshToken();
   const { selectedCredential, setSelectedCredential, clearSelectedCredential } =
     useSelectedCredential();
@@ -104,13 +104,18 @@ export default function useCredentialMutations() {
         return null;
       }
 
-      const { note, select = false, reorderApplications = false } = options;
+      const {
+        note,
+        select = false,
+        reorderApplications = false,
+        preservePosition = false,
+      } = options;
       const persistedEntry = setCredentialEntry(
         {
           ...entry,
           note,
         },
-        false
+        preservePosition
       );
 
       if (select && entry.token) {
@@ -145,7 +150,13 @@ export default function useCredentialMutations() {
   );
 
   const attachCredentialSecret = useCallback(
-    async ({ entryId, clientSecret, agency, note } = {}) => {
+    async ({
+      entryId,
+      clientSecret,
+      agency,
+      note,
+      preservePosition = false,
+    } = {}) => {
       const response = await attachClientSecret({
         entryId,
         clientSecret,
@@ -157,12 +168,33 @@ export default function useCredentialMutations() {
           note,
           select: Boolean(response.safeEntry.token),
           reorderApplications: false,
+          preservePosition,
         });
       }
 
       return response;
     },
     [attachClientSecret, persistResolvedEntry]
+  );
+
+  const removeCredentialSecret = useCallback(
+    async ({ entryId, note, preservePosition = false } = {}) => {
+      const response = await removeClientSecret({
+        entryId,
+      });
+
+      if (response?.safeEntry) {
+        persistResolvedEntry(response.safeEntry, {
+          note,
+          select: Boolean(response.safeEntry.token),
+          reorderApplications: false,
+          preservePosition,
+        });
+      }
+
+      return response;
+    },
+    [persistResolvedEntry, removeClientSecret]
   );
 
   const attachCredentialRefreshToken = useCallback(
@@ -194,6 +226,7 @@ export default function useCredentialMutations() {
     removeCredentialEntry,
     resolveCredentialValue,
     attachCredentialSecret,
+    removeCredentialSecret,
     attachCredentialRefreshToken,
     persistResolvedEntry,
   };

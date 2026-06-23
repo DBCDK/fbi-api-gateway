@@ -79,7 +79,10 @@ export default function ConnectField({
             type="password"
             value={secretValue}
             placeholder="Add client secret ..."
-            autoComplete="off"
+            autoComplete="new-password"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             disabled={fieldIsLoading}
             onChange={onSecretChange}
             onPaste={onSecretPaste}
@@ -95,6 +98,9 @@ export default function ConnectField({
           value={credentialValue}
           placeholder="Drop token or client id here ..."
           autoComplete="off"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           disabled={fieldIsLoading}
           onChange={onCredentialChange}
           onPaste={onCredentialPaste}

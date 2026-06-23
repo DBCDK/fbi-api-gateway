@@ -107,4 +107,74 @@ describe("useCredentialInputFlow", () => {
     expect(onChange).toHaveBeenCalledWith("");
     expect(selectCredential).not.toHaveBeenCalled();
   });
+
+  test("reuses an existing token for the same clientId even without a stored client secret", async () => {
+    const onChange = jest.fn();
+    const onSubmit = jest.fn();
+    const selectCredential = jest.fn();
+    const setCredentialEntry = jest.fn();
+    const resolveCredentialValue = jest.fn();
+    const blurInput = jest.fn();
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          applications: [
+            {
+              id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+              type: "client",
+              clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+              token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+              hasClientSecret: false,
+              profile: "bibdk21",
+              agency: "190101",
+            },
+          ],
+          hasFetchedApplications: true,
+          selectedCredential: null,
+          setCredentialEntry,
+          resolveCredentialValue,
+          attachCredentialSecret: jest.fn(),
+          selectCredential,
+          clearSelectedCredential: jest.fn(),
+          onSubmit,
+          onChange,
+          blurInput,
+          focusInput: jest.fn(),
+        })
+      );
+    });
+
+    await act(async () => {
+      await hookValue.handleResolveCredential(
+        "15804e47-4ffe-43a6-9adf-7176f0b5ba52"
+      );
+    });
+
+    expect(resolveCredentialValue).not.toHaveBeenCalled();
+    expect(setCredentialEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+      }),
+      false
+    );
+    expect(selectCredential).toHaveBeenCalledWith(
+      "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+      "bibdk21",
+      "190101",
+      expect.objectContaining({
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        hasClientSecret: false,
+      }),
+      { reorderApplications: false }
+    );
+    expect(onSubmit).toHaveBeenCalledWith(
+      "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f"
+    );
+    expect(onChange).toHaveBeenCalledWith(
+      "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f"
+    );
+  });
 });

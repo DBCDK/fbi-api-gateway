@@ -32,9 +32,14 @@ export default function useConnectController({
     useCredentialNetwork();
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const { configuration, status, isLoading } = useConfiguration(selectedToken);
+  const isEffectiveInternalNetwork =
+    !isNetworkLoading &&
+    isDetectedInternal &&
+    internalNetworkCheck !== "disabled";
 
   const [hasFocus, setHasFocus] = useState(false);
   const containerRef = useRef(null);
+  const lastResolvedNetworkModeRef = useRef(null);
 
   const syncFocusState = useCallback(() => {
     const container = containerRef.current;
@@ -86,14 +91,17 @@ export default function useConnectController({
     blurInput,
     focusInput,
   });
+  const requiresClientSecretInput =
+    Boolean(pendingClient) && !isEffectiveInternalNetwork;
 
   useEffect(() => {
     const nextIsValid = pendingClient
-      ? Boolean(secretValue.trim())
+      ? isEffectiveInternalNetwork || Boolean(secretValue.trim())
       : Boolean(selectedToken?.token) && !resolvingCredential;
 
     onValidityChange?.(nextIsValid);
   }, [
+    isEffectiveInternalNetwork,
     onValidityChange,
     pendingClient,
     resolvingCredential,
@@ -121,6 +129,45 @@ export default function useConnectController({
     }
   }, [pendingClient, resolvingCredential, selectedToken?.token]);
 
+  useEffect(() => {
+    if (isNetworkLoading || resolvingCredential) {
+      return;
+    }
+
+    const nextNetworkMode = isEffectiveInternalNetwork
+      ? "internal"
+      : "external";
+    const previousNetworkMode = lastResolvedNetworkModeRef.current;
+    lastResolvedNetworkModeRef.current = nextNetworkMode;
+
+    if (!previousNetworkMode || previousNetworkMode === nextNetworkMode) {
+      return;
+    }
+
+    const clientIdToRefresh =
+      pendingClient?.clientId ||
+      (selectedToken?.clientId && !selectedToken?.hasClientSecret
+        ? selectedToken.clientId
+        : null);
+
+    if (!clientIdToRefresh) {
+      return;
+    }
+
+    handleResolveCredential(clientIdToRefresh, {
+      shouldSubmit: false,
+      onResolvedSelection: () => setHasFocus(false),
+    });
+  }, [
+    handleResolveCredential,
+    isEffectiveInternalNetwork,
+    isNetworkLoading,
+    pendingClient?.clientId,
+    resolvingCredential,
+    selectedToken?.clientId,
+    selectedToken?.hasClientSecret,
+  ]);
+
   const {
     hasResolvedDisplay,
     hasMissingConfigurationWarning,
@@ -136,7 +183,7 @@ export default function useConnectController({
     applications,
     configuration,
     credentialValue,
-    pendingClient,
+    pendingClient: requiresClientSecretInput ? pendingClient : null,
     resolveError,
     resolvingCredential,
     selectedCredential: selectedToken,
@@ -185,7 +232,13 @@ export default function useConnectController({
       }
 
       if (pendingClient) {
-        await handleAttachSecret();
+        if (isEffectiveInternalNetwork) {
+          await handleResolveCredential(pendingClient.clientId || credentialValue, {
+            shouldSubmit: true,
+          });
+        } else {
+          await handleAttachSecret();
+        }
       } else {
         await handleResolveCredential(credentialValue);
       }
@@ -197,6 +250,7 @@ export default function useConnectController({
       handleAttachSecret,
       handleResolveCredential,
       hasResolvedDisplay,
+      isEffectiveInternalNetwork,
       isResolvingCredential,
       onSubmit,
       pendingClient,
@@ -297,7 +351,7 @@ export default function useConnectController({
     credentialValue: effectiveCredentialValue,
     secretValue,
     hasFocus,
-    pendingClient,
+    pendingClient: requiresClientSecretInput ? pendingClient : null,
     configuration,
     status,
     isLoading,
