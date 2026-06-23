@@ -573,6 +573,143 @@ type Manifestations {
   searchHits: [SearchHit!]
 }
 
+"""
+Metadata related to material selection, including publication status,
+selection group, and librarian assessment.
+"""
+type MaterialSelection {
+  """
+  Publication status of the manifestation (e.g. new title, new edition, new print run).
+  """
+  cataloguedPublicationStatus: [MaterialSelectionCataloguedPublicationStatus!]!
+
+  """
+  Recommended selection group for the manifestation: adult, children, or school libraries.
+  """
+  selectionGroup: [MaterialSelectionSelectionGroup!]!
+
+  """
+  The type of library assessment associated with the manifestation:
+  literature, movie, or multimedia.
+  """
+  librarianAssessment: [MaterialSelectionLibrarianAssessment!]!
+}
+
+enum MaterialSelectionPublicationStatusEnum {
+  """
+  New title. Display label example: "Ny titel".
+  """
+  NEW_TITLE
+
+  """
+  New edition. Display label example: "Ny udgave".
+  """
+  NEW_EDITION
+
+  """
+  New print run. Display label example: "Nyt oplag".
+  """
+  NEW_PRINT
+}
+
+enum MaterialSelectionGroupEnum {
+  """
+  Adult. Display label example: "Voksenafdelinger".
+  """
+  ADULT
+
+  """
+  Children. Display label example: "Børnebiblioteker".
+  """
+  CHILDREN
+
+  """
+  School. Display label example: "Skolebiblioteker".
+  """
+  SCHOOL
+}
+
+enum MaterialSelectionLibrarianAssessmentEnum {
+  """
+  Literature assessment.
+  Display label example: "Har lektørudtalelse (materialevurdering)".
+  """
+  LITERATURE
+
+  """
+  Has a film review. Display label example: "Har filmvurdering".
+  """
+  MOVIE
+
+  """
+  Has a multimedia review. Display label example: "Har multimedievurdering".
+  """
+  MULTIMEDIA
+}
+
+"""
+Publication status entry within material selection.
+"""
+type MaterialSelectionCataloguedPublicationStatus {
+  """
+  The publication status enum value.
+  """
+  type: MaterialSelectionPublicationStatusEnum!
+
+  """
+  Values that can be used for Complex Search filtering, e.g. ["nt", "ny titel"].
+  Use these values with term.cataloguedPublicationStatus in Complex Search.
+  """
+  searchValues: [String!]!
+
+  """
+  Danish display label for the publication status, e.g. "Ny titel".
+  """
+  display: String
+}
+
+"""
+Selection group entry within material selection.
+"""
+type MaterialSelectionSelectionGroup {
+  """
+  The selection group enum value.
+  """
+  type: MaterialSelectionGroupEnum!
+
+  """
+  Values that can be used for Complex Search filtering, e.g. ["v", "voksen"].
+  Use these values with term.selectionGroup in Complex Search.
+  """
+  searchValues: [String!]!
+
+  """
+  Danish display label for the selection group, e.g. "Voksenafdelinger".
+  """
+  display: String
+}
+
+"""
+Librarian assessment entry within material selection.
+"""
+type MaterialSelectionLibrarianAssessment {
+  """
+  The librarian assessment enum value.
+  """
+  type: MaterialSelectionLibrarianAssessmentEnum!
+
+  """
+  Values that can be used for Complex Search filtering, e.g. ["l", "lektørudtalelse"].
+  Use these values with term.librarianAssessment in Complex Search.
+  """
+  searchValues: [String!]!
+
+  """
+  Danish display label for the assessment, e.g. "Har lektørudtalelse (materialevurdering)".
+  """
+  display: String
+}
+
 type Manifestation {
   """
   A unique identifier for tracking user interactions with this manifestation. 
@@ -690,6 +827,12 @@ type Manifestation {
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   """
   contents: [ContentsEntity!]
+
+  """
+  Metadata related to material selection, including publication status,
+  selection group, and librarian assessment.
+  """
+  materialSelection: MaterialSelection
 
   """
   The type of material of the manifestation based on bibliotek.dk types

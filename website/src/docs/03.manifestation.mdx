@@ -255,3 +255,41 @@ from a specific library.
     faust: "48237053",
   }}
 />
+
+## Material Selection
+
+The _materialSelection_ field can contain publication status, selection group, and
+librarian assessment information for a manifestation.
+
+The _searchValues_ values can be used with the corresponding Complex Search indexes:
+_term.cataloguedPublicationStatus_, _term.selectionGroup_, and _term.librarianAssessment_.
+
+<InlineGraphiQL
+  query={`query Example_MaterialSelection($pid: String!) {
+  manifestation(pid: $pid) {
+    titles {
+      main
+    }
+    materialSelection {
+      cataloguedPublicationStatus {
+        type
+        display
+        searchValues
+      }
+      selectionGroup {
+        type
+        display
+        searchValues
+      }
+      librarianAssessment {
+        type
+        display
+        searchValues
+      }
+    }
+  }
+}`}
+  variables={{
+    pid: "870970-basis:01104675",
+  }}
+/>
