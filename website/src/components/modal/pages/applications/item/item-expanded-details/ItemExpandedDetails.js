@@ -176,13 +176,7 @@ export default function ItemExpandedDetails({ item, ui, form, actions }) {
                     title={secretActionLabel}
                     onClick={handleSecretAction}
                   >
-                    {isEditingClientSecret ? (
-                      "❌"
-                    ) : showValidatedClientSecretAction ? (
-                      "✏️"
-                    ) : (
-                      "✏️"
-                    )}
+                    {isEditingClientSecret ? "❌" : "✏️"}
                   </button>
                 </div>
               </div>
