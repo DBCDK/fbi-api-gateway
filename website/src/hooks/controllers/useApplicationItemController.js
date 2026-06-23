@@ -116,7 +116,7 @@ export default function useApplicationItemController(props) {
   }, [open]);
 
   useDeferredElementFocus({
-    enabled: open && shouldFocusClientSecret,
+    enabled: shouldFocusClientSecret,
     elementId: `client-secret-${props.id}`,
     onFocused: () => setShouldFocusClientSecret(false),
   });
@@ -293,7 +293,10 @@ export default function useApplicationItemController(props) {
         : "Use";
 
   function focusClientSecret() {
-    setOpen(true);
+    if (!showInlineClientSecretForm) {
+      setOpen(true);
+    }
+
     setIsEditingClientSecret(true);
     setClientSecretError("");
     setClientSecretStatus("");
