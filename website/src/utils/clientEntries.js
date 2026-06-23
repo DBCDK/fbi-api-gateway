@@ -1,5 +1,3 @@
-import getConfig from "next/config";
-
 const DEFAULT_MAX_CLIENT_ENTRIES = 5;
 
 function parseMaxClientEntries(value) {
@@ -10,11 +8,7 @@ function parseMaxClientEntries(value) {
 }
 
 export function getMaxClientEntries() {
-  const runtimeConfig = getConfig?.()?.publicRuntimeConfig || {};
-
-  // The website should follow the server-exposed runtime config instead of
-  // maintaining its own independent fallback rules in the browser.
-  return parseMaxClientEntries(runtimeConfig.maxClientEntries);
+  return parseMaxClientEntries(process.env.NEXT_PUBLIC_MAX_CLIENT_ENTRIES);
 }
 
 export const MAX_CLIENT_ENTRIES = getMaxClientEntries();

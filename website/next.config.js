@@ -16,13 +16,10 @@ module.exports = {
     locales: ["en"],
     defaultLocale: "en",
   },
-  publicRuntimeConfig: {
-    theme: process.env.WEBSITE_THEME || "default",
-    maxClientEntries:
-      process.env.MAX_CLIENT_ENTRIES || String(defaultMaxClientEntries),
-  },
   env: {
     NEXT_PUBLIC_WEBSITE_THEME: process.env.WEBSITE_THEME || "default",
+    NEXT_PUBLIC_MAX_CLIENT_ENTRIES:
+      process.env.MAX_CLIENT_ENTRIES || String(defaultMaxClientEntries),
   },
   async redirects() {
     return [
