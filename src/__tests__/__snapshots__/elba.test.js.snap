@@ -1,10 +1,10 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`PeriodicaArticleOrder, manifestation not part of statsbibliotek journal should give error 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "ERROR_PID_NOT_RESERVABLE",
       },
     },
@@ -13,10 +13,10 @@ Object {
 `;
 
 exports[`PeriodicaArticleOrder, missing mail in user, but given in input, order success 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "OK",
       },
     },
@@ -25,10 +25,10 @@ Object {
 `;
 
 exports[`PeriodicaArticleOrder, missing mail on user and input, should give error 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "ERROR_UNAUTHENTICATED_USER",
       },
     },
@@ -37,10 +37,10 @@ Object {
 `;
 
 exports[`PeriodicaArticleOrder, municiapalityAgencyId not subscribed, should give error 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "ERROR_AGENCY_NOT_SUBSCRIBED",
       },
     },
@@ -49,10 +49,10 @@ Object {
 `;
 
 exports[`PeriodicaArticleOrder, no municiapalityAgencyId, should give error 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "ERROR_MISSING_MUNICIPALITYAGENCYID",
       },
     },
@@ -61,10 +61,10 @@ Object {
 `;
 
 exports[`PeriodicaArticleOrder, order success 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "OK",
       },
     },
@@ -73,10 +73,10 @@ Object {
 `;
 
 exports[`PeriodicaArticleOrder, originRequester missing from smaug configuration 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "ERROR_MISSING_CLIENT_CONFIGURATION",
       },
     },
@@ -85,10 +85,10 @@ Object {
 `;
 
 exports[`PeriodicaArticleOrder, unauthenticated token, should give error 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "ERROR_UNAUTHENTICATED_USER",
       },
     },
@@ -97,10 +97,10 @@ Object {
 `;
 
 exports[`PeriodicaArticleOrder, user blocked by municipality - should give error 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "BORCHK_USER_BLOCKED_BY_AGENCY",
       },
     },
@@ -109,10 +109,10 @@ Object {
 `;
 
 exports[`PeriodicaArticleOrder, userName and userMail set in input, order success 1`] = `
-Object {
-  "data": Object {
-    "elba": Object {
-      "placeCopyRequest": Object {
+{
+  "data": {
+    "elba": {
+      "placeCopyRequest": {
         "status": "OK",
       },
     },

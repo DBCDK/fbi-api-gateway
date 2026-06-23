@@ -39,6 +39,47 @@ const PENDING_REQUEST_WARN_MS = 15 * 1000;
 const PENDING_REQUEST_LOG_PREFIX = "PENDING_REQUEST_DEBUG";
 
 /**
+ * Converts undici request headers to a lookup map.
+ * Undici v8 stores headers as a flat [key, value, ...] array; older versions used a raw string.
+ */
+function createHeaderMap(headers) {
+  if (Array.isArray(headers)) {
+    return Object.fromEntries(
+      headers
+        .filter((key, index) => index % 2 === 0 && key)
+        .map((key, index) => [key.toLowerCase(), headers[index * 2 + 1]])
+    );
+  }
+
+  if (typeof headers === "string") {
+    return Object.fromEntries(
+      headers
+        .split("\r\n")
+        .filter((header) => header.includes(":"))
+        .map((header) => {
+          const separatorIndex = header.indexOf(":");
+          return [
+            header.slice(0, separatorIndex).toLowerCase(),
+            header.slice(separatorIndex + 1).trim(),
+          ];
+        })
+    );
+  }
+
+  return {};
+}
+
+/**
+ * Extracts the internal request identifier from undici request headers.
+ */
+function getInternalIdFromHeaders(headers) {
+  return parseInt(
+    createHeaderMap(headers)[INTERNAL_ID_HEADER.toLowerCase()] || -1,
+    10
+  );
+}
+
+/**
  * This is called from the main thread
  *
  * It will send job to the worker thread, and the
@@ -164,6 +205,7 @@ if (!isMainThread) {
     .channel("undici:request:create")
     .subscribe(({ request }) => {
       request.timings = { create: performance.now() };
+      request.internalId = getInternalIdFromHeaders(request.headers);
     });
 
   // This message is published right before the first byte of the request is written to the socket.
@@ -194,13 +236,7 @@ if (!isMainThread) {
     const now = performance.now();
     const total = now - request.timings.create;
 
-    // Get identifer from custom header
-    const identifier = parseInt(
-      request.headers
-        .split("\r\n")
-        .find((header) => header.startsWith(INTERNAL_ID_HEADER))
-        ?.replace?.(`${INTERNAL_ID_HEADER}: `, "") || -1
-    );
+    const identifier = request.internalId;
 
     // Call resolve with collected timings
     pendingTimingCallbacks[identifier]?.({

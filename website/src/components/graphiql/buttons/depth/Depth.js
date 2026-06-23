@@ -1,7 +1,5 @@
 import { useRef, useState } from "react";
 
-import { parse } from "graphql";
-
 import { ToolbarButton } from "@graphiql/react";
 
 import useQueryDepth from "@/hooks/useQueryDepth";

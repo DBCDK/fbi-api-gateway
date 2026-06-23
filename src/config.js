@@ -141,14 +141,6 @@ export default {
       prefix: process.env.REFERENCE_PRESENTATION_PREFIX || "ref-presentation-2",
       teamLabel: "de-team",
     },
-    backend: {
-      url:
-        process.env.BACKEND_URL ||
-        "http://bibdk-backend-www-master.febib-prod.svc.cloud.dbc.dk/graphql",
-      ttl: process.env.BACKEND_TIME_TO_LIVE_SECONDS || 5,
-      prefix: process.env.BACKEND_PREFIX || "backend-1",
-      teamLabel: "febib",
-    },
     bibliotekdkCms: {
       url:
         process.env.BIBLIOTEKDK_CMS_URL ||
@@ -423,9 +415,16 @@ export default {
       url:
         process.env.INFOMEDIA_URL ||
         "http://infomedia-master.frontend-prod.svc.cloud.dbc.dk/1.5/server.php",
-      id: process.env.INFOMEDIA_ID,
+      id: process.env.INFOMEDIA_ID || "infomedia_fra_netpunkt",
       ttl: process.env.INFOMEDIA_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.INFOMEDIA_PREFIX || "infomedia-1",
+      teamLabel: "febib",
+    },
+    retriever: {
+      url: process.env.RETRIEVER_URL || "https://port.retriever-info.com",
+      token: process.env.RETRIEVER_API_TOKEN,
+      ttl: 60 * 5,
+      prefix: "retriever-1",
       teamLabel: "febib",
     },
     linkcheck: {

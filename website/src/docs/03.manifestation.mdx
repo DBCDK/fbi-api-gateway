@@ -97,12 +97,13 @@ If a manifestation provides no identifier, null is returned at the corresponding
 
 The _access_ field contains a list of ways to access a manifestation. The type of access can be both physical and digital.
 
-There can be 5 different types of access:
+Access may be one of the following types:
 
 - `AccessUrl`: Returns a url to an online media, where the article e.g. can be read.
 - `Ereol`: Returns a url to the manifestation on ereolen.dk.
 - `InterLibraryLoan`: Returns true if the manifestation is part of the ILL (the internal library loaner service)
 - `InfomediaService`: Returns an article id. This id can be used to fetch the article via the InfomediaService.
+- `RetrieverService`: Returns a document id. This id can be used to fetch the article via the [Retriever](#h1-retriever) service.
 - `DigitalArticleService`: Returns an ISSN to the article which can be used to order a digital copy of the
   article via “Digital Article Service”.
 
@@ -120,6 +121,9 @@ There can be 5 different types of access:
                 type
               }
               ... on InfomediaService {
+                id
+              }
+              ... on RetrieverService {
                 id
               }
               ... on InterLibraryLoan {
@@ -141,8 +145,10 @@ There can be 5 different types of access:
   }}
 />
 
-If an InfomediaService entry is presented, the article id can be used to access
-the content of the article through the [Infomedia](#Infomedia) type.
+If a RetrieverService or InfomediaService entry is presented, the id can be used to fetch
+the article through [Retriever](#h1-retriever) or [Infomedia](#h1-infomedia).
+
+**Transition period:** While Infomedia is being replaced by Retriever, article IDs are interchangeable. An Infomedia ID works with `retriever`, and a Retriever document ID works with `infomedia`. New integrations should use `retriever`; `infomedia` will be removed once all clients have migrated.
 
 <InlineGraphiQL
   query={`query($pid: [String!]!) {
@@ -157,6 +163,9 @@ the content of the article through the [Infomedia](#Infomedia) type.
                 url
               }
               ... on InfomediaService {
+                id
+              }
+              ... on RetrieverService {
                 id
               }
               ... on InterLibraryLoan {
@@ -244,5 +253,43 @@ from a specific library.
         }`}
   variables={{
     faust: "48237053",
+  }}
+/>
+
+## Material Selection
+
+The _materialSelection_ field can contain publication status, selection group, and
+librarian assessment information for a manifestation.
+
+The _searchValues_ values can be used with the corresponding Complex Search indexes:
+_term.cataloguedPublicationStatus_, _term.selectionGroup_, and _term.librarianAssessment_.
+
+<InlineGraphiQL
+  query={`query Example_MaterialSelection($pid: String!) {
+  manifestation(pid: $pid) {
+    titles {
+      main
+    }
+    materialSelection {
+      cataloguedPublicationStatus {
+        type
+        display
+        searchValues
+      }
+      selectionGroup {
+        type
+        display
+        searchValues
+      }
+      librarianAssessment {
+        type
+        display
+        searchValues
+      }
+    }
+  }
+}`}
+  variables={{
+    pid: "870970-basis:01104675",
   }}
 />

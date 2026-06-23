@@ -80,7 +80,7 @@ export async function hasInfomediaAccess(context) {
  * @param context
  * @returns {Promise<*>}
  */
-export async function resolveAccess(manifestation, context) {
+export async function resolveAccess(manifestation, context, { includeInfomediaAccess = true } = {}) {
   // We parse the access structure from JED, and convert it
   // to the union type structure.
   // At some point we may choose to follow the structure of JED closely,
@@ -122,6 +122,7 @@ export async function resolveAccess(manifestation, context) {
       note: entry.note,
       type: entry.type,
       status: linkStatus(proxyUrl) || "OK",
+      urlText: entry.urlText,
     });
   });
 
@@ -154,20 +155,29 @@ export async function resolveAccess(manifestation, context) {
     });
   });
 
-  if (parent?.access?.infomediaService?.id) {
+  // While we transition from Infomedia to Retriever, we need to support both services.
+  // But we always prefer the Retriever article if it exists.
+  // Legacy queries expect the InfomediaService union type in the access list, 
+  // so we need to return that type whenever the query contain InfomediaAccess as inline fragment (... on InfomediaService).
+  // This is accepted in the deprecation period. After that, we will only return RetrieverService.
+  const retrieverOrInfomediaId = parent?.access?.retrieverService?.id || parent?.access?.infomediaService?.id;
+  const retrieverOrInfomediaLicense = parent?.access?.retrieverService?.license || parent?.access?.infomediaService?.license;
+  const retrieverOrInfomediaType = includeInfomediaAccess ? "InfomediaService" : "RetrieverService";
+
+  if (retrieverOrInfomediaId) {
     // Check if token has access to INFOMEDIAPRO
     const hasInfomediaProRights = context?.user?.dbcidp?.some(
       (entry) => entry.name === "INFOMEDIAPRO"
     );
 
     if (
-      parent?.access?.infomediaService?.license === "UNRESTRICTED" ||
-      (parent?.access?.infomediaService?.license === "PROFESSIONALS" &&
+      retrieverOrInfomediaLicense === "UNRESTRICTED" ||
+      (retrieverOrInfomediaLicense === "PROFESSIONALS" &&
         hasInfomediaProRights)
     ) {
       res.push({
-        __typename: "InfomediaService",
-        id: parent.access.infomediaService.id,
+        __typename: retrieverOrInfomediaType,
+        id: retrieverOrInfomediaId,
       });
     } else {
       const hasPhysical = parent?.accessTypes?.some(
