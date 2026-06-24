@@ -3,7 +3,7 @@ const {
   getHistoryIdentifier,
   matchesSelectedCredentialIdentity,
   shouldClearSelectedTokenAfterRemoval,
-} = require("../legacy/useStorage");
+} = require("../useStorage");
 
 describe("getCanonicalId", () => {
   test("prefers an existing id when present", () => {

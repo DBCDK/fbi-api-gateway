@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import useConfiguration from "@/hooks/legacy/useConfiguration";
+import useConfiguration from "@/hooks/useConfiguration";
 import useCredentialConfiguration from "@/hooks/credentials/useCredentialConfiguration";
 import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
 import useCredentialItemActions from "@/hooks/credentials/useCredentialItemActions";
@@ -11,7 +11,7 @@ import useDeferredElementFocus from "@/hooks/ui/useDeferredElementFocus";
 import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
 import useModalScrollOffset from "@/hooks/ui/useModalScrollOffset";
 import usePendingReveal from "@/hooks/ui/usePendingReveal";
-import useUser from "@/hooks/legacy/useUser";
+import useUser from "@/hooks/useUser";
 
 import { getResolvedApplicationItemData } from "@/utils/applicationItemState";
 

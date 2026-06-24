@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-import useCredentialEntries from "../credentials/useCredentialEntries";
-import useCredentialMutations from "../credentials/useCredentialMutations";
-import useResolvedConfiguration from "../resolved/useResolvedConfiguration";
+import useCredentialEntries from "./credentials/useCredentialEntries";
+import useCredentialMutations from "./credentials/useCredentialMutations";
+import useResolvedConfiguration from "./resolved/useResolvedConfiguration";
 
 const syncedResolvedTokens = new Map();
 

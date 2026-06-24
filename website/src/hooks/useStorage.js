@@ -3,11 +3,11 @@ import useCredentialEntries, {
   getCredentialEntryId,
   matchesCredentialEntry,
   shouldClearSelectedCredentialAfterRemoval,
-} from "../credentials/useCredentialEntries";
-import useCredentialMutations from "../credentials/useCredentialMutations";
+} from "./credentials/useCredentialEntries";
+import useCredentialMutations from "./credentials/useCredentialMutations";
 import useSelectedCredential, {
   matchesSelectedCredentialIdentity,
-} from "../credentials/useSelectedCredential";
+} from "./credentials/useSelectedCredential";
 
 export const getHistoryIdentifier = getCredentialEntryIdentifier;
 export const getCanonicalId = getCredentialEntryId;

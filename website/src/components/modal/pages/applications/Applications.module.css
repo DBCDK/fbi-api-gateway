@@ -315,10 +315,6 @@
   transform: translate(-50%, -50%);
 }
 
-.plusIcon::after {
-  background-color: white;
-}
-
 .plusIcon::before {
   width: 10px;
   height: 2px;
@@ -343,4 +339,72 @@
   height: 100%;
   text-align: center;
   color: var(--text-light);
+}
+
+/* 
+* Dark mode
+*/
+
+:global(body.dark) .top {
+  background-color: var(--divider);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+}
+
+:global(body.dark) .title {
+  color: var(--text-dark);
+}
+
+:global(body.dark) .top.expanded .title,
+:global(body.dark) .top.expanded .text {
+  color: var(--text-dark);
+}
+
+:global(body.dark) .addContainer {
+  background-color: #39465d;
+}
+
+:global(body.dark) .overlay {
+  background-color: #4a3640 !important;
+  color: var(--text-dark) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+:global(body.dark) .add {
+  background-color: #39465d !important;
+  color: var(--text-dark) !important;
+  border: 1px solid var(--divider-dark);
+}
+
+:global(body.dark) .add:hover,
+:global(body.dark) .add:focus-visible {
+  background-color: #455166 !important;
+}
+
+:global(body.dark) .wrap,
+:global(body.dark) .text,
+:global(body.dark) .submit,
+:global(body.dark) .closeIcon,
+:global(body.dark) .input {
+  color: var(--text-dark);
+}
+
+:global(body.dark) .input {
+  border-bottom-color: var(--text-dark);
+}
+
+:global(body.dark) .input::placeholder {
+  color: var(--text-dark);
+}
+
+:global(body.dark) .add .plusIcon::before,
+:global(body.dark) .add .plusIcon::after {
+  background-color: var(--text-dark) !important;
+}
+
+:global(body.dark) .list {
+  background-color: transparent;
+}
+
+:global(body.dark) .list.noConfigurations {
+  color: var(--text-dark);
 }

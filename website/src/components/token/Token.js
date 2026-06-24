@@ -8,7 +8,7 @@ import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
 import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
-import useUser from "@/hooks/legacy/useUser";
+import useUser from "@/hooks/useUser";
 import { hasAvailableAgency } from "@/utils/configuration";
 import { detectCredentialType } from "@/utils/credentials";
 

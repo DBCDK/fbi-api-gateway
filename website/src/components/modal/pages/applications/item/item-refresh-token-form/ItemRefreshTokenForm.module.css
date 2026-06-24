@@ -20,12 +20,12 @@
   padding: var(--pt1);
   border: 0;
   background-color: transparent;
-  color: var(--dark);
+  color: var(--text-dark);
   font-family: var(--font-mono-regular);
 }
 
 .fieldInput::placeholder {
-  color: var(--dark);
+  color: var(--text-dark);
   opacity: 0.7;
 }
 

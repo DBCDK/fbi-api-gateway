@@ -50,5 +50,5 @@
 }
 
 :global(body.dark) .display p {
-  color: var(--dark);
+  color: var(--text-dark);
 }

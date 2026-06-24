@@ -15,7 +15,7 @@ export default function Connect(props) {
     secretValue,
     hasFocus,
     pendingClient,
-    configuration,
+    resolvedDisplayName,
     isLoading,
     showLoadingSpinner,
     isResolvingCredential,
@@ -62,7 +62,7 @@ export default function Connect(props) {
         secretValue={secretValue}
         hasFocus={hasFocus}
         pendingClient={pendingClient}
-        displayName={configuration?.displayName || ""}
+        displayName={resolvedDisplayName}
         hasResolvedDisplay={hasResolvedDisplay}
         hasMissingConfigurationWarning={hasMissingConfigurationWarning}
         isResolvingCredential={isResolvingCredential}

@@ -226,7 +226,7 @@
 
 .inUse .content .use {
   background-color: var(--primary-dark);
-  color: var(--text-dark);
+  color: var(--white);
 }
 
 .inUse .content .use:hover,

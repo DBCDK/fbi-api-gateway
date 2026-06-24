@@ -1,4 +1,4 @@
-jest.mock("@/hooks/legacy/useConfiguration", () => ({
+jest.mock("@/hooks/useConfiguration", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
@@ -37,7 +37,7 @@ const React = require("react");
 const { act } = React;
 const { createRoot } = require("react-dom/client");
 
-const useConfiguration = require("@/hooks/legacy/useConfiguration").default;
+const useConfiguration = require("@/hooks/useConfiguration").default;
 const useCredentialEntries = require("@/hooks/credentials/useCredentialEntries").default;
 const useCredentialInputFlow =
   require("@/hooks/credentials/useCredentialInputFlow").default;

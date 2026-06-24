@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import useConfiguration from "@/hooks/legacy/useConfiguration";
+import useConfiguration from "@/hooks/useConfiguration";
 import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
 import useCredentialInputFlow from "@/hooks/credentials/useCredentialInputFlow";
 import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
@@ -20,7 +20,12 @@ export default function useConnectController({
   onPendingChange,
 }) {
   const { selectedCredential: selectedToken } = useSelectedCredential();
-  const { applications, hasFetchedApplications, setCredentialEntry } =
+  const {
+    applications,
+    hasFetchedApplications,
+    setCredentialEntry,
+    getCredentialEntry,
+  } =
     useCredentialEntries();
   const {
     clearSelectedCredential,
@@ -32,6 +37,8 @@ export default function useConnectController({
     useCredentialNetwork();
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const { configuration, status, isLoading } = useConfiguration(selectedToken);
+  const selectedEntry = selectedToken ? getCredentialEntry(selectedToken) : null;
+  const resolvedDisplayName = selectedEntry?.note || configuration?.displayName || "";
   const isEffectiveInternalNetwork =
     !isNetworkLoading &&
     isDetectedInternal &&
@@ -353,6 +360,7 @@ export default function useConnectController({
     hasFocus,
     pendingClient: requiresClientSecretInput ? pendingClient : null,
     configuration,
+    resolvedDisplayName,
     status,
     isLoading,
     showLoadingSpinner,

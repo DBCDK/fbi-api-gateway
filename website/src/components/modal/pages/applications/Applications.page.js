@@ -148,6 +148,38 @@ function ApplicationsPage({ modal }) {
     );
   }
 
+  function areApplicationListsEqual(current = [], next = []) {
+    if (current === next) {
+      return true;
+    }
+
+    if (current.length !== next.length) {
+      return false;
+    }
+
+    return current.every((entry, index) => {
+      const nextEntry = next[index];
+
+      return (
+        getEntryIdentifier(entry) === getEntryIdentifier(nextEntry) &&
+        entry?.id === nextEntry?.id &&
+        entry?.token === nextEntry?.token &&
+        entry?.clientId === nextEntry?.clientId &&
+        entry?.status === nextEntry?.status &&
+        entry?.message === nextEntry?.message &&
+        entry?.note === nextEntry?.note &&
+        entry?.inUse === nextEntry?.inUse &&
+        entry?.isPending === nextEntry?.isPending &&
+        entry?.isEntering === nextEntry?.isEntering &&
+        entry?.isRemoving === nextEntry?.isRemoving &&
+        entry?.profile === nextEntry?.profile &&
+        entry?.agency === nextEntry?.agency &&
+        entry?.hasClientSecret === nextEntry?.hasClientSecret &&
+        entry?.networkSetting === nextEntry?.networkSetting
+      );
+    });
+  }
+
   function createPendingEntry(value) {
     const normalizedValue = typeof value === "string" ? value.trim() : "";
     const type = detectCredentialType(normalizedValue);
@@ -439,26 +471,25 @@ function ApplicationsPage({ modal }) {
 
   useEffect(() => {
     setState((current) => {
-      if (modal.isVisible) {
-        return mergeApplicationsIntoCurrentOrder(current, applications);
-      }
+      const nextState = modal.isVisible
+        ? mergeApplicationsIntoCurrentOrder(current, applications)
+        : [
+            ...current.filter((entry) => {
+              if (!isTransientEntry(entry)) {
+                return false;
+              }
 
-      const transientEntries = current.filter((entry) => {
-        if (!isTransientEntry(entry)) {
-          return false;
-        }
+              const identifier = getEntryIdentifier(entry);
 
-        const identifier = getEntryIdentifier(entry);
+              return !applications.some(
+                (applicationEntry) =>
+                  getEntryIdentifier(applicationEntry) === identifier
+              );
+            }),
+            ...applications,
+          ].slice(0, MAX_APPLICATION_ENTRIES);
 
-        return !applications.some(
-          (applicationEntry) => getEntryIdentifier(applicationEntry) === identifier
-        );
-      });
-
-      return [...transientEntries, ...applications].slice(
-        0,
-        MAX_APPLICATION_ENTRIES
-      );
+      return areApplicationListsEqual(current, nextState) ? current : nextState;
     });
   }, [applications, modal.isVisible]);
 
@@ -486,7 +517,11 @@ function ApplicationsPage({ modal }) {
       setIsAddExpanded(false);
       setFilter("");
       setInputError("");
-      setTimeout(() => setState(applications), 200);
+      setTimeout(() => {
+        setState((current) =>
+          areApplicationListsEqual(current, applications) ? current : applications
+        );
+      }, 200);
     }
   }, [modal.isVisible, applications]);
 

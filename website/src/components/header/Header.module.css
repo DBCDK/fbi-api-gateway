@@ -289,52 +289,6 @@
   background-color: var(--text-light) !important;
 }
 
-/* pride border theme*/
-:global(body.pride) .header:not(.index) .border {
-  content: "";
-  background: linear-gradient(
-    90deg,
-    #fe0000 16.66%,
-    #fd8c00 16.66%,
-    33.32%,
-    #ffe500 33.32%,
-    49.98%,
-    #119f0b 49.98%,
-    66.64%,
-    #0644b3 66.64%,
-    83.3%,
-    #c22edc 83.3%
-  );
-  display: block;
-  height: 4px;
-  width: 100%;
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-}
-
-/* pride border theme*/
-:global(body.future) .header:not(.index) .border {
-  content: "";
-  background: linear-gradient(
-    75deg,
-    var(--hero-gradient-primary),
-    var(--hero-gradient-secondary),
-    var(--hero-gradient-primary),
-    var(--hero-gradient-secondary)
-  );
-  display: block;
-  height: 4px;
-  width: 100%;
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-}
-
-:global(body.dark) .header:not(.index) .border {
-  display: none;
-}
-
 :global(body.dark) .header:not(.index) {
   border-bottom: 4px solid var(--text-light);
 }

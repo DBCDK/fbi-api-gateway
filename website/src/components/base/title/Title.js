@@ -55,5 +55,6 @@ Container.propTypes = {
     "title4",
     "title5",
     "title6",
+    "title7",
   ]),
 };

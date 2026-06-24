@@ -5,6 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import useTheme from "@/hooks/useTheme";
 import { hasAvailableAgency } from "@/utils/configuration";
@@ -21,7 +22,7 @@ import Modal, { Pages } from "@/components/modal";
 import styles from "./Header.module.css";
 import Settings from "@/components/settings";
 import Top from "../top";
-import useUser from "@/hooks/legacy/useUser";
+import useUser from "@/hooks/useUser";
 import More from "../more";
 
 export default function Header() {
@@ -43,6 +44,7 @@ export default function Header() {
   }, [elRef]);
 
   const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { getCredentialEntry } = useCredentialEntries();
   const { configuration, status, isLoading } =
     useResolvedConfiguration(selectedToken);
   const { icon, theme } = useTheme();
@@ -65,7 +67,8 @@ export default function Header() {
     status === "OK" &&
     (!effectiveProfile || !hasAvailableAgency(configuration));
 
-  const displayName = configuration?.displayName;
+  const selectedEntry = selectedToken ? getCredentialEntry(selectedToken) : null;
+  const displayName = selectedEntry?.note || configuration?.displayName;
   const isAuthenticated = user?.isAuthenticated;
 
   const isIndex = router.pathname === "/";

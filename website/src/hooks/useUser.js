@@ -1,4 +1,4 @@
-import useResolvedUser from "../resolved/useResolvedUser";
+import useResolvedUser from "./resolved/useResolvedUser";
 
 export default function useUser(
   props,
