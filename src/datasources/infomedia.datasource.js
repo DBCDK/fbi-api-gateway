@@ -1,4 +1,5 @@
 import config from "../config";
+import { htmlToPlainText } from "../utils/htmlToPlainText";
 import { getInfomediaDetails } from "../utils/utils";
 
 const { id, url, ttl, prefix, teamLabel } = config.datasources.infomedia;
@@ -54,7 +55,11 @@ export async function load({ articleId, userId, agencyId }, context) {
       if (!details.text) {
         return null;
       }
-      return { id: articleId, ...details };
+      return {
+        id: articleId,
+        ...details,
+        textNoHtml: htmlToPlainText(details.text),
+      };
     }
     return null;
   } catch (e) {
