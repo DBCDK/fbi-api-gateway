@@ -45,6 +45,7 @@ export default function useConnectController({
     internalNetworkCheck !== "disabled";
 
   const [hasFocus, setHasFocus] = useState(false);
+  const [isSubmittingFlow, setIsSubmittingFlow] = useState(false);
   const containerRef = useRef(null);
   const lastResolvedNetworkModeRef = useRef(null);
 
@@ -116,15 +117,45 @@ export default function useConnectController({
     selectedToken?.token,
   ]);
 
-  const isSubmittingCredential = Boolean(resolvingCredential);
   const showLoadingSpinner = useMinimumVisibility(
-    isSubmittingCredential,
+    Boolean(resolvingCredential) || isSubmittingFlow,
     1000
   );
 
   useEffect(() => {
     onPendingChange?.(showLoadingSpinner);
   }, [onPendingChange, showLoadingSpinner]);
+
+  useEffect(() => {
+    if (!isSubmittingFlow) {
+      return;
+    }
+
+    if (resolvingCredential) {
+      return;
+    }
+
+    if (pendingClient && !isEffectiveInternalNetwork) {
+      setIsSubmittingFlow(false);
+      return;
+    }
+
+    if (!selectedToken?.token) {
+      setIsSubmittingFlow(false);
+      return;
+    }
+
+    if (!isLoading) {
+      setIsSubmittingFlow(false);
+    }
+  }, [
+    isEffectiveInternalNetwork,
+    isLoading,
+    isSubmittingFlow,
+    pendingClient,
+    resolvingCredential,
+    selectedToken?.token,
+  ]);
 
   useEffect(() => {
     if (resolvingCredential) {
@@ -238,6 +269,8 @@ export default function useConnectController({
         inputRef?.current?.blur();
         return;
       }
+
+      setIsSubmittingFlow(true);
 
       if (pendingClient) {
         if (isEffectiveInternalNetwork) {

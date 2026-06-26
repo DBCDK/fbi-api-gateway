@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { SELECTED_CREDENTIAL_CLEARED_EVENT } from "@/hooks/credentials/useSelectedCredential";
+import {
+  SELECTED_CREDENTIAL_CLEARED_EVENT,
+  matchesSelectedCredentialIdentity,
+} from "@/hooks/credentials/useSelectedCredential";
 import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
 import { detectCredentialType } from "@/utils/credentials";
 import { isLikelyClientSecret } from "@/utils/credentialState";
@@ -76,6 +79,8 @@ export default function useCredentialInputFlow({
   const lastSyncedSelectedTokenRef = useRef(null);
   const lastSelectedCredentialSnapshotRef = useRef(null);
   const suppressedRehydrateClientIdRef = useRef("");
+  const latestSelectedCredentialRef = useRef(selectedCredential || null);
+  const skipNextAutoResolveRef = useRef(false);
 
   const enrichResolvedEntry = useCallback(
     async (entry) => {
@@ -98,18 +103,31 @@ export default function useCredentialInputFlow({
         };
 
         setCredentialEntry(enrichedEntry, false);
-        selectCredential(
-          enrichedEntry.token,
-          enrichedEntry.profile,
-          enrichedEntry.agency,
-          {
-            id: enrichedEntry.id,
-            type: enrichedEntry.type,
-            clientId: enrichedEntry.clientId,
-            hasClientSecret: enrichedEntry.hasClientSecret,
-          },
-          { reorderApplications: false }
-        );
+        const currentSelectedCredential = latestSelectedCredentialRef.current;
+
+        if (
+          matchesSelectedCredentialIdentity(
+            currentSelectedCredential,
+            enrichedEntry.token,
+            {
+              id: enrichedEntry.id,
+              clientId: enrichedEntry.clientId,
+            }
+          )
+        ) {
+          selectCredential(
+            enrichedEntry.token,
+            enrichedEntry.profile,
+            enrichedEntry.agency,
+            {
+              id: enrichedEntry.id,
+              type: enrichedEntry.type,
+              clientId: enrichedEntry.clientId,
+              hasClientSecret: enrichedEntry.hasClientSecret,
+            },
+            { reorderApplications: false }
+          );
+        }
 
         return enrichedEntry;
       } catch {
@@ -317,12 +335,28 @@ export default function useCredentialInputFlow({
   );
 
   useEffect(() => {
+    latestSelectedCredentialRef.current = selectedCredential || null;
+  }, [selectedCredential]);
+
+  useEffect(() => {
     if (pendingClient) {
       return;
     }
 
+    const previousSelection = lastSelectedCredentialSnapshotRef.current;
     const nextCredentialValue =
       selectedCredential?.clientId || selectedCredential?.token || "";
+
+    if (
+      previousSelection?.token &&
+      selectedCredential?.token &&
+      previousSelection.token !== selectedCredential.token
+    ) {
+      skipNextAutoResolveRef.current = true;
+      setCredentialValue((currentValue) =>
+        currentValue === nextCredentialValue ? currentValue : nextCredentialValue
+      );
+    }
 
     lastResolvedCredentialRef.current = nextCredentialValue;
 
@@ -376,6 +410,11 @@ export default function useCredentialInputFlow({
 
   useEffect(() => {
     if (pendingClient) {
+      return;
+    }
+
+    if (skipNextAutoResolveRef.current) {
+      skipNextAutoResolveRef.current = false;
       return;
     }
 

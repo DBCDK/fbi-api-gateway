@@ -254,19 +254,214 @@ describe("useCredentialInputFlow", () => {
       }),
       false
     );
-    expect(selectCredential).toHaveBeenCalledWith(
-      "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
-      "bibdk21",
-      "190101",
-      expect.objectContaining({
-        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
-        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
-        hasClientSecret: false,
-      }),
-      { reorderApplications: false }
-    );
     expect(onSubmit).toHaveBeenCalledWith(
       "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f"
     );
   });
+
+  test("does not reselect a newly added client when enrichment finishes after another client was chosen", async () => {
+    jest.useFakeTimers();
+    let resolveCredentialResponse;
+    const newClientId = "15804e47-4ffe-43a6-9adf-7176f0b5ba53";
+    const onChange = jest.fn();
+    const onSubmit = jest.fn();
+    const selectCredential = jest.fn();
+    const setCredentialEntry = jest.fn();
+    const resolveCredentialValue = jest.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveCredentialResponse = resolve;
+        })
+    );
+
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        agency: "190101",
+        profiles: ["bibdk21"],
+        permissions: {
+          allowRootFields: ["search"],
+        },
+      }),
+    });
+
+    const props = {
+      applications: [],
+      hasFetchedApplications: true,
+      selectedCredential: null,
+      setCredentialEntry,
+      resolveCredentialValue,
+      attachCredentialSecret: jest.fn(),
+      selectCredential,
+      clearSelectedCredential: jest.fn(),
+      onSubmit,
+      onChange,
+      blurInput: jest.fn(),
+      focusInput: jest.fn(),
+    };
+
+    await act(async () => {
+      root.render(React.createElement(Harness, props));
+    });
+
+    let resolutionPromise;
+    await act(async () => {
+      resolutionPromise = hookValue.handleResolveCredential(newClientId);
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          ...props,
+          selectedCredential: {
+            id: "client:other-client",
+            type: "client",
+            clientId: "other-client",
+            token: "other-client-token",
+          },
+        })
+      );
+    });
+
+    await act(async () => {
+      resolveCredentialResponse({
+        safeEntry: {
+          id: `client:${newClientId}`,
+          type: "client",
+          clientId: newClientId,
+          token: "new-client-token",
+          hasClientSecret: false,
+          agency: "190101",
+          status: "OK",
+        },
+      });
+      jest.advanceTimersByTime(1200);
+      await resolutionPromise;
+    });
+
+    jest.useRealTimers();
+
+    expect(setCredentialEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: `client:${newClientId}`,
+        configuration: expect.objectContaining({
+          permissions: expect.objectContaining({
+            allowRootFields: ["search"],
+          }),
+        }),
+      }),
+      false
+    );
+    expect(selectCredential).not.toHaveBeenCalledWith(
+      "new-client-token",
+      "bibdk21",
+      "190101",
+      expect.any(Object),
+      { reorderApplications: false }
+    );
+    expect(onSubmit).toHaveBeenCalledWith("new-client-token");
+  });
+
+  test("syncs the input value when another selected client takes over", async () => {
+    const selectCredential = jest.fn();
+    const resolveCredentialValue = jest.fn();
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          applications: [
+            {
+              id: "client:first-client",
+              type: "client",
+              clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+              token: "first-token",
+              hasClientSecret: false,
+              profile: "bibdk21",
+              agency: "190101",
+            },
+            {
+              id: "client:second-client",
+              type: "client",
+              clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba53",
+              token: "second-token",
+              hasClientSecret: false,
+              profile: "bibdk22",
+              agency: "190102",
+            },
+          ],
+          hasFetchedApplications: true,
+          selectedCredential: {
+            id: "client:first-client",
+            type: "client",
+            clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+            token: "first-token",
+          },
+          setCredentialEntry: jest.fn(),
+          resolveCredentialValue,
+          attachCredentialSecret: jest.fn(),
+          selectCredential,
+          clearSelectedCredential: jest.fn(),
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+          blurInput: jest.fn(),
+          focusInput: jest.fn(),
+        })
+      );
+    });
+
+    expect(hookValue.credentialValue).toBe("");
+
+    await act(async () => {
+      hookValue.setCredentialValue("15804e47-4ffe-43a6-9adf-7176f0b5ba52");
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          applications: [
+            {
+              id: "client:first-client",
+              type: "client",
+              clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+              token: "first-token",
+              hasClientSecret: false,
+              profile: "bibdk21",
+              agency: "190101",
+            },
+            {
+              id: "client:second-client",
+              type: "client",
+              clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba53",
+              token: "second-token",
+              hasClientSecret: false,
+              profile: "bibdk22",
+              agency: "190102",
+            },
+          ],
+          hasFetchedApplications: true,
+          selectedCredential: {
+            id: "client:second-client",
+            type: "client",
+            clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba53",
+            token: "second-token",
+          },
+          setCredentialEntry: jest.fn(),
+          resolveCredentialValue,
+          attachCredentialSecret: jest.fn(),
+          selectCredential,
+          clearSelectedCredential: jest.fn(),
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+          blurInput: jest.fn(),
+          focusInput: jest.fn(),
+        })
+      );
+    });
+
+    expect(hookValue.credentialValue).toBe(
+      "15804e47-4ffe-43a6-9adf-7176f0b5ba53"
+    );
+    expect(resolveCredentialValue).not.toHaveBeenCalled();
+  });
+
 });
