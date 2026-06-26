@@ -9,23 +9,86 @@ import ItemExpandedDetails from "./item-expanded-details";
 import useApplicationItemController from "@/hooks/controllers/useApplicationItemController";
 import styles from "./Item.module.css";
 
-function getReadableTextColor(hex) {
+const DARK_MODE_DISPLAY_BASE = "#1f2633";
+
+function normalizeHexColor(hex) {
   if (typeof hex !== "string") {
     return null;
   }
 
   const normalized = hex.trim().replace("#", "");
 
-  if (!/^[0-9a-fA-F]{6}$/.test(normalized)) {
+  return /^[0-9a-fA-F]{6}$/.test(normalized) ? normalized : null;
+}
+
+function parseHexColor(hex) {
+  const normalized = normalizeHexColor(hex);
+
+  if (!normalized) {
     return null;
   }
 
-  const r = parseInt(normalized.slice(0, 2), 16);
-  const g = parseInt(normalized.slice(2, 4), 16);
-  const b = parseInt(normalized.slice(4, 6), 16);
+  return {
+    r: parseInt(normalized.slice(0, 2), 16),
+    g: parseInt(normalized.slice(2, 4), 16),
+    b: parseInt(normalized.slice(4, 6), 16),
+  };
+}
+
+function toHexColor({ r, g, b }) {
+  const channelToHex = (value) =>
+    Math.max(0, Math.min(255, Math.round(value)))
+      .toString(16)
+      .padStart(2, "0");
+
+  return `#${channelToHex(r)}${channelToHex(g)}${channelToHex(b)}`;
+}
+
+function blendHexColors(foreground, background, foregroundWeight = 0.4) {
+  const foregroundColor = parseHexColor(foreground);
+  const backgroundColor = parseHexColor(background);
+
+  if (!foregroundColor || !backgroundColor) {
+    return null;
+  }
+
+  const backgroundWeight = 1 - foregroundWeight;
+
+  return toHexColor({
+    r: foregroundColor.r * foregroundWeight + backgroundColor.r * backgroundWeight,
+    g: foregroundColor.g * foregroundWeight + backgroundColor.g * backgroundWeight,
+    b: foregroundColor.b * foregroundWeight + backgroundColor.b * backgroundWeight,
+  });
+}
+
+function getReadableTextColor(hex) {
+  const color = parseHexColor(hex);
+
+  if (!color) {
+    return null;
+  }
+  const { r, g, b } = color;
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 
   return brightness > 155 ? "#111111" : "#ffffff";
+}
+
+function getExpandedDisplayColors(logoColor) {
+  const defaultBackground = normalizeHexColor(logoColor)
+    ? `#${normalizeHexColor(logoColor)}`
+    : null;
+  const darkBackground = blendHexColors(
+    defaultBackground,
+    DARK_MODE_DISPLAY_BASE,
+    0.45
+  );
+
+  return {
+    defaultBackground,
+    defaultText: getReadableTextColor(defaultBackground),
+    darkBackground,
+    darkText: getReadableTextColor(darkBackground),
+  };
 }
 
 function ApplicationItemView({ item, ui, form, actions }) {
@@ -44,11 +107,16 @@ function ApplicationItemView({ item, ui, form, actions }) {
   const removingClass = item.isRemoving ? styles.removing : "";
   const enteringClass = item.isEntering ? styles.entering : "";
   const revealClass = ui.reveal ? styles.reveal : "";
-  const expandedHeaderColor = item.logoColor || "var(--divider)";
+  const expandedDisplayColors = getExpandedDisplayColors(item.logoColor);
   const expandedDisplayStyle = ui.open
     ? {
-        backgroundColor: expandedHeaderColor,
-        color: getReadableTextColor(item.logoColor) || undefined,
+        "--expanded-display-bg": expandedDisplayColors.defaultBackground || "var(--divider)",
+        "--expanded-display-color":
+          expandedDisplayColors.defaultText || "inherit",
+        "--expanded-display-bg-dark":
+          expandedDisplayColors.darkBackground || "var(--dark-light)",
+        "--expanded-display-color-dark":
+          expandedDisplayColors.darkText || "#ffffff",
       }
     : undefined;
   const shouldShowBottomRemove = ui.open || (item.type === "client" && !ui.canExpand);

@@ -32,10 +32,10 @@
     ),
     linear-gradient(
       150deg,
-      var(--hero-gradient-shadow) 6%,
+      color-mix(in srgb, var(--hero-gradient-shadow) 82%, white) 6%,
       color-mix(
           in srgb,
-          var(--hero-gradient-tertiary) 58%,
+          var(--hero-gradient-tertiary) 38%,
           var(--hero-gradient-primary)
         )
         24%,

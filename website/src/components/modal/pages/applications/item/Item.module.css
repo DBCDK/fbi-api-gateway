@@ -322,6 +322,8 @@
   margin: 0 calc(var(--pt2) * -1);
   padding: var(--pt6) var(--pt2) var(--pt4) var(--pt2);
   z-index: 1;
+  background-color: var(--expanded-display-bg, transparent);
+  color: var(--expanded-display-color, inherit);
   transition:
     box-shadow 0.3s,
     background-color 0.32s ease,
@@ -459,6 +461,14 @@
 
 :global(body.dark) .removed .content {
   background-color: var(--dark-light);
+}
+
+:global(body.dark) .expanded .display {
+  background-color: var(
+    --expanded-display-bg-dark,
+    var(--expanded-display-bg, var(--dark-light))
+  );
+  color: var(--expanded-display-color-dark, var(--expanded-display-color, #ffffff));
 }
 
 :global(body.dark) .item hr {

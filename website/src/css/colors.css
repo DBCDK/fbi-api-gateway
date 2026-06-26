@@ -38,22 +38,22 @@ body {
 /* https://materialui.co/colors/ */
 
 body {
-  /* primary */
-  --primary-light: #f48fb1;
-  --primary: #f06292;
-  --primary-dark: #fb4281;
+  /* primary - lysere magenta/pink */
+  --primary-light: #f8a5c2;
+  --primary: #f56fa6;
+  --primary-dark: #ec4f91;
 
-  /* secondary */
-  --secondary-light: #b3e5fc;
-  --secondary: #81d4fa;
-  --secondary-dark: #64b5f6;
+  /* secondary - frisk turkis, men ikke neon */
+  --secondary-light: #b2ebf2;
+  --secondary: #4dd0e1;
+  --secondary-dark: #26b6c8;
 
-  /* gradient */
+  /* gradient - beholdt mere punch her */
   --hero-gradient-primary: #f8bbd0;
-  --hero-gradient-secondary: #b3e5fc;
-  --hero-gradient-tertiary: #ce6ca3;
-  --hero-gradient-shadow: #51324f;
-  --hero-gradient-glow: rgba(179, 229, 252, 0.34);
+  --hero-gradient-secondary: #80deea;
+  --hero-gradient-tertiary: #c486c9;
+  --hero-gradient-shadow: #5a3f5c;
+  --hero-gradient-glow: rgba(77, 208, 225, 0.32);
 }
 body.temp {
   --primary: #bdbdbd;
