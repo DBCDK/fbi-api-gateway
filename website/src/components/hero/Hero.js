@@ -4,8 +4,10 @@ import Spinner from "react-bootstrap/Spinner";
 import { useRouter } from "next/router";
 
 import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import useTheme from "@/hooks/useTheme";
+import { hasAvailableAgency } from "@/utils/configuration";
 
 import Title from "@/components/base/title";
 import Connect from "@/components/connect";
@@ -13,6 +15,7 @@ import Button from "@/components/base/button";
 import Label from "@/components/base/label";
 import Text from "@/components/base/text";
 import Applications from "@/components/applications";
+import ClientConnectButton from "./client-connect-button/ClientConnectButton";
 
 import Christmas from "./christmas";
 import Chicken from "./chicken";
@@ -30,6 +33,7 @@ export default function Hero({ className = "" }) {
   const [applicationsOpenMode, setApplicationsOpenMode] = useState("default");
 
   const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { getCredentialEntry } = useCredentialEntries();
   const { configuration, status, isLoading } =
     useResolvedConfiguration(selectedToken);
   const { theme } = useTheme();
@@ -45,6 +49,34 @@ export default function Hero({ className = "" }) {
     !isLoading &&
     status === "OK" &&
     Boolean(configuration?.displayName);
+  const selectedEntry = selectedToken
+    ? getCredentialEntry(selectedToken)
+    : null;
+  const effectiveProfile =
+    selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
+  const hasMissingClientConfiguration =
+    Boolean(selectedToken) &&
+    !isLoading &&
+    status === "OK" &&
+    (!effectiveProfile || !hasAvailableAgency(configuration));
+  const resolvedDisplayName =
+    selectedEntry?.note ||
+    configuration?.displayName ||
+    selectedEntry?.displayName ||
+    selectedToken?.clientId ||
+    selectedEntry?.clientId ||
+    (selectedToken ? "Active client" : "") ||
+    "";
+  const alternativeDisplayName =
+    selectedEntry?.note &&
+    configuration?.displayName &&
+    selectedEntry.note.trim() !== configuration.displayName
+      ? configuration.displayName
+      : selectedEntry?.displayName &&
+          selectedEntry.displayName !== resolvedDisplayName
+        ? selectedEntry.displayName
+        : "";
+  const hasActiveClientSummary = Boolean(selectedToken && resolvedDisplayName);
   const inputIsValid = hasResolvedCredential || canSubmitCredential;
 
   function handleOpenClientConnect() {
@@ -94,16 +126,6 @@ export default function Hero({ className = "" }) {
                   });
                 }}
               />
-              {/* <Text type="text1" className={styles.help}>
-                No token? Connect with a clientId{" "}
-                <button
-                  type="button"
-                  className={styles.helpLink}
-                  onClick={handleOpenClientConnect}
-                >
-                  here!
-                </button>
-              </Text> */}
             </div>
             <Applications
               className={styles.history}
@@ -111,6 +133,22 @@ export default function Hero({ className = "" }) {
               onShowChange={handleShowApplicationsChange}
               openAddOnShow={applicationsOpenMode === "add"}
             />
+            <div className={styles.inputGroupMobile}>
+              <div className={styles.helpGroup}>
+                <Text type="text1" className={styles.help}>
+                  Connect with a token or clientId
+                </Text>
+                <ClientConnectButton
+                  onClick={handleOpenClientConnect}
+                  hasActiveClientSummary={hasActiveClientSummary}
+                  hasMissingClientConfiguration={
+                    hasMissingClientConfiguration
+                  }
+                  resolvedDisplayName={resolvedDisplayName}
+                  alternativeDisplayName={alternativeDisplayName}
+                />
+              </div>
+            </div>
           </Col>
         </Row>
 

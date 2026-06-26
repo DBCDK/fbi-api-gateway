@@ -1,0 +1,86 @@
+.button {
+  margin-top: var(--pt2);
+  padding: 0 !important;
+  height: unset !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--pt4);
+  min-width: 150px;
+}
+
+.inner {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  max-width: min(260px, 70vw);
+}
+
+.label {
+  line-height: 1;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pt1);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pt4);
+  height: var(--pt4);
+  border-radius: 999px;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.confirmed {
+  background-color: var(--success-light);
+}
+
+.warning {
+  background-color: var(--warning);
+}
+
+.statusText {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  text-align: left;
+  padding-right: var(--pt2);
+  padding-left: var(--pt05);
+}
+
+.name,
+.alternative {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
+.name {
+  font-size: 12px;
+  max-width: 150px;
+}
+
+.alternative {
+  font-size: 11px;
+  opacity: 0.72;
+  max-width: 150px;
+}
+
+:global(body.dark) .warning {
+  background-color: var(--warning-light);
+}

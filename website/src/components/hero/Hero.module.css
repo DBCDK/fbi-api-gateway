@@ -1,5 +1,6 @@
 .hero {
   position: relative;
+  height: 75vh;
   padding: var(--pt12) 0;
   text-align: center;
   overflow: hidden;
@@ -19,17 +20,24 @@
   pointer-events: none;
   z-index: -1;
   overflow: hidden;
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at 18% 22%,
       var(--hero-gradient-glow) 0,
       transparent 24%
     ),
-    radial-gradient(circle at 82% 20%, rgba(226, 247, 255, 0.22) 0, transparent 22%),
+    radial-gradient(
+      circle at 82% 20%,
+      rgba(226, 247, 255, 0.22) 0,
+      transparent 22%
+    ),
     linear-gradient(
       150deg,
       var(--hero-gradient-shadow) 6%,
-      color-mix(in srgb, var(--hero-gradient-tertiary) 58%, var(--hero-gradient-primary))
+      color-mix(
+          in srgb,
+          var(--hero-gradient-tertiary) 58%,
+          var(--hero-gradient-primary)
+        )
         24%,
       var(--hero-gradient-primary) 58%,
       var(--hero-gradient-secondary) 100%
@@ -37,8 +45,8 @@
   background-size: 180% 180%;
   filter: saturate(118%);
   transform: scale(1.1);
-  animation: heroGradientFlow 30s cubic-bezier(0.45, 0.05, 0.55, 0.95)
-    infinite alternate;
+  animation: heroGradientFlow 30s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite
+    alternate;
 }
 
 .color::before,
@@ -49,12 +57,31 @@
 }
 
 .color::before {
-  background:
-    radial-gradient(circle at 18% 26%, rgba(222, 248, 255, 0.18) 0, transparent 10%),
-    radial-gradient(circle at 62% 32%, rgba(92, 231, 255, 0.34) 0, transparent 17%),
-    radial-gradient(circle at 78% 72%, rgba(201, 98, 174, 0.22) 0, transparent 19%),
-    radial-gradient(circle at 34% 80%, rgba(97, 53, 120, 0.18) 0, transparent 22%),
-    radial-gradient(circle at 52% 54%, rgba(84, 101, 255, 0.26) 0, transparent 15%);
+  background: radial-gradient(
+      circle at 18% 26%,
+      rgba(222, 248, 255, 0.18) 0,
+      transparent 10%
+    ),
+    radial-gradient(
+      circle at 62% 32%,
+      rgba(92, 231, 255, 0.34) 0,
+      transparent 17%
+    ),
+    radial-gradient(
+      circle at 78% 72%,
+      rgba(201, 98, 174, 0.22) 0,
+      transparent 19%
+    ),
+    radial-gradient(
+      circle at 34% 80%,
+      rgba(97, 53, 120, 0.18) 0,
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 52% 54%,
+      rgba(84, 101, 255, 0.26) 0,
+      transparent 15%
+    );
   mix-blend-mode: screen;
   filter: blur(44px);
   opacity: 0.92;
@@ -63,10 +90,21 @@
 }
 
 .color::after {
-  background:
-    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.12) 0, transparent 9%),
-    radial-gradient(circle at 74% 28%, rgba(180, 255, 244, 0.16) 0, transparent 11%),
-    radial-gradient(circle at 48% 82%, rgba(142, 119, 255, 0.14) 0, transparent 12%),
+  background: radial-gradient(
+      circle at 24% 18%,
+      rgba(255, 255, 255, 0.12) 0,
+      transparent 9%
+    ),
+    radial-gradient(
+      circle at 74% 28%,
+      rgba(180, 255, 244, 0.16) 0,
+      transparent 11%
+    ),
+    radial-gradient(
+      circle at 48% 82%,
+      rgba(142, 119, 255, 0.14) 0,
+      transparent 12%
+    ),
     linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.04) 0%,
@@ -90,24 +128,28 @@
 
 .hero .row:first-of-type > div {
   padding: 0;
-  padding-bottom: var(--pt2);
+  padding-bottom: var(--pt4);
 }
 
 .hero .row > div {
   display: flex;
   justify-content: center;
-  padding-top: var(--pt2);
+  padding-top: var(--pt4);
 }
 
 .inputGroup {
+  display: none;
+}
+
+.inputGroupMobile {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .go {
-  margin-top: var(--pt1);
-  margin-right: 60px; /* Application component kompensation */
+  margin-top: var(--pt15);
+  margin-right: 0;
 }
 
 .goSpinner {
@@ -115,8 +157,7 @@
   margin-bottom: 2px;
 }
 
-.title,
-.text {
+.title {
   color: var(--white);
   align-self: center;
   text-shadow: 0 8px 32px rgba(8, 17, 38, 0.3);
@@ -127,26 +168,15 @@
   margin-top: var(--pt1);
 }
 
-.helpLink {
-  border: 0;
-  padding: 0;
-  font: inherit;
-  line-height: inherit;
-  color: inherit;
-  background: transparent;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-}
-
-.helpLink:hover,
-.helpLink:focus-visible {
-  opacity: 0.85;
-}
-
 .history {
   margin-left: var(--pt1);
   margin-top: var(--pt1);
+
+  display: none;
+}
+
+.history > span {
+  font-size: 18px;
 }
 
 .title,
@@ -156,6 +186,12 @@
 .go {
   position: relative;
   z-index: 2;
+}
+
+.hero > div {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
 }
 
 @keyframes heroGradientFlow {
@@ -210,25 +246,39 @@
   }
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (min-width: 576px) {
   .hero {
-    height: 75vh;
-  }
-
-  .hero > div {
-    display: flex;
-    flex-flow: column;
-    justify-content: center;
+    height: auto;
   }
 
   .hero .row:first-of-type > div {
-    padding-bottom: var(--pt4);
+    padding-bottom: var(--pt2);
   }
 
   .hero .row > div {
-    padding-top: var(--pt4);
+    padding-top: var(--pt2);
   }
 
+  .helpGroup {
+    display: none;
+  }
+
+  .inputGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .inputGroupMobile {
+    display: none;
+  }
+
+  .token {
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 576px) {
   .token,
   .token > div {
     width: 100% !important;
@@ -253,9 +303,14 @@
   }
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (min-width: 1201px) {
   .history {
-    display: none;
+    display: block;
+  }
+
+  .go {
+    margin-top: var(--pt1);
+    margin-right: 60px; /* Application component kompensation */
   }
 }
 

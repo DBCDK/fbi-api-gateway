@@ -11,12 +11,13 @@ const modes = [
   { label: "External", value: "disabled", icon: "🌍" },
 ];
 
-export function Network({ mode, onClick, className = "" }) {
+export function Network({ mode, onClick, className = "", ...props }) {
   const isSelected =
     modes.find((item) => item.value === mode) || modes[modes.length - 1];
 
   return (
     <Dropdown
+      {...props}
       className={`${styles.wrap} ${className}`}
       align="end"
       drop="down-centered"

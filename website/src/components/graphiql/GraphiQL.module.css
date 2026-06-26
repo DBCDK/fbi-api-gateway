@@ -20,7 +20,7 @@
 }
 
 .graphiql :global(.graphiql-container) {
-  height: calc(100vh - 68px);
+  height: calc(100vh - (56px + var(--pt4)));
 }
 
 .graphiql :global(.graphiql-container .graphiql-sessions) {

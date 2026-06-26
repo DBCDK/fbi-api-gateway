@@ -38,19 +38,6 @@ function Menu({ modal, context }) {
 
   return (
     <div className={`${styles.menu}`}>
-      <Row className={styles.middle}>
-        <Col>
-          <Label for="token-input">
-            <Text type="text1">FBI API token</Text>
-          </Label>
-          <Row>
-            <Col className={styles.token}>
-              <Token className={styles.input} compact />
-              <Profile className={styles.profiles} />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
       <Row as="ul">
         <Col xs={12} as="li">
           <Text type="text5" className={styles.link}>

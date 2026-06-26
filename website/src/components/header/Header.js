@@ -15,7 +15,6 @@ import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 import Overlay from "@/components/base/overlay";
 import Applications from "@/components/applications";
-import Token from "@/components/token";
 
 import Modal, { Pages } from "@/components/modal";
 
@@ -29,8 +28,11 @@ export default function Header() {
   const router = useRouter();
   const elRef = useRef();
   const infoRef = useRef(null);
+  const lastScrollYRef = useRef(0);
+  const topVisibilityLockUntilRef = useRef(0);
   const [isSticky, setIsSticky] = useState(false);
   const [show, setShow] = useState(false);
+  const [isTopVisible, setIsTopVisible] = useState(true);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -42,6 +44,55 @@ export default function Header() {
 
     return () => observer.disconnect();
   }, [elRef]);
+
+  useEffect(() => {
+    let ticking = false;
+
+    function updateTopVisibility() {
+      const currentScrollY = window.scrollY;
+      const now = window.performance.now();
+
+      if (now < topVisibilityLockUntilRef.current) {
+        lastScrollYRef.current = currentScrollY;
+        ticking = false;
+        return;
+      }
+
+      const delta = currentScrollY - lastScrollYRef.current;
+
+      if (currentScrollY <= 0) {
+        setIsTopVisible(true);
+        lastScrollYRef.current = currentScrollY;
+      } else if (Math.abs(delta) >= 8) {
+        const nextIsTopVisible = delta < 0;
+
+        setIsTopVisible((prevIsTopVisible) => {
+          if (prevIsTopVisible !== nextIsTopVisible) {
+            topVisibilityLockUntilRef.current = now + 320;
+          }
+
+          return nextIsTopVisible;
+        });
+        lastScrollYRef.current = currentScrollY;
+      }
+
+      ticking = false;
+    }
+
+    function handleScroll() {
+      if (ticking) {
+        return;
+      }
+
+      ticking = true;
+      window.requestAnimationFrame(updateTopVisibility);
+    }
+
+    lastScrollYRef.current = window.scrollY;
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const { selectedCredential: selectedToken } = useSelectedCredential();
   const { getCredentialEntry } = useCredentialEntries();
@@ -67,13 +118,17 @@ export default function Header() {
     status === "OK" &&
     (!effectiveProfile || !hasAvailableAgency(configuration));
 
-  const selectedEntry = selectedToken ? getCredentialEntry(selectedToken) : null;
+  const selectedEntry = selectedToken
+    ? getCredentialEntry(selectedToken)
+    : null;
   const displayName = selectedEntry?.note || configuration?.displayName;
   const isAuthenticated = user?.isAuthenticated;
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
   const isSchema = router.pathname === "/schema";
+  const isVoyager = router.pathname === "/voyager";
+  const isGraphiql = router.pathname === "/graphiql";
   const isTemp = theme === "temp";
   const isFuture = theme === "future";
   const isOld = theme === "old";
@@ -83,6 +138,7 @@ export default function Header() {
   const indexStyles = isIndex ? styles.index : "";
   const documentationStyles = isDocumentation ? styles.documentation : "";
   const schemaStyles = isSchema ? styles.schema : "";
+  const shouldKeepTopVisible = isVoyager || isGraphiql;
 
   const stickyClass = isSticky ? styles.sticky : "";
 
@@ -91,7 +147,13 @@ export default function Header() {
       className={`${styles.header} ${stickyClass} ${indexStyles} ${documentationStyles} ${schemaStyles}`}
       ref={elRef}
     >
-      <Top className={styles.top} />
+      <Top
+        className={
+          shouldKeepTopVisible || isTopVisible
+            ? styles.topVisible
+            : styles.topHidden
+        }
+      />
       <Container fluid>
         <Row className={styles.row}>
           <Col className={styles.left}>
@@ -123,10 +185,7 @@ export default function Header() {
                   Voyager
                 </Link>
               </Text>
-              <Text
-                type="text5"
-                className={`${styles.link} ${styles.download}`}
-              >
+              <Text type="text5" className={styles.link}>
                 <Link href="/schema" disabled={!isValidToken}>
                   Schema
                 </Link>
@@ -142,15 +201,9 @@ export default function Header() {
                 </Text>
               )}
             </nav>
-            <span />
 
             {!isIndex && selectedToken && !isLoading && !hasValidationError && (
-              <div
-                ref={infoRef}
-                className={`${styles.info} ${
-                  hasMissingClientConfiguration ? styles.infoWarning : ""
-                }`}
-              >
+              <div ref={infoRef} className={styles.info}>
                 <div>
                   <Text type="text4">{displayName}</Text>
                 </div>

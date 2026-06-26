@@ -8,6 +8,17 @@
   background-color: var(--white);
 }
 
+.history > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+  line-height: 1;
+  margin-left: 2px;
+}
+
 .history.compact {
   width: var(--pt5);
   max-height: var(--pt5);
