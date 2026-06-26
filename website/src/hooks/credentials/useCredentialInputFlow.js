@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { SELECTED_CREDENTIAL_CLEARED_EVENT } from "@/hooks/credentials/useSelectedCredential";
+import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
 import { detectCredentialType } from "@/utils/credentials";
 import { isLikelyClientSecret } from "@/utils/credentialState";
 
@@ -18,6 +19,34 @@ function findResolvedClientEntry(applications, clientId) {
       (item) => item?.clientId === clientId && item?.token
     ) || null
   );
+}
+
+async function prewarmClientConfiguration(entry) {
+  const entryId = entry?.id;
+
+  if (!entryId) {
+    return null;
+  }
+
+  const params = new URLSearchParams({ entryId });
+
+  if (entry?.agency) {
+    params.set("agency", entry.agency);
+  }
+
+  const response = await fetch(
+    `/api/credentials/configuration?${params.toString()}`,
+    {
+      method: "GET",
+      headers: getCredentialRequestHeaders(),
+    }
+  );
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return await response.json();
 }
 
 export default function useCredentialInputFlow({
@@ -47,6 +76,48 @@ export default function useCredentialInputFlow({
   const lastSyncedSelectedTokenRef = useRef(null);
   const lastSelectedCredentialSnapshotRef = useRef(null);
   const suppressedRehydrateClientIdRef = useRef("");
+
+  const enrichResolvedEntry = useCallback(
+    async (entry) => {
+      if (!entry?.token || entry?.type !== "client") {
+        return entry;
+      }
+
+      try {
+        const configuration = await prewarmClientConfiguration(entry);
+
+        if (!configuration) {
+          return entry;
+        }
+
+        const enrichedEntry = {
+          ...entry,
+          configuration,
+          profile: entry.profile || configuration?.profiles?.[0] || null,
+          agency: entry.agency || configuration?.agency || null,
+        };
+
+        setCredentialEntry(enrichedEntry, false);
+        selectCredential(
+          enrichedEntry.token,
+          enrichedEntry.profile,
+          enrichedEntry.agency,
+          {
+            id: enrichedEntry.id,
+            type: enrichedEntry.type,
+            clientId: enrichedEntry.clientId,
+            hasClientSecret: enrichedEntry.hasClientSecret,
+          },
+          { reorderApplications: false }
+        );
+
+        return enrichedEntry;
+      } catch {
+        return entry;
+      }
+    },
+    [selectCredential, setCredentialEntry]
+  );
 
   const handleResolveCredential = useCallback(
     async (nextValue, options = {}) => {
@@ -135,21 +206,24 @@ export default function useCredentialInputFlow({
         return;
       }
 
+      const resolvedEntry = await enrichResolvedEntry(response.safeEntry);
+
       if (!shouldSubmit) {
         onResolvedSelection?.();
         blurInput();
       }
 
       if (shouldSubmit) {
-        onSubmit?.(response.safeEntry.token);
+        onSubmit?.(resolvedEntry?.token || response.safeEntry.token);
       }
 
-      onChange?.(response.safeEntry.token);
+      onChange?.(resolvedEntry?.token || response.safeEntry.token);
     },
     [
       applications,
       blurInput,
       clearSelectedCredential,
+      enrichResolvedEntry,
       focusInput,
       onChange,
       onSubmit,
@@ -209,9 +283,14 @@ export default function useCredentialInputFlow({
         return;
       }
 
+      const resolvedEntry = await enrichResolvedEntry(response.safeEntry);
+
       lastAttachedSecretRef.current = `${pendingClient.id}:${trimmedSecret}`;
       const resolvedClientId =
-        pendingClient.clientId || response.safeEntry.clientId || "";
+        pendingClient.clientId ||
+        resolvedEntry?.clientId ||
+        response.safeEntry.clientId ||
+        "";
       setCredentialValue(resolvedClientId || response.safeEntry.token);
       lastResolvedCredentialRef.current =
         resolvedClientId || response.safeEntry.token || "";
@@ -221,14 +300,15 @@ export default function useCredentialInputFlow({
       blurInput();
 
       if (shouldSubmit) {
-        onSubmit?.(response.safeEntry.token);
+        onSubmit?.(resolvedEntry?.token || response.safeEntry.token);
       }
 
-      onChange?.(response.safeEntry.token);
+      onChange?.(resolvedEntry?.token || response.safeEntry.token);
     },
     [
       attachCredentialSecret,
       blurInput,
+      enrichResolvedEntry,
       onChange,
       onSubmit,
       pendingClient,

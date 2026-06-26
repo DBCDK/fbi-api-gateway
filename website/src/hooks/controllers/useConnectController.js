@@ -116,14 +116,15 @@ export default function useConnectController({
     selectedToken?.token,
   ]);
 
-  useEffect(() => {
-    onPendingChange?.(Boolean(resolvingCredential));
-  }, [onPendingChange, resolvingCredential]);
-
+  const isSubmittingCredential = Boolean(resolvingCredential);
   const showLoadingSpinner = useMinimumVisibility(
-    isLoading || Boolean(resolvingCredential),
-    500
+    isSubmittingCredential,
+    1000
   );
+
+  useEffect(() => {
+    onPendingChange?.(showLoadingSpinner);
+  }, [onPendingChange, showLoadingSpinner]);
 
   useEffect(() => {
     if (resolvingCredential) {

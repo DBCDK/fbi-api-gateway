@@ -12,6 +12,7 @@ describe("useCredentialInputFlow", () => {
   let container;
   let root;
   let hookValue;
+  let originalFetch;
 
   function Harness(props) {
     hookValue = useCredentialInputFlow(props);
@@ -21,6 +22,8 @@ describe("useCredentialInputFlow", () => {
   beforeEach(() => {
     globalThis.IS_REACT_ACT_ENVIRONMENT = true;
     hookValue = null;
+    originalFetch = global.fetch;
+    global.fetch = jest.fn();
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -31,6 +34,7 @@ describe("useCredentialInputFlow", () => {
       root.unmount();
     });
     container.remove();
+    global.fetch = originalFetch;
   });
 
   test("does not reselect a cleared credential from a stale clientId input value", async () => {
@@ -174,6 +178,94 @@ describe("useCredentialInputFlow", () => {
       "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f"
     );
     expect(onChange).toHaveBeenCalledWith(
+      "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f"
+    );
+  });
+
+  test("prewarms configuration for a newly resolved client before submit", async () => {
+    const onChange = jest.fn();
+    const onSubmit = jest.fn();
+    const selectCredential = jest.fn();
+    const setCredentialEntry = jest.fn();
+    const resolveCredentialValue = jest.fn().mockResolvedValue({
+      safeEntry: {
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        type: "client",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+        hasClientSecret: false,
+        agency: "190101",
+        status: "OK",
+      },
+    });
+
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        agency: "190101",
+        profiles: ["bibdk21"],
+        permissions: {
+          allowRootFields: ["search"],
+        },
+      }),
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          applications: [],
+          hasFetchedApplications: true,
+          selectedCredential: null,
+          setCredentialEntry,
+          resolveCredentialValue,
+          attachCredentialSecret: jest.fn(),
+          selectCredential,
+          clearSelectedCredential: jest.fn(),
+          onSubmit,
+          onChange,
+          blurInput: jest.fn(),
+          focusInput: jest.fn(),
+        })
+      );
+    });
+
+    await act(async () => {
+      await hookValue.handleResolveCredential(
+        "15804e47-4ffe-43a6-9adf-7176f0b5ba52"
+      );
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/credentials/configuration?entryId=client%3A15804e47-4ffe-43a6-9adf-7176f0b5ba52&agency=190101",
+      expect.objectContaining({
+        method: "GET",
+      })
+    );
+    expect(setCredentialEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        configuration: expect.objectContaining({
+          agency: "190101",
+          permissions: expect.objectContaining({
+            allowRootFields: ["search"],
+          }),
+        }),
+        profile: "bibdk21",
+      }),
+      false
+    );
+    expect(selectCredential).toHaveBeenCalledWith(
+      "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+      "bibdk21",
+      "190101",
+      expect.objectContaining({
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        hasClientSecret: false,
+      }),
+      { reorderApplications: false }
+    );
+    expect(onSubmit).toHaveBeenCalledWith(
       "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f"
     );
   });

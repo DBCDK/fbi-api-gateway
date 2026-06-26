@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote";
 
 import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
 import useDocuments from "@/hooks/useDocuments";
+import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 
 import { InlineGraphiQL } from "@/components/graphiql";
@@ -81,9 +82,18 @@ const customComponents = {
 export default function Docs() {
   const { docs } = useDocuments();
   const { selectedCredential: selectedToken } = useSelectedCredential();
-  const { configuration } = useResolvedConfiguration(selectedToken);
+  const { getCredentialEntry } = useCredentialEntries();
+  const selectedEntry = selectedToken
+    ? getCredentialEntry(selectedToken)
+    : null;
+  const { configuration } = useResolvedConfiguration({
+    ...selectedToken,
+    agency: selectedToken?.agency || selectedEntry?.agency || null,
+  });
 
   const [containerRef, setContainerRef] = useState();
+  const effectivePermissions =
+    configuration?.permissions || selectedEntry?.configuration?.permissions;
 
   // Only include docs usable by the selected token
   const accessibleDocs = useMemo(
@@ -92,7 +102,7 @@ export default function Docs() {
         let state = false;
 
         // return all
-        if (configuration?.permissions?.admin) {
+        if (effectivePermissions?.admin) {
           state = true;
         }
         // return all public docs
@@ -101,16 +111,14 @@ export default function Docs() {
         }
         const splitName = doc.name.split(".");
         // return client allowed docs
-        if (
-          configuration?.permissions?.allowRootFields?.includes(
-            splitName[splitName.length - 1]
-          )
-        ) {
+        if (effectivePermissions?.allowRootFields?.includes(
+          splitName[splitName.length - 1]
+        )) {
           state = true;
         }
         return state;
       }) || [],
-    [docs, configuration?.permissions]
+    [docs, effectivePermissions]
   );
 
   return (
@@ -131,7 +139,10 @@ export default function Docs() {
 
               return (
                 <section key={doc.name} id={id}>
-                  <MDXRemote {...doc.mdxSource} components={customComponents} />
+                  <MDXRemote
+                    {...doc.mdxSource}
+                    components={customComponents}
+                  />
                 </section>
               );
             })}

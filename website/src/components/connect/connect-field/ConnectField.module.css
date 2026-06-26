@@ -64,7 +64,7 @@
 }
 
 .input {
-  width: 100%;
+  width: 0;
   min-width: 75px;
   height: var(--pt6);
   padding: 0 var(--pt3);
@@ -73,13 +73,11 @@
   transition:
     padding 0.25s ease,
     min-width 0.25s ease,
-    width 0.25s ease,
     flex-basis 0.25s ease;
-  /* flex-grow 0.25s ease; */
   border-radius: calc(var(--pt6) / 2);
   font-size: 16px;
   font-family: var(--font-mono-regular);
-  flex-shrink: 1;
+  flex: 1 1 100%;
   z-index: 2;
 }
 
@@ -98,17 +96,16 @@
 .resolvedDisplay .fieldDisplay {
   flex: 0 1 auto;
   max-width: 75%;
+  min-width: 0;
 }
 
 .wrap.resolvedDisplay .input {
-  width: auto;
   min-width: 25%;
   flex: 1 1 25%;
 }
 
 .wrap.resolvedDisplay:focus-within .input,
 .wrap.resolvedDisplay.focused .input {
-  width: 100%;
   min-width: 100%;
   flex: 1 1 100%;
 }
