@@ -7,6 +7,10 @@ const config = {
     "^@/(.*)$": "<rootDir>/website/src/$1",
   },
   testEnvironment: "node",
+  testPathIgnorePatterns: [
+    "<rootDir>/website/.next/",
+    "<rootDir>/testuser-website/.next/",
+  ],
   projects: [
     {
       displayName: "server",
@@ -23,7 +27,11 @@ const config = {
           },
         ],
       },
-      testPathIgnorePatterns: ["<rootDir>/website/src/"],
+      testPathIgnorePatterns: [
+        "<rootDir>/website/src/",
+        "<rootDir>/website/.next/",
+        "<rootDir>/testuser-website/.next/",
+      ],
     },
     {
       displayName: "website",
@@ -40,6 +48,10 @@ const config = {
           },
         ],
       },
+      testPathIgnorePatterns: [
+        "<rootDir>/website/.next/",
+        "<rootDir>/testuser-website/.next/",
+      ],
       testMatch: ["<rootDir>/website/src/**/*.test.js"],
     },
   ],

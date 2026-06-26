@@ -58,6 +58,7 @@ describe("useConnectController", () => {
   let handleAttachSecret;
   let resetCredentialInput;
   let inputRef;
+  let selectedCredential;
 
   function Harness(props) {
     controller = useConnectController(props);
@@ -81,19 +82,39 @@ describe("useConnectController", () => {
     handleAttachSecret = jest.fn();
     resetCredentialInput = jest.fn();
 
-    useSelectedCredential.mockReturnValue({
-      selectedCredential: {
-        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
-        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
-        hasClientSecret: true,
-        profile: "bibdk21",
-      },
-    });
-    useCredentialEntries.mockReturnValue({
-      applications: [],
+    selectedCredential = {
+      token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      hasClientSecret: true,
+      profile: "bibdk21",
+    };
+    useSelectedCredential.mockImplementation(() => ({
+      selectedCredential,
+    }));
+    useCredentialEntries.mockImplementation(() => ({
+      applications: selectedCredential ? [selectedCredential] : [],
       hasFetchedApplications: true,
       setCredentialEntry: jest.fn(),
-    });
+      getCredentialEntry: jest.fn((tokenOrEntry) => {
+        if (!selectedCredential) {
+          return null;
+        }
+
+        if (typeof tokenOrEntry === "string") {
+          return selectedCredential.token === tokenOrEntry ||
+            selectedCredential.clientId === tokenOrEntry ||
+            selectedCredential.id === tokenOrEntry
+            ? selectedCredential
+            : null;
+        }
+
+        return tokenOrEntry?.token === selectedCredential.token ||
+          tokenOrEntry?.clientId === selectedCredential.clientId ||
+          tokenOrEntry?.id === selectedCredential.id
+          ? selectedCredential
+          : null;
+      }),
+    }));
     useCredentialMutations.mockReturnValue({
       clearSelectedCredential: jest.fn(),
       resolveCredentialValue: jest.fn(),
@@ -263,14 +284,12 @@ describe("useConnectController", () => {
   });
 
   test("keeps steps hidden for an already selected credential on external network", async () => {
-    useSelectedCredential.mockReturnValue({
-      selectedCredential: {
-        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
-        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
-        hasClientSecret: false,
-        profile: "bibdk21",
-      },
-    });
+    selectedCredential = {
+      token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      hasClientSecret: false,
+      profile: "bibdk21",
+    };
     useConfiguration.mockReturnValue({
       configuration: {
         displayName: "DBC Client",
@@ -359,14 +378,12 @@ describe("useConnectController", () => {
     useInternalNetworkCheck.mockReturnValue({
       internalNetworkCheck: "enabled",
     });
-    useSelectedCredential.mockReturnValue({
-      selectedCredential: {
-        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
-        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
-        hasClientSecret: false,
-        profile: "bibdk21",
-      },
-    });
+    selectedCredential = {
+      token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      hasClientSecret: false,
+      profile: "bibdk21",
+    };
 
     await act(async () => {
       root.render(
@@ -505,14 +522,12 @@ describe("useConnectController", () => {
   });
 
   test("keeps the pasted token visible until token resolving finishes", async () => {
-    useSelectedCredential.mockReturnValue({
-      selectedCredential: {
-        token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
-        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
-        hasClientSecret: false,
-        profile: "bibdk21",
-      },
-    });
+    selectedCredential = {
+      token: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      hasClientSecret: false,
+      profile: "bibdk21",
+    };
     useCredentialInputFlow.mockReturnValue({
       inputRef,
       credentialValue: "raw-token-value-that-user-pasted",
