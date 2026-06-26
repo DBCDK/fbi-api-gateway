@@ -1,3 +1,27 @@
+function stripHtmlTags(input) {
+  const text = [];
+  let tag = "";
+
+  for (const char of input) {
+    if (char === "<") {
+      tag = char;
+      continue;
+    }
+
+    if (tag) {
+      tag += char;
+      if (char === ">") {
+        tag = "";
+      }
+      continue;
+    }
+
+    text.push(char);
+  }
+
+  return text.join("") + tag;
+}
+
 /**
  * Convert HTML-ish content to plain text with sensible line breaks.
  */
@@ -6,10 +30,11 @@ export function htmlToPlainText(input) {
     return input;
   }
 
-  return input
-    .replace(/<(?:br|hr)\s*\/?>/gi, "\n")
-    .replace(/<\/(?:p|div|li|h[1-6]|tr|blockquote)>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
+  return stripHtmlTags(
+    input
+      .replace(/<(?:br|hr)\s*\/?>/gi, "\n")
+      .replace(/<\/(?:p|div|li|h[1-6]|tr|blockquote)>/gi, "\n")
+  )
     .replace(/&nbsp;/gi, " ")
     .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
     .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>

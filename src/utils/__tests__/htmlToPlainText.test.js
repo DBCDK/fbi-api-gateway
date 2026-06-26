@@ -34,4 +34,9 @@ describe("htmlToPlainText", () => {
     const text = "Already plain text.\nWith a newline.";
     expect(htmlToPlainText(text)).toBe(text);
   });
+
+  test("preserves unclosed tags instead of hanging on malformed input", () => {
+    const html = "hello<world";
+    expect(htmlToPlainText(html)).toBe(html);
+  });
 });
