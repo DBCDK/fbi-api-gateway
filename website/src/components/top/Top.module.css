@@ -1,7 +1,6 @@
 .top {
   background-color: var(--divider);
   min-height: 32px;
-  overflow: hidden;
 }
 
 .container {
