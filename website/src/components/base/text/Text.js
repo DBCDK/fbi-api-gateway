@@ -52,5 +52,13 @@ Container.propTypes = {
     PropTypes.node,
   ]),
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  type: PropTypes.oneOf(["text1", "text2", "text3", "text4", "text5", "text6"]),
+  type: PropTypes.oneOf([
+    "text0",
+    "text1",
+    "text2",
+    "text3",
+    "text4",
+    "text5",
+    "text6",
+  ]),
 };

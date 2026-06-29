@@ -1,0 +1,269 @@
+.collapsed {
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.2s,
+    padding 0.2s linear 0s;
+}
+
+:global(.expanded) .collapsed {
+  max-height: 100vh;
+  margin-bottom: var(--pt2);
+  padding: var(--pt2) 0 var(--pt2);
+  overflow-y: auto;
+  transition:
+    max-height 0.3s,
+    padding 0.2s linear 0s;
+}
+
+.divider {
+  margin: var(--pt2) 0;
+}
+
+:global(.expanded) .divider {
+  width: calc(100% + var(--pt8));
+  margin-left: calc(var(--pt4) * -1);
+}
+
+:global(.expanded) .collapsed::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
+
+:global(.expanded) .collapsed::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:global(.expanded) .collapsed::-webkit-scrollbar-thumb {
+  background: var(--divider);
+  border-radius: var(--pt05);
+}
+
+:global(.expanded) .collapsed::-webkit-scrollbar-thumb:hover {
+  background: var(--divider-dark);
+}
+
+.user {
+  margin-top: var(--pt1);
+}
+
+.heading {
+  margin: var(--pt1) 0;
+}
+
+.heading p {
+  font-size: 12px;
+}
+
+.submitted,
+.expires,
+.token,
+.refreshToken,
+.clientId,
+.clientDisplayName,
+.clientOriginalDisplayName,
+.alwaysRequireAgencyId,
+.clientNote,
+.name,
+.mail,
+.municipalityAgencyId,
+.isCPRValidated,
+.culr,
+.loggedInBranchId,
+.loggedInAgencyId,
+.hasOmittedCulrUniqueId,
+.user > div {
+  color: var(--text);
+  margin-top: var(--pt1);
+  margin-bottom: var(--pt1);
+}
+
+.submitted span,
+.expires span {
+  color: var(--text-light);
+  letter-spacing: 0.6px;
+  font-size: 12px;
+  font-family: var(--font-mono-regular);
+}
+
+.expires > div {
+  display: flex;
+  align-items: center;
+}
+
+.indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: var(--pt1);
+}
+
+.indicator.health-critical {
+  background-color: var(--error);
+}
+
+.indicator.health-warning {
+  background-color: var(--warning-dark);
+}
+
+.indicator.health-safe {
+  background-color: var(--success-dark);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt1);
+}
+
+.details > div {
+  width: 100%;
+}
+
+:global(.missingConfig) .clientId ~ .details > div p:last-child {
+  color: var(--error);
+}
+
+.nameSummaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pt2);
+}
+
+.nameValue {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 2rem;
+}
+
+.nameInlineEditor {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 2rem;
+}
+
+.nameText {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 2rem;
+}
+
+.nameInput {
+  display: block;
+  width: 100%;
+  min-height: 2rem;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: var(--text-dark);
+  font-size: 14px;
+  font-family: var(--font-mono-regular);
+  line-height: 20px;
+}
+
+.nameInput::placeholder {
+  color: var(--text-dark);
+  opacity: 0.7;
+}
+
+.nameInput:focus {
+  outline: none;
+}
+
+.attachments {
+  margin-top: var(--pt2);
+}
+
+.clientSecretSummary {
+  color: var(--text);
+  margin-top: var(--pt1);
+  margin-bottom: var(--pt1);
+}
+
+.secretSummaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pt2);
+}
+
+.secretValue {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 2rem;
+}
+
+.secretInlineForm {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 2rem;
+}
+
+.secretMask {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 2rem;
+}
+
+.secretAction {
+  position: relative;
+  flex: 0 0 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 260ms ease,
+    background-color 260ms ease,
+    border-color 260ms ease,
+    color 260ms ease;
+}
+
+.secretAction:hover,
+.secretAction:focus-visible {
+  background-color: var(--text-dark);
+  border-color: var(--text-light);
+}
+
+.secretAction:focus-visible {
+  outline: 2px solid var(--text-light);
+  outline-offset: 2px;
+}
+
+.i {
+  font-style: italic;
+}
+
+@media (min-width: 480px) {
+  .details {
+    flex-direction: row;
+  }
+
+  .details > div {
+    width: 50%;
+  }
+}

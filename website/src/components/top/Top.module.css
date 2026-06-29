@@ -10,5 +10,5 @@
 }
 
 :global(body.dark) .top {
-  background-color: var(--text-light);
+  background-color: var(--divider);
 }

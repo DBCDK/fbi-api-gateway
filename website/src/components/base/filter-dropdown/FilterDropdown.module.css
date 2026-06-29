@@ -237,7 +237,7 @@
 :global(body.dark) .toggle:hover .value,
 :global(body.dark) .toggle:focus-visible .value,
 :global(body.dark) .dropdown:focus-within .value {
-  color: var(--dark);
+  color: var(--text-dark);
 }
 
 @keyframes dropdown-menu-in {

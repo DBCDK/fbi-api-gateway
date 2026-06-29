@@ -1,5 +1,9 @@
 const path = require("path");
 
+const redisEnabled = ["1", "true", "yes"].includes(
+  String(process.env.REDIS_ENABLED).toLowerCase()
+);
+const defaultMaxClientEntries = redisEnabled ? 10 : 5;
 const projectRoot = __dirname;
 const monorepoRoot = path.join(__dirname, "..");
 
@@ -8,8 +12,14 @@ module.exports = {
     ? { outputFileTracingRoot: monorepoRoot }
     : {}),
   reactStrictMode: true,
+  i18n: {
+    locales: ["en"],
+    defaultLocale: "en",
+  },
   env: {
     NEXT_PUBLIC_WEBSITE_THEME: process.env.WEBSITE_THEME || "default",
+    NEXT_PUBLIC_MAX_CLIENT_ENTRIES:
+      process.env.MAX_CLIENT_ENTRIES || String(defaultMaxClientEntries),
   },
   async redirects() {
     return [

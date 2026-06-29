@@ -95,7 +95,10 @@ export function fetch(url, options = {}) {
 
   return new Promise((resolve, reject) => {
     // Store the resolve and reject functions with the identifier
-    pendingRequests[identifier] = { resolve, reject };
+    pendingRequests[identifier] = {
+      resolve,
+      reject,
+    };
 
     // Sending a message to the worker thread to initiate the fetch
     worker.postMessage({ url, options, identifier });
@@ -112,13 +115,46 @@ if (isMainThread) {
 
   // Listening for messages from the worker thread
   worker.on("message", (obj) => {
+    const pendingRequest = pendingRequests[obj.identifier];
+
+    if (!pendingRequest) {
+      return;
+    }
+
     // Lookup pending request, and resolve it with the object
     // sent from the worker thread.
     // This will resolve a promise created in the fetch function
-    pendingRequests[obj.identifier].resolve(obj);
+    pendingRequest.resolve(obj);
 
     // Clean up request
     delete pendingRequests[obj.identifier];
+  });
+
+  worker.on("error", (error) => {
+    const identifiers = Object.keys(pendingRequests);
+
+    identifiers.forEach((identifier) => {
+      const pendingRequest = pendingRequests[identifier];
+
+      pendingRequest.reject(error);
+      delete pendingRequests[identifier];
+    });
+  });
+
+  worker.on("exit", (code) => {
+    if (code === 0) {
+      return;
+    }
+
+    const identifiers = Object.keys(pendingRequests);
+
+    identifiers.forEach((identifier) => {
+      const pendingRequest = pendingRequests[identifier];
+      const error = new Error(`fetchWorker exited with code ${code}`);
+
+      pendingRequest.reject(error);
+      delete pendingRequests[identifier];
+    });
   });
 }
 

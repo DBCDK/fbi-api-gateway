@@ -137,6 +137,5 @@ export async function resolveGraphQLQuery(req, res, next) {
       }
     },
   });
-
   return handler(req, res);
 }

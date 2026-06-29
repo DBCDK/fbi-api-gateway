@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import useStorage from "@/hooks/useStorage";
 import { Spinner } from "react-bootstrap";
+import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
+import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 
 export default function TokenPage() {
   const router = useRouter();
   const { accessToken } = router.query;
-  const { getHistoryItem, setSelectedToken } = useStorage();
+  const { getCredentialEntry: getHistoryItem } = useCredentialEntries();
+  const { selectCredential: setSelectedToken } = useCredentialMutations();
 
   const [isClient, setIsClient] = useState(false);
 
@@ -20,7 +22,12 @@ export default function TokenPage() {
     if (typeof accessToken === "string") {
       // If token is already owned we set token with the profile already used
       const item = getHistoryItem(accessToken);
-      setSelectedToken(accessToken, item?.profile, item?.agency);
+      setSelectedToken(accessToken, item?.profile, item?.agency, {
+        id: item?.id,
+        type: item?.type,
+        clientId: item?.clientId,
+        hasClientSecret: item?.hasClientSecret,
+      });
       router.replace("/documentation");
     }
   }, [isClient, accessToken, setSelectedToken, router]);

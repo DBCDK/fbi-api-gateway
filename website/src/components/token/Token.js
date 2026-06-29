@@ -3,10 +3,14 @@ import Spinner from "react-bootstrap/Spinner";
 
 import Overlay from "@/components/base/overlay";
 
-import useStorage from "@/hooks/useStorage";
-import useConfiguration from "@/hooks/useConfiguration";
+import useCredentialResolve from "@/hooks/credentials/useCredentialResolve";
+import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
+import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import useUser from "@/hooks/useUser";
 import { hasAvailableAgency } from "@/utils/configuration";
+import { detectCredentialType } from "@/utils/credentials";
 
 import Button from "@/components/base/button";
 import Text from "@/components/base/text";
@@ -19,10 +23,17 @@ export default function Token({
   onSubmit,
   onChange,
   compact,
+  onRequiresClientSecret,
+  allowClientId = true,
 }) {
   // useToken custom hook
-  const { selectedToken, setSelectedToken, removeSelectedToken } = useStorage();
-  const { configuration, status, isLoading } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { selectCredential: setSelectedToken, clearSelectedCredential: removeSelectedToken } =
+    useCredentialMutations();
+  const { setCredentialEntry: setHistoryItem } = useCredentialEntries();
+  const { resolveCredential } = useCredentialResolve();
+  const { configuration, status, isLoading } =
+    useResolvedConfiguration(selectedToken);
   const { user } = useUser(selectedToken);
 
   // internal state
@@ -31,6 +42,7 @@ export default function Token({
     display: false,
     focus: false,
   });
+  const [resolveError, setResolveError] = useState("");
 
   // update token input value if changed after render (swr update)
   useEffect(() => {
@@ -57,21 +69,23 @@ export default function Token({
   const hasDisplay = !!(configuration?.displayName && hasValue && isToken);
   const effectiveProfile =
     selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
-
-  const hasMissingConfigError =
-    !effectiveProfile || !hasAvailableAgency(configuration);
-
   const hasValidationError =
     selectedToken?.token && !isLoading && status !== "OK";
 
   // Error messages
-  const _errorToken = !selectedToken?.token && "🧐 This token is invalid!";
+  const inputType = detectCredentialType(state.value);
+  const acceptsCurrentInput =
+    inputType === "token" || (allowClientId && inputType === "client");
+  const _errorToken =
+    !selectedToken?.token &&
+    (state.value ? !acceptsCurrentInput : !inputType) &&
+    `🧐 Input must be ${allowClientId ? "a token or a clientId" : "a token"}!`;
 
-  const _errorMissingConfig =
+  const hasMissingConfigurationWarning =
     !isLoading &&
     !hasValidationError &&
-    hasMissingConfigError &&
-    "😵‍💫 Missing client configuration!";
+    selectedToken?.token &&
+    (!effectiveProfile || !hasAvailableAgency(configuration));
 
   const _errorExpired =
     hasValidationError && status === "EXPIRED" && "😔 This token is expired!";
@@ -82,7 +96,71 @@ export default function Token({
   const _errorIsNotVerified =
     hasValidationError && status === "ERROR" && "🤔 Error validating token!";
 
-  const hasError = _errorToken || _errorMissingConfig || hasValidationError;
+  const hasError = _errorToken || hasValidationError || resolveError;
+
+  async function handleResolveToken(nextValue = state.value, options = {}) {
+    const { shouldSubmit = true } = options;
+
+    if (!nextValue) {
+      return;
+    }
+
+    const nextInputType = detectCredentialType(nextValue);
+    const acceptsNextInput =
+      nextInputType === "token" ||
+      (allowClientId && nextInputType === "client");
+
+    if (!acceptsNextInput) {
+      setResolveError(
+        `🧐 Input must be ${allowClientId ? "a valid token or clientId" : "a valid token"}!`
+      );
+      return;
+    }
+
+    setResolveError("");
+    const response = await resolveCredential({
+      value: nextValue,
+    });
+
+    if (response?.safeEntry?.status === "CLIENT_SECRET_REQUIRED") {
+      setHistoryItem(response.safeEntry, false);
+      removeSelectedToken();
+
+      if (nextInputType === "client" && onRequiresClientSecret) {
+        onRequiresClientSecret?.(response.safeEntry);
+        return;
+      }
+
+      setResolveError(
+        "Secret is required before token exchange. Open the application in the list to continue."
+      );
+      return;
+    }
+
+    if (!response?.safeEntry?.token) {
+      setResolveError(
+        response?.message || "🧐 Input must be a valid token or clientId!"
+      );
+      return;
+    }
+
+    setHistoryItem(response.safeEntry, false);
+    setSelectedToken(
+      response.safeEntry.token,
+      response.safeEntry.profile,
+      response.safeEntry.agency,
+      {
+        id: response.safeEntry.id,
+        type: response.safeEntry.type,
+        clientId: response.safeEntry.clientId,
+        hasClientSecret: response.safeEntry.hasClientSecret,
+      }
+    );
+    if (shouldSubmit) {
+      onSubmit?.(response.safeEntry.token);
+    }
+    onChange?.(response.safeEntry.token);
+  }
 
   // custom class'
   const compactSize = compact ? styles.compact : "";
@@ -90,20 +168,30 @@ export default function Token({
   const valueState = hasValue ? styles.value : styles.empty;
   const displayState = hasDisplay ? styles.display : "";
   const loadingState = isLoading ? styles.isLoading : "";
+  const activateInput = () => {
+    inputRef?.current?.focus();
+    state.value && hasDisplay && inputRef?.current?.select();
+    setState({ ...state, focus: true });
+  };
 
   return (
     <form
       ref={containerRef}
       id={`${id}-form`}
-      onClick={() => {
-        inputRef?.current?.focus();
-        state.value && hasDisplay && inputRef?.current?.select();
-        setState({ ...state, focus: true });
+      tabIndex={0}
+      onClick={activateInput}
+      onKeyDown={(e) => {
+        if (e.key !== "Enter" && e.key !== " ") {
+          return;
+        }
+
+        e.preventDefault();
+        activateInput();
       }}
       className={`${styles.form} ${compactSize} ${className}`}
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        onSubmit?.(state.value);
+        await handleResolveToken();
         inputRef?.current?.blur();
       }}
     >
@@ -115,14 +203,14 @@ export default function Token({
             <Text type="text4" title={`${configuration?.displayName}`}>
               {isAuthenticated && (
                 <span
-                  title={`Authenticated token ${
+                  title={`Authenticated client access ${
                     !hasCulrAccount ? "- user does not exist in CULR" : ""
                   }`}
                 >
                   🧑 {!hasCulrAccount && <i>⚠️</i>}
                 </span>
               )}{" "}
-              {`${configuration?.displayName}`}
+              {`${configuration?.displayName} ${hasMissingConfigurationWarning ? "⚠️" : ""}`}
             </Text>
           </div>
         )}
@@ -134,23 +222,46 @@ export default function Token({
         )}
 
         <input
-          aria-label="inputfield for access token"
+          aria-label={`inputfield for access ${allowClientId ? "token or clientId" : "token"}`}
           ref={inputRef}
           id={id}
           className={styles.input}
           value={state.value}
-          placeholder="Drop token here ..."
+          placeholder={
+            allowClientId
+              ? "Drop token or clientId here ..."
+              : "Drop token here ..."
+          }
           autoComplete="off"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           onBlur={() => {
-            // state.value && setToken(state.value);
-            // onSubmit?.(state.value);
             setState({ ...state, focus: false });
           }}
           onChange={(e) => {
             const value = e.target.value;
-            value && setSelectedToken(value, null);
+            setResolveError("");
             onChange?.(value);
             setState({ ...state, value });
+          }}
+          onPaste={(e) => {
+            const pastedValue = e.clipboardData?.getData("text")?.trim();
+
+            if (detectCredentialType(pastedValue) !== "token") {
+              return;
+            }
+
+            e.preventDefault();
+            setResolveError("");
+            onChange?.(pastedValue);
+            setState((current) => ({
+              ...current,
+              value: pastedValue,
+            }));
+            window.setTimeout(() => {
+              handleResolveToken(pastedValue, { shouldSubmit: false });
+            }, 0);
           }}
         />
         <Button
@@ -179,9 +290,9 @@ export default function Token({
         <Text type="text2">
           {_errorToken ||
             _errorExpired ||
-            _errorMissingConfig ||
             _errorInvalid ||
-            _errorIsNotVerified}
+            _errorIsNotVerified ||
+            resolveError}
         </Text>
       </Overlay>
     </form>

@@ -1,8 +1,8 @@
 // src/hooks/useSchema.js
 import useSWR from "swr";
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql";
-import useStorage from "./useStorage";
-import useConfiguration from "./useConfiguration";
+import useResolvedConfiguration from "./resolved/useResolvedConfiguration";
+import useSelectedCredential from "./credentials/useSelectedCredential";
 import { buildGraphQLPath } from "@/utils/graphqlPath";
 
 /**
@@ -11,8 +11,8 @@ import { buildGraphQLPath } from "@/utils/graphqlPath";
  * - SSR-safe: returns null when window is not available yet
  */
 export function useGraphQLUrl(origin) {
-  const { selectedToken } = useStorage(); // ✅ hook always called
-  const { configuration } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { configuration } = useResolvedConfiguration(selectedToken);
   const hasConfiguration = Object.keys(configuration || {}).length > 0;
   const agency = selectedToken?.agency ?? null;
   const defaultAgency = configuration?.defaultAgency ?? null;
@@ -79,6 +79,7 @@ export default function useSchema(token, _url) {
     if (res.status !== 200) return {};
 
     const json = await res.json();
+
     // If data is missing, keep shape predictable
     if (!json?.data) return { schema: null, schemaStr: null, json };
 

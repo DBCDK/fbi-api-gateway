@@ -119,6 +119,18 @@ app.use("/test", testUserLoginProxy);
 app.use(docsProxy);
 
 const port = 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   log.info(`Running Proxy at http://localhost:${port}`);
+});
+
+server.on("error", (error) => {
+  if (error?.code === "EADDRINUSE") {
+    log.error("Proxy port already in use", {
+      port,
+      hint: "Stop the existing dev server on port 3000 before restarting.",
+    });
+    process.exit(1);
+  }
+
+  throw error;
 });

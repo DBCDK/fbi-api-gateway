@@ -1,0 +1,297 @@
+.wrap {
+  position: relative;
+  width: 450px;
+  height: var(--pt6);
+  overflow: hidden;
+  border-radius: calc(var(--pt6) / 2);
+  background-color: var(--white);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: auto;
+}
+
+.wrap.value:not(:focus-within):not(.focused) {
+  background-color: var(--divider);
+  cursor: pointer;
+}
+
+.wrap.value:not(:focus-within):not(.focused):hover .clear {
+  transform: translateX(0);
+}
+
+.wrap:focus-within,
+.wrap.focused {
+  outline: 2px solid var(--text-dark);
+}
+
+.wrap.value:not(:focus-within):not(.focused):hover .input {
+  padding-right: var(--pt7);
+}
+
+.wrap:focus-within .input,
+.wrap.focused .input {
+  cursor: unset !important;
+  flex-shrink: 0;
+}
+
+.wrap.value.displayState:not(:focus-within):not(.focused) .input {
+  padding: 0 var(--pt1) 0 var(--pt2);
+  cursor: pointer;
+}
+
+.wrap.pending.value.displayState:not(:focus-within):not(.focused) .input {
+  padding-left: 0;
+}
+
+.wrap.pending {
+  justify-content: flex-start;
+  background-color: var(--divider);
+}
+
+.wrap.resolving {
+  background-color: var(--divider);
+  cursor: wait;
+}
+
+.wrap.pending:focus-within .input,
+.wrap.pending.focused .input {
+  flex-shrink: 1;
+}
+
+.spinner {
+  margin: 0 var(--pt2);
+}
+
+.input {
+  width: 0;
+  min-width: 75px;
+  height: var(--pt6);
+  padding: 0 var(--pt3);
+  border: none;
+  background-color: var(--white);
+  transition:
+    padding 0.25s ease,
+    min-width 0.25s ease,
+    flex-basis 0.25s ease;
+  border-radius: calc(var(--pt6) / 2);
+  font-size: 16px;
+  font-family: var(--font-mono-regular);
+  flex: 1 1 100%;
+  z-index: 2;
+}
+
+.input:disabled {
+  cursor: wait;
+  opacity: 1;
+}
+
+.secretInput::placeholder {
+  opacity: 0.7;
+}
+
+.fieldDisplay {
+}
+
+.resolvedDisplay .fieldDisplay {
+  flex: 0 1 auto;
+  max-width: 75%;
+  min-width: 0;
+}
+
+.wrap.resolvedDisplay .input {
+  min-width: 25%;
+  flex: 1 1 25%;
+}
+
+.wrap.resolvedDisplay:focus-within .input,
+.wrap.resolvedDisplay.focused .input {
+  min-width: 100%;
+  flex: 1 1 100%;
+}
+
+.pending .fieldDisplay {
+  flex: 0 0 auto;
+  max-width: var(--pt15);
+}
+
+.wrap.pending.value:not(:focus-within):not(.focused) .fieldDisplay:hover {
+  max-width: calc(100% - var(--pt12));
+  min-width: calc(100% - var(--pt12));
+  transition-delay: 0.3s;
+}
+
+.wrap.pending.value:not(:focus-within):not(.focused):has(.secretField:hover)
+  .fieldDisplay {
+  max-width: 0%;
+  min-width: 0%;
+  transition-delay: 0.3s;
+}
+
+.pending:focus-within .fieldDisplay,
+.pending.focused .fieldDisplay {
+  max-width: 0%;
+}
+
+.pending.hasSecretValue:not(:focus-within):not(.focused) .fieldDisplay {
+  max-width: 50%;
+}
+
+.resolvingPreview {
+  opacity: 0.9;
+}
+
+.resolvingMarker {
+  position: absolute;
+  left: var(--pt2);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.secretField {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: stretch;
+  background-color: var(--white);
+  transition:
+    flex-basis 0.25s ease,
+    min-width 0.25s ease,
+    padding 0.25s ease;
+  border-top-left-radius: calc(var(--pt6) / 2);
+  border-bottom-left-radius: calc(var(--pt6) / 2);
+}
+
+.secretIcon,
+.confirmed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--pt5);
+  width: var(--pt5);
+  border-radius: 25px;
+}
+
+.secretIcon {
+  flex: 0 0 auto;
+  font-size: 16px;
+  line-height: 1;
+  margin-left: var(--pt1);
+  margin-right: var(--pt1);
+}
+
+.confirmed {
+  background-color: var(--success-light);
+  margin-left: calc(var(--pt1) * -1) !important;
+}
+
+.resolving .confirmed {
+  background-color: transparent;
+}
+
+.resolving .confirmed :global(.spinner-border) {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.resolving.pending .secretIcon {
+  visibility: hidden;
+}
+
+.resolving .input:not(.secretInput) {
+  padding-left: calc(var(--pt5) + var(--pt2));
+}
+
+.secretInput {
+  width: auto;
+  min-width: 90px;
+  flex: 1 1 auto;
+  padding-left: 0;
+}
+
+.clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 5;
+  transform: translateX(100%);
+  border: var(--pt05) solid var(--white);
+  background-color: var(--divider) !important;
+  padding: 0;
+  min-width: var(--pt6) !important;
+  max-width: var(--pt6) !important;
+  height: var(--pt6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.clear p {
+  padding: 0;
+}
+
+.clear:focus-visible,
+.clear:hover {
+  background-color: var(--primary-dark) !important;
+  color: var(--white) !important;
+}
+
+.clear:focus-visible {
+  transform: translateX(0);
+  background-color: var(--text-dark) !important;
+}
+
+.clear:focus-visible p {
+  color: var(--white);
+}
+
+@media screen and (max-width: 576px) {
+  .wrap {
+    width: 320px;
+  }
+
+  .wrap.inActive.value .clear {
+    transform: translateX(0);
+    background-color: var(--primary-dark) !important;
+    color: var(--white) !important;
+  }
+}
+
+:global(body.dark) .input {
+  background-color: var(--dark);
+  color: var(--text-dark);
+}
+
+:global(body.dark) .secretField {
+  background-color: var(--dark);
+}
+
+:global(body.dark) .clear {
+  background-color: var(--dark) !important;
+  border: var(--pt05) solid var(--dark-light);
+}
+
+:global(body.dark) .clear p {
+  color: var(--text-dark);
+}
+
+:global(body.dark) .clear:focus-visible,
+:global(body.dark) .clear:hover {
+  background-color: var(--text-dark) !important;
+}
+
+:global(body.dark) .clear:focus-visible p,
+:global(body.dark) .clear:hover p {
+  color: var(--dark-light) !important;
+}
+
+@media screen and (max-width: 576px) {
+  :global(body.dark) .wrap.inActive.value .clear {
+    background-color: var(--dark) !important;
+    color: var(--text-dark) !important;
+  }
+}
