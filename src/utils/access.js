@@ -346,6 +346,7 @@ export function getProxyUrl(url, user, options = {}) {
     user?.municipality ||
     parseForMunicipalityNumber(user?.municipalityAgencyId);
   const agencyId = user?.municipalityAgencyId || user?.loggedInAgencyId;
+  const requiresLogin = shouldProxyUrl(url);
 
   // check if we should proxy this url - for now it is ebookcentral, ebscohost and gale
   const proxyMe = shouldUseProxy(url, agencyId, collectionIdentifiers);
@@ -359,19 +360,19 @@ export function getProxyUrl(url, user, options = {}) {
       const realUrl = `https://bib${municipality}.bibbaser.dk/login?url=${proxiedTargetUrl}`;
       return {
         proxyUrl: realUrl,
-        loginRequired: true,
+        loginRequired: requiresLogin,
       };
     }
 
     return {
       proxyUrl: null,
-      loginRequired: true,
+      loginRequired: requiresLogin,
     };
   }
 
   return {
     proxyUrl: null,
-    loginRequired: false,
+    loginRequired: requiresLogin,
   };
 }
 

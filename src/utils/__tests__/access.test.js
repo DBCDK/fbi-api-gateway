@@ -18,7 +18,7 @@ describe("getProxyUrl", () => {
     });
   });
 
-  test("returns null proxy url and no login requirement when agency has no configured Gale provider library id", () => {
+  test("returns null proxy url but still requires login when agency has no configured Gale provider library id", () => {
     const url =
       "https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB&u=[PROVIDERSLIBRARYID]";
 
@@ -30,11 +30,11 @@ describe("getProxyUrl", () => {
 
     expect(result).toEqual({
       proxyUrl: null,
-      loginRequired: false,
+      loginRequired: true,
     });
   });
 
-  test("returns null proxy url and no login requirement when collection access does not match", () => {
+  test("returns null proxy url but still requires login when collection access does not match", () => {
     const url =
       "https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB&u=[PROVIDERSLIBRARYID]";
 
@@ -50,7 +50,7 @@ describe("getProxyUrl", () => {
 
     expect(result).toEqual({
       proxyUrl: null,
-      loginRequired: false,
+      loginRequired: true,
     });
   });
 
