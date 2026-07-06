@@ -121,7 +121,7 @@ export async function resolveAccess(
     res.push({
       __typename: "AccessUrl",
       origin: parseOnlineUrlToOrigin(entry.url),
-      url: proxyUrl,
+      url: entry.url || "",
       proxyUrl,
       loginRequired,
       note: entry.note,
@@ -362,11 +362,16 @@ export function getProxyUrl(url, user, options = {}) {
         loginRequired: true,
       };
     }
+
+    return {
+      proxyUrl: null,
+      loginRequired: true,
+    };
   }
 
   return {
-    proxyUrl: proxiedTargetUrl,
-    loginRequired: shouldProxyUrl(url),
+    proxyUrl: null,
+    loginRequired: false,
   };
 }
 

@@ -18,7 +18,7 @@ describe("getProxyUrl", () => {
     });
   });
 
-  test("returns direct Gale url when agency has no configured Gale provider library id", () => {
+  test("returns null proxy url and no login requirement when agency has no configured Gale provider library id", () => {
     const url =
       "https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB&u=[PROVIDERSLIBRARYID]";
 
@@ -29,12 +29,12 @@ describe("getProxyUrl", () => {
     });
 
     expect(result).toEqual({
-      proxyUrl: url,
-      loginRequired: true,
+      proxyUrl: null,
+      loginRequired: false,
     });
   });
 
-  test("returns direct Gale url when collection access does not match", () => {
+  test("returns null proxy url and no login requirement when collection access does not match", () => {
     const url =
       "https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB&u=[PROVIDERSLIBRARYID]";
 
@@ -49,12 +49,12 @@ describe("getProxyUrl", () => {
     );
 
     expect(result).toEqual({
-      proxyUrl: url,
-      loginRequired: true,
+      proxyUrl: null,
+      loginRequired: false,
     });
   });
 
-  test("returns direct url for non-proxy resources", () => {
+  test("returns null proxy url for non-proxy resources", () => {
     const url = "https://example.com/resource";
 
     const result = getProxyUrl(url, {
@@ -64,7 +64,7 @@ describe("getProxyUrl", () => {
     });
 
     expect(result).toEqual({
-      proxyUrl: url,
+      proxyUrl: null,
       loginRequired: false,
     });
   });
