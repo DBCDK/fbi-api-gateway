@@ -64,6 +64,11 @@ type AccessUrl {
   The url where manifestation is located
   """
   url: String!
+
+  """
+  Proxy/login url for the resource when relevant. Falls back to the same value as url when no proxy is needed.
+  """
+  proxyUrl: String!
   
   """
   Notes for the resource

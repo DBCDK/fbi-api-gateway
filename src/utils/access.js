@@ -3,6 +3,7 @@
  */
 
 import { filterDuplicateAgencies, resolveManifestation } from "./utils";
+import { getGaleAgencyConfig } from "./galeAgencyConfig";
 
 /**
  *
@@ -80,7 +81,11 @@ export async function hasInfomediaAccess(context) {
  * @param context
  * @returns {Promise<*>}
  */
-export async function resolveAccess(manifestation, context, { includeInfomediaAccess = true } = {}) {
+export async function resolveAccess(
+  manifestation,
+  context,
+  { includeInfomediaAccess = true } = {}
+) {
   // We parse the access structure from JED, and convert it
   // to the union type structure.
   // At some point we may choose to follow the structure of JED closely,
@@ -96,7 +101,7 @@ export async function resolveAccess(manifestation, context, { includeInfomediaAc
   // use linkchecker to check status of a single accessUrl
   // linkchecker does NOT handle proxy urls, so we skip ebookcentral and ebsco urls
   const linkStatus = async (url) => {
-    if (url?.includes("ebookcentral") || url?.includes("ebscohost")) {
+    if (shouldProxyUrl(url)) {
       return "OK";
     }
 
@@ -109,19 +114,19 @@ export async function resolveAccess(manifestation, context, { includeInfomediaAc
   };
 
   parent?.access?.accessUrls?.forEach((entry) => {
-    const { proxyUrl, loginRequired } = getProxyUrl(
-      entry.url || "",
-      context?.user
-    );
+    const { proxyUrl, loginRequired } = getProxyUrl(entry.url || "", context?.user, {
+      collectionIdentifiers: parent?.collectionIdentifiers,
+    });
 
     res.push({
       __typename: "AccessUrl",
       origin: parseOnlineUrlToOrigin(entry.url),
       url: proxyUrl,
+      proxyUrl,
       loginRequired,
       note: entry.note,
       type: entry.type,
-      status: linkStatus(proxyUrl) || "OK",
+      status: linkStatus(proxyUrl || entry.url || "") || "OK",
       urlText: entry.urlText,
     });
   });
@@ -157,12 +162,18 @@ export async function resolveAccess(manifestation, context, { includeInfomediaAc
 
   // While we transition from Infomedia to Retriever, we need to support both services.
   // But we always prefer the Retriever article if it exists.
-  // Legacy queries expect the InfomediaService union type in the access list, 
+  // Legacy queries expect the InfomediaService union type in the access list,
   // so we need to return that type whenever the query contain InfomediaAccess as inline fragment (... on InfomediaService).
   // This is accepted in the deprecation period. After that, we will only return RetrieverService.
-  const retrieverOrInfomediaId = parent?.access?.retrieverService?.id || parent?.access?.infomediaService?.id;
-  const retrieverOrInfomediaLicense = parent?.access?.retrieverService?.license || parent?.access?.infomediaService?.license;
-  const retrieverOrInfomediaType = includeInfomediaAccess ? "InfomediaService" : "RetrieverService";
+  const retrieverOrInfomediaId =
+    parent?.access?.retrieverService?.id ||
+    parent?.access?.infomediaService?.id;
+  const retrieverOrInfomediaLicense =
+    parent?.access?.retrieverService?.license ||
+    parent?.access?.infomediaService?.license;
+  const retrieverOrInfomediaType = includeInfomediaAccess
+    ? "InfomediaService"
+    : "RetrieverService";
 
   if (retrieverOrInfomediaId) {
     // Check if token has access to INFOMEDIAPRO
@@ -172,8 +183,7 @@ export async function resolveAccess(manifestation, context, { includeInfomediaAc
 
     if (
       retrieverOrInfomediaLicense === "UNRESTRICTED" ||
-      (retrieverOrInfomediaLicense === "PROFESSIONALS" &&
-        hasInfomediaProRights)
+      (retrieverOrInfomediaLicense === "PROFESSIONALS" && hasInfomediaProRights)
     ) {
       res.push({
         __typename: retrieverOrInfomediaType,
@@ -266,29 +276,98 @@ function parseForMunicipalityNumber(agencyId) {
   return agencyId?.substring(1, 4);
 }
 
+function shouldProxyUrl(url = "") {
+  const PROXY_URL_PATTERNS = ["ebookcentral", "ebscohost", "link.gale"];
+  return PROXY_URL_PATTERNS.some((pattern) => url.includes(pattern));
+}
+
+function isGaleUrl(url = "") {
+  return url.includes("link.gale");
+}
+
+function hasGaleCollectionAccess(agencyId, collectionIdentifiers = []) {
+  const accessTo = getGaleAgencyConfig(agencyId)?.accessTo || [];
+
+  if (collectionIdentifiers.length === 0 || accessTo.length === 0) {
+    return true;
+  }
+
+  return collectionIdentifiers.some((identifier) =>
+    accessTo.includes(identifier)
+  );
+}
+
+function replaceGaleProvidersLibraryId(
+  url,
+  agencyId,
+  collectionIdentifiers = []
+) {
+  if (!isGaleUrl(url)) {
+    return url;
+  }
+
+  if (!hasGaleCollectionAccess(agencyId, collectionIdentifiers)) {
+    return url;
+  }
+
+  const providersLibraryId = getGaleAgencyConfig(agencyId)?.providersLibraryId;
+
+  if (!providersLibraryId) {
+    return url;
+  }
+
+  return url.replace("[PROVIDERSLIBRARYID]", providersLibraryId);
+}
+
+function shouldUseProxy(url, agencyId, collectionIdentifiers = []) {
+  if (!isGaleUrl(url)) {
+    return shouldProxyUrl(url);
+  }
+
+  const providersLibraryId = getGaleAgencyConfig(agencyId)?.providersLibraryId;
+
+  return (
+    shouldProxyUrl(url) &&
+    !!providersLibraryId &&
+    hasGaleCollectionAccess(agencyId, collectionIdentifiers)
+  );
+}
+
 /**
  * This one is for ebook.plus - we need to go via a proxy url (if user is logged in)
  * @param url
  * @param user
+ * @param options
  * @returns {*}
  */
-export function getProxyUrl(url, user) {
+export function getProxyUrl(url, user, options = {}) {
+  const { collectionIdentifiers = [] } = options;
   const municipality =
     user?.municipality ||
     parseForMunicipalityNumber(user?.municipalityAgencyId);
+  const agencyId = user?.municipalityAgencyId || user?.loggedInAgencyId;
 
-  // check if we should proxy this url - for now it is ebookcentral and ebscohost
-  const proxyMe =
-    url.indexOf("ebookcentral") !== -1 || url.indexOf("ebscohost") !== -1;
+  // check if we should proxy this url - for now it is ebookcentral, ebscohost and gale
+  const proxyMe = shouldUseProxy(url, agencyId, collectionIdentifiers);
+  const proxiedTargetUrl = isGaleUrl(url)
+    ? replaceGaleProvidersLibraryId(url, agencyId, collectionIdentifiers)
+    : url;
+
   if (proxyMe) {
     // check if user is logged in
     if (user?.userId) {
-      const realUrl = `https://bib${municipality}.bibbaser.dk/login?url=${url}`;
-      return { proxyUrl: realUrl, loginRequired: proxyMe };
+      const realUrl = `https://bib${municipality}.bibbaser.dk/login?url=${proxiedTargetUrl}`;
+      return {
+        proxyUrl: realUrl,
+        loginRequired: true,
+      };
     }
   }
 
-  return { proxyUrl: url, loginRequired: proxyMe };
+  return {
+    proxyUrl: proxiedTargetUrl,
+    loginRequired: shouldProxyUrl(url),
+  };
 }
 
 /**
