@@ -16,18 +16,55 @@ function renderBody(body = "", { interactive = true } = {}) {
     return body;
   }
 
-  const linkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
   const parts = [];
   let lastIndex = 0;
+  let cursor = 0;
 
-  body.replace(linkPattern, (match, label, href, offset) => {
-    if (offset > lastIndex) {
-      parts.push(body.slice(lastIndex, offset));
+  while (cursor < body.length) {
+    const labelStart = body.indexOf("[", cursor);
+
+    if (labelStart === -1) {
+      break;
+    }
+
+    const labelEnd = body.indexOf("]", labelStart + 1);
+    const hrefStart = body.indexOf("(", labelEnd + 1);
+    const hrefEnd = body.indexOf(")", hrefStart + 1);
+
+    const hasValidStructure =
+      labelEnd > labelStart &&
+      hrefStart === labelEnd + 1 &&
+      hrefEnd > hrefStart;
+
+    if (!hasValidStructure) {
+      cursor = labelStart + 1;
+      continue;
+    }
+
+    const label = body.slice(labelStart + 1, labelEnd);
+    const href = body.slice(hrefStart + 1, hrefEnd);
+    const isValidHref =
+      label.trim() !== "" &&
+      /^https?:\/\//.test(href) &&
+      !/\s/.test(href);
+
+    if (!isValidHref) {
+      cursor = labelStart + 1;
+      continue;
+    }
+
+    if (labelStart > lastIndex) {
+      parts.push(body.slice(lastIndex, labelStart));
     }
 
     parts.push(
       interactive ? (
-        <Link key={`${href}-${offset}`} href={href} target="_blank" underline>
+        <Link
+          key={`${href}-${labelStart}`}
+          href={href}
+          target="_blank"
+          underline
+        >
           {label}
         </Link>
       ) : (
@@ -35,9 +72,9 @@ function renderBody(body = "", { interactive = true } = {}) {
       )
     );
 
-    lastIndex = offset + match.length;
-    return match;
-  });
+    lastIndex = hrefEnd + 1;
+    cursor = hrefEnd + 1;
+  }
 
   if (lastIndex < body.length) {
     parts.push(body.slice(lastIndex));
