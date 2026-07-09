@@ -27,6 +27,7 @@ import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Button from "@/components/base/button/Button";
 import Highlight from "@/components/base/highlight";
+import WhatsNew from "@/components/whats-new";
 
 import styles from "./Docs.module.css";
 
@@ -149,6 +150,7 @@ export default function Docs() {
           </Col>
         </Row>
       </Container>
+      <WhatsNew />
     </>
   );
 }

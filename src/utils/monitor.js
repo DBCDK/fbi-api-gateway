@@ -14,13 +14,11 @@ import client from "prom-client";
  */
 export default function monitor({ name, help }, func) {
   // Create timings histogram
-  const hist =
-    client.register.getSingleMetric(name) ||
-    new client.Histogram({
-      name,
-      help,
-      buckets: [0.1, 0.5, 2, 10, 30],
-    });
+  const hist = new client.Histogram({
+    name,
+    help,
+    buckets: [0.1, 0.5, 2, 10, 30],
+  });
 
   // Return the wrapped function
   return async function (...args) {
@@ -46,7 +44,7 @@ const histograms = {};
  * @param {string} name
  */
 export function createHistogram(name) {
-  let hist = histograms[name] || client.register.getSingleMetric(name);
+  let hist = histograms[name];
   if (!hist) {
     if (Object.keys(histograms).length > 99) {
       throw new Error(`Too many observations created`);
@@ -84,7 +82,7 @@ const counters = {};
  * @param {string} name
  */
 export function count(name) {
-  let counter = counters[name] || client.register.getSingleMetric(name);
+  let counter = counters[name];
   if (!counter) {
     counter = new client.Counter({
       name,

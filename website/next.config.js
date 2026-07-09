@@ -6,6 +6,10 @@ const redisEnabled = ["1", "true", "yes"].includes(
 const defaultMaxClientEntries = redisEnabled ? 10 : 5;
 const projectRoot = __dirname;
 const monorepoRoot = path.join(__dirname, "..");
+const whatsNewEnabled = process.env.NEXT_PUBLIC_WHATS_NEW_ENABLED;
+const whatsNewPublishedAt = process.env.NEXT_PUBLIC_WHATS_NEW_PUBLISHED_AT;
+const whatsNewExpiresAfterDays =
+  process.env.NEXT_PUBLIC_WHATS_NEW_EXPIRES_AFTER_DAYS;
 
 module.exports = {
   ...(process.env.NODE_ENV === "production"
@@ -20,6 +24,9 @@ module.exports = {
     NEXT_PUBLIC_WEBSITE_THEME: process.env.WEBSITE_THEME || "default",
     NEXT_PUBLIC_MAX_CLIENT_ENTRIES:
       process.env.MAX_CLIENT_ENTRIES || String(defaultMaxClientEntries),
+    NEXT_PUBLIC_WHATS_NEW_ENABLED: whatsNewEnabled || "",
+    NEXT_PUBLIC_WHATS_NEW_PUBLISHED_AT: whatsNewPublishedAt || "",
+    NEXT_PUBLIC_WHATS_NEW_EXPIRES_AFTER_DAYS: whatsNewExpiresAfterDays || "",
   },
   async redirects() {
     return [

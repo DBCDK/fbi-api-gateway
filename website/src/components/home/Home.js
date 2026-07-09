@@ -7,6 +7,7 @@ import Hero from "@/components/hero";
 import Link from "@/components/base/link";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
+import WhatsNew from "@/components/whats-new";
 
 import useTheme from "@/hooks/useTheme";
 
@@ -125,6 +126,7 @@ export default function Home() {
           </Col>
         </Row>
       </Layout>
+      <WhatsNew />
     </>
   );
 }

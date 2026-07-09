@@ -1,15 +1,16 @@
 import Dropdown from "react-bootstrap/Dropdown";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { useSWRConfig } from "swr";
 
 import useApplications from "@/hooks/useApplications";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
+import { isWhatsNewRestorable, restoreWhatsNew } from "@/components/whats-new";
 import styles from "./Storage.module.css";
 
-const actions = [
+const baseActions = [
   {
     label: "Reset preferences",
     value: "local",
@@ -37,13 +38,40 @@ const DANGEROUS_ACTIONS = new Set(["graphiql-tabs", "cookies"]);
 export function Storage({ className = "", ...props }) {
   const [show, setShow] = useState(false);
   const [pendingConfirm, setPendingConfirm] = useState(null);
+  const [canRestoreNews, setCanRestoreNews] = useState(false);
   const router = useRouter();
   const { mutate } = useSWRConfig();
   const { mutateApplications } = useApplications();
   const { clearSelectedCredential } = useSelectedCredential();
 
+  const actions = useMemo(() => {
+    const restoreNewsAction = canRestoreNews
+      ? [
+          {
+            label: "Restore news",
+            value: "restore-news",
+            icon: "✨",
+          },
+        ]
+      : [];
+
+    return [
+      ...baseActions.slice(0, 2),
+      ...restoreNewsAction,
+      ...baseActions.slice(2),
+    ];
+  }, [canRestoreNews]);
+
+  useEffect(() => {
+    setCanRestoreNews(isWhatsNewRestorable());
+  }, []);
+
   function handleToggle(nextShow) {
     setShow(nextShow);
+
+    if (nextShow) {
+      setCanRestoreNews(isWhatsNewRestorable());
+    }
 
     if (!nextShow) {
       setPendingConfirm(null);
@@ -103,6 +131,13 @@ export function Storage({ className = "", ...props }) {
 
       clearSelectedCredential();
       mutateApplications([], false);
+      setShow(false);
+      return;
+    }
+
+    if (value === "restore-news") {
+      restoreWhatsNew();
+      setCanRestoreNews(false);
       setShow(false);
     }
   }
