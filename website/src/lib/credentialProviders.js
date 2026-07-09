@@ -45,7 +45,8 @@ export function getRequestIp(req) {
 
   return String(rawValue)
     .trim()
-    .replace(/(^\[)|(\]$)/g, "")
+    .replace(/^\[/, "")
+    .replace(/\]$/, "")
     .replace(/^::ffff:/i, "")
     .replace(/^for=/i, "");
 }

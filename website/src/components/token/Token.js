@@ -178,14 +178,15 @@ export default function Token({
     <form
       ref={containerRef}
       id={`${id}-form`}
-      tabIndex={0}
-      onClick={activateInput}
-      onKeyDown={(e) => {
-        if (e.key !== "Enter" && e.key !== " ") {
+      onMouseDown={(e) => {
+        const isInteractiveTarget =
+          e.target instanceof HTMLElement &&
+          e.target.closest("button, input");
+
+        if (isInteractiveTarget) {
           return;
         }
 
-        e.preventDefault();
         activateInput();
       }}
       className={`${styles.form} ${compactSize} ${className}`}
@@ -266,6 +267,9 @@ export default function Token({
         />
         <Button
           className={styles.clear}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
           onClick={(e) => {
             // Prevent firering onClick event on form
             e.stopPropagation();
