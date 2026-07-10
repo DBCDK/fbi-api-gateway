@@ -80,7 +80,11 @@ export async function hasInfomediaAccess(context) {
  * @param context
  * @returns {Promise<*>}
  */
-export async function resolveAccess(manifestation, context, { includeInfomediaAccess = true } = {}) {
+export async function resolveAccess(
+  manifestation,
+  context,
+  { includeInfomediaAccess = true } = {}
+) {
   // We parse the access structure from JED, and convert it
   // to the union type structure.
   // At some point we may choose to follow the structure of JED closely,
@@ -157,12 +161,18 @@ export async function resolveAccess(manifestation, context, { includeInfomediaAc
 
   // While we transition from Infomedia to Retriever, we need to support both services.
   // But we always prefer the Retriever article if it exists.
-  // Legacy queries expect the InfomediaService union type in the access list, 
+  // Legacy queries expect the InfomediaService union type in the access list,
   // so we need to return that type whenever the query contain InfomediaAccess as inline fragment (... on InfomediaService).
   // This is accepted in the deprecation period. After that, we will only return RetrieverService.
-  const retrieverOrInfomediaId = parent?.access?.retrieverService?.id || parent?.access?.infomediaService?.id;
-  const retrieverOrInfomediaLicense = parent?.access?.retrieverService?.license || parent?.access?.infomediaService?.license;
-  const retrieverOrInfomediaType = includeInfomediaAccess ? "InfomediaService" : "RetrieverService";
+  const retrieverOrInfomediaId =
+    parent?.access?.retrieverService?.id ||
+    parent?.access?.infomediaService?.id;
+  const retrieverOrInfomediaLicense =
+    parent?.access?.retrieverService?.license ||
+    parent?.access?.infomediaService?.license;
+  const retrieverOrInfomediaType = includeInfomediaAccess
+    ? "InfomediaService"
+    : "RetrieverService";
 
   if (retrieverOrInfomediaId) {
     // Check if token has access to INFOMEDIAPRO
@@ -172,8 +182,7 @@ export async function resolveAccess(manifestation, context, { includeInfomediaAc
 
     if (
       retrieverOrInfomediaLicense === "UNRESTRICTED" ||
-      (retrieverOrInfomediaLicense === "PROFESSIONALS" &&
-        hasInfomediaProRights)
+      (retrieverOrInfomediaLicense === "PROFESSIONALS" && hasInfomediaProRights)
     ) {
       res.push({
         __typename: retrieverOrInfomediaType,

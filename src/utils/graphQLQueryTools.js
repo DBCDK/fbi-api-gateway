@@ -25,7 +25,11 @@ function hasTypeInSelections(selections, typeName, fragments) {
       const fragment = fragments[selection.name.value];
       if (
         fragment &&
-        hasTypeInSelections(fragment.selectionSet.selections, typeName, fragments)
+        hasTypeInSelections(
+          fragment.selectionSet.selections,
+          typeName,
+          fragments
+        )
       ) {
         return true;
       }

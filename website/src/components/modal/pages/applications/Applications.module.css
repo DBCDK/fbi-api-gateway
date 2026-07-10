@@ -242,20 +242,18 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: var(--white);
+  color: var(--text-light);
   z-index: 2;
-  opacity: 0;
-  pointer-events: none;
   transition:
     opacity 0.2s ease,
     background-color 0.2s ease,
+    color 0.2s ease,
     transform 0.2s ease;
+  cursor: pointer;
 }
 
 .top.expanded .closeIcon {
-  opacity: 1;
-  cursor: pointer;
-  pointer-events: auto;
+  color: var(--white);
 }
 
 .closeIcon:hover,

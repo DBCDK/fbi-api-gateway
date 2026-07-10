@@ -68,6 +68,7 @@ export function Applications({
           modal={{
             isVisible: show,
             openAddOnShow,
+            onHide: () => handleShowChange(false),
           }}
         />
       </Modal>

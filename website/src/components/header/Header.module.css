@@ -218,7 +218,8 @@
   position: fixed;
   padding: var(--pt2);
   z-index: 1;
-  display: none;
+  bottom: 15vh;
+  right: 0;
 }
 
 @media (min-width: 768px) {
@@ -247,8 +248,8 @@
 
   .settings {
     top: 65vh;
+    bottom: unset;
     right: 0;
-    display: block;
   }
 
   .links {

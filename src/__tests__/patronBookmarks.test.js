@@ -102,7 +102,11 @@ describe("Patron bookmarks", () => {
       limit: 3,
     });
 
-    expect(result.map((item) => item.title)).toEqual(["Alpha", "Bravo", "Zulu"]);
+    expect(result.map((item) => item.title)).toEqual([
+      "Alpha",
+      "Bravo",
+      "Zulu",
+    ]);
   });
 
   test("BookmarkItem.application uses explicit application when present", () => {

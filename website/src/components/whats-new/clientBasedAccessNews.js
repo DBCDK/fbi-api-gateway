@@ -7,7 +7,7 @@ const clientBasedAccessNews = {
       eyebrow: "What's new?",
       icon: "✨",
       title: "What’s changed since the last update?",
-      body: "We’ve added client-based access, more stable token handling, and a new settings menu for the documentation interface.",
+      body: "We’ve added client-based access, more stable token handling, and a new settings menu for the docs interface.",
     },
     {
       eyebrow: "Access",

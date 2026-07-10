@@ -235,7 +235,7 @@ export default function Header() {
       <Modal
         show={show}
         onHide={() => setShow(false)}
-        title=" "
+        showCloseButton
         className={styles.modal}
       >
         <Pages.Menu modal={{ isVisible: show }} />

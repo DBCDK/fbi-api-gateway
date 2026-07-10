@@ -561,10 +561,18 @@ function ApplicationsPage({ modal }) {
 
         <button
           type="button"
-          onClick={() => setIsAddExpanded(false)}
+          onClick={() => {
+            if (isAddExpanded) {
+              setIsAddExpanded(false);
+              return;
+            }
+
+            modal.onHide?.();
+          }}
           className={styles.closeIcon}
-          aria-label="Close add application"
-          tabIndex={isAddExpanded ? 0 : -1}
+          aria-label={
+            isAddExpanded ? "Close add application" : "Close applications"
+          }
         >
           <span className={styles.closeGlyph} aria-hidden="true" />
         </button>
