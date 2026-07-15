@@ -30,7 +30,7 @@ const CREDENTIAL_FETCH_TIMEOUT_MS = Number.parseInt(
 // Keep these separate so we can re-enable the enrichment chain one step at a time.
 const BYPASS_CREDENTIAL_AGENCY_LOOKUP = false;
 const BYPASS_CREDENTIAL_CULR = false;
-const BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT = true;
+const BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT = false;
 const BYPASS_CREDENTIAL_OPENUSERSTATUS = true;
 
 function isAbortError(error) {
