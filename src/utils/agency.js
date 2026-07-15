@@ -71,7 +71,12 @@ export async function isFFUAgency(branchId, context) {
 
   const loader = context?.getLoader || context?.datasources?.getLoader;
 
-  const result = (await loader("library").load({ branchId }))?.result?.[0];
+  const result = (
+    await loader("library").load({
+      branchId,
+      traceId,
+    })
+  )?.result?.[0];
 
   // toUpperCase needed for mocked agencies (jest testing)
   return !!(result?.agencyType?.toUpperCase() === "FORSKNINGSBIBLIOTEK");
