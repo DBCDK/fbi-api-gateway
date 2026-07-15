@@ -1,7 +1,7 @@
 import { Row, Col } from "react-bootstrap";
 
-import useStorage from "@/hooks/useStorage";
-import useConfiguration from "@/hooks/useConfiguration";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import { hasAvailableAgency } from "@/utils/configuration";
 
 import Token from "@/components/token";
@@ -23,8 +23,8 @@ import useTheme from "@/hooks/useTheme";
  */
 
 function Menu({ modal, context }) {
-  const { selectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { configuration } = useResolvedConfiguration(selectedToken);
   const { theme } = useTheme();
 
   const isValidToken =
@@ -38,19 +38,6 @@ function Menu({ modal, context }) {
 
   return (
     <div className={`${styles.menu}`}>
-      <Row className={styles.middle}>
-        <Col>
-          <Label for="token-input">
-            <Text type="text1">FBI API token</Text>
-          </Label>
-          <Row>
-            <Col className={styles.token}>
-              <Token className={styles.input} compact />
-              <Profile className={styles.profiles} />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
       <Row as="ul">
         <Col xs={12} as="li">
           <Text type="text5" className={styles.link}>

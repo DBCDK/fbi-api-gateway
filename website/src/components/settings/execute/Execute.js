@@ -11,12 +11,13 @@ const modes = [
   { label: "auto", icon: "🛵" },
 ];
 
-export function Execute({ mode, onClick, className = "" }) {
+export function Execute({ mode, onClick, className = "", ...props }) {
   const isSelected =
     modes.find((t) => t.label === mode) || modes[modes.length - 1];
 
   return (
     <Dropdown
+      {...props}
       className={`${styles.wrap} ${className}`}
       align="end"
       drop="down-centered"

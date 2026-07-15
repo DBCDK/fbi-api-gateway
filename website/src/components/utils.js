@@ -51,6 +51,16 @@ export function isToken(token) {
 }
 
 export function isEqual(token1, token2) {
+  const sameCredentialIdentity =
+    (token1?.id && token2?.id && token1.id === token2.id) ||
+    (token1?.clientId &&
+      token2?.clientId &&
+      token1.clientId === token2.clientId);
+
+  if (sameCredentialIdentity) {
+    return token1?.profile === token2?.profile && token1?.agency === token2?.agency;
+  }
+
   return (
     token1?.token === token2?.token &&
     token1?.profile === token2?.profile &&

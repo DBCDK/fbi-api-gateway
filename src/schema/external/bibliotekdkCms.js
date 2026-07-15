@@ -23,7 +23,8 @@ const schemaOptions = {
 };
 
 //remote schema
-export const remoteBibliotekdkCmsSchema = () => createRemoteSchema(schemaOptions);
+export const remoteBibliotekdkCmsSchema = () =>
+  createRemoteSchema(schemaOptions);
 
 /**
  * Local pre-loaded bibliotekdkCms schema snapshot.

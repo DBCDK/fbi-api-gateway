@@ -19,10 +19,11 @@ export async function load(
   const subjectsFacets = res.facets?.find((entry) =>
     entry?.name?.includes(facet.toLowerCase())
   );
-  const entries = subjectsFacets?.values?.map((entry) => ({
-    ...entry,
-    term: entry.key,
-  })) || [];
+  const entries =
+    subjectsFacets?.values?.map((entry) => ({
+      ...entry,
+      term: entry.key,
+    })) || [];
 
   entries.sort((a, b) => {
     let valA, valB;
