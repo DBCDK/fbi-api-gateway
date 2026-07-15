@@ -2,9 +2,13 @@
  * @file API route for resolving a submitted token or clientId into a safe UI
  * entry while persisting the sensitive credential state server-side.
  */
+import crypto from "crypto";
+import { log } from "dbc-node-logger";
 import {
+  attachCredentialTraceId,
   buildConfigurationResponse,
   buildUserResponse,
+  getCredentialTraceId,
   getAccessTokenForClient,
   getRequestIp,
   isInternalRequest,
@@ -15,6 +19,26 @@ import { detectCredentialType } from "../../../utils/credentials";
 
 function getType(value) {
   return detectCredentialType(value);
+}
+
+function hashSensitiveValue(value) {
+  if (!value) {
+    return null;
+  }
+
+  return crypto
+    .createHash("sha256")
+    .update(String(value))
+    .digest("hex")
+    .slice(0, 12);
+}
+
+function summarizeError(error) {
+  return {
+    name: error?.name || "Error",
+    message: error?.message || String(error),
+    code: error?.code || error?.cause?.code || null,
+  };
 }
 
 function getCredentialEntryId({ type, token = null, clientId = null }) {
@@ -97,6 +121,7 @@ async function respondWithClientSecretRequired({
   entryId,
   network,
   reasonCode,
+  traceId,
 }) {
   const detectedIp = getRequestIp(req);
   const sessionEntry = await upsertCredentialSessionEntry(
@@ -127,6 +152,7 @@ async function respondWithClientSecretRequired({
       reasonCode,
     }),
     reasonCode,
+    traceId,
   });
 }
 
@@ -134,6 +160,8 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).send({});
   }
+
+  const traceId = attachCredentialTraceId(res, getCredentialTraceId(req));
 
   const {
     value,
@@ -160,17 +188,40 @@ export default async function handler(req, res) {
     return res.status(400).send({
       status: "INVALID_INPUT",
       message: "Input must be a token or a clientId",
+      traceId,
     });
   }
 
   try {
+    log.info("CREDENTIAL_RESOLVE_START", {
+      traceId,
+      type,
+      network: isInternalRequest(req) ? "internal" : "external",
+      tokenHash: type === "token" ? hashSensitiveValue(normalizedValue) : null,
+      clientId: type === "client" ? normalizedValue : clientId || null,
+      entryId: entryId || null,
+      agency: agency || null,
+    });
+
     if (type === "token") {
       const network = isInternalRequest(req) ? "internal" : "external";
       const configurationResponse = await buildConfigurationResponse(
         normalizedValue,
-        agency
+        agency,
+        { traceId }
       );
-      const userResponse = await buildUserResponse(normalizedValue);
+      let userResponse = { status: 200, body: {} };
+
+      try {
+        userResponse = await buildUserResponse(normalizedValue, { traceId });
+      } catch (error) {
+        log.warn("CREDENTIAL_RESOLVE_USER_ENRICHMENT_FAILED", {
+          traceId,
+          tokenHash: hashSensitiveValue(normalizedValue),
+          error: summarizeError(error),
+        });
+        userResponse = { status: 200, body: {} };
+      }
       const resolvedClientId =
         configurationResponse.body?.clientId || clientId || null;
       const resolvedExpiresAt =
@@ -188,9 +239,15 @@ export default async function handler(req, res) {
         });
 
       if (configurationResponse.status !== 200) {
+        log.warn("CREDENTIAL_RESOLVE_INVALID_TOKEN", {
+          traceId,
+          tokenHash: hashSensitiveValue(normalizedValue),
+          configurationStatus: configurationResponse.status,
+        });
         return res.status(configurationResponse.status).send({
           status: "TOKEN_INVALID",
           message: "Token could not be validated",
+          traceId,
         });
       }
 
@@ -232,10 +289,19 @@ export default async function handler(req, res) {
         }
       );
 
+      log.info("CREDENTIAL_RESOLVE_SUCCESS", {
+        traceId,
+        type: canonicalType,
+        network,
+        tokenHash: hashSensitiveValue(normalizedValue),
+        clientId: resolvedClientId,
+      });
+
       return res.status(200).send({
         status: "OK",
         entry: sessionEntry,
         safeEntry,
+        traceId,
       });
     }
 
@@ -247,6 +313,7 @@ export default async function handler(req, res) {
           clientId: normalizedValue,
           network,
           req,
+          traceId,
         });
 
         if (tokenResolution.status === 200 && tokenResolution.token) {
@@ -289,9 +356,17 @@ export default async function handler(req, res) {
             status: "OK",
             entry: sessionEntry,
             safeEntry,
+            traceId,
           });
         }
-      } catch (error) {}
+      } catch (error) {
+        log.warn("CREDENTIAL_RESOLVE_AUTO_EXCHANGE_FAILED", {
+          traceId,
+          clientId: normalizedValue,
+          network,
+          error: summarizeError(error),
+        });
+      }
 
       return await respondWithClientSecretRequired({
         req,
@@ -303,6 +378,7 @@ export default async function handler(req, res) {
           network === "internal"
             ? "CLIENT_SECRET_AUTO_EXCHANGE_FAILED"
             : "CLIENT_SECRET_REQUIRED",
+        traceId,
       });
     }
 
@@ -311,21 +387,35 @@ export default async function handler(req, res) {
       clientSecret,
       network,
       req,
+      traceId,
     });
 
     if (tokenResolution.status !== 200) {
+      log.warn("CREDENTIAL_RESOLVE_CLIENT_INVALID", {
+        traceId,
+        clientId: normalizedValue,
+        network,
+        tokenStatus: tokenResolution.status,
+      });
       return res.status(401).send({
         status: "CLIENT_CREDENTIALS_INVALID",
         message: "Client credentials could not be validated",
+        traceId,
       });
     }
 
     const accessToken = tokenResolution.token;
 
     if (!accessToken) {
+      log.error("CREDENTIAL_RESOLVE_TOKEN_EXCHANGE_FAILED", {
+        traceId,
+        clientId: normalizedValue,
+        network,
+      });
       return res.status(500).send({
         status: "TOKEN_EXCHANGE_FAILED",
         message: "Could not exchange client credentials for an access token",
+        traceId,
       });
     }
 
@@ -364,15 +454,32 @@ export default async function handler(req, res) {
       }
     );
 
+    log.info("CREDENTIAL_RESOLVE_SUCCESS", {
+      traceId,
+      type: "client",
+      network,
+      clientId: normalizedValue,
+      tokenHash: hashSensitiveValue(accessToken),
+    });
+
     return res.status(200).send({
       status: "OK",
       entry: sessionEntry,
       safeEntry,
+      traceId,
     });
   } catch (error) {
+    log.error("CREDENTIAL_RESOLVE_FAILED", {
+      traceId,
+      type,
+      tokenHash: type === "token" ? hashSensitiveValue(normalizedValue) : null,
+      clientId: type === "client" ? normalizedValue : clientId || null,
+      error: summarizeError(error),
+    });
     return res.status(500).send({
       status: "RESOLVE_FAILED",
       message: "Credential could not be resolved right now",
+      traceId,
     });
   }
 }
