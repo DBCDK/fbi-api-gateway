@@ -503,7 +503,8 @@ export async function search(props, getFunc = doRequest, fetch = defaultFetch) {
   return finalResult;
 }
 
-export async function load(props, { getLoader }, context) {
+export async function load(props, context) {
+  const { getLoader } = context || {};
   const traceId = props?.traceId || null;
 
   logLibraryEvent("info", "LOAD_START", {
