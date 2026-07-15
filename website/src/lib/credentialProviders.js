@@ -2,7 +2,9 @@
  * @file Shared server-side credential helpers for network detection, token
  * exchange, and building Smaug/user responses from resolved access tokens.
  */
+import crypto from "crypto";
 import fetch from "isomorphic-unfetch";
+import { log } from "dbc-node-logger";
 
 import config from "../../../src/config.js";
 import { parseClientPermissions } from "../../../commonUtils";
@@ -24,9 +26,24 @@ const CREDENTIAL_FETCH_TIMEOUT_MS = Number.parseInt(
   process.env.CREDENTIAL_FETCH_TIMEOUT_MS || config.fetchDefaultTimeoutMs,
   10
 );
+// Temporary isolation switch for debugging authenticated token resolve in prod.
+// When enabled, we skip loggedInAgencyId/vipcore/CULR/openuserstatus enrichment.
+const BYPASS_CREDENTIAL_USER_ENRICHMENT = true;
 
 function isAbortError(error) {
   return error?.name === "AbortError";
+}
+
+function hashSensitiveValue(value) {
+  if (!value) {
+    return null;
+  }
+
+  return crypto
+    .createHash("sha256")
+    .update(String(value))
+    .digest("hex")
+    .slice(0, 12);
 }
 
 async function fetchWithTimeout(url, options = {}) {
@@ -490,11 +507,25 @@ export async function buildConfigurationResponse(
 }
 
 export async function buildUserResponse(token, options = {}) {
+  const tokenHash = hashSensitiveValue(token);
+
+  log.info("CREDENTIAL_USER_START", {
+    tokenHash,
+    bypassUserEnrichment: BYPASS_CREDENTIAL_USER_ENRICHMENT,
+  });
+
   let smaugResponse;
 
   try {
     smaugResponse = await getSmaugConfiguration(token, options);
   } catch (error) {
+    log.warn("CREDENTIAL_USER_SMAUG_ERROR", {
+      tokenHash,
+      name: error?.name || "Error",
+      message: error?.message || String(error),
+      isAbortError: isAbortError(error),
+    });
+
     if (isAbortError(error)) {
       return { status: 200, body: {} };
     }
@@ -511,6 +542,12 @@ export async function buildUserResponse(token, options = {}) {
     loggedInAgencyId: smaugData?.user?.agency || null,
   };
 
+  log.info("CREDENTIAL_USER_SMAUG_OK", {
+    tokenHash,
+    status: smaugResponse.status,
+    smaugAgency: smaugData?.user?.agency || null,
+  });
+
   const isFFULogin =
     _isFFUAgency(smaugData?.user?.agency) &&
     !_hasCulrDataSync(smaugData?.user?.agency);
@@ -520,6 +557,13 @@ export async function buildUserResponse(token, options = {}) {
   try {
     userinfoResponse = await getUserinfo(token, options);
   } catch (error) {
+    log.warn("CREDENTIAL_USER_USERINFO_ERROR", {
+      tokenHash,
+      name: error?.name || "Error",
+      message: error?.message || String(error),
+      isAbortError: isAbortError(error),
+    });
+
     if (isAbortError(error)) {
       return { status: 200, body: user };
     }
@@ -545,6 +589,42 @@ export async function buildUserResponse(token, options = {}) {
     loggedInBranchId: user.loggedInBranchId,
   };
 
+  if (BYPASS_CREDENTIAL_USER_ENRICHMENT) {
+    const agencies = [];
+    attributes.agencies?.forEach?.(({ agencyId }) => {
+      if (!agencies.includes(agencyId)) {
+        agencies.push(agencyId);
+      }
+    });
+
+    user.loggedInAgencyId =
+      user.loggedInBranchId || smaugData?.user?.agency || "190101";
+    user.omittedCulrData = null;
+    user.userId = attributes.userId;
+    user.identityProviderUsed = attributes.idpUsed;
+    user.hasCulrUniqueId = !!attributes.uniqueId && !isFFULogin;
+    user.isAuthenticated = !!attributes.userId && attributes.userId !== "@";
+    user.municipalityAgencyId = attributes.municipalityAgencyId || null;
+    user.agencies = agencies;
+    user.isCPRValidated = attributes.idpUsed === "nemlogin";
+
+    log.info("CREDENTIAL_USER_BYPASS", {
+      tokenHash,
+      loggedInBranchId: user.loggedInBranchId,
+      loggedInAgencyId: user.loggedInAgencyId,
+      userId: user.userId || null,
+      isAuthenticated: user.isAuthenticated,
+      agenciesCount: agencies.length,
+    });
+
+    return { status: 200, body: user };
+  }
+
+  log.info("CREDENTIAL_USER_AGENCY_LOOKUP_START", {
+    tokenHash,
+    loggedInBranchId: attributes.loggedInBranchId,
+  });
+
   attributes.loggedInAgencyId = await getAgencyIdByBranchId(
     attributes.loggedInBranchId,
     {
@@ -554,8 +634,20 @@ export async function buildUserResponse(token, options = {}) {
 
   user.loggedInAgencyId = attributes?.loggedInAgencyId;
 
+  log.info("CREDENTIAL_USER_AGENCY_LOOKUP_OK", {
+    tokenHash,
+    loggedInBranchId: attributes.loggedInBranchId,
+    loggedInAgencyId: user.loggedInAgencyId,
+  });
+
   if (!attributes.uniqueId) {
     try {
+      log.info("CREDENTIAL_USER_CULR_START", {
+        tokenHash,
+        loggedInAgencyId: attributes.loggedInAgencyId,
+        userId: attributes.userId || null,
+      });
+
       const response = await getAccountsByLocalId(
         {
           userId: attributes.userId,
@@ -573,7 +665,21 @@ export async function buildUserResponse(token, options = {}) {
       if (response?.omittedCulrData) {
         attributes.omittedCulrData = response.omittedCulrData;
       }
+
+      log.info("CREDENTIAL_USER_CULR_OK", {
+        tokenHash,
+        omittedCulrData: response?.omittedCulrData || null,
+        accountsCount: response?.accounts?.length || 0,
+        hasGuid: Boolean(response?.guid),
+      });
     } catch (error) {
+      log.warn("CREDENTIAL_USER_CULR_ERROR", {
+        tokenHash,
+        name: error?.name || "Error",
+        message: error?.message || String(error),
+        isAbortError: isAbortError(error),
+      });
+
       if (!isAbortError(error)) {
         throw error;
       }
@@ -611,6 +717,12 @@ export async function buildUserResponse(token, options = {}) {
   );
 
   try {
+    log.info("CREDENTIAL_USER_OPENUSERSTATUS_START", {
+      tokenHash,
+      loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
+      userId: account?.userId || user?.userId || null,
+    });
+
     const userstatusResponse = await getOpenUserStatus(
       {
         loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
@@ -624,11 +736,32 @@ export async function buildUserResponse(token, options = {}) {
       user.name = userstatusData.name;
       user.mail = userstatusData.mail;
     }
+
+    log.info("CREDENTIAL_USER_OPENUSERSTATUS_OK", {
+      tokenHash,
+      status: userstatusResponse.status,
+      hasName: Boolean(user.name),
+      hasMail: Boolean(user.mail),
+    });
   } catch (error) {
+    log.warn("CREDENTIAL_USER_OPENUSERSTATUS_ERROR", {
+      tokenHash,
+      name: error?.name || "Error",
+      message: error?.message || String(error),
+      isAbortError: isAbortError(error),
+    });
+
     if (!isAbortError(error)) {
       throw error;
     }
   }
+
+  log.info("CREDENTIAL_USER_DONE", {
+    tokenHash,
+    loggedInAgencyId: user.loggedInAgencyId || null,
+    userId: user.userId || null,
+    isAuthenticated: user.isAuthenticated,
+  });
 
   return { status: 200, body: user };
 }
