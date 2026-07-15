@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { EASTER_EGG_CREDENTIAL, EASTER_EGG_CREDENTIAL_ID } from "@/utils/credentials";
 
 const isBrowser = typeof window !== "undefined";
 const SELECTED_CREDENTIAL_KEY = "selectedCredentialApplication";
@@ -21,6 +22,14 @@ function isAccessToken(token) {
 
   const stripped = token.replace(/test.*:/, "");
   return stripped.length === 40;
+}
+
+function isEasterEggCredential(value = {}) {
+  return (
+    value?.type === "easteregg" ||
+    value?.token === EASTER_EGG_CREDENTIAL ||
+    value?.id === EASTER_EGG_CREDENTIAL_ID
+  );
 }
 
 export function matchesSelectedCredentialIdentity(
@@ -51,7 +60,11 @@ export default function useSelectedCredential() {
   );
 
   const setSelectedCredential = (value) => {
-    if (!isBrowser || !value?.token || !isAccessToken(value.token)) {
+    if (
+      !isBrowser ||
+      !value?.token ||
+      (!isAccessToken(value.token) && !isEasterEggCredential(value))
+    ) {
       return null;
     }
 

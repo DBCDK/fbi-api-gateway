@@ -9,7 +9,10 @@ import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import useMinimumVisibility from "@/hooks/ui/useMinimumVisibility";
 import { getConnectState } from "@/utils/connectState";
-import { detectCredentialType } from "@/utils/credentials";
+import {
+  detectCredentialType,
+  EASTER_EGG_CREDENTIAL,
+} from "@/utils/credentials";
 import { isLikelyClientSecret } from "@/utils/credentialState";
 
 export default function useConnectController({
@@ -103,12 +106,15 @@ export default function useConnectController({
     Boolean(pendingClient) && !isEffectiveInternalNetwork;
 
   useEffect(() => {
+    const isEasterEggReady = credentialValue.trim() === EASTER_EGG_CREDENTIAL;
     const nextIsValid = pendingClient
       ? isEffectiveInternalNetwork || Boolean(secretValue.trim())
-      : Boolean(selectedToken?.token) && !resolvingCredential;
+      : (Boolean(selectedToken?.token) || isEasterEggReady) &&
+        !resolvingCredential;
 
     onValidityChange?.(nextIsValid);
   }, [
+    credentialValue,
     isEffectiveInternalNetwork,
     onValidityChange,
     pendingClient,
@@ -334,8 +340,9 @@ export default function useConnectController({
   const handleCredentialPaste = useCallback(
     (e) => {
       const pastedValue = e.clipboardData?.getData("text")?.trim();
+      const pastedType = detectCredentialType(pastedValue);
 
-      if (detectCredentialType(pastedValue) !== "token") {
+      if (pastedType !== "token" && pastedType !== "easteregg") {
         return;
       }
 

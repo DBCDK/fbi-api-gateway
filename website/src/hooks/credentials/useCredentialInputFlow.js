@@ -5,7 +5,12 @@ import {
   matchesSelectedCredentialIdentity,
 } from "@/hooks/credentials/useSelectedCredential";
 import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
-import { detectCredentialType } from "@/utils/credentials";
+import {
+  detectCredentialType,
+  EASTER_EGG_CREDENTIAL,
+  EASTER_EGG_DISPLAY_NAME,
+  EASTER_EGG_CREDENTIAL_ID,
+} from "@/utils/credentials";
 import { isLikelyClientSecret } from "@/utils/credentialState";
 
 const RESOLVE_DELAY_MS = 1200;
@@ -149,6 +154,48 @@ export default function useCredentialInputFlow({
 
       if (!nextInputType) {
         setResolveError("🧐 Input must be a valid token or clientId!");
+        return;
+      }
+
+      if (nextInputType === "easteregg") {
+        const easterEggEntry = {
+          id: EASTER_EGG_CREDENTIAL_ID,
+          type: "easteregg",
+          token: EASTER_EGG_CREDENTIAL,
+          clientId: "resolve-runner",
+          note: EASTER_EGG_DISPLAY_NAME,
+          status: "OK",
+          network: "local",
+          profile: EASTER_EGG_DISPLAY_NAME,
+          agency: "resolve-runner",
+        };
+
+        setResolveError("");
+        setPendingClient(null);
+        setCredentialEntry(easterEggEntry, false);
+        selectCredential(
+          easterEggEntry.token,
+          easterEggEntry.profile,
+          easterEggEntry.agency,
+          {
+            id: easterEggEntry.id,
+            type: easterEggEntry.type,
+            clientId: easterEggEntry.clientId,
+            hasClientSecret: false,
+          },
+          { reorderApplications: false }
+        );
+
+        if (!shouldSubmit) {
+          onResolvedSelection?.();
+          blurInput();
+        }
+
+        if (shouldSubmit) {
+          onSubmit?.(easterEggEntry.token);
+        }
+
+        onChange?.(easterEggEntry.token);
         return;
       }
 
@@ -421,6 +468,20 @@ export default function useCredentialInputFlow({
     const nextInputType = detectCredentialType(credentialValue);
 
     if (nextInputType !== "client") {
+      if (nextInputType === "easteregg") {
+        if (selectedCredential?.type === "easteregg") {
+          lastResolvedCredentialRef.current = credentialValue;
+          return;
+        }
+
+        if (lastResolvedCredentialRef.current === credentialValue) {
+          return;
+        }
+
+        lastResolvedCredentialRef.current = credentialValue;
+        handleResolveCredential(credentialValue, { shouldSubmit: false });
+      }
+
       if (!credentialValue) {
         lastResolvedCredentialRef.current = "";
       }

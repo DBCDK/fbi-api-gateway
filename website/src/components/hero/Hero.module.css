@@ -47,6 +47,10 @@
   transform: scale(1.1);
   animation: heroGradientFlow 30s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite
     alternate;
+  transition:
+    opacity 220ms ease,
+    background 220ms ease,
+    filter 220ms ease;
 }
 
 .color::before,
@@ -124,6 +128,7 @@
   z-index: -2;
   opacity: 0.75;
   display: none;
+  transition: opacity 220ms ease;
 }
 
 .hero .row:first-of-type > div {
@@ -157,15 +162,28 @@
   margin-bottom: 2px;
 }
 
+.gameLayer {
+  position: absolute;
+  inset: 0;
+}
+
 .title {
   color: var(--white);
   align-self: center;
   text-shadow: 0 8px 32px rgba(8, 17, 38, 0.3);
+  transition:
+    color 220ms ease,
+    opacity 220ms ease,
+    transform 220ms ease;
 }
 
 .help {
   color: var(--text-light);
   margin-top: var(--pt1);
+  transition:
+    color 220ms ease,
+    opacity 220ms ease,
+    transform 220ms ease;
 }
 
 .history {
@@ -186,6 +204,27 @@
 .go {
   position: relative;
   z-index: 2;
+}
+
+.contentRow > div {
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.heroGameActive .silhouette {
+  opacity: 0.45;
+}
+
+.heroGameActive .title,
+.heroGameActive .help {
+  color: var(--white);
+  text-shadow: 0 8px 32px rgba(8, 17, 38, 0.3);
+}
+
+.heroGameActive .contentRow > div {
+  opacity: 0.85;
+  transform: none;
 }
 
 .hero > div {
@@ -276,6 +315,7 @@
   .token {
     display: none !important;
   }
+
 }
 
 @media screen and (max-width: 576px) {
@@ -300,6 +340,14 @@
 
   .color::after {
     filter: blur(24px);
+  }
+
+  .hero {
+    padding-bottom: var(--pt12);
+  }
+
+  .heroGameActive .contentRow > div {
+    opacity: 0.18;
   }
 }
 

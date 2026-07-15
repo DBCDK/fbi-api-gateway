@@ -1,5 +1,17 @@
 import { toCredentialId } from "../utils/credentials";
 
+function normalizeProfileValue(profile) {
+  if (typeof profile === "string") {
+    return profile;
+  }
+
+  if (profile && typeof profile?.name === "string") {
+    return profile.name;
+  }
+
+  return null;
+}
+
 export function sanitizeCredentialSessionEntry(entry = {}) {
   return {
     type: entry.type || "client",
@@ -13,7 +25,7 @@ export function sanitizeCredentialSessionEntry(entry = {}) {
     requiresClientSecret: Boolean(entry.requiresClientSecret),
     supportsRefreshToken: Boolean(entry.supportsRefreshToken),
     note: entry.note || "",
-    profile: entry.profile || null,
+    profile: normalizeProfileValue(entry.profile),
     agency: entry.agency || null,
     status: entry.status || "OK",
     reasonCode: entry.reasonCode || null,

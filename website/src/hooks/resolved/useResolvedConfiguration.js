@@ -4,6 +4,10 @@ import fetch from "isomorphic-unfetch";
 
 import { isToken } from "@/components/utils";
 import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
+import {
+  EASTER_EGG_CREDENTIAL,
+  EASTER_EGG_DISPLAY_NAME,
+} from "@/utils/credentials";
 import useInternalNetworkCheck from "../credentials/useInternalNetworkCheck";
 import useStableSWRData from "../useStableSWRData";
 
@@ -56,6 +60,8 @@ const fetcher = async (url) => {
 
 export default function useResolvedConfiguration(props, { enabled = true } = {}) {
   const { internalNetworkCheck } = useInternalNetworkCheck();
+  const isEasterEggCredential =
+    props?.type === "easteregg" || props?.token === EASTER_EGG_CREDENTIAL;
   const token = props?.token?.replace(/test.*:/, "");
   const agency = props?.agency;
   const entryId = props?.id || null;
@@ -65,7 +71,7 @@ export default function useResolvedConfiguration(props, { enabled = true } = {})
   const usesCredentialEndpoint = isClientEntry && Boolean(entryId);
   const hasValidToken = isToken(props?.token);
   const hasLookupTarget = usesCredentialEndpoint ? Boolean(entryId) : hasValidToken;
-  const isValid = enabled && hasLookupTarget;
+  const isValid = enabled && hasLookupTarget && !isEasterEggCredential;
 
   const credentialParams = new URLSearchParams();
   if (entryId) {
@@ -124,6 +130,10 @@ export default function useResolvedConfiguration(props, { enabled = true } = {})
   const canAutoRefresh = stableData?.config?.resolvedCanAutoRefresh === true;
 
   useEffect(() => {
+    if (isEasterEggCredential) {
+      return undefined;
+    }
+
     if (!usesCredentialEndpoint || !canAutoRefresh) {
       return undefined;
     }
@@ -178,6 +188,22 @@ export default function useResolvedConfiguration(props, { enabled = true } = {})
     stableData?.config,
     usesCredentialEndpoint,
   ]);
+
+  if (isEasterEggCredential) {
+    return {
+      configuration: {
+        displayName: EASTER_EGG_DISPLAY_NAME,
+        profiles: [EASTER_EGG_DISPLAY_NAME],
+        agencies: ["resolve-runner"],
+        defaultAgency: "resolve-runner",
+      },
+      status: "OK",
+      isLoading: false,
+      mutate: async () => {},
+      usesCredentialEndpoint: false,
+      requestKey: "easteregg:resolve-runner",
+    };
+  }
 
   return {
     configuration: stableData?.config,

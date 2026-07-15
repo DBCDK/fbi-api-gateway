@@ -203,7 +203,15 @@ function ApplicationItemView({ item, ui, form, actions }) {
                 {resolvedDisplayName}
               </Text>
 
-              {!ui.needsClientSecret && item.token && (
+              {item.type === "easteregg" && (
+                <Text className={styles.authentication}>
+                  {`Personal best: ${item.personalBestScore} score · ${item.personalBestDistance} distance`}
+                </Text>
+              )}
+
+              {!ui.needsClientSecret &&
+                item.token &&
+                item.type !== "easteregg" && (
                 <Text className={styles.authentication}>
                   {`Resolved token is ${
                     item.user?.isAuthenticated ? "AUTHENTICATED" : "ANONYMOUS"

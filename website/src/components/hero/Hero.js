@@ -21,6 +21,8 @@ import Christmas from "./christmas";
 import Chicken from "./chicken";
 import Pride from "./pride";
 import Halloween from "./halloween";
+import Game from "./game";
+import { EASTER_EGG_CREDENTIAL } from "@/utils/credentials";
 
 import styles from "./Hero.module.css";
 import Future from "./future";
@@ -31,6 +33,7 @@ export default function Hero({ className = "" }) {
   const [isSubmittingCredential, setIsSubmittingCredential] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
   const [applicationsOpenMode, setApplicationsOpenMode] = useState("default");
+  const [isGameActive, setIsGameActive] = useState(false);
 
   const { selectedCredential: selectedToken } = useSelectedCredential();
   const { getCredentialEntry } = useCredentialEntries();
@@ -78,6 +81,9 @@ export default function Hero({ className = "" }) {
         : "";
   const hasActiveClientSummary = Boolean(selectedToken && resolvedDisplayName);
   const inputIsValid = hasResolvedCredential || canSubmitCredential;
+  const isGameReady =
+    selectedToken?.type === "easteregg" ||
+    selectedToken?.token === EASTER_EGG_CREDENTIAL;
 
   function handleOpenClientConnect() {
     setApplicationsOpenMode("add");
@@ -93,7 +99,10 @@ export default function Hero({ className = "" }) {
   }
 
   return (
-    <section className={`${styles.hero} ${className}`} id="hero">
+    <section
+      className={`${styles.hero} ${isGameActive ? styles.heroGameActive : ""} ${className}`}
+      id="hero"
+    >
       <div className={styles.color} />
       <div className={styles.silhouette} />
       {isChristmas && <Christmas />}
@@ -101,8 +110,13 @@ export default function Hero({ className = "" }) {
       {isPride && <Pride />}
       {isHalloween && <Halloween />}
       {isFuture && <Future />}
+      <Game
+        className={styles.gameLayer}
+        isActive={isGameActive}
+        onActiveChange={setIsGameActive}
+      />
       <Container>
-        <Row className={styles.row}>
+        <Row className={`${styles.row} ${styles.contentRow}`}>
           <Col>
             <Title className={styles.title}>
               <Label for="token-input">
@@ -112,7 +126,7 @@ export default function Hero({ className = "" }) {
           </Col>
         </Row>
 
-        <Row className={styles.row}>
+        <Row className={`${styles.row} ${styles.contentRow}`}>
           <Col>
             <div className={styles.inputGroup}>
               <Connect
@@ -120,7 +134,12 @@ export default function Hero({ className = "" }) {
                 className={styles.token}
                 onValidityChange={setCanSubmitCredential}
                 onPendingChange={setIsSubmittingCredential}
-                onSubmit={() => {
+                onSubmit={(value) => {
+                  if (value === EASTER_EGG_CREDENTIAL) {
+                    setIsGameActive(true);
+                    return;
+                  }
+
                   router.push({
                     pathname: "/documentation",
                   });
@@ -152,7 +171,7 @@ export default function Hero({ className = "" }) {
           </Col>
         </Row>
 
-        <Row className={styles.row}>
+        <Row className={`${styles.row} ${styles.contentRow}`}>
           <Col>
             <Button
               className={styles.go}
@@ -170,7 +189,7 @@ export default function Hero({ className = "" }) {
                   />
                 </>
               ) : (
-                "Go!"
+                isGameReady ? "Start game" : "Go!"
               )}
             </Button>
           </Col>
