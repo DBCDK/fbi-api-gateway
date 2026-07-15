@@ -11,7 +11,11 @@ import useCredentialResolve from "@/hooks/credentials/useCredentialResolve";
 import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import { MAX_CLIENT_ENTRIES as MAX_APPLICATION_ENTRIES } from "@/utils/clientEntries";
-import { detectCredentialType } from "@/utils/credentials";
+import {
+  detectCredentialType,
+  EASTER_EGG_CREDENTIAL_ID,
+  EASTER_EGG_DISPLAY_NAME,
+} from "@/utils/credentials";
 
 import Overlay from "@/components/base/overlay";
 import Text from "@/components/base/text";
@@ -23,6 +27,18 @@ import styles from "./Applications.module.css";
 
 const MIN_PENDING_DURATION_MS = 1000;
 const MODAL_CLOSE_REORDER_DELAY_MS = 300;
+const PERSONAL_BEST_STORAGE_KEY = "resolve-runner-personal-best";
+
+function prioritizeEasterEgg(entries = []) {
+  const runnerEntries = entries.filter(
+    (entry) => entry?.type === "easteregg" || entry?.id === EASTER_EGG_CREDENTIAL_ID
+  );
+  const regularEntries = entries.filter(
+    (entry) => entry?.type !== "easteregg" && entry?.id !== EASTER_EGG_CREDENTIAL_ID
+  );
+
+  return [...runnerEntries, ...regularEntries];
+}
 
 /**
  * The Component function
@@ -51,6 +67,57 @@ function ApplicationsPage({ modal }) {
   const inputRef = useRef(null);
   const previousModalVisibleRef = useRef(modal.isVisible);
   const closeReorderTimeoutRef = useRef(null);
+
+  function getActiveEasterEggEntry() {
+    if (selectedToken?.type !== "easteregg") {
+      return null;
+    }
+
+    let personalBestScore = 0;
+    let personalBestDistance = 0;
+
+    if (typeof window !== "undefined") {
+      try {
+        const saved = window.localStorage.getItem(PERSONAL_BEST_STORAGE_KEY);
+
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          personalBestScore = Number.isFinite(parsed?.score) ? parsed.score : 0;
+          personalBestDistance = Number.isFinite(parsed?.distance)
+            ? parsed.distance
+            : 0;
+        }
+      } catch {}
+    }
+
+    return {
+      id: EASTER_EGG_CREDENTIAL_ID,
+      type: "easteregg",
+      token: selectedToken.token,
+      clientId: "resolve-runner",
+      profile: selectedToken.profile || EASTER_EGG_DISPLAY_NAME,
+      agency: selectedToken.agency || "resolve-runner",
+      note: EASTER_EGG_DISPLAY_NAME,
+      personalBestScore,
+      personalBestDistance,
+    };
+  }
+
+  function withActiveEasterEgg(entries = []) {
+    const activeEasterEggEntry = getActiveEasterEggEntry();
+    const filteredEntries = entries.filter(
+      (entry) => entry?.type !== "easteregg" && entry?.id !== EASTER_EGG_CREDENTIAL_ID
+    );
+
+    if (!activeEasterEggEntry) {
+      return filteredEntries;
+    }
+
+    return [activeEasterEggEntry, ...filteredEntries].slice(
+      0,
+      MAX_APPLICATION_ENTRIES
+    );
+  }
 
   function getEntryIdentifier(entry) {
     if (!entry) {
@@ -471,8 +538,9 @@ function ApplicationsPage({ modal }) {
 
   useEffect(() => {
     setState((current) => {
+      const effectiveApplications = withActiveEasterEgg(applications);
       const nextState = modal.isVisible
-        ? mergeApplicationsIntoCurrentOrder(current, applications)
+        ? mergeApplicationsIntoCurrentOrder(current, effectiveApplications)
         : [
             ...current.filter((entry) => {
               if (!isTransientEntry(entry)) {
@@ -481,17 +549,17 @@ function ApplicationsPage({ modal }) {
 
               const identifier = getEntryIdentifier(entry);
 
-              return !applications.some(
+              return !effectiveApplications.some(
                 (applicationEntry) =>
                   getEntryIdentifier(applicationEntry) === identifier
               );
             }),
-            ...applications,
+            ...effectiveApplications,
           ].slice(0, MAX_APPLICATION_ENTRIES);
 
       return areApplicationListsEqual(current, nextState) ? current : nextState;
     });
-  }, [applications, modal.isVisible]);
+  }, [applications, modal.isVisible, selectedToken]);
 
   useEffect(() => {
     if (!isAddExpanded) {
@@ -513,17 +581,19 @@ function ApplicationsPage({ modal }) {
 
   // reset local view when modal closes
   useEffect(() => {
-    if (!modal.isVisible) {
+        if (!modal.isVisible) {
       setIsAddExpanded(false);
       setFilter("");
       setInputError("");
-      setTimeout(() => {
-        setState((current) =>
-          areApplicationListsEqual(current, applications) ? current : applications
+        setTimeout(() => {
+          setState((current) =>
+          areApplicationListsEqual(current, withActiveEasterEgg(applications))
+            ? current
+            : withActiveEasterEgg(applications)
         );
       }, 200);
     }
-  }, [modal.isVisible, applications]);
+  }, [modal.isVisible, applications, selectedToken]);
 
   useEffect(() => {
     function handleScroll(e) {
@@ -544,6 +614,7 @@ function ApplicationsPage({ modal }) {
   const isScrolledClass = isScrolled ? "scrolled" : "";
   const noConfigurationsClass = state?.length ? "" : styles.noConfigurations;
   const expandedClass = isAddExpanded ? styles.expanded : "";
+  const orderedState = prioritizeEasterEgg(state);
 
   return (
     <Row
@@ -637,8 +708,8 @@ function ApplicationsPage({ modal }) {
         </div>
       </Col>
       <Col xs={12} className={styles.list}>
-        {!state?.length && <span>You have no applications yet 🥹</span>}
-        {state?.map((h, i) => {
+        {!orderedState?.length && <span>You have no applications yet 🥹</span>}
+        {orderedState?.map((h, i) => {
           return (
             <ApplicationItem
               key={h.id || `${h.token}-${i}`}

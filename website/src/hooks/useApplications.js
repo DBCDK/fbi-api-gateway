@@ -1,7 +1,10 @@
 import { useCallback } from "react";
 import useSWR from "swr";
 
-import { toCredentialId } from "@/utils/credentials";
+import {
+  EASTER_EGG_CREDENTIAL_ID,
+  toCredentialId,
+} from "@/utils/credentials";
 import { MAX_CLIENT_ENTRIES } from "@/utils/clientEntries";
 
 const APPLICATIONS_ENDPOINT = "/api/credentials/applications";
@@ -19,7 +22,10 @@ const fetcher = async (url) => {
   }
 
   const body = await response.json();
-  return body.applications || [];
+  return (body.applications || []).filter(
+    (entry) =>
+      entry?.type !== "easteregg" && entry?.id !== EASTER_EGG_CREDENTIAL_ID
+  );
 };
 
 const isTransientEntry = (entry = {}) =>
@@ -140,6 +146,10 @@ export default function useApplications() {
         id: nextId,
       };
 
+      if (normalizedEntry.type === "easteregg") {
+        return normalizedEntry;
+      }
+
       mutate((current = []) => {
         let copy = [...current];
         const nextIdentifier = getApplicationIdentifier(normalizedEntry);
@@ -183,7 +193,7 @@ export default function useApplications() {
           ? entryOrId
           : getCanonicalApplicationId(entryOrId || {});
 
-      if (!id) {
+      if (!id || id === EASTER_EGG_CREDENTIAL_ID) {
         return;
       }
 

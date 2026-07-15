@@ -38,7 +38,10 @@ export function getConnectState({
     (!effectiveProfile || !hasAvailableAgency(configuration));
 
   const inputType = detectCredentialType(credentialValue);
-  const acceptsCredential = inputType === "token" || inputType === "client";
+  const acceptsCredential =
+    inputType === "token" ||
+    inputType === "client" ||
+    inputType === "easteregg";
   const resolvedClientId =
     pendingClient?.clientId ||
     configuration?.resolvedClientId ||

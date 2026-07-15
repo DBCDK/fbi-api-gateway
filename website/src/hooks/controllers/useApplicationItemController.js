@@ -203,7 +203,7 @@ export default function useApplicationItemController(props) {
   const showExpandedClientSecretForm =
     Boolean(clientId) && (!hasAttachedClientSecret || isEditingClientSecret);
   const hasPendingNoteChanges = note !== savedNote;
-  const canExpand = !needsClientSecret;
+  const canExpand = props.type === "easteregg" ? false : !needsClientSecret;
 
   const itemOffsetTop = elRef.current?.offsetTop || 0;
   const contentTop = open ? containerScrollY - itemOffsetTop : 0;
@@ -398,6 +398,8 @@ export default function useApplicationItemController(props) {
       submitted,
       expires,
       expireStatus,
+      personalBestScore: props.personalBestScore || 0,
+      personalBestDistance: props.personalBestDistance || 0,
     },
     ui: {
       open,

@@ -5,6 +5,10 @@ import useApplications, {
   getCanonicalApplicationId,
 } from "../useApplications";
 import useSelectedCredential from "./useSelectedCredential";
+import {
+  EASTER_EGG_CREDENTIAL,
+  EASTER_EGG_CREDENTIAL_ID,
+} from "@/utils/credentials";
 
 const isBrowser = typeof window !== "undefined";
 
@@ -97,6 +101,16 @@ export default function useCredentialEntries() {
 
       const identifier = getApplicationIdentifier({ token, ...nextRest });
 
+      if (nextRest.type === "easteregg" || nextRest.id === EASTER_EGG_CREDENTIAL_ID) {
+        return {
+          token,
+          profile,
+          agency,
+          note: typeof draftNote === "string" ? draftNote : "",
+          ...nextRest,
+        };
+      }
+
       if (!identifier || (!isAccessToken(token) && !nextRest.clientId)) {
         return null;
       }
@@ -183,6 +197,14 @@ export default function useCredentialEntries() {
 
   useEffect(() => {
     if (!isBrowser || !hasFetchedApplications || !selectedCredential) {
+      return;
+    }
+
+    if (
+      selectedCredential?.type === "easteregg" ||
+      selectedCredential?.id === EASTER_EGG_CREDENTIAL_ID ||
+      selectedCredential?.token === EASTER_EGG_CREDENTIAL
+    ) {
       return;
     }
 
