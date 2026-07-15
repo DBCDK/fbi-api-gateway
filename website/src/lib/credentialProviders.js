@@ -2,9 +2,7 @@
  * @file Shared server-side credential helpers for network detection, token
  * exchange, and building Smaug/user responses from resolved access tokens.
  */
-import crypto from "crypto";
 import fetch from "isomorphic-unfetch";
-import { log } from "dbc-node-logger";
 
 import config from "../../../src/config.js";
 import { parseClientPermissions } from "../../../commonUtils";
@@ -26,136 +24,40 @@ const CREDENTIAL_FETCH_TIMEOUT_MS = Number.parseInt(
   process.env.CREDENTIAL_FETCH_TIMEOUT_MS || config.fetchDefaultTimeoutMs,
   10
 );
-const CREDENTIAL_TRACE_HEADER = "x-credential-trace-id";
-
-export function createCredentialTraceId() {
-  return crypto.randomUUID();
-}
-
-export function getCredentialTraceId(req) {
-  const headerValue = req?.headers?.[CREDENTIAL_TRACE_HEADER];
-  return typeof headerValue === "string" && headerValue.trim()
-    ? headerValue.trim()
-    : createCredentialTraceId();
-}
-
-export function attachCredentialTraceId(res, traceId) {
-  if (res?.setHeader && traceId) {
-    res.setHeader(CREDENTIAL_TRACE_HEADER, traceId);
-  }
-
-  return traceId;
-}
-
-function hashSensitiveValue(value) {
-  if (!value) {
-    return null;
-  }
-
-  return crypto
-    .createHash("sha256")
-    .update(String(value))
-    .digest("hex")
-    .slice(0, 12);
-}
-
-function summarizeError(error) {
-  return {
-    name: error?.name || "Error",
-    message: error?.message || String(error),
-    code: error?.code || error?.cause?.code || null,
-  };
-}
-
-function sanitizeUrl(url) {
-  if (!url) {
-    return null;
-  }
-
-  try {
-    const parsed = new URL(url);
-    return `${parsed.origin}${parsed.pathname}`;
-  } catch {
-    return String(url).split("?")[0];
-  }
-}
-
-function logCredentialEvent(level, event, details = {}) {
-  log[level](`CREDENTIAL_${event}`, details);
-}
 
 function isAbortError(error) {
   return error?.name === "AbortError";
 }
 
-async function fetchWithTimeout(url, options = {}, meta = {}) {
+async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), CREDENTIAL_FETCH_TIMEOUT_MS);
-  const startedAt = performance.now();
-  const {
-    traceId = null,
-    requestName = "upstream",
-    logToken = null,
-    logClientId = null,
-  } = meta;
 
   try {
-    const response = await fetch(url, {
+    return await fetch(url, {
       ...options,
       signal: controller.signal,
     });
-
-    logCredentialEvent("info", "UPSTREAM", {
-      traceId,
-      requestName,
-      status: response.status,
-      durationMs: Math.round(performance.now() - startedAt),
-      tokenHash: hashSensitiveValue(logToken),
-      clientId: logClientId || null,
-      url: sanitizeUrl(url),
-    });
-
-    return response;
-  } catch (error) {
-    logCredentialEvent(isAbortError(error) ? "warn" : "error", "UPSTREAM_FAILED", {
-      traceId,
-      requestName,
-      durationMs: Math.round(performance.now() - startedAt),
-      tokenHash: hashSensitiveValue(logToken),
-      clientId: logClientId || null,
-      url: sanitizeUrl(url),
-      timeoutMs: CREDENTIAL_FETCH_TIMEOUT_MS,
-      error: summarizeError(error),
-    });
-    throw error;
   } finally {
     clearTimeout(timeout);
   }
 }
 
-async function fetchLibraryResponse(url, traceId, token = null) {
-  const response = await fetchWithTimeout(
-    url,
-    {
-      method: "GET",
-    },
-    {
-      traceId,
-      requestName: "library_vipcore",
-      logToken: token,
-    }
-  );
+async function fetchLibraryResponse(url) {
+  const response = await fetchWithTimeout(url, {
+    method: "GET",
+  });
 
   return {
     body: await response.json(),
   };
 }
 
-function createLibraryLoader(traceId, token = null) {
+function createLibraryLoader() {
   return {
     load: async (attr) =>
       await search(attr, undefined, async (url) =>
-        await fetchLibraryResponse(url, traceId, token)
+        await fetchLibraryResponse(url)
       ),
   };
 }
@@ -246,10 +148,6 @@ export async function getUserinfo(token, options = {}) {
 
   return await fetchWithTimeout(url, {
     headers: { Authorization: `Bearer ${token}` },
-  }, {
-    ...options,
-    requestName: "userinfo",
-    logToken: token,
   });
 }
 
@@ -259,9 +157,6 @@ export async function getProfiles(agency, options = {}) {
 
   return await fetchWithTimeout(`${url}/opensearchprofile/${agency}/${version}`, {
     method: "GET",
-  }, {
-    ...options,
-    requestName: "vipcore_profiles",
   });
 }
 
@@ -269,10 +164,6 @@ export async function getSmaugConfiguration(token, options = {}) {
   const url = config.datasources.smaug.url;
   return await fetchWithTimeout(`${url}/configuration?token=${token}`, {
     method: "GET",
-  }, {
-    ...options,
-    requestName: "smaug_configuration",
-    logToken: token,
   });
 }
 
@@ -289,10 +180,6 @@ export async function getAccessTokenFromClientCredentials(
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: "grant_type=client_credentials",
-  }, {
-    ...options,
-    requestName: "oauth_client_credentials",
-    logClientId: clientId,
   });
 
   return response;
@@ -321,7 +208,6 @@ async function exchangeToken({
   refreshToken = null,
   username = null,
   password = null,
-  traceId = null,
 }) {
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
   const params = new URLSearchParams({
@@ -344,10 +230,6 @@ async function exchangeToken({
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: params.toString(),
-  }, {
-    traceId,
-    requestName: `oauth_${grantType}`,
-    logClientId: clientId,
   });
 
   if (response.status !== 200) {
@@ -375,7 +257,6 @@ export async function refreshAccessToken({
   clientId,
   clientSecret,
   refreshToken,
-  traceId = null,
 }) {
   if (!clientId || !clientSecret || !refreshToken) {
     return {
@@ -393,7 +274,6 @@ export async function refreshAccessToken({
     clientSecret,
     grantType: "refresh_token",
     refreshToken,
-    traceId,
   });
 }
 
@@ -406,7 +286,6 @@ export async function getAccessTokenForClient({
   clientSecret = null,
   network = null,
   req = null,
-  traceId = null,
 }) {
   const isInternal =
     network === "internal" || (network === null && req && isInternalRequest(req));
@@ -454,7 +333,6 @@ export async function getAccessTokenForClient({
       grantType: attempt.grantType,
       username: attempt.username,
       password: attempt.password,
-      traceId,
     });
 
     if (tokenState.status === 200 && tokenState.token) {
@@ -558,9 +436,6 @@ export async function getOpenUserStatus(
       agencyId: loggedInAgencyId,
       userId,
     }),
-  }, {
-    ...options,
-    requestName: "openuserstatus",
   });
 }
 
@@ -673,9 +548,7 @@ export async function buildUserResponse(token, options = {}) {
   attributes.loggedInAgencyId = await getAgencyIdByBranchId(
     attributes.loggedInBranchId,
     {
-      traceId: options.traceId || null,
-      getLoader: () =>
-        createLibraryLoader(options.traceId || null, token),
+      getLoader: () => createLibraryLoader(),
     }
   );
 
@@ -690,15 +563,10 @@ export async function buildUserResponse(token, options = {}) {
         },
         {
           fetch: async (url, attr) => {
-            const res = await fetchWithTimeout(url, attr, {
-              traceId: options.traceId || null,
-              requestName: "culr_accounts_by_local_id",
-              logToken: token,
-            });
+            const res = await fetchWithTimeout(url, attr);
             return { body: await res.text() };
           },
-          getLoader: () =>
-            createLibraryLoader(options.traceId || null, token),
+          getLoader: () => createLibraryLoader(),
         }
       );
 

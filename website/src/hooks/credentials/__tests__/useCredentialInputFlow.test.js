@@ -463,5 +463,4 @@ describe("useCredentialInputFlow", () => {
     );
     expect(resolveCredentialValue).not.toHaveBeenCalled();
   });
-
 });

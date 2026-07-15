@@ -1,13 +1,3 @@
-import { log } from "dbc-node-logger";
-
-function logCredentialAgencyEvent(level, event, details = {}) {
-  if (!details?.traceId) {
-    return;
-  }
-
-  log[level](`CREDENTIAL_${event}`, details);
-}
-
 /**
  * Function to check if an agencyId is a FFU library
  *
@@ -175,30 +165,9 @@ export function checkLoginIndependence(branch, list) {
  */
 export async function branchIsIndependent(branch, context) {
   const loader = context?.getLoader || context?.datasources?.getLoader;
-  const traceId = context?.traceId || null;
-  const branchId = branch?.branchId || null;
-  const agencyId = branch?.agencyId || null;
-
-  logCredentialAgencyEvent("info", "AGENCY_BRANCH_INDEPENDENT_START", {
-    traceId,
-    branchId,
-    agencyId,
-  });
-
   // get AgencyId from used branchId
-  const startedAt = performance.now();
   const list = await loader("vipcore_BorrowerCheckList").load("");
-  const result = checkLoginIndependence(branch, list);
-
-  logCredentialAgencyEvent("info", "AGENCY_BRANCH_INDEPENDENT_SUCCESS", {
-    traceId,
-    branchId,
-    agencyId,
-    durationMs: Math.round(performance.now() - startedAt),
-    isIndependent: result,
-  });
-
-  return result;
+  return checkLoginIndependence(branch, list);
 }
 
 export async function getUserFromAllUserStatusData(props, context) {
@@ -243,33 +212,17 @@ export async function getAgencyIdByBranchId(branchId, context) {
   const loader = context?.getLoader || context?.datasources?.getLoader;
   const traceId = context?.traceId || null;
 
-  logCredentialAgencyEvent("info", "AGENCY_LOOKUP_START", {
-    traceId,
-    branchId,
-  });
-
   // get AgencyId from used branchId
-  const startedAt = performance.now();
   const result = (
     await loader("library").load({
       branchId,
       traceId,
     })
   )?.result?.[0];
-  const lookupDurationMs = Math.round(performance.now() - startedAt);
 
   // return agencyId
   const agencyId = result?.agencyId;
   const independent = await branchIsIndependent(result, context);
-
-  logCredentialAgencyEvent("info", "AGENCY_LOOKUP_SUCCESS", {
-    traceId,
-    branchId,
-    agencyId: agencyId || null,
-    lookupDurationMs,
-    isIndependent: independent,
-    resolvedAgencyId: independent ? branchId : agencyId || null,
-  });
 
   //  Return branchId instead of agencyId if branch act independently
   if (independent) {

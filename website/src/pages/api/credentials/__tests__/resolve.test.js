@@ -9,6 +9,7 @@ jest.mock("../../../../lib/credentialProviders", () => ({
 }));
 
 jest.mock("../../../../lib/credentialSession", () => ({
+  getCredentialSessionEntry: jest.fn(),
   upsertCredentialSessionEntry: jest.fn(),
 }));
 
@@ -18,6 +19,7 @@ const {
   buildUserResponse,
 } = require("../../../../lib/credentialProviders");
 const {
+  getCredentialSessionEntry,
   upsertCredentialSessionEntry,
 } = require("../../../../lib/credentialSession");
 
@@ -57,6 +59,7 @@ describe("/api/credentials/resolve", () => {
       id,
       ...entry,
     }));
+    getCredentialSessionEntry.mockResolvedValue(null);
   });
 
   test("resolves token submissions into canonical client entries when configuration exposes a clientId", async () => {

@@ -205,6 +205,27 @@ export default function useCredentialInputFlow({
 
       setResolvingCredential(null);
 
+      if (response?.preventedReplacement) {
+        setResolveError("");
+
+        if (response?.safeEntry?.token) {
+          const resolvedEntry = await enrichResolvedEntry(response.safeEntry);
+
+          if (!shouldSubmit) {
+            onResolvedSelection?.();
+            blurInput();
+          }
+
+          if (shouldSubmit) {
+            onSubmit?.(resolvedEntry?.token || response.safeEntry.token);
+          }
+
+          onChange?.(resolvedEntry?.token || response.safeEntry.token);
+        }
+
+        return;
+      }
+
       if (
         response?.safeEntry?.status === "CLIENT_SECRET_REQUIRED" &&
         nextInputType === "client"
