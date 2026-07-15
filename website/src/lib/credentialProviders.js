@@ -646,6 +646,7 @@ export async function buildUserResponse(token, options = {}) {
   attributes.loggedInAgencyId = await getAgencyIdByBranchId(
     attributes.loggedInBranchId,
     {
+      traceId: options.traceId || null,
       getLoader: () => ({
         load: async (attr) => await search(attr),
       }),
