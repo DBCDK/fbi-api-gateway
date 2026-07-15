@@ -70,6 +70,7 @@ export async function isFFUAgency(branchId, context) {
   }
 
   const loader = context?.getLoader || context?.datasources?.getLoader;
+  const traceId = context?.traceId || null;
 
   const result = (
     await loader("library").load({
@@ -97,8 +98,14 @@ export async function isFolkAgency(branchId, context) {
   }
 
   const loader = context?.getLoader || context?.datasources?.getLoader;
+  const traceId = context?.traceId || null;
 
-  const result = (await loader("library").load({ branchId }))?.result?.[0];
+  const result = (
+    await loader("library").load({
+      branchId,
+      traceId,
+    })
+  )?.result?.[0];
 
   // toUpperCase needed for mocked agencies (jest testing)
   return !!(result?.agencyType?.toUpperCase() === "FOLKEBIBLIOTEK");
