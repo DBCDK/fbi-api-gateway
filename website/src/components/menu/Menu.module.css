@@ -1,7 +1,7 @@
 .menu {
   max-width: 300px;
   min-width: 250px;
-  top: 132px;
+  top: var(--pt14);
   position: sticky;
   list-style: none;
   padding: 0 0 var(--pt2) 0;
