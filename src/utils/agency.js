@@ -250,7 +250,12 @@ export async function getAgencyIdByBranchId(branchId, context) {
 
   // get AgencyId from used branchId
   const startedAt = performance.now();
-  const result = (await loader("library").load({ branchId }))?.result?.[0];
+  const result = (
+    await loader("library").load({
+      branchId,
+      traceId,
+    })
+  )?.result?.[0];
   const lookupDurationMs = Math.round(performance.now() - startedAt);
 
   // return agencyId
