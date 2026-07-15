@@ -100,6 +100,7 @@ async function get(fetch = defaultFetch) {
   // borrowerchecklist
   const borrowerchecklistUrl = `${config.datasources.vipcore.url}/borrowerchecklist/login.bib.dk/true`;
 
+  // Fetch in parallel
   const [allLibrariesRes, findLibraryRes, borrowerChecklistRes] =
     await Promise.all([
       fetch(alllibrariesUrl),
@@ -353,9 +354,7 @@ export async function search(props, getFunc = doRequest, fetch = defaultFetch) {
   };
 }
 
-export async function load(props, context) {
-  const { getLoader } = context || {};
-
+export async function load(props, { getLoader }, context) {
   // We need to fetch digital access and infomedia subscriptions
   // for all agencies, in order to build the search index
   const digitalAccessSubscriptions = await getLoader(

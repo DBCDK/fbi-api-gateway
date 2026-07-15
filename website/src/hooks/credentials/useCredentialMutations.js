@@ -203,7 +203,7 @@ export default function useCredentialMutations() {
 
       return response;
     },
-    [applications, persistResolvedEntry, resolveCredential]
+    [persistResolvedEntry, resolveCredential]
   );
 
   const attachCredentialSecret = useCallback(

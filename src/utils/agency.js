@@ -60,14 +60,8 @@ export async function isFFUAgency(branchId, context) {
   }
 
   const loader = context?.getLoader || context?.datasources?.getLoader;
-  const traceId = context?.traceId || null;
 
-  const result = (
-    await loader("library").load({
-      branchId,
-      traceId,
-    })
-  )?.result?.[0];
+  const result = (await loader("library").load({ branchId }))?.result?.[0];
 
   // toUpperCase needed for mocked agencies (jest testing)
   return !!(result?.agencyType?.toUpperCase() === "FORSKNINGSBIBLIOTEK");
@@ -88,14 +82,8 @@ export async function isFolkAgency(branchId, context) {
   }
 
   const loader = context?.getLoader || context?.datasources?.getLoader;
-  const traceId = context?.traceId || null;
 
-  const result = (
-    await loader("library").load({
-      branchId,
-      traceId,
-    })
-  )?.result?.[0];
+  const result = (await loader("library").load({ branchId }))?.result?.[0];
 
   // toUpperCase needed for mocked agencies (jest testing)
   return !!(result?.agencyType?.toUpperCase() === "FOLKEBIBLIOTEK");
@@ -165,8 +153,10 @@ export function checkLoginIndependence(branch, list) {
  */
 export async function branchIsIndependent(branch, context) {
   const loader = context?.getLoader || context?.datasources?.getLoader;
+
   // get AgencyId from used branchId
   const list = await loader("vipcore_BorrowerCheckList").load("");
+
   return checkLoginIndependence(branch, list);
 }
 
@@ -210,22 +200,15 @@ export async function getUserFromAllUserStatusData(props, context) {
 
 export async function getAgencyIdByBranchId(branchId, context) {
   const loader = context?.getLoader || context?.datasources?.getLoader;
-  const traceId = context?.traceId || null;
 
   // get AgencyId from used branchId
-  const result = (
-    await loader("library").load({
-      branchId,
-      traceId,
-    })
-  )?.result?.[0];
+  const result = (await loader("library").load({ branchId }))?.result?.[0];
 
   // return agencyId
   const agencyId = result?.agencyId;
-  const independent = await branchIsIndependent(result, context);
 
   //  Return branchId instead of agencyId if branch act independently
-  if (independent) {
+  if (await branchIsIndependent(result, context)) {
     return branchId;
   }
 
