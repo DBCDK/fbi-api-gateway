@@ -2,9 +2,7 @@
  * @file Shared server-side credential helpers for network detection, token
  * exchange, and building Smaug/user responses from resolved access tokens.
  */
-import crypto from "crypto";
 import fetch from "isomorphic-unfetch";
-import { log } from "dbc-node-logger";
 
 import config from "../../../src/config.js";
 import { parseClientPermissions } from "../../../commonUtils";
@@ -22,116 +20,6 @@ import { DISABLE_INTERNAL_NETWORK_CHECK_HEADER } from "../utils/credentialSettin
 const { authenticationUser, authenticationGroup, authenticationPassword } =
   config.datasources.openorder;
 const TOKEN_ENDPOINT_URL = "https://login.bib.dk/oauth/token";
-const CREDENTIAL_FETCH_TIMEOUT_MS = Number.parseInt(
-  process.env.CREDENTIAL_FETCH_TIMEOUT_MS || config.fetchDefaultTimeoutMs,
-  10
-);
-const CREDENTIAL_TRACE_HEADER = "x-credential-trace-id";
-
-export function createCredentialTraceId() {
-  return crypto.randomUUID();
-}
-
-export function getCredentialTraceId(req) {
-  const headerValue = req?.headers?.[CREDENTIAL_TRACE_HEADER];
-  return typeof headerValue === "string" && headerValue.trim()
-    ? headerValue.trim()
-    : createCredentialTraceId();
-}
-
-export function attachCredentialTraceId(res, traceId) {
-  if (res?.setHeader && traceId) {
-    res.setHeader(CREDENTIAL_TRACE_HEADER, traceId);
-  }
-
-  return traceId;
-}
-
-function hashSensitiveValue(value) {
-  if (!value) {
-    return null;
-  }
-
-  return crypto
-    .createHash("sha256")
-    .update(String(value))
-    .digest("hex")
-    .slice(0, 12);
-}
-
-function summarizeError(error) {
-  return {
-    name: error?.name || "Error",
-    message: error?.message || String(error),
-    code: error?.code || error?.cause?.code || null,
-  };
-}
-
-function sanitizeUrl(url) {
-  if (!url) {
-    return null;
-  }
-
-  try {
-    const parsed = new URL(url);
-    return `${parsed.origin}${parsed.pathname}`;
-  } catch {
-    return String(url).split("?")[0];
-  }
-}
-
-function logCredentialEvent(level, event, details = {}) {
-  log[level](`CREDENTIAL_${event}`, details);
-}
-
-function isAbortError(error) {
-  return error?.name === "AbortError";
-}
-
-async function fetchWithTimeout(url, options = {}, meta = {}) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), CREDENTIAL_FETCH_TIMEOUT_MS);
-  const startedAt = performance.now();
-  const {
-    traceId = null,
-    requestName = "upstream",
-    logToken = null,
-    logClientId = null,
-  } = meta;
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
-
-    logCredentialEvent("info", "UPSTREAM", {
-      traceId,
-      requestName,
-      status: response.status,
-      durationMs: Math.round(performance.now() - startedAt),
-      tokenHash: hashSensitiveValue(logToken),
-      clientId: logClientId || null,
-      url: sanitizeUrl(url),
-    });
-
-    return response;
-  } catch (error) {
-    logCredentialEvent(isAbortError(error) ? "warn" : "error", "UPSTREAM_FAILED", {
-      traceId,
-      requestName,
-      durationMs: Math.round(performance.now() - startedAt),
-      tokenHash: hashSensitiveValue(logToken),
-      clientId: logClientId || null,
-      url: sanitizeUrl(url),
-      timeoutMs: CREDENTIAL_FETCH_TIMEOUT_MS,
-      error: summarizeError(error),
-    });
-    throw error;
-  } finally {
-    clearTimeout(timeout);
-  }
-}
 
 export function getRequestIp(req) {
   const forwarded = req.headers["x-forwarded-for"];
@@ -214,58 +102,42 @@ export function isInternalRequest(req, options = {}) {
   return isInternalIp(ip);
 }
 
-export async function getUserinfo(token, options = {}) {
+export async function getUserinfo(token) {
   const url = config.datasources.userInfo.url;
 
-  return await fetchWithTimeout(url, {
+  return await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
-  }, {
-    ...options,
-    requestName: "userinfo",
-    logToken: token,
   });
 }
 
-export async function getProfiles(agency, options = {}) {
+export async function getProfiles(agency) {
   const url = config.datasources.vipcore.url;
   const version = process.env.VIPCORE_VERSION || "3";
 
-  return await fetchWithTimeout(`${url}/opensearchprofile/${agency}/${version}`, {
+  return await fetch(`${url}/opensearchprofile/${agency}/${version}`, {
     method: "GET",
-  }, {
-    ...options,
-    requestName: "vipcore_profiles",
   });
 }
 
-export async function getSmaugConfiguration(token, options = {}) {
+export async function getSmaugConfiguration(token) {
   const url = config.datasources.smaug.url;
-  return await fetchWithTimeout(`${url}/configuration?token=${token}`, {
+  return await fetch(`${url}/configuration?token=${token}`, {
     method: "GET",
-  }, {
-    ...options,
-    requestName: "smaug_configuration",
-    logToken: token,
   });
 }
 
 export async function getAccessTokenFromClientCredentials(
   clientId,
-  clientSecret,
-  options = {}
+  clientSecret
 ) {
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
-  const response = await fetchWithTimeout(TOKEN_ENDPOINT_URL, {
+  const response = await fetch(TOKEN_ENDPOINT_URL, {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: "grant_type=client_credentials",
-  }, {
-    ...options,
-    requestName: "oauth_client_credentials",
-    logClientId: clientId,
   });
 
   return response;
@@ -294,7 +166,6 @@ async function exchangeToken({
   refreshToken = null,
   username = null,
   password = null,
-  traceId = null,
 }) {
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
   const params = new URLSearchParams({
@@ -310,17 +181,13 @@ async function exchangeToken({
     params.set("password", password || "@");
   }
 
-  const response = await fetchWithTimeout(TOKEN_ENDPOINT_URL, {
+  const response = await fetch(TOKEN_ENDPOINT_URL, {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: params.toString(),
-  }, {
-    traceId,
-    requestName: `oauth_${grantType}`,
-    logClientId: clientId,
   });
 
   if (response.status !== 200) {
@@ -348,7 +215,6 @@ export async function refreshAccessToken({
   clientId,
   clientSecret,
   refreshToken,
-  traceId = null,
 }) {
   if (!clientId || !clientSecret || !refreshToken) {
     return {
@@ -366,7 +232,6 @@ export async function refreshAccessToken({
     clientSecret,
     grantType: "refresh_token",
     refreshToken,
-    traceId,
   });
 }
 
@@ -379,7 +244,6 @@ export async function getAccessTokenForClient({
   clientSecret = null,
   network = null,
   req = null,
-  traceId = null,
 }) {
   const isInternal =
     network === "internal" || (network === null && req && isInternalRequest(req));
@@ -427,7 +291,6 @@ export async function getAccessTokenForClient({
       grantType: attempt.grantType,
       username: attempt.username,
       password: attempt.password,
-      traceId,
     });
 
     if (tokenState.status === 200 && tokenState.token) {
@@ -516,13 +379,10 @@ function reduceUserStatusBody(body) {
   };
 }
 
-export async function getOpenUserStatus(
-  { loggedInAgencyId, userId },
-  options = {}
-) {
+export async function getOpenUserStatus({ loggedInAgencyId, userId }) {
   const { url } = config.datasources.openuserstatus;
 
-  return await fetchWithTimeout(url, {
+  return await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "text/xml",
@@ -531,18 +391,11 @@ export async function getOpenUserStatus(
       agencyId: loggedInAgencyId,
       userId,
     }),
-  }, {
-    ...options,
-    requestName: "openuserstatus",
   });
 }
 
-export async function buildConfigurationResponse(
-  token,
-  selectedAgency = null,
-  options = {}
-) {
-  const smaugResponse = await getSmaugConfiguration(token, options);
+export async function buildConfigurationResponse(token, selectedAgency = null) {
+  const smaugResponse = await getSmaugConfiguration(token);
 
   if (smaugResponse.status !== 200) {
     return { status: smaugResponse.status, body: {} };
@@ -557,14 +410,14 @@ export async function buildConfigurationResponse(
   let result = { ...configuration };
 
   if (configuration.userId) {
-    const userinfoResponse = await getUserinfo(token, options);
+    const userinfoResponse = await getUserinfo(token);
     if (userinfoResponse.status !== 200) {
       return { status: 401, body: {} };
     }
   }
 
   if (profileAgency) {
-    const vipcoreResponse = await getProfiles(profileAgency, options);
+    const vipcoreResponse = await getProfiles(profileAgency);
 
     if (vipcoreResponse.status === 200) {
       const vipcoreData = await vipcoreResponse.json();
@@ -587,18 +440,8 @@ export async function buildConfigurationResponse(
   return { status: 200, body: result };
 }
 
-export async function buildUserResponse(token, options = {}) {
-  let smaugResponse;
-
-  try {
-    smaugResponse = await getSmaugConfiguration(token, options);
-  } catch (error) {
-    if (isAbortError(error)) {
-      return { status: 200, body: {} };
-    }
-
-    throw error;
-  }
+export async function buildUserResponse(token) {
+  const smaugResponse = await getSmaugConfiguration(token);
 
   if (smaugResponse.status !== 200) {
     return { status: 404, body: {} };
@@ -613,17 +456,7 @@ export async function buildUserResponse(token, options = {}) {
     _isFFUAgency(smaugData?.user?.agency) &&
     !_hasCulrDataSync(smaugData?.user?.agency);
 
-  let userinfoResponse;
-
-  try {
-    userinfoResponse = await getUserinfo(token, options);
-  } catch (error) {
-    if (isAbortError(error)) {
-      return { status: 200, body: user };
-    }
-
-    throw error;
-  }
+  const userinfoResponse = await getUserinfo(token);
 
   if (userinfoResponse.status !== 200) {
     return { status: 200, body: user };
@@ -655,34 +488,24 @@ export async function buildUserResponse(token, options = {}) {
   user.loggedInAgencyId = attributes?.loggedInAgencyId;
 
   if (!attributes.uniqueId) {
-    try {
-      const response = await getAccountsByLocalId(
-        {
-          userId: attributes.userId,
-          agencyId: attributes.loggedInAgencyId,
+    const response = await getAccountsByLocalId(
+      {
+        userId: attributes.userId,
+        agencyId: attributes.loggedInAgencyId,
+      },
+      {
+        fetch: async (url, attr) => {
+          const res = await fetch(url, attr);
+          return { body: await res.text() };
         },
-        {
-          fetch: async (url, attr) => {
-            const res = await fetchWithTimeout(url, attr, {
-              traceId: options.traceId || null,
-              requestName: "culr_accounts_by_local_id",
-              logToken: token,
-            });
-            return { body: await res.text() };
-          },
-          getLoader: () => ({
-            load: async (attr) => await search(attr),
-          }),
-        }
-      );
+        getLoader: () => ({
+          load: async (attr) => await search(attr),
+        }),
+      }
+    );
 
-      if (response?.omittedCulrData) {
-        attributes.omittedCulrData = response.omittedCulrData;
-      }
-    } catch (error) {
-      if (!isAbortError(error)) {
-        throw error;
-      }
+    if (response?.omittedCulrData) {
+      attributes.omittedCulrData = response.omittedCulrData;
     }
   }
 
@@ -716,24 +539,15 @@ export async function buildUserResponse(token, options = {}) {
     (agency) => agency.userIdType === "CPR"
   );
 
-  try {
-    const userstatusResponse = await getOpenUserStatus(
-      {
-        loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
-        userId: account?.userId || user?.userId,
-      },
-      options
-    );
+  const userstatusResponse = await getOpenUserStatus({
+    loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
+    userId: account?.userId || user?.userId,
+  });
 
-    if (userstatusResponse.status === 200) {
-      const userstatusData = reduceUserStatusBody(await userstatusResponse.json());
-      user.name = userstatusData.name;
-      user.mail = userstatusData.mail;
-    }
-  } catch (error) {
-    if (!isAbortError(error)) {
-      throw error;
-    }
+  if (userstatusResponse.status === 200) {
+    const userstatusData = reduceUserStatusBody(await userstatusResponse.json());
+    user.name = userstatusData.name;
+    user.mail = userstatusData.mail;
   }
 
   return { status: 200, body: user };
