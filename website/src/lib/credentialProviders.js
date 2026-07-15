@@ -133,6 +133,33 @@ async function fetchWithTimeout(url, options = {}, meta = {}) {
   }
 }
 
+async function fetchLibraryResponse(url, traceId, token = null) {
+  const response = await fetchWithTimeout(
+    url,
+    {
+      method: "GET",
+    },
+    {
+      traceId,
+      requestName: "library_vipcore",
+      logToken: token,
+    }
+  );
+
+  return {
+    body: await response.json(),
+  };
+}
+
+function createLibraryLoader(traceId, token = null) {
+  return {
+    load: async (attr) =>
+      await search(attr, undefined, async (url) =>
+        await fetchLibraryResponse(url, traceId, token)
+      ),
+  };
+}
+
 export function getRequestIp(req) {
   const forwarded = req.headers["x-forwarded-for"];
   const realIp = req.headers["x-real-ip"];
@@ -647,9 +674,8 @@ export async function buildUserResponse(token, options = {}) {
     attributes.loggedInBranchId,
     {
       traceId: options.traceId || null,
-      getLoader: () => ({
-        load: async (attr) => await search(attr),
-      }),
+      getLoader: () =>
+        createLibraryLoader(options.traceId || null, token),
     }
   );
 
@@ -671,9 +697,8 @@ export async function buildUserResponse(token, options = {}) {
             });
             return { body: await res.text() };
           },
-          getLoader: () => ({
-            load: async (attr) => await search(attr),
-          }),
+          getLoader: () =>
+            createLibraryLoader(options.traceId || null, token),
         }
       );
 
