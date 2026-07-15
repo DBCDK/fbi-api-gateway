@@ -7,14 +7,14 @@ import Overlay from "@/components/base/overlay/Overlay";
 import Text from "@/components/base/text";
 
 import useComplexity from "@/hooks/useComplexity";
+import useEffectiveSelectedCredential from "@/hooks/credentials/useEffectiveSelectedCredential";
 
 import styles from "./Complexity.module.css";
-import useStorage from "@/hooks/useStorage";
 
 export default function ComplexityButton({ className, query, variables }) {
-  const { selectedToken } = useStorage();
+  const { effectiveToken } = useEffectiveSelectedCredential();
   const { complexity, complexityClass, limit } = useComplexity({
-    token: selectedToken?.token,
+    token: effectiveToken,
     query,
     variables,
   });

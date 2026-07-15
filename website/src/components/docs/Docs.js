@@ -3,9 +3,10 @@ import { useMemo, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { MDXRemote } from "next-mdx-remote";
 
-import useConfiguration from "@/hooks/useConfiguration";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
 import useDocuments from "@/hooks/useDocuments";
-import useStorage from "@/hooks/useStorage";
+import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 
 import { InlineGraphiQL } from "@/components/graphiql";
 import { DescribeEnum } from "@/components/schema/describe";
@@ -26,6 +27,7 @@ import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Button from "@/components/base/button/Button";
 import Highlight from "@/components/base/highlight";
+import WhatsNew from "@/components/whats-new";
 
 import styles from "./Docs.module.css";
 
@@ -80,10 +82,19 @@ const customComponents = {
 
 export default function Docs() {
   const { docs } = useDocuments();
-  const { selectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { getCredentialEntry } = useCredentialEntries();
+  const selectedEntry = selectedToken
+    ? getCredentialEntry(selectedToken)
+    : null;
+  const { configuration } = useResolvedConfiguration({
+    ...selectedToken,
+    agency: selectedToken?.agency || selectedEntry?.agency || null,
+  });
 
   const [containerRef, setContainerRef] = useState();
+  const effectivePermissions =
+    configuration?.permissions || selectedEntry?.configuration?.permissions;
 
   // Only include docs usable by the selected token
   const accessibleDocs = useMemo(
@@ -92,7 +103,7 @@ export default function Docs() {
         let state = false;
 
         // return all
-        if (configuration?.permissions?.admin) {
+        if (effectivePermissions?.admin) {
           state = true;
         }
         // return all public docs
@@ -101,16 +112,14 @@ export default function Docs() {
         }
         const splitName = doc.name.split(".");
         // return client allowed docs
-        if (
-          configuration?.permissions?.allowRootFields?.includes(
-            splitName[splitName.length - 1]
-          )
-        ) {
+        if (effectivePermissions?.allowRootFields?.includes(
+          splitName[splitName.length - 1]
+        )) {
           state = true;
         }
         return state;
       }) || [],
-    [docs, configuration?.permissions]
+    [docs, effectivePermissions]
   );
 
   return (
@@ -131,13 +140,17 @@ export default function Docs() {
 
               return (
                 <section key={doc.name} id={id}>
-                  <MDXRemote {...doc.mdxSource} components={customComponents} />
+                  <MDXRemote
+                    {...doc.mdxSource}
+                    components={customComponents}
+                  />
                 </section>
               );
             })}
           </Col>
         </Row>
       </Container>
+      <WhatsNew />
     </>
   );
 }

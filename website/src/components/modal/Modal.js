@@ -5,6 +5,7 @@ export default function Modal({
   show,
   onHide,
   title,
+  showCloseButton = Boolean(title),
   children,
   className = "",
 }) {
@@ -16,11 +17,12 @@ export default function Modal({
       className={`${styles.offcanvas} ${className}`}
       // onScroll={(e) => setDistance(e.target.scrollY)}
     >
-      {title && (
+      {(title || showCloseButton) && (
         <Offcanvas.Header className={styles.header} closeButton>
-          <Offcanvas.Title>{title}</Offcanvas.Title>
+          {title && <Offcanvas.Title>{title}</Offcanvas.Title>}
         </Offcanvas.Header>
       )}
+
       <Offcanvas.Body id="modal" className={styles.body}>
         {children}
       </Offcanvas.Body>

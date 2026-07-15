@@ -1,16 +1,18 @@
 import { getStringArray } from "./utils/env.js";
 
+const isTruthy = (value) =>
+  ["1", "true", "yes"].includes(String(value).toLowerCase());
+
+const redisEnabled = isTruthy(process.env.REDIS_ENABLED);
+const defaultMaxClientEntries = redisEnabled ? 10 : 5;
+
 export default {
   app: {
     id: process.env.APP_ID || "bibliotekdk-next-api",
   },
   port: process.env.PORT || 3000,
-  allowDebug: ["1", "true", "yes"].includes(
-    String(process.env.ALLOW_DEBUG).toLowerCase()
-  ),
-  enableCpuUsagePerRequest: ["1", "true", "yes"].includes(
-    String(process.env.ENABLE_CPU_USAGE_PER_REQUEST).toLowerCase()
-  ),
+  allowDebug: isTruthy(process.env.ALLOW_DEBUG),
+  enableCpuUsagePerRequest: isTruthy(process.env.ENABLE_CPU_USAGE_PER_REQUEST),
   query: {
     maxDepth: process.env.MAX_QUERY_DEPTH
       ? parseInt(process.env.MAX_QUERY_DEPTH, 10)
@@ -38,6 +40,14 @@ export default {
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 20000,
   fastLaneEnabled: process.env.FASTLANE_ENABLED == "1" ? true : false,
+  credentials: {
+    disableInternalNetworkCheck: isTruthy(
+      process.env.DISABLE_INTERNAL_NETWORK_CHECK
+    ),
+    maxClientEntries: process.env.MAX_CLIENT_ENTRIES
+      ? parseInt(process.env.MAX_CLIENT_ENTRIES, 10)
+      : defaultMaxClientEntries,
+  },
   testUser: {
     clientId: process.env.TEST_USER_CLIENT_ID,
     clientSecret: process.env.TEST_USER_CLIENT_SECRET,
@@ -127,8 +137,7 @@ export default {
       url:
         process.env.REFERENCE_PRESENTATION_URL ||
         "http://reference-presentation.cisterne.svc.cloud.dbc.dk/api/v1",
-      ttl:
-        process.env.REFERENCE_PRESENTATION_TIME_TO_LIVE_SECONDS || 60 * 10,
+      ttl: process.env.REFERENCE_PRESENTATION_TIME_TO_LIVE_SECONDS || 60 * 10,
       prefix: process.env.REFERENCE_PRESENTATION_PREFIX || "ref-presentation-2",
       teamLabel: "de-team",
     },
@@ -241,9 +250,7 @@ export default {
         "frontend-staging-redis-cluster.platform-redis.svc.cloud.dbc.dk",
       port: process.env.REDIS_PORT || "6379",
       prefix: process.env.REDIS_PREFIX || "bibdk-api-4",
-      enabled: ["1", "true", "yes"].includes(
-        String(process.env.REDIS_ENABLED).toLowerCase()
-      ),
+      enabled: redisEnabled,
       teamLabel: "febib",
     },
     simplesearch: {
@@ -335,7 +342,7 @@ export default {
         process.env.VIP_EXCLUDE_BRANCHES == "1",
       url:
         process.env.VIP_CORE_URL ||
-        "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api",
+        "http://vipcore-nocache.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api", // NOSONAR
       prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
       teamLabel: "fbiscrum",
@@ -364,7 +371,7 @@ export default {
         "http://culrservice-1-7.iscrum-culr-prod.svc.cloud.dbc.dk/1.7/api",
       soap_url:
         process.env.CULR_SOAP_URL ||
-        "https://culr.addi.dk/1.6/CulrWebService?wsdl", // soap version of culr will be removed in future
+        "https://culr.addi.dk/1.7/CulrWebService?wsdl", // soap version of culr will be removed in future
       authenticationUser: process.env.CULR_USER,
       authenticationGroup: process.env.CULR_GROUP,
       authenticationPassword: process.env.CULR_PASSWORD,

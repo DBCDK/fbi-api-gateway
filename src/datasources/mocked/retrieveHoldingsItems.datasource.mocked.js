@@ -51,7 +51,7 @@ export async function load({ agencyId, bibliographicRecordId }) {
           issueText: "",
           readyForLoan: 0,
           items: {
-            "5058092640": {
+            5058092640: {
               branch: "Hasseris",
               branchId: 785107,
               department: "Børn",

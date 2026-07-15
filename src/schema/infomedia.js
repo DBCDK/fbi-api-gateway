@@ -98,7 +98,7 @@ export const resolvers = {
       return parent.FULLTEXT_HTML || parent.html;
     },
     hedLine(parent) {
-      return  parent.hedline;
+      return parent.hedline;
     },
   },
 };

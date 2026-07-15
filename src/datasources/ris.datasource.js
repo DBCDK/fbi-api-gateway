@@ -1,6 +1,7 @@
 import config from "../config";
 
-const { url, ttl, prefix, teamLabel } = config.datasources.referencePresentation;
+const { url, ttl, prefix, teamLabel } =
+  config.datasources.referencePresentation;
 
 export function parseResponse(response) {
   return response?.body?.content?.["reference-data"] || "";
