@@ -26,9 +26,12 @@ const CREDENTIAL_FETCH_TIMEOUT_MS = Number.parseInt(
   process.env.CREDENTIAL_FETCH_TIMEOUT_MS || config.fetchDefaultTimeoutMs,
   10
 );
-// Temporary isolation switch for debugging authenticated token resolve in prod.
-// When enabled, we skip loggedInAgencyId/vipcore/CULR/openuserstatus enrichment.
-const BYPASS_CREDENTIAL_USER_ENRICHMENT = true;
+// Temporary isolation switches for debugging authenticated token resolve in prod.
+// Keep these separate so we can re-enable the enrichment chain one step at a time.
+const BYPASS_CREDENTIAL_AGENCY_LOOKUP = true;
+const BYPASS_CREDENTIAL_CULR = true;
+const BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT = true;
+const BYPASS_CREDENTIAL_OPENUSERSTATUS = true;
 
 function isAbortError(error) {
   return error?.name === "AbortError";
@@ -511,7 +514,10 @@ export async function buildUserResponse(token, options = {}) {
 
   log.info("CREDENTIAL_USER_START", {
     tokenHash,
-    bypassUserEnrichment: BYPASS_CREDENTIAL_USER_ENRICHMENT,
+    bypassAgencyLookup: BYPASS_CREDENTIAL_AGENCY_LOOKUP,
+    bypassCulr: BYPASS_CREDENTIAL_CULR,
+    bypassMunicipalityEnrichment: BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT,
+    bypassOpenUserStatus: BYPASS_CREDENTIAL_OPENUSERSTATUS,
   });
 
   let smaugResponse;
@@ -589,58 +595,38 @@ export async function buildUserResponse(token, options = {}) {
     loggedInBranchId: user.loggedInBranchId,
   };
 
-  if (BYPASS_CREDENTIAL_USER_ENRICHMENT) {
-    const agencies = [];
-    attributes.agencies?.forEach?.(({ agencyId }) => {
-      if (!agencies.includes(agencyId)) {
-        agencies.push(agencyId);
-      }
-    });
-
+  if (BYPASS_CREDENTIAL_AGENCY_LOOKUP) {
     user.loggedInAgencyId =
       user.loggedInBranchId || smaugData?.user?.agency || "190101";
-    user.omittedCulrData = null;
-    user.userId = attributes.userId;
-    user.identityProviderUsed = attributes.idpUsed;
-    user.hasCulrUniqueId = !!attributes.uniqueId && !isFFULogin;
-    user.isAuthenticated = !!attributes.userId && attributes.userId !== "@";
-    user.municipalityAgencyId = attributes.municipalityAgencyId || null;
-    user.agencies = agencies;
-    user.isCPRValidated = attributes.idpUsed === "nemlogin";
 
-    log.info("CREDENTIAL_USER_BYPASS", {
+    log.info("CREDENTIAL_USER_AGENCY_LOOKUP_BYPASS", {
       tokenHash,
       loggedInBranchId: user.loggedInBranchId,
       loggedInAgencyId: user.loggedInAgencyId,
-      userId: user.userId || null,
-      isAuthenticated: user.isAuthenticated,
-      agenciesCount: agencies.length,
+    });
+  } else {
+    log.info("CREDENTIAL_USER_AGENCY_LOOKUP_START", {
+      tokenHash,
+      loggedInBranchId: attributes.loggedInBranchId,
     });
 
-    return { status: 200, body: user };
+    attributes.loggedInAgencyId = await getAgencyIdByBranchId(
+      attributes.loggedInBranchId,
+      {
+        getLoader: () => createLibraryLoader(),
+      }
+    );
+
+    user.loggedInAgencyId = attributes?.loggedInAgencyId;
+
+    log.info("CREDENTIAL_USER_AGENCY_LOOKUP_OK", {
+      tokenHash,
+      loggedInBranchId: attributes.loggedInBranchId,
+      loggedInAgencyId: user.loggedInAgencyId,
+    });
   }
 
-  log.info("CREDENTIAL_USER_AGENCY_LOOKUP_START", {
-    tokenHash,
-    loggedInBranchId: attributes.loggedInBranchId,
-  });
-
-  attributes.loggedInAgencyId = await getAgencyIdByBranchId(
-    attributes.loggedInBranchId,
-    {
-      getLoader: () => createLibraryLoader(),
-    }
-  );
-
-  user.loggedInAgencyId = attributes?.loggedInAgencyId;
-
-  log.info("CREDENTIAL_USER_AGENCY_LOOKUP_OK", {
-    tokenHash,
-    loggedInBranchId: attributes.loggedInBranchId,
-    loggedInAgencyId: user.loggedInAgencyId,
-  });
-
-  if (!attributes.uniqueId) {
+  if (!attributes.uniqueId && !BYPASS_CREDENTIAL_CULR) {
     try {
       log.info("CREDENTIAL_USER_CULR_START", {
         tokenHash,
@@ -684,6 +670,12 @@ export async function buildUserResponse(token, options = {}) {
         throw error;
       }
     }
+  } else if (!attributes.uniqueId) {
+    log.info("CREDENTIAL_USER_CULR_BYPASS", {
+      tokenHash,
+      loggedInAgencyId: user.loggedInAgencyId || null,
+      userId: attributes.userId || null,
+    });
   }
 
   if (attributes.uniqueId && isFFULogin) {
@@ -707,7 +699,16 @@ export async function buildUserResponse(token, options = {}) {
   user.identityProviderUsed = attributes.idpUsed;
   user.hasCulrUniqueId = !!attributes.uniqueId && !isFFULogin;
   user.isAuthenticated = !!attributes.userId && attributes.userId !== "@";
-  user.municipalityAgencyId = await setMunicipalityAgencyId(attributes);
+  if (BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT) {
+    user.municipalityAgencyId = attributes.municipalityAgencyId || null;
+
+    log.info("CREDENTIAL_USER_MUNICIPALITY_BYPASS", {
+      tokenHash,
+      municipalityAgencyId: user.municipalityAgencyId,
+    });
+  } else {
+    user.municipalityAgencyId = await setMunicipalityAgencyId(attributes);
+  }
   user.agencies = agencies.length > 0 ? agencies : [];
   user.isCPRValidated =
     attributes.idpUsed === "nemlogin" || hasCPRValidatedAccount;
@@ -716,43 +717,51 @@ export async function buildUserResponse(token, options = {}) {
     (agency) => agency.userIdType === "CPR"
   );
 
-  try {
-    log.info("CREDENTIAL_USER_OPENUSERSTATUS_START", {
+  if (BYPASS_CREDENTIAL_OPENUSERSTATUS) {
+    log.info("CREDENTIAL_USER_OPENUSERSTATUS_BYPASS", {
       tokenHash,
-      loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
+      loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId || null,
       userId: account?.userId || user?.userId || null,
     });
-
-    const userstatusResponse = await getOpenUserStatus(
-      {
+  } else {
+    try {
+      log.info("CREDENTIAL_USER_OPENUSERSTATUS_START", {
+        tokenHash,
         loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
-        userId: account?.userId || user?.userId,
-      },
-      options
-    );
+        userId: account?.userId || user?.userId || null,
+      });
 
-    if (userstatusResponse.status === 200) {
-      const userstatusData = reduceUserStatusBody(await userstatusResponse.json());
-      user.name = userstatusData.name;
-      user.mail = userstatusData.mail;
-    }
+      const userstatusResponse = await getOpenUserStatus(
+        {
+          loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
+          userId: account?.userId || user?.userId,
+        },
+        options
+      );
 
-    log.info("CREDENTIAL_USER_OPENUSERSTATUS_OK", {
-      tokenHash,
-      status: userstatusResponse.status,
-      hasName: Boolean(user.name),
-      hasMail: Boolean(user.mail),
-    });
-  } catch (error) {
-    log.warn("CREDENTIAL_USER_OPENUSERSTATUS_ERROR", {
-      tokenHash,
-      name: error?.name || "Error",
-      message: error?.message || String(error),
-      isAbortError: isAbortError(error),
-    });
+      if (userstatusResponse.status === 200) {
+        const userstatusData = reduceUserStatusBody(await userstatusResponse.json());
+        user.name = userstatusData.name;
+        user.mail = userstatusData.mail;
+      }
 
-    if (!isAbortError(error)) {
-      throw error;
+      log.info("CREDENTIAL_USER_OPENUSERSTATUS_OK", {
+        tokenHash,
+        status: userstatusResponse.status,
+        hasName: Boolean(user.name),
+        hasMail: Boolean(user.mail),
+      });
+    } catch (error) {
+      log.warn("CREDENTIAL_USER_OPENUSERSTATUS_ERROR", {
+        tokenHash,
+        name: error?.name || "Error",
+        message: error?.message || String(error),
+        isAbortError: isAbortError(error),
+      });
+
+      if (!isAbortError(error)) {
+        throw error;
+      }
     }
   }
 
