@@ -28,6 +28,11 @@
   padding: 0;
 }
 
+.itemWrap {
+  position: relative;
+  margin-bottom: var(--pt05);
+}
+
 .item {
   width: var(--pt5);
   height: var(--pt5);
@@ -37,8 +42,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  margin-bottom: var(--pt05);
 
   font-size: var(--pt2);
 
@@ -71,9 +74,46 @@
   background-color: var(--white);
 }
 
-.itemConfirm {
+.itemPending {
+  border: 2px solid #d66a6a;
+  background-color: var(--white);
+}
+
+.itemPending:is(:hover, :focus-visible) {
+  border: 2px solid #d66a6a;
+  background-color: #f8d7da;
+}
+
+.inlineActions {
+  position: absolute;
+  top: 0;
+  left: calc(100% + var(--pt05));
+  display: flex;
+}
+
+.inlineButton {
+  width: var(--pt5);
+  height: var(--pt5);
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--pt2);
+  cursor: pointer;
+  border: 2px solid var(--text-dark);
+  background-color: var(--white);
+  transform: scale(0);
+  animation: scale 0.3s forwards 0s;
+}
+
+.inlineConfirm {
+  border-color: #84c497;
+  background-color: var(--white);
+}
+
+.inlineConfirm:is(:hover, :focus-visible) {
   background-color: #dff3e4;
-  border: 2px solid #84c497;
 }
 
 .tooltip {
@@ -105,8 +145,30 @@
   color: var(--text-dark);
 }
 
-:global(body.dark) .itemConfirm,
-:global(body.dark) .itemConfirm:is(:hover, :focus-visible) {
+:global(body.dark) .itemPending,
+:global(body.dark) .itemPending {
+  background-color: var(--dark-light);
+  border: 2px solid #d66a6a;
+}
+
+:global(body.dark) .itemPending:is(:hover, :focus-visible) {
+  background-color: #5a2d33;
+  border: 2px solid #d66a6a;
+}
+
+:global(body.dark) .inlineButton {
+  color: var(--text-dark);
+  border: 2px solid var(--text-light);
+  background-color: var(--dark-light);
+}
+
+:global(body.dark) .inlineConfirm,
+:global(body.dark) .inlineConfirm {
+  background-color: var(--dark-light);
+  border: 2px solid #84c497;
+}
+
+:global(body.dark) .inlineConfirm:is(:hover, :focus-visible) {
   background-color: #365040;
   border: 2px solid #84c497;
 }

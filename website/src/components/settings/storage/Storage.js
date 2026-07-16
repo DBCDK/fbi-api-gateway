@@ -142,6 +142,12 @@ export function Storage({ className = "", ...props }) {
     }
   }
 
+  function handleCancel(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setPendingConfirm(null);
+  }
+
   return (
     <Dropdown
       {...props}
@@ -166,29 +172,47 @@ export function Storage({ className = "", ...props }) {
       </OverlayTrigger>
 
       <Dropdown.Menu className={styles.menu}>
-        {actions.map(({ label, value, icon }) => (
-          <OverlayTrigger
-            key={value}
-            placement="left"
-            overlay={
-              <Tooltip
-                className={styles.tooltip}
-                id={`tooltip-storage-${value}`}
+        {actions.map(({ label, value, icon }) => {
+          const isPending = pendingConfirm === value;
+          const showInlineActions = isPending && DANGEROUS_ACTIONS.has(value);
+
+          return (
+            <div key={value} className={styles.itemWrap}>
+              <OverlayTrigger
+                placement="left"
+                overlay={
+                  <Tooltip
+                    className={styles.tooltip}
+                    id={`tooltip-storage-${value}`}
+                  >
+                    {isPending ? "Cancel" : label}
+                  </Tooltip>
+                }
               >
-                {pendingConfirm === value ? "Confirm" : label}
-              </Tooltip>
-            }
-          >
-            <Dropdown.Item
-              className={`${styles.item} ${
-                pendingConfirm === value ? styles.itemConfirm : ""
-              }`}
-              onClick={(e) => handleClick(e, value)}
-            >
-              {pendingConfirm === value ? "✅" : icon}
-            </Dropdown.Item>
-          </OverlayTrigger>
-        ))}
+                <Dropdown.Item
+                  className={`${styles.item} ${
+                    isPending ? styles.itemPending : ""
+                  }`}
+                  onClick={isPending ? handleCancel : (e) => handleClick(e, value)}
+                >
+                  {isPending ? "❌" : icon}
+                </Dropdown.Item>
+              </OverlayTrigger>
+
+              {showInlineActions ? (
+                <div className={styles.inlineActions}>
+                  <button
+                    type="button"
+                    className={`${styles.inlineButton} ${styles.inlineConfirm}`}
+                    onClick={(e) => handleClick(e, value)}
+                  >
+                    {"✅"}
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
       </Dropdown.Menu>
     </Dropdown>
   );
