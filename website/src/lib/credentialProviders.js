@@ -24,15 +24,17 @@ const CREDENTIAL_FETCH_TIMEOUT_MS = Number.parseInt(
   process.env.CREDENTIAL_FETCH_TIMEOUT_MS || config.fetchDefaultTimeoutMs,
   10
 );
-// Temporary isolation switches for debugging authenticated token resolve in prod.
-// Keep these separate so we can re-enable the enrichment chain one step at a time.
-const BYPASS_CREDENTIAL_AGENCY_LOOKUP = false;
-const BYPASS_CREDENTIAL_CULR = false;
-const BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT = false;
-const BYPASS_CREDENTIAL_OPENUSERSTATUS = false;
 
 function isAbortError(error) {
   return error?.name === "AbortError";
+}
+
+async function runOptionalEnrichment(action, fallbackValue = null) {
+  try {
+    return await action();
+  } catch {
+    return fallbackValue;
+  }
 }
 
 async function fetchWithTimeout(url, options = {}) {
@@ -472,9 +474,12 @@ export async function buildConfigurationResponse(
   }
 
   if (profileAgency) {
-    const vipcoreResponse = await getProfiles(profileAgency, options);
+    const vipcoreResponse = await runOptionalEnrichment(
+      async () => await getProfiles(profileAgency, options),
+      null
+    );
 
-    if (vipcoreResponse.status === 200) {
+    if (vipcoreResponse?.status === 200) {
       const vipcoreData = await vipcoreResponse.json();
       result = {
         ...result,
@@ -551,43 +556,37 @@ export async function buildUserResponse(token, options = {}) {
     loggedInBranchId: user.loggedInBranchId,
   };
 
-  if (BYPASS_CREDENTIAL_AGENCY_LOOKUP) {
-    user.loggedInAgencyId =
-      user.loggedInBranchId || smaugData?.user?.agency || "190101";
-  } else {
-    attributes.loggedInAgencyId = await getAgencyIdByBranchId(
-      attributes.loggedInBranchId,
-      {
+  attributes.loggedInAgencyId = await runOptionalEnrichment(
+    async () =>
+      await getAgencyIdByBranchId(attributes.loggedInBranchId, {
         getLoader: () => createLibraryLoader(),
-      }
+      }),
+    user.loggedInBranchId || smaugData?.user?.agency || "190101"
+  );
+
+  user.loggedInAgencyId = attributes?.loggedInAgencyId;
+
+  if (!attributes.uniqueId) {
+    const response = await runOptionalEnrichment(
+      async () =>
+        await getAccountsByLocalId(
+          {
+            userId: attributes.userId,
+            agencyId: attributes.loggedInAgencyId,
+          },
+          {
+            fetch: async (url, attr) => {
+              const res = await fetchWithTimeout(url, attr);
+              return { body: await res.text() };
+            },
+            getLoader: () => createLibraryLoader(),
+          }
+        ),
+      null
     );
 
-    user.loggedInAgencyId = attributes?.loggedInAgencyId;
-  }
-
-  if (!attributes.uniqueId && !BYPASS_CREDENTIAL_CULR) {
-    try {
-      const response = await getAccountsByLocalId(
-        {
-          userId: attributes.userId,
-          agencyId: attributes.loggedInAgencyId,
-        },
-        {
-          fetch: async (url, attr) => {
-            const res = await fetchWithTimeout(url, attr);
-            return { body: await res.text() };
-          },
-          getLoader: () => createLibraryLoader(),
-        }
-      );
-
-      if (response?.omittedCulrData) {
-        attributes.omittedCulrData = response.omittedCulrData;
-      }
-    } catch (error) {
-      if (!isAbortError(error)) {
-        throw error;
-      }
+    if (response?.omittedCulrData) {
+      attributes.omittedCulrData = response.omittedCulrData;
     }
   }
 
@@ -612,11 +611,10 @@ export async function buildUserResponse(token, options = {}) {
   user.identityProviderUsed = attributes.idpUsed;
   user.hasCulrUniqueId = !!attributes.uniqueId && !isFFULogin;
   user.isAuthenticated = !!attributes.userId && attributes.userId !== "@";
-  if (BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT) {
-    user.municipalityAgencyId = attributes.municipalityAgencyId || null;
-  } else {
-    user.municipalityAgencyId = await setMunicipalityAgencyId(attributes);
-  }
+  user.municipalityAgencyId = await runOptionalEnrichment(
+    async () => await setMunicipalityAgencyId(attributes),
+    attributes.municipalityAgencyId || null
+  );
   user.agencies = agencies.length > 0 ? agencies : [];
   user.isCPRValidated =
     attributes.idpUsed === "nemlogin" || hasCPRValidatedAccount;
@@ -625,26 +623,22 @@ export async function buildUserResponse(token, options = {}) {
     (agency) => agency.userIdType === "CPR"
   );
 
-  if (!BYPASS_CREDENTIAL_OPENUSERSTATUS) {
-    try {
-      const userstatusResponse = await getOpenUserStatus(
+  const userstatusResponse = await runOptionalEnrichment(
+    async () =>
+      await getOpenUserStatus(
         {
           loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
           userId: account?.userId || user?.userId,
         },
         options
-      );
+      ),
+    null
+  );
 
-      if (userstatusResponse.status === 200) {
-        const userstatusData = reduceUserStatusBody(await userstatusResponse.json());
-        user.name = userstatusData.name;
-        user.mail = userstatusData.mail;
-      }
-    } catch (error) {
-      if (!isAbortError(error)) {
-        throw error;
-      }
-    }
+  if (userstatusResponse?.status === 200) {
+    const userstatusData = reduceUserStatusBody(await userstatusResponse.json());
+    user.name = userstatusData.name;
+    user.mail = userstatusData.mail;
   }
 
   return { status: 200, body: user };
