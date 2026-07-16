@@ -20,6 +20,55 @@ import { DISABLE_INTERNAL_NETWORK_CHECK_HEADER } from "../utils/credentialSettin
 const { authenticationUser, authenticationGroup, authenticationPassword } =
   config.datasources.openorder;
 const TOKEN_ENDPOINT_URL = "https://login.bib.dk/oauth/token";
+const CREDENTIAL_FETCH_TIMEOUT_MS = Number.parseInt(
+  process.env.CREDENTIAL_FETCH_TIMEOUT_MS || config.fetchDefaultTimeoutMs,
+  10
+);
+
+function isAbortError(error) {
+  return error?.name === "AbortError";
+}
+
+async function runOptionalEnrichment(action, fallbackValue = null) {
+  try {
+    return await action();
+  } catch {
+    return fallbackValue;
+  }
+}
+
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), CREDENTIAL_FETCH_TIMEOUT_MS);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchLibraryResponse(url) {
+  const response = await fetchWithTimeout(url, {
+    method: "GET",
+  });
+
+  return {
+    body: await response.json(),
+  };
+}
+
+function createLibraryLoader() {
+  return {
+    load: async (attr) =>
+      await search(attr, undefined, async (url) =>
+        await fetchLibraryResponse(url)
+      ),
+  };
+}
 
 export function getRequestIp(req) {
   const forwarded = req.headers["x-forwarded-for"];
@@ -102,36 +151,37 @@ export function isInternalRequest(req, options = {}) {
   return isInternalIp(ip);
 }
 
-export async function getUserinfo(token) {
+export async function getUserinfo(token, options = {}) {
   const url = config.datasources.userInfo.url;
 
-  return await fetch(url, {
+  return await fetchWithTimeout(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
 
-export async function getProfiles(agency) {
+export async function getProfiles(agency, options = {}) {
   const url = config.datasources.vipcore.url;
   const version = process.env.VIPCORE_VERSION || "3";
 
-  return await fetch(`${url}/opensearchprofile/${agency}/${version}`, {
+  return await fetchWithTimeout(`${url}/opensearchprofile/${agency}/${version}`, {
     method: "GET",
   });
 }
 
-export async function getSmaugConfiguration(token) {
+export async function getSmaugConfiguration(token, options = {}) {
   const url = config.datasources.smaug.url;
-  return await fetch(`${url}/configuration?token=${token}`, {
+  return await fetchWithTimeout(`${url}/configuration?token=${token}`, {
     method: "GET",
   });
 }
 
 export async function getAccessTokenFromClientCredentials(
   clientId,
-  clientSecret
+  clientSecret,
+  options = {}
 ) {
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
-  const response = await fetch(TOKEN_ENDPOINT_URL, {
+  const response = await fetchWithTimeout(TOKEN_ENDPOINT_URL, {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -181,7 +231,7 @@ async function exchangeToken({
     params.set("password", password || "@");
   }
 
-  const response = await fetch(TOKEN_ENDPOINT_URL, {
+  const response = await fetchWithTimeout(TOKEN_ENDPOINT_URL, {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -379,10 +429,13 @@ function reduceUserStatusBody(body) {
   };
 }
 
-export async function getOpenUserStatus({ loggedInAgencyId, userId }) {
+export async function getOpenUserStatus(
+  { loggedInAgencyId, userId },
+  options = {}
+) {
   const { url } = config.datasources.openuserstatus;
 
-  return await fetch(url, {
+  return await fetchWithTimeout(url, {
     method: "POST",
     headers: {
       "Content-Type": "text/xml",
@@ -394,8 +447,12 @@ export async function getOpenUserStatus({ loggedInAgencyId, userId }) {
   });
 }
 
-export async function buildConfigurationResponse(token, selectedAgency = null) {
-  const smaugResponse = await getSmaugConfiguration(token);
+export async function buildConfigurationResponse(
+  token,
+  selectedAgency = null,
+  options = {}
+) {
+  const smaugResponse = await getSmaugConfiguration(token, options);
 
   if (smaugResponse.status !== 200) {
     return { status: smaugResponse.status, body: {} };
@@ -410,16 +467,19 @@ export async function buildConfigurationResponse(token, selectedAgency = null) {
   let result = { ...configuration };
 
   if (configuration.userId) {
-    const userinfoResponse = await getUserinfo(token);
+    const userinfoResponse = await getUserinfo(token, options);
     if (userinfoResponse.status !== 200) {
       return { status: 401, body: {} };
     }
   }
 
   if (profileAgency) {
-    const vipcoreResponse = await getProfiles(profileAgency);
+    const vipcoreResponse = await runOptionalEnrichment(
+      async () => await getProfiles(profileAgency, options),
+      null
+    );
 
-    if (vipcoreResponse.status === 200) {
+    if (vipcoreResponse?.status === 200) {
       const vipcoreData = await vipcoreResponse.json();
       result = {
         ...result,
@@ -440,8 +500,18 @@ export async function buildConfigurationResponse(token, selectedAgency = null) {
   return { status: 200, body: result };
 }
 
-export async function buildUserResponse(token) {
-  const smaugResponse = await getSmaugConfiguration(token);
+export async function buildUserResponse(token, options = {}) {
+  let smaugResponse;
+
+  try {
+    smaugResponse = await getSmaugConfiguration(token, options);
+  } catch (error) {
+    if (isAbortError(error)) {
+      return { status: 200, body: {} };
+    }
+
+    throw error;
+  }
 
   if (smaugResponse.status !== 200) {
     return { status: 404, body: {} };
@@ -456,7 +526,17 @@ export async function buildUserResponse(token) {
     _isFFUAgency(smaugData?.user?.agency) &&
     !_hasCulrDataSync(smaugData?.user?.agency);
 
-  const userinfoResponse = await getUserinfo(token);
+  let userinfoResponse;
+
+  try {
+    userinfoResponse = await getUserinfo(token, options);
+  } catch (error) {
+    if (isAbortError(error)) {
+      return { status: 200, body: user };
+    }
+
+    throw error;
+  }
 
   if (userinfoResponse.status !== 200) {
     return { status: 200, body: user };
@@ -476,32 +556,33 @@ export async function buildUserResponse(token) {
     loggedInBranchId: user.loggedInBranchId,
   };
 
-  attributes.loggedInAgencyId = await getAgencyIdByBranchId(
-    attributes.loggedInBranchId,
-    {
-      getLoader: () => ({
-        load: async (attr) => await search(attr),
+  attributes.loggedInAgencyId = await runOptionalEnrichment(
+    async () =>
+      await getAgencyIdByBranchId(attributes.loggedInBranchId, {
+        getLoader: () => createLibraryLoader(),
       }),
-    }
+    user.loggedInBranchId || smaugData?.user?.agency || "190101"
   );
 
   user.loggedInAgencyId = attributes?.loggedInAgencyId;
 
   if (!attributes.uniqueId) {
-    const response = await getAccountsByLocalId(
-      {
-        userId: attributes.userId,
-        agencyId: attributes.loggedInAgencyId,
-      },
-      {
-        fetch: async (url, attr) => {
-          const res = await fetch(url, attr);
-          return { body: await res.text() };
-        },
-        getLoader: () => ({
-          load: async (attr) => await search(attr),
-        }),
-      }
+    const response = await runOptionalEnrichment(
+      async () =>
+        await getAccountsByLocalId(
+          {
+            userId: attributes.userId,
+            agencyId: attributes.loggedInAgencyId,
+          },
+          {
+            fetch: async (url, attr) => {
+              const res = await fetchWithTimeout(url, attr);
+              return { body: await res.text() };
+            },
+            getLoader: () => createLibraryLoader(),
+          }
+        ),
+      null
     );
 
     if (response?.omittedCulrData) {
@@ -530,7 +611,10 @@ export async function buildUserResponse(token) {
   user.identityProviderUsed = attributes.idpUsed;
   user.hasCulrUniqueId = !!attributes.uniqueId && !isFFULogin;
   user.isAuthenticated = !!attributes.userId && attributes.userId !== "@";
-  user.municipalityAgencyId = await setMunicipalityAgencyId(attributes);
+  user.municipalityAgencyId = await runOptionalEnrichment(
+    async () => await setMunicipalityAgencyId(attributes),
+    attributes.municipalityAgencyId || null
+  );
   user.agencies = agencies.length > 0 ? agencies : [];
   user.isCPRValidated =
     attributes.idpUsed === "nemlogin" || hasCPRValidatedAccount;
@@ -539,12 +623,19 @@ export async function buildUserResponse(token) {
     (agency) => agency.userIdType === "CPR"
   );
 
-  const userstatusResponse = await getOpenUserStatus({
-    loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
-    userId: account?.userId || user?.userId,
-  });
+  const userstatusResponse = await runOptionalEnrichment(
+    async () =>
+      await getOpenUserStatus(
+        {
+          loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
+          userId: account?.userId || user?.userId,
+        },
+        options
+      ),
+    null
+  );
 
-  if (userstatusResponse.status === 200) {
+  if (userstatusResponse?.status === 200) {
     const userstatusData = reduceUserStatusBody(await userstatusResponse.json());
     user.name = userstatusData.name;
     user.mail = userstatusData.mail;

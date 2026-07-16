@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useSWRConfig } from "swr";
 
 import useCredentialClientSecret from "./useCredentialClientSecret";
 import useCredentialEntries, {
@@ -47,7 +48,27 @@ function buildSelectedCredentialValue({
   };
 }
 
+function buildCredentialEndpointMatcher(pathname, entryId) {
+  if (!entryId) {
+    return () => false;
+  }
+
+  return (key) => {
+    if (typeof key !== "string" || !key.startsWith(pathname)) {
+      return false;
+    }
+
+    try {
+      const url = new URL(key, "http://localhost");
+      return url.searchParams.get("entryId") === entryId;
+    } catch {
+      return key.includes(`entryId=${encodeURIComponent(entryId)}`);
+    }
+  };
+}
+
 export default function useCredentialMutations() {
+  const { mutate } = useSWRConfig();
   const { resolveCredential } = useCredentialResolve();
   const { attachClientSecret, removeClientSecret } = useCredentialClientSecret();
   const { attachRefreshToken } = useCredentialRefreshToken();
@@ -55,6 +76,28 @@ export default function useCredentialMutations() {
     useSelectedCredential();
   const { applications, setCredentialEntry, removeCredentialEntry } =
     useCredentialEntries();
+
+  const revalidateCredentialViews = useCallback(
+    async (entryId) => {
+      if (!entryId) {
+        return;
+      }
+
+      await Promise.all([
+        mutate(
+          buildCredentialEndpointMatcher("/api/credentials/configuration", entryId),
+          undefined,
+          { revalidate: true }
+        ),
+        mutate(
+          buildCredentialEndpointMatcher("/api/credentials/user", entryId),
+          undefined,
+          { revalidate: true }
+        ),
+      ]);
+    },
+    [mutate]
+  );
 
   const selectCredential = useCallback(
     (token, profile, agency, metadata = null, options = {}) => {
@@ -110,6 +153,16 @@ export default function useCredentialMutations() {
         reorderApplications = false,
         preservePosition = false,
       } = options;
+      const existingEntry =
+        applications?.find?.((item) => item?.id === entry.id) ||
+        applications?.find?.(
+          (item) => item?.clientId && entry.clientId && item.clientId === entry.clientId
+        ) ||
+        null;
+      const replacedToken =
+        Boolean(existingEntry?.token) &&
+        Boolean(entry?.token) &&
+        existingEntry.token !== entry.token;
       const persistedEntry = setCredentialEntry(
         {
           ...entry,
@@ -119,17 +172,21 @@ export default function useCredentialMutations() {
       );
 
       if (select && entry.token) {
-        selectCredential(entry.token, entry.profile, entry.agency, {
-          id: entry.id,
-          type: entry.type,
-          clientId: entry.clientId,
-          hasClientSecret: entry.hasClientSecret,
-        }, { reorderApplications });
+          selectCredential(entry.token, entry.profile, entry.agency, {
+            id: entry.id,
+            type: entry.type,
+            clientId: entry.clientId,
+            hasClientSecret: entry.hasClientSecret,
+          }, { reorderApplications });
+      }
+
+      if (replacedToken && entry.id) {
+        revalidateCredentialViews(entry.id);
       }
 
       return persistedEntry || entry;
     },
-    [selectCredential, setCredentialEntry]
+    [applications, revalidateCredentialViews, selectCredential, setCredentialEntry]
   );
 
   const resolveCredentialValue = useCallback(

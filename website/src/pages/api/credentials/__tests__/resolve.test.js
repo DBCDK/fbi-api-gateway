@@ -154,4 +154,31 @@ describe("/api/credentials/resolve", () => {
       })
     );
   });
+
+  test("resolves token submissions even when user enrichment fails", async () => {
+    const req = {
+      method: "POST",
+      body: {
+        value: "af20a0ff1d6c7dde6d00d04b433a1204d3c086cc",
+        agency: "190101",
+      },
+      headers: {},
+      socket: {},
+      res: {},
+    };
+    const res = createResponse();
+
+    buildUserResponse.mockRejectedValue(new Error("userinfo timeout"));
+
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe("OK");
+    expect(res.body.safeEntry).toEqual(
+      expect.objectContaining({
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        token: "af20a0ff1d6c7dde6d00d04b433a1204d3c086cc",
+      })
+    );
+  });
 });
