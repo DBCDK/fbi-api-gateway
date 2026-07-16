@@ -2,8 +2,6 @@
  * @file API route for resolving a submitted token or clientId into a safe UI
  * entry while persisting the sensitive credential state server-side.
  */
-import crypto from "crypto";
-import { log } from "dbc-node-logger";
 import {
   buildConfigurationResponse,
   buildUserResponse,
@@ -17,18 +15,6 @@ import { detectCredentialType } from "../../../utils/credentials";
 
 function getType(value) {
   return detectCredentialType(value);
-}
-
-function hashSensitiveValue(value) {
-  if (!value) {
-    return null;
-  }
-
-  return crypto
-    .createHash("sha256")
-    .update(String(value))
-    .digest("hex")
-    .slice(0, 12);
 }
 
 function getCredentialEntryId({ type, token = null, clientId = null }) {
@@ -180,36 +166,15 @@ export default async function handler(req, res) {
   try {
     if (type === "token") {
       const network = isInternalRequest(req) ? "internal" : "external";
-      const tokenHash = hashSensitiveValue(normalizedValue);
-
-      log.info("CREDENTIAL_RESOLVE_START", {
-        type,
-        network,
-        tokenHash,
-        agency: agency || null,
-      });
-
       const configurationResponse = await buildConfigurationResponse(
         normalizedValue,
         agency
       );
-
-      log.info("CREDENTIAL_RESOLVE_CONFIGURATION", {
-        tokenHash,
-        status: configurationResponse.status,
-        clientId: configurationResponse.body?.clientId || null,
-        profile: configurationResponse.body?.profiles?.[0] || null,
-        agency: configurationResponse.body?.agency || null,
-      });
-
       let userResponse = { status: 200, body: {} };
 
       try {
         userResponse = await buildUserResponse(normalizedValue);
       } catch {
-        log.warn("CREDENTIAL_RESOLVE_USER_FALLBACK", {
-          tokenHash,
-        });
         userResponse = { status: 200, body: {} };
       }
       const resolvedClientId =
@@ -229,11 +194,6 @@ export default async function handler(req, res) {
         });
 
       if (configurationResponse.status !== 200) {
-        log.warn("CREDENTIAL_RESOLVE_INVALID_TOKEN", {
-          tokenHash,
-          status: configurationResponse.status,
-        });
-
         return res.status(configurationResponse.status).send({
           status: "TOKEN_INVALID",
           message: "Token could not be validated",
@@ -277,14 +237,6 @@ export default async function handler(req, res) {
           status: "OK",
         }
       );
-
-      log.info("CREDENTIAL_RESOLVE_DONE", {
-        tokenHash,
-        canonicalEntryId,
-        clientId: resolvedClientId,
-        userAuthenticated: Boolean(userResponse.body?.isAuthenticated),
-        loggedInAgencyId: userResponse.body?.loggedInAgencyId || null,
-      });
 
       return res.status(200).send({
         status: "OK",

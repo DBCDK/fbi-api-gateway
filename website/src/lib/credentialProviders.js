@@ -2,9 +2,7 @@
  * @file Shared server-side credential helpers for network detection, token
  * exchange, and building Smaug/user responses from resolved access tokens.
  */
-import crypto from "crypto";
 import fetch from "isomorphic-unfetch";
-import { log } from "dbc-node-logger";
 
 import config from "../../../src/config.js";
 import { parseClientPermissions } from "../../../commonUtils";
@@ -35,18 +33,6 @@ const BYPASS_CREDENTIAL_OPENUSERSTATUS = false;
 
 function isAbortError(error) {
   return error?.name === "AbortError";
-}
-
-function hashSensitiveValue(value) {
-  if (!value) {
-    return null;
-  }
-
-  return crypto
-    .createHash("sha256")
-    .update(String(value))
-    .digest("hex")
-    .slice(0, 12);
 }
 
 async function fetchWithTimeout(url, options = {}) {
@@ -510,28 +496,11 @@ export async function buildConfigurationResponse(
 }
 
 export async function buildUserResponse(token, options = {}) {
-  const tokenHash = hashSensitiveValue(token);
-
-  log.info("CREDENTIAL_USER_START", {
-    tokenHash,
-    bypassAgencyLookup: BYPASS_CREDENTIAL_AGENCY_LOOKUP,
-    bypassCulr: BYPASS_CREDENTIAL_CULR,
-    bypassMunicipalityEnrichment: BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT,
-    bypassOpenUserStatus: BYPASS_CREDENTIAL_OPENUSERSTATUS,
-  });
-
   let smaugResponse;
 
   try {
     smaugResponse = await getSmaugConfiguration(token, options);
   } catch (error) {
-    log.warn("CREDENTIAL_USER_SMAUG_ERROR", {
-      tokenHash,
-      name: error?.name || "Error",
-      message: error?.message || String(error),
-      isAbortError: isAbortError(error),
-    });
-
     if (isAbortError(error)) {
       return { status: 200, body: {} };
     }
@@ -548,12 +517,6 @@ export async function buildUserResponse(token, options = {}) {
     loggedInAgencyId: smaugData?.user?.agency || null,
   };
 
-  log.info("CREDENTIAL_USER_SMAUG_OK", {
-    tokenHash,
-    status: smaugResponse.status,
-    smaugAgency: smaugData?.user?.agency || null,
-  });
-
   const isFFULogin =
     _isFFUAgency(smaugData?.user?.agency) &&
     !_hasCulrDataSync(smaugData?.user?.agency);
@@ -563,13 +526,6 @@ export async function buildUserResponse(token, options = {}) {
   try {
     userinfoResponse = await getUserinfo(token, options);
   } catch (error) {
-    log.warn("CREDENTIAL_USER_USERINFO_ERROR", {
-      tokenHash,
-      name: error?.name || "Error",
-      message: error?.message || String(error),
-      isAbortError: isAbortError(error),
-    });
-
     if (isAbortError(error)) {
       return { status: 200, body: user };
     }
@@ -595,35 +551,10 @@ export async function buildUserResponse(token, options = {}) {
     loggedInBranchId: user.loggedInBranchId,
   };
 
-  log.info("CREDENTIAL_USER_ATTRIBUTES", {
-    tokenHash,
-    attributeKeys: Object.keys(attributes || {}).sort(),
-    uniqueId: attributes?.uniqueId || null,
-    userId: attributes?.userId || null,
-    municipality: attributes?.municipality || null,
-    municipalityAgencyId: attributes?.municipalityAgencyId || null,
-    idpUsed: attributes?.idpUsed || null,
-    agenciesCount: attributes?.agencies?.length || 0,
-    agencyIds:
-      attributes?.agencies?.map?.((agency) => agency?.agencyId).filter(Boolean) ||
-      [],
-  });
-
   if (BYPASS_CREDENTIAL_AGENCY_LOOKUP) {
     user.loggedInAgencyId =
       user.loggedInBranchId || smaugData?.user?.agency || "190101";
-
-    log.info("CREDENTIAL_USER_AGENCY_LOOKUP_BYPASS", {
-      tokenHash,
-      loggedInBranchId: user.loggedInBranchId,
-      loggedInAgencyId: user.loggedInAgencyId,
-    });
   } else {
-    log.info("CREDENTIAL_USER_AGENCY_LOOKUP_START", {
-      tokenHash,
-      loggedInBranchId: attributes.loggedInBranchId,
-    });
-
     attributes.loggedInAgencyId = await getAgencyIdByBranchId(
       attributes.loggedInBranchId,
       {
@@ -632,22 +563,10 @@ export async function buildUserResponse(token, options = {}) {
     );
 
     user.loggedInAgencyId = attributes?.loggedInAgencyId;
-
-    log.info("CREDENTIAL_USER_AGENCY_LOOKUP_OK", {
-      tokenHash,
-      loggedInBranchId: attributes.loggedInBranchId,
-      loggedInAgencyId: user.loggedInAgencyId,
-    });
   }
 
   if (!attributes.uniqueId && !BYPASS_CREDENTIAL_CULR) {
     try {
-      log.info("CREDENTIAL_USER_CULR_START", {
-        tokenHash,
-        loggedInAgencyId: attributes.loggedInAgencyId,
-        userId: attributes.userId || null,
-      });
-
       const response = await getAccountsByLocalId(
         {
           userId: attributes.userId,
@@ -665,31 +584,11 @@ export async function buildUserResponse(token, options = {}) {
       if (response?.omittedCulrData) {
         attributes.omittedCulrData = response.omittedCulrData;
       }
-
-      log.info("CREDENTIAL_USER_CULR_OK", {
-        tokenHash,
-        omittedCulrData: response?.omittedCulrData || null,
-        accountsCount: response?.accounts?.length || 0,
-        hasGuid: Boolean(response?.guid),
-      });
     } catch (error) {
-      log.warn("CREDENTIAL_USER_CULR_ERROR", {
-        tokenHash,
-        name: error?.name || "Error",
-        message: error?.message || String(error),
-        isAbortError: isAbortError(error),
-      });
-
       if (!isAbortError(error)) {
         throw error;
       }
     }
-  } else if (!attributes.uniqueId) {
-    log.info("CREDENTIAL_USER_CULR_BYPASS", {
-      tokenHash,
-      loggedInAgencyId: user.loggedInAgencyId || null,
-      userId: attributes.userId || null,
-    });
   }
 
   if (attributes.uniqueId && isFFULogin) {
@@ -715,11 +614,6 @@ export async function buildUserResponse(token, options = {}) {
   user.isAuthenticated = !!attributes.userId && attributes.userId !== "@";
   if (BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT) {
     user.municipalityAgencyId = attributes.municipalityAgencyId || null;
-
-    log.info("CREDENTIAL_USER_MUNICIPALITY_BYPASS", {
-      tokenHash,
-      municipalityAgencyId: user.municipalityAgencyId,
-    });
   } else {
     user.municipalityAgencyId = await setMunicipalityAgencyId(attributes);
   }
@@ -731,20 +625,8 @@ export async function buildUserResponse(token, options = {}) {
     (agency) => agency.userIdType === "CPR"
   );
 
-  if (BYPASS_CREDENTIAL_OPENUSERSTATUS) {
-    log.info("CREDENTIAL_USER_OPENUSERSTATUS_BYPASS", {
-      tokenHash,
-      loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId || null,
-      userId: account?.userId || user?.userId || null,
-    });
-  } else {
+  if (!BYPASS_CREDENTIAL_OPENUSERSTATUS) {
     try {
-      log.info("CREDENTIAL_USER_OPENUSERSTATUS_START", {
-        tokenHash,
-        loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
-        userId: account?.userId || user?.userId || null,
-      });
-
       const userstatusResponse = await getOpenUserStatus(
         {
           loggedInAgencyId: account?.agencyId || user?.loggedInAgencyId,
@@ -758,33 +640,12 @@ export async function buildUserResponse(token, options = {}) {
         user.name = userstatusData.name;
         user.mail = userstatusData.mail;
       }
-
-      log.info("CREDENTIAL_USER_OPENUSERSTATUS_OK", {
-        tokenHash,
-        status: userstatusResponse.status,
-        hasName: Boolean(user.name),
-        hasMail: Boolean(user.mail),
-      });
     } catch (error) {
-      log.warn("CREDENTIAL_USER_OPENUSERSTATUS_ERROR", {
-        tokenHash,
-        name: error?.name || "Error",
-        message: error?.message || String(error),
-        isAbortError: isAbortError(error),
-      });
-
       if (!isAbortError(error)) {
         throw error;
       }
     }
   }
-
-  log.info("CREDENTIAL_USER_DONE", {
-    tokenHash,
-    loggedInAgencyId: user.loggedInAgencyId || null,
-    userId: user.userId || null,
-    isAuthenticated: user.isAuthenticated,
-  });
 
   return { status: 200, body: user };
 }
