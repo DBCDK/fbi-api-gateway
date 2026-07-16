@@ -15,7 +15,7 @@ export default function useCredentialResolve() {
     }
 
     if (normalized.startsWith("<")) {
-      return statusText || "Server returned an unexpected response";
+      return statusText || "Error: unexpected response";
     }
 
     return normalized;
@@ -30,80 +30,75 @@ export default function useCredentialResolve() {
       return "Secret is required before token exchange";
     }
 
-    return response.ok
-      ? ""
-      : getFallbackMessage(rawBody, response.statusText);
+    return response.ok ? "" : getFallbackMessage(rawBody, response.statusText);
   }
 
-  const resolveCredential = useCallback(
-    async function resolveCredential({
-      value,
-      clientId,
-      clientSecret,
-      refreshToken,
-      tokenType,
-      expiresAt,
-      expiresIn,
-      entryId,
-      agency,
-    }) {
-      let response;
+  const resolveCredential = useCallback(async function resolveCredential({
+    value,
+    clientId,
+    clientSecret,
+    refreshToken,
+    tokenType,
+    expiresAt,
+    expiresIn,
+    entryId,
+    agency,
+  }) {
+    let response;
 
-      try {
-        response = await fetch("/api/credentials/resolve", {
-          method: "POST",
-          headers: {
-            ...getCredentialRequestHeaders({
-              "Content-Type": "application/json",
-            }),
-          },
-          body: JSON.stringify({
-            value,
-            clientId,
-            clientSecret,
-            refreshToken,
-            tokenType,
-            expiresAt,
-            expiresIn,
-            entryId,
-            agency,
+    try {
+      response = await fetch("/api/credentials/resolve", {
+        method: "POST",
+        headers: {
+          ...getCredentialRequestHeaders({
+            "Content-Type": "application/json",
           }),
-        });
-      } catch (error) {
-        const result = {
-          ok: false,
-          statusCode: 0,
-          statusText: "FETCH_FAILED",
-          rawBody: "",
-          status: "FETCH_FAILED",
-          message: error?.message || "Failed to fetch",
-        };
-
-        return result;
-      }
-
-      const rawBody = await response.text().catch(() => "");
-      let body = {};
-
-      try {
-        body = rawBody ? JSON.parse(rawBody) : {};
-      } catch {
-        body = {};
-      }
-
+        },
+        body: JSON.stringify({
+          value,
+          clientId,
+          clientSecret,
+          refreshToken,
+          tokenType,
+          expiresAt,
+          expiresIn,
+          entryId,
+          agency,
+        }),
+      });
+    } catch (error) {
       const result = {
-        ok: response.ok,
-        statusCode: response.status,
-        statusText: response.statusText,
-        rawBody,
-        message: getResponseMessage(body, response, rawBody),
-        ...body,
+        ok: false,
+        statusCode: 0,
+        statusText: "FETCH_FAILED",
+        rawBody: "",
+        status: "FETCH_FAILED",
+        message: error?.message || "Failed to fetch",
       };
 
       return result;
-    },
-    []
-  );
+    }
+
+    const rawBody = await response.text().catch(() => "");
+    let body = {};
+
+    try {
+      body = rawBody ? JSON.parse(rawBody) : {};
+    } catch {
+      body = {};
+    }
+
+    const result = {
+      ok: response.ok,
+      statusCode: response.status,
+      statusText: response.statusText,
+      rawBody,
+      message: getResponseMessage(body, response, rawBody),
+      ...body,
+    };
+
+    return result;
+  }, []);
 
   return { resolveCredential };
 }

@@ -170,7 +170,13 @@ export default async function handler(req, res) {
         normalizedValue,
         agency
       );
-      const userResponse = await buildUserResponse(normalizedValue);
+      let userResponse = { status: 200, body: {} };
+
+      try {
+        userResponse = await buildUserResponse(normalizedValue);
+      } catch {
+        userResponse = { status: 200, body: {} };
+      }
       const resolvedClientId =
         configurationResponse.body?.clientId || clientId || null;
       const resolvedExpiresAt =
@@ -369,7 +375,7 @@ export default async function handler(req, res) {
       entry: sessionEntry,
       safeEntry,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).send({
       status: "RESOLVE_FAILED",
       message: "Credential could not be resolved right now",
