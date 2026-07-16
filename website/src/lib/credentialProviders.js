@@ -31,7 +31,7 @@ const CREDENTIAL_FETCH_TIMEOUT_MS = Number.parseInt(
 const BYPASS_CREDENTIAL_AGENCY_LOOKUP = false;
 const BYPASS_CREDENTIAL_CULR = false;
 const BYPASS_CREDENTIAL_MUNICIPALITY_ENRICHMENT = false;
-const BYPASS_CREDENTIAL_OPENUSERSTATUS = true;
+const BYPASS_CREDENTIAL_OPENUSERSTATUS = false;
 
 function isAbortError(error) {
   return error?.name === "AbortError";
@@ -594,6 +594,20 @@ export async function buildUserResponse(token, options = {}) {
     loggedInAgencyId: null,
     loggedInBranchId: user.loggedInBranchId,
   };
+
+  log.info("CREDENTIAL_USER_ATTRIBUTES", {
+    tokenHash,
+    attributeKeys: Object.keys(attributes || {}).sort(),
+    uniqueId: attributes?.uniqueId || null,
+    userId: attributes?.userId || null,
+    municipality: attributes?.municipality || null,
+    municipalityAgencyId: attributes?.municipalityAgencyId || null,
+    idpUsed: attributes?.idpUsed || null,
+    agenciesCount: attributes?.agencies?.length || 0,
+    agencyIds:
+      attributes?.agencies?.map?.((agency) => agency?.agencyId).filter(Boolean) ||
+      [],
+  });
 
   if (BYPASS_CREDENTIAL_AGENCY_LOOKUP) {
     user.loggedInAgencyId =
