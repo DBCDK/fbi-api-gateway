@@ -20,7 +20,9 @@ describe("Patron loans", () => {
       {
         accessToken: "DUMMY_TOKEN",
         user: {
-          agencies: [{ agencyId: "710100", userId: "123456", userIdType: "CPR" }],
+          agencies: [
+            { agencyId: "710100", userId: "123456", userIdType: "CPR" },
+          ],
         },
         datasources: {
           getLoader: jest.fn(() => ({
@@ -163,7 +165,9 @@ describe("Patron loans", () => {
       {},
       {
         user: {
-          agencies: [{ agencyId: "710100", userId: "123456", userIdType: "CPR" }],
+          agencies: [
+            { agencyId: "710100", userId: "123456", userIdType: "CPR" },
+          ],
         },
         datasources: {
           getLoader: jest.fn(() => ({

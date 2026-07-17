@@ -3877,6 +3877,11 @@ type Patron {
   Retrieves the list of bookmarks for the patron, including pagination and sorting options.
   """
   bookmarks: Bookmarks!
+
+  """
+  Retrieves the list of loans for the patron, including pagination and sorting options.
+  """
+  loans: PatronLoans!
 }
 
 type PatronMutation {
@@ -4017,6 +4022,75 @@ enum BookmarksStatusEnum {
   ALREADY_EXISTS
   NOT_FOUND
   UNKNOWN_ERROR
+}
+
+type PatronLoans {
+  """The total number of loans for the patron."""
+  hitcount: Int!
+
+  """The overall status of the loan lookup."""
+  status: PatronLoansStatusEnum!
+
+  """The list of loans for the patron."""
+  items(orderBy: OrderLoansByEnum, offset: Int, limit: PaginationLimitScalar): [PatronLoanItem!]!
+}
+
+type PatronLoanItem {
+  """The unique identifier for the loan."""
+  id: String!
+
+  """Due date of the loan."""
+  dueDate: DateTime!
+
+  """Branch information for the agency where the loan belongs."""
+  agency: Branch
+
+  """
+  The bibliographic record associated with the loan, if it can still be resolved from the faust number.
+  """
+  manifestation: Manifestation
+
+  """Stored fallback metadata captured from the legacy loan service."""
+  snapshot: PatronLoanSnapshot
+}
+
+type PatronLoanSnapshot {
+  """Stored faust number from the legacy loan service."""
+  faust: String
+
+  """Stored title from the legacy loan service."""
+  title: String
+
+  """Stored creator from the legacy loan service."""
+  creator: String
+
+  """Stored material type from the legacy loan service."""
+  materialType: String
+
+  """Stored edition from the legacy loan service."""
+  edition: String
+
+  """Stored page information from the legacy loan service."""
+  pages: String
+
+  """Stored publisher from the legacy loan service."""
+  publisher: String
+
+  """Stored language from the legacy loan service."""
+  language: String
+}
+
+enum PatronLoansStatusEnum {
+  OK
+  FAILED
+  ERROR_UNAUTHENTICATED_TOKEN
+}
+
+enum OrderLoansByEnum {
+  DUEDATE_ASC
+  DUEDATE_DESC
+  TITLE_ASC
+  TITLE_DESC
 }
 
 type RawRepo {
