@@ -12,6 +12,7 @@ export function getConnectState({
   secretValue,
   status,
   isLoading,
+  isUserLoading,
   isNetworkLoading,
   isDetectedInternal,
   internalNetworkCheck,
@@ -87,6 +88,19 @@ export function getConnectState({
     unknownError;
   const showPendingClientMessage = pendingClient && !resolveError;
   const showReadyMessage = hasResolvedDisplay && !pendingClient;
+  const activeCheckMessage =
+    !feedbackMessage &&
+    !showPendingClientMessage &&
+    (isResolvingCredential
+      ? "Checking token/client..."
+      : selectedCredential?.token && isLoading
+        ? "Checking configuration..."
+        : selectedCredential?.token &&
+            !isLoading &&
+            status === "OK" &&
+            isUserLoading
+          ? "Checking user status..."
+          : "");
   const effectiveCredentialValue =
     resolvingCredential?.type === "token"
       ? credentialValue
@@ -105,6 +119,7 @@ export function getConnectState({
     feedbackMessage,
     showPendingClientMessage,
     showReadyMessage,
+    activeCheckMessage,
     effectiveCredentialValue,
     isResolvingCredential,
   };

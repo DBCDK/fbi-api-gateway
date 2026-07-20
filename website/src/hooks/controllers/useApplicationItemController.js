@@ -51,7 +51,11 @@ export default function useApplicationItemController(props) {
     enabled: !isClientEntry,
     syncResolvedToken: false,
   });
-  const { user: tokenUser } = useUser(props, {
+  const {
+    user: tokenUser,
+    isLoading: tokenUserIsLoading,
+    hasResolvedUserStatus: tokenHasResolvedUserStatus,
+  } = useUser(props, {
     enabled: !isClientEntry,
     syncResolvedToken: false,
   });
@@ -75,7 +79,12 @@ export default function useApplicationItemController(props) {
     lookupByEntryId: isClientEntry,
     enabled: !shouldSkipCredentialLookup,
   });
-  const { user: credentialUser, mutate: mutateCredentialUser } =
+  const {
+    user: credentialUser,
+    isLoading: credentialUserIsLoading,
+    hasResolvedUserStatus: credentialHasResolvedUserStatus,
+    mutate: mutateCredentialUser,
+  } =
     useCredentialUser({
       id: props.id,
       token: props.token,
@@ -160,6 +169,15 @@ export default function useApplicationItemController(props) {
     ? credentialConfiguration
     : tokenConfiguration;
   const resolvedUser = isClientEntry ? credentialUser : tokenUser;
+  const isResolvedConfigurationLoading = isClientEntry
+    ? credentialIsLoading
+    : tokenIsLoading;
+  const isResolvedUserLoading = isClientEntry
+    ? credentialUserIsLoading
+    : tokenUserIsLoading;
+  const hasResolvedUserStatus = isClientEntry
+    ? credentialHasResolvedUserStatus
+    : tokenHasResolvedUserStatus;
 
   const {
     configuration,
@@ -193,6 +211,17 @@ export default function useApplicationItemController(props) {
     tokenIsLoading,
     internalNetworkCheck,
   });
+  const activeLoadingMessage =
+    props.isPending || isRehydratingSession
+      ? "Checking token/client..."
+      : isResolvedConfigurationLoading && (Boolean(props.token) || isClientEntry)
+        ? "Checking configuration..."
+        : Boolean(token) &&
+            configurationStatus === "OK" &&
+            isResolvedUserLoading &&
+            !hasResolvedUserStatus
+          ? "Checking user status..."
+          : "";
   const shouldPromptForGlobalClientSecret =
     isGlobalNetworkSelected &&
     Boolean(clientId) &&
@@ -370,7 +399,7 @@ export default function useApplicationItemController(props) {
     isLoadingView:
       props.isPending ||
       isRehydratingSession ||
-      (isLoading && (Boolean(props.token) || isClientEntry)),
+      (isResolvedConfigurationLoading && (Boolean(props.token) || isClientEntry)),
     item: {
       id: props.id,
       type: props.type || "token",
@@ -395,6 +424,8 @@ export default function useApplicationItemController(props) {
       statusMessage,
       clientSecretMessage,
       hasCulrAccount,
+      hasResolvedUserStatus,
+      activeLoadingMessage,
       submitted,
       expires,
       expireStatus,

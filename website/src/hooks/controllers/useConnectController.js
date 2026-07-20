@@ -7,6 +7,7 @@ import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 import useCredentialNetwork from "@/hooks/credentials/useCredentialNetwork";
 import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
+import useUser from "@/hooks/useUser";
 import useMinimumVisibility from "@/hooks/ui/useMinimumVisibility";
 import { getConnectState } from "@/utils/connectState";
 import { detectCredentialType } from "@/utils/credentials";
@@ -37,6 +38,7 @@ export default function useConnectController({
     useCredentialNetwork();
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const { configuration, status, isLoading } = useConfiguration(selectedToken);
+  const { isLoading: isUserLoading } = useUser(selectedToken);
   const selectedEntry = selectedToken ? getCredentialEntry(selectedToken) : null;
   const resolvedDisplayName = selectedEntry?.note || configuration?.displayName || "";
   const isEffectiveInternalNetwork =
@@ -216,6 +218,7 @@ export default function useConnectController({
     feedbackMessage,
     showPendingClientMessage,
     showReadyMessage,
+    activeCheckMessage,
     effectiveCredentialValue,
     isResolvingCredential,
   } = getConnectState({
@@ -229,6 +232,7 @@ export default function useConnectController({
     secretValue,
     status,
     isLoading,
+    isUserLoading,
     isNetworkLoading,
     isDetectedInternal,
     internalNetworkCheck,
@@ -405,6 +409,7 @@ export default function useConnectController({
     hasCompletedClientIdStep,
     showSteps,
     feedbackMessage,
+    activeCheckMessage,
     showFeedbackOverlay: !hasFocus && Boolean(feedbackMessage),
     showPendingClientMessage,
     showReadyMessage: showReadyMessage && !showLoadingSpinner,
