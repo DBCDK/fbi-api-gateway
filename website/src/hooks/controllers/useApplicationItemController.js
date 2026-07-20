@@ -212,16 +212,31 @@ export default function useApplicationItemController(props) {
     internalNetworkCheck,
   });
   const activeLoadingMessage =
-    props.isPending || isRehydratingSession
-      ? "Checking token/client..."
-      : isResolvedConfigurationLoading && (Boolean(props.token) || isClientEntry)
-        ? "Checking configuration..."
-        : Boolean(token) &&
-            configurationStatus === "OK" &&
-            isResolvedUserLoading &&
-            !hasResolvedUserStatus
-          ? "Checking user status..."
-          : "";
+    (() => {
+      const hasCredentialToCheck = Boolean(props.token) || isClientEntry;
+      const isCheckingCredential = props.isPending || isRehydratingSession;
+      const isCheckingConfiguration =
+        hasCredentialToCheck && isResolvedConfigurationLoading;
+      const isCheckingUserStatus =
+        Boolean(token) &&
+        configurationStatus === "OK" &&
+        isResolvedUserLoading &&
+        !hasResolvedUserStatus;
+
+      if (isCheckingCredential) {
+        return "Checking token/client...";
+      }
+
+      if (isCheckingConfiguration) {
+        return "Checking configuration...";
+      }
+
+      if (isCheckingUserStatus) {
+        return "Checking user status...";
+      }
+
+      return "";
+    })();
   const shouldPromptForGlobalClientSecret =
     isGlobalNetworkSelected &&
     Boolean(clientId) &&
