@@ -114,9 +114,13 @@ export async function resolveAccess(
   };
 
   parent?.access?.accessUrls?.forEach((entry) => {
-    const { proxyUrl, loginRequired } = getProxyUrl(entry.url || "", context?.user, {
-      collectionIdentifiers: parent?.collectionIdentifiers,
-    });
+    const { proxyUrl, loginRequired } = getProxyUrl(
+      entry.url || "",
+      context?.user,
+      {
+        collectionIdentifiers: parent?.collectionIdentifiers,
+      }
+    );
 
     res.push({
       __typename: "AccessUrl",
