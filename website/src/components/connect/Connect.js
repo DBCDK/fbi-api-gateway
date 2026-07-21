@@ -25,6 +25,7 @@ export default function Connect(props) {
     hasCompletedClientIdStep,
     showSteps,
     feedbackMessage,
+    activeCheckMessage,
     showFeedbackOverlay,
     showPendingClientMessage,
     showReadyMessage,
@@ -79,6 +80,7 @@ export default function Connect(props) {
 
       <ConnectFeedback
         containerRef={containerRef}
+        activeCheckMessage={activeCheckMessage}
         showPendingClientMessage={showPendingClientMessage}
         showReadyMessage={showReadyMessage}
         showFeedbackOverlay={showFeedbackOverlay}

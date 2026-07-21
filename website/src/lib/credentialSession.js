@@ -23,7 +23,9 @@ import {
 const COOKIE_NAME = "fbi_credentials_session";
 const BACKUP_COOKIE_NAME = "fbi_credentials_backup";
 const MAX_SERVER_ENTRIES = config.credentials?.maxClientEntries || 10;
-const ONE_WEEK_IN_SECONDS = 60 * 60 * 24 * 7;
+const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
+const ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365;
+const SESSION_REFRESH_INTERVAL_IN_MS = ONE_DAY_IN_SECONDS * 1000;
 const REDIS_PREFIX = "credential_session";
 const SERVER_SIDE_STORAGE_ENABLED =
   config.datasources.redis.enabled === true ||
@@ -205,8 +207,40 @@ function getCookieOptions(ctx) {
     secure: shouldUseSecureCookies(ctx),
     sameSite: "lax",
     path: "/",
-    maxAge: ONE_WEEK_IN_SECONDS,
+    maxAge: ONE_YEAR_IN_SECONDS,
   };
+}
+
+function getSerializableSession(session) {
+  return {
+    entries: getEntries(session),
+    touchedAt: Number(session?.touchedAt || 0) || Date.now(),
+  };
+}
+
+function shouldRefreshSession(session) {
+  const touchedAt = Number(session?.touchedAt || 0);
+
+  if (!touchedAt) {
+    return true;
+  }
+
+  return Date.now() - touchedAt >= SESSION_REFRESH_INTERVAL_IN_MS;
+}
+
+function getCookieContext(ctx) {
+  if (ctx?.res) {
+    return ctx;
+  }
+
+  if (ctx?.req?.res) {
+    return {
+      ...ctx,
+      res: ctx.req.res,
+    };
+  }
+
+  return null;
 }
 
 function setBackupCookie(ctx, session) {
@@ -294,31 +328,49 @@ async function getRedisSession(sessionId) {
 async function setRedisSession(sessionId, session) {
   await setRedis(
     getRedisKey(sessionId),
-    ONE_WEEK_IN_SECONDS,
-    {
-      entries: getEntries(session),
-    }
+    ONE_YEAR_IN_SECONDS,
+    getSerializableSession(session)
   );
 }
 
 async function restoreRedisSession(ctx, sessionId = null, session = null) {
-  const restoredSession = {
-    entries: getEntries(session),
-  };
+  const restoredSession = getSerializableSession(session);
 
   if (Object.keys(restoredSession.entries).length === 0) {
-    return { sessionId: null, session: { entries: {} } };
+    return { sessionId: null, session: { entries: {}, touchedAt: 0 } };
   }
 
   const effectiveSessionId = sessionId || getSessionId(ctx) || createSessionId();
   await setRedisSession(effectiveSessionId, restoredSession);
-  setSessionIdCookie(ctx, effectiveSessionId);
-  setBackupCookie(ctx, restoredSession);
+  const cookieContext = getCookieContext(ctx);
+  if (cookieContext) {
+    setSessionIdCookie(cookieContext, effectiveSessionId);
+    setBackupCookie(cookieContext, restoredSession);
+  }
 
   return {
     sessionId: effectiveSessionId,
     session: restoredSession,
   };
+}
+
+async function refreshSessionIfNeeded(ctx, sessionId, session) {
+  const cookieContext = getCookieContext(ctx);
+
+  if (!cookieContext || !sessionId || !shouldRefreshSession(session)) {
+    return session;
+  }
+
+  const refreshedSession = {
+    ...session,
+    touchedAt: Date.now(),
+  };
+
+  await setRedisSession(sessionId, refreshedSession);
+  setSessionIdCookie(cookieContext, sessionId);
+  setBackupCookie(cookieContext, refreshedSession);
+
+  return refreshedSession;
 }
 
 export async function getCredentialSession(ctx) {
@@ -343,7 +395,7 @@ export async function getCredentialSession(ctx) {
           });
         }
 
-        return { sessionId: null, session: { entries: {} } };
+        return { sessionId: null, session: { entries: {}, touchedAt: 0 } };
       }
 
       return await restoreRedisSession(ctx, null, backupSession);
@@ -354,7 +406,7 @@ export async function getCredentialSession(ctx) {
         const legacySession = unseal(raw) || { entries: {} };
         return await restoreRedisSession(ctx, null, legacySession);
       } catch {
-        return { sessionId: null, session: { entries: {} } };
+        return { sessionId: null, session: { entries: {}, touchedAt: 0 } };
       }
     }
 
@@ -362,9 +414,14 @@ export async function getCredentialSession(ctx) {
     const redisHit = getEntryCount(redisSession) > 0;
 
     if (redisHit) {
+      const refreshedSession = await refreshSessionIfNeeded(
+        ctx,
+        raw,
+        redisSession
+      );
       return {
         sessionId: raw,
-        session: redisSession,
+        session: refreshedSession,
       };
     }
 
@@ -388,29 +445,55 @@ export async function getCredentialSession(ctx) {
         redisHit,
         entryCount: 0,
       });
-      return { sessionId: null, session: { entries: {} } };
+      return { sessionId: null, session: { entries: {}, touchedAt: 0 } };
     }
 
     return await restoreRedisSession(ctx, raw, backupSession);
   }
 
   if (!raw) {
-    return { sessionId: null, session: { entries: {} } };
+    return { sessionId: null, session: { entries: {}, touchedAt: 0 } };
   }
 
   try {
+    const session = getSerializableSession(unseal(raw) || { entries: {} });
+    const cookieContext = getCookieContext(ctx);
+
+    if (cookieContext && shouldRefreshSession(session)) {
+      const refreshedSession = {
+        ...session,
+        touchedAt: Date.now(),
+      };
+      const sealedValue = seal(refreshedSession);
+
+      if (sealedValue) {
+        setCookie(
+          cookieContext,
+          COOKIE_NAME,
+          sealedValue,
+          getCookieOptions(cookieContext)
+        );
+      }
+
+      return {
+        sessionId: null,
+        session: refreshedSession,
+      };
+    }
+
     return {
       sessionId: null,
-      session: unseal(raw) || { entries: {} },
+      session,
     };
   } catch {
-    return { sessionId: null, session: { entries: {} } };
+    return { sessionId: null, session: { entries: {}, touchedAt: 0 } };
   }
 }
 
 export async function setCredentialSession(ctx, session, sessionId = null) {
   const normalizedSession = {
-    entries: getEntries(session),
+    ...getSerializableSession(session),
+    touchedAt: Date.now(),
   };
   const nextEntryCount = getEntryCount(normalizedSession);
 
@@ -428,21 +511,30 @@ export async function setCredentialSession(ctx, session, sessionId = null) {
     }
 
     await setRedisSession(effectiveSessionId, normalizedSession);
-    setSessionIdCookie(ctx, effectiveSessionId);
-    setBackupCookie(ctx, normalizedSession);
+    const cookieContext = getCookieContext(ctx);
+    if (cookieContext) {
+      setSessionIdCookie(cookieContext, effectiveSessionId);
+      setBackupCookie(cookieContext, normalizedSession);
+    }
     return effectiveSessionId;
   }
 
   const sealedValue = seal(normalizedSession);
 
   if (!sealedValue) {
-    destroyCookie(ctx, COOKIE_NAME, {
+    destroyCookie(getCookieContext(ctx) || ctx, COOKIE_NAME, {
       path: "/",
     });
     return null;
   }
 
-  setCookie(ctx, COOKIE_NAME, sealedValue, getCookieOptions(ctx));
+  const cookieContext = getCookieContext(ctx) || ctx;
+  setCookie(
+    cookieContext,
+    COOKIE_NAME,
+    sealedValue,
+    getCookieOptions(cookieContext)
+  );
   return null;
 }
 
