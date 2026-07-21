@@ -26,12 +26,12 @@ export const typeDef = `
         """
         The overall status of the loan lookup.
         """
-        status: PatronLoansStatusEnum!
+        status: PatronLoansOverallStatusEnum!
 
         """
         The list of loans for the patron.
         """
-        items(orderBy: OrderLoansByEnum offset: Int limit: PaginationLimitScalar): [PatronLoanItem!]!
+        items(orderBy: OrderLoansByEnum status: PatronLoanStatusEnum offset: Int limit: PaginationLimitScalar): [PatronLoanItem!]!
     }
 
     type PatronLoanItem {
@@ -46,6 +46,11 @@ export const typeDef = `
         dueDate: DateTimeScalar!
 
         """
+        Computed loan status based on due date.
+        """
+        status: PatronLoanStatusEnum!
+
+        """
         Branch information for the agency where the loan belongs.
         """
         agency: Branch
@@ -58,55 +63,18 @@ export const typeDef = `
         """
         Stored fallback metadata captured from the legacy loan service.
         """
-        snapshot: PatronLoanSnapshot
+        snapshot: PatronMaterialSnapshot
     }
 
-    type PatronLoanSnapshot {
-        """
-        Stored faust number from the legacy loan service.
-        """
-        faust: String
-
-        """
-        Stored title from the legacy loan service.
-        """
-        title: String
-
-        """
-        Stored creator from the legacy loan service.
-        """
-        creator: String
-
-        """
-        Stored material type from the legacy loan service.
-        """
-        materialType: String
-
-        """
-        Stored edition from the legacy loan service.
-        """
-        edition: String
-
-        """
-        Stored page information from the legacy loan service.
-        """
-        pages: String
-
-        """
-        Stored publisher from the legacy loan service.
-        """
-        publisher: String
-
-        """
-        Stored language from the legacy loan service.
-        """
-        language: String
-    }
-
-    enum PatronLoansStatusEnum {
+    enum PatronLoansOverallStatusEnum {
         OK
         FAILED
         ERROR_UNAUTHENTICATED_TOKEN
+    }
+
+    enum PatronLoanStatusEnum {
+        ACTIVE
+        OVERDUE
     }
 
     enum OrderLoansByEnum {
@@ -127,6 +95,25 @@ function mapLegacyLoanStatus(loansResponse) {
   }
 
   return "FAILED";
+}
+
+function getTodayDateInCopenhagen() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Copenhagen",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+function getLoanStatus(loan) {
+  const dueDate = loan?.dueDate?.slice?.(0, 10);
+
+  if (!dueDate) {
+    return "ACTIVE";
+  }
+
+  return dueDate < getTodayDateInCopenhagen() ? "OVERDUE" : "ACTIVE";
 }
 
 export const resolvers = {
@@ -172,9 +159,17 @@ export const resolvers = {
       return parent?.status || "OK";
     },
     items(parent, args, context, info) {
-      const { orderBy = "DUEDATE_ASC", offset = 0, limit = 10 } = args;
+      const { orderBy = "DUEDATE_ASC", status, offset = 0, limit = 10 } = args;
 
-      const sortedItems = [...(parent?.result || [])].sort((a, b) => {
+      const filteredItems = (parent?.result || []).filter((item) => {
+        if (!status) {
+          return true;
+        }
+
+        return getLoanStatus(item) === status;
+      });
+
+      const sortedItems = [...filteredItems].sort((a, b) => {
         switch (orderBy) {
           case "DUEDATE_ASC":
             return new Date(a.dueDate) - new Date(b.dueDate);
@@ -200,6 +195,9 @@ export const resolvers = {
   PatronLoanItem: {
     id(parent) {
       return parent?.loanId || null;
+    },
+    status(parent) {
+      return getLoanStatus(parent);
     },
     async agency(parent, args, context, info) {
       if (!parent?.agencyId) {
@@ -227,14 +225,11 @@ export const resolvers = {
       }
 
       return {
-        faust: parent?.titleId || null,
+        _sourceFaust: parent?.titleId || null,
         title: parent?.title || null,
         creator: parent?.creator || null,
         materialType: parent?.materialType || null,
-        edition: parent?.edition || null,
-        pages: parent?.pages || null,
-        publisher: parent?.publisher || null,
-        language: parent?.language || null,
+        workType: null,
       };
     },
     manifestation(parent, args, context, info) {

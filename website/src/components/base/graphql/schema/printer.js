@@ -23,6 +23,7 @@ import {
   DEFAULT_DEPRECATION_REASON,
   isSpecifiedDirective,
 } from "graphql";
+import { getDraftDetails, isDraftReason } from "@fbi-api/utils/deprecation";
 
 export function printSchema(schema) {
   return printFilteredSchema(
@@ -286,6 +287,14 @@ function printDirective(directive) {
 function printDeprecated(reason) {
   if (reason == null) {
     return "";
+  }
+  if (isDraftReason(reason)) {
+    const details = getDraftDetails(reason);
+    if (details) {
+      const astValue = print({ kind: Kind.STRING, value: details });
+      return ` @draft(reason: ${astValue})`;
+    }
+    return " @draft";
   }
   if (reason !== DEFAULT_DEPRECATION_REASON) {
     const astValue = print({ kind: Kind.STRING, value: reason });

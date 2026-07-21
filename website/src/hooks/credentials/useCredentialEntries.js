@@ -4,6 +4,7 @@ import useApplications, {
   getApplicationIdentifier,
   getCanonicalApplicationId,
 } from "../useApplications";
+import { isToken } from "@/components/utils";
 import useSelectedCredential from "./useSelectedCredential";
 
 const isBrowser = typeof window !== "undefined";
@@ -13,8 +14,7 @@ const isAccessToken = (token) => {
     return false;
   }
 
-  const stripped = token.replace(/test.*:/, "");
-  return stripped.length === 40;
+  return isToken(token);
 };
 
 export { getApplicationIdentifier as getCredentialEntryIdentifier };

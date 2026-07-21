@@ -8,6 +8,7 @@ import useSchema from "@/hooks/useSchema";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import Text from "@/components/base/text";
 import Spinner from "@/components/base/spinner/Spinner";
+import { getChangelogEntries } from "../logUtils";
 
 /**
  *
@@ -65,129 +66,11 @@ function getStatusClass({ expires }) {
   }
 }
 
-function getKind(obj) {
-  switch (obj?.kind) {
-    case "OBJECT":
-    case "INTERFACE":
-      return "fields";
-    case "INPUT_OBJECT":
-      return "inputFields";
-    case "ENUM":
-      return "enumValues";
-    case "SCALAR":
-    case "UNION":
-      return null;
-    default:
-      return null;
-  }
-}
-
-function selectArgFields(arg) {
-  if (!arg) {
-    return [];
-  }
-
-  const split = arg?.deprecationReason?.split("expires:");
-  const expires = split?.[1]?.trim() || null;
-  const deprecationReason = split?.[0]?.trim() || null;
-
-  return {
-    name: arg?.name,
-    type: arg?.type,
-    expires,
-    isDeprecated: arg?.isDeprecated,
-    deprecationReason,
-  };
-}
-
-// combines the the type/field to a changelog obj structure
-function selectFields(type, field) {
-  const split = field?.deprecationReason?.split("expires:");
-  const expires = split?.[1]?.trim() || null;
-  const deprecationReason = split?.[0]?.trim() || null;
-
-  return {
-    type: { name: type?.name, kind: type?.kind },
-    field: {
-      name: field?.name,
-      type: field?.type,
-      expires,
-      args: field.args
-        ?.filter((a) => a.isDeprecated)
-        .map((arg) => selectArgFields(arg)),
-      isDeprecated: field?.isDeprecated,
-      deprecationReason,
-    },
-  };
-}
-
-function getDeprecatedFields(json) {
-  const arr = [];
-
-  if (!json?.data) {
-    return arr;
-  }
-
-  const types = json.data.__schema?.types;
-  types?.forEach((obj) => {
-    const target = getKind(obj);
-    if (target) {
-      const hits = [];
-      obj?.[target]?.forEach((field) => {
-        if (field.isDeprecated) {
-          hits.push(field);
-        }
-        field.args?.forEach(
-          (arg) => arg.isDeprecated && hits.push({ ...field, args: [arg] })
-        );
-      });
-
-      if (hits.length) {
-        hits.forEach((hit) => arr.push(selectFields(obj, hit)));
-      }
-    }
-  });
-
-  return arr;
-}
-
-function buildTemplates(data) {
-  if (!data || !data.length) {
-    return [];
-  }
-
-  const temps = [];
-  data.forEach(({ type, field }) => {
-    const base = {
-      kind: type.kind,
-      type: type.name,
-      field: field.name,
-      reason: field.deprecationReason,
-      expires: field.expires,
-    };
-
-    if (field.isDeprecated) {
-      temps.push(base);
-    } else {
-      field.args?.forEach((args) =>
-        temps.push({
-          ...base,
-          argument: args.name,
-          reason: args.deprecationReason,
-          expires: args.expires,
-        })
-      );
-    }
-  });
-
-  return temps;
-}
-
 export default function Changelog() {
   const { selectedCredential: selectedToken } = useSelectedCredential();
   const { json, isLoading } = useSchema(selectedToken);
 
-  const data = buildTemplates(getDeprecatedFields(json));
+  const data = getChangelogEntries(json);
 
   // Expired fields
   const expired = useMemo(

@@ -85,6 +85,22 @@ describe("Patron loans", () => {
     );
   });
 
+  test("PatronLoanItem.status returns OVERDUE for past due dates", () => {
+    expect(
+      resolvers.PatronLoanItem.status({
+        dueDate: "2026-07-20T00:00:00+02:00",
+      })
+    ).toBe("OVERDUE");
+  });
+
+  test("PatronLoanItem.status returns ACTIVE for future due dates", () => {
+    expect(
+      resolvers.PatronLoanItem.status({
+        dueDate: "2026-07-28T00:00:00+02:00",
+      })
+    ).toBe("ACTIVE");
+  });
+
   test("PatronLoans.items sorts by title descending", () => {
     const parent = {
       result: [
@@ -107,6 +123,33 @@ describe("Patron loans", () => {
     ]);
   });
 
+  test("PatronLoans.items filters by status", () => {
+    const parent = {
+      result: [
+        { loanId: "1", dueDate: "2026-07-20T00:00:00+02:00", title: "Past" },
+        {
+          loanId: "2",
+          dueDate: "2026-07-28T00:00:00+02:00",
+          title: "Future",
+        },
+      ],
+    };
+
+    const overdueItems = resolvers.PatronLoans.items(parent, {
+      status: "OVERDUE",
+      offset: 0,
+      limit: 10,
+    });
+    const activeItems = resolvers.PatronLoans.items(parent, {
+      status: "ACTIVE",
+      offset: 0,
+      limit: 10,
+    });
+
+    expect(overdueItems.map((item) => item.loanId)).toEqual(["1"]);
+    expect(activeItems.map((item) => item.loanId)).toEqual(["2"]);
+  });
+
   test("PatronLoanItem.snapshot exposes legacy fallback metadata", () => {
     expect(
       resolvers.PatronLoanItem.snapshot({
@@ -114,20 +157,13 @@ describe("Patron loans", () => {
         title: "Brandmand",
         creator: "Lunter, Federico van",
         materialType: "Billedbog",
-        edition: null,
-        pages: "[28] sider",
-        publisher: "Turbine 2026",
-        language: "dan",
       })
     ).toEqual({
-      faust: "142526328",
+      _sourceFaust: "142526328",
       title: "Brandmand",
       creator: "Lunter, Federico van",
       materialType: "Billedbog",
-      edition: null,
-      pages: "[28] sider",
-      publisher: "Turbine 2026",
-      language: "dan",
+      workType: null,
     });
   });
 
