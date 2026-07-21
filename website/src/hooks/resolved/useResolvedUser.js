@@ -60,6 +60,10 @@ export default function useResolvedUser(props, { enabled = true } = {}) {
   return {
     user: stableData || {},
     isLoading: !stableData && !error && isValid,
+    hasResolvedUserStatus: Boolean(
+      stableData &&
+        Object.prototype.hasOwnProperty.call(stableData, "isAuthenticated")
+    ),
     mutate,
   };
 }

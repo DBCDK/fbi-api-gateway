@@ -24,11 +24,15 @@ export default function useCredentialUser({
         token,
         profile,
       };
-  const { user, isLoading, mutate } = useResolvedUser(props, { enabled });
+  const { user, isLoading, hasResolvedUserStatus, mutate } = useResolvedUser(
+    props,
+    { enabled }
+  );
 
   return {
     user,
     isLoading,
+    hasResolvedUserStatus,
     mutate,
   };
 }

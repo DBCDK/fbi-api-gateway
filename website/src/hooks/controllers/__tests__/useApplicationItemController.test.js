@@ -199,4 +199,39 @@ describe("useApplicationItemController session rehydration", () => {
     );
     expect(controller.isLoadingView).toBe(false);
   });
+
+  test("shows the item while user status is still loading after configuration resolves", async () => {
+    useCredentialConfiguration.mockReturnValue({
+      configuration: {
+        resolvedToken: "51a33c6d19e0a22d32e93bf3cc2b0b6202399e7f",
+      },
+      status: "OK",
+      isLoading: false,
+      mutate: jest.fn(),
+    });
+    useCredentialUser.mockReturnValue({
+      user: {},
+      isLoading: true,
+      hasResolvedUserStatus: false,
+      mutate: jest.fn(),
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "client:2b25816b-6034-452d-9e10-b2e6c55f0f23",
+          type: "client",
+          clientId: "2b25816b-6034-452d-9e10-b2e6c55f0f23",
+          token: "4ff4e4936471996cfb93091c9b93f5d4f71bff3f",
+          timestamp: Date.now(),
+          note: "saved note",
+          agency: "190101",
+          isVisible: true,
+        })
+      );
+    });
+
+    expect(controller.isLoadingView).toBe(false);
+    expect(controller.item.activeLoadingMessage).toBe("Checking user status...");
+  });
 });
