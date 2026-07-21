@@ -105,6 +105,55 @@ describe("/api/credentials/client-secret", () => {
     );
   });
 
+  test("keeps an existing auth token when client secret is attached to an existing client", async () => {
+    getCredentialSessionEntry.mockResolvedValueOnce({
+      id: "client:example-client-id",
+      type: "client",
+      clientId: "example-client-id",
+      token: "existing-auth-token",
+      tokenType: "Bearer",
+      expiresAt: "2026-06-09T12:00:00.000Z",
+      refreshToken: "existing-refresh-token",
+      profile: "bibdk21",
+      agency: "190101",
+      requiresClientSecret: false,
+      status: "OK",
+    });
+
+    const req = {
+      method: "POST",
+      body: {
+        entryId: "client:example-client-id",
+        clientSecret: "real-client-secret",
+        agency: "190101",
+      },
+      headers: {},
+      res: {},
+    };
+    const res = createResponse();
+
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(upsertCredentialSessionEntry).toHaveBeenCalledWith(
+      expect.any(Object),
+      "client:example-client-id",
+      expect.objectContaining({
+        token: "existing-auth-token",
+        refreshToken: "existing-refresh-token",
+        tokenType: "Bearer",
+        expiresAt: "2026-06-09T12:00:00.000Z",
+        clientSecret: "real-client-secret",
+      })
+    );
+    expect(res.body.safeEntry).toEqual(
+      expect.objectContaining({
+        token: "existing-auth-token",
+        hasClientSecret: true,
+      })
+    );
+  });
+
   test("removes an attached client secret and keeps the entry available", async () => {
     const req = {
       method: "DELETE",

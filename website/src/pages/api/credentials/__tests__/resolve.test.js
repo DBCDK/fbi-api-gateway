@@ -7,6 +7,7 @@ jest.mock("../../../../lib/credentialProviders", () => ({
 }));
 
 jest.mock("../../../../lib/credentialSession", () => ({
+  getCredentialSessionEntry: jest.fn(),
   upsertCredentialSessionEntry: jest.fn(),
 }));
 
@@ -16,6 +17,7 @@ const {
   buildUserResponse,
 } = require("../../../../lib/credentialProviders");
 const {
+  getCredentialSessionEntry,
   upsertCredentialSessionEntry,
 } = require("../../../../lib/credentialSession");
 
@@ -51,6 +53,7 @@ describe("/api/credentials/resolve", () => {
       status: 200,
       body: {},
     });
+    getCredentialSessionEntry.mockResolvedValue(null);
     upsertCredentialSessionEntry.mockImplementation(async (_ctx, id, entry) => ({
       id,
       ...entry,
@@ -155,6 +158,70 @@ describe("/api/credentials/resolve", () => {
     );
   });
 
+  test("uses and preserves an existing client secret when resolving a fresh anonymous token for the same client", async () => {
+    const {
+      getAccessTokenForClient,
+    } = require("../../../../lib/credentialProviders");
+
+    getCredentialSessionEntry.mockResolvedValueOnce({
+      id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      type: "client",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      token: "old-anonymous-token",
+      clientSecret: "existing-secret",
+      refreshToken: "existing-refresh-token",
+      tokenType: "Bearer",
+      agency: "190101",
+      status: "OK",
+    });
+    getAccessTokenForClient.mockResolvedValue({
+      status: 200,
+      token: "fresh-anonymous-token",
+      tokenType: "Bearer",
+      refreshToken: null,
+      expiresAt: "2026-06-10T12:00:00.000Z",
+    });
+
+    const req = {
+      method: "POST",
+      body: {
+        value: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        agency: "190101",
+      },
+      headers: {},
+      socket: {},
+      res: {},
+    };
+    const res = createResponse();
+
+    await handler(req, res);
+
+    expect(getAccessTokenForClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        clientSecret: "existing-secret",
+      })
+    );
+    expect(upsertCredentialSessionEntry).toHaveBeenCalledWith(
+      expect.any(Object),
+      "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      expect.objectContaining({
+        token: "fresh-anonymous-token",
+        clientSecret: "existing-secret",
+        refreshToken: "existing-refresh-token",
+        hasClientSecret: true,
+        hasRefreshToken: true,
+      })
+    );
+    expect(res.body.safeEntry).toEqual(
+      expect.objectContaining({
+        token: "fresh-anonymous-token",
+        hasClientSecret: true,
+        hasRefreshToken: true,
+      })
+    );
+  });
+
   test("resolves token submissions even when user enrichment fails", async () => {
     const req = {
       method: "POST",
@@ -178,6 +245,57 @@ describe("/api/credentials/resolve", () => {
       expect.objectContaining({
         id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
         token: "af20a0ff1d6c7dde6d00d04b433a1204d3c086cc",
+      })
+    );
+  });
+
+  test("preserves existing client secret metadata when replacing a client token", async () => {
+    getCredentialSessionEntry.mockResolvedValueOnce({
+      id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      type: "client",
+      clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      token: "old-token",
+      clientSecret: "existing-secret",
+      refreshToken: "existing-refresh-token",
+      tokenType: "Bearer",
+      agency: "190101",
+      status: "OK",
+    });
+
+    const req = {
+      method: "POST",
+      body: {
+        value: "af20a0ff1d6c7dde6d00d04b433a1204d3c086cc",
+        agency: "190101",
+      },
+      headers: {},
+      socket: {},
+      res: {},
+    };
+    const res = createResponse();
+
+    await handler(req, res);
+
+    expect(getCredentialSessionEntry).toHaveBeenCalledWith(
+      expect.any(Object),
+      "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52"
+    );
+    expect(upsertCredentialSessionEntry).toHaveBeenCalledWith(
+      expect.any(Object),
+      "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      expect.objectContaining({
+        token: "af20a0ff1d6c7dde6d00d04b433a1204d3c086cc",
+        clientSecret: "existing-secret",
+        refreshToken: "existing-refresh-token",
+        hasClientSecret: true,
+        hasRefreshToken: true,
+      })
+    );
+    expect(res.body.safeEntry).toEqual(
+      expect.objectContaining({
+        token: "af20a0ff1d6c7dde6d00d04b433a1204d3c086cc",
+        hasClientSecret: true,
+        hasRefreshToken: true,
       })
     );
   });
