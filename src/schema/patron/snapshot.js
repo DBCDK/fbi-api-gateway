@@ -49,7 +49,9 @@ export const resolvers = {
       }
 
       if (parent?._sourceMaterialId) {
-        return isWorkId(parent._sourceMaterialId) ? null : parent._sourceMaterialId;
+        return isWorkId(parent._sourceMaterialId)
+          ? null
+          : parent._sourceMaterialId;
       }
 
       if (parent?._sourceFaust) {

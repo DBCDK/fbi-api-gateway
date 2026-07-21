@@ -510,14 +510,15 @@ export const resolvers = {
       return parent?.materialId || null;
     },
     snapshot(parent) {
-      if (
-        !parent?.materialId &&
-        !parent?.workId &&
-        !parent?.title &&
-        !parent?.creator &&
-        !parent?.materialType &&
-        !parent?.workType
-      ) {
+      const hasSnapshotData =
+        parent?.materialId ||
+        parent?.workId ||
+        parent?.title ||
+        parent?.creator ||
+        parent?.materialType ||
+        parent?.workType;
+
+      if (!hasSnapshotData) {
         return null;
       }
 

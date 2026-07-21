@@ -1,7 +1,9 @@
 export const DRAFT_PREFIX = "@draft";
 
 export function hasDeprecatedDirective(directives = []) {
-  return directives?.some((directive) => directive?.name?.value === "deprecated");
+  return directives?.some(
+    (directive) => directive?.name?.value === "deprecated"
+  );
 }
 
 export function getDeprecationReasonFromDirectives(directives = []) {

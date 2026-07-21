@@ -211,16 +211,13 @@ export const resolvers = {
       return libraries?.result?.[0] || null;
     },
     snapshot(parent) {
-      if (
-        !parent?.titleId &&
-        !parent?.title &&
-        !parent?.creator &&
-        !parent?.materialType &&
-        !parent?.edition &&
-        !parent?.pages &&
-        !parent?.publisher &&
-        !parent?.language
-      ) {
+      const hasSnapshotData =
+        parent?.titleId ||
+        parent?.title ||
+        parent?.creator ||
+        parent?.materialType;
+
+      if (!hasSnapshotData) {
         return null;
       }
 

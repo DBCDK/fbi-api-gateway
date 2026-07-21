@@ -7,7 +7,9 @@ import {
   isTrueDeprecated,
 } from "../deprecation";
 
-function createDeprecatedDirective(reason = "use another field expires: 31/12-2099") {
+function createDeprecatedDirective(
+  reason = "use another field expires: 31/12-2099"
+) {
   return {
     kind: "Directive",
     name: {
