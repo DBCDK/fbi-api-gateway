@@ -34,7 +34,7 @@ async function persistTokenState(
   const nextEntry = await upsertCredentialSessionEntry(ctx, entryId, {
     ...entry,
     token: tokenState.token,
-    refreshToken: tokenState.refreshToken || null,
+    refreshToken: tokenState.refreshToken || entry?.refreshToken || null,
     tokenType: tokenState.tokenType || entry?.tokenType || "Bearer",
     expiresAt: tokenState.expiresAt || null,
     requiresClientSecret: false,

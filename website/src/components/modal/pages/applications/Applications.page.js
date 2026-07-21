@@ -7,7 +7,6 @@ import { Col, Row } from "react-bootstrap";
 
 import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
 import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
-import useCredentialResolve from "@/hooks/credentials/useCredentialResolve";
 import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import { MAX_CLIENT_ENTRIES as MAX_APPLICATION_ENTRIES } from "@/utils/clientEntries";
@@ -37,8 +36,10 @@ function ApplicationsPage({ modal }) {
   const { applications, setCredentialEntry: setApplicationEntry, removeCredentialEntry: removeApplicationEntry } =
     useCredentialEntries();
   const { selectedCredential: selectedToken } = useSelectedCredential();
-  const { selectCredential: setSelectedToken } = useCredentialMutations();
-  const { resolveCredential } = useCredentialResolve();
+  const {
+    selectCredential: setSelectedToken,
+    resolveCredentialValue,
+  } = useCredentialMutations();
   const { internalNetworkCheck } = useInternalNetworkCheck();
   const [state, setState] = useState(applications);
   const [isScrolled, setIsScrolled] = useState(null);
@@ -385,7 +386,7 @@ function ApplicationsPage({ modal }) {
 
     setIsSubmitting(true);
 
-    const response = await resolveCredential({
+    const response = await resolveCredentialValue({
       value: filter,
       entryId: existingEntry?.id || undefined,
     });

@@ -10,7 +10,10 @@ import {
   isInternalRequest,
 } from "../../../lib/credentialProviders";
 import { buildApplicationEntry } from "../../../lib/credentialApplications";
-import { upsertCredentialSessionEntry } from "../../../lib/credentialSession";
+import {
+  getCredentialSessionEntry,
+  upsertCredentialSessionEntry,
+} from "../../../lib/credentialSession";
 import { detectCredentialType } from "../../../utils/credentials";
 
 function getType(value) {
@@ -200,12 +203,22 @@ export default async function handler(req, res) {
         });
       }
 
+      const existingSessionEntry =
+        canonicalType === "client" && canonicalEntryId
+          ? await getCredentialSessionEntry({ req, res }, canonicalEntryId)
+          : null;
+      const nextClientSecret =
+        clientSecret || existingSessionEntry?.clientSecret || null;
+      const nextRefreshToken =
+        refreshToken || existingSessionEntry?.refreshToken || null;
+      const nextTokenType =
+        tokenType || existingSessionEntry?.tokenType || "Bearer";
       const safeEntry = buildSafeEntry({
         type: canonicalType,
         token: normalizedValue,
         clientId: resolvedClientId,
-        hasClientSecret: Boolean(clientSecret),
-        hasRefreshToken: Boolean(refreshToken),
+        hasClientSecret: Boolean(nextClientSecret),
+        hasRefreshToken: Boolean(nextRefreshToken),
         supportsRefreshToken: Boolean(
           configurationResponse.body?.supportsRefreshToken
         ),
@@ -222,14 +235,14 @@ export default async function handler(req, res) {
           type: canonicalType,
           token: normalizedValue,
           clientId: resolvedClientId,
-          hasClientSecret: Boolean(clientSecret),
-          hasRefreshToken: Boolean(refreshToken),
+          hasClientSecret: Boolean(nextClientSecret),
+          hasRefreshToken: Boolean(nextRefreshToken),
           supportsRefreshToken: Boolean(
             configurationResponse.body?.supportsRefreshToken
           ),
-          clientSecret: clientSecret || null,
-          refreshToken: refreshToken || null,
-          tokenType: tokenType || "Bearer",
+          clientSecret: nextClientSecret,
+          refreshToken: nextRefreshToken,
+          tokenType: nextTokenType,
           network,
           expiresAt: resolvedExpiresAt,
           profile: configurationResponse.body?.profiles?.[0] || null,
@@ -246,23 +259,34 @@ export default async function handler(req, res) {
     }
 
     const network = isInternalRequest(req) ? "internal" : "external";
+    const clientEntryId = entryId || `client:${normalizedValue}`;
+    const existingClientEntry = await getCredentialSessionEntry(
+      { req, res },
+      clientEntryId
+    );
 
     if (!clientSecret) {
       try {
         const tokenResolution = await getAccessTokenForClient({
           clientId: normalizedValue,
+          clientSecret: existingClientEntry?.clientSecret || null,
           network,
           req,
         });
 
         if (tokenResolution.status === 200 && tokenResolution.token) {
           const accessToken = tokenResolution.token;
+          const nextClientSecret = existingClientEntry?.clientSecret || null;
+          const nextRefreshToken =
+            tokenResolution.refreshToken ||
+            existingClientEntry?.refreshToken ||
+            null;
           const safeEntry = buildSafeEntry({
             type: "client",
             token: accessToken,
             clientId: normalizedValue,
-            hasClientSecret: false,
-            hasRefreshToken: Boolean(tokenResolution.refreshToken),
+            hasClientSecret: Boolean(nextClientSecret),
+            hasRefreshToken: Boolean(nextRefreshToken),
             supportsRefreshToken: false,
             agency: agency || null,
             requiresClientSecret: false,
@@ -272,18 +296,22 @@ export default async function handler(req, res) {
 
           const sessionEntry = await upsertCredentialSessionEntry(
             { req, res },
-            entryId || `client:${normalizedValue}`,
+            clientEntryId,
             {
               type: "client",
               clientId: normalizedValue,
-              hasClientSecret: false,
-              hasRefreshToken: Boolean(tokenResolution.refreshToken),
+              hasClientSecret: Boolean(nextClientSecret),
+              hasRefreshToken: Boolean(nextRefreshToken),
               supportsRefreshToken: false,
               network,
               requiresClientSecret: false,
               token: accessToken,
-              refreshToken: tokenResolution.refreshToken || null,
-              tokenType: tokenResolution.tokenType || "Bearer",
+              clientSecret: nextClientSecret,
+              refreshToken: nextRefreshToken,
+              tokenType:
+                tokenResolution.tokenType ||
+                existingClientEntry?.tokenType ||
+                "Bearer",
               expiresAt: tokenResolution.expiresAt || null,
               profile: null,
               agency: agency || null,

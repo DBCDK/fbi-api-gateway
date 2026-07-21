@@ -7,6 +7,7 @@ import useCredentialEntries, {
 } from "./useCredentialEntries";
 import useCredentialRefreshToken from "./useCredentialRefreshToken";
 import useCredentialResolve from "./useCredentialResolve";
+import useInternalNetworkCheck from "./useInternalNetworkCheck";
 import useSelectedCredential, {
   matchesSelectedCredentialIdentity,
 } from "./useSelectedCredential";
@@ -48,23 +49,44 @@ function buildSelectedCredentialValue({
   };
 }
 
-function buildCredentialEndpointMatcher(pathname, entryId) {
+function buildCredentialConfigurationKey({
+  entryId,
+  agency = null,
+  internalNetworkCheck = null,
+}) {
   if (!entryId) {
-    return () => false;
+    return null;
   }
 
-  return (key) => {
-    if (typeof key !== "string" || !key.startsWith(pathname)) {
-      return false;
-    }
+  const params = new URLSearchParams({ entryId });
 
-    try {
-      const url = new URL(key, "http://localhost");
-      return url.searchParams.get("entryId") === entryId;
-    } catch {
-      return key.includes(`entryId=${encodeURIComponent(entryId)}`);
-    }
-  };
+  if (agency) {
+    params.set("agency", agency);
+  }
+
+  if (internalNetworkCheck) {
+    params.set("networkCheck", internalNetworkCheck);
+  }
+
+  return `/api/credentials/configuration?${params.toString()}`;
+}
+
+function buildCredentialUserKey({ entryId, profile = null }) {
+  if (!entryId) {
+    return null;
+  }
+
+  const params = new URLSearchParams({ entryId });
+
+  if (profile) {
+    params.set("profile", profile);
+  }
+
+  return `/api/credentials/user?${params.toString()}`;
+}
+
+function uniqueValues(values = []) {
+  return values.filter((value, index) => value && values.indexOf(value) === index);
 }
 
 export default function useCredentialMutations() {
@@ -72,31 +94,41 @@ export default function useCredentialMutations() {
   const { resolveCredential } = useCredentialResolve();
   const { attachClientSecret, removeClientSecret } = useCredentialClientSecret();
   const { attachRefreshToken } = useCredentialRefreshToken();
+  const { internalNetworkCheck } = useInternalNetworkCheck();
   const { selectedCredential, setSelectedCredential, clearSelectedCredential } =
     useSelectedCredential();
   const { applications, setCredentialEntry, removeCredentialEntry } =
     useCredentialEntries();
 
   const revalidateCredentialViews = useCallback(
-    async (entryId) => {
+    async (entryId, entry = {}) => {
       if (!entryId) {
         return;
       }
 
-      await Promise.all([
-        mutate(
-          buildCredentialEndpointMatcher("/api/credentials/configuration", entryId),
-          undefined,
-          { revalidate: true }
-        ),
-        mutate(
-          buildCredentialEndpointMatcher("/api/credentials/user", entryId),
-          undefined,
-          { revalidate: true }
-        ),
+      const configurationKeys = uniqueValues([
+        buildCredentialConfigurationKey({
+          entryId,
+          internalNetworkCheck,
+        }),
+        buildCredentialConfigurationKey({
+          entryId,
+          agency: entry?.agency,
+          internalNetworkCheck,
+        }),
       ]);
+      const userKeys = uniqueValues([
+        buildCredentialUserKey({ entryId }),
+        buildCredentialUserKey({
+          entryId,
+          profile: entry?.profile,
+        }),
+      ]);
+      const keys = [...configurationKeys, ...userKeys];
+
+      await Promise.all(keys.map((key) => mutate(key)));
     },
-    [mutate]
+    [internalNetworkCheck, mutate]
   );
 
   const selectCredential = useCallback(
@@ -181,7 +213,7 @@ export default function useCredentialMutations() {
       }
 
       if (replacedToken && entry.id) {
-        revalidateCredentialViews(entry.id);
+        revalidateCredentialViews(entry.id, entry);
       }
 
       return persistedEntry || entry;

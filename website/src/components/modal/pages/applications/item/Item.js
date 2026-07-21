@@ -211,8 +211,7 @@ function ApplicationItemView({ item, ui, form, actions }) {
 
               {!ui.needsClientSecret &&
                 item.token &&
-                !item.activeLoadingMessage &&
-                item.hasResolvedUserStatus && (
+                !item.activeLoadingMessage && (
                 <Text className={styles.authentication}>
                   {`Resolved token is ${
                     item.user?.isAuthenticated ? "AUTHENTICATED" : "ANONYMOUS"
