@@ -11,6 +11,7 @@ jest.mock("../credentialSession", () => ({
 const { resolveCredentialAccessToken } = require("../credentialAccess");
 const {
   getAccessTokenForClient,
+  refreshAccessToken,
   isInternalRequest,
 } = require("../credentialProviders");
 const { upsertCredentialSessionEntry } = require("../credentialSession");
@@ -176,6 +177,68 @@ describe("resolveCredentialAccessToken", () => {
           id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
           type: "client",
         }),
+      })
+    );
+  });
+
+  test("preserves existing client secret and refresh token when renewing an expired client entry", async () => {
+    isInternalRequest.mockReturnValue(false);
+    refreshAccessToken.mockResolvedValue({
+      status: 401,
+      token: null,
+      refreshToken: null,
+      tokenType: null,
+      expiresAt: null,
+      expiresIn: null,
+    });
+    getAccessTokenForClient.mockResolvedValue({
+      status: 200,
+      token: "renewed-token",
+      refreshToken: null,
+      tokenType: "Bearer",
+      expiresAt: Date.now() + 60000,
+      expiresIn: 60,
+      grantTypeUsed: "client_credentials",
+      clientSecretUsed: true,
+    });
+
+    const result = await resolveCredentialAccessToken({
+      ctx: { req: { headers: {}, socket: {} }, res: {} },
+      entryId: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      entry: {
+        id: "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        type: "client",
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        token: "expired-token",
+        expiresAt: Date.now() - 1000,
+        clientSecret: "existing-secret",
+        refreshToken: "existing-refresh-token",
+        network: "external",
+      },
+      req: { headers: {}, socket: {} },
+    });
+
+    expect(getAccessTokenForClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clientId: "15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+        clientSecret: "existing-secret",
+        network: "external",
+      })
+    );
+    expect(upsertCredentialSessionEntry).toHaveBeenCalledWith(
+      expect.any(Object),
+      "client:15804e47-4ffe-43a6-9adf-7176f0b5ba52",
+      expect.objectContaining({
+        token: "renewed-token",
+        clientSecret: "existing-secret",
+        refreshToken: "existing-refresh-token",
+      })
+    );
+    expect(result.entry).toEqual(
+      expect.objectContaining({
+        token: "renewed-token",
+        clientSecret: "existing-secret",
+        refreshToken: "existing-refresh-token",
       })
     );
   });
