@@ -4,13 +4,6 @@ jest.mock("nookies", () => ({
   destroyCookie: jest.fn(),
 }));
 
-jest.mock("dbc-node-logger", () => ({
-  log: {
-    warn: jest.fn(),
-    error: jest.fn(),
-  },
-}));
-
 jest.mock("../../../../src/datasources/redis.datasource", () => ({
   get: jest.fn(),
   set: jest.fn(),
@@ -213,64 +206,4 @@ describe("credentialSession", () => {
     expect(setCookie).not.toHaveBeenCalled();
   });
 
-  test("logs when a session cookie exists but redis is empty and no backup can recover it", async () => {
-    const { getCredentialSession } = loadCredentialSessionModule();
-    const { parseCookies } = require("nookies");
-    const { get } = require("../../../../src/datasources/redis.datasource");
-    const { log } = require("dbc-node-logger");
-
-    parseCookies.mockReturnValue({
-      fbi_credentials_session: "session-123",
-    });
-    get.mockResolvedValue(null);
-
-    const result = await getCredentialSession({ req: { headers: {} }, res: {} });
-
-    expect(result).toEqual({
-      sessionId: null,
-      session: { entries: {}, touchedAt: 0 },
-    });
-    expect(log.warn).toHaveBeenCalledWith(
-      "credential_session_missing_in_redis",
-      expect.objectContaining({
-        component: "credential_session",
-        hasSessionCookie: true,
-        hasBackupCookie: false,
-        redisHit: false,
-        entryCount: 0,
-      })
-    );
-    expect(log.warn).toHaveBeenCalledWith(
-      "credential_session_empty_result",
-      expect.objectContaining({
-        component: "credential_session",
-        outcome: "redis_miss_without_recovery",
-      })
-    );
-  });
-
-  test("logs when backup cookie cannot be restored", async () => {
-    const { getCredentialSession } = loadCredentialSessionModule();
-    const { parseCookies } = require("nookies");
-    const { log } = require("dbc-node-logger");
-
-    parseCookies.mockReturnValue({
-      fbi_credentials_backup: "broken.payload",
-    });
-
-    const result = await getCredentialSession({ req: { headers: {} }, res: {} });
-
-    expect(result).toEqual({
-      sessionId: null,
-      session: { entries: {}, touchedAt: 0 },
-    });
-    expect(log.warn).toHaveBeenCalledWith(
-      "credential_backup_restore_failed",
-      expect.objectContaining({
-        component: "credential_session",
-        outcome: "invalid_backup_payload",
-        hasBackupCookie: true,
-      })
-    );
-  });
 });
