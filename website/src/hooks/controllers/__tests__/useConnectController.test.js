@@ -33,6 +33,11 @@ jest.mock("@/hooks/credentials/useSelectedCredential", () => ({
   default: jest.fn(),
 }));
 
+jest.mock("@/hooks/useUser", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 const React = require("react");
 const { act } = React;
 const { createRoot } = require("react-dom/client");
@@ -47,6 +52,7 @@ const useCredentialNetwork = require("@/hooks/credentials/useCredentialNetwork")
 const useInternalNetworkCheck =
   require("@/hooks/credentials/useInternalNetworkCheck").default;
 const useSelectedCredential = require("@/hooks/credentials/useSelectedCredential").default;
+const useUser = require("@/hooks/useUser").default;
 
 const useConnectController = require("../useConnectController").default;
 
@@ -135,6 +141,11 @@ describe("useConnectController", () => {
       },
       status: "OK",
       isLoading: false,
+    });
+    useUser.mockReturnValue({
+      user: {},
+      isLoading: false,
+      hasResolvedUserStatus: false,
     });
     useCredentialInputFlow.mockReturnValue({
       inputRef,
@@ -281,6 +292,46 @@ describe("useConnectController", () => {
     });
 
     expect(controller.showSteps).toBe(false);
+  });
+
+  test("shows a configuration check message while the credential configuration is loading", async () => {
+    useConfiguration.mockReturnValue({
+      configuration: {},
+      status: "OK",
+      isLoading: true,
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    expect(controller.activeCheckMessage).toBe("Checking configuration...");
+  });
+
+  test("shows a user status check message after configuration resolves", async () => {
+    useUser.mockReturnValue({
+      user: {},
+      isLoading: true,
+      hasResolvedUserStatus: false,
+    });
+
+    await act(async () => {
+      root.render(
+        React.createElement(Harness, {
+          id: "connect",
+          onSubmit: jest.fn(),
+          onChange: jest.fn(),
+        })
+      );
+    });
+
+    expect(controller.activeCheckMessage).toBe("Checking user status...");
   });
 
   test("keeps steps hidden for an already selected credential on external network", async () => {

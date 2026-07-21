@@ -100,7 +100,8 @@ export default function Header() {
     useResolvedConfiguration(selectedToken);
   const { icon, theme } = useTheme();
 
-  const { user } = useUser(selectedToken);
+  const { user, isLoading: isUserLoading, hasResolvedUserStatus } =
+    useUser(selectedToken);
 
   const isValidToken =
     selectedToken &&
@@ -209,7 +210,11 @@ export default function Header() {
                 </div>
                 <div>
                   <Text type="text0">
-                    {isAuthenticated ? "Authenticated" : "Anonymous"}
+                    {isUserLoading && !hasResolvedUserStatus
+                      ? "Checking user status..."
+                      : isAuthenticated
+                        ? "Authenticated"
+                        : "Anonymous"}
                   </Text>
                 </div>
               </div>
