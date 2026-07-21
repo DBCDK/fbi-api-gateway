@@ -13,6 +13,7 @@ jest.mock("../../../../src/datasources/redis.datasource", () => ({
 function loadCredentialSessionModule() {
   jest.resetModules();
   process.env.REDIS_ENABLED = "true";
+  process.env.WEBSITE_CREDENTIALS_SECRET = "test-secret";
   return require("../credentialSession");
 }
 
@@ -204,4 +205,5 @@ describe("credentialSession", () => {
     expect(set).not.toHaveBeenCalled();
     expect(setCookie).not.toHaveBeenCalled();
   });
+
 });

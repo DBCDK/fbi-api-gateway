@@ -4,6 +4,7 @@
  * restore flow for credential entries.
  */
 import crypto from "crypto";
+import { log } from "dbc-node-logger";
 import { parseCookies, setCookie, destroyCookie } from "nookies";
 
 import config from "../../../src/config.js";
@@ -29,6 +30,24 @@ const REDIS_PREFIX = "credential_session";
 const SERVER_SIDE_STORAGE_ENABLED =
   config.datasources.redis.enabled === true ||
   config.datasources.redis.enabled === "true";
+
+function logCredentialSessionWarn(message, metadata = {}) {
+  log.warn(message, {
+    component: "credential_session",
+    ...metadata,
+  });
+}
+
+function logCredentialSessionError(message, metadata = {}) {
+  log.error(message, {
+    component: "credential_session",
+    ...metadata,
+  });
+}
+
+function getEntryCount(session) {
+  return Object.keys(session?.entries || {}).length;
+}
 
 function getKey() {
   const secret = process.env.WEBSITE_CREDENTIALS_SECRET || process.env.APP_ID;
@@ -250,7 +269,7 @@ function setBackupCookie(ctx, session) {
   );
 }
 
-function getBackupSession(ctx) {
+function getBackupSession(ctx, metadata = {}) {
   const cookies = parseCookies(ctx);
   const raw = cookies[BACKUP_COOKIE_NAME];
 
@@ -259,8 +278,25 @@ function getBackupSession(ctx) {
   }
 
   try {
-    return normalizeBackupSession(unseal(raw)) || null;
-  } catch {
+    const unsealed = unseal(raw);
+    const normalized = normalizeBackupSession(unsealed);
+
+    if (!normalized) {
+      logCredentialSessionWarn("credential_backup_restore_failed", {
+        ...metadata,
+        outcome: "invalid_backup_payload",
+        hasBackupCookie: true,
+      });
+    }
+
+    return normalized || null;
+  } catch (error) {
+    logCredentialSessionWarn("credential_backup_restore_failed", {
+      ...metadata,
+      outcome: "backup_unseal_failed",
+      hasBackupCookie: true,
+      errorMessage: error?.message || "unknown",
+    });
     return null;
   }
 }
@@ -340,11 +376,25 @@ async function refreshSessionIfNeeded(ctx, sessionId, session) {
 export async function getCredentialSession(ctx) {
   const cookies = parseCookies(ctx);
   const raw = cookies[COOKIE_NAME];
+  const hasSessionCookie = Boolean(raw);
+  const hasBackupCookie = Boolean(cookies[BACKUP_COOKIE_NAME]);
 
   if (usesServerSideStorage()) {
     if (!raw) {
-      const backupSession = getBackupSession(ctx);
+      const backupSession = getBackupSession(ctx, {
+        hasSessionCookie,
+      });
       if (!backupSession) {
+        if (hasBackupCookie) {
+          logCredentialSessionWarn("credential_session_empty_result", {
+            outcome: "missing_session_cookie_and_unusable_backup",
+            hasSessionCookie,
+            hasBackupCookie,
+            redisHit: false,
+            entryCount: 0,
+          });
+        }
+
         return { sessionId: null, session: { entries: {}, touchedAt: 0 } };
       }
 
@@ -361,23 +411,40 @@ export async function getCredentialSession(ctx) {
     }
 
     const redisSession = await getRedisSession(raw);
+    const redisHit = getEntryCount(redisSession) > 0;
 
-    if (Object.keys(redisSession.entries || {}).length > 0) {
+    if (redisHit) {
       const refreshedSession = await refreshSessionIfNeeded(
         ctx,
         raw,
         redisSession
       );
-
       return {
         sessionId: raw,
         session: refreshedSession,
       };
     }
 
-    const backupSession = getBackupSession(ctx);
+    logCredentialSessionWarn("credential_session_missing_in_redis", {
+      hasSessionCookie,
+      hasBackupCookie,
+      redisHit,
+      entryCount: 0,
+    });
+
+    const backupSession = getBackupSession(ctx, {
+      hasSessionCookie,
+      redisHit,
+    });
 
     if (!backupSession) {
+      logCredentialSessionWarn("credential_session_empty_result", {
+        outcome: "redis_miss_without_recovery",
+        hasSessionCookie,
+        hasBackupCookie,
+        redisHit,
+        entryCount: 0,
+      });
       return { sessionId: null, session: { entries: {}, touchedAt: 0 } };
     }
 
@@ -428,9 +495,21 @@ export async function setCredentialSession(ctx, session, sessionId = null) {
     ...getSerializableSession(session),
     touchedAt: Date.now(),
   };
+  const nextEntryCount = getEntryCount(normalizedSession);
 
   if (usesServerSideStorage()) {
     const effectiveSessionId = sessionId || getSessionId(ctx) || createSessionId();
+    const previousSession = await getRedisSession(effectiveSessionId);
+    const previousEntryCount = getEntryCount(previousSession);
+
+    if (previousEntryCount > 0 && nextEntryCount === 0) {
+      logCredentialSessionWarn("credential_session_suspicious_overwrite", {
+        previousEntryCount,
+        nextEntryCount,
+        hasSessionCookie: Boolean(sessionId || getSessionId(ctx)),
+      });
+    }
+
     await setRedisSession(effectiveSessionId, normalizedSession);
     const cookieContext = getCookieContext(ctx);
     if (cookieContext) {
