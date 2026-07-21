@@ -1040,6 +1040,29 @@ type Wikidata {
   awards: [String!]
 }
 
+"""An editorially curated image of the creator"""
+type EditorialImage {
+  """Url to creator image. Width 800px"""
+  small: String
+
+  """Url to creator image. Width 1200px"""
+  medium: String
+
+  """Url to creator image. Width 1800px"""
+  large: String
+
+  """Alternative text describing the image"""
+  alt: String
+
+  """Image credits/attribution"""
+  credits: String
+}
+
+"""Editorially curated data about the creator"""
+type EditorialData {
+  image: EditorialImage
+}
+
 type CreatorInfo {
   display: String!
   firstName: String
@@ -1048,6 +1071,7 @@ type CreatorInfo {
   wikidata(language: LanguageCodeEnum): Wikidata
   generated: GeneratedContentPerson
   forfatterweb: Forfatterweb
+  editorialData: EditorialData
 }
 
 type Translation {
@@ -8658,6 +8682,29 @@ type Wikidata {
   awards: [String!]
 }
 
+"""An editorially curated image of the creator"""
+type EditorialImage {
+  """Url to creator image. Width 800px"""
+  small: String
+
+  """Url to creator image. Width 1200px"""
+  medium: String
+
+  """Url to creator image. Width 1800px"""
+  large: String
+
+  """Alternative text describing the image"""
+  alt: String
+
+  """Image credits/attribution"""
+  credits: String
+}
+
+"""Editorially curated data about the creator"""
+type EditorialData {
+  image: EditorialImage
+}
+
 type CreatorInfo {
   display: String!
   firstName: String
@@ -8666,6 +8713,7 @@ type CreatorInfo {
   wikidata(language: LanguageCodeEnum): Wikidata
   generated: GeneratedContentPerson
   forfatterweb: Forfatterweb
+  editorialData: EditorialData
 }
 
 type Translation {
