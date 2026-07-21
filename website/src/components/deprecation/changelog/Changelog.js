@@ -5,7 +5,7 @@ import { daysBetween } from "@/components/utils";
 
 import styles from "./Changelog.module.css";
 import useSchema from "@/hooks/useSchema";
-import useStorage from "@/hooks/useStorage";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import Text from "@/components/base/text";
 import Spinner from "@/components/base/spinner/Spinner";
 
@@ -184,7 +184,7 @@ function buildTemplates(data) {
 }
 
 export default function Changelog() {
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
   const { json, isLoading } = useSchema(selectedToken);
 
   const data = buildTemplates(getDeprecatedFields(json));

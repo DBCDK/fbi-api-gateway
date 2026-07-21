@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 
 import FilterDropdown from "@/components/base/filter-dropdown";
-import useStorage from "@/hooks/useStorage";
-import useConfiguration from "@/hooks/useConfiguration";
+import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import {
   getAvailableAgencies,
   hasAvailableAgency,
@@ -38,8 +39,9 @@ function buildAgencyItems({ agencies, agencyId }) {
 }
 
 export default function Agencies({ id = "agencies-dropdown", className = "" }) {
-  const { selectedToken, setSelectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { selectCredential: setSelectedToken } = useCredentialMutations();
+  const { configuration } = useResolvedConfiguration(selectedToken);
 
   const isToken = selectedToken?.token && hasAvailableAgency(configuration);
   const defaultAgencyId = configuration?.defaultAgency || null;

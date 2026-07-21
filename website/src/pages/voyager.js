@@ -8,10 +8,8 @@ export default function Page(props) {
       <Head>
         <title>FBI API | Voyager</title>
       </Head>
-      <div style={{ height: "100vh" }}>
-        <Header />
-        <Voyager />
-      </div>
+      <Header />
+      <Voyager />
     </>
   );
 }

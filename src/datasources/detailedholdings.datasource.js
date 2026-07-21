@@ -82,17 +82,14 @@ export async function load({ localIds, agencyId }, context) {
 
   try {
     const baseUrl = url.replace(/\/?$/, "/");
-    const response = await context.fetch(
-      baseUrl + "detailed-holdings",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(query),
-        timeoutMs: 60000,
-      }
-    );
+    const response = await context.fetch(baseUrl + "detailed-holdings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(query),
+      timeoutMs: 60000,
+    });
 
     return parseResponse(response?.body, agencyId);
   } catch (e) {

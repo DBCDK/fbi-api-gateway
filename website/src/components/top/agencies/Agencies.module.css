@@ -24,3 +24,8 @@
   line-height: 1;
   white-space: nowrap;
 }
+
+:global(body.dark) .defaultBadge {
+  background: var(--divider-dark);
+  color: var(--text-dark);
+}

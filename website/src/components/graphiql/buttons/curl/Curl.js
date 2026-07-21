@@ -4,7 +4,7 @@ import Overlay from "@/components/base/overlay";
 import Input from "@/components/base/input";
 import Button from "@/components/base/button";
 
-import useStorage from "@/hooks/useStorage";
+import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 import useParseCurl from "@/hooks/useParseCurl";
 import useQuery from "@/hooks/useQuery";
 
@@ -17,7 +17,7 @@ import styles from "./Curl.module.css";
 import { debounce } from "lodash";
 
 export default function CurlButton({ className }) {
-  const { setSelectedToken } = useStorage();
+  const { selectCredential: setSelectedToken } = useCredentialMutations();
   const { params, trimmedParams, updateInitialParams } = useQuery();
 
   const { run = null } = useExecutionContext({

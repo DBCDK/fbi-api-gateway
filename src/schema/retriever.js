@@ -212,7 +212,7 @@ export const resolvers = {
       return parent.SOURCE_NAME || parent.paper;
     },
     fullText(parent) {
-      return parent.FULLTEXT || parent.text;
+      return parent.FULLTEXT || parent.textNoHtml;
     },
     fullTextHtml(parent) {
       return parent.FULLTEXT_HTML || parent.html;
