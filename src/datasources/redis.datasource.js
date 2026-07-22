@@ -134,6 +134,12 @@ export const incr = monitor(
   async (key, seconds, stats, datasourceName) => {
     const timings = { redisTime: 0 };
 
+    // Rate limiting must fail open while Redis is disconnected. Otherwise
+    // ioredis queues the command until reconnect and the GraphQL request hangs.
+    if (!isConnected) {
+      return null;
+    }
+
     try {
       const now = performance.now();
       const count = await redis.incr(key);

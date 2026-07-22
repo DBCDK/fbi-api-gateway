@@ -7,6 +7,11 @@ jest.mock("./useCredentialResolve", () => ({
   default: jest.fn(),
 }));
 
+jest.mock("./useInternalNetworkCheck", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 jest.mock("./useCredentialClientSecret", () => ({
   __esModule: true,
   default: jest.fn(),
@@ -34,6 +39,7 @@ const { act } = React;
 const { createRoot } = require("react-dom/client");
 const { useSWRConfig } = require("swr");
 const useCredentialResolve = require("./useCredentialResolve").default;
+const useInternalNetworkCheck = require("./useInternalNetworkCheck").default;
 const useCredentialClientSecret =
   require("./useCredentialClientSecret").default;
 const useCredentialRefreshToken =
@@ -67,6 +73,9 @@ describe("useCredentialMutations", () => {
 
     useSWRConfig.mockReturnValue({ mutate });
     useCredentialResolve.mockReturnValue({ resolveCredential });
+    useInternalNetworkCheck.mockReturnValue({
+      internalNetworkCheck: "enabled",
+    });
     useCredentialClientSecret.mockReturnValue({
       attachClientSecret: jest.fn(),
       removeClientSecret: jest.fn(),
@@ -128,15 +137,12 @@ describe("useCredentialMutations", () => {
     );
     expect(mutate).toHaveBeenCalledTimes(2);
 
-    const [configMatcher] = mutate.mock.calls[0];
-    const [userMatcher] = mutate.mock.calls[1];
-
-    expect(
-      configMatcher("/api/credentials/configuration?entryId=client%3Aabc")
-    ).toBe(true);
-    expect(configMatcher("/api/credentials/user?entryId=client%3Aabc")).toBe(false);
-    expect(userMatcher("/api/credentials/user?entryId=client%3Aabc")).toBe(true);
-    expect(userMatcher("/api/credentials/configuration?entryId=client%3Aabc")).toBe(false);
+    expect(mutate).toHaveBeenCalledWith(
+      "/api/credentials/configuration?entryId=client%3Aabc&networkCheck=enabled"
+    );
+    expect(mutate).toHaveBeenCalledWith(
+      "/api/credentials/user?entryId=client%3Aabc"
+    );
   });
 
 });

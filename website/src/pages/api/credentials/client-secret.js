@@ -114,12 +114,25 @@ export default async function handler(req, res) {
     });
   }
 
+  const shouldPreserveExistingToken = Boolean(sessionEntry.token);
+  const nextToken = shouldPreserveExistingToken
+    ? sessionEntry.token
+    : tokenResolution.token;
+  const nextRefreshToken = shouldPreserveExistingToken
+    ? sessionEntry.refreshToken || null
+    : tokenResolution.refreshToken || null;
+  const nextTokenType = shouldPreserveExistingToken
+    ? sessionEntry.tokenType || "Bearer"
+    : tokenResolution.tokenType || sessionEntry.tokenType || "Bearer";
+  const nextExpiresAt = shouldPreserveExistingToken
+    ? sessionEntry.expiresAt || null
+    : tokenResolution.expiresAt || null;
   const nextEntry = await upsertCredentialSessionEntry({ req, res }, entryId, {
     ...sessionEntry,
-    token: tokenResolution.token,
-    refreshToken: tokenResolution.refreshToken || null,
-    tokenType: tokenResolution.tokenType || sessionEntry.tokenType || "Bearer",
-    expiresAt: tokenResolution.expiresAt || null,
+    token: nextToken,
+    refreshToken: nextRefreshToken,
+    tokenType: nextTokenType,
+    expiresAt: nextExpiresAt,
     clientSecret,
     requiresClientSecret: false,
     profile: sessionEntry.profile || null,
