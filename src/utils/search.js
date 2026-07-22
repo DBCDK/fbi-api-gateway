@@ -1,4 +1,4 @@
-import { mapWikidata } from "./utils";
+import { mapWikidata, mapEditorialData } from "./utils";
 import { resolveWork, fetchAndExpandSeries } from "../utils/utils";
 
 export const DEFAULT_TOP_WORKS_LIMIT = 5;
@@ -183,6 +183,7 @@ export async function getCreatorInfo(candidate, context) {
     lastName: creatorInfoRaw?.original?.lastname || null,
     viafid: creatorInfoRaw?.viafId || null,
     wikidata: mapWikidata(creatorInfoRaw),
+    editorialData: mapEditorialData(creatorInfoRaw),
     generated: creatorDisplay
       ? {
           creator: creatorDisplay,
