@@ -1,4 +1,4 @@
-import { mapWikidata } from "../utils/utils";
+import { mapWikidata, mapEditorialData } from "../utils/utils";
 import generatedContentExamples from "../utils/generatedContentExamples.json";
 
 const GENERATED_DISCLAIMER =
@@ -89,6 +89,39 @@ type Wikidata {
   awards: [String!]
 }
 
+"""
+An editorially curated image of the creator
+"""
+type EditorialImage {
+  """
+  Url to creator image. Width 800px
+  """
+  small: String
+  """
+  Url to creator image. Width 1200px
+  """
+  medium: String
+  """
+  Url to creator image. Width 1800px
+  """
+  large: String
+  """
+  Alternative text describing the image
+  """
+  alt: String
+  """
+  Image credits/attribution
+  """
+  credits: String
+}
+
+"""
+Editorially curated data about the creator
+"""
+type EditorialData {
+  image: EditorialImage
+}
+
 type CreatorInfo {
   display: String!
   firstName: String
@@ -97,6 +130,7 @@ type CreatorInfo {
   wikidata(language: LanguageCodeEnum): Wikidata
   generated: GeneratedContentPerson
   forfatterweb: Forfatterweb
+  editorialData: EditorialData
 }
 
 type Translation {
@@ -298,6 +332,7 @@ export const resolvers = {
         lastName: creatorInfoRaw?.original?.lastname || null,
         viafid: creatorInfoRaw?.viafId || null,
         wikidata: mapWikidata(creatorInfoRaw),
+        editorialData: mapEditorialData(creatorInfoRaw),
         generated: creatorInfoRaw?.generated?.shortSummary
           ? {
               creator: creatorInfoRaw?.display,
@@ -324,6 +359,7 @@ export const resolvers = {
         lastName: creatorInfoRaw?.original?.lastname || null,
         viafid: creatorInfoRaw?.viafId || null,
         wikidata: creatorInfoRaw ? mapWikidata(creatorInfoRaw) : null,
+        editorialData: creatorInfoRaw ? mapEditorialData(creatorInfoRaw) : null,
         generated: {
           creator: args.display,
           summary: creatorInfoRaw?.generated?.summary && {
@@ -389,6 +425,7 @@ export const resolvers = {
           lastName: info?.original?.lastname || null,
           viafid: info?.viafId || null,
           wikidata: mapWikidata(info),
+          editorialData: mapEditorialData(info),
           generated:
             info?.generated?.shortSummary || info?.generated?.summary
               ? {
