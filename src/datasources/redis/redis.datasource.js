@@ -1,26 +1,15 @@
 import { log } from "dbc-node-logger";
 import Redis from "ioredis";
-import config from "../config";
-import { parseJSON, stringifyJSON } from "../utils/json";
-import monitor from "../utils/monitor";
+import config from "../../config";
+import { parseJSON, stringifyJSON } from "../../utils/json";
+import monitor from "../../utils/monitor";
 
 const { teamLabel } = config.datasources.redis;
-// Redis client
 let redis;
-
-// Variable indicating if we are connected
 let isConnected = false;
 
 const localStore = {};
 
-/**
- * Connect to a Redis server and create event handlers
- *
- * @param {Object} params The params object
- * @param {string} params.host The Redis host
- * @param {number|string} params.port The Redis port
- * @param {string} params.prefix The Redis prefix
- */
 function connectRedis({ host, port, prefix }) {
   log.info(`Connecting to Redis`, {
     redisHost: host,
@@ -62,9 +51,6 @@ function connectRedis({ host, port, prefix }) {
   });
 }
 
-/**
- * A monitored redis get operation
- */
 export const get = monitor(
   { name: "REQUEST_redis_get", help: "Redis get request" },
   async (key, inMemory, stats, datasourceName) => {
@@ -98,9 +84,6 @@ export const get = monitor(
   }
 );
 
-/**
- * A monitored redis set operation
- */
 export const set = monitor(
   { name: "REQUEST_redis_set", help: "Redis set request" },
   async (key, seconds, val, inMemory, stats, datasourceName) => {
@@ -126,16 +109,11 @@ export const set = monitor(
   }
 );
 
-/**
- * A monitored Redis increment operation
- */
 export const incr = monitor(
   { name: "REQUEST_redis_incr", help: "Redis increment request" },
   async (key, seconds, stats, datasourceName) => {
     const timings = { redisTime: 0 };
 
-    // Rate limiting must fail open while Redis is disconnected. Otherwise
-    // ioredis queues the command until reconnect and the GraphQL request hangs.
     if (!isConnected) {
       return null;
     }
@@ -143,12 +121,7 @@ export const incr = monitor(
     try {
       const now = performance.now();
       const count = await redis.incr(key);
-
-      // Ensure the counter key always has a TTL:
-      // - Fixes rare cases where a key ended up without expiry (would count forever).
-      // - "NX" means: only set expiry if the key has no expiry already.
       await redis.expire(key, seconds, "NX");
-
       timings.redisTime = performance.now() - now;
 
       return count;
@@ -161,9 +134,6 @@ export const incr = monitor(
   }
 );
 
-/**
- * A monitored redis delete operation
- */
 export const del = monitor(
   { name: "REQUEST_redis_del", help: "Redis del (delete) request" },
   async (key) => {
@@ -177,13 +147,6 @@ export const del = monitor(
   }
 );
 
-/**
- * mget does not work when Redis is running in a cluster
- * and keys are on different nodes.
- * Therefore, we must call get per key.
- *
- * @param {string} keys The keys to fetch
- */
 async function mget(keys, inMemory, stats, datasourceName) {
   if (!isConnected) {
     return keys.map(() => null);
@@ -194,15 +157,6 @@ async function mget(keys, inMemory, stats, datasourceName) {
   );
 }
 
-/**
- * Wrap the Redis setex function in a Promise.
- * The promise will always resolve - never reject.
- * In case of failure, we log and move on.
- *
- * @param {string} key The key
- * @param {number} seconds Time to live in seconds
- * @param {Object} val The value to store
- */
 async function setex(key, seconds, val, inMemory, stats, datasourceName) {
   if (!isConnected) {
     return;
@@ -218,20 +172,6 @@ function createPrefixedKey(prefix, key) {
   return `${prefix}_${key}`;
 }
 
-/**
- * A higher order function, that makes it easy to enhance
- * a batch loader with Redis caching capabilities.
- *
- * @param {function} batchFunc a DataLoader batch function
- * @param {Object} options The options object
- * @param {string} options.prefix Prefix to put on each keys
- * @param {number} options.ttl Time to live in seconds
- * @param {number} options.staleWhileRevalidate seconds to allow values to be stale
- * @param {function} options.setex Inject setex function (for testing)
- * @param {function} options.mget Inject mget function (for testing)
- *
- * @returns {function} A Redis enhanced batch function
- */
 export function withRedis(
   batchFunc,
   {
@@ -246,22 +186,9 @@ export function withRedis(
     stats,
   }
 ) {
-  /**
-   * This is a DataLoader batch function
-   * It fetches as many keys from Redis as possible.
-   * The rest will be fetched via the batchFunc that
-   * is given to the outer function.
-   * Finally, missing values are sent to Redis
-   *
-   * @param {Array.<string>} keys The keys to fetch
-   */
   async function redisBatchLoader(keys) {
     const now = Date.now();
-
-    // Create array of prefixed keys
     const prefixedKeys = keys.map((key) => createPrefixedKey(prefix, key));
-
-    // Get values of all prefixed keys from Redis
     const cachedValues = await mgetFunc(
       prefixedKeys,
       inMemory,
@@ -269,9 +196,6 @@ export function withRedis(
       datasourceName
     );
 
-    // If some values were not found in Redis,
-    // they are added to missing keys array
-    // If they are stale, they are added to staleKeys array
     const missingKeys = [];
     const staleKeys = [];
     cachedValues.forEach((val, idx) => {
@@ -288,13 +212,10 @@ export function withRedis(
       keys.length - missingKeys.length - staleKeys.length
     );
 
-    // Fetch missing values using the provided batch function
     let values;
     if (missingKeys.length > 0) {
       values = await batchFunc(missingKeys);
 
-      // Store those missing values in Redis with expiration time set to ttl
-      // We do not await here
       missingKeys.forEach((key, idx) => {
         if (!(values[idx] instanceof Error)) {
           return setexFunc(
@@ -309,7 +230,6 @@ export function withRedis(
       });
     }
 
-    // Refresh stale values, we don't await
     (async () => {
       if (staleKeys.length > 0) {
         const refreshedValues = await batchFunc(staleKeys);
@@ -331,7 +251,6 @@ export function withRedis(
       }
     })();
 
-    // Return array of values
     const res = keys.map((key, idx) => {
       if (cachedValues[idx]) {
         return cachedValues[idx].val;
@@ -344,27 +263,17 @@ export function withRedis(
   return redisBatchLoader;
 }
 
-/**
- * Delete a Redis cache by prefixed key
- *
- */
 export async function clearRedis(prefix, key) {
   const prefixedKey = createPrefixedKey(prefix, key);
   await redis.del(prefixedKey);
 }
 
-/**
- * The status function
- *
- * @throws Will throw error if service is down
- */
 export function status() {
   if (!isConnected) {
     throw new Error("Redis is not connected");
   }
 }
 
-// Connect if Redis is enabled
 if (
   config.datasources.redis.enabled === true ||
   config.datasources.redis.enabled === "true"
