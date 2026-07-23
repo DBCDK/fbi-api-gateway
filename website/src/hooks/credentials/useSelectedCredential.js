@@ -1,5 +1,7 @@
 import useSWR from "swr";
 
+import { isToken } from "@/components/utils";
+
 const isBrowser = typeof window !== "undefined";
 const SELECTED_CREDENTIAL_KEY = "selectedCredentialApplication";
 export const SELECTED_CREDENTIAL_CLEARED_EVENT =
@@ -19,8 +21,7 @@ function isAccessToken(token) {
     return false;
   }
 
-  const stripped = token.replace(/test.*:/, "");
-  return stripped.length === 40;
+  return isToken(token);
 }
 
 export function matchesSelectedCredentialIdentity(

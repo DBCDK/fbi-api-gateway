@@ -199,7 +199,7 @@ type Mutation {
   submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
 
   """Updates patron information, such as adding or removing bookmarks."""
-  patron: PatronMutation
+  patron: PatronMutation @deprecated(reason: "@draft")
 
   """
   Represents the overall reservability status across all items according to the Cicero API (booking allowed).
@@ -260,7 +260,7 @@ type Query {
   """
   Retrieves information about the patron, such as bookmarks, reservations, and loans.
   """
-  patron: Patron
+  patron: Patron @deprecated(reason: "@draft")
 
   """Access to various types of recommendations."""
   recommendations: Recommendations!
@@ -3901,6 +3901,11 @@ type Patron {
   Retrieves the list of bookmarks for the patron, including pagination and sorting options.
   """
   bookmarks: Bookmarks!
+
+  """
+  Retrieves the list of loans for the patron, including pagination and sorting options.
+  """
+  loans: PatronLoans!
 }
 
 type PatronMutation {
@@ -3939,30 +3944,13 @@ type BookmarkItem {
   material: MaterialUnion
 
   """Stored metadata captured when the bookmark was created."""
-  snapshot: BookmarkSnapshot
+  snapshot: PatronMaterialSnapshot
 
   """creation date of the bookmark"""
   createdAt: DateTime!
 
   """The application the bookmark belongs to"""
   application: BookmarksApplicationEnum!
-}
-
-type BookmarkSnapshot {
-  """Stored work id from when the bookmark was created."""
-  workId: String
-
-  """Stored title from when the bookmark was created."""
-  title: String
-
-  """Stored creator from when the bookmark was created."""
-  creator: String
-
-  """Stored material type from when the bookmark was created."""
-  materialType: String
-
-  """Stored work type from when the bookmark was created."""
-  workType: String
 }
 
 """Union type for different material types that can be bookmarked"""
@@ -4041,6 +4029,77 @@ enum BookmarksStatusEnum {
   ALREADY_EXISTS
   NOT_FOUND
   UNKNOWN_ERROR
+}
+
+type PatronLoans {
+  """The total number of loans for the patron."""
+  hitcount: Int!
+
+  """The overall status of the loan lookup."""
+  status: PatronLoansOverallStatusEnum!
+
+  """The list of loans for the patron."""
+  items(orderBy: OrderLoansByEnum, status: PatronLoanStatusEnum, offset: Int, limit: PaginationLimitScalar): [PatronLoanItem!]!
+}
+
+type PatronLoanItem {
+  """The unique identifier for the loan."""
+  id: String!
+
+  """Due date of the loan."""
+  dueDate: DateTime!
+
+  """Computed loan status based on due date."""
+  status: PatronLoanStatusEnum!
+
+  """Branch information for the agency where the loan belongs."""
+  agency: Branch
+
+  """
+  The bibliographic record associated with the loan, if it can still be resolved from the faust number.
+  """
+  manifestation: Manifestation
+
+  """Stored fallback metadata captured from the legacy loan service."""
+  snapshot: PatronMaterialSnapshot
+}
+
+enum PatronLoansOverallStatusEnum {
+  OK
+  FAILED
+  ERROR_UNAUTHENTICATED_TOKEN
+}
+
+enum PatronLoanStatusEnum {
+  ACTIVE
+  OVERDUE
+}
+
+enum OrderLoansByEnum {
+  DUEDATE_ASC
+  DUEDATE_DESC
+  TITLE_ASC
+  TITLE_DESC
+}
+
+type PatronMaterialSnapshot {
+  """Stored pid for the material, if known."""
+  pid: String
+
+  """Stored work id for the material, if known."""
+  workId: String
+
+  """Stored title for the material."""
+  title: String
+
+  """Stored creator for the material."""
+  creator: String
+
+  """Stored material type for the material."""
+  materialType: String
+
+  """Stored work type for the material."""
+  workType: String
 }
 
 type RawRepo {
