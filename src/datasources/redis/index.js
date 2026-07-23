@@ -17,12 +17,7 @@ import Redis from "ioredis";
  * @param {string} params.messages.errorPrefix Prefix used for error logs
  * @returns {Object} Runtime helpers for Redis access
  */
-export function createRedisConnection({
-  host,
-  port,
-  prefix,
-  messages,
-}) {
+export function createRedisConnection({ host, port, prefix, messages }) {
   let redis;
   let isConnected = false;
 

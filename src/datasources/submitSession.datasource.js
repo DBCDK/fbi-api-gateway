@@ -1,4 +1,4 @@
-import { set } from "./redis.datasource";
+import { set } from "./redis/redis.datasource";
 
 export async function load({ accessToken, session }) {
   const key = `session_${accessToken}`;

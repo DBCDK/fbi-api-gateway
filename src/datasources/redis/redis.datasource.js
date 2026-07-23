@@ -204,7 +204,7 @@ export function withRedis(
     datasourceName,
     stats,
   }
-  ) {
+) {
   /**
    * This is a DataLoader batch function
    * It fetches as many keys from Redis as possible.
