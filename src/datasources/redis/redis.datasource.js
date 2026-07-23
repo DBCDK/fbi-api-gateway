@@ -134,6 +134,8 @@ export const incr = monitor(
   async (key, seconds, stats, datasourceName) => {
     const timings = { redisTime: 0 };
 
+    // Rate limiting must fail open while Redis is disconnected. Otherwise
+    // ioredis queues the command until reconnect and the GraphQL request hangs.
     if (!isConnected) {
       return null;
     }
@@ -141,6 +143,10 @@ export const incr = monitor(
     try {
       const now = performance.now();
       const count = await redis.incr(key);
+
+      // Ensure the counter key always has a TTL:
+      // - Fixes rare cases where a key ended up without expiry (would count forever).
+      // - "NX" means: only set expiry if the key has no expiry already.
       await redis.expire(key, seconds, "NX");
       timings.redisTime = performance.now() - now;
 
@@ -238,7 +244,7 @@ export function withRedis(
     datasourceName,
     stats,
   }
-) {
+  ) {
   /**
    * This is a DataLoader batch function
    * It fetches as many keys from Redis as possible.
@@ -250,7 +256,11 @@ export function withRedis(
    */
   async function redisBatchLoader(keys) {
     const now = Date.now();
+
+    // Create array of prefixed keys
     const prefixedKeys = keys.map((key) => createPrefixedKey(prefix, key));
+
+    // Get values of all prefixed keys from Redis
     const cachedValues = await mgetFunc(
       prefixedKeys,
       inMemory,
@@ -258,6 +268,9 @@ export function withRedis(
       datasourceName
     );
 
+    // If some values were not found in Redis,
+    // they are added to missing keys array
+    // If they are stale, they are added to staleKeys array
     const missingKeys = [];
     const staleKeys = [];
     cachedValues.forEach((val, idx) => {
@@ -274,10 +287,13 @@ export function withRedis(
       keys.length - missingKeys.length - staleKeys.length
     );
 
+    // Fetch missing values using the provided batch function
     let values;
     if (missingKeys.length > 0) {
       values = await batchFunc(missingKeys);
 
+      // Store those missing values in Redis with expiration time set to ttl
+      // We do not await here
       missingKeys.forEach((key, idx) => {
         if (!(values[idx] instanceof Error)) {
           return setexFunc(
@@ -292,6 +308,7 @@ export function withRedis(
       });
     }
 
+    // Refresh stale values, we don't await
     (async () => {
       if (staleKeys.length > 0) {
         const refreshedValues = await batchFunc(staleKeys);
@@ -313,6 +330,7 @@ export function withRedis(
       }
     })();
 
+    // Return array of values
     const res = keys.map((key, idx) => {
       if (cachedValues[idx]) {
         return cachedValues[idx].val;
