@@ -8,7 +8,7 @@ export const typeDef = `
       """
       Retrieves information about the patron, such as bookmarks, reservations, and loans.
       """
-      patron: Patron 
+      patron: Patron @deprecated(reason: "@draft")
     }
 
     type Patron
@@ -17,7 +17,7 @@ export const typeDef = `
       """
       Updates patron information, such as adding or removing bookmarks.
       """
-      patron: PatronMutation
+      patron: PatronMutation @deprecated(reason: "@draft")
     }
 
     type PatronMutation

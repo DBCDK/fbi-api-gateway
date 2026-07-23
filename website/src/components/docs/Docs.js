@@ -15,6 +15,7 @@ import {
   DeprecationBorder,
   DeprecationTitle,
   Changelog,
+  DraftLog,
 } from "@/components/deprecation";
 
 import Progress from "@/components/base/progress";
@@ -38,6 +39,7 @@ const customComponents = {
   DeprecationBorder,
   DeprecationTitle,
   Changelog,
+  DraftLog,
   Progress,
   Complexity,
   Depth,

@@ -138,6 +138,7 @@ describe("Patron bookmarks", () => {
         workType: "work",
       })
     ).toEqual({
+      _sourceMaterialId: "pid:123",
       workId: "work-of:123",
       title: "Stored title",
       creator: "Stored creator",

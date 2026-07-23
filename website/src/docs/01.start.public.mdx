@@ -200,6 +200,8 @@ Deprecation details will include:
 - Reason and/or alternative options
 - Expiration date
 
+Draft fields may also be present in the schema. They are marked separately, may change without the same stability guarantees, and are listed in the Draft Log for the selected token.
+
 Furthermore, if an entire section in the documentation, with its own heading or subheading, is deprecated, the section title will be flagged deprecated to alert users.
 
 FBI-API ensures that users are informed of any potential deprecations and can smoothly transition to alternative options.
@@ -223,6 +225,16 @@ The changelog table contains a list of both previous and current deprecated fiel
 <br />
 
 <Changelog />
+
+## Draft 🧪
+
+The draft log contains fields currently marked as draft in the schema for the selected token.
+
+Draft fields, including all of their subfields, are available to use but may change or be removed without prior notice. Unlike established fields, changes to draft fields and their subfields are not subject to the standard three-month deprecation notice.
+
+<br />
+
+<DraftLog />
 
 ## Tracing User Actions 👣
 
