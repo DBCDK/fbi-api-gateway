@@ -5,9 +5,20 @@ import { parseJSON, stringifyJSON } from "../../utils/json";
 import monitor from "../../utils/monitor";
 
 const { teamLabel } = config.datasources.websiteRedis;
+// Redis client
 let redis;
+
+// Variable indicating if we are connected
 let isConnected = false;
 
+/**
+ * Connect to a Redis server and create event handlers
+ *
+ * @param {Object} params The params object
+ * @param {string} params.host The Redis host
+ * @param {number|string} params.port The Redis port
+ * @param {string} params.prefix The Redis prefix
+ */
 function connectRedis({ host, port, prefix }) {
   log.info(`Connecting to website Redis`, {
     redisHost: host,
@@ -49,6 +60,9 @@ function connectRedis({ host, port, prefix }) {
   });
 }
 
+/**
+ * A monitored website redis get operation
+ */
 export const get = monitor(
   { name: "REQUEST_website_redis_get", help: "Website Redis get request" },
   async (key) => {
@@ -62,6 +76,9 @@ export const get = monitor(
   }
 );
 
+/**
+ * A monitored website redis set operation
+ */
 export const set = monitor(
   { name: "REQUEST_website_redis_set", help: "Website Redis set request" },
   async (key, seconds, val) => {
@@ -78,6 +95,9 @@ export const set = monitor(
   }
 );
 
+/**
+ * A monitored website redis delete operation
+ */
 export const del = monitor(
   { name: "REQUEST_website_redis_del", help: "Website Redis del request" },
   async (key) => {
@@ -89,6 +109,7 @@ export const del = monitor(
   }
 );
 
+// Connect if website Redis is enabled
 if (
   config.datasources.websiteRedis.enabled === true ||
   config.datasources.websiteRedis.enabled === "true"
