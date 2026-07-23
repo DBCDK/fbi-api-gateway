@@ -16,7 +16,7 @@ export const typeDef = `
         """
         Retrieves the list of bookmarks for the patron, including pagination and sorting options.
         """
-        bookmarks: Bookmarks!
+        bookmarks: Bookmarks! 
     }
 
     extend type PatronMutation {
@@ -67,7 +67,7 @@ export const typeDef = `
         """
         Stored metadata captured when the bookmark was created.
         """
-        snapshot: BookmarkSnapshot
+        snapshot: PatronMaterialSnapshot
 
         """
         creation date of the bookmark
@@ -78,33 +78,6 @@ export const typeDef = `
         The application the bookmark belongs to
         """
         application: BookmarksApplicationEnum!
-    }
-
-    type BookmarkSnapshot {
-        """
-        Stored work id from when the bookmark was created.
-        """
-        workId: String
-
-        """
-        Stored title from when the bookmark was created.
-        """
-        title: String
-
-        """
-        Stored creator from when the bookmark was created.
-        """
-        creator: String
-
-        """
-        Stored material type from when the bookmark was created.
-        """
-        materialType: String
-
-        """
-        Stored work type from when the bookmark was created.
-        """
-        workType: String
     }
 
     """
@@ -537,19 +510,23 @@ export const resolvers = {
       return parent?.materialId || null;
     },
     snapshot(parent) {
-      if (
-        !parent?.materialId &&
-        !parent?.workId &&
-        !parent?.title &&
-        !parent?.creator &&
-        !parent?.materialType &&
-        !parent?.workType
-      ) {
+      const hasSnapshotData =
+        parent?.materialId ||
+        parent?.workId ||
+        parent?.title ||
+        parent?.creator ||
+        parent?.materialType ||
+        parent?.workType;
+
+      if (!hasSnapshotData) {
         return null;
       }
 
+      const isWork = parent?.materialId?.startsWith("work-of:");
+
       return {
-        workId: parent?.workId || null,
+        _sourceMaterialId: parent?.materialId || null,
+        workId: parent?.workId || (isWork ? parent?.materialId : null),
         title: parent?.title || null,
         creator: parent?.creator || null,
         materialType: parent?.materialType || null,

@@ -18,6 +18,11 @@ import { log } from "dbc-node-logger";
 import { bibliotekdkCmsSchema } from "./schema/external/bibliotekdkCms";
 import { getFilesRecursive } from "./utils/utils";
 import { wrapResolvers } from "./utils/wrapResolvers";
+import {
+  getDeprecationReasonFromDirectives,
+  hasDeprecatedDirective,
+  isDraftReason,
+} from "./utils/deprecation";
 
 import merge from "lodash/merge";
 import { parseClientPermissions } from "../commonUtils";
@@ -196,12 +201,14 @@ export function fieldNameValidator(props, errorType = "THROW") {
       subfields?.forEach((obj) => {
         const subfield = obj?.name?.value;
         const kind = obj?.kind;
-        const isDeprecated = !!obj?.directives?.find(
-          (obj) => obj?.name?.value === "deprecated"
+        const isDeprecated = hasDeprecatedDirective(obj?.directives);
+        const deprecationReason = getDeprecationReasonFromDirectives(
+          obj?.directives
         );
+        const isDraft = isDraftReason(deprecationReason);
 
-        // ignore deprecated fields
-        if (!isDeprecated) {
+        // ignore only true deprecated fields
+        if (!isDeprecated || isDraft) {
           // has subfields
           if (subfield) {
             // handle enum subfields (all UPPERCASE check)
@@ -241,25 +248,18 @@ export function fieldNameValidator(props, errorType = "THROW") {
        */
       subfields?.forEach((obj) => {
         const subfield = obj?.name?.value;
-        const isDeprecated = !!obj?.directives?.find(
-          (obj) => obj?.name?.value === "deprecated"
+        const isDeprecated = hasDeprecatedDirective(obj?.directives);
+        const deprecationReason = getDeprecationReasonFromDirectives(
+          obj?.directives
         );
+        const isDraft = isDraftReason(deprecationReason);
 
         if (isDeprecated) {
-          const target = obj?.directives?.find(
-            (obj) => obj?.name?.value === "deprecated"
-          );
-
-          const reason = target?.arguments?.find(
-            ({ name }) => name?.value === "reason"
-          );
-
-          const value = reason?.value?.value;
-
-          // ensure reason includes an expires string and date has correct format
+          // true deprecations must include an expires string with a valid date
           if (
+            !isDraft &&
             !/expires: (0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[1,2])-(20)\d{2}/.test(
-              value
+              deprecationReason
             )
           ) {
             handleError(

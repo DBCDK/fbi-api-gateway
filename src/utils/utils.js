@@ -1102,6 +1102,26 @@ export function mapImage(wikidataImage) {
 }
 
 /**
+ * Map raw editorialData object to API EditorialData type or null
+ */
+export function mapEditorialData(creatorInfoRaw) {
+  const img = creatorInfoRaw?.editorialData?.image;
+  if (!img?.small && !img?.medium && !img?.large) {
+    return null;
+  }
+
+  return {
+    image: {
+      small: img?.small || null,
+      medium: img?.medium || null,
+      large: img?.large || null,
+      alt: img?.alt || null,
+      credits: img?.credits || null,
+    },
+  };
+}
+
+/**
  * Map raw wikidata object to API Wikidata type or null
  */
 export function mapWikidata(creatorInfoRaw) {

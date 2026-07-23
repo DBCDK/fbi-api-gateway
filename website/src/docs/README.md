@@ -61,5 +61,21 @@ type SomeType {
 
 The field/type can still be accessed and user of the API will still get the requested data, but the subject will no longer be auto suggested and will get highlighted as deprecated when used.
 
+Draft fields can reuse the same GraphQL mechanism, but must start their reason with `@draft`.
+
+Draft in the schema could look like this:
+
+```
+type SomeType {
+ field: [Type!]! @deprecated(reason: "@draft")
+ ...,
+}
+```
+
+Draft fields are shown as `@draft` in the website schema printer, are excluded from the changelog, and do not require an `expires` date.
+
 ### Changelog
 Deprecation is automatically added to the changelog table.
+
+### Draft Log
+Draft fields are automatically added to the draft log table for the current token permissions.
