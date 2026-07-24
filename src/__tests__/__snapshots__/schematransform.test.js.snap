@@ -3896,6 +3896,7 @@ type OrsQuery {
   itemOrder(itemId: String!): ItemIdResponse!
 }
 
+"""Information about the patron associated with the current access token."""
 type Patron {
   """
   Retrieves the list of accounts for the patron, including pagination and sorting options.
@@ -3906,6 +3907,36 @@ type Patron {
   Retrieves the list of bookmarks for the patron, including pagination and sorting options.
   """
   bookmarks: Bookmarks!
+
+  """Name of the current patron."""
+  name: String
+
+  """Email address of the current patron."""
+  email: String
+
+  """Municipality number of the current patron."""
+  municipalityNumber: String
+
+  """Municipality agency ID of the current patron."""
+  municipalityAgencyId: String
+
+  """Address of the current patron."""
+  address: String
+
+  """Postal code of the current patron."""
+  postalCode: String
+
+  """Country of the current patron."""
+  country: String
+
+  """Agency ID where the current patron is logged in."""
+  loggedInAgencyId: String
+
+  """Branch ID where the current patron is logged in."""
+  loggedInBranchId: String
+
+  """Indicates whether the current patron is blocked."""
+  blocked: Boolean!
 
   """
   Retrieves the list of loans for the patron, including pagination and sorting options.
@@ -4196,7 +4227,7 @@ type PatronLoanItem {
   account: PatronAccount
 
   """Branch information for the agency where the loan belongs."""
-  agency: Branch
+  agency: PatronAgency
 
   """
   The bibliographic record associated with the loan, if it can still be resolved from the faust number.

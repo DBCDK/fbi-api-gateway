@@ -1,6 +1,39 @@
 import { resolvers } from "../schema/patron/account";
+import { resolvers as patronResolvers } from "../schema/patron";
 
 describe("Patron accounts", () => {
+  test("resolves patron fields directly from context.user", () => {
+    const context = {
+      user: {
+        name: "Test User",
+        email: "test@example.com",
+        municipality: "101",
+        municipalityAgencyId: "710100",
+        address: "Test Street 1",
+        postalCode: "1000",
+        country: "DK",
+        blocked: true,
+      },
+    };
+
+    expect(patronResolvers.Patron.name(null, {}, context)).toBe("Test User");
+    expect(patronResolvers.Patron.email(null, {}, context)).toBe(
+      "test@example.com"
+    );
+    expect(patronResolvers.Patron.municipalityNumber(null, {}, context)).toBe(
+      "101"
+    );
+    expect(patronResolvers.Patron.municipalityAgencyId(null, {}, context)).toBe(
+      "710100"
+    );
+    expect(patronResolvers.Patron.address(null, {}, context)).toBe(
+      "Test Street 1"
+    );
+    expect(patronResolvers.Patron.postalCode(null, {}, context)).toBe("1000");
+    expect(patronResolvers.Patron.country(null, {}, context)).toBe("DK");
+    expect(patronResolvers.Patron.blocked(null, {}, context)).toBe(true);
+  });
+
   test("returns a lightweight reference for every CPR agency", () => {
     const result = resolvers.Patron.accounts(
       null,
