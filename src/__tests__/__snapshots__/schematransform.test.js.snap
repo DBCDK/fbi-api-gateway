@@ -3898,6 +3898,11 @@ type OrsQuery {
 
 type Patron {
   """
+  Retrieves the list of accounts for the patron, including pagination and sorting options.
+  """
+  accounts: [PatronAccount]!
+
+  """
   Retrieves the list of bookmarks for the patron, including pagination and sorting options.
   """
   bookmarks: Bookmarks!
@@ -3906,6 +3911,141 @@ type Patron {
   Retrieves the list of loans for the patron, including pagination and sorting options.
   """
   loans: PatronLoans!
+}
+
+type PatronAccount {
+  """Name of the patron."""
+  name: String
+
+  """The email address of the patron."""
+  email: String
+
+  """The municipality number of the patron."""
+  municipalityNumber: String
+
+  """The agency ID of the patron."""
+  municipalityAgencyId: String
+
+  """The address of the patron."""
+  address: String
+
+  """The postal code of the patron."""
+  postalCode: String
+
+  """The country of the patron."""
+  country: String
+
+  """Indicates whether the patron is blocked or not."""
+  blocked: Boolean!
+
+  """The library agency associated with the patron account."""
+  agency: PatronAgency
+}
+
+type PatronAgency {
+  """The unique identifier of the agency."""
+  id: String!
+
+  """The primary name of the agency."""
+  name: String
+
+  """Alternative names associated with the agency."""
+  names: [String!]
+
+  """The type of library agency."""
+  type: String
+
+  """The opening hours of the agency's main branch."""
+  openingHours: String
+
+  """The current status of the agency."""
+  status: String
+
+  """The city in which the agency's main branch is located."""
+  city: String
+
+  """The postal code of the agency's main branch."""
+  postalCode: String
+
+  """The postal address of the agency's main branch."""
+  address: String
+
+  """The phone number of the agency's main branch."""
+  phone: String
+
+  """The email address of the agency's main branch."""
+  email: String
+
+  """The website URL of the agency's main branch."""
+  websiteUrl: String
+
+  """The catalogue URL of the agency's main branch."""
+  catalogueUrl: String
+
+  """The lookup URL of the agency's main branch."""
+  lookupUrl: String
+
+  """Indicates whether the agency's main branch is temporarily closed."""
+  temporarilyClosed: Boolean!
+
+  """Indicates whether pickup is allowed at the agency's main branch."""
+  pickupAllowed: Boolean!
+
+  """The total number of branches belonging to the agency."""
+  numberOfBranches: Int!
+
+  """The branches belonging to the agency."""
+  branches: [PatronBranch!]!
+}
+
+type PatronBranch {
+  """The unique identifier of the branch."""
+  id: String!
+
+  """The name of the branch."""
+  name: String
+
+  """The type of library branch."""
+  type: String
+
+  """The opening hours of the branch."""
+  openingHours: String
+
+  """The current status of the branch."""
+  status: String
+
+  """The city in which the branch is located."""
+  city: String
+
+  """The postal code of the branch."""
+  postalCode: String
+
+  """The postal address of the branch."""
+  address: String
+
+  """The phone number of the branch."""
+  phone: String
+
+  """The email address of the branch."""
+  email: String
+
+  """The website URL of the branch."""
+  websiteUrl: String
+
+  """The catalogue URL of the branch."""
+  catalogueUrl: String
+
+  """The lookup URL of the branch."""
+  lookupUrl: String
+
+  """Indicates whether the branch is temporarily closed."""
+  temporarilyClosed: Boolean!
+
+  """Indicates whether pickup is allowed at the branch."""
+  pickupAllowed: Boolean!
+
+  """The agency to which the branch belongs."""
+  agency: PatronAgency
 }
 
 type PatronMutation {
@@ -4051,6 +4191,9 @@ type PatronLoanItem {
 
   """Computed loan status based on due date."""
   status: PatronLoanStatusEnum!
+
+  """Account information for the patron who owns the loan."""
+  account: PatronAccount
 
   """Branch information for the agency where the loan belongs."""
   agency: Branch

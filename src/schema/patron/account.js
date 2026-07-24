@@ -1,13 +1,8 @@
 /**
- * @file This file handles "patron" requests related to loans.
- *
+ * @file This file handles patron requests related to accounts.
  */
 
-import { log } from "dbc-node-logger";
-import {
-  filterDuplicateAgencies,
-  resolveManifestation,
-} from "../../utils/utils";
+import { filterAgenciesByProps } from "../../utils/accounts";
 
 export const typeDef = `
     extend type Patron {
@@ -18,75 +13,107 @@ export const typeDef = `
     }
 
     type PatronAccount {
-        
         """
-        The total number of accounts for the patron.
+        Name of the patron.
         """
-        numberOfAccounts: Int!
-
-        """
-        The overall status of the account lookup.
-        """
-        status: PatronAccountsOverallStatusEnum!
+        name: String
 
         """
         The email address of the patron.
         """
-        email: String!
+        email: String
 
         """
-        Name of the patron.
+        The municipality number of the patron.
         """
-        name: String!
+        municipalityNumber: String
+
+        """
+        The agency ID of the patron.
+        """
+        municipalityAgencyId: String
+
+        """
+        The address of the patron.
+        """
+        address: String
+
+        """
+        The postal code of the patron.
+        """
+        postalCode: String
         
         """
-        The list of agencies associated with the patron.
+        The country of the patron.
         """
-        agencies: [Branch]
-    }
+        country: String
 
-    enum PatronAccountsOverallStatusEnum {
-        OK
-        FAILED
-        ERROR_UNAUTHENTICATED_TOKEN
+        """
+        Indicates whether the patron is blocked or not.
+        """
+        blocked: Boolean!
     }
 `;
 
+async function loadAccountUser(parent, context) {
+  if (!parent?.userId || !parent?.agencyId) {
+    return null;
+  }
+
+  return await context.datasources.getLoader("user").load({
+    userId: parent.userId,
+    agencyId: parent.agencyId,
+  });
+}
+
 export const resolvers = {
   Patron: {
-    async accounts(parent, args, context, info) {
+    accounts(parent, args, context) {
       const user = context?.user;
 
       if (!user) {
-        return {
-          numberOfAccounts: 0,
-          status: "ERROR_UNAUTHENTICATED_TOKEN",
-          email: "",
-        };
+        return [];
       }
 
-      try {
-        const userInfoAccounts = filterDuplicateAgencies(user?.agencies);
-        const res = await context.datasources.getLoader("loans").load({
-          userInfoAccounts,
-          accessToken: context.accessToken, // Required for testing
-        });
+      // Select CPR accounts from user agencies
+      const accounts = filterAgenciesByProps(user?.agencies, {
+        type: "CPR",
+      });
 
-        return {
-          numberOfAccounts: res?.result?.length || 0,
-          status: "OK",
-          email: user?.email || "",
-        };
-      } catch (error) {
-        log.error(
-          `Failed to get loans from legacy loan service. Message: ${error.message}`
-        );
-        return {
-          result: [],
-          status: "FAILED",
-          email: user?.email || "",
-        };
-      }
+      return accounts.map((account) => ({
+        agencyId: account.agencyId,
+        userId: account.userId,
+        municipalityNumber: user?.municipality,
+        municipalityAgencyId: user?.municipalityAgencyId,
+        blocked: user?.blocked ?? false,
+      }));
+    },
+  },
+
+  PatronAccount: {
+    async name(parent, args, context) {
+      return (await loadAccountUser(parent, context))?.name;
+    },
+    async email(parent, args, context) {
+      return (await loadAccountUser(parent, context))?.mail;
+    },
+    municipalityNumber(parent) {
+      return parent?.municipalityNumber;
+    },
+    municipalityAgencyId(parent) {
+      return parent?.municipalityAgencyId;
+    },
+    async address(parent, args, context) {
+      return (await loadAccountUser(parent, context))?.address;
+    },
+    async postalCode(parent, args, context) {
+      return (await loadAccountUser(parent, context))?.postalCode;
+    },
+    async country(parent, args, context) {
+      return (await loadAccountUser(parent, context))?.country;
+    },
+    blocked(parent) {
+      return parent?.blocked ?? false;
     },
   },
 };

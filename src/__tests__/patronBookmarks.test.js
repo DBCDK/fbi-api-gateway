@@ -153,6 +153,13 @@ describe("Patron bookmarks", () => {
     );
   });
 
+  test("BookmarkItem.material returns null without a material id", async () => {
+    await expect(
+      resolvers.BookmarkItem.material({}, {}, {})
+    ).resolves.toBeNull();
+    expect(resolveMaterial).not.toHaveBeenCalled();
+  });
+
   test("addBookmarks dryRun reports partial failure when one material is missing", async () => {
     resolveMaterial.mockResolvedValueOnce({ workId: "work-1" });
     resolveMaterial.mockResolvedValueOnce(null);

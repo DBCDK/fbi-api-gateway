@@ -11,6 +11,12 @@ jest.mock("dbc-node-logger", () => ({
 describe("Patron loans", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-07-24T12:00:00+02:00"));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   test("loans query maps successful legacy response into patron shape", async () => {
@@ -83,6 +89,48 @@ describe("Patron loans", () => {
     expect(resolvers.PatronLoanItem.id({ loanId: "5478268693" })).toBe(
       "5478268693"
     );
+  });
+
+  test("PatronLoanItem.account uses the same preferred account as loans", () => {
+    const result = resolvers.PatronLoanItem.account(
+      { agencyId: "710100" },
+      {},
+      {
+        user: {
+          agencies: [
+            { agencyId: "710100", userId: "cpr-id", userIdType: "CPR" },
+            { agencyId: "710100", userId: "local-id", userIdType: "LOCAL" },
+          ],
+          municipality: "101",
+          municipalityAgencyId: "710100",
+          blocked: false,
+        },
+      }
+    );
+
+    expect(result).toEqual({
+      agencyId: "710100",
+      userId: "local-id",
+      municipalityNumber: "101",
+      municipalityAgencyId: "710100",
+      blocked: false,
+    });
+  });
+
+  test("PatronLoanItem.account returns null without a matching account", () => {
+    expect(
+      resolvers.PatronLoanItem.account(
+        { agencyId: "715100" },
+        {},
+        {
+          user: {
+            agencies: [
+              { agencyId: "710100", userId: "local-id", userIdType: "LOCAL" },
+            ],
+          },
+        }
+      )
+    ).toBeNull();
   });
 
   test("PatronLoanItem.status returns OVERDUE for past due dates", () => {
@@ -167,22 +215,28 @@ describe("Patron loans", () => {
     });
   });
 
-  test("PatronLoanItem.agency resolves branch data from library loader", async () => {
+  test("PatronLoanItem.agency resolves agency data from library loader", async () => {
+    const agency = {
+      hitcount: 1,
+      result: [{ branchId: "732900", name: "Test Branch" }],
+    };
+    const load = jest.fn().mockResolvedValue(agency);
+
     const result = await resolvers.PatronLoanItem.agency(
       { agencyId: "732900" },
       {},
       {
         datasources: {
-          getLoader: jest.fn(() => ({
-            load: jest.fn().mockResolvedValue({
-              result: [{ branchId: "732900", name: "Test Branch" }],
-            }),
-          })),
+          getLoader: jest.fn(() => ({ load })),
         },
       }
     );
 
-    expect(result).toEqual({ branchId: "732900", name: "Test Branch" });
+    expect(load).toHaveBeenCalledWith({
+      agencyid: "732900",
+      limit: 1000,
+    });
+    expect(result).toBe(agency);
   });
 
   test("PatronLoanItem.snapshot returns null when no fallback metadata exists", () => {
