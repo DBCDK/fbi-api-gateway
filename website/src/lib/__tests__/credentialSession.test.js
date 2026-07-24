@@ -4,7 +4,7 @@ jest.mock("nookies", () => ({
   destroyCookie: jest.fn(),
 }));
 
-jest.mock("../../../../src/datasources/redis.datasource", () => ({
+jest.mock("../../../../src/datasources/redis/websiteRedis.datasource", () => ({
   get: jest.fn(),
   set: jest.fn(),
   del: jest.fn(),
@@ -94,7 +94,7 @@ describe("credentialSession", () => {
   test("writes one-year TTL for stored sessions", async () => {
     const { setCredentialSession } = loadCredentialSessionModule();
     const { parseCookies, setCookie } = require("nookies");
-    const { set } = require("../../../../src/datasources/redis.datasource");
+    const { set } = require("../../../../src/datasources/redis/websiteRedis.datasource");
 
     parseCookies.mockReturnValue({});
     set.mockResolvedValue();
@@ -137,7 +137,7 @@ describe("credentialSession", () => {
     const now = Date.UTC(2026, 6, 20, 10, 0, 0);
     const { getCredentialSession } = loadCredentialSessionModule();
     const { parseCookies, setCookie } = require("nookies");
-    const { get, set } = require("../../../../src/datasources/redis.datasource");
+    const { get, set } = require("../../../../src/datasources/redis/websiteRedis.datasource");
 
     jest.spyOn(Date, "now").mockReturnValue(now);
     parseCookies.mockReturnValue({
@@ -177,7 +177,7 @@ describe("credentialSession", () => {
     const now = Date.UTC(2026, 6, 20, 10, 0, 0);
     const { getCredentialSession } = loadCredentialSessionModule();
     const { parseCookies, setCookie } = require("nookies");
-    const { get, set } = require("../../../../src/datasources/redis.datasource");
+    const { get, set } = require("../../../../src/datasources/redis/websiteRedis.datasource");
 
     jest.spyOn(Date, "now").mockReturnValue(now);
     parseCookies.mockReturnValue({

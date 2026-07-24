@@ -1,4 +1,4 @@
-import { withRedis } from "../redis.datasource";
+import { withRedis } from "../redis/redis.datasource";
 
 /**
  * The enhancedBatchFunction (redis batch function) calls different functions

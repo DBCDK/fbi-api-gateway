@@ -12,7 +12,7 @@ import {
   get as getRedis,
   set as setRedis,
   del as delRedis,
-} from "../../../src/datasources/redis.datasource";
+} from "../../../src/datasources/redis/websiteRedis.datasource";
 import {
   buildSessionEntriesFromBackupClientIds,
   dedupeCredentialEntries,
@@ -28,8 +28,8 @@ const ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365;
 const SESSION_REFRESH_INTERVAL_IN_MS = ONE_DAY_IN_SECONDS * 1000;
 const REDIS_PREFIX = "credential_session";
 const SERVER_SIDE_STORAGE_ENABLED =
-  config.datasources.redis.enabled === true ||
-  config.datasources.redis.enabled === "true";
+  config.datasources.websiteRedis.enabled === true ||
+  config.datasources.websiteRedis.enabled === "true";
 
 function logCredentialSessionWarn(message, metadata = {}) {
   log.warn(message, {

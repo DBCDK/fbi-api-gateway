@@ -2,7 +2,7 @@ import { log } from "dbc-node-logger";
 import _ from "lodash";
 import config from "./config";
 import { datasources } from "./datasourceLoader";
-import { status as redisStatus } from "./datasources/redis.datasource";
+import { status as redisStatus } from "./datasources/redis/redis.datasource";
 import { getStats } from "./utils/fetchWithLimit";
 
 // Create upSince timestamp

@@ -1,11 +1,11 @@
 import { validateRateLimit } from "../validateRateLimit";
-import { incr } from "../../datasources/redis.datasource";
+import { incr } from "../../datasources/redis/redis.datasource";
 import isbot from "isbot";
 import { log } from "dbc-node-logger";
 import config from "../../config";
 
 // Jest mock functions
-jest.mock("../../datasources/redis.datasource", () => ({
+jest.mock("../../datasources/redis/redis.datasource", () => ({
   incr: jest.fn(),
 }));
 

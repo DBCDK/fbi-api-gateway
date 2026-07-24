@@ -253,6 +253,20 @@ export default {
       enabled: redisEnabled,
       teamLabel: "febib",
     },
+    websiteRedis: {
+      host:
+        process.env.WEBSITE_REDIS_HOST ||
+        "febib-fbiapiwebsite-prod-redis-cluster.platform-redis.svc.cloud.dbc.dk",
+      port: process.env.WEBSITE_REDIS_PORT || process.env.REDIS_PORT || "6379",
+      prefix:
+        process.env.WEBSITE_REDIS_PREFIX ||
+        process.env.REDIS_PREFIX ||
+        "bibdk-api-4",
+      enabled: isTruthy(
+        process.env.WEBSITE_REDIS_ENABLED ?? process.env.REDIS_ENABLED
+      ),
+      teamLabel: "febib",
+    },
     simplesearch: {
       url:
         process.env.SIMPLESEARCH_URL ||

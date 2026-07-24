@@ -1,4 +1,4 @@
-import { set, get } from "../datasources/redis.datasource";
+import { set, get } from "../datasources/redis/redis.datasource";
 import config from "../config";
 
 const { visit } = require("graphql");
