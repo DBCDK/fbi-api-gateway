@@ -1,4 +1,4 @@
-import { incr } from "../datasources/redis.datasource";
+import { incr } from "../datasources/redis/redis.datasource";
 import config from "../config";
 import { log } from "dbc-node-logger";
 

@@ -3,7 +3,7 @@ import { parseTestToken } from "../utils/testUserStore";
 import { performTestQuery } from "../utils/utils";
 
 const redisObjects = {};
-jest.mock("../datasources/redis.datasource", () => ({
+jest.mock("../datasources/redis/redis.datasource", () => ({
   get: (key) => redisObjects[key],
   set: (key, _ttl, val) => (redisObjects[key] = { val }),
 }));
