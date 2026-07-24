@@ -1,66 +1,22 @@
 import { log } from "dbc-node-logger";
-import Redis from "ioredis";
-import config from "../config";
-import { parseJSON, stringifyJSON } from "../utils/json";
-import monitor from "../utils/monitor";
+import config from "../../config";
+import { parseJSON, stringifyJSON } from "../../utils/json";
+import monitor from "../../utils/monitor";
+import { createRedisConnection } from "./index";
 
 const { teamLabel } = config.datasources.redis;
-// Redis client
-let redis;
-
-// Variable indicating if we are connected
-let isConnected = false;
-
 const localStore = {};
-
-/**
- * Connect to a Redis server and create event handlers
- *
- * @param {Object} params The params object
- * @param {string} params.host The Redis host
- * @param {number|string} params.port The Redis port
- * @param {string} params.prefix The Redis prefix
- */
-function connectRedis({ host, port, prefix }) {
-  log.info(`Connecting to Redis`, {
-    redisHost: host,
-    redisPort: port,
-    redisPrefix: prefix,
-  });
-  redis = new Redis.Cluster([{ host, port }], { keyPrefix: prefix });
-
-  redis.on("ready", function () {
-    isConnected = true;
-    log.info(`Connected to Redis`, {
-      redisHost: host,
-      redisPort: port,
-      redisPrefix: prefix,
-    });
-  });
-
-  redis.on("close", function () {
-    if (!isConnected) {
-      return;
-    }
-    isConnected = false;
-    log.error(`Disconnected from Redis`, {
-      redisHost: host,
-      redisPort: port,
-      redisPrefix: prefix,
-    });
-  });
-
-  redis.on("error", function (error) {
-    if (!isConnected) {
-      return;
-    }
-    log.error(`Some Redis error occured: ${error.message}`, {
-      redisHost: host,
-      redisPort: port,
-      redisPrefix: prefix,
-    });
-  });
-}
+const connection = createRedisConnection({
+  host: config.datasources.redis.host,
+  port: config.datasources.redis.port,
+  prefix: config.datasources.redis.prefix,
+  messages: {
+    connecting: "Connecting to Redis",
+    connected: "Connected to Redis",
+    disconnected: "Disconnected from Redis",
+    errorPrefix: "Some Redis error occured",
+  },
+});
 
 /**
  * A monitored redis get operation
@@ -74,6 +30,7 @@ export const get = monitor(
       if (inMemory && localStore[key]) {
         parsed = localStore[key];
       } else {
+        const redis = connection.getRedis();
         const now = performance.now();
         const str = await redis.get(key);
         const buf = str && Buffer.from(str);
@@ -106,6 +63,7 @@ export const set = monitor(
   async (key, seconds, val, inMemory, stats, datasourceName) => {
     const timings = { redisTime: 0 };
     try {
+      const redis = connection.getRedis();
       const obj = { _redis_stored: Date.now(), val };
       if (inMemory) {
         localStore[key] = obj;
@@ -136,11 +94,12 @@ export const incr = monitor(
 
     // Rate limiting must fail open while Redis is disconnected. Otherwise
     // ioredis queues the command until reconnect and the GraphQL request hangs.
-    if (!isConnected) {
+    if (!connection.isConnected()) {
       return null;
     }
 
     try {
+      const redis = connection.getRedis();
       const now = performance.now();
       const count = await redis.incr(key);
 
@@ -148,7 +107,6 @@ export const incr = monitor(
       // - Fixes rare cases where a key ended up without expiry (would count forever).
       // - "NX" means: only set expiry if the key has no expiry already.
       await redis.expire(key, seconds, "NX");
-
       timings.redisTime = performance.now() - now;
 
       return count;
@@ -168,6 +126,7 @@ export const del = monitor(
   { name: "REQUEST_redis_del", help: "Redis del (delete) request" },
   async (key) => {
     try {
+      const redis = connection.getRedis();
       await redis.del(key);
     } catch (e) {
       log.error(`Redis delete failed`, {
@@ -185,7 +144,7 @@ export const del = monitor(
  * @param {string} keys The keys to fetch
  */
 async function mget(keys, inMemory, stats, datasourceName) {
-  if (!isConnected) {
+  if (!connection.isConnected()) {
     return keys.map(() => null);
   }
 
@@ -204,7 +163,7 @@ async function mget(keys, inMemory, stats, datasourceName) {
  * @param {Object} val The value to store
  */
 async function setex(key, seconds, val, inMemory, stats, datasourceName) {
-  if (!isConnected) {
+  if (!connection.isConnected()) {
     return;
   }
 
@@ -350,6 +309,7 @@ export function withRedis(
  */
 export async function clearRedis(prefix, key) {
   const prefixedKey = createPrefixedKey(prefix, key);
+  const redis = connection.getRedis();
   await redis.del(prefixedKey);
 }
 
@@ -359,7 +319,7 @@ export async function clearRedis(prefix, key) {
  * @throws Will throw error if service is down
  */
 export function status() {
-  if (!isConnected) {
+  if (!connection.isConnected()) {
     throw new Error("Redis is not connected");
   }
 }
@@ -369,11 +329,7 @@ if (
   config.datasources.redis.enabled === true ||
   config.datasources.redis.enabled === "true"
 ) {
-  connectRedis({
-    host: config.datasources.redis.host,
-    port: config.datasources.redis.port,
-    prefix: config.datasources.redis.prefix,
-  });
+  connection.connect();
 }
 
 export { teamLabel };

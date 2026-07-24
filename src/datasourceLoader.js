@@ -1,7 +1,7 @@
 import DataLoader from "dataloader";
 
 import { log } from "dbc-node-logger";
-import { withRedis, clearRedis } from "./datasources/redis.datasource";
+import { withRedis, clearRedis } from "./datasources/redis/redis.datasource";
 import { createFetchWithConcurrencyLimit } from "./utils/fetchWithLimit";
 import { getFilesRecursive } from "./utils/utils";
 import config from "./config";
