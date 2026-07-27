@@ -65,7 +65,7 @@ export function Applications({
       <Modal
         show={show}
         onHide={() => handleShowChange(false)}
-        onExited={() =>
+        onClosed={() =>
           reorderSelectedApplication(selectedToken, setCredentialEntry)
         }
         className={styles.modal}
