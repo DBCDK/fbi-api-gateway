@@ -237,6 +237,7 @@ export const resolvers = {
 
       const agency = await context.datasources.getLoader("library").load({
         agencyid: parent.agencyId,
+        limit: 50,
       });
 
       if (!agency?.hitcount) {

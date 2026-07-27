@@ -200,7 +200,7 @@ export const resolvers = {
 
       const agency = await context.datasources.getLoader("library").load({
         agencyid: parent.agencyId,
-        limit: 1000,
+        limit: 50,
       });
 
       return agency?.hitcount ? agency : null;

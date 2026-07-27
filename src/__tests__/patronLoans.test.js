@@ -234,7 +234,7 @@ describe("Patron loans", () => {
 
     expect(load).toHaveBeenCalledWith({
       agencyid: "732900",
-      limit: 1000,
+      limit: 50,
     });
     expect(result).toBe(agency);
   });

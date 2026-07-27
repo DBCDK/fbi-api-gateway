@@ -3,6 +3,8 @@
  *
  */
 
+import { loadAccountUser } from "./account";
+
 export const typeDef = `
     extend type Query {
       """
@@ -76,6 +78,18 @@ export const typeDef = `
     type PatronMutation
  `;
 
+function loadCurrentPatronUser(context) {
+  const user = context?.user;
+
+  return loadAccountUser(
+    {
+      userId: user?.userId,
+      agencyId: user?.loggedInAgencyId,
+    },
+    context
+  );
+}
+
 export const resolvers = {
   Query: {
     async patron(parent, args, context) {
@@ -88,11 +102,11 @@ export const resolvers = {
     },
   },
   Patron: {
-    name(parent, args, context) {
-      return context?.user?.name;
+    async name(parent, args, context) {
+      return (await loadCurrentPatronUser(context))?.name;
     },
-    email(parent, args, context) {
-      return context?.user?.email;
+    async email(parent, args, context) {
+      return (await loadCurrentPatronUser(context))?.mail;
     },
     municipalityNumber(parent, args, context) {
       return context?.user?.municipality;
@@ -100,14 +114,14 @@ export const resolvers = {
     municipalityAgencyId(parent, args, context) {
       return context?.user?.municipalityAgencyId;
     },
-    address(parent, args, context) {
-      return context?.user?.address;
+    async address(parent, args, context) {
+      return (await loadCurrentPatronUser(context))?.address;
     },
-    postalCode(parent, args, context) {
-      return context?.user?.postalCode;
+    async postalCode(parent, args, context) {
+      return (await loadCurrentPatronUser(context))?.postalCode;
     },
-    country(parent, args, context) {
-      return context?.user?.country;
+    async country(parent, args, context) {
+      return (await loadCurrentPatronUser(context))?.country;
     },
     loggedInAgencyId(parent, args, context) {
       return context?.user?.loggedInAgencyId;

@@ -55,7 +55,7 @@ export const typeDef = `
     }
 `;
 
-async function loadAccountUser(parent, context) {
+export async function loadAccountUser(parent, context) {
   if (!parent?.userId || !parent?.agencyId) {
     return null;
   }
@@ -78,6 +78,8 @@ export const resolvers = {
       // Select CPR accounts from user agencies
       const accounts = filterAgenciesByProps(user?.agencies, {
         type: "CPR",
+        useLocalFallbackForUnrepresentedAgencies: true,
+        limitToOneAccountPerAgency: true,
       });
 
       return accounts.map((account) => ({

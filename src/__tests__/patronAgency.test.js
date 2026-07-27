@@ -41,7 +41,7 @@ describe("Patron agency", () => {
 
     expect(load).toHaveBeenCalledWith({
       agencyid: "710100",
-      limit: 1000,
+      limit: 50,
     });
     expect(result).toEqual({
       hitcount: 2,
