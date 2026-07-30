@@ -1,4 +1,3 @@
-import { log } from "dbc-node-logger";
 import { resolvers } from "../schema/patron/bookmarks";
 import { resolveMaterial } from "../utils/utils";
 
@@ -12,150 +11,158 @@ jest.mock("dbc-node-logger", () => ({
   },
 }));
 
+const bookmarkId = "45fb4d52-d7f7-4c36-a94f-37a00eb60163";
+const missingBookmarkId = "d719653c-f40f-467f-acb5-a16f594a14a7";
+
+function createContext(load = jest.fn()) {
+  const loader = { load, clear: jest.fn() };
+  return {
+    accessToken: "access-token",
+    user: { uniqueId: "user-1" },
+    smaug: {
+      app: { clientId: "client-1" },
+      gateway: { bookmarks: { key: "key-1", app: "BIBLIOTEKDK" } },
+    },
+    datasources: {
+      getLoader: jest.fn(() => loader),
+    },
+  };
+}
+
 describe("Patron bookmarks", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("bookmarks query filters out bookmarks without id and logs", async () => {
-    const result = await resolvers.Patron.bookmarks(
-      null,
-      {},
-      {
-        user: { uniqueId: "user-1" },
-        profile: { agency: "190101" },
-        smaug: {
-          gateway: { bookmarks: { key: "key-1", app: "BIBLIOTEKDK" } },
-        },
-        datasources: {
-          getLoader: jest.fn(() => ({
-            load: jest.fn().mockResolvedValue({
-              result: [
-                {
-                  bookmarkId: 42,
-                  materialId: "pid:1",
-                  createdAt: "2024-01-01T00:00:00.000Z",
-                },
-                {
-                  materialId: "pid:2",
-                  createdAt: "2024-01-02T00:00:00.000Z",
-                },
-              ],
-            }),
-          })),
-        },
-      }
-    );
-
-    expect(log.error).toHaveBeenCalledWith(
-      "Ignoring bookmark without id from userData service",
-      {
-        materialId: "pid:2",
-        createdAt: "2024-01-02T00:00:00.000Z",
-        agencyId: undefined,
-      }
-    );
-    expect(result).toEqual({
-      result: [
+  test("bookmarks forwards filters and pagination to UserData V2", async () => {
+    const load = jest.fn().mockResolvedValue({
+      hitcount: 2,
+      items: [
         {
-          bookmarkId: 42,
+          id: bookmarkId,
           materialId: "pid:1",
-          createdAt: "2024-01-01T00:00:00.000Z",
+          application: "BIBLIOTEKDK",
+          snapshot: {
+            version: 1,
+            workId: "work-of:pid:1",
+            title: "Title",
+            creator: null,
+            materialType: "BOOK",
+            workType: "LITERATURE",
+          },
+          createdAt: "2026-07-29T10:00:00.000Z",
         },
       ],
+    });
+    const context = createContext(load);
+
+    const result = await resolvers.Patron.bookmarks(
+      null,
+      {
+        applications: ["BIBLIOTEKDK", "STUDIESOEG"],
+        orderBy: "TITLE_ASC",
+        offset: 10,
+        limit: 5,
+      },
+      context
+    );
+
+    expect(context.datasources.getLoader).toHaveBeenCalledWith(
+      "userDataV2GetBookmarks"
+    );
+    expect(load).toHaveBeenCalledWith({
+      accessToken: "access-token",
+      filterApplications: ["BIBLIOTEKDK", "STUDIESOEG"],
+      orderBy: "TITLE_ASC",
+      offset: 10,
+      limit: 5,
+    });
+    expect(result).toEqual({
+      hitcount: 2,
+      items: expect.arrayContaining([
+        expect.objectContaining({ id: bookmarkId }),
+      ]),
       status: "OK",
     });
   });
 
-  test("Bookmarks.items sorts by createdAt descending and paginates", () => {
-    const parent = {
-      result: [
-        { title: "B", createdAt: "2024-01-01T00:00:00.000Z" },
-        { title: "C", createdAt: "2024-03-01T00:00:00.000Z" },
-        { title: "A", createdAt: "2024-02-01T00:00:00.000Z" },
-      ],
-    };
+  test("bookmarks applies V2 pagination defaults", async () => {
+    const load = jest.fn().mockResolvedValue({ hitcount: 0, items: [] });
 
-    const result = resolvers.Bookmarks.items(parent, {
+    await resolvers.Patron.bookmarks(null, {}, createContext(load));
+
+    expect(load).toHaveBeenCalledWith({
+      accessToken: "access-token",
+      filterApplications: undefined,
       orderBy: "CREATEDAT_DESC",
-      offset: 1,
-      limit: 1,
+      offset: 0,
+      limit: 10,
     });
-
-    expect(result).toEqual([
-      { title: "A", createdAt: "2024-02-01T00:00:00.000Z" },
-    ]);
   });
 
-  test("Bookmarks.items sorts by title ascending", () => {
+  test("bookmarks returns unauthenticated status without access token", async () => {
+    const context = createContext();
+    context.accessToken = undefined;
+
+    const result = await resolvers.Patron.bookmarks(null, {}, context);
+
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      hitcount: 0,
+      items: [],
+      status: "ERROR_UNAUTHENTICATED_TOKEN",
+    });
+  });
+
+  test("bookmarks returns missing client configuration status", async () => {
+    const context = createContext();
+    context.smaug = {};
+
+    const result = await resolvers.Patron.bookmarks(null, {}, context);
+
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      hitcount: 0,
+      items: [],
+      status: "ERROR_MISSING_CLIENT_CONFIGURATION",
+    });
+  });
+
+  test("Bookmarks exposes the service page without local sorting", () => {
+    const items = [
+      { id: bookmarkId, title: "Zulu" },
+      { id: missingBookmarkId, title: "Alpha" },
+    ];
+
+    expect(resolvers.Bookmarks.hitcount({ hitcount: 27 })).toBe(27);
+    expect(resolvers.Bookmarks.items({ items })).toBe(items);
+  });
+
+  test("BookmarkItem exposes dynamic application and versioned snapshot", () => {
     const parent = {
-      result: [
-        { title: "Zulu", createdAt: "2024-01-01T00:00:00.000Z" },
-        { title: "Alpha", createdAt: "2024-02-01T00:00:00.000Z" },
-        { title: "Bravo", createdAt: "2024-03-01T00:00:00.000Z" },
-      ],
+      materialId: "pid:123",
+      application: "NEW_APPLICATION",
+      snapshot: {
+        version: 1,
+        workId: "work-of:pid:123",
+        title: "Stored title",
+        creator: null,
+        materialType: "BOOK",
+        workType: "LITERATURE",
+      },
     };
 
-    const result = resolvers.Bookmarks.items(parent, {
-      orderBy: "TITLE_ASC",
-      offset: 0,
-      limit: 3,
-    });
-
-    expect(result.map((item) => item.title)).toEqual([
-      "Alpha",
-      "Bravo",
-      "Zulu",
-    ]);
-  });
-
-  test("BookmarkItem.application uses explicit application when present", () => {
-    expect(
-      resolvers.BookmarkItem.application({ application: "BIBLIOTEKDK" })
-    ).toBe("BIBLIOTEKDK");
-  });
-
-  test("BookmarkItem.application falls back to agency mappings", () => {
-    expect(resolvers.BookmarkItem.application({ agencyId: "190101" })).toBe(
-      "BIBLIOTEKDK"
-    );
-    expect(resolvers.BookmarkItem.application({ agencyId: "872960" })).toBe(
-      "STUDIESOEG"
-    );
-    expect(resolvers.BookmarkItem.application({ agencyId: "000000" })).toBe(
-      "UNKNOWN"
-    );
-  });
-
-  test("BookmarkItem.snapshot exposes stored fallback metadata", () => {
-    expect(
-      resolvers.BookmarkItem.snapshot({
-        materialId: "pid:123",
-        workId: "work-of:123",
-        title: "Stored title",
-        creator: "Stored creator",
-        materialType: "BOOK",
-        workType: "work",
-      })
-    ).toEqual({
+    expect(resolvers.BookmarkItem.application(parent)).toBe("NEW_APPLICATION");
+    expect(resolvers.BookmarkItem.snapshot(parent)).toEqual({
+      ...parent.snapshot,
       _sourceMaterialId: "pid:123",
-      workId: "work-of:123",
-      title: "Stored title",
-      creator: "Stored creator",
-      materialType: "BOOK",
-      workType: "work",
     });
   });
 
-  test("BookmarkItem.materialId exposes stored material id on item level", () => {
-    expect(resolvers.BookmarkItem.materialId({ materialId: "pid:123" })).toBe(
-      "pid:123"
-    );
-  });
-
-  test("addBookmarks dryRun reports partial failure when one material is missing", async () => {
+  test("addBookmarks dryRun reports unresolved materials without calling UserData", async () => {
     resolveMaterial.mockResolvedValueOnce({ workId: "work-1" });
     resolveMaterial.mockResolvedValueOnce(null);
+    const context = createContext();
 
     const result = await resolvers.PatronMutation.addBookmarks(
       null,
@@ -163,16 +170,10 @@ describe("Patron bookmarks", () => {
         dryRun: true,
         bookmarks: [{ materialId: "work-of:test:1" }, { materialId: "pid:2" }],
       },
-      {
-        user: { uniqueId: "user-1" },
-        profile: { agency: "190101" },
-        smaug: {
-          app: { clientId: "client-1" },
-          gateway: { bookmarks: { key: "key-1", app: "BIBLIOTEKDK" } },
-        },
-      }
+      context
     );
 
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
     expect(result).toEqual({
       status: "PARTIALLY_FAILED",
       items: [
@@ -182,236 +183,255 @@ describe("Patron bookmarks", () => {
     });
   });
 
-  test("addBookmarks fails with missing client configuration", async () => {
-    const result = await resolvers.PatronMutation.addBookmarks(
-      null,
-      {
-        bookmarks: [{ materialId: "work-of:test:1" }],
-      },
-      {
-        user: { uniqueId: "user-1" },
-        profile: { agency: "190101" },
-        smaug: {},
-      }
-    );
-
-    expect(result).toEqual({
-      status: "ERROR_MISSING_CLIENT_CONFIGURATION",
-      items: [{ materialId: "work-of:test:1", status: "FAILED" }],
-    });
-  });
-
-  test("addBookmarks returns OK when all materials already exist", async () => {
-    resolveMaterial.mockResolvedValueOnce({
-      workId: "work-1",
-      titles: { main: ["Stored title"] },
-      creators: { persons: [{ display: "Stored creator" }] },
-      materialTypes: [{ specific: { code: "BOOK" } }],
-      workTypes: ["work"],
-    });
-
-    const result = await resolvers.PatronMutation.addBookmarks(
-      null,
-      {
-        bookmarks: [{ materialId: "work-of:test:1" }],
-      },
-      {
-        user: { uniqueId: "user-1" },
-        profile: { agency: "190101" },
-        smaug: {
-          app: { clientId: "client-1" },
-          gateway: { bookmarks: { key: "key-1", app: "BIBLIOTEKDK" } },
-        },
-        datasources: {
-          getLoader: jest.fn(() => ({
-            load: jest.fn().mockResolvedValue({
-              bookmarksAlreadyExists: [
-                { materialId: "work-of:test:1", bookmarkId: 77 },
-              ],
-            }),
-          })),
-        },
-      }
-    );
-
-    expect(result).toEqual({
-      status: "OK",
-      items: [
+  test("addBookmarks sends snapshots and maps ordered V2 results", async () => {
+    resolveMaterial
+      .mockResolvedValueOnce({
+        workId: "work-1",
+        titles: { main: ["Stored title"] },
+        creators: { persons: [{ display: "Stored creator" }] },
+        materialTypes: [{ specific: { code: "BOOK" } }],
+        workTypes: ["LITERATURE"],
+      })
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ workId: "work-3" });
+    const load = jest.fn().mockResolvedValue({
+      results: [
         {
-          id: "77",
-          materialId: "work-of:test:1",
-          status: "ALREADY_EXISTS",
+          id: bookmarkId,
+          materialId: "pid:1",
+          status: "already_exists",
+        },
+        {
+          id: missingBookmarkId,
+          materialId: "pid:3",
+          status: "ok",
         },
       ],
     });
-  });
+    const context = createContext(load);
 
-  test("deleteBookmarks reports partial failure from delete count", async () => {
-    const load = jest.fn().mockResolvedValue({ IdsDeletedCount: 1 });
-    const context = {
-      user: { uniqueId: "user-1" },
-      profile: { agency: "190101" },
-      smaug: {
-        gateway: { bookmarks: { key: "key-1", app: "BIBLIOTEKDK" } },
-      },
-      datasources: {
-        getLoader: jest.fn(() => ({
-          load,
-        })),
-      },
-    };
-
-    const result = await resolvers.PatronMutation.deleteBookmarks(
+    const result = await resolvers.PatronMutation.addBookmarks(
       null,
       {
-        ids: ["11", "12"],
+        bookmarks: [
+          { materialId: "pid:1" },
+          { materialId: "pid:2" },
+          { materialId: "pid:3" },
+        ],
       },
       context
     );
 
+    expect(context.datasources.getLoader).toHaveBeenCalledWith(
+      "userDataV2AddBookmarks"
+    );
     expect(load).toHaveBeenCalledWith({
-      uniqueId: "user-1",
-      bookmarkIds: [11, 12],
-      agencyId: "190101",
-      key: "key-1",
-      application: "BIBLIOTEKDK",
+      accessToken: "access-token",
+      bookmarks: [
+        {
+          materialId: "pid:1",
+          snapshot: {
+            workId: "work-1",
+            title: "Stored title",
+            creator: "Stored creator",
+            materialType: "BOOK",
+            workType: "LITERATURE",
+          },
+        },
+        {
+          materialId: "pid:3",
+          snapshot: {
+            workId: "work-3",
+            title: null,
+            creator: null,
+            materialType: null,
+            workType: null,
+          },
+        },
+      ],
     });
-
+    expect(
+      context.datasources.getLoader.mock.results[0].value.clear
+    ).toHaveBeenCalledWith({
+      accessToken: "access-token",
+      bookmarks: expect.any(Array),
+    });
     expect(result).toEqual({
       status: "PARTIALLY_FAILED",
       items: [
-        { id: "11", status: "UNKNOWN_ERROR" },
-        { id: "12", status: "UNKNOWN_ERROR" },
+        {
+          id: bookmarkId,
+          materialId: "pid:1",
+          status: "ALREADY_EXISTS",
+        },
+        { materialId: "pid:2", status: "NOT_FOUND" },
+        {
+          id: missingBookmarkId,
+          materialId: "pid:3",
+          status: "OK",
+        },
       ],
     });
   });
 
-  test("deleteBookmarks fails with missing client configuration", async () => {
-    const result = await resolvers.PatronMutation.deleteBookmarks(
+  test("addBookmarks does not send an empty V2 batch when no material resolves", async () => {
+    resolveMaterial.mockResolvedValueOnce(null);
+    const context = createContext();
+
+    const result = await resolvers.PatronMutation.addBookmarks(
       null,
-      {
-        ids: ["11", "12"],
-      },
-      {
-        user: { uniqueId: "user-1" },
-        profile: { agency: "190101" },
-        smaug: {},
-      }
+      { bookmarks: [{ materialId: "pid:missing" }] },
+      context
     );
 
-    expect(result).toEqual({
-      status: "ERROR_MISSING_CLIENT_CONFIGURATION",
-      items: [
-        { id: "11", status: "FAILED" },
-        { id: "12", status: "FAILED" },
-      ],
-    });
-  });
-
-  test("deleteBookmarks fails when all bookmark ids are invalid", async () => {
-    const load = jest.fn();
-
-    const result = await resolvers.PatronMutation.deleteBookmarks(
-      null,
-      {
-        ids: ["abc", "def"],
-      },
-      {
-        user: { uniqueId: "user-1" },
-        profile: { agency: "190101" },
-        smaug: {
-          gateway: { bookmarks: { key: "key-1", app: "BIBLIOTEKDK" } },
-        },
-        datasources: {
-          getLoader: jest.fn(() => ({
-            load,
-          })),
-        },
-      }
-    );
-
-    expect(load).not.toHaveBeenCalled();
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
     expect(result).toEqual({
       status: "FAILED",
-      items: [
-        { id: "abc", status: "FAILED" },
-        { id: "def", status: "FAILED" },
-      ],
+      items: [{ materialId: "pid:missing", status: "NOT_FOUND" }],
     });
   });
 
-  test("deleteBookmarks ignores invalid ids in service call and reports partial failure", async () => {
-    const load = jest.fn().mockResolvedValue({ IdsDeletedCount: 1 });
+  test("addBookmarks maps service authentication errors", async () => {
+    resolveMaterial.mockResolvedValueOnce({ workId: "work-1" });
+    const error = new Error("request failed");
+    error.serviceErrorCode = "INVALID_ACCESS_TOKEN";
+    const load = jest.fn().mockRejectedValue(error);
+
+    const result = await resolvers.PatronMutation.addBookmarks(
+      null,
+      { bookmarks: [{ materialId: "pid:1" }] },
+      createContext(load)
+    );
+
+    expect(result).toEqual({
+      status: "ERROR_UNAUTHENTICATED_TOKEN",
+      items: [{ materialId: "pid:1", status: "UNKNOWN_ERROR" }],
+    });
+  });
+
+  test("deleteBookmarks forwards UUIDs and maps per-item results", async () => {
+    const load = jest.fn().mockResolvedValue({
+      results: [
+        {
+          id: bookmarkId,
+          materialId: "pid:1",
+          status: "ok",
+        },
+        {
+          id: missingBookmarkId,
+          materialId: null,
+          status: "not_found",
+        },
+      ],
+    });
+    const context = createContext(load);
 
     const result = await resolvers.PatronMutation.deleteBookmarks(
       null,
-      {
-        ids: ["11", "abc"],
-      },
-      {
-        user: { uniqueId: "user-1" },
-        profile: { agency: "190101" },
-        smaug: {
-          gateway: { bookmarks: { key: "key-1", app: "BIBLIOTEKDK" } },
-        },
-        datasources: {
-          getLoader: jest.fn(() => ({
-            load,
-          })),
-        },
-      }
+      { ids: [bookmarkId, missingBookmarkId] },
+      context
     );
 
+    expect(context.datasources.getLoader).toHaveBeenCalledWith(
+      "userDataV2DeleteBookmarks"
+    );
     expect(load).toHaveBeenCalledWith({
-      uniqueId: "user-1",
-      bookmarkIds: [11],
-      agencyId: "190101",
-      key: "key-1",
-      application: "BIBLIOTEKDK",
+      accessToken: "access-token",
+      bookmarkIds: [bookmarkId, missingBookmarkId],
+    });
+    expect(
+      context.datasources.getLoader.mock.results[0].value.clear
+    ).toHaveBeenCalledWith({
+      accessToken: "access-token",
+      bookmarkIds: [bookmarkId, missingBookmarkId],
     });
     expect(result).toEqual({
       status: "PARTIALLY_FAILED",
       items: [
-        { id: "11", status: "OK" },
-        { id: "abc", status: "FAILED" },
+        {
+          id: bookmarkId,
+          materialId: "pid:1",
+          status: "OK",
+        },
+        {
+          id: missingBookmarkId,
+          materialId: null,
+          status: "NOT_FOUND",
+        },
       ],
     });
   });
 
-  test("bookmarks query returns missing client configuration status", async () => {
-    const result = await resolvers.Patron.bookmarks(
+  test("deleteBookmarks dryRun validates public UUIDs", async () => {
+    const context = createContext();
+
+    const result = await resolvers.PatronMutation.deleteBookmarks(
       null,
-      {},
-      {
-        user: { uniqueId: "user-1" },
-        profile: { agency: "190101" },
-        smaug: {},
-      }
+      { dryRun: true, ids: [bookmarkId, "123"] },
+      context
     );
 
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
     expect(result).toEqual({
-      result: [],
-      status: "ERROR_MISSING_CLIENT_CONFIGURATION",
+      status: "PARTIALLY_FAILED",
+      items: [
+        { id: bookmarkId, status: "OK" },
+        { id: "123", status: "FAILED" },
+      ],
     });
   });
 
-  test("bookmarks query returns unauthenticated status without uniqueId", async () => {
-    const result = await resolvers.Patron.bookmarks(
-      null,
-      {},
-      {
-        user: {},
-        profile: { agency: "190101" },
-        smaug: {
-          gateway: { bookmarks: { key: "key-1", app: "BIBLIOTEKDK" } },
+  test("deleteBookmarks keeps invalid IDs out of a mixed V2 request", async () => {
+    const load = jest.fn().mockResolvedValue({
+      results: [
+        {
+          id: bookmarkId,
+          materialId: "pid:1",
+          status: "ok",
         },
-      }
+      ],
+    });
+    const context = createContext(load);
+
+    const result = await resolvers.PatronMutation.deleteBookmarks(
+      null,
+      { ids: [bookmarkId, "123"] },
+      context
     );
 
-    expect(result).toEqual({
-      result: [],
-      status: "ERROR_UNAUTHENTICATED_TOKEN",
+    expect(load).toHaveBeenCalledWith({
+      accessToken: "access-token",
+      bookmarkIds: [bookmarkId],
     });
+    expect(result).toEqual({
+      status: "PARTIALLY_FAILED",
+      items: [
+        {
+          id: bookmarkId,
+          materialId: "pid:1",
+          status: "OK",
+        },
+        { id: "123", status: "FAILED" },
+      ],
+    });
+  });
+
+  test.each([
+    ["MISSING_ACCESS_TOKEN", "ERROR_UNAUTHENTICATED_TOKEN"],
+    ["INVALID_ACCESS_TOKEN", "ERROR_UNAUTHENTICATED_TOKEN"],
+    ["MISSING_USER_ID", "ERROR_UNAUTHENTICATED_TOKEN"],
+    ["MISSING_BOOKMARK_CONFIGURATION", "ERROR_MISSING_CLIENT_CONFIGURATION"],
+    ["INVALID_REQUEST", "FAILED"],
+    ["AUTH_SERVICE_UNAVAILABLE", "FAILED"],
+    ["INTERNAL_ERROR", "FAILED"],
+  ])("maps UserData error %s to %s", async (serviceErrorCode, status) => {
+    const error = new Error("safe service error");
+    error.serviceErrorCode = serviceErrorCode;
+    const context = createContext(jest.fn().mockRejectedValue(error));
+
+    const result = await resolvers.Patron.bookmarks(null, {}, context);
+
+    expect(result).toEqual({ hitcount: 0, items: [], status });
   });
 
   test("BookmarksStatusItem.material returns null without materialId", async () => {
@@ -421,7 +441,7 @@ describe("Patron bookmarks", () => {
     expect(resolveMaterial).not.toHaveBeenCalled();
   });
 
-  test("BookmarkItem.id returns a string", () => {
-    expect(resolvers.BookmarkItem.id({ bookmarkId: 42 })).toBe("42");
+  test("BookmarkItem.id preserves the public UUID", () => {
+    expect(resolvers.BookmarkItem.id({ id: bookmarkId })).toBe(bookmarkId);
   });
 });

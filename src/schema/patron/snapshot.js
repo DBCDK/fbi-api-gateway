@@ -10,6 +10,11 @@ function isWorkId(materialId) {
 export const typeDef = `
     type PatronMaterialSnapshot {
         """
+        Version of the stored snapshot format.
+        """
+        version: Int
+
+        """
         Stored pid for the material, if known.
         """
         pid: String

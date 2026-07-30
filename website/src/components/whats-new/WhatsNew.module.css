@@ -76,6 +76,7 @@
 .body {
   margin: 0;
   max-width: 34ch;
+  white-space: pre-line;
 }
 
 .wrap button:focus-visible {

@@ -29,18 +29,3 @@ export function normalizeBookmarkId(id) {
 
   return String(id);
 }
-
-// Helper for parsing legacy bookmark ids
-export function parseLegacyBookmarkId(id) {
-  if (typeof id !== "string" || !/^\d+$/.test(id)) {
-    return null;
-  }
-
-  const parsedId = Number.parseInt(id, 10);
-
-  if (Number.isNaN(parsedId)) {
-    return null;
-  }
-
-  return parsedId;
-}

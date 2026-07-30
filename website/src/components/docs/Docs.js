@@ -28,7 +28,6 @@ import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Button from "@/components/base/button/Button";
 import Highlight from "@/components/base/highlight";
-import WhatsNew from "@/components/whats-new";
 
 import styles from "./Docs.module.css";
 
@@ -114,9 +113,11 @@ export default function Docs() {
         }
         const splitName = doc.name.split(".");
         // return client allowed docs
-        if (effectivePermissions?.allowRootFields?.includes(
-          splitName[splitName.length - 1]
-        )) {
+        if (
+          effectivePermissions?.allowRootFields?.includes(
+            splitName[splitName.length - 1]
+          )
+        ) {
           state = true;
         }
         return state;
@@ -142,17 +143,13 @@ export default function Docs() {
 
               return (
                 <section key={doc.name} id={id}>
-                  <MDXRemote
-                    {...doc.mdxSource}
-                    components={customComponents}
-                  />
+                  <MDXRemote {...doc.mdxSource} components={customComponents} />
                 </section>
               );
             })}
           </Col>
         </Row>
       </Container>
-      <WhatsNew />
     </>
   );
 }
