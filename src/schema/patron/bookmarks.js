@@ -493,6 +493,11 @@ export const resolvers = {
     },
     async material(parent, args, context, info) {
       const materialId = parent?.materialId;
+
+      if (!materialId) {
+        return null;
+      }
+
       const isWork = materialId?.startsWith("work-of:");
       const props = isWork ? { id: materialId } : { pid: materialId };
 

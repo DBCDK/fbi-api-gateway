@@ -159,6 +159,19 @@ describe("Patron bookmarks", () => {
     });
   });
 
+  test("BookmarkItem.materialId exposes stored material id on item level", () => {
+    expect(resolvers.BookmarkItem.materialId({ materialId: "pid:123" })).toBe(
+      "pid:123"
+    );
+  });
+
+  test("BookmarkItem.material returns null without a material id", async () => {
+    await expect(
+      resolvers.BookmarkItem.material({}, {}, {})
+    ).resolves.toBeNull();
+    expect(resolveMaterial).not.toHaveBeenCalled();
+  });
+
   test("addBookmarks dryRun reports unresolved materials without calling UserData", async () => {
     resolveMaterial.mockResolvedValueOnce({ workId: "work-1" });
     resolveMaterial.mockResolvedValueOnce(null);
