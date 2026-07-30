@@ -21,7 +21,6 @@ import ApplicationItem from "./item";
 import styles from "./Applications.module.css";
 
 const MIN_PENDING_DURATION_MS = 1000;
-const MODAL_CLOSE_REORDER_DELAY_MS = 300;
 
 /**
  * The Component function
@@ -51,7 +50,6 @@ function ApplicationsPage({ modal }) {
   const containerRef = useRef(null);
   const inputRef = useRef(null);
   const previousModalVisibleRef = useRef(modal.isVisible);
-  const closeReorderTimeoutRef = useRef(null);
 
   function getEntryIdentifier(entry) {
     if (!entry) {
@@ -445,30 +443,11 @@ function ApplicationsPage({ modal }) {
 
   useEffect(() => {
     if (modal.isVisible && !previousModalVisibleRef.current) {
-      window.clearTimeout(closeReorderTimeoutRef.current);
       setRefreshCycle((current) => current + 1);
     }
 
-    if (
-      !modal.isVisible &&
-      previousModalVisibleRef.current &&
-      selectedToken?.token
-    ) {
-      closeReorderTimeoutRef.current = window.setTimeout(() => {
-        setApplicationEntry(selectedToken, false);
-        closeReorderTimeoutRef.current = null;
-      }, MODAL_CLOSE_REORDER_DELAY_MS);
-    }
-
     previousModalVisibleRef.current = modal.isVisible;
-  }, [modal.isVisible, selectedToken, setApplicationEntry]);
-
-  useEffect(
-    () => () => {
-      window.clearTimeout(closeReorderTimeoutRef.current);
-    },
-    []
-  );
+  }, [modal.isVisible]);
 
   useEffect(() => {
     setState((current) => {
