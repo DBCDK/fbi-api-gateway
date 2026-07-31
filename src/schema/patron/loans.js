@@ -51,9 +51,14 @@ export const typeDef = `
         status: PatronLoanStatusEnum!
 
         """
+        Account information for the patron who owns the loan.
+        """
+        account: PatronAccount
+
+        """
         Branch information for the agency where the loan belongs.
         """
-        agency: Branch
+        agency: PatronAgency
 
         """
         The bibliographic record associated with the loan, if it can still be resolved from the faust number.
@@ -199,16 +204,47 @@ export const resolvers = {
     status(parent) {
       return getLoanStatus(parent);
     },
+
+    account(parent, args, context) {
+      const user = context?.user;
+
+      if (!user || !parent?.agencyId) {
+        return null;
+      }
+
+      // Use the same account selection as the legacy loans datasource.
+      const account = filterDuplicateAgencies(user?.agencies).find(
+        ({ agencyId }) => agencyId === parent.agencyId
+      );
+
+      if (!account) {
+        return null;
+      }
+
+      return {
+        agencyId: account.agencyId,
+        userId: account.userId,
+        municipalityNumber: user?.municipality,
+        municipalityAgencyId: user?.municipalityAgencyId,
+        blocked: user?.blocked ?? false,
+      };
+    },
+
     async agency(parent, args, context, info) {
       if (!parent?.agencyId) {
         return null;
       }
 
-      const libraries = await context.datasources.getLoader("library").load({
-        branchId: parent.agencyId.replace(/\D/g, ""),
+      const agency = await context.datasources.getLoader("library").load({
+        agencyid: parent.agencyId,
+        limit: 50,
       });
 
-      return libraries?.result?.[0] || null;
+      if (!agency?.hitcount) {
+        return null;
+      }
+
+      return agency;
     },
     snapshot(parent) {
       const hasSnapshotData =

@@ -4,6 +4,7 @@ import styles from "./Modal.module.css";
 export default function Modal({
   show,
   onHide,
+  onClosed,
   title,
   showCloseButton = Boolean(title),
   children,
@@ -14,6 +15,7 @@ export default function Modal({
       show={show}
       placement="end"
       onHide={onHide}
+      onExited={onClosed}
       className={`${styles.offcanvas} ${className}`}
       // onScroll={(e) => setDistance(e.target.scrollY)}
     >

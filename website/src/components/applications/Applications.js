@@ -11,6 +11,8 @@ import Button from "@/components/base/button";
 import Overlay from "@/components/base/overlay";
 import Text from "@/components/base/text";
 
+import { reorderSelectedApplication } from "./applicationOrder";
+
 import styles from "./Applications.module.css";
 
 export function Applications({
@@ -24,6 +26,7 @@ export function Applications({
 }) {
   const [uncontrolledShow, setUncontrolledShow] = useState(false);
   const buttonRef = useRef(null);
+  const { setCredentialEntry } = useCredentialEntries();
   const { selectedCredential: selectedToken } = useSelectedCredential();
   const { status, isLoading } = useResolvedConfiguration(selectedToken);
   const compactClass = compact ? styles.compact : "";
@@ -62,6 +65,9 @@ export function Applications({
       <Modal
         show={show}
         onHide={() => handleShowChange(false)}
+        onClosed={() =>
+          reorderSelectedApplication(selectedToken, setCredentialEntry)
+        }
         className={styles.modal}
       >
         <Pages.Applications
