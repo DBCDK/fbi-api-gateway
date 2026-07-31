@@ -1,0 +1,50 @@
+const whatsNewNews = [
+  {
+    id: "july-2026-overview-v1",
+    publishedAt: "2026-07-29",
+    expiresAfterDays: 30,
+    eyebrow: "What's new?",
+    icon: "✨",
+    title: "What’s changed since the last update?",
+    body: "We’ve added a draft log, client-based access, more stable token handling, and a new settings menu for the docs interface.",
+  },
+  {
+    id: "draft-fields-v1",
+    publishedAt: "2026-07-29",
+    expiresAfterDays: 30,
+    eyebrow: "Draft log",
+    icon: "🧪",
+    title: "Draft fields are now marked",
+    body: "Some fields may still be subject to change or removal. These fields and their subfields are marked as draft and are not covered by the standard three-month deprecation notice.",
+  },
+  {
+    id: "client-based-access-v1",
+    publishedAt: "2026-07-29",
+    expiresAfterDays: 30,
+    eyebrow: "Access",
+    icon: "🔐",
+    title: "Connect with client credentials",
+    body: "Client secrets can now be attached to connected applications, so the documentation site can renew access tokens automatically.",
+  },
+  {
+    id: "settings-menu-v1",
+    publishedAt: "2026-07-29",
+    expiresAfterDays: 30,
+    eyebrow: "Settings",
+    icon: "⚙️",
+    title: "New settings menu",
+    body: "Adjust how the documentation tools behave, including theme, query execution, network mode, and cleanup options.",
+  },
+  {
+    id: "newsletter-reminder-v1",
+    publishedAt: "2026-07-29",
+    expiresAfterDays: 30,
+    repeatAfterDays: 30,
+    eyebrow: "Newsletter",
+    icon: "📬",
+    title: "Stay updated",
+    body: "Remember to subscribe for updates about schema changes, deprecations, and breaking changes in the FBI API. [Sign up here](http://eepurl.com/jlfdkE)",
+  },
+];
+
+export default whatsNewNews;

@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { useRouter } from "next/router";
 
 // Function to trim the GraphQL query and variables
-const trimParams = (params) => {
+export const trimParams = (params) => {
   const trimmedQuery = params?.query
     ? params.query.replace(/\s+/g, " ").trim()
     : "";
@@ -12,8 +12,8 @@ const trimParams = (params) => {
   if (params?.variables) {
     try {
       trimmedVariables = JSON.stringify(JSON.parse(params.variables), null, 0);
-    } catch (error) {
-      console.error("Invalid JSON in variables:", error);
+    } catch {
+      // Partially written JSON is expected while editing GraphiQL variables.
       trimmedVariables = "{}"; // Fallback to empty JSON object if parsing fails
     }
   }

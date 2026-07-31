@@ -24,12 +24,12 @@ describe("Patron accounts", () => {
       },
     };
 
-    await expect(
-      patronResolvers.Patron.name(null, {}, context)
-    ).resolves.toBe("Test User");
-    await expect(
-      patronResolvers.Patron.email(null, {}, context)
-    ).resolves.toBe("test@example.com");
+    await expect(patronResolvers.Patron.name(null, {}, context)).resolves.toBe(
+      "Test User"
+    );
+    await expect(patronResolvers.Patron.email(null, {}, context)).resolves.toBe(
+      "test@example.com"
+    );
     await expect(
       patronResolvers.Patron.address(null, {}, context)
     ).resolves.toBe("Test Street 1");

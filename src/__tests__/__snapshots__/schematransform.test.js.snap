@@ -3906,7 +3906,7 @@ type Patron {
   """
   Retrieves the list of bookmarks for the patron, including pagination and sorting options.
   """
-  bookmarks: Bookmarks!
+  bookmarks(applications: [String!], orderBy: OrderBookmarksByEnum, offset: Int, limit: PaginationLimitScalar): Bookmarks!
 
   """Name of the current patron."""
   name: String
@@ -4099,7 +4099,7 @@ type Bookmarks {
   status: BookmarksOverallStatusEnum!
 
   """The list of bookmarks for the patron"""
-  items(orderBy: OrderBookmarksByEnum, offset: Int, limit: PaginationLimitScalar): [BookmarkItem!]!
+  items: [BookmarkItem!]!
 }
 
 type BookmarkItem {
@@ -4107,7 +4107,7 @@ type BookmarkItem {
   id: String!
 
   """The unique identifier for the material this bookmark points to."""
-  materialId: String
+  materialId: String!
 
   """
   The bibliographic record associated with the bookmark, if it can still be resolved.
@@ -4115,13 +4115,13 @@ type BookmarkItem {
   material: MaterialUnion
 
   """Stored metadata captured when the bookmark was created."""
-  snapshot: PatronMaterialSnapshot
+  snapshot: PatronMaterialSnapshot!
 
   """creation date of the bookmark"""
   createdAt: DateTime!
 
   """The application the bookmark belongs to"""
-  application: BookmarksApplicationEnum!
+  application: String!
 }
 
 """Union type for different material types that can be bookmarked"""
@@ -4133,12 +4133,6 @@ enum OrderBookmarksByEnum {
   CREATEDAT_DESC
   TITLE_ASC
   TITLE_DESC
-}
-
-enum BookmarksApplicationEnum {
-  BIBLIOTEKDK
-  STUDIESOEG
-  UNKNOWN
 }
 
 input BookmarksInput {
@@ -4257,6 +4251,9 @@ enum OrderLoansByEnum {
 }
 
 type PatronMaterialSnapshot {
+  """Version of the stored snapshot format."""
+  version: Int
+
   """Stored pid for the material, if known."""
   pid: String
 
