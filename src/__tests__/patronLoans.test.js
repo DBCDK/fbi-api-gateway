@@ -2,205 +2,184 @@ import { log } from "dbc-node-logger";
 import { resolvers } from "../schema/patron/loans";
 
 jest.mock("dbc-node-logger", () => ({
-  log: {
-    error: jest.fn(),
-    debug: jest.fn(),
-  },
+  log: { error: jest.fn(), debug: jest.fn() },
 }));
 
-describe("Patron loans", () => {
+const accessToken = "DUMMY_TOKEN";
+const publicLoanId = "45fb4d52-d7f7-4c36-a94f-37a00eb60163";
+const secondPublicLoanId = "56ac5e63-e8a8-4d47-b05f-48b11fc71274";
+
+function createContext(load, overrides = {}) {
+  const loader = { load, clear: jest.fn() };
+  return {
+    accessToken,
+    user: {
+      uniqueId: "loan-user",
+      agencies: [
+        { agencyId: "710100", userId: "cpr-id", userIdType: "CPR" },
+        { agencyId: "710100", userId: "local-id", userIdType: "LOCAL" },
+      ],
+      municipality: "101",
+      municipalityAgencyId: "710100",
+      blocked: false,
+    },
+    datasources: { getLoader: jest.fn(() => loader) },
+    ...overrides,
+    _loader: loader,
+  };
+}
+
+const resolvedManifestation = {
+  pid: "870970-basis:23424916",
+  workId: "work-of:870970-basis:23424916",
+  titles: { main: ["Efter uvejret"] },
+  creators: { persons: [{ display: "Kenneth Bøgh Andersen" }] },
+  materialTypes: [{ specific: { code: "BOOK" } }],
+  workTypes: ["LITERATURE"],
+  hostPublication: {
+    edition: "Årg. 10",
+    pages: "S. 12-15",
+    publisher: "Eksempelbladet",
+  },
+  languages: { main: [{ isoCode: "dan", display: "Dansk" }] },
+};
+
+function createAddContext(serviceLoad, manifestation = resolvedManifestation) {
+  const serviceLoader = { load: serviceLoad, clear: jest.fn() };
+  const faustLoader = {
+    load: jest.fn().mockResolvedValue("870970-basis:23424916"),
+  };
+  const manifestationLoader = {
+    load: jest.fn().mockResolvedValue(manifestation),
+  };
+  const context = createContext(jest.fn(), {
+    datasources: {
+      getLoader: jest.fn((name) => {
+        if (name === "faustToPid") return faustLoader;
+        if (name === "jedRecord") return manifestationLoader;
+        return serviceLoader;
+      }),
+    },
+  });
+  context._loader = serviceLoader;
+  context._faustLoader = faustLoader;
+  return context;
+}
+
+describe("Patron current loans", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2026-07-24T12:00:00+02:00"));
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
+  afterEach(() => jest.useRealTimers());
+
+  test("loads current loans from OpenUserStatus", async () => {
+    const load = jest.fn().mockResolvedValue({
+      status: true,
+      statusCode: "OK",
+      result: [{ loanId: "1", title: "Alpha", titleId: "12345678" }],
+    });
+    const context = createContext(load);
+
+    await expect(
+      resolvers.Patron.currentLoans(
+        null,
+        { orderBy: "TITLE_DESC", offset: 0, limit: 10 },
+        context
+      )
+    ).resolves.toEqual({
+      hitcount: 1,
+      items: [{ loanId: "1", title: "Alpha", titleId: "12345678" }],
+      status: "OK",
+    });
+    expect(context.datasources.getLoader).toHaveBeenCalledWith("loans");
+    expect(load).toHaveBeenCalledWith({
+      userInfoAccounts: [
+        { agencyId: "710100", userId: "local-id", userIdType: "LOCAL" },
+      ],
+      accessToken,
+    });
   });
 
-  test("loans query maps successful legacy response into patron shape", async () => {
-    const result = await resolvers.Patron.loans(
-      null,
-      {},
-      {
-        accessToken: "DUMMY_TOKEN",
-        user: {
-          agencies: [
-            { agencyId: "710100", userId: "123456", userIdType: "CPR" },
-          ],
-        },
-        datasources: {
-          getLoader: jest.fn(() => ({
-            load: jest.fn().mockResolvedValue({
-              status: true,
-              statusCode: "OK",
-              result: [{ loanId: "1", title: "Alpha", titleId: "12345678" }],
-            }),
-          })),
-        },
-      }
+  test("returns unauthenticated status without a user", async () => {
+    const context = createContext(jest.fn(), { user: null });
+
+    await expect(
+      resolvers.Patron.currentLoans(null, {}, context)
+    ).resolves.toEqual({
+      hitcount: 0,
+      items: [],
+      status: "ERROR_UNAUTHENTICATED_TOKEN",
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
+  test("logs and returns failed on OpenUserStatus errors", async () => {
+    const context = createContext(
+      jest.fn().mockRejectedValue(new Error("boom"))
     );
 
-    expect(result).toEqual({
-      result: [{ loanId: "1", title: "Alpha", titleId: "12345678" }],
+    await expect(
+      resolvers.Patron.currentLoans(null, {}, context)
+    ).resolves.toEqual({ hitcount: 0, items: [], status: "FAILED" });
+    expect(log.error).toHaveBeenCalledWith(
+      "Failed to get loans from OpenUserStatus. Message: boom"
+    );
+  });
+
+  test("collection exposes overall status, hitcount and items", () => {
+    const items = [{ loanId: "1" }, { loanId: "2" }];
+    const parent = { hitcount: 2, items, status: "OK" };
+
+    expect(resolvers.PatronCurrentLoans.hitcount(parent)).toBe(2);
+    expect(resolvers.PatronCurrentLoans.status(parent)).toBe("OK");
+    expect(resolvers.PatronCurrentLoans.items(parent)).toBe(items);
+  });
+
+  test("currentLoans filters, sorts and paginates before building collection", async () => {
+    const context = createContext(
+      jest.fn().mockResolvedValue({
+        status: true,
+        result: [
+          { loanId: "3", dueDate: "2026-07-30", title: "Charlie" },
+          { loanId: "1", dueDate: "2026-07-20", title: "Alpha" },
+          { loanId: "2", dueDate: "2026-07-28", title: "Bravo" },
+        ],
+      })
+    );
+
+    await expect(
+      resolvers.Patron.currentLoans(
+        null,
+        {
+          status: "ACTIVE",
+          orderBy: "TITLE_DESC",
+          offset: 1,
+          limit: 1,
+        },
+        context
+      )
+    ).resolves.toEqual({
+      hitcount: 2,
+      items: [{ loanId: "2", dueDate: "2026-07-28", title: "Bravo" }],
       status: "OK",
     });
   });
 
-  test("loans query returns unauthenticated status without user", async () => {
-    const result = await resolvers.Patron.loans(
-      null,
-      {},
-      {
-        datasources: {
-          getLoader: jest.fn(),
-        },
-      }
-    );
-
-    expect(result).toEqual({
-      result: [],
-      status: "ERROR_UNAUTHENTICATED_TOKEN",
-    });
-  });
-
-  test("PatronLoans.items sorts by due date ascending and paginates", () => {
-    const parent = {
-      result: [
-        { loanId: "3", dueDate: "2024-03-01T00:00:00.000Z", title: "Charlie" },
-        { loanId: "1", dueDate: "2024-01-01T00:00:00.000Z", title: "Alpha" },
-        { loanId: "2", dueDate: "2024-02-01T00:00:00.000Z", title: "Bravo" },
-      ],
-    };
-
-    const result = resolvers.PatronLoans.items(parent, {
-      orderBy: "DUEDATE_ASC",
-      offset: 1,
-      limit: 1,
-    });
-
-    expect(result).toEqual([
-      { loanId: "2", dueDate: "2024-02-01T00:00:00.000Z", title: "Bravo" },
-    ]);
-  });
-
-  test("PatronLoanItem.id maps legacy loanId to public id field", () => {
-    expect(resolvers.PatronLoanItem.id({ loanId: "5478268693" })).toBe(
+  test("current-loan fields preserve legacy mappings", () => {
+    expect(resolvers.CurrentLoan.id({ loanId: "5478268693" })).toBe(
       "5478268693"
     );
-  });
-
-  test("PatronLoanItem.account uses the same preferred account as loans", () => {
-    const result = resolvers.PatronLoanItem.account(
-      { agencyId: "710100" },
-      {},
-      {
-        user: {
-          agencies: [
-            { agencyId: "710100", userId: "cpr-id", userIdType: "CPR" },
-            { agencyId: "710100", userId: "local-id", userIdType: "LOCAL" },
-          ],
-          municipality: "101",
-          municipalityAgencyId: "710100",
-          blocked: false,
-        },
-      }
+    expect(resolvers.CurrentLoan.status({ dueDate: "2026-07-20" })).toBe(
+      "OVERDUE"
     );
-
-    expect(result).toEqual({
-      agencyId: "710100",
-      userId: "local-id",
-      municipalityNumber: "101",
-      municipalityAgencyId: "710100",
-      blocked: false,
-    });
-  });
-
-  test("PatronLoanItem.account returns null without a matching account", () => {
+    expect(resolvers.CurrentLoan.status({ dueDate: "2026-07-28" })).toBe(
+      "ACTIVE"
+    );
     expect(
-      resolvers.PatronLoanItem.account(
-        { agencyId: "715100" },
-        {},
-        {
-          user: {
-            agencies: [
-              { agencyId: "710100", userId: "local-id", userIdType: "LOCAL" },
-            ],
-          },
-        }
-      )
-    ).toBeNull();
-  });
-
-  test("PatronLoanItem.status returns OVERDUE for past due dates", () => {
-    expect(
-      resolvers.PatronLoanItem.status({
-        dueDate: "2026-07-20T00:00:00+02:00",
-      })
-    ).toBe("OVERDUE");
-  });
-
-  test("PatronLoanItem.status returns ACTIVE for future due dates", () => {
-    expect(
-      resolvers.PatronLoanItem.status({
-        dueDate: "2026-07-28T00:00:00+02:00",
-      })
-    ).toBe("ACTIVE");
-  });
-
-  test("PatronLoans.items sorts by title descending", () => {
-    const parent = {
-      result: [
-        { loanId: "1", title: "Alpha" },
-        { loanId: "2", title: "Charlie" },
-        { loanId: "3", title: "Bravo" },
-      ],
-    };
-
-    const result = resolvers.PatronLoans.items(parent, {
-      orderBy: "TITLE_DESC",
-      offset: 0,
-      limit: 3,
-    });
-
-    expect(result.map((item) => item.title)).toEqual([
-      "Charlie",
-      "Bravo",
-      "Alpha",
-    ]);
-  });
-
-  test("PatronLoans.items filters by status", () => {
-    const parent = {
-      result: [
-        { loanId: "1", dueDate: "2026-07-20T00:00:00+02:00", title: "Past" },
-        {
-          loanId: "2",
-          dueDate: "2026-07-28T00:00:00+02:00",
-          title: "Future",
-        },
-      ],
-    };
-
-    const overdueItems = resolvers.PatronLoans.items(parent, {
-      status: "OVERDUE",
-      offset: 0,
-      limit: 10,
-    });
-    const activeItems = resolvers.PatronLoans.items(parent, {
-      status: "ACTIVE",
-      offset: 0,
-      limit: 10,
-    });
-
-    expect(overdueItems.map((item) => item.loanId)).toEqual(["1"]);
-    expect(activeItems.map((item) => item.loanId)).toEqual(["2"]);
-  });
-
-  test("PatronLoanItem.snapshot exposes legacy fallback metadata", () => {
-    expect(
-      resolvers.PatronLoanItem.snapshot({
+      resolvers.CurrentLoan.snapshot({
         titleId: "142526328",
         title: "Brandmand",
         creator: "Lunter, Federico van",
@@ -215,64 +194,206 @@ describe("Patron loans", () => {
     });
   });
 
-  test("PatronLoanItem.agency resolves agency data from library loader", async () => {
-    const agency = {
-      hitcount: 1,
-      result: [{ branchId: "732900", name: "Test Branch" }],
-    };
-    const load = jest.fn().mockResolvedValue(agency);
+  test("current-loan account uses the preferred account", () => {
+    const context = createContext(jest.fn());
 
-    const result = await resolvers.PatronLoanItem.agency(
-      { agencyId: "732900" },
-      {},
-      {
-        datasources: {
-          getLoader: jest.fn(() => ({ load })),
-        },
-      }
-    );
-
-    expect(load).toHaveBeenCalledWith({
-      agencyid: "732900",
-      limit: 50,
-    });
-    expect(result).toBe(agency);
-  });
-
-  test("PatronLoanItem.snapshot returns null when no fallback metadata exists", () => {
     expect(
-      resolvers.PatronLoanItem.snapshot({
-        loanId: "1",
-        dueDate: "2026-07-28T00:00:00+02:00",
-        agencyId: "732900",
-      })
-    ).toBeNull();
+      resolvers.CurrentLoan.account({ agencyId: "710100" }, {}, context)
+    ).toEqual({
+      agencyId: "710100",
+      userId: "local-id",
+      municipalityNumber: "101",
+      municipalityAgencyId: "710100",
+      blocked: false,
+    });
+  });
+});
+
+describe("Patron historical loans", () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  test("loads the collection from UserData", async () => {
+    const items = [{ id: publicLoanId, loanedAt: "2026-05-01" }];
+    const load = jest.fn().mockResolvedValue({ hitcount: 12, items });
+    const context = createContext(load);
+
+    await expect(
+      resolvers.Patron.historicalLoans(null, { offset: 20, limit: 5 }, context)
+    ).resolves.toEqual({ hitcount: 12, items, status: "OK" });
+    expect(context.datasources.getLoader).toHaveBeenCalledWith(
+      "userDataV2GetHistoricalLoans"
+    );
+    expect(load).toHaveBeenCalledWith({ accessToken, offset: 20, limit: 5 });
   });
 
-  test("loans query logs and returns failed on datasource error", async () => {
-    const result = await resolvers.Patron.loans(
-      null,
-      {},
+  test("requires an authenticated user and access token", async () => {
+    const load = jest.fn();
+    const context = createContext(load, { accessToken: null });
+
+    await expect(
+      resolvers.Patron.historicalLoans(null, {}, context)
+    ).resolves.toEqual({
+      hitcount: 0,
+      items: [],
+      status: "ERROR_UNAUTHENTICATED_TOKEN",
+    });
+    expect(load).not.toHaveBeenCalled();
+  });
+
+  test("collection exposes UserData status, hitcount and items", () => {
+    const items = [{ id: publicLoanId }];
+    const parent = { hitcount: 27, status: "OK", items };
+
+    expect(resolvers.PatronHistoricalLoans.hitcount(parent)).toBe(27);
+    expect(resolvers.PatronHistoricalLoans.status(parent)).toBe("OK");
+    expect(resolvers.PatronHistoricalLoans.items(parent)).toBe(items);
+  });
+
+  test.each([
+    ["FAUST", { faust: "23424916" }],
+    ["PID", { pid: "870970-basis:23424916" }],
+  ])("resolves historical %s identifiers", async (type, expected) => {
+    const load = jest.fn().mockResolvedValue(null);
+    const context = createContext(load, { profile: "profile" });
+
+    await resolvers.HistoricalLoan.manifestation(
       {
-        user: {
-          agencies: [
-            { agencyId: "710100", userId: "123456", userIdType: "CPR" },
+        materialId: type === "FAUST" ? "23424916" : "870970-basis:23424916",
+        materialIdType: type,
+      },
+      {},
+      context
+    );
+    expect(load).toHaveBeenCalledWith(
+      type === "FAUST"
+        ? { ...expected, profile: "profile" }
+        : { id: expected.pid, profile: "profile" }
+    );
+  });
+
+  test("add resolves material and sends dates plus a grouped snapshot", async () => {
+    const load = jest.fn().mockResolvedValue({
+      results: [{ id: publicLoanId, materialId: "23424916", status: "ok" }],
+    });
+    const context = createAddContext(load);
+    const loans = [
+      {
+        agencyId: "710100",
+        materialId: "23424916",
+        loanedAt: new Date("2026-05-01T00:00:00.000Z"),
+        returnedAt: new Date("2026-05-20T00:00:00.000Z"),
+      },
+    ];
+
+    await expect(
+      resolvers.PatronMutation.addHistoricalLoans(null, { loans }, context)
+    ).resolves.toEqual({
+      status: "OK",
+      items: [{ id: publicLoanId, materialId: "23424916", status: "OK" }],
+    });
+    const serviceLoans = [
+      {
+        agencyId: "710100",
+        materialId: "23424916",
+        materialIdType: "FAUST",
+        loanedAt: "2026-05-01",
+        returnedAt: "2026-05-20",
+        snapshot: {
+          pid: "870970-basis:23424916",
+          workId: "work-of:870970-basis:23424916",
+          title: "Efter uvejret",
+          creator: "Kenneth Bøgh Andersen",
+          materialType: "BOOK",
+          workType: "LITERATURE",
+          periodical: {
+            edition: "Årg. 10",
+            pages: "S. 12-15",
+            publisher: "Eksempelbladet",
+            language: "dan",
+          },
+        },
+      },
+    ];
+    expect(context.datasources.getLoader).toHaveBeenCalledWith(
+      "userDataV2AddHistoricalLoans"
+    );
+    expect(load).toHaveBeenCalledWith({ accessToken, loans: serviceLoans });
+    expect(context._loader.clear).toHaveBeenCalledWith({
+      accessToken,
+      loans: serviceLoans,
+    });
+  });
+
+  test("add does not send unresolved manifestations or client snapshots", async () => {
+    const serviceLoad = jest.fn();
+    const context = createAddContext(serviceLoad, null);
+
+    await expect(
+      resolvers.PatronMutation.addHistoricalLoans(
+        null,
+        {
+          loans: [
+            {
+              materialId: "870970-basis:missing",
+              snapshot: { title: "Must be ignored" },
+            },
           ],
         },
-        datasources: {
-          getLoader: jest.fn(() => ({
-            load: jest.fn().mockRejectedValue(new Error("boom")),
-          })),
-        },
-      }
-    );
-
-    expect(log.error).toHaveBeenCalledWith(
-      "Failed to get loans from legacy loan service. Message: boom"
-    );
-    expect(result).toEqual({
-      result: [],
+        context
+      )
+    ).resolves.toEqual({
       status: "FAILED",
+      items: [{ materialId: "870970-basis:missing", status: "NOT_FOUND" }],
     });
+    expect(serviceLoad).not.toHaveBeenCalled();
+  });
+
+  test("delete forwards valid UUIDs and preserves input order", async () => {
+    const invalidId = "not-a-uuid";
+    const load = jest.fn().mockResolvedValue({
+      results: [
+        { id: publicLoanId, materialId: "pid:1", status: "ok" },
+        { id: secondPublicLoanId, status: "not_found" },
+      ],
+    });
+    const context = createContext(load);
+
+    await expect(
+      resolvers.PatronMutation.deleteHistoricalLoans(
+        null,
+        { ids: [publicLoanId, invalidId, secondPublicLoanId] },
+        context
+      )
+    ).resolves.toEqual({
+      status: "PARTIALLY_FAILED",
+      items: [
+        { id: publicLoanId, materialId: "pid:1", status: "OK" },
+        { id: invalidId, status: "FAILED" },
+        { id: secondPublicLoanId, materialId: null, status: "NOT_FOUND" },
+      ],
+    });
+    expect(load).toHaveBeenCalledWith({
+      accessToken,
+      ids: [publicLoanId, secondPublicLoanId],
+    });
+  });
+
+  test("delete dry-run validates IDs without calling UserData", async () => {
+    const context = createContext(jest.fn());
+
+    await expect(
+      resolvers.PatronMutation.deleteHistoricalLoans(
+        null,
+        { ids: [publicLoanId, "invalid"], dryRun: true },
+        context
+      )
+    ).resolves.toEqual({
+      status: "PARTIALLY_FAILED",
+      items: [
+        { id: publicLoanId, status: "OK" },
+        { id: "invalid", status: "FAILED" },
+      ],
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
   });
 });

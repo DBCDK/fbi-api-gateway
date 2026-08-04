@@ -294,7 +294,7 @@ export function fieldNameValidator(props, errorType = "THROW") {
  */
 export function schemaLoader() {
   // Custom selected scalar type defs (from graphiql-scalar lib)
-  const customScalarTypeDefs = ["DateTime"];
+  const customScalarTypeDefs = ["Date", "DateTime"];
 
   const _scalarResolvers = {};
   const _scalarTypeDefs = [];
