@@ -24,6 +24,125 @@ const serviceStatusMap = {
   unknown_error: "UNKNOWN_ERROR",
 };
 
+const historicalLoanConsentMinimumAge = 15;
+
+function validBirthDate(day, month, year) {
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() + 1 !== month ||
+    date.getUTCDate() !== day
+  ) {
+    return null;
+  }
+
+  return { day, month, year };
+}
+
+function birthDateFromUserInfo(user) {
+  const birthDate = String(user?.birthDate || "");
+  const birthYear = String(user?.birthYear || "");
+
+  if (/^\d{4}$/.test(birthDate) && /^\d{4}$/.test(birthYear)) {
+    const parsed = validBirthDate(
+      Number(birthDate.slice(0, 2)),
+      Number(birthDate.slice(2, 4)),
+      Number(birthYear)
+    );
+    if (parsed) {
+      return parsed;
+    }
+  }
+
+  return birthDateFromCpr(user?.cpr);
+}
+
+function getCprBirthYear(year, centuryCode) {
+  if (centuryCode <= 3) {
+    return 1900 + year;
+  }
+  if (centuryCode === 4 || centuryCode === 9) {
+    return (year <= 36 ? 2000 : 1900) + year;
+  }
+  return (year <= 57 ? 2000 : 1800) + year;
+}
+
+function birthDateFromCpr(cpr) {
+  const normalizedCpr = String(cpr || "").replace(/[^\d]/g, "");
+  if (!/^\d{10}$/.test(normalizedCpr)) {
+    return null;
+  }
+
+  const year = Number(normalizedCpr.slice(4, 6));
+  return validBirthDate(
+    Number(normalizedCpr.slice(0, 2)),
+    Number(normalizedCpr.slice(2, 4)),
+    getCprBirthYear(year, Number(normalizedCpr[6]))
+  );
+}
+
+function getCurrentDateInCopenhagen() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Copenhagen",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  })
+    .formatToParts(new Date())
+    .reduce((result, part) => ({ ...result, [part.type]: part.value }), {});
+
+  return {
+    day: Number(parts.day),
+    month: Number(parts.month),
+    year: Number(parts.year),
+  };
+}
+
+function getHistoricalLoanConsentEligibility(user) {
+  const birthDate = birthDateFromUserInfo(user);
+  if (!birthDate) {
+    return { canBeChanged: false, status: "AGE_NOT_VERIFIABLE" };
+  }
+
+  const today = getCurrentDateInCopenhagen();
+  let age = today.year - birthDate.year;
+  if (
+    today.month < birthDate.month ||
+    (today.month === birthDate.month && today.day < birthDate.day)
+  ) {
+    age -= 1;
+  }
+
+  return age >= historicalLoanConsentMinimumAge
+    ? { canBeChanged: true, status: null }
+    : { canBeChanged: false, status: "UNDER_AGE" };
+}
+
+function historicalLoanConsentResponse(consent, eligibility) {
+  if (typeof consent !== "boolean") {
+    return {
+      isGranted: null,
+      ...eligibility,
+      status: eligibility.status || "FAILED",
+    };
+  }
+
+  return {
+    isGranted: consent,
+    ...eligibility,
+    status: eligibility.status || (consent ? "GRANTED" : "NOT_GRANTED"),
+  };
+}
+
+function unauthenticatedHistoricalLoanConsent() {
+  return {
+    isGranted: null,
+    canBeChanged: false,
+    status: "ERROR_UNAUTHENTICATED_TOKEN",
+  };
+}
+
 function mapServiceStatus(status) {
   return serviceStatusMap[status] || "UNKNOWN_ERROR";
 }
@@ -262,6 +381,11 @@ export const typeDef = `
           offset: Int
           limit: PaginationLimitScalar
         ): PatronHistoricalLoans!
+
+        """
+        Retrieves consent for storing historical loans and whether the patron is old enough to change it.
+        """
+        historicalLoanConsent: PatronHistoricalLoanConsent!
     }
 
     extend type PatronMutation {
@@ -281,6 +405,13 @@ export const typeDef = `
           ids: [String!]!
           dryRun: Boolean
         ): DeleteHistoricalLoansResponse!
+
+        """
+        Changes consent for storing historical loans.
+        """
+        setHistoricalLoanConsent(
+          consent: Boolean!
+        ): PatronHistoricalLoanConsent!
     }
 
     type PatronCurrentLoans {
@@ -426,6 +557,26 @@ export const typeDef = `
         items: [PatronHistoricalLoanStatusItem!]!
     }
 
+    type PatronHistoricalLoanConsent {
+        """Whether the patron has given consent. Null when the status could not be retrieved."""
+        isGranted: Boolean
+
+        """Whether the patron's age can be verified as at least 15 years."""
+        canBeChanged: Boolean!
+
+        """The result of retrieving or changing consent, including age eligibility."""
+        status: PatronHistoricalLoanConsentStatusEnum!
+    }
+
+    enum PatronHistoricalLoanConsentStatusEnum {
+        GRANTED
+        NOT_GRANTED
+        UNDER_AGE
+        AGE_NOT_VERIFIABLE
+        ERROR_UNAUTHENTICATED_TOKEN
+        FAILED
+    }
+
     type PatronHistoricalLoanStatusItem {
         status: PatronLoanMutationStatusEnum!
         id: String
@@ -546,9 +697,63 @@ export const resolvers = {
         };
       }
     },
+
+    async historicalLoanConsent(parent, args, context) {
+      const accessToken = context?.accessToken;
+      const user = context?.user;
+      if (!accessToken || !user) {
+        return unauthenticatedHistoricalLoanConsent();
+      }
+
+      const eligibility = getHistoricalLoanConsentEligibility(user);
+      try {
+        const response = await context.datasources
+          .getLoader("userDataV2GetHistoricalLoanConsent")
+          .load({ accessToken });
+
+        return historicalLoanConsentResponse(response?.consent, eligibility);
+      } catch (error) {
+        log.error(
+          `Failed to get historical loan consent from UserData. Message: ${error.message}`
+        );
+        return { isGranted: null, ...eligibility, status: "FAILED" };
+      }
+    },
   },
 
   PatronMutation: {
+    async setHistoricalLoanConsent(parent, args, context) {
+      const accessToken = context?.accessToken;
+      const user = context?.user;
+      if (!accessToken || !user) {
+        return unauthenticatedHistoricalLoanConsent();
+      }
+
+      const eligibility = getHistoricalLoanConsentEligibility(user);
+      if (!eligibility.canBeChanged) {
+        return { isGranted: null, ...eligibility };
+      }
+
+      const { consent } = args;
+      try {
+        const loader = context.datasources.getLoader(
+          "userDataV2SetHistoricalLoanConsent"
+        );
+        const request = { accessToken, consent };
+        const response = await loadMutation(loader, request);
+
+        return historicalLoanConsentResponse(
+          response?.consent ?? consent,
+          eligibility
+        );
+      } catch (error) {
+        log.error(
+          `Failed to set historical loan consent in UserData. Message: ${error.message}`
+        );
+        return { isGranted: null, ...eligibility, status: "FAILED" };
+      }
+    },
+
     async addHistoricalLoans(parent, args, context, info) {
       const uniqueId = context?.user?.uniqueId;
       const accessToken = context?.accessToken;

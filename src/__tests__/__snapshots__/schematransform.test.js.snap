@@ -3948,6 +3948,11 @@ type Patron {
 
   """Retrieves historical loans stored in UserData."""
   historicalLoans(offset: Int, limit: PaginationLimitScalar): PatronHistoricalLoans!
+
+  """
+  Retrieves consent for storing historical loans and whether the patron is old enough to change it.
+  """
+  historicalLoanConsent: PatronHistoricalLoanConsent!
 }
 
 type PatronAccount {
@@ -4104,6 +4109,9 @@ type PatronMutation {
 
   """Deletes one or more historical loans by their public UserData IDs."""
   deleteHistoricalLoans(ids: [String!]!, dryRun: Boolean): DeleteHistoricalLoansResponse!
+
+  """Changes consent for storing historical loans."""
+  setHistoricalLoanConsent(consent: Boolean!): PatronHistoricalLoanConsent!
 }
 
 type Bookmarks {
@@ -4320,6 +4328,30 @@ type AddHistoricalLoansResponse {
 type DeleteHistoricalLoansResponse {
   status: PatronLoansOverallStatusEnum!
   items: [PatronHistoricalLoanStatusItem!]!
+}
+
+type PatronHistoricalLoanConsent {
+  """
+  Whether the patron has given consent. Null when the status could not be retrieved.
+  """
+  isGranted: Boolean
+
+  """Whether the patron's age can be verified as at least 15 years."""
+  canBeChanged: Boolean!
+
+  """
+  The result of retrieving or changing consent, including age eligibility.
+  """
+  status: PatronHistoricalLoanConsentStatusEnum!
+}
+
+enum PatronHistoricalLoanConsentStatusEnum {
+  GRANTED
+  NOT_GRANTED
+  UNDER_AGE
+  AGE_NOT_VERIFIABLE
+  ERROR_UNAUTHENTICATED_TOKEN
+  FAILED
 }
 
 type PatronHistoricalLoanStatusItem {

@@ -534,3 +534,201 @@ describe("Patron historical loans", () => {
     expect(context.datasources.getLoader).not.toHaveBeenCalled();
   });
 });
+
+describe("Patron historical loan consent", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-08-05T12:00:00+02:00"));
+  });
+
+  afterEach(() => jest.useRealTimers());
+
+  test("gets consent and exposes age eligibility from birthDate and birthYear", async () => {
+    const load = jest.fn().mockResolvedValue({ consent: true });
+    const context = createContext(load, {
+      user: {
+        uniqueId: "loan-user",
+        birthDate: "1506",
+        birthYear: "1980",
+      },
+    });
+
+    await expect(
+      resolvers.Patron.historicalLoanConsent(null, {}, context)
+    ).resolves.toEqual({
+      isGranted: true,
+      canBeChanged: true,
+      status: "GRANTED",
+    });
+    expect(context.datasources.getLoader).toHaveBeenCalledWith(
+      "userDataV2GetHistoricalLoanConsent"
+    );
+    expect(load).toHaveBeenCalledWith({ accessToken });
+  });
+
+  test("uses CPR as fallback when separate birth fields are unavailable", async () => {
+    const context = createContext(
+      jest.fn().mockResolvedValue({ consent: false }),
+      { user: { uniqueId: "loan-user", cpr: "1506800000" } }
+    );
+
+    await expect(
+      resolvers.Patron.historicalLoanConsent(null, {}, context)
+    ).resolves.toEqual({
+      isGranted: false,
+      canBeChanged: true,
+      status: "NOT_GRANTED",
+    });
+  });
+
+  test("prefers valid birth fields over CPR", async () => {
+    const context = createContext(
+      jest.fn().mockResolvedValue({ consent: false }),
+      {
+        user: {
+          uniqueId: "loan-user",
+          birthDate: "0608",
+          birthYear: "2011",
+          cpr: "1506800000",
+        },
+      }
+    );
+
+    await expect(
+      resolvers.Patron.historicalLoanConsent(null, {}, context)
+    ).resolves.toEqual({
+      isGranted: false,
+      canBeChanged: false,
+      status: "UNDER_AGE",
+    });
+  });
+
+  test("allows consent from the fifteenth birthday", async () => {
+    const context = createContext(
+      jest.fn().mockResolvedValue({ consent: false }),
+      {
+        user: {
+          uniqueId: "loan-user",
+          birthDate: "0508",
+          birthYear: "2011",
+        },
+      }
+    );
+
+    await expect(
+      resolvers.Patron.historicalLoanConsent(null, {}, context)
+    ).resolves.toMatchObject({
+      canBeChanged: true,
+      status: "NOT_GRANTED",
+    });
+  });
+
+  test("reports an unverifiable age while still retrieving consent", async () => {
+    const load = jest.fn().mockResolvedValue({ consent: true });
+    const context = createContext(load, {
+      user: { uniqueId: "loan-user", birthDate: "3102", birthYear: "1980" },
+    });
+
+    await expect(
+      resolvers.Patron.historicalLoanConsent(null, {}, context)
+    ).resolves.toEqual({
+      isGranted: true,
+      canBeChanged: false,
+      status: "AGE_NOT_VERIFIABLE",
+    });
+    expect(load).toHaveBeenCalledWith({ accessToken });
+  });
+
+  test("sets consent for an age-verified patron", async () => {
+    const load = jest.fn().mockResolvedValue({ consent: true });
+    const context = createContext(load, {
+      user: {
+        uniqueId: "loan-user",
+        birthDate: "1506",
+        birthYear: "1980",
+      },
+    });
+
+    await expect(
+      resolvers.PatronMutation.setHistoricalLoanConsent(
+        null,
+        { consent: true },
+        context
+      )
+    ).resolves.toEqual({
+      isGranted: true,
+      canBeChanged: true,
+      status: "GRANTED",
+    });
+    expect(context.datasources.getLoader).toHaveBeenCalledWith(
+      "userDataV2SetHistoricalLoanConsent"
+    );
+    expect(load).toHaveBeenCalledWith({ accessToken, consent: true });
+    expect(context._loader.clear).toHaveBeenCalledWith({
+      accessToken,
+      consent: true,
+    });
+  });
+
+  test.each([
+    ["UNDER_AGE", { birthDate: "0608", birthYear: "2011" }],
+    ["AGE_NOT_VERIFIABLE", {}],
+  ])("does not set consent when eligibility is %s", async (status, user) => {
+    const load = jest.fn();
+    const context = createContext(load, {
+      user: { uniqueId: "loan-user", ...user },
+    });
+
+    await expect(
+      resolvers.PatronMutation.setHistoricalLoanConsent(
+        null,
+        { consent: true },
+        context
+      )
+    ).resolves.toEqual({
+      isGranted: null,
+      canBeChanged: false,
+      status,
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+    expect(load).not.toHaveBeenCalled();
+  });
+
+  test("reports unauthenticated consent requests", async () => {
+    const context = createContext(jest.fn(), { accessToken: null });
+
+    await expect(
+      resolvers.Patron.historicalLoanConsent(null, {}, context)
+    ).resolves.toEqual({
+      isGranted: null,
+      canBeChanged: false,
+      status: "ERROR_UNAUTHENTICATED_TOKEN",
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
+  test("returns FAILED when UserData consent cannot be retrieved", async () => {
+    const context = createContext(
+      jest.fn().mockRejectedValue(new Error("boom")),
+      {
+        user: {
+          uniqueId: "loan-user",
+          birthDate: "1506",
+          birthYear: "1980",
+        },
+      }
+    );
+
+    await expect(
+      resolvers.Patron.historicalLoanConsent(null, {}, context)
+    ).resolves.toEqual({
+      isGranted: null,
+      canBeChanged: true,
+      status: "FAILED",
+    });
+    expect(log.error).toHaveBeenCalledWith(
+      "Failed to get historical loan consent from UserData. Message: boom"
+    );
+  });
+});

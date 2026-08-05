@@ -2,6 +2,8 @@ import config from "../config";
 import { load as getHistoricalLoans } from "../datasources/userDataService/userDataV2GetHistoricalLoans.datasource";
 import { load as addHistoricalLoans } from "../datasources/userDataService/userDataV2AddHistoricalLoans.datasource";
 import { load as deleteHistoricalLoans } from "../datasources/userDataService/userDataV2DeleteHistoricalLoans.datasource";
+import { load as getHistoricalLoanConsent } from "../datasources/userDataService/userDataV2GetHistoricalLoanConsent.datasource";
+import { load as setHistoricalLoanConsent } from "../datasources/userDataService/userDataV2SetHistoricalLoanConsent.datasource";
 
 const accessToken = "forwarded-access-token";
 
@@ -72,6 +74,40 @@ describe("UserData Historical Loan V2 datasources", () => {
         },
         method: "DELETE",
         body: JSON.stringify({ ids }),
+      }
+    );
+  });
+
+  test("GET consent forwards the bearer token", async () => {
+    const context = createContext({ consent: true });
+
+    await expect(
+      getHistoricalLoanConsent({ accessToken }, context)
+    ).resolves.toEqual({ consent: true });
+    expect(context.fetch).toHaveBeenCalledWith(
+      `${config.datasources.userdata.url}v2/historical-loan/consent`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        method: "GET",
+      }
+    );
+  });
+
+  test("PUT consent forwards the bearer token and consent", async () => {
+    const context = createContext({ consent: false });
+
+    await expect(
+      setHistoricalLoanConsent({ accessToken, consent: false }, context)
+    ).resolves.toEqual({ consent: false });
+    expect(context.fetch).toHaveBeenCalledWith(
+      `${config.datasources.userdata.url}v2/historical-loan/consent`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        method: "PUT",
+        body: JSON.stringify({ consent: false }),
       }
     );
   });
