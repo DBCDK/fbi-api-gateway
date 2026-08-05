@@ -86,6 +86,18 @@ describe("Patron bookmarks", () => {
     });
   });
 
+  test("bookmarks rejects a negative offset as bad user input", async () => {
+    const context = createContext();
+
+    await expect(
+      resolvers.Patron.bookmarks(null, { offset: -1 }, context)
+    ).rejects.toMatchObject({
+      message: "offset must be greater than or equal to 0",
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
   test("bookmarks applies V2 pagination defaults", async () => {
     const load = jest.fn().mockResolvedValue({ hitcount: 0, items: [] });
 
@@ -304,6 +316,39 @@ describe("Patron bookmarks", () => {
     });
   });
 
+  test("addBookmarks distinguishes invalid material IDs from missing materials", async () => {
+    const context = createContext();
+
+    await expect(
+      resolvers.PatronMutation.addBookmarks(
+        null,
+        { bookmarks: [{ materialId: "ostepops" }] },
+        context
+      )
+    ).resolves.toEqual({
+      status: "FAILED",
+      items: [{ materialId: "ostepops", status: "INVALID_MATERIAL_ID" }],
+    });
+    expect(resolveMaterial).not.toHaveBeenCalled();
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
+  test("bookmark mutations reject empty batches as bad user input", async () => {
+    const context = createContext();
+
+    await expect(
+      resolvers.PatronMutation.addBookmarks(null, { bookmarks: [] }, context)
+    ).rejects.toMatchObject({
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+    await expect(
+      resolvers.PatronMutation.deleteBookmarks(null, { ids: [] }, context)
+    ).rejects.toMatchObject({
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
   test("addBookmarks maps service authentication errors", async () => {
     resolveMaterial.mockResolvedValueOnce({ workId: "work-1" });
     const error = new Error("request failed");
@@ -389,7 +434,7 @@ describe("Patron bookmarks", () => {
       status: "PARTIALLY_FAILED",
       items: [
         { id: bookmarkId, status: "OK" },
-        { id: "123", status: "FAILED" },
+        { id: "123", status: "INVALID_ID" },
       ],
     });
   });
@@ -424,9 +469,25 @@ describe("Patron bookmarks", () => {
           materialId: "pid:1",
           status: "OK",
         },
-        { id: "123", status: "FAILED" },
+        { id: "123", status: "INVALID_ID" },
       ],
     });
+  });
+
+  test("deleteBookmarks identifies a request containing only invalid IDs", async () => {
+    const context = createContext();
+
+    await expect(
+      resolvers.PatronMutation.deleteBookmarks(
+        null,
+        { ids: ["not-a-bookmark-id"] },
+        context
+      )
+    ).resolves.toEqual({
+      status: "FAILED",
+      items: [{ id: "not-a-bookmark-id", status: "INVALID_ID" }],
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
   });
 
   test.each([

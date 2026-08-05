@@ -8,6 +8,28 @@ function isWorkId(materialId) {
 }
 
 export const typeDef = `
+    type PeriodicalSnapshot {
+        """
+        Stored edition statement for the host publication.
+        """
+        edition: String
+
+        """
+        Stored pages within the host publication.
+        """
+        pages: String
+
+        """
+        Stored publisher of the host publication.
+        """
+        publisher: String
+
+        """
+        Stored language of the periodical material.
+        """
+        language: String
+    }
+
     type PatronMaterialSnapshot {
         """
         Version of the stored snapshot format.
@@ -43,11 +65,30 @@ export const typeDef = `
         Stored work type for the material.
         """
         workType: String
+
+        """
+        Stored metadata about the periodical host publication, when relevant.
+        """
+        periodical: PeriodicalSnapshot
     }
 `;
 
 export const resolvers = {
   PatronMaterialSnapshot: {
+    periodical(parent) {
+      if (parent?.periodical) {
+        return parent.periodical;
+      }
+
+      const periodical = {
+        edition: parent?.edition || null,
+        pages: parent?.pages || null,
+        publisher: parent?.publisher || null,
+        language: parent?.language || null,
+      };
+
+      return Object.values(periodical).some(Boolean) ? periodical : null;
+    },
     async pid(parent, args, context, info) {
       if (parent?.pid) {
         return parent.pid;

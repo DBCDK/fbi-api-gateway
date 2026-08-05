@@ -1,6 +1,28 @@
 import { resolvers } from "../schema/patron/snapshot";
 
 describe("Patron material snapshot", () => {
+  test("groups flat UserData periodical fields in PeriodicalSnapshot", () => {
+    expect(
+      resolvers.PatronMaterialSnapshot.periodical({
+        edition: "Årg. 10",
+        pages: "S. 12-15",
+        publisher: "Eksempelbladet",
+        language: "dan",
+      })
+    ).toEqual({
+      edition: "Årg. 10",
+      pages: "S. 12-15",
+      publisher: "Eksempelbladet",
+      language: "dan",
+    });
+  });
+
+  test("returns no PeriodicalSnapshot without periodical metadata", () => {
+    expect(
+      resolvers.PatronMaterialSnapshot.periodical({ title: "En bog" })
+    ).toBeNull();
+  });
+
   test("pid resolves directly from bookmark pid material id", async () => {
     const result = await resolvers.PatronMaterialSnapshot.pid(
       { _sourceMaterialId: "pid:123" },

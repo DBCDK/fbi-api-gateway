@@ -5,7 +5,12 @@
 
 import { log } from "dbc-node-logger";
 import { resolveMaterial } from "../../utils/utils";
-import { normalizeBookmarkId, getOverallStatus } from "./utils";
+import {
+  normalizeBookmarkId,
+  getOverallStatus,
+  isBookmarkMaterialId,
+  badUserInput,
+} from "./utils";
 
 const bookmarkIdPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -194,6 +199,8 @@ export const typeDef = `
     enum BookmarksStatusEnum {
       OK
       FAILED
+      INVALID_ID
+      INVALID_MATERIAL_ID
       ALREADY_EXISTS
       NOT_FOUND
       UNKNOWN_ERROR
@@ -213,6 +220,10 @@ export const resolvers = {
         offset = 0,
         limit = 10,
       } = args;
+
+      if (offset < 0) {
+        throw badUserInput("offset must be greater than or equal to 0");
+      }
 
       try {
         if (!uniqueId || !accessToken) {
@@ -288,24 +299,34 @@ export const resolvers = {
       }
 
       if (bookmarks.length === 0) {
-        return { status: "FAILED", items: [] };
+        throw badUserInput("bookmarks must contain at least one item");
       }
 
       try {
         const resolved = await Promise.all(
           bookmarks.map(async ({ materialId }) => {
+            if (!isBookmarkMaterialId(materialId)) {
+              return { materialId, obj: null, invalidMaterialId: true };
+            }
+
             const isWork = materialId?.startsWith("work-of:");
             const props = isWork ? { id: materialId } : { pid: materialId };
             const obj = await resolveMaterial(props, context);
 
-            return { materialId, obj };
+            return { materialId, obj, invalidMaterialId: false };
           })
         );
 
-        const items = resolved.map(({ materialId, obj }) => ({
-          materialId,
-          status: obj ? "OK" : "NOT_FOUND",
-        }));
+        const items = resolved.map(
+          ({ materialId, obj, invalidMaterialId }) => ({
+            materialId,
+            status: invalidMaterialId
+              ? "INVALID_MATERIAL_ID"
+              : obj
+                ? "OK"
+                : "NOT_FOUND",
+          })
+        );
 
         const data = resolved
           .filter(({ obj }) => obj)
@@ -397,7 +418,7 @@ export const resolvers = {
       }
 
       if (ids.length === 0) {
-        return { status: "FAILED", items: [] };
+        throw badUserInput("ids must contain at least one item");
       }
 
       try {
@@ -408,7 +429,7 @@ export const resolvers = {
         if (dryRun) {
           const items = ids.map((id) => ({
             id,
-            status: validIdSet.has(id) ? "OK" : "FAILED",
+            status: validIdSet.has(id) ? "OK" : "INVALID_ID",
           }));
 
           return {
@@ -421,7 +442,7 @@ export const resolvers = {
         if (validIds.length === 0) {
           return {
             status: "FAILED",
-            items: ids.map((id) => ({ id, status: "FAILED" })),
+            items: ids.map((id) => ({ id, status: "INVALID_ID" })),
           };
         }
 
@@ -434,7 +455,7 @@ export const resolvers = {
         let serviceResultIndex = 0;
         const items = ids.map((id) => {
           if (!validIdSet.has(id)) {
-            return { id, status: "FAILED" };
+            return { id, status: "INVALID_ID" };
           }
 
           const serviceResult = res?.results?.[serviceResultIndex++];

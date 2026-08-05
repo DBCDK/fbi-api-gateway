@@ -2,6 +2,20 @@
  * @file This file contains utility functions for handling patron-related operations.
  */
 
+import { GraphQLError } from "graphql";
+
+export function badUserInput(message) {
+  return new GraphQLError(
+    message,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    { code: "BAD_USER_INPUT" }
+  );
+}
+
 // Helper function to determine overall status based on item statuses.
 export function getOverallStatus(items = [], successStatuses = ["OK"]) {
   if (items.length === 0) return "OK";
@@ -28,4 +42,34 @@ export function normalizeBookmarkId(id) {
   }
 
   return String(id);
+}
+
+const namespacedMaterialIdPattern = /^[^\s:]+:[^\s]+$/;
+
+export function isPid(materialId) {
+  return (
+    typeof materialId === "string" &&
+    !materialId.startsWith("work-of:") &&
+    namespacedMaterialIdPattern.test(materialId)
+  );
+}
+
+export function isWorkId(materialId) {
+  return (
+    typeof materialId === "string" &&
+    materialId.startsWith("work-of:") &&
+    isPid(materialId.slice("work-of:".length))
+  );
+}
+
+export function isFaustNumber(materialId) {
+  return typeof materialId === "string" && /^\d+$/.test(materialId);
+}
+
+export function isBookmarkMaterialId(materialId) {
+  return isWorkId(materialId) || isPid(materialId);
+}
+
+export function isHistoricalLoanMaterialId(materialId) {
+  return isFaustNumber(materialId) || isPid(materialId);
 }

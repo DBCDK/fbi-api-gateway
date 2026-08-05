@@ -7,6 +7,11 @@ exports[`complete access to whole schema 1`] = `
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
 """
+A date string, such as 2007-12-03, compliant with the \`full-date\` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the \`date-time\` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
@@ -3938,10 +3943,11 @@ type Patron {
   """Indicates whether the current patron is blocked."""
   blocked: Boolean!
 
-  """
-  Retrieves the list of loans for the patron, including pagination and sorting options.
-  """
-  loans: PatronLoans!
+  """Retrieves current loans live from OpenUserStatus."""
+  currentLoans(orderBy: OrderLoansByEnum, status: PatronLoanStatusEnum, offset: Int, limit: PaginationLimitScalar): PatronCurrentLoans!
+
+  """Retrieves historical loans stored in UserData."""
+  historicalLoans(offset: Int, limit: PaginationLimitScalar): PatronHistoricalLoans!
 }
 
 type PatronAccount {
@@ -4089,6 +4095,15 @@ type PatronMutation {
   Deletes one or more bookmarks for the patron. If a bookmark does not exist, it will be ignored.
   """
   deleteBookmarks(ids: [String!]!, dryRun: Boolean): DeleteBookmarksResponse!
+
+  """
+  Adds one or more manual historical loans for integration testing.
+  Snapshot data is resolved by the gateway and cannot be supplied by the client.
+  """
+  addHistoricalLoans(loans: [PatronHistoricalLoanInput!]!, dryRun: Boolean): AddHistoricalLoansResponse!
+
+  """Deletes one or more historical loans by their public UserData IDs."""
+  deleteHistoricalLoans(ids: [String!]!, dryRun: Boolean): DeleteHistoricalLoansResponse!
 }
 
 type Bookmarks {
@@ -4191,30 +4206,32 @@ enum BookmarksOverallStatusEnum {
 enum BookmarksStatusEnum {
   OK
   FAILED
+  INVALID_ID
+  INVALID_MATERIAL_ID
   ALREADY_EXISTS
   NOT_FOUND
   UNKNOWN_ERROR
 }
 
-type PatronLoans {
-  """The total number of loans for the patron."""
+type PatronCurrentLoans {
+  """The total number of current loans before filtering and pagination."""
   hitcount: Int!
 
-  """The overall status of the loan lookup."""
+  """The overall status of the current-loan lookup."""
   status: PatronLoansOverallStatusEnum!
 
-  """The list of loans for the patron."""
-  items(orderBy: OrderLoansByEnum, status: PatronLoanStatusEnum, offset: Int, limit: PaginationLimitScalar): [PatronLoanItem!]!
+  """Current loans for the requested page."""
+  items: [CurrentLoan!]!
 }
 
-type PatronLoanItem {
-  """The unique identifier for the loan."""
+type CurrentLoan {
+  """Identifier assigned to the loan by the library system."""
   id: String!
 
-  """Due date of the loan."""
+  """Due date reported by OpenUserStatus."""
   dueDate: DateTime!
 
-  """Computed loan status based on due date."""
+  """Status computed from the due date in the Europe/Copenhagen timezone."""
   status: PatronLoanStatusEnum!
 
   """Account information for the patron who owns the loan."""
@@ -4223,19 +4240,101 @@ type PatronLoanItem {
   """Branch information for the agency where the loan belongs."""
   agency: PatronAgency
 
+  """The manifestation associated with the loan, when it can be resolved."""
+  manifestation: Manifestation
+
+  """Fallback metadata reported by OpenUserStatus."""
+  snapshot: PatronMaterialSnapshot
+}
+
+type PatronHistoricalLoans {
+  """The total number of historical loans before pagination."""
+  hitcount: Int!
+
+  """The overall status of the historical-loan lookup."""
+  status: PatronLoansOverallStatusEnum!
+
+  """Historical loans in UserData service order."""
+  items: [HistoricalLoan!]!
+}
+
+type HistoricalLoan {
   """
-  The bibliographic record associated with the loan, if it can still be resolved from the faust number.
+  Stable public UserData identifier used when deleting the historical loan.
+  """
+  id: String!
+
+  """Date on which the material was borrowed, when known."""
+  loanedAt: Date
+
+  """Date on which the material was returned, when known."""
+  returnedAt: Date
+
+  """
+  The patron's current account for the loan agency, when that account still exists.
+  This is not a snapshot of the account at the time of the historical loan.
+  """
+  account: PatronAccount
+
+  """Branch information for the agency where the loan belonged."""
+  agency: PatronAgency
+
+  """
+  The manifestation associated with the historical loan, when it can still be resolved.
   """
   manifestation: Manifestation
 
-  """Stored fallback metadata captured from the legacy loan service."""
+  """
+  Stored fallback metadata captured when the historical loan was ingested.
+  """
   snapshot: PatronMaterialSnapshot
+}
+
+input PatronHistoricalLoanInput {
+  """Agency ID for the library where the material was borrowed, when known."""
+  agencyId: String
+
+  """
+  PID or numeric faust number. The identifier type is detected by the gateway.
+  """
+  materialId: String!
+
+  """
+  Borrowing date in YYYY-MM-DD format, when known.
+  When both dates are supplied, this date cannot be after returnedAt.
+  """
+  loanedAt: Date
+
+  """
+  Return date in YYYY-MM-DD format, when known.
+  When both dates are supplied, this date cannot be before loanedAt.
+  """
+  returnedAt: Date
+}
+
+type AddHistoricalLoansResponse {
+  status: PatronLoansOverallStatusEnum!
+  items: [PatronHistoricalLoanStatusItem!]!
+}
+
+type DeleteHistoricalLoansResponse {
+  status: PatronLoansOverallStatusEnum!
+  items: [PatronHistoricalLoanStatusItem!]!
+}
+
+type PatronHistoricalLoanStatusItem {
+  status: PatronLoanMutationStatusEnum!
+  id: String
+  materialId: String
 }
 
 enum PatronLoansOverallStatusEnum {
   OK
   FAILED
+  PARTIALLY_FAILED
   ERROR_UNAUTHENTICATED_TOKEN
+  ERROR_MANUAL_ADDS_DISABLED
+  CONSENT_REQUIRED
 }
 
 enum PatronLoanStatusEnum {
@@ -4243,11 +4342,36 @@ enum PatronLoanStatusEnum {
   OVERDUE
 }
 
+enum PatronLoanMutationStatusEnum {
+  OK
+  FAILED
+  INVALID_ID
+  INVALID_MATERIAL_ID
+  INVALID_DATE_RANGE
+  ALREADY_EXISTS
+  NOT_FOUND
+  UNKNOWN_ERROR
+}
+
 enum OrderLoansByEnum {
   DUEDATE_ASC
   DUEDATE_DESC
   TITLE_ASC
   TITLE_DESC
+}
+
+type PeriodicalSnapshot {
+  """Stored edition statement for the host publication."""
+  edition: String
+
+  """Stored pages within the host publication."""
+  pages: String
+
+  """Stored publisher of the host publication."""
+  publisher: String
+
+  """Stored language of the periodical material."""
+  language: String
 }
 
 type PatronMaterialSnapshot {
@@ -4271,6 +4395,9 @@ type PatronMaterialSnapshot {
 
   """Stored work type for the material."""
   workType: String
+
+  """Stored metadata about the periodical host publication, when relevant."""
+  periodical: PeriodicalSnapshot
 }
 
 type RawRepo {
