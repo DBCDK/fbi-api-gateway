@@ -21,14 +21,10 @@ describe("UserData Historical Loan V2 datasources", () => {
       getHistoricalLoans({ accessToken, offset: 20, limit: 5 }, context)
     ).resolves.toEqual({ hitcount: 0, status: "OK", items: [] });
     expect(context.fetch).toHaveBeenCalledWith(
-      `${config.datasources.userdata.url}v2/historical-loan/get`,
+      `${config.datasources.userdata.url}v2/historical-loan/get?offset=20&limit=5`,
       {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({ offset: 20, limit: 5 }),
+        headers: { Authorization: `Bearer ${accessToken}` },
+        method: "GET",
       }
     );
   });
