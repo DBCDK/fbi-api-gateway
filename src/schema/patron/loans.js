@@ -7,11 +7,15 @@ import {
   filterDuplicateAgencies,
   resolveManifestation,
 } from "../../utils/utils";
-import { getOverallStatus } from "./utils";
+import {
+  getOverallStatus,
+  isFaustNumber,
+  isHistoricalLoanMaterialId,
+  badUserInput,
+} from "./utils";
 
 const historicalLoanIdPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const faustPattern = /^\d+$/;
 
 const serviceStatusMap = {
   ok: "OK",
@@ -164,8 +168,16 @@ function normalizeHistoricalLoanInput(loan) {
     loanedAt: normalizeDate(loan.loanedAt),
     returnedAt: normalizeDate(loan.returnedAt),
     materialId: loan.materialId,
-    materialIdType: faustPattern.test(loan.materialId) ? "FAUST" : "PID",
+    materialIdType: isFaustNumber(loan.materialId) ? "FAUST" : "PID",
   };
+}
+
+function hasInvalidDateRange(loan) {
+  return (
+    loan.loanedAt !== null &&
+    loan.returnedAt !== null &&
+    loan.loanedAt > loan.returnedAt
+  );
 }
 
 function resolveHistoricalLoanManifestation(loan, context) {
@@ -359,6 +371,12 @@ export const typeDef = `
         returnedAt: DateScalar
 
         """
+        The patron's current account for the loan agency, when that account still exists.
+        This is not a snapshot of the account at the time of the historical loan.
+        """
+        account: PatronAccount
+
+        """
         Branch information for the agency where the loan belonged.
         """
         agency: PatronAgency
@@ -387,11 +405,13 @@ export const typeDef = `
 
         """
         Borrowing date in YYYY-MM-DD format, when known.
+        When both dates are supplied, this date cannot be after returnedAt.
         """
         loanedAt: DateScalar
 
         """
         Return date in YYYY-MM-DD format, when known.
+        When both dates are supplied, this date cannot be before loanedAt.
         """
         returnedAt: DateScalar
     }
@@ -429,6 +449,9 @@ export const typeDef = `
     enum PatronLoanMutationStatusEnum {
         OK
         FAILED
+        INVALID_ID
+        INVALID_MATERIAL_ID
+        INVALID_DATE_RANGE
         ALREADY_EXISTS
         NOT_FOUND
         UNKNOWN_ERROR
@@ -454,6 +477,10 @@ export const resolvers = {
           items: [],
           status: "ERROR_UNAUTHENTICATED_TOKEN",
         };
+      }
+
+      if (offset < 0) {
+        throw badUserInput("offset must be greater than or equal to 0");
       }
 
       try {
@@ -492,6 +519,10 @@ export const resolvers = {
           items: [],
           status: "ERROR_UNAUTHENTICATED_TOKEN",
         };
+      }
+
+      if (offset < 0) {
+        throw badUserInput("offset must be greater than or equal to 0");
       }
 
       try {
@@ -534,25 +565,54 @@ export const resolvers = {
       }
 
       if (loans.length === 0) {
-        return { status: "FAILED", items: [] };
+        throw badUserInput("loans must contain at least one item");
       }
 
       const normalizedLoans = loans.map(normalizeHistoricalLoanInput);
 
       try {
         const resolved = await Promise.all(
-          normalizedLoans.map(async (loan) => ({
-            loan,
-            manifestation: await resolveHistoricalLoanManifestation(
+          normalizedLoans.map(async (loan) => {
+            if (!isHistoricalLoanMaterialId(loan.materialId)) {
+              return {
+                loan,
+                manifestation: null,
+                invalidMaterialId: true,
+              };
+            }
+
+            if (hasInvalidDateRange(loan)) {
+              return {
+                loan,
+                manifestation: null,
+                invalidMaterialId: false,
+                invalidDateRange: true,
+              };
+            }
+
+            return {
               loan,
-              context
-            ),
-          }))
+              manifestation: await resolveHistoricalLoanManifestation(
+                loan,
+                context
+              ),
+              invalidMaterialId: false,
+              invalidDateRange: false,
+            };
+          })
         );
-        const items = resolved.map(({ loan, manifestation }) => ({
-          materialId: loan.materialId,
-          status: manifestation ? "OK" : "NOT_FOUND",
-        }));
+        const items = resolved.map(
+          ({ loan, manifestation, invalidMaterialId, invalidDateRange }) => ({
+            materialId: loan.materialId,
+            status: invalidMaterialId
+              ? "INVALID_MATERIAL_ID"
+              : invalidDateRange
+                ? "INVALID_DATE_RANGE"
+                : manifestation
+                  ? "OK"
+                  : "NOT_FOUND",
+          })
+        );
         const data = resolved
           .filter(({ manifestation }) => manifestation)
           .map(({ loan, manifestation }) =>
@@ -613,7 +673,7 @@ export const resolvers = {
       }
 
       if (ids.length === 0) {
-        return { status: "FAILED", items: [] };
+        throw badUserInput("ids must contain at least one item");
       }
 
       const validIdSet = new Set(
@@ -623,7 +683,7 @@ export const resolvers = {
       if (dryRun) {
         const items = ids.map((id) => ({
           id,
-          status: validIdSet.has(id) ? "OK" : "FAILED",
+          status: validIdSet.has(id) ? "OK" : "INVALID_ID",
         }));
         return { status: getOverallStatus(items), items };
       }
@@ -632,7 +692,7 @@ export const resolvers = {
       if (validIds.length === 0) {
         return {
           status: "FAILED",
-          items: ids.map((id) => ({ id, status: "FAILED" })),
+          items: ids.map((id) => ({ id, status: "INVALID_ID" })),
         };
       }
 
@@ -645,7 +705,7 @@ export const resolvers = {
         let resultIndex = 0;
         const items = ids.map((id) => {
           if (!validIdSet.has(id)) {
-            return { id, status: "FAILED" };
+            return { id, status: "INVALID_ID" };
           }
 
           const result = response?.results?.[resultIndex++];
@@ -738,6 +798,9 @@ export const resolvers = {
   },
 
   HistoricalLoan: {
+    account(parent, args, context) {
+      return accountForAgency(parent, context);
+    },
     agency(parent, args, context) {
       return agencyForLoan(parent, context);
     },

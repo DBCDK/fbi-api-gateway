@@ -10,6 +10,7 @@ import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { wrapSchema } from "@graphql-tools/wrap";
 import { mergeTypeDefs } from "@graphql-tools/merge";
 import { filterSchema, pruneSchema } from "@graphql-tools/utils";
+import { GraphQLError, GraphQLScalarType } from "graphql";
 
 import { typeDefs as scalarTypeDefs } from "graphql-scalars";
 import { resolvers as scalarResolvers } from "graphql-scalars";
@@ -33,6 +34,44 @@ const { enumFallbackDirectiveTypeDefs, enumFallbackDirectiveTransformer } =
 
 // Stores the transformed schemas
 const schemaCache = {};
+
+function scalarInputError(error) {
+  if (error instanceof GraphQLError) {
+    return error;
+  }
+
+  return new GraphQLError(
+    error?.message || "Invalid scalar input",
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    { code: "BAD_USER_INPUT" }
+  );
+}
+
+function wrapScalarInputErrors(scalar) {
+  const config = scalar.toConfig();
+
+  return new GraphQLScalarType({
+    ...config,
+    parseValue(value) {
+      try {
+        return config.parseValue(value);
+      } catch (error) {
+        throw scalarInputError(error);
+      }
+    },
+    parseLiteral(ast, variables) {
+      try {
+        return config.parseLiteral(ast, variables);
+      } catch (error) {
+        throw scalarInputError(error);
+      }
+    },
+  });
+}
 
 // External schemas mounted into the gateway
 let externalSchemas;
@@ -301,8 +340,9 @@ export function schemaLoader() {
 
   customScalarTypeDefs.forEach((val) => {
     if (scalarTypeDefs.includes(`scalar ${val}`)) {
-      _scalarResolvers[`${val}Scalar`] = scalarResolvers[val];
-      _scalarTypeDefs.push(`scalar ${val}Scalar`);
+      const name = `${val}Scalar`;
+      _scalarResolvers[name] = wrapScalarInputErrors(scalarResolvers[val]);
+      _scalarTypeDefs.push(`scalar ${name}`);
     }
   });
 

@@ -116,6 +116,18 @@ describe("Patron current loans", () => {
     expect(context.datasources.getLoader).not.toHaveBeenCalled();
   });
 
+  test("currentLoans rejects a negative offset as bad user input", async () => {
+    const context = createContext(jest.fn());
+
+    await expect(
+      resolvers.Patron.currentLoans(null, { offset: -1 }, context)
+    ).rejects.toMatchObject({
+      message: "offset must be greater than or equal to 0",
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
   test("logs and returns failed on OpenUserStatus errors", async () => {
     const context = createContext(
       jest.fn().mockRejectedValue(new Error("boom"))
@@ -240,6 +252,18 @@ describe("Patron historical loans", () => {
     expect(load).not.toHaveBeenCalled();
   });
 
+  test("historicalLoans rejects a negative offset as bad user input", async () => {
+    const context = createContext(jest.fn());
+
+    await expect(
+      resolvers.Patron.historicalLoans(null, { offset: -1 }, context)
+    ).rejects.toMatchObject({
+      message: "offset must be greater than or equal to 0",
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
   test("collection exposes UserData status, hitcount and items", () => {
     const items = [{ id: publicLoanId }];
     const parent = { hitcount: 27, status: "OK", items };
@@ -247,6 +271,23 @@ describe("Patron historical loans", () => {
     expect(resolvers.PatronHistoricalLoans.hitcount(parent)).toBe(27);
     expect(resolvers.PatronHistoricalLoans.status(parent)).toBe("OK");
     expect(resolvers.PatronHistoricalLoans.items(parent)).toBe(items);
+  });
+
+  test("historical-loan account resolves the patron's current matching account", () => {
+    const context = createContext(jest.fn());
+
+    expect(
+      resolvers.HistoricalLoan.account({ agencyId: "710100" }, {}, context)
+    ).toEqual({
+      agencyId: "710100",
+      userId: "local-id",
+      municipalityNumber: "101",
+      municipalityAgencyId: "710100",
+      blocked: false,
+    });
+    expect(
+      resolvers.HistoricalLoan.account({ agencyId: "unknown" }, {}, context)
+    ).toBeNull();
   });
 
   test.each([
@@ -348,6 +389,86 @@ describe("Patron historical loans", () => {
     expect(serviceLoad).not.toHaveBeenCalled();
   });
 
+  test("add distinguishes invalid material IDs from missing manifestations", async () => {
+    const serviceLoad = jest.fn();
+    const context = createAddContext(serviceLoad);
+
+    await expect(
+      resolvers.PatronMutation.addHistoricalLoans(
+        null,
+        { loans: [{ materialId: "ostepops" }] },
+        context
+      )
+    ).resolves.toEqual({
+      status: "FAILED",
+      items: [{ materialId: "ostepops", status: "INVALID_MATERIAL_ID" }],
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+    expect(serviceLoad).not.toHaveBeenCalled();
+  });
+
+  test("add rejects an inverted historical date range", async () => {
+    const context = createAddContext(jest.fn());
+
+    await expect(
+      resolvers.PatronMutation.addHistoricalLoans(
+        null,
+        {
+          loans: [
+            {
+              materialId: "pid:1",
+              loanedAt: new Date("2026-05-20T00:00:00.000Z"),
+              returnedAt: new Date("2026-05-01T00:00:00.000Z"),
+            },
+          ],
+        },
+        context
+      )
+    ).resolves.toEqual({
+      status: "FAILED",
+      items: [{ materialId: "pid:1", status: "INVALID_DATE_RANGE" }],
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
+  test("add accepts a missing loanedAt or returnedAt without a range check", async () => {
+    const serviceLoad = jest.fn();
+    const context = createAddContext(serviceLoad);
+
+    await expect(
+      resolvers.PatronMutation.addHistoricalLoans(
+        null,
+        {
+          dryRun: true,
+          loans: [
+            { materialId: "pid:1", loanedAt: null, returnedAt: "2026-05-01" },
+            { materialId: "pid:2", loanedAt: "2026-05-20", returnedAt: null },
+          ],
+        },
+        context
+      )
+    ).resolves.toEqual({
+      status: "OK",
+      items: [
+        { materialId: "pid:1", status: "OK" },
+        { materialId: "pid:2", status: "OK" },
+      ],
+    });
+    expect(serviceLoad).not.toHaveBeenCalled();
+  });
+
+  test("historical-loan mutations reject empty batches as bad user input", async () => {
+    const context = createContext(jest.fn());
+
+    await expect(
+      resolvers.PatronMutation.addHistoricalLoans(null, { loans: [] }, context)
+    ).rejects.toMatchObject({ extensions: { code: "BAD_USER_INPUT" } });
+    await expect(
+      resolvers.PatronMutation.deleteHistoricalLoans(null, { ids: [] }, context)
+    ).rejects.toMatchObject({ extensions: { code: "BAD_USER_INPUT" } });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
   test("delete forwards valid UUIDs and preserves input order", async () => {
     const invalidId = "not-a-uuid";
     const load = jest.fn().mockResolvedValue({
@@ -368,7 +489,7 @@ describe("Patron historical loans", () => {
       status: "PARTIALLY_FAILED",
       items: [
         { id: publicLoanId, materialId: "pid:1", status: "OK" },
-        { id: invalidId, status: "FAILED" },
+        { id: invalidId, status: "INVALID_ID" },
         { id: secondPublicLoanId, materialId: null, status: "NOT_FOUND" },
       ],
     });
@@ -391,8 +512,24 @@ describe("Patron historical loans", () => {
       status: "PARTIALLY_FAILED",
       items: [
         { id: publicLoanId, status: "OK" },
-        { id: "invalid", status: "FAILED" },
+        { id: "invalid", status: "INVALID_ID" },
       ],
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
+  test("delete identifies a request containing only invalid IDs", async () => {
+    const context = createContext(jest.fn());
+
+    await expect(
+      resolvers.PatronMutation.deleteHistoricalLoans(
+        null,
+        { ids: ["ostepops"] },
+        context
+      )
+    ).resolves.toEqual({
+      status: "FAILED",
+      items: [{ id: "ostepops", status: "INVALID_ID" }],
     });
     expect(context.datasources.getLoader).not.toHaveBeenCalled();
   });

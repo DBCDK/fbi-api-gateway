@@ -4206,6 +4206,8 @@ enum BookmarksOverallStatusEnum {
 enum BookmarksStatusEnum {
   OK
   FAILED
+  INVALID_ID
+  INVALID_MATERIAL_ID
   ALREADY_EXISTS
   NOT_FOUND
   UNKNOWN_ERROR
@@ -4268,6 +4270,12 @@ type HistoricalLoan {
   """Date on which the material was returned, when known."""
   returnedAt: Date
 
+  """
+  The patron's current account for the loan agency, when that account still exists.
+  This is not a snapshot of the account at the time of the historical loan.
+  """
+  account: PatronAccount
+
   """Branch information for the agency where the loan belonged."""
   agency: PatronAgency
 
@@ -4291,10 +4299,16 @@ input PatronHistoricalLoanInput {
   """
   materialId: String!
 
-  """Borrowing date in YYYY-MM-DD format, when known."""
+  """
+  Borrowing date in YYYY-MM-DD format, when known.
+  When both dates are supplied, this date cannot be after returnedAt.
+  """
   loanedAt: Date
 
-  """Return date in YYYY-MM-DD format, when known."""
+  """
+  Return date in YYYY-MM-DD format, when known.
+  When both dates are supplied, this date cannot be before loanedAt.
+  """
   returnedAt: Date
 }
 
@@ -4331,6 +4345,9 @@ enum PatronLoanStatusEnum {
 enum PatronLoanMutationStatusEnum {
   OK
   FAILED
+  INVALID_ID
+  INVALID_MATERIAL_ID
+  INVALID_DATE_RANGE
   ALREADY_EXISTS
   NOT_FOUND
   UNKNOWN_ERROR
