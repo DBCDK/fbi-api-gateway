@@ -4111,7 +4111,7 @@ type PatronMutation {
   deleteHistoricalLoans(ids: [String!]!, dryRun: Boolean): DeleteHistoricalLoansResponse!
 
   """Changes consent for storing historical loans."""
-  setHistoricalLoanConsent(consent: Boolean!): PatronHistoricalLoanConsent!
+  setHistoricalLoanConsent(consent: Boolean!): SetHistoricalLoanConsentResponse!
 }
 
 type Bookmarks {
@@ -4348,6 +4348,24 @@ type PatronHistoricalLoanConsent {
 enum PatronHistoricalLoanConsentStatusEnum {
   GRANTED
   NOT_GRANTED
+  UNDER_AGE
+  AGE_NOT_VERIFIABLE
+  ERROR_UNAUTHENTICATED_TOKEN
+  FAILED
+}
+
+type SetHistoricalLoanConsentResponse {
+  """Whether the consent update operation succeeded."""
+  status: SetHistoricalLoanConsentStatusEnum!
+
+  """
+  The updated consent state. Null when the operation was not performed or failed.
+  """
+  historicalLoanConsent: PatronHistoricalLoanConsent
+}
+
+enum SetHistoricalLoanConsentStatusEnum {
+  OK
   UNDER_AGE
   AGE_NOT_VERIFIABLE
   ERROR_UNAUTHENTICATED_TOKEN

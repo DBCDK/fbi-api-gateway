@@ -411,7 +411,7 @@ export const typeDef = `
         """
         setHistoricalLoanConsent(
           consent: Boolean!
-        ): PatronHistoricalLoanConsent!
+        ): SetHistoricalLoanConsentResponse!
     }
 
     type PatronCurrentLoans {
@@ -577,6 +577,22 @@ export const typeDef = `
         FAILED
     }
 
+    type SetHistoricalLoanConsentResponse {
+        """Whether the consent update operation succeeded."""
+        status: SetHistoricalLoanConsentStatusEnum!
+
+        """The updated consent state. Null when the operation was not performed or failed."""
+        historicalLoanConsent: PatronHistoricalLoanConsent
+    }
+
+    enum SetHistoricalLoanConsentStatusEnum {
+        OK
+        UNDER_AGE
+        AGE_NOT_VERIFIABLE
+        ERROR_UNAUTHENTICATED_TOKEN
+        FAILED
+    }
+
     type PatronHistoricalLoanStatusItem {
         status: PatronLoanMutationStatusEnum!
         id: String
@@ -726,12 +742,18 @@ export const resolvers = {
       const accessToken = context?.accessToken;
       const user = context?.user;
       if (!accessToken || !user) {
-        return unauthenticatedHistoricalLoanConsent();
+        return {
+          status: "ERROR_UNAUTHENTICATED_TOKEN",
+          historicalLoanConsent: null,
+        };
       }
 
       const eligibility = getHistoricalLoanConsentEligibility(user);
       if (!eligibility.canBeChanged) {
-        return { isGranted: null, ...eligibility };
+        return {
+          status: eligibility.status,
+          historicalLoanConsent: null,
+        };
       }
 
       const { consent } = args;
@@ -742,15 +764,18 @@ export const resolvers = {
         const request = { accessToken, consent };
         const response = await loadMutation(loader, request);
 
-        return historicalLoanConsentResponse(
-          response?.consent ?? consent,
-          eligibility
-        );
+        return {
+          status: "OK",
+          historicalLoanConsent: historicalLoanConsentResponse(
+            response?.consent ?? consent,
+            eligibility
+          ),
+        };
       } catch (error) {
         log.error(
           `Failed to set historical loan consent in UserData. Message: ${error.message}`
         );
-        return { isGranted: null, ...eligibility, status: "FAILED" };
+        return { status: "FAILED", historicalLoanConsent: null };
       }
     },
 

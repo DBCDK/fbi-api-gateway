@@ -657,9 +657,12 @@ describe("Patron historical loan consent", () => {
         context
       )
     ).resolves.toEqual({
-      isGranted: true,
-      canBeChanged: true,
-      status: "GRANTED",
+      status: "OK",
+      historicalLoanConsent: {
+        isGranted: true,
+        canBeChanged: true,
+        status: "GRANTED",
+      },
     });
     expect(context.datasources.getLoader).toHaveBeenCalledWith(
       "userDataV2SetHistoricalLoanConsent"
@@ -687,12 +690,51 @@ describe("Patron historical loan consent", () => {
         context
       )
     ).resolves.toEqual({
-      isGranted: null,
-      canBeChanged: false,
       status,
+      historicalLoanConsent: null,
     });
     expect(context.datasources.getLoader).not.toHaveBeenCalled();
     expect(load).not.toHaveBeenCalled();
+  });
+
+  test("returns an operation status for unauthenticated mutations", async () => {
+    const context = createContext(jest.fn(), { accessToken: null });
+
+    await expect(
+      resolvers.PatronMutation.setHistoricalLoanConsent(
+        null,
+        { consent: false },
+        context
+      )
+    ).resolves.toEqual({
+      status: "ERROR_UNAUTHENTICATED_TOKEN",
+      historicalLoanConsent: null,
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
+  test("returns FAILED when a consent update fails", async () => {
+    const context = createContext(
+      jest.fn().mockRejectedValue(new Error("boom")),
+      {
+        user: {
+          uniqueId: "loan-user",
+          birthDate: "1506",
+          birthYear: "1980",
+        },
+      }
+    );
+
+    await expect(
+      resolvers.PatronMutation.setHistoricalLoanConsent(
+        null,
+        { consent: false },
+        context
+      )
+    ).resolves.toEqual({
+      status: "FAILED",
+      historicalLoanConsent: null,
+    });
   });
 
   test("reports unauthenticated consent requests", async () => {
