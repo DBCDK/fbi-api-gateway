@@ -7,6 +7,56 @@ function isWorkId(materialId) {
   return typeof materialId === "string" && materialId.startsWith("work-of:");
 }
 
+function firstCreator(material) {
+  if (Array.isArray(material?.creators)) {
+    return material.creators[0]?.display || null;
+  }
+
+  return (
+    material?.creators?.persons?.[0]?.display ||
+    material?.creators?.corporations?.[0]?.display ||
+    null
+  );
+}
+
+function materialTypeCode(material) {
+  const specific = material?.materialTypes?.[0]?.specific;
+  return (typeof specific === "string" ? specific : specific?.code) || null;
+}
+
+function mainLanguage(material) {
+  const language = material?.languages?.main?.[0];
+  if (typeof language === "string") {
+    return language;
+  }
+
+  return language?.isoCode || language?.iso639Set2 || language?.display || null;
+}
+
+/**
+ * Build the common snapshot persisted for Patron bookmarks and historical loans.
+ */
+export function buildPatronMaterialSnapshot(material) {
+  const hostPublication = material?.hostPublication;
+
+  return {
+    pid: material?.pid || null,
+    workId: material?.workId || material?.ownerWork?.workId || null,
+    title: material?.titles?.main?.[0] || null,
+    creator: firstCreator(material),
+    materialType: materialTypeCode(material),
+    workType: material?.workTypes?.[0] || null,
+    periodical: hostPublication
+      ? {
+          edition: hostPublication.edition || null,
+          pages: hostPublication.pages || null,
+          publisher: hostPublication.publisher || null,
+          language: mainLanguage(material),
+        }
+      : null,
+  };
+}
+
 export const typeDef = `
     type PeriodicalSnapshot {
         """

@@ -4111,7 +4111,7 @@ type PatronMutation {
   deleteHistoricalLoans(ids: [String!]!, dryRun: Boolean): DeleteHistoricalLoansResponse!
 
   """Changes consent for storing historical loans."""
-  setHistoricalLoanConsent(consent: Boolean!): SetHistoricalLoanConsentResponse!
+  setHistoricalLoanConsent(consent: Boolean!, dryRun: Boolean): SetHistoricalLoanConsentResponse!
 }
 
 type Bookmarks {

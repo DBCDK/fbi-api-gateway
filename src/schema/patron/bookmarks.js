@@ -11,6 +11,7 @@ import {
   isBookmarkMaterialId,
   badUserInput,
 } from "./utils";
+import { buildPatronMaterialSnapshot } from "./snapshot";
 
 const bookmarkIdPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -332,13 +333,7 @@ export const resolvers = {
           .filter(({ obj }) => obj)
           .map(({ materialId, obj }) => ({
             materialId,
-            snapshot: {
-              workId: obj?.workId || null,
-              title: obj?.titles?.main?.[0] || null,
-              creator: obj?.creators?.persons?.[0]?.display || null,
-              materialType: obj?.materialTypes?.[0]?.specific?.code || null,
-              workType: obj?.workTypes?.[0] || null,
-            },
+            snapshot: buildPatronMaterialSnapshot(obj),
           }));
 
         // Early return for dry run to avoid unnecessary calls to userData service

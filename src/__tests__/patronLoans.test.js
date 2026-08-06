@@ -653,7 +653,7 @@ describe("Patron historical loan consent", () => {
     await expect(
       resolvers.PatronMutation.setHistoricalLoanConsent(
         null,
-        { consent: true },
+        { consent: true, dryRun: false },
         context
       )
     ).resolves.toEqual({
@@ -672,6 +672,34 @@ describe("Patron historical loan consent", () => {
       accessToken,
       consent: true,
     });
+  });
+
+  test("simulates consent without updating UserData during dryRun", async () => {
+    const load = jest.fn();
+    const context = createContext(load, {
+      user: {
+        uniqueId: "loan-user",
+        birthDate: "1506",
+        birthYear: "1980",
+      },
+    });
+
+    await expect(
+      resolvers.PatronMutation.setHistoricalLoanConsent(
+        null,
+        { consent: false, dryRun: true },
+        context
+      )
+    ).resolves.toEqual({
+      status: "OK",
+      historicalLoanConsent: {
+        isGranted: false,
+        canBeChanged: true,
+        status: "NOT_GRANTED",
+      },
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+    expect(load).not.toHaveBeenCalled();
   });
 
   test.each([
