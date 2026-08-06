@@ -2,6 +2,20 @@
  * @file This file contains utility functions for handling patron-related operations.
  */
 
+import { GraphQLError } from "graphql";
+
+export function badUserInput(message) {
+  return new GraphQLError(
+    message,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    { code: "BAD_USER_INPUT" }
+  );
+}
+
 // Helper function to determine overall status based on item statuses.
 export function getOverallStatus(items = [], successStatuses = ["OK"]) {
   if (items.length === 0) return "OK";
@@ -30,17 +44,32 @@ export function normalizeBookmarkId(id) {
   return String(id);
 }
 
-// Helper for parsing legacy bookmark ids
-export function parseLegacyBookmarkId(id) {
-  if (typeof id !== "string" || !/^\d+$/.test(id)) {
-    return null;
-  }
+const namespacedMaterialIdPattern = /^[^\s:]+:[^\s]+$/;
 
-  const parsedId = Number.parseInt(id, 10);
+export function isPid(materialId) {
+  return (
+    typeof materialId === "string" &&
+    !materialId.startsWith("work-of:") &&
+    namespacedMaterialIdPattern.test(materialId)
+  );
+}
 
-  if (Number.isNaN(parsedId)) {
-    return null;
-  }
+export function isWorkId(materialId) {
+  return (
+    typeof materialId === "string" &&
+    materialId.startsWith("work-of:") &&
+    isPid(materialId.slice("work-of:".length))
+  );
+}
 
-  return parsedId;
+export function isFaustNumber(materialId) {
+  return typeof materialId === "string" && /^\d+$/.test(materialId);
+}
+
+export function isBookmarkMaterialId(materialId) {
+  return isWorkId(materialId) || isPid(materialId);
+}
+
+export function isHistoricalLoanMaterialId(materialId) {
+  return isFaustNumber(materialId) || isPid(materialId);
 }

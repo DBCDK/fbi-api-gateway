@@ -1,0 +1,616 @@
+# Patron
+
+The `patron` root field provides the authenticated patron's profile, library
+accounts, bookmarks, current loans, historical loans and consent for storing
+historical loans.
+
+Both queries and mutations require an authenticated Bearer token. The patron is
+identified from the token, so no user ID or CPR number is supplied as an
+argument. The Patron API is currently marked as `@draft` in the schema.
+
+Pagination defaults to `offset: 0` and `limit: 10`. `limit` accepts values from
+1 through 100.
+
+## Basic patron information
+
+The fields directly on `Patron` describe the account used for the current
+login. Some profile fields are nullable because availability depends on the
+login and the local library system.
+
+<InlineGraphiQL
+  query={`
+    query Example_PatronProfile {
+      patron {
+        name
+        email
+        municipalityNumber
+        municipalityAgencyId
+        address
+        postalCode
+        country
+        loggedInAgencyId
+        loggedInBranchId
+        blocked
+      }
+    }
+  `}
+/>
+
+## Library accounts
+
+`accounts` contains at most one preferred account per agency. CPR-backed
+accounts are preferred, with a local account used when the agency has no CPR
+account. Account details are read live from the relevant library system.
+
+Each account links to its library agency and all branches belonging to that
+agency.
+
+<InlineGraphiQL
+  query={`
+    query Example_PatronAccounts {
+      patron {
+        accounts {
+          name
+          email
+          municipalityNumber
+          municipalityAgencyId
+          address
+          postalCode
+          country
+          blocked
+          agency {
+            id
+            name
+            names
+            type
+            openingHours
+            status
+            city
+            postalCode
+            address
+            phone
+            email
+            websiteUrl
+            catalogueUrl
+            lookupUrl
+            temporarilyClosed
+            pickupAllowed
+            numberOfBranches
+            branches {
+              id
+              name
+              type
+              openingHours
+              status
+              city
+              postalCode
+              address
+              phone
+              email
+              websiteUrl
+              catalogueUrl
+              lookupUrl
+              temporarilyClosed
+              pickupAllowed
+              agency {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  `}
+/>
+
+## Bookmarks
+
+Bookmarks are stored in UserData and belong to the application configured for
+the calling client. The optional `applications` argument filters the result by
+one or more applications.
+
+Bookmarks can be sorted by creation time or title:
+
+`OrderBookmarksByEnum` accepts `CREATEDAT_ASC`, `CREATEDAT_DESC`, `TITLE_ASC`
+and `TITLE_DESC`.
+
+The result contains both the stored snapshot and the currently resolved
+material. `material` is a `Work` for work IDs and a `Manifestation` for PIDs.
+It can be null if the material can no longer be resolved; the stored snapshot
+remains available.
+
+<InlineGraphiQL
+  query={`
+    query Example_PatronBookmarks(
+      $applications: [String!]
+      $orderBy: OrderBookmarksByEnum
+      $offset: Int
+      $limit: PaginationLimitScalar
+    ) {
+      patron {
+        bookmarks(
+          applications: $applications
+          orderBy: $orderBy
+          offset: $offset
+          limit: $limit
+        ) {
+          hitcount
+          status
+          items {
+            id
+            materialId
+            createdAt
+            application
+            snapshot {
+              version
+              pid
+              workId
+              title
+              creator
+              materialType
+              workType
+              periodical {
+                edition
+                pages
+                publisher
+                language
+              }
+            }
+            material {
+              ... on Work {
+                workId
+                titles {
+                  main
+                }
+              }
+              ... on Manifestation {
+                pid
+                titles {
+                  main
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    applications: ["BIBLIOTEKDK", "STUDIESOEG"],
+    orderBy: "CREATEDAT_DESC",
+    offset: 0,
+    limit: 10,
+  }}
+/>
+
+Bookmark collection status values:
+
+`BookmarksOverallStatusEnum` can be `OK`, `FAILED`, `PARTIALLY_FAILED`,
+`ERROR_UNAUTHENTICATED_TOKEN` or `ERROR_MISSING_CLIENT_CONFIGURATION`.
+
+### Add bookmarks
+
+`addBookmarks` accepts PIDs and work IDs. Snapshot metadata is resolved and
+created by the API; clients only submit `materialId`.
+
+When `dryRun` is `true`, identifiers and materials are validated without
+writing to UserData. Existing bookmarks are reported as `ALREADY_EXISTS` and
+are considered successful by the overall status.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_AddPatronBookmarks(
+      $bookmarks: [BookmarksInput!]!
+      $dryRun: Boolean
+    ) {
+      patron {
+        addBookmarks(bookmarks: $bookmarks, dryRun: $dryRun) {
+          status
+          items {
+            id
+            materialId
+            status
+            material {
+              ... on Work {
+                workId
+              }
+              ... on Manifestation {
+                pid
+              }
+            }
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    bookmarks: [
+      { materialId: "work-of:870970-basis:54029519" },
+      { materialId: "870970-basis:54029519" },
+    ],
+    dryRun: true,
+  }}
+/>
+
+### Delete bookmarks
+
+Bookmarks are deleted by their public bookmark IDs, not by `materialId`.
+`dryRun` validates the IDs without deleting anything.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_DeletePatronBookmarks(
+      $ids: [String!]!
+      $dryRun: Boolean
+    ) {
+      patron {
+        deleteBookmarks(ids: $ids, dryRun: $dryRun) {
+          status
+          items {
+            id
+            materialId
+            status
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    ids: ["45fb4d52-d7f7-4c36-a94f-37a00eb60163"],
+    dryRun: true,
+  }}
+/>
+
+Per-item bookmark mutation statuses:
+
+`BookmarksStatusEnum` can be `OK`, `FAILED`, `INVALID_ID`,
+`INVALID_MATERIAL_ID`, `ALREADY_EXISTS`, `NOT_FOUND` or `UNKNOWN_ERROR`.
+
+## Current loans
+
+Current loans are fetched live from OpenUserStatus. They can be filtered by
+`ACTIVE` or `OVERDUE`, sorted by due date or title, and paginated. A loan is
+considered overdue when its due date is before the current date in the
+`Europe/Copenhagen` timezone.
+
+`PatronLoanStatusEnum` accepts `ACTIVE` and `OVERDUE`.
+
+`OrderLoansByEnum` accepts `DUEDATE_ASC`, `DUEDATE_DESC`, `TITLE_ASC` and
+`TITLE_DESC`.
+
+<InlineGraphiQL
+  query={`
+    query Example_PatronCurrentLoans(
+      $status: PatronLoanStatusEnum
+      $orderBy: OrderLoansByEnum
+      $offset: Int
+      $limit: PaginationLimitScalar
+    ) {
+      patron {
+        currentLoans(
+          status: $status
+          orderBy: $orderBy
+          offset: $offset
+          limit: $limit
+        ) {
+          hitcount
+          status
+          items {
+            id
+            dueDate
+            status
+            account {
+              name
+              email
+              municipalityNumber
+              municipalityAgencyId
+              address
+              postalCode
+              country
+              blocked
+              agency {
+                id
+                name
+              }
+            }
+            agency {
+              id
+              name
+              branches {
+                id
+                name
+              }
+            }
+            manifestation {
+              pid
+              ownerWork {
+                workId
+              }
+              titles {
+                main
+              }
+            }
+            snapshot {
+              pid
+              workId
+              title
+              creator
+              materialType
+              workType
+            }
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    status: "ACTIVE",
+    orderBy: "DUEDATE_ASC",
+    offset: 0,
+    limit: 10,
+  }}
+/>
+
+## Historical-loan consent
+
+Historical-loan consent is independent of the legacy `persistUserData`
+setting. `isGranted` describes the stored consent, while `canBeChanged`
+indicates whether the patron's age can be verified as at least 15 years.
+
+Age verification primarily uses `birthDate` and `birthYear` from userinfo and
+falls back to the CPR field. The CPR number itself is neither exposed by the
+Patron API nor sent to UserData.
+
+<InlineGraphiQL
+  query={`
+    query Example_PatronHistoricalLoanConsent {
+      patron {
+        historicalLoanConsent {
+          isGranted
+          canBeChanged
+          status
+        }
+      }
+    }
+  `}
+/>
+
+Consent status values:
+
+`PatronHistoricalLoanConsentStatusEnum` can be `GRANTED`, `NOT_GRANTED`,
+`UNDER_AGE`, `AGE_NOT_VERIFIABLE`, `ERROR_UNAUTHENTICATED_TOKEN` or `FAILED`.
+
+A patron with a verified age and no consent receives a result similar to:
+
+```json
+{
+  "isGranted": false,
+  "canBeChanged": true,
+  "status": "NOT_GRANTED"
+}
+```
+
+### Change historical-loan consent
+
+The mutation result separates the operation status from the consent state.
+`status: OK` means the operation completed, and `historicalLoanConsent` then
+contains the resulting state.
+
+Setting `consent` to `false` withdraws consent. UserData permanently deletes
+all of the patron's historical loans and suppressions as part of that
+operation. Set `dryRun` to `true` to validate and preview the resulting consent
+state without changing consent or deleting data. The example below is a dry
+run.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_SetPatronHistoricalLoanConsent(
+      $consent: Boolean!
+      $dryRun: Boolean
+    ) {
+      patron {
+        setHistoricalLoanConsent(consent: $consent, dryRun: $dryRun) {
+          status
+          historicalLoanConsent {
+            isGranted
+            canBeChanged
+            status
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    consent: false,
+    dryRun: true,
+  }}
+/>
+
+Consent mutation operation statuses:
+
+`SetHistoricalLoanConsentStatusEnum` can be `OK`, `UNDER_AGE`,
+`AGE_NOT_VERIFIABLE`, `ERROR_UNAUTHENTICATED_TOKEN` or `FAILED`.
+
+When an update cannot be performed, `historicalLoanConsent` is null and the
+outer status explains why:
+
+```json
+{
+  "status": "AGE_NOT_VERIFIABLE",
+  "historicalLoanConsent": null
+}
+```
+
+## Historical loans
+
+Historical loans are stored in UserData and require historical-loan consent.
+The result is paginated in UserData's service order.
+
+If consent has not been granted, the collection has no items and returns
+`CONSENT_REQUIRED`:
+
+```json
+{
+  "hitcount": 0,
+  "status": "CONSENT_REQUIRED",
+  "items": []
+}
+```
+
+<InlineGraphiQL
+  query={`
+    query Example_PatronHistoricalLoans(
+      $offset: Int
+      $limit: PaginationLimitScalar
+    ) {
+      patron {
+        historicalLoans(offset: $offset, limit: $limit) {
+          hitcount
+          status
+          items {
+            id
+            loanedAt
+            returnedAt
+            account {
+              name
+              email
+              blocked
+              agency {
+                id
+                name
+              }
+            }
+            agency {
+              id
+              name
+            }
+            manifestation {
+              pid
+              ownerWork {
+                workId
+              }
+              titles {
+                main
+              }
+            }
+            snapshot {
+              version
+              pid
+              workId
+              title
+              creator
+              materialType
+              workType
+              periodical {
+                edition
+                pages
+                publisher
+                language
+              }
+            }
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    offset: 0,
+    limit: 10,
+  }}
+/>
+
+Loan collection and operation statuses:
+
+`PatronLoansOverallStatusEnum` can be `OK`, `FAILED`, `PARTIALLY_FAILED`,
+`ERROR_UNAUTHENTICATED_TOKEN`, `ERROR_MANUAL_ADDS_DISABLED` or
+`CONSENT_REQUIRED`.
+
+### Add historical loans
+
+Manual historical-loan creation is intended for integration testing and can be
+disabled by UserData. Consent is required before a loan can be stored.
+
+`materialId` accepts a PID or a numeric faust number. Dates use `YYYY-MM-DD`,
+and `returnedAt` cannot be earlier than `loanedAt`. Snapshot metadata is
+resolved by the API and cannot be supplied by the client.
+
+When `dryRun` is true, identifiers, date ranges and material resolution are
+validated without storing loans.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_AddPatronHistoricalLoans(
+      $loans: [PatronHistoricalLoanInput!]!
+      $dryRun: Boolean
+    ) {
+      patron {
+        addHistoricalLoans(loans: $loans, dryRun: $dryRun) {
+          status
+          items {
+            id
+            materialId
+            status
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    loans: [
+      {
+        agencyId: "710100",
+        materialId: "54029519",
+        loanedAt: "2026-01-10",
+        returnedAt: "2026-01-31",
+      },
+    ],
+    dryRun: true,
+  }}
+/>
+
+### Delete historical loans
+
+Historical loans are deleted by their public UserData IDs. `dryRun` validates
+the IDs without deleting loans.
+
+<InlineGraphiQL
+  query={`
+    mutation Example_DeletePatronHistoricalLoans(
+      $ids: [String!]!
+      $dryRun: Boolean
+    ) {
+      patron {
+        deleteHistoricalLoans(ids: $ids, dryRun: $dryRun) {
+          status
+          items {
+            id
+            materialId
+            status
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    ids: ["56ac5e63-e8a8-4d47-b05f-48b11fc71274"],
+    dryRun: true,
+  }}
+/>
+
+Per-item historical-loan mutation statuses:
+
+`PatronLoanMutationStatusEnum` can be `OK`, `FAILED`, `INVALID_ID`,
+`INVALID_MATERIAL_ID`, `INVALID_DATE_RANGE`, `ALREADY_EXISTS`, `NOT_FOUND` or
+`UNKNOWN_ERROR`.
+
+## Status handling
+
+Patron collection and mutation fields return status enums instead of throwing
+for expected service and authentication outcomes. Input validation errors,
+such as a negative offset or an empty mutation batch, are returned as GraphQL
+errors with the code `BAD_USER_INPUT`.
+
+Clients should inspect both the collection or operation status and individual
+item statuses. For batch mutations, `PARTIALLY_FAILED` means at least one item
+succeeded and at least one item failed.

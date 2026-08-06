@@ -5,13 +5,12 @@ import Link from "@/components/base/link";
 import Text from "@/components/base/text";
 import Title from "@/components/base/title";
 
-import clientBasedAccessNews from "./clientBasedAccessNews";
+import whatsNewNews from "./whatsNewNews";
 import styles from "./WhatsNew.module.css";
 import {
   WHATS_NEW_RESTORED_EVENT,
-  getResolvedWhatsNew,
-  getWhatsNewStorageKey,
-  isExpired,
+  getVisibleWhatsNew,
+  markWhatsNewSeen,
 } from "./utils";
 
 function renderBody(body = "", { interactive = true } = {}) {
@@ -87,32 +86,18 @@ function renderBody(body = "", { interactive = true } = {}) {
 }
 
 export default function WhatsNew() {
-  const resolvedNews = getResolvedWhatsNew(clientBasedAccessNews);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [visibleNews, setVisibleNews] = useState([]);
 
   useEffect(() => {
-    if (!resolvedNews.newsId) {
-      setIsHydrated(true);
-      return;
-    }
-
-    try {
-      const isStoredDismissed =
-        localStorage.getItem(getWhatsNewStorageKey(resolvedNews.newsId)) ===
-        "true";
-      setIsDismissed(isStoredDismissed);
-    } catch {}
-
+    setVisibleNews(getVisibleWhatsNew(whatsNewNews));
     setIsHydrated(true);
-  }, [resolvedNews.newsId]);
+  }, []);
 
   useEffect(() => {
-    function handleNewsRestored(event) {
-      if (event?.detail?.newsId !== resolvedNews.newsId) {
-        return;
-      }
-
+    function handleNewsRestored() {
+      setVisibleNews(getVisibleWhatsNew(whatsNewNews));
       setIsDismissed(false);
     }
 
@@ -121,32 +106,20 @@ export default function WhatsNew() {
     return () => {
       window.removeEventListener(WHATS_NEW_RESTORED_EVENT, handleNewsRestored);
     };
-  }, [resolvedNews.newsId]);
+  }, []);
 
   function dismissNews() {
+    markWhatsNewSeen(visibleNews);
     setIsDismissed(true);
-
-    if (!resolvedNews.newsId) {
-      return;
-    }
-
-    try {
-      localStorage.setItem(getWhatsNewStorageKey(resolvedNews.newsId), "true");
-    } catch {}
   }
 
-  if (
-    !isHydrated ||
-    isDismissed ||
-    !resolvedNews.active ||
-    isExpired(resolvedNews)
-  ) {
+  if (!isHydrated || isDismissed || visibleNews.length === 0) {
     return null;
   }
 
   return (
     <Carousel
-      items={resolvedNews.slides.filter((slide) => slide?.title && slide?.body)}
+      items={visibleNews}
       className={styles.wrap}
       contentClassName={styles.content}
       closeClassName={styles.closeButton}
@@ -162,7 +135,7 @@ export default function WhatsNew() {
       completeLabel="Got it"
       onClose={dismissNews}
       onComplete={dismissNews}
-      getItemKey={(slide, index) => `${slide.title}-${index}`}
+      getItemKey={(slide) => slide.id}
       getItemAriaLabel={(slide, index) =>
         `Show what's new item ${index + 1}${slide.title ? `: ${slide.title}` : ""}`
       }

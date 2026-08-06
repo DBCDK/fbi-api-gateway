@@ -39,6 +39,115 @@ button.graphiql-un-styled .graphiql-toolbar-icon {
   background-color: hsla(var(--color-neutral), var(--alpha-background-light));
 }
 
+@keyframes graphiql-plugin-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.graphiql-container
+  .graphiql-plugin
+  > :is(.graphiql-doc-explorer, .graphiql-history) {
+  animation: graphiql-plugin-slide-in 200ms ease-out;
+}
+
+/*
+ * GraphiQL 3.8 uses Headless UI roles for the documentation explorer search,
+ * while the vendored GraphiQL stylesheet still targets Reach UI attributes.
+ */
+.graphiql-container
+  .graphiql-doc-explorer-search:not([data-state="idle"]) {
+  border: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
+  border-radius: var(--border-radius-4);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.14),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  height: auto;
+}
+
+.graphiql-container .graphiql-doc-explorer-search {
+  left: auto;
+  transition: width 180ms ease-out;
+  width: 7rem;
+}
+
+.graphiql-container .graphiql-doc-explorer-search:focus-within {
+  left: auto;
+  width: 100%;
+}
+
+.graphiql-container
+  .graphiql-doc-explorer-search
+  [role="combobox"] {
+  background-color: transparent;
+  border: none;
+  margin-left: var(--px-4);
+  min-width: 0;
+  outline: none;
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graphiql-container .graphiql-doc-explorer-search {
+    transition: none;
+  }
+
+  .graphiql-container
+    .graphiql-plugin
+    > :is(.graphiql-doc-explorer, .graphiql-history) {
+    animation: none;
+  }
+}
+
+.graphiql-container
+  .graphiql-doc-explorer-search:not([data-state="idle"])
+  .graphiql-doc-explorer-search-input,
+.graphiql-container .graphiql-doc-explorer-search [role="listbox"] {
+  background-color: hsl(var(--color-base));
+}
+
+.graphiql-container .graphiql-doc-explorer-search [role="listbox"] {
+  border: none;
+  border-bottom-left-radius: var(--border-radius-4);
+  border-bottom-right-radius: var(--border-radius-4);
+  border-top: 1px solid
+    hsla(var(--color-neutral), var(--alpha-background-heavy));
+  font-size: var(--font-size-body);
+  list-style: none;
+  margin: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: var(--px-4);
+  position: relative;
+}
+
+.graphiql-container .graphiql-doc-explorer-search [role="option"] {
+  border-radius: var(--border-radius-4);
+  color: hsla(var(--color-neutral), var(--alpha-secondary));
+  cursor: pointer;
+  overflow-x: hidden;
+  padding: var(--px-8) var(--px-12);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.graphiql-container
+  .graphiql-doc-explorer-search
+  [role="option"][data-headlessui-state="active"] {
+  background-color: hsla(var(--color-neutral), var(--alpha-background-light));
+}
+
+.graphiql-container .graphiql-doc-explorer-search [role="option"]:hover {
+  background-color: hsla(var(--color-neutral), var(--alpha-background-medium));
+}
+
 /* History */
 
 .graphiql-history-header {

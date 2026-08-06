@@ -66,6 +66,8 @@ pipeline {
                         sonarOptions += " -Dsonar.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts,**/.next/**"
                         sonarOptions += " -Dsonar.test.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
                         sonarOptions += " -Dsonar.coverage.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
+                        // Declarative news records intentionally share a schema; keep them out of duplication detection only.
+                        sonarOptions += " -Dsonar.cpd.exclusions=website/src/components/whats-new/whatsNewNews.js"
 
                         sh returnStatus: true, script: """
                         $SONAR_SCANNER $sonarOptions -Dsonar.token=${SONAR_AUTH_TOKEN} -Dsonar.projectKey="${SONAR_PROJECT_KEY}"

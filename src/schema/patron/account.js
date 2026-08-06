@@ -42,7 +42,7 @@ export const typeDef = `
         The postal code of the patron.
         """
         postalCode: String
-        
+
         """
         The country of the patron.
         """
