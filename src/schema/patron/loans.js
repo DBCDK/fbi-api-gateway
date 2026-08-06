@@ -13,6 +13,7 @@ import {
   isHistoricalLoanMaterialId,
   badUserInput,
 } from "./utils";
+import { buildPatronMaterialSnapshot } from "./snapshot";
 
 const historicalLoanIdPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -228,53 +229,6 @@ function getCurrentLoansPage(loans, { orderBy, status, offset, limit }) {
   };
 }
 
-function firstCreator(manifestation) {
-  if (Array.isArray(manifestation?.creators)) {
-    return manifestation.creators[0]?.display || null;
-  }
-
-  return (
-    manifestation?.creators?.persons?.[0]?.display ||
-    manifestation?.creators?.corporations?.[0]?.display ||
-    null
-  );
-}
-
-function materialTypeCode(manifestation) {
-  const specific = manifestation?.materialTypes?.[0]?.specific;
-  return (typeof specific === "string" ? specific : specific?.code) || null;
-}
-
-function mainLanguage(manifestation) {
-  const language = manifestation?.languages?.main?.[0];
-  if (typeof language === "string") {
-    return language;
-  }
-
-  return language?.isoCode || language?.iso639Set2 || language?.display || null;
-}
-
-function buildHistoricalLoanSnapshot(manifestation) {
-  const hostPublication = manifestation?.hostPublication;
-
-  return {
-    pid: manifestation?.pid || null,
-    workId: manifestation?.workId || manifestation?.ownerWork?.workId || null,
-    title: manifestation?.titles?.main?.[0] || null,
-    creator: firstCreator(manifestation),
-    materialType: materialTypeCode(manifestation),
-    workType: manifestation?.workTypes?.[0] || null,
-    periodical: hostPublication
-      ? {
-          edition: hostPublication.edition || null,
-          pages: hostPublication.pages || null,
-          publisher: hostPublication.publisher || null,
-          language: mainLanguage(manifestation),
-        }
-      : null,
-  };
-}
-
 function normalizeDate(value) {
   return value instanceof Date
     ? value.toISOString().slice(0, 10)
@@ -321,7 +275,7 @@ function toServiceHistoricalLoan(loan, manifestation) {
     returnedAt: loan.returnedAt,
     materialId: loan.materialId,
     materialIdType: loan.materialIdType,
-    snapshot: buildHistoricalLoanSnapshot(manifestation),
+    snapshot: buildPatronMaterialSnapshot(manifestation),
   };
 }
 
@@ -411,6 +365,7 @@ export const typeDef = `
         """
         setHistoricalLoanConsent(
           consent: Boolean!
+          dryRun: Boolean
         ): SetHistoricalLoanConsentResponse!
     }
 
@@ -756,7 +711,17 @@ export const resolvers = {
         };
       }
 
-      const { consent } = args;
+      const { consent, dryRun = false } = args;
+      if (dryRun) {
+        return {
+          status: "OK",
+          historicalLoanConsent: historicalLoanConsentResponse(
+            consent,
+            eligibility
+          ),
+        };
+      }
+
       try {
         const loader = context.datasources.getLoader(
           "userDataV2SetHistoricalLoanConsent"

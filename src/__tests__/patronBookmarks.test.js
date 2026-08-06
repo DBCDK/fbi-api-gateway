@@ -211,11 +211,18 @@ describe("Patron bookmarks", () => {
   test("addBookmarks sends snapshots and maps ordered V2 results", async () => {
     resolveMaterial
       .mockResolvedValueOnce({
+        pid: "pid:1",
         workId: "work-1",
         titles: { main: ["Stored title"] },
         creators: { persons: [{ display: "Stored creator" }] },
         materialTypes: [{ specific: { code: "BOOK" } }],
         workTypes: ["LITERATURE"],
+        hostPublication: {
+          edition: "Årg. 10",
+          pages: "S. 12-15",
+          publisher: "Eksempelbladet",
+        },
+        languages: { main: [{ isoCode: "dan" }] },
       })
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce({ workId: "work-3" });
@@ -256,21 +263,30 @@ describe("Patron bookmarks", () => {
         {
           materialId: "pid:1",
           snapshot: {
+            pid: "pid:1",
             workId: "work-1",
             title: "Stored title",
             creator: "Stored creator",
             materialType: "BOOK",
             workType: "LITERATURE",
+            periodical: {
+              edition: "Årg. 10",
+              pages: "S. 12-15",
+              publisher: "Eksempelbladet",
+              language: "dan",
+            },
           },
         },
         {
           materialId: "pid:3",
           snapshot: {
+            pid: null,
             workId: "work-3",
             title: null,
             creator: null,
             materialType: null,
             workType: null,
+            periodical: null,
           },
         },
       ],

@@ -112,7 +112,8 @@ one or more applications.
 
 Bookmarks can be sorted by creation time or title:
 
-<DescribeEnum name="OrderBookmarksByEnum" />
+`OrderBookmarksByEnum` accepts `CREATEDAT_ASC`, `CREATEDAT_DESC`, `TITLE_ASC`
+and `TITLE_DESC`.
 
 The result contains both the stored snapshot and the currently resolved
 material. `material` is a `Work` for work IDs and a `Manifestation` for PIDs.
@@ -185,7 +186,8 @@ remains available.
 
 Bookmark collection status values:
 
-<DescribeEnum name="BookmarksOverallStatusEnum" />
+`BookmarksOverallStatusEnum` can be `OK`, `FAILED`, `PARTIALLY_FAILED`,
+`ERROR_UNAUTHENTICATED_TOKEN` or `ERROR_MISSING_CLIENT_CONFIGURATION`.
 
 ### Add bookmarks
 
@@ -262,7 +264,8 @@ Bookmarks are deleted by their public bookmark IDs, not by `materialId`.
 
 Per-item bookmark mutation statuses:
 
-<DescribeEnum name="BookmarksStatusEnum" />
+`BookmarksStatusEnum` can be `OK`, `FAILED`, `INVALID_ID`,
+`INVALID_MATERIAL_ID`, `ALREADY_EXISTS`, `NOT_FOUND` or `UNKNOWN_ERROR`.
 
 ## Current loans
 
@@ -271,9 +274,10 @@ Current loans are fetched live from OpenUserStatus. They can be filtered by
 considered overdue when its due date is before the current date in the
 `Europe/Copenhagen` timezone.
 
-<DescribeEnum name="PatronLoanStatusEnum" />
+`PatronLoanStatusEnum` accepts `ACTIVE` and `OVERDUE`.
 
-<DescribeEnum name="OrderLoansByEnum" />
+`OrderLoansByEnum` accepts `DUEDATE_ASC`, `DUEDATE_DESC`, `TITLE_ASC` and
+`TITLE_DESC`.
 
 <InlineGraphiQL
   query={`
@@ -374,7 +378,8 @@ Patron API nor sent to UserData.
 
 Consent status values:
 
-<DescribeEnum name="PatronHistoricalLoanConsentStatusEnum" />
+`PatronHistoricalLoanConsentStatusEnum` can be `GRANTED`, `NOT_GRANTED`,
+`UNDER_AGE`, `AGE_NOT_VERIFIABLE`, `ERROR_UNAUTHENTICATED_TOKEN` or `FAILED`.
 
 A patron with a verified age and no consent receives a result similar to:
 
@@ -388,19 +393,24 @@ A patron with a verified age and no consent receives a result similar to:
 
 ### Change historical-loan consent
 
-The mutation result separates the operation status from the updated consent
-state. `status: OK` means the update completed, and `historicalLoanConsent`
-then contains the state stored by UserData.
+The mutation result separates the operation status from the consent state.
+`status: OK` means the operation completed, and `historicalLoanConsent` then
+contains the resulting state.
 
 Setting `consent` to `false` withdraws consent. UserData permanently deletes
 all of the patron's historical loans and suppressions as part of that
-operation.
+operation. Set `dryRun` to `true` to validate and preview the resulting consent
+state without changing consent or deleting data. The example below is a dry
+run.
 
 <InlineGraphiQL
   query={`
-    mutation Example_SetPatronHistoricalLoanConsent($consent: Boolean!) {
+    mutation Example_SetPatronHistoricalLoanConsent(
+      $consent: Boolean!
+      $dryRun: Boolean
+    ) {
       patron {
-        setHistoricalLoanConsent(consent: $consent) {
+        setHistoricalLoanConsent(consent: $consent, dryRun: $dryRun) {
           status
           historicalLoanConsent {
             isGranted
@@ -413,12 +423,14 @@ operation.
   `}
   variables={{
     consent: false,
+    dryRun: true,
   }}
 />
 
 Consent mutation operation statuses:
 
-<DescribeEnum name="SetHistoricalLoanConsentStatusEnum" />
+`SetHistoricalLoanConsentStatusEnum` can be `OK`, `UNDER_AGE`,
+`AGE_NOT_VERIFIABLE`, `ERROR_UNAUTHENTICATED_TOKEN` or `FAILED`.
 
 When an update cannot be performed, `historicalLoanConsent` is null and the
 outer status explains why:
@@ -510,7 +522,9 @@ If consent has not been granted, the collection has no items and returns
 
 Loan collection and operation statuses:
 
-<DescribeEnum name="PatronLoansOverallStatusEnum" />
+`PatronLoansOverallStatusEnum` can be `OK`, `FAILED`, `PARTIALLY_FAILED`,
+`ERROR_UNAUTHENTICATED_TOKEN`, `ERROR_MANUAL_ADDS_DISABLED` or
+`CONSENT_REQUIRED`.
 
 ### Add historical loans
 
@@ -586,7 +600,9 @@ the IDs without deleting loans.
 
 Per-item historical-loan mutation statuses:
 
-<DescribeEnum name="PatronLoanMutationStatusEnum" />
+`PatronLoanMutationStatusEnum` can be `OK`, `FAILED`, `INVALID_ID`,
+`INVALID_MATERIAL_ID`, `INVALID_DATE_RANGE`, `ALREADY_EXISTS`, `NOT_FOUND` or
+`UNKNOWN_ERROR`.
 
 ## Status handling
 
