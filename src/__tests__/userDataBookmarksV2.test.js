@@ -23,7 +23,7 @@ describe("UserData Bookmark V2 datasources", () => {
       getBookmarks(
         {
           accessToken,
-          filterApplications: ["BIBLIOTEKDK"],
+          filterApplications: ["BIBLIOTEKDK", "STUDIESOEG"],
           orderBy: "CREATEDAT_DESC",
           offset: 0,
           limit: 10,
@@ -33,19 +33,10 @@ describe("UserData Bookmark V2 datasources", () => {
     ).resolves.toEqual({ hitcount: 0, items: [] });
 
     expect(context.fetch).toHaveBeenCalledWith(
-      `${config.datasources.userdata.url}v2/bookmark/get`,
+      `${config.datasources.userdata.url}v2/bookmark/get?filterApplications=BIBLIOTEKDK&filterApplications=STUDIESOEG&orderBy=CREATEDAT_DESC&offset=0&limit=10`,
       {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          filterApplications: ["BIBLIOTEKDK"],
-          orderBy: "CREATEDAT_DESC",
-          offset: 0,
-          limit: 10,
-        }),
+        headers: { Authorization: `Bearer ${accessToken}` },
+        method: "GET",
       }
     );
   });
