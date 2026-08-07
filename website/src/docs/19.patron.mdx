@@ -106,14 +106,13 @@ agency.
 
 ## Bookmarks
 
-Bookmarks are stored in UserData and belong to the application configured for
-the calling client. The optional `applications` argument filters the result by
-one or more applications.
+Bookmarks belong to the application configured for the calling client. The
+optional `applications` argument filters the result by one or more
+applications.
 
 Bookmarks can be sorted by creation time or title:
 
-`OrderBookmarksByEnum` accepts `CREATEDAT_ASC`, `CREATEDAT_DESC`, `TITLE_ASC`
-and `TITLE_DESC`.
+<DescribeEnum name="OrderBookmarksByEnum" />
 
 The result contains both the stored snapshot and the currently resolved
 material. `material` is a `Work` for work IDs and a `Manifestation` for PIDs.
@@ -186,8 +185,7 @@ remains available.
 
 Bookmark collection status values:
 
-`BookmarksOverallStatusEnum` can be `OK`, `FAILED`, `PARTIALLY_FAILED`,
-`ERROR_UNAUTHENTICATED_TOKEN` or `ERROR_MISSING_CLIENT_CONFIGURATION`.
+<DescribeEnum name="BookmarksOverallStatusEnum" />
 
 ### Add bookmarks
 
@@ -195,8 +193,8 @@ Bookmark collection status values:
 created by the API; clients only submit `materialId`.
 
 When `dryRun` is `true`, identifiers and materials are validated without
-writing to UserData. Existing bookmarks are reported as `ALREADY_EXISTS` and
-are considered successful by the overall status.
+storing bookmarks. Existing bookmarks are reported as `ALREADY_EXISTS` and are
+considered successful by the overall status.
 
 <InlineGraphiQL
   query={`
@@ -264,8 +262,7 @@ Bookmarks are deleted by their public bookmark IDs, not by `materialId`.
 
 Per-item bookmark mutation statuses:
 
-`BookmarksStatusEnum` can be `OK`, `FAILED`, `INVALID_ID`,
-`INVALID_MATERIAL_ID`, `ALREADY_EXISTS`, `NOT_FOUND` or `UNKNOWN_ERROR`.
+<DescribeEnum name="BookmarksStatusEnum" />
 
 ## Current loans
 
@@ -274,10 +271,13 @@ Current loans are fetched live from OpenUserStatus. They can be filtered by
 considered overdue when its due date is before the current date in the
 `Europe/Copenhagen` timezone.
 
-`PatronLoanStatusEnum` accepts `ACTIVE` and `OVERDUE`.
+Loan status values:
 
-`OrderLoansByEnum` accepts `DUEDATE_ASC`, `DUEDATE_DESC`, `TITLE_ASC` and
-`TITLE_DESC`.
+<DescribeEnum name="PatronLoanStatusEnum" />
+
+Loan sorting values:
+
+<DescribeEnum name="OrderLoansByEnum" />
 
 <InlineGraphiQL
   query={`
@@ -354,13 +354,12 @@ considered overdue when its due date is before the current date in the
 
 ## Historical-loan consent
 
-Historical-loan consent is independent of the legacy `persistUserData`
-setting. `isGranted` describes the stored consent, while `canBeChanged`
-indicates whether the patron's age can be verified as at least 15 years.
+`isGranted` describes the stored consent, while `canBeChanged` indicates
+whether the patron's age can be verified as at least 15 years.
 
 Age verification primarily uses `birthDate` and `birthYear` from userinfo and
-falls back to the CPR field. The CPR number itself is neither exposed by the
-Patron API nor sent to UserData.
+falls back to the CPR field. The CPR number itself is not exposed by the Patron
+API or retained as part of this feature.
 
 <InlineGraphiQL
   query={`
@@ -378,18 +377,7 @@ Patron API nor sent to UserData.
 
 Consent status values:
 
-`PatronHistoricalLoanConsentStatusEnum` can be `GRANTED`, `NOT_GRANTED`,
-`UNDER_AGE`, `AGE_NOT_VERIFIABLE`, `ERROR_UNAUTHENTICATED_TOKEN` or `FAILED`.
-
-A patron with a verified age and no consent receives a result similar to:
-
-```json
-{
-  "isGranted": false,
-  "canBeChanged": true,
-  "status": "NOT_GRANTED"
-}
-```
+<DescribeEnum name="PatronHistoricalLoanConsentStatusEnum" />
 
 ### Change historical-loan consent
 
@@ -397,11 +385,10 @@ The mutation result separates the operation status from the consent state.
 `status: OK` means the operation completed, and `historicalLoanConsent` then
 contains the resulting state.
 
-Setting `consent` to `false` withdraws consent. UserData permanently deletes
-all of the patron's historical loans and suppressions as part of that
-operation. Set `dryRun` to `true` to validate and preview the resulting consent
-state without changing consent or deleting data. The example below is a dry
-run.
+Setting `consent` to `false` withdraws consent and permanently deletes all of
+the patron's historical loans. Set `dryRun` to `true` to
+validate and preview the resulting consent state without changing consent or
+deleting data. The example below is a dry run.
 
 <InlineGraphiQL
   query={`
@@ -429,8 +416,7 @@ run.
 
 Consent mutation operation statuses:
 
-`SetHistoricalLoanConsentStatusEnum` can be `OK`, `UNDER_AGE`,
-`AGE_NOT_VERIFIABLE`, `ERROR_UNAUTHENTICATED_TOKEN` or `FAILED`.
+<DescribeEnum name="SetHistoricalLoanConsentStatusEnum" />
 
 When an update cannot be performed, `historicalLoanConsent` is null and the
 outer status explains why:
@@ -444,8 +430,8 @@ outer status explains why:
 
 ## Historical loans
 
-Historical loans are stored in UserData and require historical-loan consent.
-The result is paginated in UserData's service order.
+Historical loans are only retained when historical-loan consent has been
+granted. Results are paginated and returned in their default order.
 
 If consent has not been granted, the collection has no items and returns
 `CONSENT_REQUIRED`:
@@ -522,14 +508,12 @@ If consent has not been granted, the collection has no items and returns
 
 Loan collection and operation statuses:
 
-`PatronLoansOverallStatusEnum` can be `OK`, `FAILED`, `PARTIALLY_FAILED`,
-`ERROR_UNAUTHENTICATED_TOKEN`, `ERROR_MANUAL_ADDS_DISABLED` or
-`CONSENT_REQUIRED`.
+<DescribeEnum name="PatronLoansOverallStatusEnum" />
 
 ### Add historical loans
 
 Manual historical-loan creation is intended for integration testing and can be
-disabled by UserData. Consent is required before a loan can be stored.
+disabled by configuration. Consent is required before a loan can be stored.
 
 `materialId` accepts a PID or a numeric faust number. Dates use `YYYY-MM-DD`,
 and `returnedAt` cannot be earlier than `loanedAt`. Snapshot metadata is
@@ -571,8 +555,8 @@ validated without storing loans.
 
 ### Delete historical loans
 
-Historical loans are deleted by their public UserData IDs. `dryRun` validates
-the IDs without deleting loans.
+Historical loans are deleted by their public IDs. `dryRun` validates the IDs
+without deleting loans.
 
 <InlineGraphiQL
   query={`
@@ -600,9 +584,7 @@ the IDs without deleting loans.
 
 Per-item historical-loan mutation statuses:
 
-`PatronLoanMutationStatusEnum` can be `OK`, `FAILED`, `INVALID_ID`,
-`INVALID_MATERIAL_ID`, `INVALID_DATE_RANGE`, `ALREADY_EXISTS`, `NOT_FOUND` or
-`UNKNOWN_ERROR`.
+<DescribeEnum name="PatronLoanMutationStatusEnum" />
 
 ## Status handling
 
