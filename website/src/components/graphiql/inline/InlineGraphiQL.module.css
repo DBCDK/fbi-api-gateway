@@ -103,6 +103,10 @@
   background-color: var(--primary-dark);
 }
 
+:global(body:not(.dark, .graphiql-dark)) .button.run {
+  color: var(--white);
+}
+
 .curl {
   box-sizing: border-box;
   margin: var(--pt2) 0;

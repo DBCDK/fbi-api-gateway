@@ -1,36 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { Spinner } from "react-bootstrap";
-import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
 import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 
 export default function TokenPage() {
   const router = useRouter();
   const { accessToken } = router.query;
-  const { getCredentialEntry: getHistoryItem } = useCredentialEntries();
-  const { selectCredential: setSelectedToken } = useCredentialMutations();
+  const { resolveCredentialValue } = useCredentialMutations();
 
   const [isClient, setIsClient] = useState(false);
+  const [error, setError] = useState("");
+  const handledToken = useRef(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || typeof accessToken !== "string") return;
 
-    if (typeof accessToken === "string") {
-      // If token is already owned we set token with the profile already used
-      const item = getHistoryItem(accessToken);
-      setSelectedToken(accessToken, item?.profile, item?.agency, {
-        id: item?.id,
-        type: item?.type,
-        clientId: item?.clientId,
-        hasClientSecret: item?.hasClientSecret,
-      });
-      router.replace("/documentation");
+    if (handledToken.current === accessToken) {
+      return;
     }
-  }, [isClient, accessToken, setSelectedToken, router]);
+
+    handledToken.current = accessToken;
+
+    async function resolveAndRedirect() {
+      const response = await resolveCredentialValue({ value: accessToken });
+
+      if (!response?.safeEntry?.token) {
+        setError(response?.message || "The access token could not be resolved.");
+        return;
+      }
+
+      await router.replace("/documentation");
+    }
+
+    resolveAndRedirect().catch(() => {
+      setError("The access token could not be resolved.");
+    });
+  }, [isClient, accessToken, resolveCredentialValue, router]);
 
   return (
     <div
@@ -42,13 +51,13 @@ export default function TokenPage() {
         textAlign: "center",
       }}
     >
-      <Spinner />
+      {!error && <Spinner />}
       <div
         style={{
           marginTop: "var(--pt1)",
         }}
       >
-        Fetching documentation
+        {error || "Fetching documentation"}
       </div>
     </div>
   );

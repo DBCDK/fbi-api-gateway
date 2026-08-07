@@ -17,7 +17,8 @@ export function useGraphQLUrl(origin) {
   const agency = selectedToken?.agency ?? null;
   const defaultAgency = configuration?.defaultAgency ?? null;
   const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId === true;
-  const profile = selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
+  const profile =
+    selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
 
   if (
     selectedToken?.token &&
@@ -44,7 +45,7 @@ export function useGraphQLUrl(origin) {
 
 /**
  * useSchema
- * - Uses a STRING SWR key (endpoint or null)
+ * - Uses endpoint and access token as the SWR key
  * - Fetches only when a token exists
  * - Keeps tolerant non-200 behavior (returns {}) to avoid forcing error UIs
  */
@@ -55,20 +56,15 @@ export default function useSchema(token, _url) {
 
   const hasToken = Boolean(token?.token);
 
-  // STRING key (like your original working version)
-  const swrKey = hasToken && endpoint ? endpoint : null;
+  const swrKey = hasToken && endpoint ? [endpoint, token.token] : null;
 
-  const authHeader = token?.token
-    ? { Authorization: `bearer ${token.token}` }
-    : {};
-
-  const fetcher = async (fetchUrl) => {
+  const fetcher = async (fetchUrl, accessToken) => {
     const res = await fetch(fetchUrl, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        ...authHeader,
+        Authorization: `bearer ${accessToken}`,
       },
       body: JSON.stringify({
         query: getIntrospectionQuery({ inputValueDeprecation: true }),
