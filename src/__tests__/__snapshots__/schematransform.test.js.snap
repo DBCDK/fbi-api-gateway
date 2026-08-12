@@ -1488,6 +1488,9 @@ type Branch {
   debug: MinisearchDebug
   infomediaAccess: Boolean!
   digitalCopyAccess: Boolean!
+
+  """Indicates if the library has access to login.bib.dk"""
+  loginBibDkAccess: Boolean!
   userStatusUrl: String
   holdingStatus(pids: [String]): DetailedHoldings
   branchWebsiteUrl: String
