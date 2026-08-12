@@ -67,6 +67,12 @@ export const typeDef = `
     debug: MinisearchDebug
     infomediaAccess: Boolean!
     digitalCopyAccess: Boolean!
+
+    """
+    Indicates if the library has access to login.bib.dk
+    """
+    loginBibDkAccess: Boolean!
+    
     userStatusUrl: String
     holdingStatus(pids:[String]): DetailedHoldings @complexity(value: 5, multipliers: ["pids"])
     branchWebsiteUrl: String
