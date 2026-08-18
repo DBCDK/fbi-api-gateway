@@ -57,24 +57,5 @@ export const resolvers = {
 
       return manifestations;
     },
-    async contentSubstitute(parent, args, context, info) {
-      // TODO this is temporary until JED provides this string
-
-      let substitute = parent?.content;
-
-      // get all manifestations that are refered to in 'content'
-      const manifestations = await Promise.all(
-        parent?.pidList?.map((pid) => {
-          return resolveManifestation({ pid }, context);
-        })
-      );
-
-      // Substitute title for pid
-      manifestations.forEach((m) => {
-        substitute = substitute?.replace(m?.titles?.main, `[${m?.pid}]`);
-      });
-
-      return substitute;
-    },
   },
 };
