@@ -140,7 +140,6 @@ async function get(fetch = defaultFetch) {
         null,
       branchPhone: branchMap[branchId]?.branchPhone,
       branchEmail: branchMap[branchId]?.branchEmail,
-      loginBibDkAccess: !!borchkMap[branchId] || !!borchkMap[agencyId],
     };
   });
 

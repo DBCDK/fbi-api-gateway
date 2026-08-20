@@ -282,6 +282,21 @@ export async function resolveBorrowerCheck(agencyId, context) {
 }
 
 /**
+ * Get agency parameters from vip core - check if settings allows borrowercheck
+ * for given branch/agency.
+ */
+export async function resolveBorrowerCheckSystem(agencyId, system, context) {
+  const res = await context.datasources
+    ?.getLoader("vipcore_UserOrderParameters")
+    .load(agencyId);
+
+  return !!res.agencyParameters.borrowerCheckParameters.find(
+    ({ borrowerCheckSystem, borrowerCheck }) =>
+      borrowerCheckSystem === system && borrowerCheck
+  );
+}
+
+/**
  * Get the infomedia access status for the current user
  *
  * @param {*} context
