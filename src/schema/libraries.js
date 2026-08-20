@@ -3,7 +3,7 @@
  *
  */
 import { orderBy } from "lodash";
-import { resolveBorrowerCheck, resolveLocalizations } from "../utils/utils";
+import { resolveBorrowerCheck, resolveLocalizations, resolveBorrowerCheckSystem } from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
 import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
