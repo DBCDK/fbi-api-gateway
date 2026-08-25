@@ -7,7 +7,7 @@ export async function load(libraryId, context) {
     allowedErrorStatusCodes: [],
   });
 
-  return res.body;
+  return !!res.body?.usePincode;
 }
 
 export const options = {

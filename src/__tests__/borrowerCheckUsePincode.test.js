@@ -38,7 +38,9 @@ describe("borrowerCheckUsePincode", () => {
   });
 
   test("loads the pincode setting from VIP Core", async () => {
-    const fetch = jest.fn().mockResolvedValue({ body: true });
+    const fetch = jest.fn().mockResolvedValue({
+      body: { bibNr: 820050, usePincode: true },
+    });
 
     await expect(load("820050", { fetch })).resolves.toBe(true);
     expect(fetch).toHaveBeenCalledWith(
