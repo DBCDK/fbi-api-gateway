@@ -3,7 +3,11 @@
  *
  */
 import { orderBy } from "lodash";
-import { resolveBorrowerCheck, resolveLocalizations, resolveBorrowerCheckSystem } from "../utils/utils";
+import {
+  resolveBorrowerCheck,
+  resolveLocalizations,
+  resolveBorrowerCheckSystem,
+} from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
 import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
@@ -47,6 +51,9 @@ export const typeDef = `
 
     """Whether this branch's agency supports borrowerCheck for Bibliotek.dk"""
     borrowerCheckBibliotekdk: Boolean!
+
+    """Whether this branch's agency supports borrowerCheck with pincode"""
+    borrowerCheckUsePincode: Boolean!
 
     culrDataSync: Boolean!
     agencyName: String
@@ -159,6 +166,17 @@ export const resolvers = {
         "bibliotek.dk",
         context
       );
+    },
+    async borrowerCheckUsePincode(parent, args, context, info) {
+      const isFFU = await isFFUAgency(parent?.agencyId);
+
+      const libraryId = !isFFU
+        ? parent?.agencyId
+        : parent?.branchId || parent?.agencyId;
+
+      return await context.datasources
+        .getLoader("vipcore_BorrowerCheckUsePincode")
+        .load(libraryId);
     },
     async culrDataSync(parent, args, context, info) {
       return await hasCulrDataSync(parent.agencyId, context);
