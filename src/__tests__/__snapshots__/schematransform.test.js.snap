@@ -1467,6 +1467,9 @@ type Branch {
 
   """Whether this branch's agency supports borrowerCheck for Bibliotek.dk"""
   borrowerCheckBibliotekdk: Boolean!
+
+  """Whether this branch's agency supports borrowerCheck with pincode"""
+  borrowerCheckUsePincode: Boolean!
   culrDataSync: Boolean!
   agencyName: String
   autoIll: AutomationParams!
