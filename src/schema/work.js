@@ -221,7 +221,7 @@ type WorkTitles {
   """
   The standard title of the entity, used for music and movies
   """
-  standard: String @deprecated(reason: "Field is discontinued due to the format change in the transition to danMarc3 expires: 26/11-2026")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -231,7 +231,7 @@ type WorkTitles {
   """
   Danish translation of the main title
   """
-  translated: [String!] @deprecated(reason: "Field is discontinued due to the format change in the transition to danMarc3 expires: 26/11-2026")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """
   detailed title for tv series 
