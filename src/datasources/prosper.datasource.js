@@ -42,6 +42,7 @@ export async function load(
 }
 
 export const options = {
+  allowDebug: true,
   redis: {
     prefix,
     ttl,
