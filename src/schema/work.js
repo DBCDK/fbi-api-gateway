@@ -248,7 +248,7 @@ type TvSeries {
   """
   Dansih translated title of the tv serie
   """
-  danishLaunchTitle: String
+  danishLaunchTitle: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """
   Detailed information about the episode

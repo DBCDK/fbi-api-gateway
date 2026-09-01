@@ -2548,7 +2548,7 @@ type Note {
   type: NoteTypeEnum!
 
   """Heading before note"""
-  heading: String
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """The actual notes"""
   display: [String!]!
@@ -2691,7 +2691,7 @@ type Edition {
   edition: String
 
   """Quotation of contributor statements related to the edition"""
-  contributors: [String!]!
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """A year as displayable text and as number"""
   publicationYear: PublicationYear
@@ -6155,7 +6155,7 @@ type TvSeries {
   title: String
 
   """Dansih translated title of the tv serie"""
-  danishLaunchTitle: String
+  danishLaunchTitle: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """Detailed information about the episode"""
   episode: TvSeriesDetails
@@ -7049,7 +7049,7 @@ type Note {
   type: NoteTypeEnum!
 
   """Heading before note"""
-  heading: String
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """The actual notes"""
   display: [String!]!
@@ -7192,7 +7192,7 @@ type Edition {
   edition: String
 
   """Quotation of contributor statements related to the edition"""
-  contributors: [String!]!
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """A year as displayable text and as number"""
   publicationYear: PublicationYear
@@ -8839,7 +8839,7 @@ type TvSeries {
   title: String
 
   """Dansih translated title of the tv serie"""
-  danishLaunchTitle: String
+  danishLaunchTitle: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """Detailed information about the episode"""
   episode: TvSeriesDetails
@@ -9555,7 +9555,7 @@ type Note {
   type: NoteTypeEnum!
 
   """Heading before note"""
-  heading: String
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """The actual notes"""
   display: [String!]!
@@ -9698,7 +9698,7 @@ type Edition {
   edition: String
 
   """Quotation of contributor statements related to the edition"""
-  contributors: [String!]!
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """A year as displayable text and as number"""
   publicationYear: PublicationYear
@@ -10946,7 +10946,7 @@ type TvSeries {
   title: String
 
   """Dansih translated title of the tv serie"""
-  danishLaunchTitle: String
+  danishLaunchTitle: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """Detailed information about the episode"""
   episode: TvSeriesDetails

@@ -183,7 +183,7 @@ type Note {
   """
   Heading before note
   """
-  heading: String
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """
   The actual notes
@@ -364,7 +364,7 @@ type Edition {
   """
   Quotation of contributor statements related to the edition
   """
-  contributors: [String!]! 
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
 
   """
   A year as displayable text and as number
