@@ -52,6 +52,7 @@ export const FAKE_PERSON = {
     { display: "Dummy Kirsten Kirstensen, personen bag Jens Jensen" },
   ],
   roles: [FAKE_ROLE],
+  andOthers: true,
 };
 
 export const FAKE_ACCESS = {
@@ -82,6 +83,7 @@ export const FAKE_CORPORATION = {
   number: "Dummy 5",
   attributeToName: "Dummy Some Corporation ...",
   roles: [],
+  andOthers: false,
 };
 
 export const FAKE_SUBJECTS = {
