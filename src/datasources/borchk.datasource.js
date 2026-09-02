@@ -125,6 +125,11 @@ export const options = {
   redis: {
     prefix: prefix,
     ttl: ttl,
+    // Parallel checks with the same credentials share one Borchk request.
+    dedupe: {
+      waitTimeoutMs: 5_000,
+      lockTtlMs: 8_000,
+    },
   },
 };
 
