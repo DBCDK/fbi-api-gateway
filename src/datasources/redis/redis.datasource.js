@@ -236,6 +236,10 @@ export function withRedis(
   const waitTimeoutMs = dedupeOptions.waitTimeoutMs || 3_000;
   const pollIntervalMs = dedupeOptions.pollIntervalMs || 100;
 
+  if (dedupe) {
+    stats?.enableDedupe?.(datasourceName);
+  }
+
   // Another instance owns this cache miss. Wait briefly for its result, but
   // return null on timeout so this request can fetch the data itself.
   async function waitForCachedValue(key) {
@@ -309,10 +313,6 @@ export function withRedis(
     });
 
     stats?.incrementRedisLookups(datasourceName, keys.length);
-    stats?.incrementRedisHits(
-      datasourceName,
-      keys.length - missingIndexes.length - staleIndexes.length
-    );
 
     if (dedupe && missingIndexes.length > 0) {
       await Promise.all(
@@ -329,6 +329,12 @@ export function withRedis(
       // A timeout or Redis failure is a normal miss and fetches without a lock.
       missingIndexes = missingIndexes.filter((index) => !cachedValues[index]);
     }
+
+    // A miss resolved by another request is a cache hit for this request.
+    stats?.incrementRedisHits(
+      datasourceName,
+      keys.length - missingIndexes.length - staleIndexes.length
+    );
 
     // Convert the remaining positions back to the keys batchFunc understands.
     const missingKeys = missingIndexes.map((index) => keys[index]);

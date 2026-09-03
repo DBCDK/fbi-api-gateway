@@ -248,11 +248,18 @@ describe("Distributed Redis single-flight contract", () => {
 
     expect(results).toEqual([["same_fresh"], ["same_fresh"], ["same_fresh"]]);
     expect(upstreamCalls).toBe(1);
+    const summaries = trackers.map((tracker) => tracker.summary().userinfo);
     expect(
-      trackers.filter(
-        (tracker) => tracker.summary().userinfo?.dedupeWaitMs > 0
-      )
+      summaries.filter((summary) => summary.dedupeWaitMs > 0)
     ).toHaveLength(2);
+    expect(
+      summaries.filter(
+        (summary) => summary.dedupeWaitMs === 0 && summary.cacheMiss === 1
+      )
+    ).toHaveLength(1);
+    expect(summaries.map((summary) => summary.cacheMiss).sort()).toEqual([
+      0, 0, 1,
+    ]);
   });
 
   test("preserves result positions when a miss becomes a hit", async () => {
