@@ -46,6 +46,11 @@ export const options = {
   redis: {
     prefix: "smaug-1",
     ttl: 10, // 10 seconds
+    // Parallel requests for the same token share one Smaug lookup.
+    dedupe: {
+      waitTimeoutMs: 5_000,
+      lockTtlMs: 8_000,
+    },
   },
 };
 

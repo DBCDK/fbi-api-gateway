@@ -170,6 +170,28 @@ async function setex(key, seconds, val, inMemory, stats, datasourceName) {
   await set(key, seconds, val, inMemory, stats, datasourceName);
 }
 
+/**
+ * Try to become the one FBI-API instance responsible for filling a cache key.
+ * The lock expires in Redis, so a crashed instance cannot block later requests.
+ */
+async function acquireLock({ key, ttlMs }) {
+  if (!connection.isConnected()) {
+    return null;
+  }
+
+  try {
+    const redis = connection.getRedis();
+    const result = await redis.set(`${key}:lock`, "1", "PX", ttlMs, "NX");
+    return result === "OK";
+  } catch (e) {
+    log.error("Redis cache lock failed", { key });
+    return null;
+  }
+}
+
+const sleep = (milliseconds) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 function createPrefixedKey(prefix, key) {
   if (typeof key === "object") {
     return `${prefix}_${JSON.stringify(key)}`;
@@ -188,6 +210,7 @@ function createPrefixedKey(prefix, key) {
  * @param {number} options.staleWhileRevalidate seconds to allow values to be stale
  * @param {function} options.setex Inject setex function (for testing)
  * @param {function} options.mget Inject mget function (for testing)
+ * @param {boolean|Object} options.dedupe Coordinate cache misses across instances
  *
  * @returns {function} A Redis enhanced batch function
  */
@@ -203,8 +226,53 @@ export function withRedis(
     track,
     datasourceName,
     stats,
+    dedupe = false,
+    acquireLockFunc = acquireLock,
+    sleepFunc = sleep,
   }
 ) {
+  const dedupeOptions = typeof dedupe === "object" ? dedupe : {};
+  const lockTtlMs = dedupeOptions.lockTtlMs || 5_000;
+  const waitTimeoutMs = dedupeOptions.waitTimeoutMs || 3_000;
+  const pollIntervalMs = dedupeOptions.pollIntervalMs || 100;
+
+  // Another instance owns this cache miss. Wait briefly for its result, but
+  // return null on timeout so this request can fetch the data itself.
+  async function waitForCachedValue(key) {
+    const startedAt = performance.now();
+    const deadline = performance.now() + waitTimeoutMs;
+
+    try {
+      while (performance.now() < deadline) {
+        const [cachedValue] = await mgetFunc(
+          [key],
+          inMemory,
+          stats,
+          datasourceName
+        );
+        if (cachedValue) {
+          return cachedValue;
+        }
+        await sleepFunc(pollIntervalMs);
+      }
+
+      return null;
+    } finally {
+      stats?.addDedupeWait(datasourceName, performance.now() - startedAt);
+    }
+  }
+
+  async function tryAcquireLock(key) {
+    try {
+      // true: this request fetches, false: another request fetches,
+      // null: Redis failed, so this request fetches without deduplication.
+      return await acquireLockFunc({ key, ttlMs: lockTtlMs });
+    } catch (e) {
+      // Cache coordination must never block the primary datasource.
+      return null;
+    }
+  }
+
   /**
    * This is a DataLoader batch function
    * It fetches as many keys from Redis as possible.
@@ -228,33 +296,50 @@ export function withRedis(
       datasourceName
     );
 
-    // If some values were not found in Redis,
-    // they are added to missing keys array
-    // If they are stale, they are added to staleKeys array
-    const missingKeys = [];
-    const staleKeys = [];
+    // Remember where missing and stale values belong in the original arrays.
+    // A missing position may become a cache hit while we wait for another pod.
+    let missingIndexes = [];
+    const staleIndexes = [];
     cachedValues.forEach((val, idx) => {
       if (!val) {
-        missingKeys.push(keys[idx]);
+        missingIndexes.push(idx);
       } else if (now - val._redis_stored > ttl * 1000) {
-        staleKeys.push(keys[idx]);
+        staleIndexes.push(idx);
       }
     });
 
     stats?.incrementRedisLookups(datasourceName, keys.length);
     stats?.incrementRedisHits(
       datasourceName,
-      keys.length - missingKeys.length - staleKeys.length
+      keys.length - missingIndexes.length - staleIndexes.length
     );
+
+    if (dedupe && missingIndexes.length > 0) {
+      await Promise.all(
+        missingIndexes.map(async (index) => {
+          const cacheKey = prefixedKeys[index];
+          const acquired = await tryAcquireLock(cacheKey);
+
+          // The lock holder fetches. Everyone else waits for its cache write.
+          if (acquired === false) {
+            cachedValues[index] = await waitForCachedValue(cacheKey);
+          }
+        })
+      );
+      // A timeout or Redis failure is a normal miss and fetches without a lock.
+      missingIndexes = missingIndexes.filter((index) => !cachedValues[index]);
+    }
+
+    // Convert the remaining positions back to the keys batchFunc understands.
+    const missingKeys = missingIndexes.map((index) => keys[index]);
+    const staleKeys = staleIndexes.map((index) => keys[index]);
 
     // Fetch missing values using the provided batch function
     let values;
     if (missingKeys.length > 0) {
       values = await batchFunc(missingKeys);
 
-      // Store those missing values in Redis with expiration time set to ttl
-      // We do not await here
-      missingKeys.forEach((key, idx) => {
+      const writes = missingKeys.map((key, idx) => {
         if (!(values[idx] instanceof Error)) {
           return setexFunc(
             createPrefixedKey(prefix, key),
@@ -266,13 +351,36 @@ export function withRedis(
           );
         }
       });
+
+      // Waiting instances need the value to be visible before this one returns.
+      if (dedupe) {
+        await Promise.all(writes);
+      }
     }
 
     // Refresh stale values, we don't await
     (async () => {
       if (staleKeys.length > 0) {
-        const refreshedValues = await batchFunc(staleKeys);
-        staleKeys.forEach((key, idx) => {
+        let keysToRefresh = staleKeys;
+        if (dedupe) {
+          const decisions = await Promise.all(
+            staleKeys.map((key) =>
+              tryAcquireLock(createPrefixedKey(prefix, key))
+            )
+          );
+          // Stale data is returned immediately; only lock holders refresh it.
+          // On Redis failure we refresh normally instead of blocking the flow.
+          keysToRefresh = staleKeys.filter(
+            (_key, index) => decisions[index] !== false
+          );
+        }
+
+        if (keysToRefresh.length === 0) {
+          return;
+        }
+
+        const refreshedValues = await batchFunc(keysToRefresh);
+        const writes = keysToRefresh.map((key, idx) => {
           if (
             refreshedValues?.[idx] &&
             !(refreshedValues[idx] instanceof Error)
@@ -287,6 +395,9 @@ export function withRedis(
             );
           }
         });
+        if (dedupe) {
+          await Promise.all(writes);
+        }
       }
     })();
 

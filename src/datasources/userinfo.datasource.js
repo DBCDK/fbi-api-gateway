@@ -179,6 +179,12 @@ export const options = {
     prefix,
     staleWhileRevalidate: 60 * 60 * 24 * 30, // 30 days
     ttl,
+    // One application often sends parallel requests with the same user token.
+    // Let those requests share one userinfo fetch, even across gateway pods.
+    dedupe: {
+      waitTimeoutMs: 5_000,
+      lockTtlMs: 8_000,
+    },
   },
 };
 
