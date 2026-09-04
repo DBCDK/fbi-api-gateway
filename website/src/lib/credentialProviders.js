@@ -10,11 +10,7 @@ import { setMunicipalityAgencyId } from "../../../src/utils/municipalityAgencyId
 import { omitUserinfoCulrData } from "../../../src/utils/omitCulrData";
 import { search } from "../../../src/datasources/library.datasource";
 import { load as getAccountsByLocalId } from "../../../src/datasources/culrGetAccountsByLocalId.datasource";
-import {
-  _isFFUAgency,
-  _hasCulrDataSync,
-  getAgencyIdByBranchId,
-} from "../../../src/utils/agency";
+import { _isFFUAgency, _hasCulrDataSync } from "../../../src/utils/agency";
 import { DISABLE_INTERNAL_NETWORK_CHECK_HEADER } from "../utils/credentialSettings";
 
 const { authenticationUser, authenticationGroup, authenticationPassword } =
@@ -29,6 +25,10 @@ function isAbortError(error) {
   return error?.name === "AbortError";
 }
 
+function reportCredentialStage(options, stage) {
+  options?.onStageChange?.(stage);
+}
+
 async function runOptionalEnrichment(action, fallbackValue = null) {
   try {
     return await action();
@@ -39,7 +39,10 @@ async function runOptionalEnrichment(action, fallbackValue = null) {
 
 async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), CREDENTIAL_FETCH_TIMEOUT_MS);
+  const timeout = setTimeout(
+    () => controller.abort(),
+    CREDENTIAL_FETCH_TIMEOUT_MS
+  );
 
   try {
     return await fetch(url, {
@@ -61,11 +64,57 @@ async function fetchLibraryResponse(url) {
   };
 }
 
+export async function getAgencyInfoByBranchIdFromVipCore(branchId) {
+  if (!branchId) {
+    return null;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    CREDENTIAL_FETCH_TIMEOUT_MS
+  );
+
+  try {
+    const response = await fetch(
+      `${config.datasources.vipcore.url}/agencyinfo`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ branchId }),
+        signal: controller.signal,
+      }
+    );
+
+    if (response.status !== 200) {
+      return null;
+    }
+
+    const body = await response.json();
+    const agency = body?.agencyInfo?.[0]?.pickupAgency;
+
+    if (!agency?.agencyId) {
+      return null;
+    }
+
+    return {
+      agencyId: agency.agencyId,
+      agencyType: agency.agencyType || null,
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 function createLibraryLoader() {
   return {
     load: async (attr) =>
-      await search(attr, undefined, async (url) =>
-        await fetchLibraryResponse(url)
+      await search(
+        attr,
+        undefined,
+        async (url) => await fetchLibraryResponse(url)
       ),
   };
 }
@@ -106,10 +155,14 @@ export function isInternalIp(ip) {
   }
 
   const normalizedIp = String(ip).trim().toLowerCase();
-  const ipv4Match = normalizedIp.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  const ipv4Match = normalizedIp.match(
+    /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/
+  );
 
   if (ipv4Match) {
-    const octets = ipv4Match.slice(1).map((value) => Number.parseInt(value, 10));
+    const octets = ipv4Match
+      .slice(1)
+      .map((value) => Number.parseInt(value, 10));
 
     if (octets.some((value) => value < 0 || value > 255)) {
       return false;
@@ -163,9 +216,12 @@ export async function getProfiles(agency, options = {}) {
   const url = config.datasources.vipcore.url;
   const version = process.env.VIPCORE_VERSION || "3";
 
-  return await fetchWithTimeout(`${url}/opensearchprofile/${agency}/${version}`, {
-    method: "GET",
-  });
+  return await fetchWithTimeout(
+    `${url}/opensearchprofile/${agency}/${version}`,
+    {
+      method: "GET",
+    }
+  );
 }
 
 export async function getSmaugConfiguration(token, options = {}) {
@@ -296,7 +352,8 @@ export async function getAccessTokenForClient({
   req = null,
 }) {
   const isInternal =
-    network === "internal" || (network === null && req && isInternalRequest(req));
+    network === "internal" ||
+    (network === null && req && isInternalRequest(req));
   const effectiveClientSecret =
     clientSecret || (isInternal ? getInternalClientSecretForDate() : null);
 
@@ -504,6 +561,7 @@ export async function buildUserResponse(token, options = {}) {
   let smaugResponse;
 
   try {
+    reportCredentialStage(options, "smaug_request");
     smaugResponse = await getSmaugConfiguration(token, options);
   } catch (error) {
     if (isAbortError(error)) {
@@ -517,18 +575,16 @@ export async function buildUserResponse(token, options = {}) {
     return { status: 404, body: {} };
   }
 
+  reportCredentialStage(options, "smaug_response_body");
   const smaugData = await smaugResponse.json();
   const user = {
     loggedInAgencyId: smaugData?.user?.agency || null,
   };
 
-  const isFFULogin =
-    _isFFUAgency(smaugData?.user?.agency) &&
-    !_hasCulrDataSync(smaugData?.user?.agency);
-
   let userinfoResponse;
 
   try {
+    reportCredentialStage(options, "userinfo_request");
     userinfoResponse = await getUserinfo(token, options);
   } catch (error) {
     if (isAbortError(error)) {
@@ -542,6 +598,7 @@ export async function buildUserResponse(token, options = {}) {
     return { status: 200, body: user };
   }
 
+  reportCredentialStage(options, "userinfo_response_body");
   const userinfoData = (await userinfoResponse.json()).attributes;
   const idpUsed = userinfoData?.idpUsed;
 
@@ -556,17 +613,25 @@ export async function buildUserResponse(token, options = {}) {
     loggedInBranchId: user.loggedInBranchId,
   };
 
-  attributes.loggedInAgencyId = await runOptionalEnrichment(
+  const fallbackAgencyId =
+    user.loggedInBranchId || smaugData?.user?.agency || "190101";
+  reportCredentialStage(options, "agencyinfo_lookup");
+  const agencyInfo = await runOptionalEnrichment(
     async () =>
-      await getAgencyIdByBranchId(attributes.loggedInBranchId, {
-        getLoader: () => createLibraryLoader(),
-      }),
-    user.loggedInBranchId || smaugData?.user?.agency || "190101"
+      await getAgencyInfoByBranchIdFromVipCore(attributes.loggedInBranchId),
+    null
   );
+  attributes.loggedInAgencyId = agencyInfo?.agencyId || fallbackAgencyId;
+
+  const isFFUAgency =
+    agencyInfo?.agencyType?.toUpperCase() === "FORSKNINGSBIBLIOTEK" ||
+    _isFFUAgency(smaugData?.user?.agency);
+  const isFFULogin = isFFUAgency && !_hasCulrDataSync(smaugData?.user?.agency);
 
   user.loggedInAgencyId = attributes?.loggedInAgencyId;
 
   if (!attributes.uniqueId) {
+    reportCredentialStage(options, "culr_lookup");
     const response = await runOptionalEnrichment(
       async () =>
         await getAccountsByLocalId(
@@ -611,6 +676,7 @@ export async function buildUserResponse(token, options = {}) {
   user.identityProviderUsed = attributes.idpUsed;
   user.hasCulrUniqueId = !!attributes.uniqueId && !isFFULogin;
   user.isAuthenticated = !!attributes.userId && attributes.userId !== "@";
+  reportCredentialStage(options, "municipality_lookup");
   user.municipalityAgencyId = await runOptionalEnrichment(
     async () => await setMunicipalityAgencyId(attributes),
     attributes.municipalityAgencyId || null
@@ -623,6 +689,7 @@ export async function buildUserResponse(token, options = {}) {
     (agency) => agency.userIdType === "CPR"
   );
 
+  reportCredentialStage(options, "openuserstatus_request");
   const userstatusResponse = await runOptionalEnrichment(
     async () =>
       await getOpenUserStatus(
@@ -636,10 +703,14 @@ export async function buildUserResponse(token, options = {}) {
   );
 
   if (userstatusResponse?.status === 200) {
-    const userstatusData = reduceUserStatusBody(await userstatusResponse.json());
+    reportCredentialStage(options, "openuserstatus_response_body");
+    const userstatusData = reduceUserStatusBody(
+      await userstatusResponse.json()
+    );
     user.name = userstatusData.name;
     user.mail = userstatusData.mail;
   }
 
+  reportCredentialStage(options, "user_response_ready");
   return { status: 200, body: user };
 }
