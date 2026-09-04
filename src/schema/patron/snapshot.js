@@ -24,6 +24,26 @@ function materialTypeCode(material) {
   return (typeof specific === "string" ? specific : specific?.code) || null;
 }
 
+function materialTypes(material) {
+  return (material?.materialTypes || []).map((materialType) => {
+    const general =
+      materialType?.general || materialType?.materialTypeGeneral || {};
+    const specific =
+      materialType?.specific || materialType?.materialTypeSpecific || {};
+
+    return {
+      materialTypeGeneral: {
+        code: general.code || null,
+        display: general.display || null,
+      },
+      materialTypeSpecific: {
+        code: specific.code || null,
+        display: specific.display || null,
+      },
+    };
+  });
+}
+
 function mainLanguage(material) {
   const language = material?.languages?.main?.[0];
   if (typeof language === "string") {
@@ -36,7 +56,10 @@ function mainLanguage(material) {
 /**
  * Build the common snapshot persisted for Patron bookmarks and historical loans.
  */
-export function buildPatronMaterialSnapshot(material) {
+export function buildPatronMaterialSnapshot(
+  material,
+  { includeMaterialTypes = false } = {}
+) {
   const hostPublication = material?.hostPublication;
 
   return {
@@ -45,6 +68,7 @@ export function buildPatronMaterialSnapshot(material) {
     title: material?.titles?.main?.[0] || null,
     creator: firstCreator(material),
     materialType: materialTypeCode(material),
+    ...(includeMaterialTypes && { materialTypes: materialTypes(material) }),
     workType: material?.workTypes?.[0] || null,
     periodical: hostPublication
       ? {
@@ -112,6 +136,11 @@ export const typeDef = `
         materialType: String
 
         """
+        Stored general and specific material types.
+        """
+        materialTypes: [PatronMaterialTypeSnapshot!]!
+
+        """
         Stored work type for the material.
         """
         workType: String
@@ -121,10 +150,23 @@ export const typeDef = `
         """
         periodical: PeriodicalSnapshot
     }
+
+    type PatronMaterialTypeSnapshot {
+        materialTypeGeneral: PatronMaterialTypeValueSnapshot!
+        materialTypeSpecific: PatronMaterialTypeValueSnapshot!
+    }
+
+    type PatronMaterialTypeValueSnapshot {
+        code: String
+        display: String
+    }
 `;
 
 export const resolvers = {
   PatronMaterialSnapshot: {
+    materialTypes(parent) {
+      return parent?.materialTypes || [];
+    },
     periodical(parent) {
       if (parent?.periodical) {
         return parent.periodical;

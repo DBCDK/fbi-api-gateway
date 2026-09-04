@@ -1,6 +1,40 @@
-import { resolvers } from "../schema/patron/snapshot";
+import {
+  buildPatronMaterialSnapshot,
+  resolvers,
+} from "../schema/patron/snapshot";
 
 describe("Patron material snapshot", () => {
+  test("stores general and specific material type codes and displays", () => {
+    expect(
+      buildPatronMaterialSnapshot(
+        {
+          materialTypes: [
+            {
+              general: { code: "AUDIO_BOOKS", display: "Lydbøger" },
+              specific: { code: "AUDIO_BOOK", display: "Lydbog" },
+            },
+          ],
+        },
+        { includeMaterialTypes: true }
+      ).materialTypes
+    ).toEqual([
+      {
+        materialTypeGeneral: {
+          code: "AUDIO_BOOKS",
+          display: "Lydbøger",
+        },
+        materialTypeSpecific: {
+          code: "AUDIO_BOOK",
+          display: "Lydbog",
+        },
+      },
+    ]);
+  });
+
+  test("returns an empty materialTypes list for older snapshots", () => {
+    expect(resolvers.PatronMaterialSnapshot.materialTypes({})).toEqual([]);
+  });
+
   test("groups flat UserData periodical fields in PeriodicalSnapshot", () => {
     expect(
       resolvers.PatronMaterialSnapshot.periodical({

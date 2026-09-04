@@ -4,11 +4,12 @@
  */
 
 import { log } from "dbc-node-logger";
-import { resolveMaterial } from "../../utils/utils";
+import { resolveManifestation, resolveWork } from "../../utils/utils";
 import {
   normalizeBookmarkId,
   getOverallStatus,
-  isBookmarkMaterialId,
+  isPid,
+  isWorkId,
   badUserInput,
 } from "./utils";
 import { buildPatronMaterialSnapshot } from "./snapshot";
@@ -48,7 +49,157 @@ async function loadMutation(loader, request) {
   }
 }
 
+function materialTypeParts(materialType = {}) {
+  return {
+    general: materialType.general || materialType.materialTypeGeneral,
+    specific: materialType.specific || materialType.materialTypeSpecific,
+  };
+}
+
+function inputMaterialId(input = {}) {
+  return input.materialId || null;
+}
+
+function normalizeSelection(selection) {
+  if (selection == null) {
+    return { selection: null, invalidSelection: false };
+  }
+
+  const materialTypes = selection?.materialTypes;
+  const hasGeneral = materialTypes?.general != null;
+  const hasSpecific = materialTypes?.specific != null;
+
+  if (hasGeneral === hasSpecific) {
+    return { selection: null, invalidSelection: true };
+  }
+
+  const field = hasGeneral ? "general" : "specific";
+  const inputCodes = materialTypes[field];
+  if (!Array.isArray(inputCodes) || inputCodes.length === 0) {
+    return { selection: null, invalidSelection: true };
+  }
+
+  const codes = [...new Set(inputCodes)];
+  if (
+    codes.some((code) => typeof code !== "string" || code.trim().length === 0)
+  ) {
+    return { selection: null, invalidSelection: true };
+  }
+
+  return {
+    selection: {
+      materialTypes: {
+        [field]: codes.sort(),
+      },
+    },
+    invalidSelection: false,
+  };
+}
+
+function matchesSelection(manifestation, selection) {
+  const materialTypes = selection?.materialTypes;
+  const field = materialTypes?.general ? "general" : "specific";
+  const selectedCodes = materialTypes?.[field] || [];
+  const manifestationCodes = new Set(
+    (manifestation?.materialTypes || [])
+      .map((materialType) => materialTypeParts(materialType)[field]?.code)
+      .filter(Boolean)
+  );
+
+  return selectedCodes.every((code) => manifestationCodes.has(code));
+}
+
+async function resolveBookmarkInput(input, context) {
+  const materialId = inputMaterialId(input);
+  const isManifestation = isPid(materialId);
+  const isWork = isWorkId(materialId);
+
+  if (!isManifestation && !isWork) {
+    return { materialId, obj: null, invalidMaterialId: true };
+  }
+
+  const { selection, invalidSelection } = normalizeSelection(input.selection);
+  if (invalidSelection) {
+    return { materialId, obj: null, invalidMaterialId: true };
+  }
+
+  if (!selection && isManifestation) {
+    const obj = await resolveManifestation({ pid: materialId }, context);
+    return {
+      materialId,
+      selection,
+      obj,
+      snapshotMaterial: obj,
+      invalidMaterialId: false,
+    };
+  }
+
+  if (!selection) {
+    const obj = await resolveWork({ id: materialId }, context);
+    return {
+      materialId,
+      selection,
+      obj,
+      snapshotMaterial: obj,
+      invalidMaterialId: false,
+    };
+  }
+
+  const work = await resolveWork(
+    isWork ? { id: materialId } : { pid: materialId },
+    context
+  );
+  if (!work) {
+    return { materialId, selection, obj: null, invalidMaterialId: false };
+  }
+
+  const manifestations = (work?.manifestations?.all || []).filter(
+    (manifestation) => matchesSelection(manifestation, selection)
+  );
+
+  return {
+    materialId: work.workId,
+    selection,
+    obj: manifestations.length > 0 ? { work, manifestations } : null,
+    snapshotMaterial: work,
+    invalidMaterialId: false,
+  };
+}
+
+async function resolveStoredBookmarkMaterial(parent, context) {
+  const materialId = parent?.materialId;
+
+  if (!materialId) {
+    return {};
+  }
+
+  if (parent?.selection) {
+    const work = await resolveWork({ id: materialId }, context);
+    if (!work) {
+      return { work: null, manifestation: null, manifestations: [] };
+    }
+    const manifestations = (work?.manifestations?.all || []).filter(
+      (manifestation) => matchesSelection(manifestation, parent.selection)
+    );
+
+    return { work, manifestation: null, manifestations };
+  }
+
+  if (isWorkId(materialId)) {
+    const work = await resolveWork({ id: materialId }, context);
+    return { work, manifestation: null, manifestations: null };
+  }
+
+  const manifestation = await resolveManifestation(
+    { pid: materialId },
+    context
+  );
+  return { work: null, manifestation, manifestations: null };
+}
+
 export const typeDef = `
+    directive @oneOf on INPUT_OBJECT
+
     extend type Patron {
         """
         Retrieves the list of bookmarks for the patron, including pagination and sorting options.
@@ -104,7 +255,12 @@ export const typeDef = `
         """
         The bibliographic record associated with the bookmark, if it can still be resolved.
         """
-        material: MaterialUnion
+        material: BookmarkMaterial!
+
+        """
+        The selection applied to the bookmarked work.
+        """
+        selection: BookmarkSelection
 
         """
         Stored metadata captured when the bookmark was created.
@@ -122,10 +278,25 @@ export const typeDef = `
         application: String!
     }
 
-    """
-    Union type for different material types that can be bookmarked
-    """
-    union MaterialUnion = Work | Manifestation
+    type BookmarkMaterial {
+      work: Work
+      manifestation: Manifestation
+
+      """
+      Manifestations matching the bookmark selection. This is not necessarily
+      every manifestation in the work.
+      """
+      manifestations: [Manifestation!]
+    }
+
+    type BookmarkSelection {
+      materialTypes: BookmarkMaterialTypesSelection!
+    }
+
+    type BookmarkMaterialTypesSelection {
+      general: [GeneralMaterialTypeCodeEnum!]
+      specific: [String!]
+    }
 
     """
     Enum for sorting bookmarks
@@ -138,10 +309,17 @@ export const typeDef = `
     }
 
     input BookmarksInput {
-      """
-      The unique identifier for the material being bookmarked (e.g., a PID or work ID).
-      """
       materialId: String!
+      selection: BookmarkSelectionInput
+    }
+
+    input BookmarkSelectionInput {
+      materialTypes: BookmarkMaterialTypesSelectionInput!
+    }
+
+    input BookmarkMaterialTypesSelectionInput @oneOf {
+      general: [GeneralMaterialTypeCodeEnum!]
+      specific: [String!]
     }
 
     type AddBookmarksResponse {
@@ -183,10 +361,16 @@ export const typeDef = `
       The unique identifier for the material for which bookmark addition failed (e.g., a PID or work ID).
       """
       materialId: String
+
+      """
+      The normalized selection for the bookmark operation.
+      """
+      selection: BookmarkSelection
+
       """
       The material for which bookmark addition failed.
       """
-      material: MaterialUnion
+      material: BookmarkMaterial
     }
 
     enum BookmarksOverallStatusEnum {
@@ -282,8 +466,8 @@ export const resolvers = {
       if (!uniqueId || !accessToken) {
         return {
           status: "ERROR_UNAUTHENTICATED_TOKEN",
-          items: bookmarks.map(({ materialId }) => ({
-            materialId,
+          items: bookmarks.map((bookmark) => ({
+            materialId: inputMaterialId(bookmark),
             status: "FAILED",
           })),
         };
@@ -292,8 +476,8 @@ export const resolvers = {
       if (!key || !application) {
         return {
           status: "ERROR_MISSING_CLIENT_CONFIGURATION",
-          items: bookmarks.map(({ materialId }) => ({
-            materialId,
+          items: bookmarks.map((bookmark) => ({
+            materialId: inputMaterialId(bookmark),
             status: "FAILED",
           })),
         };
@@ -305,22 +489,13 @@ export const resolvers = {
 
       try {
         const resolved = await Promise.all(
-          bookmarks.map(async ({ materialId }) => {
-            if (!isBookmarkMaterialId(materialId)) {
-              return { materialId, obj: null, invalidMaterialId: true };
-            }
-
-            const isWork = materialId?.startsWith("work-of:");
-            const props = isWork ? { id: materialId } : { pid: materialId };
-            const obj = await resolveMaterial(props, context);
-
-            return { materialId, obj, invalidMaterialId: false };
-          })
+          bookmarks.map((bookmark) => resolveBookmarkInput(bookmark, context))
         );
 
         const items = resolved.map(
-          ({ materialId, obj, invalidMaterialId }) => ({
+          ({ materialId, selection, obj, invalidMaterialId }) => ({
             materialId,
+            selection,
             status: invalidMaterialId
               ? "INVALID_MATERIAL_ID"
               : obj
@@ -331,9 +506,12 @@ export const resolvers = {
 
         const data = resolved
           .filter(({ obj }) => obj)
-          .map(({ materialId, obj }) => ({
+          .map(({ materialId, selection, snapshotMaterial }) => ({
             materialId,
-            snapshot: buildPatronMaterialSnapshot(obj),
+            ...(selection && { selection }),
+            snapshot: buildPatronMaterialSnapshot(snapshotMaterial, {
+              includeMaterialTypes: true,
+            }),
           }));
 
         // Early return for dry run to avoid unnecessary calls to userData service
@@ -364,6 +542,7 @@ export const resolvers = {
           return {
             ...item,
             id: normalizeBookmarkId(serviceResult?.id),
+            selection: serviceResult?.selection || item.selection,
             status: mapServiceStatus(serviceResult?.status),
           };
         });
@@ -378,8 +557,8 @@ export const resolvers = {
         );
         return {
           status: mapServiceErrorStatus(error),
-          items: bookmarks.map(({ materialId }) => ({
-            materialId,
+          items: bookmarks.map((bookmark) => ({
+            materialId: inputMaterialId(bookmark),
             status: error?.status === 400 ? "FAILED" : "UNKNOWN_ERROR",
           })),
         };
@@ -457,6 +636,7 @@ export const resolvers = {
           return {
             id,
             materialId: serviceResult?.materialId || null,
+            selection: serviceResult?.selection,
             status: mapServiceStatus(serviceResult?.status),
           };
         });
@@ -508,16 +688,7 @@ export const resolvers = {
       };
     },
     async material(parent, args, context, info) {
-      const materialId = parent?.materialId;
-
-      if (!materialId) {
-        return null;
-      }
-
-      const isWork = materialId?.startsWith("work-of:");
-      const props = isWork ? { id: materialId } : { pid: materialId };
-
-      return await resolveMaterial(props, context);
+      return resolveStoredBookmarkMaterial(parent, context);
     },
     application(parent) {
       return parent.application;
@@ -526,25 +697,7 @@ export const resolvers = {
 
   BookmarksStatusItem: {
     async material(parent, args, context, info) {
-      const materialId = parent.materialId;
-      if (!materialId) {
-        return null;
-      }
-      const isWork = materialId?.startsWith("work-of:");
-      const props = isWork ? { id: materialId } : { pid: materialId };
-      const material = await resolveMaterial(props, context);
-
-      return material;
-    },
-  },
-
-  MaterialUnion: {
-    __resolveType(obj) {
-      if (!obj) return null;
-      if (obj.__typename) return obj.__typename;
-      if (obj.pid) return "Manifestation";
-      if (obj.manifestations) return "Work";
-      return null;
+      return resolveStoredBookmarkMaterial(parent, context);
     },
   },
 };

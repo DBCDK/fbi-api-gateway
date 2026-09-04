@@ -3,6 +3,8 @@
 exports[`complete access to whole schema 1`] = `
 "directive @fallback on ENUM_VALUE
 
+directive @oneOf on INPUT_OBJECT
+
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
@@ -4154,7 +4156,29 @@ type BookmarkItem {
 }
 
 """Union type for different material types that can be bookmarked"""
-union MaterialUnion = Work | Manifestation
+union MaterialUnion = Work | Manifestation | MaterialTypeBookmark
+
+type MaterialTypeBookmark {
+  """Whether the selected material type is general or specific."""
+  scope: MaterialTypeScopeEnum!
+
+  """The selected material type code."""
+  code: String!
+
+  """Display value captured from the matching material type."""
+  display: String
+
+  """The work containing the matching manifestations."""
+  work: Work!
+
+  """Manifestations in the work matching the selected material type."""
+  manifestations: [Manifestation!]!
+}
+
+enum MaterialTypeScopeEnum {
+  GENERAL
+  SPECIFIC
+}
 
 """Enum for sorting bookmarks"""
 enum OrderBookmarksByEnum {
@@ -4165,10 +4189,22 @@ enum OrderBookmarksByEnum {
 }
 
 input BookmarksInput {
-  """
-  The unique identifier for the material being bookmarked (e.g., a PID or work ID).
-  """
-  materialId: String!
+  manifestation: ManifestationBookmarkInput
+  work: WorkBookmarkInput
+  materialType: MaterialTypeBookmarkInput
+}
+
+input ManifestationBookmarkInput {
+  pid: String!
+}
+
+input WorkBookmarkInput {
+  workId: String!
+}
+
+input MaterialTypeBookmarkInput {
+  workId: String!
+  code: String!
 }
 
 type AddBookmarksResponse {
@@ -4449,11 +4485,24 @@ type PatronMaterialSnapshot {
   """Stored material type for the material."""
   materialType: String
 
+  """Stored general and specific material types."""
+  materialTypes: [PatronMaterialTypeSnapshot!]!
+
   """Stored work type for the material."""
   workType: String
 
   """Stored metadata about the periodical host publication, when relevant."""
   periodical: PeriodicalSnapshot
+}
+
+type PatronMaterialTypeSnapshot {
+  materialTypeGeneral: PatronMaterialTypeValueSnapshot!
+  materialTypeSpecific: PatronMaterialTypeValueSnapshot!
+}
+
+type PatronMaterialTypeValueSnapshot {
+  code: String
+  display: String
 }
 
 type RawRepo {
@@ -6182,6 +6231,8 @@ type TvSeriesDetails {
 
 exports[`default schema transform 1`] = `
 "directive @fallback on ENUM_VALUE
+
+directive @oneOf on INPUT_OBJECT
 
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
@@ -8867,6 +8918,8 @@ type TvSeriesDetails {
 exports[`limited access to root fields 1`] = `
 "directive @fallback on ENUM_VALUE
 
+directive @oneOf on INPUT_OBJECT
+
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
@@ -8878,6 +8931,8 @@ type Query {
 
 exports[`remove all fields by type 1`] = `
 "directive @fallback on ENUM_VALUE
+
+directive @oneOf on INPUT_OBJECT
 
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION

@@ -115,9 +115,10 @@ Bookmarks can be sorted by creation time or title:
 <DescribeEnum name="OrderBookmarksByEnum" />
 
 The result contains both the stored snapshot and the currently resolved
-material. `material` is a `Work` for work IDs and a `Manifestation` for PIDs.
-It can be null if the material can no longer be resolved; the stored snapshot
-remains available.
+material. Without a selection, a PID resolves `material.manifestation` and a
+work ID resolves `material.work`. With a selection, `material.work` contains
+the selected work and `material.manifestations` contains only manifestations
+matching the selection.
 
 <InlineGraphiQL
   query={`
@@ -141,6 +142,12 @@ remains available.
             materialId
             createdAt
             application
+            selection {
+              materialTypes {
+                general
+                specific
+              }
+            }
             snapshot {
               version
               pid
@@ -148,6 +155,16 @@ remains available.
               title
               creator
               materialType
+              materialTypes {
+                materialTypeGeneral {
+                  code
+                  display
+                }
+                materialTypeSpecific {
+                  code
+                  display
+                }
+              }
               workType
               periodical {
                 edition
@@ -157,17 +174,20 @@ remains available.
               }
             }
             material {
-              ... on Work {
+              work {
                 workId
                 titles {
                   main
                 }
               }
-              ... on Manifestation {
+              manifestation {
                 pid
                 titles {
                   main
                 }
+              }
+              manifestations {
+                pid
               }
             }
           }
@@ -189,8 +209,12 @@ Bookmark collection status values:
 
 ### Add bookmarks
 
-`addBookmarks` accepts PIDs and work IDs. Snapshot metadata is resolved and
-created by the API; clients only submit `materialId`.
+`addBookmarks` accepts a PID or work ID and an optional material type
+selection. A selection must contain either general or specific codes, never
+both. A manifestation must contain every code in the selected array to match.
+When a PID has a selection, the API resolves its work and stores the normalized
+work ID with the selection. Snapshot metadata is resolved and created by the
+API.
 
 When `dryRun` is `true`, identifiers and materials are validated without
 storing bookmarks. Existing bookmarks are reported as `ALREADY_EXISTS` and are
@@ -209,11 +233,20 @@ considered successful by the overall status.
             id
             materialId
             status
+            selection {
+              materialTypes {
+                general
+                specific
+              }
+            }
             material {
-              ... on Work {
+              work {
                 workId
               }
-              ... on Manifestation {
+              manifestation {
+                pid
+              }
+              manifestations {
                 pid
               }
             }
@@ -226,6 +259,14 @@ considered successful by the overall status.
     bookmarks: [
       { materialId: "work-of:870970-basis:54029519" },
       { materialId: "870970-basis:54029519" },
+      {
+        materialId: "work-of:870970-basis:54029519",
+        selection: {
+          materialTypes: {
+            specific: ["BOOK"],
+          },
+        },
+      },
     ],
     dryRun: true,
   }}
