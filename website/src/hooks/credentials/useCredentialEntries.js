@@ -71,6 +71,7 @@ export function shouldClearSelectedCredentialAfterRemoval(
 export default function useCredentialEntries() {
   const {
     applications,
+    maxClientEntries,
     hasFetchedApplications,
     mutateApplications,
     setApplicationItem,
@@ -207,6 +208,7 @@ export default function useCredentialEntries() {
   return {
     credentialEntries: applications,
     applications,
+    maxClientEntries,
     hasFetchedApplications,
     mutateCredentialEntries: mutateApplications,
     setCredentialEntry,

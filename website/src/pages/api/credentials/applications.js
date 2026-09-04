@@ -1,4 +1,9 @@
-import { getCredentialSession, removeCredentialSessionEntry, upsertCredentialSessionEntry } from "../../../lib/credentialSession";
+import {
+  getCredentialSession,
+  removeCredentialSessionEntry,
+  upsertCredentialSessionEntry,
+} from "../../../lib/credentialSession";
+import config from "../../../../../src/config.js";
 import { listApplicationEntries } from "../../../lib/credentialApplications";
 import { toCredentialId } from "../../../utils/credentials";
 
@@ -36,6 +41,7 @@ export default async function handler(req, res) {
 
     return res.status(200).send({
       applications: listApplicationEntries(session.entries || {}),
+      maxClientEntries: config.credentials?.maxClientEntries || 10,
     });
   }
 

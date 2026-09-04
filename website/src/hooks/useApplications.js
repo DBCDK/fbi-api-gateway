@@ -6,6 +6,13 @@ import { MAX_CLIENT_ENTRIES } from "@/utils/clientEntries";
 
 const APPLICATIONS_ENDPOINT = "/api/credentials/applications";
 
+function normalizeMaxClientEntries(value) {
+  const parsed = Number.parseInt(String(value || ""), 10);
+  return Number.isFinite(parsed) && parsed > 0
+    ? parsed
+    : MAX_CLIENT_ENTRIES;
+}
+
 const fetcher = async (url) => {
   const response = await fetch(url, {
     method: "GET",
@@ -19,7 +26,10 @@ const fetcher = async (url) => {
   }
 
   const body = await response.json();
-  return body.applications || [];
+  return {
+    applications: body.applications || [],
+    maxClientEntries: normalizeMaxClientEntries(body.maxClientEntries),
+  };
 };
 
 const isTransientEntry = (entry = {}) =>
@@ -119,13 +129,34 @@ async function deleteApplication(id) {
 }
 
 export default function useApplications() {
-  const {
-    data,
-    error,
-    mutate,
-  } = useSWR(APPLICATIONS_ENDPOINT, fetcher);
-  const applications = data || [];
+  const { data, error, mutate } = useSWR(APPLICATIONS_ENDPOINT, fetcher);
+  const applications = Array.isArray(data) ? data : data?.applications || [];
+  const maxClientEntries = normalizeMaxClientEntries(data?.maxClientEntries);
   const hasFetchedApplications = data !== undefined || Boolean(error);
+  const mutateApplications = useCallback(
+    (nextApplications, shouldRevalidate) => {
+      if (nextApplications === undefined) {
+        return mutate();
+      }
+
+      return mutate((current) => {
+        const currentApplications = Array.isArray(current)
+          ? current
+          : current?.applications || [];
+        const applicationsValue =
+          typeof nextApplications === "function"
+            ? nextApplications(currentApplications)
+            : nextApplications;
+
+        return {
+          ...(Array.isArray(current) ? {} : current),
+          applications: applicationsValue,
+          maxClientEntries,
+        };
+      }, shouldRevalidate);
+    },
+    [maxClientEntries, mutate]
+  );
 
   const setApplicationItem = useCallback(
     (entry, shallow = true) => {
@@ -140,7 +171,7 @@ export default function useApplications() {
         id: nextId,
       };
 
-      mutate((current = []) => {
+      mutateApplications((current = []) => {
         let copy = [...current];
         const nextIdentifier = getApplicationIdentifier(normalizedEntry);
         const index = copy.findIndex(
@@ -162,18 +193,18 @@ export default function useApplications() {
           });
         }
 
-        return mergeApplications(copy).slice(0, MAX_CLIENT_ENTRIES);
+        return mergeApplications(copy).slice(0, maxClientEntries);
       }, false);
 
       if (!isTransientEntry(normalizedEntry)) {
         patchApplication(normalizedEntry).catch((error) => {
-          mutate();
+          mutateApplications();
         });
       }
 
       return normalizedEntry;
     },
-    [mutate]
+    [maxClientEntries, mutateApplications]
   );
 
   const removeApplicationItem = useCallback(
@@ -187,7 +218,7 @@ export default function useApplications() {
         return;
       }
 
-      mutate(
+      mutateApplications(
         (current = []) =>
           current.filter((item) => {
             const identifier = getApplicationIdentifier(item);
@@ -197,10 +228,10 @@ export default function useApplications() {
       );
 
       deleteApplication(id).catch((error) => {
-        mutate();
+        mutateApplications();
       });
     },
-    [mutate]
+    [mutateApplications]
   );
 
   const getApplicationItem = useCallback(
@@ -226,8 +257,9 @@ export default function useApplications() {
 
   return {
     applications,
+    maxClientEntries,
     hasFetchedApplications,
-    mutateApplications: mutate,
+    mutateApplications,
     setApplicationItem,
     removeApplicationItem,
     getApplicationItem,
