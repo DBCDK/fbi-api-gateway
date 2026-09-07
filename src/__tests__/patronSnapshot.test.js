@@ -4,6 +4,20 @@ import {
 } from "../schema/patron/snapshot";
 
 describe("Patron material snapshot", () => {
+  test("keeps legacy materialType by default and allows Bookmarks V2 to omit it", () => {
+    const material = {
+      materialTypes: [{ specific: { code: "BOOK" } }],
+    };
+
+    expect(buildPatronMaterialSnapshot(material)).toHaveProperty(
+      "materialType",
+      "BOOK"
+    );
+    expect(
+      buildPatronMaterialSnapshot(material, { includeMaterialType: false })
+    ).not.toHaveProperty("materialType");
+  });
+
   test("stores general and specific material type codes and displays", () => {
     expect(
       buildPatronMaterialSnapshot(

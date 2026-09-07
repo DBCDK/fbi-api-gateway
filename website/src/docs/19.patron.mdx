@@ -118,7 +118,10 @@ The result contains both the stored snapshot and the currently resolved
 material. Without a selection, a PID resolves `material.manifestation` and a
 work ID resolves `material.work`. With a selection, `material.work` contains
 the selected work and `material.manifestations` contains only manifestations
-matching the selection.
+matching the selection. Bookmark snapshots use `materialTypes`; the former
+singular `materialType` field is not part of Bookmarks V2. `materialTypes` is
+present for manifestation bookmarks and bookmarks with a selection, and is
+`null` for a bookmark of an entire work.
 
 <InlineGraphiQL
   query={`
@@ -154,7 +157,6 @@ matching the selection.
               workId
               title
               creator
-              materialType
               materialTypes {
                 materialTypeGeneral {
                   code

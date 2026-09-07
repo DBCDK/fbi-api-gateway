@@ -4143,10 +4143,13 @@ type BookmarkItem {
   """
   The bibliographic record associated with the bookmark, if it can still be resolved.
   """
-  material: MaterialUnion
+  material: BookmarkMaterial!
+
+  """The selection applied to the bookmarked work."""
+  selection: BookmarkSelection
 
   """Stored metadata captured when the bookmark was created."""
-  snapshot: PatronMaterialSnapshot!
+  snapshot: BookmarkSnapshot!
 
   """creation date of the bookmark"""
   createdAt: DateTime!
@@ -4155,29 +4158,40 @@ type BookmarkItem {
   application: String!
 }
 
-"""Union type for different material types that can be bookmarked"""
-union MaterialUnion = Work | Manifestation | MaterialTypeBookmark
+type BookmarkMaterial {
+  work: Work
+  manifestation: Manifestation
 
-type MaterialTypeBookmark {
-  """Whether the selected material type is general or specific."""
-  scope: MaterialTypeScopeEnum!
-
-  """The selected material type code."""
-  code: String!
-
-  """Display value captured from the matching material type."""
-  display: String
-
-  """The work containing the matching manifestations."""
-  work: Work!
-
-  """Manifestations in the work matching the selected material type."""
-  manifestations: [Manifestation!]!
+  """
+  Manifestations matching the bookmark selection. This is not necessarily
+  every manifestation in the work.
+  """
+  manifestations: [Manifestation!]
 }
 
-enum MaterialTypeScopeEnum {
-  GENERAL
-  SPECIFIC
+type BookmarkSnapshot {
+  version: Int
+  pid: String
+  workId: String
+  title: String
+  creator: String
+
+  """
+  Stored material types for a manifestation or a work selection. This is
+  null for a bookmark of an entire work.
+  """
+  materialTypes: [PatronMaterialTypeSnapshot!]
+  workType: String
+  periodical: PeriodicalSnapshot
+}
+
+type BookmarkSelection {
+  materialTypes: BookmarkMaterialTypesSelection!
+}
+
+type BookmarkMaterialTypesSelection {
+  general: [GeneralMaterialTypeCodeEnum!]
+  specific: [String!]
 }
 
 """Enum for sorting bookmarks"""
@@ -4189,22 +4203,17 @@ enum OrderBookmarksByEnum {
 }
 
 input BookmarksInput {
-  manifestation: ManifestationBookmarkInput
-  work: WorkBookmarkInput
-  materialType: MaterialTypeBookmarkInput
+  materialId: String!
+  selection: BookmarkSelectionInput
 }
 
-input ManifestationBookmarkInput {
-  pid: String!
+input BookmarkSelectionInput {
+  materialTypes: BookmarkMaterialTypesSelectionInput!
 }
 
-input WorkBookmarkInput {
-  workId: String!
-}
-
-input MaterialTypeBookmarkInput {
-  workId: String!
-  code: String!
+input BookmarkMaterialTypesSelectionInput {
+  general: [GeneralMaterialTypeCodeEnum!]
+  specific: [String!]
 }
 
 type AddBookmarksResponse {
@@ -4241,8 +4250,11 @@ type BookmarksStatusItem {
   """
   materialId: String
 
+  """The normalized selection for the bookmark operation."""
+  selection: BookmarkSelection
+
   """The material for which bookmark addition failed."""
-  material: MaterialUnion
+  material: BookmarkMaterial
 }
 
 enum BookmarksOverallStatusEnum {

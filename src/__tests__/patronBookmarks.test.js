@@ -1,13 +1,8 @@
 import { resolvers } from "../schema/patron/bookmarks";
-import {
-  resolveManifestation,
-  resolveMaterial,
-  resolveWork,
-} from "../utils/utils";
+import { resolveManifestation, resolveWork } from "../utils/utils";
 
 jest.mock("../utils/utils", () => ({
   resolveManifestation: jest.fn(),
-  resolveMaterial: jest.fn(),
   resolveWork: jest.fn(),
 }));
 
@@ -53,7 +48,12 @@ describe("Patron bookmarks", () => {
             workId: "work-of:pid:1",
             title: "Title",
             creator: null,
-            materialType: "BOOK",
+            materialTypes: [
+              {
+                materialTypeGeneral: { code: "BOOKS", display: "Bøger" },
+                materialTypeSpecific: { code: "BOOK", display: "Bog" },
+              },
+            ],
             workType: "LITERATURE",
           },
           createdAt: "2026-07-29T10:00:00.000Z",
@@ -165,7 +165,12 @@ describe("Patron bookmarks", () => {
         workId: "work-of:pid:123",
         title: "Stored title",
         creator: null,
-        materialType: "BOOK",
+        materialTypes: [
+          {
+            materialTypeGeneral: { code: "BOOKS", display: "Bøger" },
+            materialTypeSpecific: { code: "BOOK", display: "Bog" },
+          },
+        ],
         workType: "LITERATURE",
       },
     };
@@ -183,11 +188,12 @@ describe("Patron bookmarks", () => {
     );
   });
 
-  test("BookmarkItem.material returns null without a material id", async () => {
-    await expect(
-      resolvers.BookmarkItem.material({}, {}, {})
-    ).resolves.toBeNull();
-    expect(resolveMaterial).not.toHaveBeenCalled();
+  test("BookmarkItem.material returns an empty material wrapper without a material id", async () => {
+    await expect(resolvers.BookmarkItem.material({}, {}, {})).resolves.toEqual(
+      {}
+    );
+    expect(resolveManifestation).not.toHaveBeenCalled();
+    expect(resolveWork).not.toHaveBeenCalled();
   });
 
   test("addBookmarks dryRun reports unresolved materials without calling UserData", async () => {
@@ -199,10 +205,7 @@ describe("Patron bookmarks", () => {
       null,
       {
         dryRun: true,
-        bookmarks: [
-          { work: { workId: "work-of:test:1" } },
-          { manifestation: { pid: "pid:2" } },
-        ],
+        bookmarks: [{ materialId: "work-of:test:1" }, { materialId: "pid:2" }],
       },
       context
     );
@@ -213,14 +216,12 @@ describe("Patron bookmarks", () => {
       items: [
         {
           materialId: "work-of:test:1",
-          materialScope: "WORK",
-          materialTypeCode: undefined,
+          selection: null,
           status: "OK",
         },
         {
           materialId: "pid:2",
-          materialScope: "MANIFESTATION",
-          materialTypeCode: undefined,
+          selection: null,
           status: "NOT_FOUND",
         },
       ],
@@ -270,9 +271,9 @@ describe("Patron bookmarks", () => {
       null,
       {
         bookmarks: [
-          { manifestation: { pid: "pid:1" } },
-          { manifestation: { pid: "pid:2" } },
-          { work: { workId: "work-of:pid:3" } },
+          { materialId: "pid:1" },
+          { materialId: "pid:2" },
+          { materialId: "work-of:pid:3" },
         ],
       },
       context
@@ -286,13 +287,11 @@ describe("Patron bookmarks", () => {
       bookmarks: [
         {
           materialId: "pid:1",
-          materialScope: "MANIFESTATION",
           snapshot: {
             pid: "pid:1",
             workId: "work-1",
             title: "Stored title",
             creator: "Stored creator",
-            materialType: "BOOK",
             materialTypes: [
               {
                 materialTypeGeneral: {
@@ -316,20 +315,22 @@ describe("Patron bookmarks", () => {
         },
         {
           materialId: "work-of:pid:3",
-          materialScope: "WORK",
           snapshot: {
             pid: null,
             workId: "work-of:pid:3",
             title: null,
             creator: null,
-            materialType: null,
-            materialTypes: [],
             workType: null,
             periodical: null,
           },
         },
       ],
     });
+    const sentBookmarks = load.mock.calls[0][0].bookmarks;
+    expect(sentBookmarks[0].snapshot).not.toHaveProperty("materialType");
+    expect(sentBookmarks[0].snapshot).toHaveProperty("materialTypes");
+    expect(sentBookmarks[1].snapshot).not.toHaveProperty("materialType");
+    expect(sentBookmarks[1].snapshot).not.toHaveProperty("materialTypes");
     expect(
       context.datasources.getLoader.mock.results[0].value.clear
     ).toHaveBeenCalledWith({
@@ -342,28 +343,25 @@ describe("Patron bookmarks", () => {
         {
           id: bookmarkId,
           materialId: "pid:1",
-          materialScope: "MANIFESTATION",
-          materialTypeCode: undefined,
+          selection: null,
           status: "ALREADY_EXISTS",
         },
         {
           materialId: "pid:2",
-          materialScope: "MANIFESTATION",
-          materialTypeCode: undefined,
+          selection: null,
           status: "NOT_FOUND",
         },
         {
           id: missingBookmarkId,
           materialId: "work-of:pid:3",
-          materialScope: "WORK",
-          materialTypeCode: undefined,
+          selection: null,
           status: "OK",
         },
       ],
     });
   });
 
-  test("addBookmarks derives and stores a specific material type bookmark", async () => {
+  test("addBookmarks normalizes and stores a specific material type selection", async () => {
     const work = {
       workId: "work-of:pid:1",
       titles: { main: ["Stored title"] },
@@ -406,9 +404,11 @@ describe("Patron bookmarks", () => {
       {
         bookmarks: [
           {
-            materialType: {
-              workId: "work-of:pid:1",
-              code: "AUDIO_BOOK",
+            materialId: "work-of:pid:1",
+            selection: {
+              materialTypes: {
+                specific: ["AUDIO_BOOK", "AUDIO_BOOK"],
+              },
             },
           },
         ],
@@ -419,12 +419,18 @@ describe("Patron bookmarks", () => {
     expect(load).toHaveBeenCalledWith({
       accessToken: "access-token",
       bookmarks: [
-        expect.objectContaining({
+        {
           materialId: "work-of:pid:1",
-          materialScope: "MATERIAL_TYPE_SPECIFIC",
-          materialTypeCode: "AUDIO_BOOK",
-          snapshot: expect.objectContaining({
+          selection: {
+            materialTypes: {
+              specific: ["AUDIO_BOOK"],
+            },
+          },
+          snapshot: {
+            pid: null,
             workId: "work-of:pid:1",
+            title: "Stored title",
+            creator: null,
             materialTypes: [
               {
                 materialTypeGeneral: {
@@ -437,25 +443,33 @@ describe("Patron bookmarks", () => {
                 },
               },
             ],
-          }),
-        }),
+            workType: null,
+            periodical: null,
+          },
+        },
       ],
     });
+    expect(load.mock.calls[0][0].bookmarks[0].snapshot).not.toHaveProperty(
+      "materialType"
+    );
     expect(result).toEqual({
       status: "OK",
       items: [
         {
           id: bookmarkId,
           materialId: "work-of:pid:1",
-          materialScope: "MATERIAL_TYPE_SPECIFIC",
-          materialTypeCode: "AUDIO_BOOK",
+          selection: {
+            materialTypes: {
+              specific: ["AUDIO_BOOK"],
+            },
+          },
           status: "OK",
         },
       ],
     });
   });
 
-  test("BookmarkItem.material returns only manifestations matching the stored material type", async () => {
+  test("BookmarkItem.material returns only manifestations matching the stored selection", async () => {
     const matchingManifestation = {
       pid: "pid:1",
       materialTypes: [
@@ -485,42 +499,70 @@ describe("Patron bookmarks", () => {
     const material = await resolvers.BookmarkItem.material(
       {
         materialId: "work-of:pid:1",
-        materialScope: "MATERIAL_TYPE_GENERAL",
-        materialTypeCode: "AUDIO_BOOKS",
+        selection: {
+          materialTypes: {
+            general: ["AUDIO_BOOKS"],
+          },
+        },
       },
       {},
       createContext()
     );
 
     expect(material).toEqual({
-      __typename: "MaterialTypeBookmark",
-      scope: "GENERAL",
-      code: "AUDIO_BOOKS",
-      display: "Lydbøger",
       work,
+      manifestation: null,
       manifestations: [matchingManifestation],
     });
-    expect(resolvers.MaterialUnion.__resolveType(material)).toBe(
-      "MaterialTypeBookmark"
-    );
   });
 
-  test("addBookmarks rejects a material type code that is both general and specific", async () => {
-    resolveWork.mockResolvedValueOnce({
-      workId: "work-of:pid:1",
-      manifestations: {
-        all: [
-          {
-            materialTypes: [
-              {
-                general: { code: "AMBIGUOUS" },
-                specific: { code: "AMBIGUOUS" },
-              },
-            ],
-          },
-        ],
+  test("BookmarkItem.material applies AND semantics within a selection", async () => {
+    const compoundManifestation = {
+      pid: "pid:compound",
+      materialTypes: [
+        { specific: { code: "BOOK" } },
+        { specific: { code: "CD" } },
+      ],
+    };
+    const splitAcrossManifestations = [
+      {
+        pid: "pid:book",
+        materialTypes: [{ specific: { code: "BOOK" } }],
       },
+      {
+        pid: "pid:cd",
+        materialTypes: [{ specific: { code: "CD" } }],
+      },
+    ];
+    const work = {
+      workId: "work-of:pid:compound",
+      manifestations: {
+        all: [compoundManifestation, ...splitAcrossManifestations],
+      },
+    };
+    resolveWork.mockResolvedValueOnce(work);
+
+    await expect(
+      resolvers.BookmarkItem.material(
+        {
+          materialId: work.workId,
+          selection: {
+            materialTypes: {
+              specific: ["BOOK", "CD"],
+            },
+          },
+        },
+        {},
+        createContext()
+      )
+    ).resolves.toEqual({
+      work,
+      manifestation: null,
+      manifestations: [compoundManifestation],
     });
+  });
+
+  test("addBookmarks rejects a selection containing both general and specific codes", async () => {
     const context = createContext();
 
     const result = await resolvers.PatronMutation.addBookmarks(
@@ -529,9 +571,12 @@ describe("Patron bookmarks", () => {
         dryRun: true,
         bookmarks: [
           {
-            materialType: {
-              workId: "work-of:pid:1",
-              code: "AMBIGUOUS",
+            materialId: "work-of:pid:1",
+            selection: {
+              materialTypes: {
+                general: ["BOOKS"],
+                specific: ["BOOK"],
+              },
             },
           },
         ],
@@ -544,8 +589,7 @@ describe("Patron bookmarks", () => {
       items: [
         {
           materialId: "work-of:pid:1",
-          materialScope: undefined,
-          materialTypeCode: undefined,
+          selection: undefined,
           status: "INVALID_MATERIAL_ID",
         },
       ],
@@ -559,7 +603,7 @@ describe("Patron bookmarks", () => {
 
     const result = await resolvers.PatronMutation.addBookmarks(
       null,
-      { bookmarks: [{ manifestation: { pid: "pid:missing" } }] },
+      { bookmarks: [{ materialId: "pid:missing" }] },
       context
     );
 
@@ -569,8 +613,7 @@ describe("Patron bookmarks", () => {
       items: [
         {
           materialId: "pid:missing",
-          materialScope: "MANIFESTATION",
-          materialTypeCode: undefined,
+          selection: null,
           status: "NOT_FOUND",
         },
       ],
@@ -583,12 +626,18 @@ describe("Patron bookmarks", () => {
     await expect(
       resolvers.PatronMutation.addBookmarks(
         null,
-        { bookmarks: [{ manifestation: { pid: "ostepops" } }] },
+        { bookmarks: [{ materialId: "ostepops" }] },
         context
       )
     ).resolves.toEqual({
       status: "FAILED",
-      items: [{ materialId: "ostepops", status: "INVALID_MATERIAL_ID" }],
+      items: [
+        {
+          materialId: "ostepops",
+          selection: undefined,
+          status: "INVALID_MATERIAL_ID",
+        },
+      ],
     });
     expect(resolveManifestation).not.toHaveBeenCalled();
     expect(context.datasources.getLoader).not.toHaveBeenCalled();
@@ -618,7 +667,7 @@ describe("Patron bookmarks", () => {
 
     const result = await resolvers.PatronMutation.addBookmarks(
       null,
-      { bookmarks: [{ manifestation: { pid: "pid:1" } }] },
+      { bookmarks: [{ materialId: "pid:1" }] },
       createContext(load)
     );
 
@@ -634,6 +683,11 @@ describe("Patron bookmarks", () => {
         {
           id: bookmarkId,
           materialId: "pid:1",
+          selection: {
+            materialTypes: {
+              general: ["BOOKS"],
+            },
+          },
           status: "ok",
         },
         {
@@ -670,6 +724,11 @@ describe("Patron bookmarks", () => {
         {
           id: bookmarkId,
           materialId: "pid:1",
+          selection: {
+            materialTypes: {
+              general: ["BOOKS"],
+            },
+          },
           status: "OK",
         },
         {
@@ -769,11 +828,12 @@ describe("Patron bookmarks", () => {
     expect(result).toEqual({ hitcount: 0, items: [], status });
   });
 
-  test("BookmarksStatusItem.material returns null without materialId", async () => {
+  test("BookmarksStatusItem.material returns an empty wrapper without materialId", async () => {
     const result = await resolvers.BookmarksStatusItem.material({}, {}, {});
 
-    expect(result).toBeNull();
-    expect(resolveMaterial).not.toHaveBeenCalled();
+    expect(result).toEqual({});
+    expect(resolveManifestation).not.toHaveBeenCalled();
+    expect(resolveWork).not.toHaveBeenCalled();
   });
 
   test("BookmarkItem.id preserves the public UUID", () => {

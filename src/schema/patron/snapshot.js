@@ -58,7 +58,7 @@ function mainLanguage(material) {
  */
 export function buildPatronMaterialSnapshot(
   material,
-  { includeMaterialTypes = false } = {}
+  { includeMaterialType = true, includeMaterialTypes = false } = {}
 ) {
   const hostPublication = material?.hostPublication;
 
@@ -67,7 +67,7 @@ export function buildPatronMaterialSnapshot(
     workId: material?.workId || material?.ownerWork?.workId || null,
     title: material?.titles?.main?.[0] || null,
     creator: firstCreator(material),
-    materialType: materialTypeCode(material),
+    ...(includeMaterialType && { materialType: materialTypeCode(material) }),
     ...(includeMaterialTypes && { materialTypes: materialTypes(material) }),
     workType: material?.workTypes?.[0] || null,
     periodical: hostPublication

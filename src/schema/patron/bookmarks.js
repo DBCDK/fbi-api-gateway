@@ -265,7 +265,7 @@ export const typeDef = `
         """
         Stored metadata captured when the bookmark was created.
         """
-        snapshot: PatronMaterialSnapshot!
+        snapshot: BookmarkSnapshot!
 
         """
         creation date of the bookmark
@@ -287,6 +287,23 @@ export const typeDef = `
       every manifestation in the work.
       """
       manifestations: [Manifestation!]
+    }
+
+    type BookmarkSnapshot {
+      version: Int
+      pid: String
+      workId: String
+      title: String
+      creator: String
+
+      """
+      Stored material types for a manifestation or a work selection. This is
+      null for a bookmark of an entire work.
+      """
+      materialTypes: [PatronMaterialTypeSnapshot!]
+
+      workType: String
+      periodical: PeriodicalSnapshot
     }
 
     type BookmarkSelection {
@@ -510,7 +527,8 @@ export const resolvers = {
             materialId,
             ...(selection && { selection }),
             snapshot: buildPatronMaterialSnapshot(snapshotMaterial, {
-              includeMaterialTypes: true,
+              includeMaterialType: false,
+              includeMaterialTypes: Boolean(selection) || isPid(materialId),
             }),
           }));
 
