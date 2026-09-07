@@ -203,6 +203,12 @@ type Person implements SubjectInterface & CreatorInterface {
   """
   roles: [Role!]!
 
+  """
+  True when the person is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed persons contributed to this creation
+  """
+  andOthers: Boolean
+
   type: SubjectTypeEnum!
 
   language: Language
@@ -269,6 +275,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
     """
     roles: [Role!]!
 
+    """
+    True when the corporation is followed by 'm.fl.' (and others) in the publication,
+    meaning that additional unnamed corporations contributed to this creation
+    """
+    andOthers: Boolean
+
     type: SubjectTypeEnum!
 
     language: Language
@@ -295,6 +307,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the creator is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed creators contributed to this creation
+  """
+  andOthers: Boolean
 
   """
   VIAF identifier of the creator
