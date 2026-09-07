@@ -3,22 +3,12 @@
 import config from "../../config";
 
 const { url, ttl, prefix, teamLabel } = config.datasources.seriesService;
-const { url: jedUrl } = config.datasources.jed;
 const allowedLanguages = new Set([
   "dansk",
   "engelsk",
   "ukendt sprog",
   "flere sprog",
 ]);
-const WORKTYPES_QUERY = `query($id: String! ) {
-    work(id: $id) {
-      workTypes
-      mainLanguages {
-        display
-      }
-    }
-  }
-  `;
 
 export async function load(
   { universeId, trackingId = null, profile },
@@ -48,27 +38,21 @@ export async function load(
             return entry;
           }
 
-          // Fetch workTypes via jed graphql for a single work
-          // This is way faster than fetching via the REST endpoint
-          const jedRes = await context?.fetch(`${jedUrl}/graphql`, {
-            method: "POST",
-            body: JSON.stringify({
-              query: WORKTYPES_QUERY,
-              variables: {
-                profile: `${agency}-${name}`,
-                id: entry.persistentWorkId,
-              },
-            }),
-            allowedErrorStatusCodes: [404, 500],
-          });
+          const jedRecord = await context
+            .getLoader("jedRecord")
+            .load({
+              id: entry.persistentWorkId,
+              profile,
+            });
 
-          if (!jedRes?.body?.data?.work) {
+          if (!jedRecord) {
             return null;
           }
 
           return {
             ...entry,
-            ...jedRes?.body?.data?.work,
+            workTypes: jedRecord.workTypes,
+            mainLanguages: jedRecord.mainLanguages,
           };
         })
       )

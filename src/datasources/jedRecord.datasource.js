@@ -21,13 +21,13 @@ export async function batchLoader(keys, context) {
   return keys.map((k) => res?.body?.records?.[k.id]);
 }
 
-// Disable from redis, as it seems like big objects hurts Redis
-
-// export const options = {
-//   redis: {
-//     prefix,
-//     ttl,
-//   },
-// };
+// Redis caching is enabled on a trial basis. If the large record objects put
+// too much load on Redis, we must disable it and find another caching strategy.
+export const options = {
+  redis: {
+    prefix,
+    ttl,
+  },
+};
 
 export { teamLabel };
