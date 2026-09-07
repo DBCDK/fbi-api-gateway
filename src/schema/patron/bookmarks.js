@@ -89,7 +89,7 @@ function normalizeSelection(selection) {
   return {
     selection: {
       materialTypes: {
-        [field]: codes.sort(),
+        [field]: codes.sort((a, b) => a.localeCompare(b)),
       },
     },
     invalidSelection: false,
