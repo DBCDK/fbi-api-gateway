@@ -13,9 +13,13 @@ describe("getProxyUrl", () => {
 
     expect(result).toEqual({
       proxyUrl:
-        "https://bib376.bibbaser.dk/login?url=https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB&u=45nykob",
+        "https://bib376.bibbaser.dk/login?url=https%3A%2F%2Flink.gale.com%2Fapps%2Fdoc%2FEJ2156000312%2FSUIC%3Fsid%3DDDB%26u%3D45nykob",
       loginRequired: true,
     });
+
+    expect(new URL(result.proxyUrl).searchParams.get("url")).toBe(
+      "https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB&u=45nykob"
+    );
   });
 
   test("returns null proxy url but still requires login when agency has no configured Gale provider library id", () => {
