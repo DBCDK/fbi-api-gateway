@@ -62,6 +62,10 @@ export const options = {
     prefix: "facets-" + prefix,
     ttl,
     staleWhileRevalidate: 24 * 60 * 60,
+    dedupe: {
+      waitTimeoutMs: 5_000,
+      lockTtlMs: 8_000,
+    },
   },
 };
 

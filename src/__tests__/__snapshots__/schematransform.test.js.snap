@@ -3,6 +3,8 @@
 exports[`complete access to whole schema 1`] = `
 "directive @fallback on ENUM_VALUE
 
+directive @oneOf on INPUT_OBJECT
+
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
@@ -1130,6 +1132,12 @@ type Person implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this person made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the person is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed persons contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -1181,6 +1189,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this corporation made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the corporation is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed corporations contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -1200,6 +1214,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the creator is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed creators contributed to this creation
+  """
+  andOthers: Boolean
 
   """VIAF identifier of the creator"""
   viafid: String
@@ -4141,10 +4161,13 @@ type BookmarkItem {
   """
   The bibliographic record associated with the bookmark, if it can still be resolved.
   """
-  material: MaterialUnion
+  material: BookmarkMaterial!
+
+  """The selection applied to the bookmarked work."""
+  selection: BookmarkSelection
 
   """Stored metadata captured when the bookmark was created."""
-  snapshot: PatronMaterialSnapshot!
+  snapshot: BookmarkSnapshot!
 
   """creation date of the bookmark"""
   createdAt: DateTime!
@@ -4153,8 +4176,41 @@ type BookmarkItem {
   application: String!
 }
 
-"""Union type for different material types that can be bookmarked"""
-union MaterialUnion = Work | Manifestation
+type BookmarkMaterial {
+  work: Work
+  manifestation: Manifestation
+
+  """
+  Manifestations matching the bookmark selection. This is not necessarily
+  every manifestation in the work.
+  """
+  manifestations: [Manifestation!]
+}
+
+type BookmarkSnapshot {
+  version: Int
+  pid: String
+  workId: String
+  title: String
+  creator: String
+
+  """
+  Stored material types for a manifestation or a work selection. This is
+  null for a bookmark of an entire work.
+  """
+  materialTypes: [PatronMaterialTypeSnapshot!]
+  workType: String
+  periodical: PeriodicalSnapshot
+}
+
+type BookmarkSelection {
+  materialTypes: BookmarkMaterialTypesSelection!
+}
+
+type BookmarkMaterialTypesSelection {
+  general: [GeneralMaterialTypeCodeEnum!]
+  specific: [String!]
+}
 
 """Enum for sorting bookmarks"""
 enum OrderBookmarksByEnum {
@@ -4165,10 +4221,17 @@ enum OrderBookmarksByEnum {
 }
 
 input BookmarksInput {
-  """
-  The unique identifier for the material being bookmarked (e.g., a PID or work ID).
-  """
   materialId: String!
+  selection: BookmarkSelectionInput
+}
+
+input BookmarkSelectionInput {
+  materialTypes: BookmarkMaterialTypesSelectionInput!
+}
+
+input BookmarkMaterialTypesSelectionInput {
+  general: [GeneralMaterialTypeCodeEnum!]
+  specific: [String!]
 }
 
 type AddBookmarksResponse {
@@ -4205,8 +4268,11 @@ type BookmarksStatusItem {
   """
   materialId: String
 
+  """The normalized selection for the bookmark operation."""
+  selection: BookmarkSelection
+
   """The material for which bookmark addition failed."""
-  material: MaterialUnion
+  material: BookmarkMaterial
 }
 
 enum BookmarksOverallStatusEnum {
@@ -4449,11 +4515,24 @@ type PatronMaterialSnapshot {
   """Stored material type for the material."""
   materialType: String
 
+  """Stored general and specific material types."""
+  materialTypes: [PatronMaterialTypeSnapshot!]!
+
   """Stored work type for the material."""
   workType: String
 
   """Stored metadata about the periodical host publication, when relevant."""
   periodical: PeriodicalSnapshot
+}
+
+type PatronMaterialTypeSnapshot {
+  materialTypeGeneral: PatronMaterialTypeValueSnapshot!
+  materialTypeSpecific: PatronMaterialTypeValueSnapshot!
+}
+
+type PatronMaterialTypeValueSnapshot {
+  code: String
+  display: String
 }
 
 type RawRepo {
@@ -6183,6 +6262,8 @@ type TvSeriesDetails {
 exports[`default schema transform 1`] = `
 "directive @fallback on ENUM_VALUE
 
+directive @oneOf on INPUT_OBJECT
+
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
@@ -6661,6 +6742,12 @@ type Person implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this person made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the person is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed persons contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -6702,6 +6789,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this corporation made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the corporation is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed corporations contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -6721,6 +6814,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the creator is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed creators contributed to this creation
+  """
+  andOthers: Boolean
 
   """VIAF identifier of the creator"""
   viafid: String
@@ -8867,6 +8966,8 @@ type TvSeriesDetails {
 exports[`limited access to root fields 1`] = `
 "directive @fallback on ENUM_VALUE
 
+directive @oneOf on INPUT_OBJECT
+
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
@@ -8878,6 +8979,8 @@ type Query {
 
 exports[`remove all fields by type 1`] = `
 "directive @fallback on ENUM_VALUE
+
+directive @oneOf on INPUT_OBJECT
 
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
@@ -9180,6 +9283,12 @@ type Person implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this person made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the person is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed persons contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -9231,6 +9340,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this corporation made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the corporation is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed corporations contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -9250,6 +9365,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the creator is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed creators contributed to this creation
+  """
+  andOthers: Boolean
 
   """VIAF identifier of the creator"""
   viafid: String
