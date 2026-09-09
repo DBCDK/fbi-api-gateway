@@ -13,11 +13,11 @@ describe("getProxyUrl", () => {
 
     expect(result).toEqual({
       proxyUrl:
-        "https://bib376.bibbaser.dk/login?url=https%3A%2F%2Flink.gale.com%2Fapps%2Fdoc%2FEJ2156000312%2FSUIC%3Fsid%3DDDB%26u%3D45nykob",
+        "https://bib376.bibbaser.dk/login?qurl=https%3A%2F%2Flink.gale.com%2Fapps%2Fdoc%2FEJ2156000312%2FSUIC%3Fsid%3DDDB%26u%3D45nykob",
       loginRequired: true,
     });
 
-    expect(new URL(result.proxyUrl).searchParams.get("url")).toBe(
+    expect(new URL(result.proxyUrl).searchParams.get("qurl")).toBe(
       "https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB&u=45nykob"
     );
   });

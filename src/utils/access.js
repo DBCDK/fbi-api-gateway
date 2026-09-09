@@ -361,7 +361,7 @@ export function getProxyUrl(url, user, options = {}) {
   if (proxyMe) {
     // check if user is logged in
     if (user?.userId) {
-      const realUrl = `https://bib${municipality}.bibbaser.dk/login?url=${encodeURIComponent(
+      const realUrl = `https://bib${municipality}.bibbaser.dk/login?qurl=${encodeURIComponent(
         proxiedTargetUrl
       )}`;
       return {
