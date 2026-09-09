@@ -15,7 +15,7 @@ export async function load(agencyId, context) {
 
 export const options = {
   redis: {
-    prefix: "vipcore-autoill-2",
+    prefix: "vipcore-autoill-requester-2",
     ttl,
     staleWhileRevalidate: 60 * 60 * 24, // 1 day
   },
