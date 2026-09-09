@@ -49,6 +49,29 @@ describe("Patron material snapshot", () => {
     expect(resolvers.PatronMaterialSnapshot.materialTypes({})).toEqual([]);
   });
 
+  test("normalizes material type aliases from stored snapshots", () => {
+    const materialType = {
+      general: { code: "BOOKS", display: "Bøger" },
+      specific: { code: "BOOK", display: "Bog" },
+    };
+
+    expect(
+      resolvers.PatronMaterialTypeSnapshot.materialTypeGeneral(materialType)
+    ).toEqual(materialType.general);
+    expect(
+      resolvers.PatronMaterialTypeSnapshot.materialTypeSpecific(materialType)
+    ).toEqual(materialType.specific);
+  });
+
+  test("returns empty material type values for incomplete stored snapshots", () => {
+    expect(
+      resolvers.PatronMaterialTypeSnapshot.materialTypeGeneral({})
+    ).toEqual({});
+    expect(
+      resolvers.PatronMaterialTypeSnapshot.materialTypeSpecific({})
+    ).toEqual({});
+  });
+
   test("groups flat UserData periodical fields in PeriodicalSnapshot", () => {
     expect(
       resolvers.PatronMaterialSnapshot.periodical({
