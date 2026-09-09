@@ -22,7 +22,6 @@ export const options = {
   redis: {
     ttl,
     prefix,
-    dedupe: false,
   },
 };
 

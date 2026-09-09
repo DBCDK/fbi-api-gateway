@@ -7,11 +7,6 @@ import { getFilesRecursive } from "./utils/utils";
 import config from "./config";
 import { createTracker } from "./utils/tracker";
 
-const DEFAULT_REDIS_DEDUPE_OPTIONS = {
-  waitTimeoutMs: 5_000,
-  lockTtlMs: 8_000,
-};
-
 // Find all datasources in src/datasources
 export const datasources = getFilesRecursive(`${__dirname}/datasources`)
   .map((file) => {
@@ -78,7 +73,6 @@ function setupDataloader(
     !context.debugObj
   ) {
     batchLoaderWithContext = withRedis(batchLoaderWithContext, {
-      dedupe: DEFAULT_REDIS_DEDUPE_OPTIONS,
       ...options.redis,
       ...context,
       datasourceName: name,
