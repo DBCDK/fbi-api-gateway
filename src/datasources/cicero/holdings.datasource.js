@@ -37,7 +37,6 @@ export const options = {
   redis: {
     prefix,
     ttl,
-    dedupe: false,
   },
 };
 
