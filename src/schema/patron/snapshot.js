@@ -163,6 +163,14 @@ export const typeDef = `
 `;
 
 export const resolvers = {
+  PatronMaterialTypeSnapshot: {
+    materialTypeGeneral(parent) {
+      return parent?.materialTypeGeneral || parent?.general || {};
+    },
+    materialTypeSpecific(parent) {
+      return parent?.materialTypeSpecific || parent?.specific || {};
+    },
+  },
   PatronMaterialSnapshot: {
     materialTypes(parent) {
       return parent?.materialTypes || [];
