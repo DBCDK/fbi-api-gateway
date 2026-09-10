@@ -314,13 +314,25 @@ function replaceGaleProvidersLibraryId(
     return url;
   }
 
-  const providersLibraryId = getGaleAgencyConfig(agencyId)?.providersLibraryId;
+  const agencyConfig = getGaleAgencyConfig(agencyId);
 
-  if (!providersLibraryId) {
+  if (!agencyConfig) {
     return url;
   }
 
-  return url.replace("[PROVIDERSLIBRARYID]", providersLibraryId);
+  if (!agencyConfig.omitProvidersLibraryId) {
+    return url.replace(
+      "[PROVIDERSLIBRARYID]",
+      agencyConfig.providersLibraryId
+    );
+  }
+
+  // Some Gale subscriptions, such as Copenhagen's, are identified by the
+  // proxy and must not receive a provider library id in the target URL.
+  return url
+    .replace("?u=[PROVIDERSLIBRARYID]&", "?")
+    .replace("&u=[PROVIDERSLIBRARYID]", "")
+    .replace("?u=[PROVIDERSLIBRARYID]", "");
 }
 
 function shouldUseProxy(url, agencyId, collectionIdentifiers = []) {
@@ -328,11 +340,12 @@ function shouldUseProxy(url, agencyId, collectionIdentifiers = []) {
     return shouldProxyUrl(url);
   }
 
-  const providersLibraryId = getGaleAgencyConfig(agencyId)?.providersLibraryId;
+  const agencyConfig = getGaleAgencyConfig(agencyId);
 
   return (
     shouldProxyUrl(url) &&
-    !!providersLibraryId &&
+    (!!agencyConfig?.providersLibraryId ||
+      agencyConfig?.omitProvidersLibraryId === true) &&
     hasGaleCollectionAccess(agencyId, collectionIdentifiers)
   );
 }
