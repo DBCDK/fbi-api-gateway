@@ -27,6 +27,7 @@ import { validateAgencyId } from "./middlewares/validateAgencyId";
 import { dataHubMiddleware } from "./middlewares/dataHubMiddleware";
 import { validateRateLimit } from "./middlewares/validateRateLimit";
 import estimatedCpuTimeMs from "./middlewares/estimatedCpuTime";
+import { resolveClientPermissions } from "./middlewares/resolveClientPermissions";
 
 // this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
@@ -44,8 +45,19 @@ let server;
 //prometheus endpoint for monitoring
 const prometheusApp = express();
 prometheusApp.get("/metrics", metricsHandler);
-prometheusApp.listen(9599, () => {
+const prometheusServer = prometheusApp.listen(9599, () => {
   log.info(`Running metrics endpoint at http://localhost:9599/metrics`);
+});
+
+prometheusServer.on("error", (error) => {
+  if (error?.code === "EADDRINUSE") {
+    log.warn("Metrics endpoint already running, skipping local metrics bind", {
+      port: 9599,
+    });
+    return;
+  }
+
+  throw error;
 });
 
 // //old endpoint.TODO: expose this in the new port
@@ -90,6 +102,7 @@ prometheusApp.listen(9599, () => {
       validateAgencyId,
       fetchUserInfo,
       validateDepth,
+      resolveClientPermissions,
       resolveGraphQLQuery,
     ].filter(Boolean)
   );
@@ -108,6 +121,7 @@ prometheusApp.listen(9599, () => {
       validateAgencyId,
       fetchUserInfo,
       validateDepth,
+      resolveClientPermissions,
       resolveGraphQLQuery,
     ].filter(Boolean)
   );

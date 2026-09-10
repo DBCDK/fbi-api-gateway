@@ -1,11 +1,14 @@
 import Head from "next/head";
 
+import useMode from "@/hooks/useMode";
 import useTheme from "@/hooks/useTheme";
 
 import "@/scss/custom-bootstrap.scss";
 import "@/css/styles.css";
+import WhatsNew from "@/components/whats-new";
 
 function MyApp({ Component, pageProps, router }) {
+  useMode();
   const { icon } = useTheme();
 
   return (
@@ -17,6 +20,7 @@ function MyApp({ Component, pageProps, router }) {
         />
         <title>FBI API</title>
       </Head>
+      <WhatsNew />
       <Component {...pageProps} />
     </>
   );

@@ -1,123 +1,123 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Work Query all fields 1`] = `
-Object {
-  "data": Object {
-    "work": Object {
-      "abstract": Array [
+{
+  "data": {
+    "work": {
+      "abstract": [
         "Dummy The abstract",
       ],
-      "creators": Array [
-        Object {
+      "creators": [
+        {
           "display": "Dummy Jens Jensen",
           "nameSort": "Dummy Jensen Jens",
         },
-        Object {
+        {
           "display": "Dummy Some Corporation",
           "nameSort": "Dummy Some Corporation for sorting",
         },
       ],
-      "dk5MainEntry": Object {
+      "dk5MainEntry": {
         "code": "Dummy some dk5 code",
         "display": "Dummy some dk5 display",
         "dk5Heading": "Dummy some dk5 heading",
       },
-      "fictionNonfiction": Object {
+      "fictionNonfiction": {
         "code": "FICTION",
         "display": "Dummy skønlitteratur",
       },
-      "genreAndForm": Array [
+      "genreAndForm": [
         "Dummy some genre",
       ],
-      "mainLanguages": Array [
-        Object {
+      "mainLanguages": [
+        {
           "display": "Dummy dansk",
           "isoCode": "Dummy dan",
         },
       ],
-      "manifestations": Object {
-        "all": Array [
-          Object {
+      "manifestations": {
+        "all": [
+          {
             "pid": "Dummy some-pid-1",
           },
-          Object {
+          {
             "pid": "Dummy some-pid-2",
           },
         ],
-        "bestRepresentation": Object {
+        "bestRepresentation": {
           "pid": "Dummy some-pid-1",
         },
-        "first": Object {
+        "first": {
           "pid": "Dummy some-pid-1",
         },
-        "latest": Object {
+        "latest": {
           "pid": "Dummy some-pid-2",
         },
-        "mostRelevant": Array [
-          Object {
+        "mostRelevant": [
+          {
             "pid": "Dummy some-pid-2",
           },
-          Object {
+          {
             "pid": "Dummy some-pid-1",
           },
         ],
       },
-      "materialTypes": Array [
-        Object {
-          "materialTypeGeneral": Object {
+      "materialTypes": [
+        {
+          "materialTypeGeneral": {
             "code": "AUDIO_BOOKS",
             "display": "Dummy bøger",
           },
-          "materialTypeSpecific": Object {
+          "materialTypeSpecific": {
             "code": "AUDIO_BOOK",
             "display": "Dummy bog",
           },
         },
       ],
-      "series": Array [
-        Object {
-          "alternativeTitles": Array [
+      "series": [
+        {
+          "alternativeTitles": [
             "De 7 søstre",
             "De 7 søstre-serien",
           ],
           "isPopular": true,
           "numberInSeries": "Del 1",
-          "parallelTitles": Array [],
+          "parallelTitles": [],
           "readThisFirst": true,
           "readThisWhenever": null,
           "title": "De syv søstre-serien",
         },
       ],
-      "subjects": Object {
-        "all": Array [],
-        "dbcVerified": Array [],
+      "subjects": {
+        "all": [],
+        "dbcVerified": [],
       },
-      "titles": Object {
-        "full": Array [
+      "titles": {
+        "full": [
           "Dummy Some Title: Full",
         ],
-        "main": Array [
+        "main": [
           "Dummy Some Title",
         ],
-        "original": Array [
+        "original": [
           "Dummy Some Title Origintal",
         ],
-        "parallel": Array [
+        "parallel": [
           "Dummy Parallel Title 1",
           "Dummy Parallel Title 2",
         ],
         "sort": "Dummy Some Title Sort",
         "standard": "Dummy Some Title Standard",
-        "translated": Array [
+        "translated": [
           "Dummy Oversat titel",
         ],
       },
-      "universes": Array [],
+      "universes": [],
       "workId": "work-of:870970-basis:26521556",
-      "workTypes": Array [
+      "workTypes": [
         "LITERATURE",
       ],
-      "workYear": Object {
+      "workYear": {
         "display": "Dummy",
         "endYear": 1951,
         "frequency": "1",
@@ -129,9 +129,9 @@ Object {
 `;
 
 exports[`Work fetch by faust 1`] = `
-Object {
-  "data": Object {
-    "work": Object {
+{
+  "data": {
+    "work": {
       "workId": "work-of:870970-basis:26521556",
     },
   },
@@ -139,9 +139,9 @@ Object {
 `;
 
 exports[`Work fetch by id 1`] = `
-Object {
-  "data": Object {
-    "work": Object {
+{
+  "data": {
+    "work": {
       "workId": "work-of:870970-basis:26521556",
     },
   },
@@ -149,9 +149,9 @@ Object {
 `;
 
 exports[`Work fetch by pid 1`] = `
-Object {
-  "data": Object {
-    "work": Object {
+{
+  "data": {
+    "work": {
       "workId": "work-of:870970-basis:26521556",
     },
   },
@@ -159,10 +159,10 @@ Object {
 `;
 
 exports[`Work fetch multi by faust 1`] = `
-Object {
-  "data": Object {
-    "works": Array [
-      Object {
+{
+  "data": {
+    "works": [
+      {
         "workId": "work-of:870970-basis:26521556",
       },
     ],
@@ -171,10 +171,10 @@ Object {
 `;
 
 exports[`Work fetch multi by id 1`] = `
-Object {
-  "data": Object {
-    "works": Array [
-      Object {
+{
+  "data": {
+    "works": [
+      {
         "workId": "work-of:870970-basis:26521556",
       },
     ],
@@ -183,10 +183,10 @@ Object {
 `;
 
 exports[`Work fetch multi by pid 1`] = `
-Object {
-  "data": Object {
-    "works": Array [
-      Object {
+{
+  "data": {
+    "works": [
+      {
         "workId": "work-of:870970-basis:26521556",
       },
     ],

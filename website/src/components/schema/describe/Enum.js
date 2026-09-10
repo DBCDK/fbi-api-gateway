@@ -1,5 +1,5 @@
 import useSchema from "@/hooks/useSchema";
-import useStorage from "@/hooks/useStorage";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import { orderBy } from "lodash";
 import { useMemo } from "react";
 
@@ -7,7 +7,7 @@ import { useMemo } from "react";
  * A React component that lists possible values of a Enum type
  */
 export default function DescribeEnum({ name }) {
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
   const { schema } = useSchema(selectedToken);
   const enumValues = useMemo(() => {
     const type = schema?.getTypeMap()?.[name];

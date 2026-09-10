@@ -290,6 +290,10 @@ describe("Manifestation", () => {
             type
             value
           }
+          illAutomationMaterialGroup {
+            id
+            name
+          }
           languages {
             notes
             main {
@@ -316,24 +320,6 @@ describe("Manifestation", () => {
               display
               isoCode
             }
-          }
-          manifestationParts {
-            heading
-            parts {
-              title
-              creators {
-                display
-              }
-              classifications {
-                code
-              }
-              subjects {
-                display
-              }
-              creatorsFromDescription
-              playingTime
-            }
-            type
           }
           materialTypes {
             materialTypeGeneral{
@@ -400,13 +386,6 @@ describe("Manifestation", () => {
             numberInSeries
           }          
           volume
-          tableOfContents {
-            heading
-            content
-            listOfContent {
-              content
-            }
-          }
         }
       }`,
       variables: { faust: "26521556" },

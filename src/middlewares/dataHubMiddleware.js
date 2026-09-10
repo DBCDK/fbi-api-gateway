@@ -419,16 +419,24 @@ export function dataHubMiddleware(req, res, next) {
     }
 
     const variables = { ...fieldInfo?.recommend?.args };
+    const identifiers =
+      data?.recommend?.result
+        ?.map((r) => ({
+          identifier: r?.work?.workId,
+          traceId: r?.work?.traceId || createTraceId(),
+        }))
+        .filter((entry) => entry?.identifier) || [];
+
+    if (identifiers.length === 0) {
+      return;
+    }
 
     const event = {
       context,
       kind: "RECOMMEND",
       variables,
       result: {
-        identifiers: data?.recommend?.result?.map((r) => ({
-          identifier: r?.work?.workId,
-          traceId: r?.work?.traceId || createTraceId(),
-        })),
+        identifiers,
       },
     };
 

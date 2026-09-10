@@ -1,4 +1,59 @@
-import { findAliasesAndArgs } from "../graphQLQueryTools";
+import { parse } from "graphql";
+import { findAliasesAndArgs, isTypeRequested } from "../graphQLQueryTools";
+
+function createInfoForField(query, fieldName) {
+  const ast = parse(query);
+  const fragments = {};
+
+  for (const definition of ast.definitions) {
+    if (definition.kind === "FragmentDefinition") {
+      fragments[definition.name.value] = definition;
+    }
+  }
+
+  function findField(selections) {
+    for (const selection of selections) {
+      if (selection.kind === "Field" && selection.name.value === fieldName) {
+        return selection;
+      }
+
+      if (selection.kind === "Field" && selection.selectionSet) {
+        const found = findField(selection.selectionSet.selections);
+        if (found) {
+          return found;
+        }
+      }
+
+      if (selection.kind === "InlineFragment" && selection.selectionSet) {
+        const found = findField(selection.selectionSet.selections);
+        if (found) {
+          return found;
+        }
+      }
+
+      if (selection.kind === "FragmentSpread") {
+        const fragment = fragments[selection.name.value];
+        if (fragment) {
+          const found = findField(fragment.selectionSet.selections);
+          if (found) {
+            return found;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  const operation = ast.definitions.find(
+    (definition) => definition.kind === "OperationDefinition"
+  );
+
+  return {
+    fieldNodes: [findField(operation.selectionSet.selections)],
+    fragments,
+  };
+}
 
 describe("findAliasesAndArgs", () => {
   it("should handle a query with aliases and variables", () => {
@@ -131,5 +186,68 @@ describe("findAliasesAndArgs", () => {
       "books.writer": { realPath: "allBooks.author", args: null },
       "books.writer.fullName": { realPath: "allBooks.author.name", args: null },
     });
+  });
+});
+
+describe("isTypeRequested", () => {
+  it("returns true when an inline fragment for the type is requested", () => {
+    const query = `
+      query {
+        manifestation(pid: "870971-avis:1") {
+          access {
+            ... on InfomediaService {
+              id
+            }
+          }
+        }
+      }
+    `;
+
+    const info = createInfoForField(query, "access");
+
+    expect(isTypeRequested(info, "InfomediaService")).toBe(true);
+    expect(isTypeRequested(info, "AccessUrl")).toBe(false);
+  });
+
+  it("returns true when the type is requested via a named fragment", () => {
+    const query = `
+      fragment AccessFields on Manifestation {
+        access {
+          ...InfomediaAccess
+        }
+      }
+
+      fragment InfomediaAccess on AccessUnion {
+        ... on InfomediaService {
+          id
+        }
+      }
+
+      query {
+        manifestation(pid: "870971-avis:1") {
+          ...AccessFields
+        }
+      }
+    `;
+
+    const info = createInfoForField(query, "access");
+
+    expect(isTypeRequested(info, "InfomediaService")).toBe(true);
+  });
+
+  it("returns false when only __typename is requested on the field", () => {
+    const query = `
+      query {
+        manifestation(pid: "870971-avis:1") {
+          access {
+            __typename
+          }
+        }
+      }
+    `;
+
+    const info = createInfoForField(query, "access");
+
+    expect(isTypeRequested(info, "InfomediaService")).toBe(false);
   });
 });

@@ -1,28 +1,28 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Inspiration - 'populære' should sort before 'nyeste' in 'fiction' 1`] = `
-Object {
-  "data": Object {
-    "inspiration": Object {
-      "categories": Array [
-        Object {
-          "subCategories": Array [
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+{
+  "data": {
+    "inspiration": {
+      "categories": [
+        {
+          "subCategories": [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:52557240",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -32,22 +32,22 @@ Object {
               ],
               "title": "populære",
             },
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:04778502",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -68,28 +68,28 @@ Object {
 `;
 
 exports[`Inspiration - Empty subCategories array returns all subCategories in 'fiction' 1`] = `
-Object {
-  "data": Object {
-    "inspiration": Object {
-      "categories": Array [
-        Object {
-          "subCategories": Array [
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+{
+  "data": {
+    "inspiration": {
+      "categories": [
+        {
+          "subCategories": [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:04778502",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -99,22 +99,22 @@ Object {
               ],
               "title": "nyeste",
             },
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:52557240",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -135,28 +135,28 @@ Object {
 `;
 
 exports[`Inspiration - get both 'nyeste' and 'populære' in 'fiction' and 'games' 1`] = `
-Object {
-  "data": Object {
-    "inspiration": Object {
-      "categories": Array [
-        Object {
-          "subCategories": Array [
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+{
+  "data": {
+    "inspiration": {
+      "categories": [
+        {
+          "subCategories": [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:04778502",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -166,22 +166,22 @@ Object {
               ],
               "title": "nyeste",
             },
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:52557240",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -195,24 +195,24 @@ Object {
           "title": "fiction",
           "type": "FICTION",
         },
-        Object {
-          "subCategories": Array [
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+        {
+          "subCategories": [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:61629475",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -222,22 +222,22 @@ Object {
               ],
               "title": "nyeste",
             },
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:45938247",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -258,48 +258,48 @@ Object {
 `;
 
 exports[`Inspiration - no categories returned when filters prop is empty 1`] = `
-Object {
-  "data": Object {
-    "inspiration": Object {
-      "categories": Array [],
+{
+  "data": {
+    "inspiration": {
+      "categories": [],
     },
   },
 }
 `;
 
 exports[`Inspiration - no categories returned when filters prop is missing 1`] = `
-Object {
-  "data": Object {
-    "inspiration": Object {
-      "categories": Array [],
+{
+  "data": {
+    "inspiration": {
+      "categories": [],
     },
   },
 }
 `;
 
 exports[`Inspiration - no subCategories prop returns all subCategories in 'games' 1`] = `
-Object {
-  "data": Object {
-    "inspiration": Object {
-      "categories": Array [
-        Object {
-          "subCategories": Array [
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+{
+  "data": {
+    "inspiration": {
+      "categories": [
+        {
+          "subCategories": [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:61629475",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -309,22 +309,22 @@ Object {
               ],
               "title": "nyeste",
             },
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:45938247",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
@@ -345,28 +345,28 @@ Object {
 `;
 
 exports[`Inspiration - only get 'nyeste' in 'fiction' 1`] = `
-Object {
-  "data": Object {
-    "inspiration": Object {
-      "categories": Array [
-        Object {
-          "subCategories": Array [
-            Object {
-              "result": Array [
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+{
+  "data": {
+    "inspiration": {
+      "categories": [
+        {
+          "subCategories": [
+            {
+              "result": [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },
                     "workId": "work-of:870970-basis:04778502",
                   },
                 },
-                Object {
-                  "work": Object {
-                    "titles": Object {
-                      "main": Array [
+                {
+                  "work": {
+                    "titles": {
+                      "main": [
                         "Dummy Some Title",
                       ],
                     },

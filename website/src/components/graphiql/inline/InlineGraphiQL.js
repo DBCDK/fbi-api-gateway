@@ -10,9 +10,9 @@ import {
 
 import { generateCurl } from "@/components/utils";
 
-import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
 import useIntersection from "@/hooks/useIntersection";
+import useEffectiveSelectedCredential from "@/hooks/credentials/useEffectiveSelectedCredential";
 
 import Text from "@/components/base/text";
 import Button from "@/components/base/button";
@@ -125,6 +125,7 @@ function generateGraphiqlURL(parameters) {
 export function InlineGraphiQL({
   query,
   variables,
+  token,
   onEditQuery,
   onEditVariables,
   settings,
@@ -142,7 +143,6 @@ export function InlineGraphiQL({
 
   const prettifyEditors = usePrettifyEditors();
 
-  const { selectedToken } = useStorage();
   const url = useGraphQLUrl();
 
   const [isReady, setIsReady] = useState(false);
@@ -152,7 +152,7 @@ export function InlineGraphiQL({
 
   const curl = generateCurl({
     url,
-    token: selectedToken?.token,
+    token,
     query,
     variables,
   });
@@ -244,8 +244,8 @@ export function InlineGraphiQL({
 }
 
 export default function Wrap(props) {
-  const { selectedToken } = useStorage();
-  const { schema } = useSchema(selectedToken);
+  const { effectiveCredential, effectiveToken } = useEffectiveSelectedCredential();
+  const { schema } = useSchema(effectiveCredential);
   const { execute } = useExecute();
   const url = useGraphQLUrl();
 
@@ -254,10 +254,6 @@ export default function Wrap(props) {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState(initialQuery);
   const [variables, setVariables] = useState(initialVariabels);
-
-  useEffect(() => {
-    setShow(false);
-  }, [selectedToken]);
 
   if (!show || !schema) {
     return <DummyContainer inView={() => setShow(true)} />;
@@ -269,14 +265,20 @@ export default function Wrap(props) {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `bearer ${selectedToken?.token}`,
+        Authorization: `bearer ${effectiveToken}`,
         "X-Tracking-Consent": "false",
         "X-Session-Token": "test-session-id",
       },
       body: JSON.stringify({ query, variables }),
       credentials: "same-origin",
     });
-    return data.json().catch(() => data.text());
+    const body = await data.text();
+
+    try {
+      return JSON.parse(body);
+    } catch {
+      return body;
+    }
   };
 
   return (
@@ -289,6 +291,7 @@ export default function Wrap(props) {
     >
       <InlineGraphiQL
         query={query}
+        token={effectiveToken}
         variables={variables}
         onEditVariables={setVariables}
         onEditQuery={setQuery}

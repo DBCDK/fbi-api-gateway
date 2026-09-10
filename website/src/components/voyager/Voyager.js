@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
 
-import useStorage from "@/hooks/useStorage";
-
 import dynamic from "next/dynamic";
 import styles from "./Voyager.module.css";
 import useSchema from "@/hooks/useSchema";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 
 // Voyager cannot be imported server side
 const VoyagerComp = dynamic(
@@ -13,7 +12,7 @@ const VoyagerComp = dynamic(
 );
 
 export default function Voyager() {
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
   const { json } = useSchema(selectedToken);
 
   // Render only when token is changed,

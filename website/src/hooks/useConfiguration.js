@@ -1,43 +1,107 @@
-import fetch from "isomorphic-unfetch";
-import useSWR from "swr";
+import { useEffect } from "react";
 
-import { isToken } from "@/components/utils";
+import useCredentialEntries from "./credentials/useCredentialEntries";
+import useCredentialMutations from "./credentials/useCredentialMutations";
+import useResolvedConfiguration from "./resolved/useResolvedConfiguration";
 
-const STATUS_MAP = { 200: "OK", 404: "EXPIRED", 401: "INVALID", 500: "ERROR" };
+const syncedResolvedTokens = new Map();
 
-const fetcher = async (url) => {
-  const response = await fetch(url, {
-    method: "GET",
-  });
+export default function useConfiguration(
+  props,
+  { enabled = true, syncResolvedToken = true } = {}
+) {
+  const { setCredentialEntry } = useCredentialEntries();
+  const { selectCredential } = useCredentialMutations();
+  const {
+    configuration,
+    status,
+    isLoading,
+    usesCredentialEndpoint,
+    requestKey,
+  } = useResolvedConfiguration(props, { enabled });
 
-  const status = response.status;
+  useEffect(() => {
+    const resolvedToken = configuration?.resolvedToken;
 
-  if (response.status !== 200) {
-    return {
-      config: {},
-      statusCode: status,
-      status: STATUS_MAP[status] || "ERROR",
-    };
-  }
+    if (
+      !syncResolvedToken ||
+      !usesCredentialEndpoint ||
+      !resolvedToken ||
+      resolvedToken === props?.token
+    ) {
+      return;
+    }
 
-  const config = await response.json();
+    const syncKey = [
+      requestKey,
+      resolvedToken,
+      configuration?.resolvedExpiresAt || "",
+    ].join(":");
 
-  return { config, statusCode: 200, status: "OK" };
-};
+    if (syncedResolvedTokens.get(requestKey) === syncKey) {
+      return;
+    }
 
-export default function useConfiguration(props) {
-  const url = `/api/smaug?token=${props?.token?.replace(/test.*:/, "")}`;
-  const isValid = isToken(props?.token);
+    syncedResolvedTokens.set(requestKey, syncKey);
 
-  const { data, error } = useSWR(isValid && url, fetcher, {
-    fallback: { config: {}, status: null, statusCode: null },
-  });
+    setCredentialEntry({
+      id: props?.id || null,
+      type: configuration?.resolvedType || props?.type || "token",
+      token: resolvedToken,
+      clientId: configuration?.resolvedClientId || props?.clientId || null,
+      hasClientSecret:
+        configuration?.resolvedHasClientSecret ?? props?.hasClientSecret,
+      hasRefreshToken:
+        configuration?.resolvedHasRefreshToken ?? props?.hasRefreshToken,
+      supportsRefreshToken:
+        configuration?.resolvedSupportsRefreshToken ??
+        props?.supportsRefreshToken,
+      profile: props?.profile,
+      agency: props?.agency,
+      configuration,
+    });
 
-  return (
-    {
-      configuration: data?.config,
-      status: data?.status,
-      isLoading: !data && !error && isValid,
-    } || {}
-  );
+    selectCredential(
+      resolvedToken,
+      props?.profile,
+      props?.agency,
+      {
+        id: props?.id || null,
+        type: configuration?.resolvedType || props?.type || "token",
+        clientId: configuration?.resolvedClientId || props?.clientId || null,
+        hasClientSecret:
+          configuration?.resolvedHasClientSecret ?? props?.hasClientSecret,
+      },
+      { reorderApplications: false }
+    );
+  }, [
+    configuration,
+    configuration?.resolvedClientId,
+    configuration?.resolvedExpiresAt,
+    configuration?.resolvedHasClientSecret,
+    configuration?.resolvedHasRefreshToken,
+    configuration?.resolvedSupportsRefreshToken,
+    configuration?.resolvedToken,
+    configuration?.resolvedType,
+    props?.agency,
+    props?.clientId,
+    props?.hasClientSecret,
+    props?.hasRefreshToken,
+    props?.id,
+    props?.profile,
+    props?.supportsRefreshToken,
+    props?.token,
+    props?.type,
+    requestKey,
+    selectCredential,
+    setCredentialEntry,
+    syncResolvedToken,
+    usesCredentialEndpoint,
+  ]);
+
+  return {
+    configuration,
+    status,
+    isLoading,
+  };
 }

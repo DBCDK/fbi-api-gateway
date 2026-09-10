@@ -3,6 +3,14 @@ import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 import { mapFacet, mapFromFacetEnum } from "../utils/filtersAndFacetsMap";
 import { createTraceId } from "../utils/trace";
+import {
+  getWorkAuthors,
+  selectPrimaryAuthor,
+  getCreatorInfo,
+  resolveWorksByIds,
+  getSeriesIdsFromWork,
+  selectPrimarySeriesId,
+} from "../utils/search";
 
 /**
  * define a searchquery
@@ -174,6 +182,16 @@ type SearchResponse {
   hitcount: Int!
 
   """
+  Returned when at least 3 of the top 5 works share the same creator.
+  """
+  creatorHit: CreatorInfo
+
+  """
+  Returned when at least 3 of the top 5 works belong to the same series.
+  """
+  seriesHit: Series
+
+  """
   The works matching the given search query. Use offset and limit for pagination.
   """
   works(offset: Int! limit: PaginationLimitScalar!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
@@ -250,6 +268,62 @@ export const resolvers = {
     },
   },
   SearchResponse: {
+    async creatorHit(parent, args, context) {
+      const res = await context.datasources.getLoader("simplesearch").load({
+        ...parent,
+        profile: context.profile,
+      });
+      const workIds =
+        res?.result?.map(({ workid }) => workid)?.filter(Boolean) || [];
+      if (workIds.length === 0) return null;
+
+      const works = await resolveWorksByIds(workIds, context);
+      // Collect authors across works
+      const authorEntries = getWorkAuthors(works);
+      if (authorEntries.length === 0) return null;
+
+      // Choose dominant author (>= 3 in top 5)
+      const primaryAuthor = selectPrimaryAuthor(authorEntries);
+      if (!primaryAuthor) return null;
+
+      // Fetch CreatorInfo details
+      try {
+        return await getCreatorInfo(primaryAuthor, context);
+      } catch (e) {
+        return null;
+      }
+    },
+    async seriesHit(parent, args, context) {
+      // Get top 5 workIds and resolve works
+      const res = await context.datasources.getLoader("simplesearch").load({
+        ...parent,
+        profile: context.profile,
+      });
+
+      const workIds =
+        res?.result?.map(({ workid }) => workid)?.filter(Boolean) || [];
+      if (!workIds || workIds.length === 0) return null;
+
+      const works = await resolveWorksByIds(workIds, context);
+      // get series ids from works
+      const seriesPerWork = await Promise.all(
+        works.map((work) => getSeriesIdsFromWork(work, context))
+      );
+
+      // return seriessid if it appears more than 3 times
+      const selectedSeriesId = selectPrimarySeriesId(seriesPerWork);
+      if (!selectedSeriesId) return null;
+
+      const seriesById = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: selectedSeriesId, profile: context.profile });
+      if (!seriesById?.seriesTitle) return null;
+      return {
+        ...seriesById,
+        seriesId: selectedSeriesId,
+        traceId: createTraceId(),
+      };
+    },
     async intelligentFacets(parent, args, context, info) {
       const input = {
         ...parent,
@@ -275,7 +349,7 @@ export const resolvers = {
         profile: context.profile,
       });
 
-      return res?.map(({ query, score }) => ({
+      return (res || []).map(({ query, score }) => ({
         query,
         score,
         traceId: createTraceId(),
@@ -299,8 +373,11 @@ export const resolvers = {
         .getLoader("simplesearch")
         .load(input);
 
+      const workIds =
+        res?.result?.map(({ workid }) => workid)?.filter(Boolean) || [];
+
       const expanded = await Promise.all(
-        res.result.map(async ({ workid }) => {
+        workIds.map(async (workid) => {
           const work = await resolveWork({ id: workid }, context);
 
           if (!work) {

@@ -40,12 +40,12 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCodeEnum): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
-  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
+  complexSearch(cql: String!, filters: ComplexSearchFiltersInput, cqlfilter: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
   """
   ComplexFacets is for internal use only - there is no limit on how many facets are allowed to extract
   """
-  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
+  complexFacets(cql: String!, filters: ComplexSearchFiltersInput, cqlfilter: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexFacetResponse!
 
   localSuggest(
     """
@@ -104,7 +104,6 @@ type Query {
   Get recommendations
   """
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse! @complexity(value: 3, multipliers: ["limit"])
-  help(q: String!, language: LanguageCodeEnum): HelpResponse
   branches(
     agencyid: String, 
     branchId: String, 
@@ -135,8 +134,13 @@ type Query {
   """
   localizationsWithHoldings(pids: [String!]!, limit: Int, offset: Int, availabilityTypes: [AvailabilityEnum!], language: LanguageCodeEnum, status: LibraryStatusEnum, bibdkExcludeBranches:Boolean): Localizations @complexity(value: 35, multipliers: ["pids"])
   refWorks(pids: [String!]!): String!
+  """
+  Returns bibliographic records formatted as RIS reference data for one or more manifestation pids.
+  When multiple pids are provided, each RIS record is separated by a newline.
+  Records are returned in the same order as the provided pids.
+  If a pid is not found, it is omitted from the response.
+  """
   ris(pids: [String!]!): String!
-  relatedSubjects(q:[String!]!, limit:Int ): [String!] @complexity(value: 3, multipliers: ["q", "limit"])  @deprecated(reason: "Use 'Recommendations.subjects' instead expires: 01/03-2025")
   inspiration(limit: Int): Inspiration! 
   orderStatus(orderIds: [String!]!): [OrderStatusResponse]!
 }
@@ -218,24 +222,14 @@ export const resolvers = {
     async inspiration(parent, args, context, info) {
       return {};
     },
-    async relatedSubjects(parent, args, context, info) {
-      const related = await context.datasources
-        .getLoader("relatedSubjects")
-        .load({ q: args.q, limit: args.limit });
-      return related.response;
-    },
-
     async ris(parent, args, context, info) {
-      const ris = await context.datasources.getLoader("ris").load({
-        pids: args.pids,
-      });
+      const risRecords = await Promise.all(
+        args.pids.map((pid) =>
+          context.datasources.getLoader("ris").load({ pid })
+        )
+      );
 
-      /**
-       * Temporary fix until openformat handles multiple pids
-       * Add newline after "ER  -" to correct format
-       */
-      const formated = ris.replaceAll("ER  -", "ER  -\n");
-      return formated;
+      return risRecords.filter(Boolean).join("\n");
     },
     async refWorks(parent, args, context, info) {
       const ref = await context.datasources
@@ -359,10 +353,6 @@ export const resolvers = {
         return e.message;
       }
     },
-    async help(parent, args, context, info) {
-      return { ...args };
-    },
-
     async work(parent, args, context, info) {
       const work = await resolveWork(args, context);
 
@@ -385,9 +375,25 @@ export const resolvers = {
       return args;
     },
     async complexSearch(parent, args, context, info) {
+      if (args.filters && args.cqlfilter) {
+        return {
+          hitcount: 0,
+          works: [],
+          errorMessage:
+            "The 'filters' and 'cqlfilter' arguments are mutually exclusive — provide only one.",
+        };
+      }
       return args;
     },
     async complexFacets(parent, args, context, info) {
+      if (args.filters && args.cqlfilter) {
+        return {
+          hitcount: 0,
+          works: [],
+          errorMessage:
+            "The 'filters' and 'cqlfilter' arguments are mutually exclusive — provide only one.",
+        };
+      }
       return args;
     },
     async linkCheck(parent, args, context, info) {

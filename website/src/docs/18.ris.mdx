@@ -1,0 +1,36 @@
+# RIS
+
+Returns bibliographic records formatted as RIS reference data.
+
+The query accepts one or more manifestation pids and returns a single string. When multiple pids are provided, each RIS record is separated by a newline. Records are returned in the same order as the provided pids. If a pid is not found, it is omitted from the response.
+
+<InlineGraphiQL
+  query={`
+    query Example_Ris($pids: [String!]!) {
+      ris(pids: $pids)
+    }
+  `}
+  variables={{
+    pids: [
+      "870970-basis:29913285",
+      "870970-basis:unknown",
+      "870970-basis:55132194",
+    ],
+  }}
+/>
+
+RIS reference data can also be fetched on each manifestation via the `ris` field. Each manifestation returns its own RIS record. To combine multiple records into a single RIS file, join them with a newline.
+
+<InlineGraphiQL
+  query={`
+    query Example_RisManifestations($pids: [String!]!) {
+      manifestations(pid: $pids) {
+        pid
+        ris
+      }
+    }
+  `}
+  variables={{
+    pids: ["870970-basis:29913285", "870970-basis:55132194"],
+  }}
+/>

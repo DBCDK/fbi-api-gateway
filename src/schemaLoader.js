@@ -10,14 +10,20 @@ import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { wrapSchema } from "@graphql-tools/wrap";
 import { mergeTypeDefs } from "@graphql-tools/merge";
 import { filterSchema, pruneSchema } from "@graphql-tools/utils";
+import { GraphQLError, GraphQLScalarType } from "graphql";
 
 import { typeDefs as scalarTypeDefs } from "graphql-scalars";
 import { resolvers as scalarResolvers } from "graphql-scalars";
 import { log } from "dbc-node-logger";
 
-import drupalSchema from "./schema/external/drupal";
+import { bibliotekdkCmsSchema } from "./schema/external/bibliotekdkCms";
 import { getFilesRecursive } from "./utils/utils";
 import { wrapResolvers } from "./utils/wrapResolvers";
+import {
+  getDeprecationReasonFromDirectives,
+  hasDeprecatedDirective,
+  isDraftReason,
+} from "./utils/deprecation";
 
 import merge from "lodash/merge";
 import { parseClientPermissions } from "../commonUtils";
@@ -29,8 +35,46 @@ const { enumFallbackDirectiveTypeDefs, enumFallbackDirectiveTransformer } =
 // Stores the transformed schemas
 const schemaCache = {};
 
-// The external schema (headless Drupal)
-let externalSchema;
+function scalarInputError(error) {
+  if (error instanceof GraphQLError) {
+    return error;
+  }
+
+  return new GraphQLError(
+    error?.message || "Invalid scalar input",
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    { code: "BAD_USER_INPUT" }
+  );
+}
+
+function wrapScalarInputErrors(scalar) {
+  const config = scalar.toConfig();
+
+  return new GraphQLScalarType({
+    ...config,
+    parseValue(value) {
+      try {
+        return config.parseValue(value);
+      } catch (error) {
+        throw scalarInputError(error);
+      }
+    },
+    parseLiteral(ast, variables) {
+      try {
+        return config.parseLiteral(ast, variables);
+      } catch (error) {
+        throw scalarInputError(error);
+      }
+    },
+  });
+}
+
+// External schemas mounted into the gateway
+let externalSchemas;
 
 // The internal schema
 let internalSchema = enumFallbackDirectiveTransformer(
@@ -196,12 +240,14 @@ export function fieldNameValidator(props, errorType = "THROW") {
       subfields?.forEach((obj) => {
         const subfield = obj?.name?.value;
         const kind = obj?.kind;
-        const isDeprecated = !!obj?.directives?.find(
-          (obj) => obj?.name?.value === "deprecated"
+        const isDeprecated = hasDeprecatedDirective(obj?.directives);
+        const deprecationReason = getDeprecationReasonFromDirectives(
+          obj?.directives
         );
+        const isDraft = isDraftReason(deprecationReason);
 
-        // ignore deprecated fields
-        if (!isDeprecated) {
+        // ignore only true deprecated fields
+        if (!isDeprecated || isDraft) {
           // has subfields
           if (subfield) {
             // handle enum subfields (all UPPERCASE check)
@@ -241,25 +287,18 @@ export function fieldNameValidator(props, errorType = "THROW") {
        */
       subfields?.forEach((obj) => {
         const subfield = obj?.name?.value;
-        const isDeprecated = !!obj?.directives?.find(
-          (obj) => obj?.name?.value === "deprecated"
+        const isDeprecated = hasDeprecatedDirective(obj?.directives);
+        const deprecationReason = getDeprecationReasonFromDirectives(
+          obj?.directives
         );
+        const isDraft = isDraftReason(deprecationReason);
 
         if (isDeprecated) {
-          const target = obj?.directives?.find(
-            (obj) => obj?.name?.value === "deprecated"
-          );
-
-          const reason = target?.arguments?.find(
-            ({ name }) => name?.value === "reason"
-          );
-
-          const value = reason?.value?.value;
-
-          // ensure reason includes an expires string and date has correct format
+          // true deprecations must include an expires string with a valid date
           if (
+            !isDraft &&
             !/expires: (0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[1,2])-(20)\d{2}/.test(
-              value
+              deprecationReason
             )
           ) {
             handleError(
@@ -294,15 +333,16 @@ export function fieldNameValidator(props, errorType = "THROW") {
  */
 export function schemaLoader() {
   // Custom selected scalar type defs (from graphiql-scalar lib)
-  const customScalarTypeDefs = ["DateTime"];
+  const customScalarTypeDefs = ["Date", "DateTime"];
 
   const _scalarResolvers = {};
   const _scalarTypeDefs = [];
 
   customScalarTypeDefs.forEach((val) => {
     if (scalarTypeDefs.includes(`scalar ${val}`)) {
-      _scalarResolvers[`${val}Scalar`] = scalarResolvers[val];
-      _scalarTypeDefs.push(`scalar ${val}Scalar`);
+      const name = `${val}Scalar`;
+      _scalarResolvers[name] = wrapScalarInputErrors(scalarResolvers[val]);
+      _scalarTypeDefs.push(`scalar ${name}`);
     }
   });
 
@@ -315,7 +355,7 @@ export function schemaLoader() {
 
   // Require typeDefs and resolvers
   files.forEach((file) => {
-    if (!file.path.endsWith(".js")) {
+    if (!file.path.endsWith(".js") || file.path.includes("/schema/scripts/")) {
       return;
     }
     const { typeDef, resolvers } = require(file.path);
@@ -347,15 +387,22 @@ export async function getExecutableSchema({
   const key = JSON.stringify({ hasAccessToken, parsedPermissions });
 
   if (!schemaCache[key]) {
-    // Fetch external Drupal schema (bibdk)
-    if (!externalSchema && loadExternal) {
-      externalSchema = await drupalSchema();
+    if (!externalSchemas && loadExternal) {
+      externalSchemas = [];
+      // bibliotekdkCms is optional during rollout. If loading fails, we continue without it.
+      try {
+        externalSchemas.push(await bibliotekdkCmsSchema());
+      } catch (error) {
+        log.warn("Could not load bibliotekdkCms schema", {
+          error: String(error),
+        });
+      }
     }
 
     // Merge external and internal schemas
     const mergedSchema = loadExternal
       ? mergeSchemas({
-          schemas: [externalSchema, internalSchema],
+          schemas: [...externalSchemas, internalSchema],
         })
       : internalSchema;
 

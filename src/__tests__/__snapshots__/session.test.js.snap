@@ -1,20 +1,20 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Session retrieve - no session 1`] = `
-Object {
-  "data": Object {
+{
+  "data": {
     "session": null,
   },
 }
 `;
 
 exports[`Session retrieve 1`] = `
-Object {
-  "data": Object {
-    "session": Object {
+{
+  "data": {
+    "session": {
       "allowSessionStorage": true,
       "pickupBranch": "790900",
-      "userParameters": Object {
+      "userParameters": {
         "barcode": "some-barcode",
         "cardno": "some-cardno",
         "cpr": "some-cpr",
@@ -32,8 +32,8 @@ Object {
 `;
 
 exports[`Session submit 1`] = `
-Object {
-  "data": Object {
+{
+  "data": {
     "submitSession": "OK",
   },
 }

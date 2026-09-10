@@ -1,0 +1,23 @@
+/* menuitems only (not in h2) */
+:global(#menu) .highlightedHeading {
+  color: var(--primary-dark);
+  font-family: var(--font-mono-semibold);
+}
+
+:global(body.dark) :global(#menu) .highlightedHeading {
+  color: var(--secondary-dark) !important;
+}
+
+/* Real-hover */
+@media (hover: hover) {
+  .highlightedHeading:hover,
+  .highlightedHeading:focus {
+    color: var(--secondary-dark);
+  }
+
+  /* selected dark theme */
+  :global(body.dark) :global(#menu) .highlightedHeading:hover,
+  :global(body.dark) :global(#menu) .highlightedHeading:focus {
+    color: var(--primary-dark) !important;
+  }
+}

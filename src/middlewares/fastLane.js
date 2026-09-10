@@ -1,4 +1,4 @@
-import { set, get } from "../datasources/redis.datasource";
+import { set, get } from "../datasources/redis/redis.datasource";
 import config from "../config";
 
 const { visit } = require("graphql");
@@ -63,7 +63,6 @@ const ALLOWED_TYPES = {
   Note: true,
   NoteTypeEnum: true,
   Relations: true,
-  TableOfContent: true,
   SubjectContainer: true,
   SubjectInterface: true,
   SubjectTypeEnum: true,
@@ -72,8 +71,6 @@ const ALLOWED_TYPES = {
   Universes: true,
   RecommendationResponse: true,
   Recommendation: true,
-  ManifestationParts: true,
-  ManifestationPart: true,
   Classification: true,
   Localizations: true,
   HoldingAgency: true,

@@ -1,14 +1,18 @@
+import { getStringArray } from "./utils/env.js";
+
+const isTruthy = (value) =>
+  ["1", "true", "yes"].includes(String(value).toLowerCase());
+
+const redisEnabled = isTruthy(process.env.REDIS_ENABLED);
+const defaultMaxClientEntries = redisEnabled ? 10 : 5;
+
 export default {
   app: {
     id: process.env.APP_ID || "bibliotekdk-next-api",
   },
   port: process.env.PORT || 3000,
-  allowDebug: ["1", "true", "yes"].includes(
-    String(process.env.ALLOW_DEBUG).toLowerCase()
-  ),
-  enableCpuUsagePerRequest: ["1", "true", "yes"].includes(
-    String(process.env.ENABLE_CPU_USAGE_PER_REQUEST).toLowerCase()
-  ),
+  allowDebug: isTruthy(process.env.ALLOW_DEBUG),
+  enableCpuUsagePerRequest: isTruthy(process.env.ENABLE_CPU_USAGE_PER_REQUEST),
   query: {
     maxDepth: process.env.MAX_QUERY_DEPTH
       ? parseInt(process.env.MAX_QUERY_DEPTH, 10)
@@ -29,10 +33,21 @@ export default {
   dmzproxy: {
     url: process.env.PROXY_URL || null,
   },
+  lockedAgencyIds: {
+    list: getStringArray(process.env.LOCKED_AGENCY_ID_LIST),
+  },
   // How many outgoing HTTP requests a single incoming request can make in parallel
   fetchConcurrencyLimit: process.env.FETCH_CONCURRENCY_LIMIT || 10,
   fetchDefaultTimeoutMs: process.env.FETCH_DEFAULT_TIMEOUT_MS || 20000,
   fastLaneEnabled: process.env.FASTLANE_ENABLED == "1" ? true : false,
+  credentials: {
+    disableInternalNetworkCheck: isTruthy(
+      process.env.DISABLE_INTERNAL_NETWORK_CHECK
+    ),
+    maxClientEntries: process.env.MAX_CLIENT_ENTRIES
+      ? parseInt(process.env.MAX_CLIENT_ENTRIES, 10)
+      : defaultMaxClientEntries,
+  },
   testUser: {
     clientId: process.env.TEST_USER_CLIENT_ID,
     clientSecret: process.env.TEST_USER_CLIENT_SECRET,
@@ -118,12 +133,20 @@ export default {
       prefix: process.env.OPENFORMAT_PREFIX || "openformat-1",
       teamLabel: "fbiscrum/de-team",
     },
-    backend: {
+    referencePresentation: {
       url:
-        process.env.BACKEND_URL ||
-        "http://bibdk-backend-www-master.febib-prod.svc.cloud.dbc.dk/graphql",
-      ttl: process.env.BACKEND_TIME_TO_LIVE_SECONDS || 5,
-      prefix: process.env.BACKEND_PREFIX || "backend-1",
+        process.env.REFERENCE_PRESENTATION_URL ||
+        "http://reference-presentation.cisterne.svc.cloud.dbc.dk/api/v1",
+      ttl: process.env.REFERENCE_PRESENTATION_TIME_TO_LIVE_SECONDS || 60 * 10,
+      prefix: process.env.REFERENCE_PRESENTATION_PREFIX || "ref-presentation-2",
+      teamLabel: "de-team",
+    },
+    bibliotekdkCms: {
+      url:
+        process.env.BIBLIOTEKDK_CMS_URL ||
+        "http://bibliotekdk-cms-staging.febib-staging.svc.cloud.dbc.dk/graphql",
+      ttl: process.env.BIBLIOTEKDK_CMS_TIME_TO_LIVE_SECONDS || 5,
+      prefix: process.env.BIBLIOTEKDK_CMS_PREFIX || "bibliotekdk-cms-1",
       teamLabel: "febib",
     },
     borchk: {
@@ -139,10 +162,16 @@ export default {
       prefix: process.env.CICERO_URL_PREFIX || "cicero-1",
       teamLabel: "febib",
     },
+    publizon: {
+      url: process.env.PUBLIZON_URL || "https://pubhub-openplatform.dbc.dk",
+      ttl: process.env.PUBLIZON_URL_TIME_TO_LIVE_SECONDS || 5,
+      prefix: process.env.PUBLIZON_URL_PREFIX || "pubhub-1",
+      teamLabel: "febib",
+    },
     holdingsservice: {
       url:
         process.env.HOLDINGSSERVICE_URL ||
-        "http://holdings-service.cisterne.svc.cloud.dbc.dk/api/",
+        "http://all-holdings.cisterne.svc.cloud.dbc.dk/api/v1/holdings-service/",
       ttl: process.env.HOLDINGSSERVICE_URL_TIME_TO_LIVE_SECONDS || 5,
       prefix: process.env.HOLDINGSITEMS_URL_PREFIX || "holdingsservice-2",
       teamLabel: "de-team",
@@ -158,23 +187,20 @@ export default {
     holdingsitems2: {
       url:
         process.env.HOLDINGSITEMS_2_URL ||
-        "http://holdings-items-2-service.fbstest.svc.cloud.dbc.dk/api/v1/holdings",
+        "http://holdings-items-2-service.cisterne.svc.cloud.dbc.dk/api/v1/holdings",
       teamLabel: "de-team",
-    },
-    moreinfo: {
-      url: process.env.MOREINFO_URL || "https://moreinfo.addi.dk/2.11/",
-      authenticationUser: process.env.MOREINFO_USER,
-      authenticationGroup: process.env.MOREINFO_GROUP,
-      authenticationPassword: process.env.MOREINFO_PASSWORD,
-      ttl: process.env.MOREINFO_TIME_TO_LIVE_SECONDS || 60 * 60 * 24,
-      prefix: process.env.MOREINFO_PREFIX || "moreinfo-2",
-      teamLabel: "febib",
     },
     fbiinfo: {
       url:
         process.env.FBIINFO_URL ||
         "http://fbiinfo-service.cisterne.svc.cloud.dbc.dk/api/v1",
       prefix: process.env.FBIINFO_PREFIX || "fbiinfo-1",
+      teamLabel: "de-team",
+    },
+    fbiArchive: {
+      url: process.env.FBI_ARCHIVE_URL || "https://fbi-arkiv.dbc.dk/api/v1",
+      prefix: process.env.FBI_ARCHIVE_PREFIX || "fbi-archive-1",
+      ttl: process.env.FBI_ARCHIVE_TIME_TO_LIVE_SECONDS || 60 * 60,
       teamLabel: "de-team",
     },
     openuserstatus: {
@@ -224,16 +250,27 @@ export default {
         "frontend-staging-redis-cluster.platform-redis.svc.cloud.dbc.dk",
       port: process.env.REDIS_PORT || "6379",
       prefix: process.env.REDIS_PREFIX || "bibdk-api-4",
-      enabled: false,
-      // enabled: ["1", "true", "yes"].includes(
-      //   String(process.env.REDIS_ENABLED).toLowerCase()
-      // ),
+      enabled: redisEnabled,
+      teamLabel: "febib",
+    },
+    websiteRedis: {
+      host:
+        process.env.WEBSITE_REDIS_HOST ||
+        "febib-fbiapiwebsite-prod-redis-cluster.platform-redis.svc.cloud.dbc.dk",
+      port: process.env.WEBSITE_REDIS_PORT || process.env.REDIS_PORT || "6379",
+      prefix:
+        process.env.WEBSITE_REDIS_PREFIX ||
+        process.env.REDIS_PREFIX ||
+        "bibdk-api-4",
+      enabled: isTruthy(
+        process.env.WEBSITE_REDIS_ENABLED ?? process.env.REDIS_ENABLED
+      ),
       teamLabel: "febib",
     },
     simplesearch: {
       url:
         process.env.SIMPLESEARCH_URL ||
-        "http://simple-search-fbiapi-1-8.ai-prod.svc.cloud.dbc.dk/search", // NOSONAR
+        "http://simple-search-fbiapi-1-9.ai-prod.svc.cloud.dbc.dk/search", // NOSONAR
       prefix: process.env.SIMPLESEARCH_PREFIX || "simplesearch-6",
       token: process.env.SIMPLESEARCH_TOKEN,
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
@@ -319,7 +356,7 @@ export default {
         process.env.VIP_EXCLUDE_BRANCHES == "1",
       url:
         process.env.VIP_CORE_URL ||
-        "http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api",
+        "http://vipcore-nocache.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api", // NOSONAR
       prefix: process.env.VIP_CORE_PREFIX || "vipcore-1",
       ttl: process.env.VIP_CORE_TIME_TO_LIVE_SECONDS || 60 * 60 * 0.5,
       teamLabel: "fbiscrum",
@@ -348,7 +385,7 @@ export default {
         "http://culrservice-1-7.iscrum-culr-prod.svc.cloud.dbc.dk/1.7/api",
       soap_url:
         process.env.CULR_SOAP_URL ||
-        "https://culr.addi.dk/1.6/CulrWebService?wsdl", // soap version of culr will be removed in future
+        "https://culr.addi.dk/1.7/CulrWebService?wsdl", // soap version of culr will be removed in future
       authenticationUser: process.env.CULR_USER,
       authenticationGroup: process.env.CULR_GROUP,
       authenticationPassword: process.env.CULR_PASSWORD,
@@ -392,9 +429,16 @@ export default {
       url:
         process.env.INFOMEDIA_URL ||
         "http://infomedia-master.frontend-prod.svc.cloud.dbc.dk/1.5/server.php",
-      id: process.env.INFOMEDIA_ID,
+      id: process.env.INFOMEDIA_ID || "infomedia_fra_netpunkt",
       ttl: process.env.INFOMEDIA_TIME_TO_LIVE_SECONDS || 60 * 60,
       prefix: process.env.INFOMEDIA_PREFIX || "infomedia-1",
+      teamLabel: "febib",
+    },
+    retriever: {
+      url: process.env.RETRIEVER_URL || "https://port.retriever-info.com",
+      token: process.env.RETRIEVER_API_TOKEN,
+      ttl: 60 * 5,
+      prefix: "retriever-1",
       teamLabel: "febib",
     },
     linkcheck: {
@@ -420,6 +464,14 @@ export default {
         "http://bibliotekdk-next-userdata-stg.febib-staging.svc.cloud.dbc.dk/",
       ttl: process.env.USERDATA_TIME_TO_LIVE_SECONDS || 0,
       prefix: "userdata",
+      teamLabel: "febib",
+    },
+    creatorInfo: {
+      url:
+        process.env.CREATORINFO_URL ||
+        "http://creator-info-staging.febib-staging.svc.cloud.dbc.dk/",
+      ttl: process.env.CREATORINFO_TIME_TO_LIVE_SECONDS || 60 * 5,
+      prefix: "creatorinfo",
       teamLabel: "febib",
     },
     orderStatus: {

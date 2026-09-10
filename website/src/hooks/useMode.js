@@ -39,7 +39,7 @@ export default function useMode() {
     // listen for changes
     matchMedia.addEventListener("change", setSystemMode);
     // cleanup listener
-    () => matchMedia.removeEventListener("change", setSystemMode);
+    return () => matchMedia.removeEventListener("change", setSystemMode);
   }, []);
 
   // effect to set final mode [dark/light]

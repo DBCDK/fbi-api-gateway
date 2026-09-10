@@ -1,8 +1,30 @@
 #!groovy​
 
+@Library('dependency-track')
+
 def app
 def imageName="fbi-api-gateway"
 def imageLabel=BUILD_NUMBER
+
+// Dependency-Track configuration
+def DT_TEAM_NAME = "febib"
+def DT_PROJECT_TYPE = "javascript"
+def OUTPUT_FOLDER = "./dependency-track-folder"
+def SBOM_TYPE = "application"
+def DT_PROJECTS = [
+    [folder: "."],
+    [folder: "./website"],
+    [folder: "./testuser-website"],
+    [folder: "./fbi-api-debug"],
+].collect { project ->
+    [
+        folder: project.folder,
+        sbomType: project.sbomType ?: SBOM_TYPE,
+        teamName: project.teamName ?: DT_TEAM_NAME,
+        projectType: project.projectType ?: DT_PROJECT_TYPE,
+        outputFolder: project.outputFolder ?: OUTPUT_FOLDER
+    ]
+}
 
 pipeline {
     agent {
@@ -41,9 +63,11 @@ pipeline {
                             sonarOptions += " -Dsonar.newCode.referenceBranch=master"
                         }
 
-                        sonarOptions += " -Dsonar.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
+                        sonarOptions += " -Dsonar.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts,**/.next/**"
                         sonarOptions += " -Dsonar.test.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
                         sonarOptions += " -Dsonar.coverage.exclusions=**/__tests__/**,**/*.test.js,**/*.test.ts"
+                        // Declarative news records intentionally share a schema; keep them out of duplication detection only.
+                        sonarOptions += " -Dsonar.cpd.exclusions=website/src/components/whats-new/whatsNewNews.js"
 
                         sh returnStatus: true, script: """
                         $SONAR_SCANNER $sonarOptions -Dsonar.token=${SONAR_AUTH_TOKEN} -Dsonar.projectKey="${SONAR_PROJECT_KEY}"
@@ -57,6 +81,33 @@ pipeline {
                 // wait for analysis results
                 timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+        stage("Supply Chain Gate") {
+            agent {
+                docker {
+                    label 'devel11'
+                    image "docker-dbc.artifacts.dbccloud.dk/dbc-node:node25"
+                    alwaysPull true
+                }
+            }
+            steps {
+                script {
+                    for (def project : DT_PROJECTS) {
+                        dir(project.folder) {
+                            generateSbomNpm(
+                                sbomType: project.sbomType,
+                                outputFolder: project.outputFolder
+                            )
+                            dependencyTrackGate(
+                                projectBom: "${project.outputFolder}/sbom.json",
+                                projectTeam: project.teamName,
+                                projectType: project.projectType,
+                                *:(fileExists("${project.outputFolder}/vex.json") ? [projectVex: "${project.outputFolder}/vex.json"] : [:])
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -79,7 +130,14 @@ pipeline {
             }
         }
         stage('Push to Artifactory') {
-            when { anyOf { branch 'master'; branch 'future' } }
+            when {
+                anyOf {
+                    branch 'master'
+                    branch 'future'
+                    branch 'prod'
+                    branch pattern: '.*feature.*', comparator: 'REGEXP'
+                }
+            }
 
             steps {
                 script {
@@ -90,6 +148,18 @@ pipeline {
                         }
                     }
                 } }
+        }
+
+        stage('Trigger feature deploy reconcile') {
+            when {
+                anyOf {
+                    branch 'master'
+                    branch pattern: '.*feature.*', comparator: 'REGEXP'
+                }
+            }
+            steps {
+                build job: 'fbi-api-gateway/fbi-api-gateway-deploy/features', wait: false
+            }
         }
 
         stage("Update 'staging' version number") {

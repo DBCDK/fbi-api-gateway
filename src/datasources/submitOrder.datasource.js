@@ -49,37 +49,71 @@ export function buildParameters({ userId, input, orderSystem }) {
     userIdType = null;
   }
 
+  // Netpunkt has a submit funktion, submitSkafOrder, where the PID isn't known.
+  // But we need to make sure that the pid is used in all the other submit functions.
+  const pids =
+    input.pids === undefined &&
+    orderSystem === "netpunkt_25" &&
+    input.title !== ""
+      ? null
+      : input.pids.map((pid) => pid);
+
+  // publicationDateOfComponent may be set for periodical orders. The frontend does not
+  // necessarily know whether the order is handled by ELBA or submitOrder: ELBA expects
+  // publicationYearOfComponent, while submitOrder expects publicationDateOfComponent.
+  // Map either input field to the submitOrder field.
+  const publicationDateOfComponent =
+    input.publicationDateOfComponent || input.publicationYearOfComponent;
+
   // Set order parameters
   const params = {
-    copy: false,
-    exactEdition: input.exactEdition || false,
-    needBeforeDate: input.expires || createNeedBeforeDate(),
-    orderSystem: orderSystem?.toUpperCase(),
-    pickUpAgencyId: input.pickUpBranch,
-    pickUpAgencySubdivision: input.pickUpBranchSubdivision,
     author: input.author,
     authorOfComponent: input.authorOfComponent,
+    bibliographicCategory: input.bibliographicCategory,
+    callNumber: input.callNumber,
+    copy: false,
+    exactEdition: input.exactEdition || false,
+    initials: input.initials,
+    isbn: input.isbn,
+    issn: input.issn,
+    issue: input.issue,
+    key: input.key,
+    latestRequesterNote: input.latestRequesterNote,
+    localHoldingsId: input.localHoldingsId,
+    mediumType: input.mediumType,
+    needBeforeDate:
+      input.needBeforeDate || input.expires || createNeedBeforeDate(),
+    orderSystem: input.orderSystem
+      ? input.orderSystem
+      : orderSystem?.toUpperCase(),
+    originalOrderId: input.originalOrderId,
     pagination: input.pagesOfComponent,
+    pickUpAgencyId: input.pickUpAgencyId || input.pickUpBranch,
+    pickUpAgencySubdivision:
+      input.pickUpAgencySubdivision || input.pickUpBranchSubdivision,
+    pid: pids,
+    pidOfPrimaryObject: input.pidOfPrimaryObject,
+    placeOnHold: input.placeOnHold,
     publicationDate: input.publicationDate,
-    publicationDateOfComponent: input.publicationDateOfComponent,
+    publicationDateOfComponent,
+    requesterId: input.requesterId,
+    requesterInitials: input.requesterInitials,
+    responderId: input.responderId,
+    seriesTitelNumber: input.seriesTitleNumber,
+    serviceRequester: serviceRequester,
     title: input.title,
     titleOfComponent: input.titleOfComponent,
-    volume: input.volumeOfComponent,
-    pid: input.pids.map((pid) => pid),
-    serviceRequester: serviceRequester,
     trackingId: createTrackingId(),
     ...input.userParameters,
     userId: userId || id?.value,
     userIdType,
-    verificationReferenceSource: "DBCDATAWELL",
-    requesterInitials: input.requesterInitials,
-    responderId: input.responderId,
-    placeOnHold: input.placeOnHold,
+    verificationReferenceSource:
+      input.verificationReferenceSource ?? "DBCDATAWELL",
+    volume: input.volumeOfComponent,
   };
 
   // delete empty params
   Object.keys(params).forEach((k) => params[k] == null && delete params[k]);
-
   return params;
 }
 
@@ -179,5 +213,9 @@ export async function testLoad({ input }, context) {
     orderId: JSON.stringify(input),
   };
 }
+
+export const options = {
+  allowDebug: true,
+};
 
 export { teamLabel };

@@ -1,10 +1,25 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Shuld get idpSystemUser:true for anon token 1`] = `
+{
+  "attributes": {
+    "agencies": [],
+    "blocked": false,
+    "isIdpSystemUser": true,
+    "loggedInAgencyId": null,
+    "loggedInBranchId": null,
+    "municipality": null,
+    "municipalityAgencyId": null,
+    "userId": null,
+  },
+}
+`;
 
 exports[`userinfo DataSynced library authenticated user, enriched with smaug agency 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "872960",
         "userId": "some-localId",
         "userIdType": "LOCAL",
@@ -12,6 +27,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "872960",
     "loggedInBranchId": "872960",
     "municipality": null,
@@ -23,10 +39,10 @@ Object {
 `;
 
 exports[`userinfo FFU authenticated user connected to FOLK library (Agency login) 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "800010",
         "userId": "some-localId",
         "userIdType": "LOCAL",
@@ -34,11 +50,12 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "800010",
     "loggedInBranchId": "800010",
     "municipality": null,
     "municipalityAgencyId": "800010",
-    "omittedCulrData": Object {
+    "omittedCulrData": {
       "hasOmittedCulrAccounts": true,
       "hasOmittedCulrMunicipality": true,
       "hasOmittedCulrMunicipalityAgencyId": true,
@@ -51,10 +68,10 @@ Object {
 `;
 
 exports[`userinfo FFU authenticated user connected to FOLK library (Branch login) 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "800021",
         "userId": "some-localId",
         "userIdType": "LOCAL",
@@ -62,11 +79,12 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "800010",
     "loggedInBranchId": "800021",
     "municipality": null,
     "municipalityAgencyId": "800021",
-    "omittedCulrData": Object {
+    "omittedCulrData": {
       "hasOmittedCulrAccounts": true,
       "hasOmittedCulrMunicipality": true,
       "hasOmittedCulrMunicipalityAgencyId": true,
@@ -79,10 +97,10 @@ Object {
 `;
 
 exports[`userinfo FFU authenticated user for independent library enriched with agency/loggedInBranchId 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "872100",
         "userId": "some-localId",
         "userIdType": "LOCAL",
@@ -90,6 +108,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "872100",
     "loggedInBranchId": "872100",
     "municipality": null,
@@ -101,10 +120,10 @@ Object {
 `;
 
 exports[`userinfo FFU authenticated user for independent library should find hidden account 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "872100",
         "userId": "some-localId",
         "userIdType": "LOCAL",
@@ -112,11 +131,12 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "872100",
     "loggedInBranchId": "872100",
     "municipality": null,
     "municipalityAgencyId": "872100",
-    "omittedCulrData": Object {
+    "omittedCulrData": {
       "hasOmittedCulrAccounts": false,
       "hasOmittedCulrMunicipality": true,
       "hasOmittedCulrMunicipalityAgencyId": true,
@@ -129,10 +149,10 @@ Object {
 `;
 
 exports[`userinfo FFU authenticated user, enriched with smaug agency 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "800010",
         "userId": "some-localId",
         "userIdType": "LOCAL",
@@ -140,6 +160,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "710100",
     "loggedInBranchId": "710100",
     "municipality": null,
@@ -151,15 +172,15 @@ Object {
 `;
 
 exports[`userinfo FOLK (branch) authenticated user, enriched with smaug agency 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "710100",
         "userId": "some-globalId",
         "userIdType": "CPR",
       },
-      Object {
+      {
         "agencyId": "710100",
         "userId": "some-localId",
         "userIdType": "LOCAL",
@@ -167,6 +188,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "737000",
     "loggedInBranchId": "737001",
     "municipality": "101",
@@ -178,20 +200,20 @@ Object {
 `;
 
 exports[`userinfo FOLK authenticated user connected to FFU library 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "800010",
         "userId": "some-localId",
         "userIdType": "LOCAL",
       },
-      Object {
+      {
         "agencyId": "710100",
         "userId": "some-globalId",
         "userIdType": "CPR",
       },
-      Object {
+      {
         "agencyId": "710100",
         "userId": "some-localId",
         "userIdType": "LOCAL",
@@ -199,6 +221,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "710100",
     "loggedInBranchId": "710100",
     "municipality": "101",
@@ -210,15 +233,15 @@ Object {
 `;
 
 exports[`userinfo FOLK authenticated user, enriched with smaug agency 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "710100",
         "userId": "some-globalId",
         "userIdType": "CPR",
       },
-      Object {
+      {
         "agencyId": "710100",
         "userId": "some-localId",
         "userIdType": "LOCAL",
@@ -226,6 +249,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "borchk",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "710100",
     "loggedInBranchId": "710100",
     "municipality": "101",
@@ -237,10 +261,10 @@ Object {
 `;
 
 exports[`userinfo Nemlogin authenticated user with NO agencies 1`] = `
-Object {
-  "attributes": Object {
-    "agencies": Array [
-      Object {
+{
+  "attributes": {
+    "agencies": [
+      {
         "agencyId": "190101",
         "userId": "some-globalId",
         "userIdType": "CPR",
@@ -248,6 +272,7 @@ Object {
     ],
     "blocked": false,
     "idpUsed": "nemlogin",
+    "isIdpSystemUser": false,
     "loggedInAgencyId": "190101",
     "loggedInBranchId": "190101",
     "municipality": null,

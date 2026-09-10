@@ -9,6 +9,7 @@ export default function Overlay({
   container,
   children,
   placement = "bottom",
+  popperConfig,
   ...props
 }) {
   return (
@@ -17,6 +18,7 @@ export default function Overlay({
       target={container?.current}
       placement={placement}
       containerPadding={20}
+      popperConfig={popperConfig}
       {...props}
     >
       <_Popover

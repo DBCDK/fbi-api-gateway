@@ -10,7 +10,7 @@
  */
 
 import { v5 as uuid } from "uuid";
-import { set, get } from "../datasources/redis.datasource";
+import { set, get } from "../datasources/redis/redis.datasource";
 const TIME_TO_LIVE_SECONDS = 60 * 60 * 24 * 30;
 
 /**

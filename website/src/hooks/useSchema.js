@@ -1,55 +1,114 @@
-import fetch from "isomorphic-unfetch";
+// src/hooks/useSchema.js
 import useSWR from "swr";
-
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql";
-import useStorage from "./useStorage";
+import useResolvedConfiguration from "./resolved/useResolvedConfiguration";
+import useSelectedCredential from "./credentials/useSelectedCredential";
+import { buildGraphQLPath } from "@/utils/graphqlPath";
 
+/**
+ * Build the GraphQL endpoint from window.origin + selected agency + profile.
+ * - Calls hooks unconditionally (rules-of-hooks safe)
+ * - SSR-safe: returns null when window is not available yet
+ */
 export function useGraphQLUrl(origin) {
-  const url = origin
-    ? origin
-    : typeof window !== "undefined" && window.location.origin;
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { configuration } = useResolvedConfiguration(selectedToken);
+  const hasConfiguration = Object.keys(configuration || {}).length > 0;
+  const agency = selectedToken?.agency ?? null;
+  const defaultAgency = configuration?.defaultAgency ?? null;
+  const alwaysRequireAgencyId = configuration?.alwaysRequireAgencyId === true;
+  const profile =
+    selectedToken?.profile ?? configuration?.profiles?.[0] ?? null;
 
-  const { selectedToken } = useStorage();
-  const { profile = "default" } = selectedToken || {};
+  if (
+    selectedToken?.token &&
+    agency &&
+    !hasConfiguration &&
+    !alwaysRequireAgencyId
+  ) {
+    return null;
+  }
 
-  // some profiles may contain spaces
-  const encodedProfile = encodeURIComponent(profile);
+  const path = buildGraphQLPath({
+    agency,
+    defaultAgency,
+    alwaysRequireAgencyId,
+    profile,
+  });
 
-  return `${url}/${encodedProfile}/graphql`;
+  // SSR: no window → no base URL yet
+  const base =
+    origin ?? (typeof window !== "undefined" ? window.location.origin : "");
+
+  return base && path ? `${base}${path}` : null;
 }
+
+/**
+ * useSchema
+ * - Uses endpoint and access token as the SWR key
+ * - Fetches only when a token exists
+ * - Keeps tolerant non-200 behavior (returns {}) to avoid forcing error UIs
+ */
 export default function useSchema(token, _url) {
-  const self = useGraphQLUrl();
+  // Call hook unconditionally, then choose value (rules-of-hooks safe)
+  const computedEndpoint = useGraphQLUrl();
+  const endpoint = _url ?? computedEndpoint;
 
-  const url = _url ?? self;
+  const hasToken = Boolean(token?.token);
 
-  const fetcher = async (url) => {
-    const response = await fetch(url, {
+  const swrKey = hasToken && endpoint ? [endpoint, token.token] : null;
+
+  const fetcher = async (fetchUrl, accessToken) => {
+    const res = await fetch(fetchUrl, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `bearer ${token?.token}`,
+        Authorization: `bearer ${accessToken}`,
       },
       body: JSON.stringify({
         query: getIntrospectionQuery({ inputValueDeprecation: true }),
       }),
     });
 
-    if (response.status !== 200) {
-      return {};
-    }
+    // Tolerant behavior: keep returning {} on non-200 like your original code
+    if (res.status !== 200) return {};
 
-    const json = await response.json();
+    const json = await res.json();
+
+    // If data is missing, keep shape predictable
+    if (!json?.data) return { schema: null, schemaStr: null, json };
+
     const schema = buildClientSchema(json.data);
     const schemaStr = printSchema(schema);
     return { schema, schemaStr, json };
   };
 
-  const { data } = useSWR(token?.token && [url, token?.token], fetcher);
+  const {
+    data,
+    isLoading: swrLoading,
+    error,
+    isValidating,
+    mutate,
+  } = useSWR(swrKey, fetcher, {
+    revalidateOnFocus: false,
+    shouldRetryOnError: false,
+  });
+
+  // Loading only when we actually fetch (never when token is missing or SSR has no endpoint yet)
+  const isIdle = !hasToken || !endpoint;
+  const isLoading = !isIdle && swrLoading;
+
   return {
-    schema: data?.schema,
-    schemaStr: data?.schemaStr,
-    json: data?.json,
-    isLoading: !data,
+    schema: data?.schema ?? null,
+    schemaStr: data?.schemaStr ?? null,
+    json: data?.json ?? null,
+    isLoading,
+    isIdle,
+    isValidating,
+    error: error ?? null,
+    mutate,
+    endpoint: endpoint ?? null,
+    hasToken,
   };
 }

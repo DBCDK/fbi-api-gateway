@@ -5,6 +5,7 @@ import { log } from "dbc-node-logger";
 
 import config from "../config";
 import { isFFUAgency } from "./agency";
+import { localizationsRoles } from "./holdings";
 
 import { createTraceId } from "./trace";
 
@@ -22,7 +23,7 @@ export async function performTestQuery({
     }),
     query,
     null,
-    { ...context, profile: { agency: "123456", name: "some-profile" } },
+    { profile: { agency: "123456", name: "some-profile" }, ...context },
     variables
   );
 }
@@ -52,6 +53,11 @@ const regex = /\d{4}/g;
 
 export function matchYear(str) {
   return str.match(regex);
+}
+
+/** Prefix facet field names with `facet.` and lowercase them. */
+export function prefixFacets(facets = []) {
+  return facets.map((fac) => `facet.${String(fac).toLowerCase()}`);
 }
 
 export async function fetchAndExpandSeries(parent, context) {
@@ -276,6 +282,21 @@ export async function resolveBorrowerCheck(agencyId, context) {
 }
 
 /**
+ * Get agency parameters from vip core - check if settings allows borrowercheck
+ * for given branch/agency.
+ */
+export async function resolveBorrowerCheckSystem(agencyId, system, context) {
+  const res = await context.datasources
+    ?.getLoader("vipcore_UserOrderParameters")
+    .load(agencyId);
+
+  return !!res.agencyParameters.borrowerCheckParameters.find(
+    ({ borrowerCheckSystem, borrowerCheck }) =>
+      borrowerCheckSystem === system && borrowerCheck
+  );
+}
+
+/**
  * Get the infomedia access status for the current user
  *
  * @param {*} context
@@ -431,6 +452,20 @@ export async function resolveManifestation(args, context) {
   }
 
   return { ...m, traceId: createTraceId() };
+}
+
+export async function resolveMaterial(args, context) {
+  const manifestation = await resolveManifestation(args, context);
+  if (manifestation) {
+    return { ...manifestation, traceId: createTraceId() };
+  }
+
+  const work = await resolveWork(args, context);
+  if (work) {
+    return { ...work, traceId: createTraceId() };
+  }
+
+  return null;
 }
 
 /**
@@ -687,13 +722,29 @@ export async function resolveLocalizations(args, context) {
   const pids =
     isPartOfManifestation?.length > 0 ? isPartOfManifestation : args.pids;
 
+  const smaugLocalizationsRole = context?.smaug?.gateway?.localizationsRole;
+  let localizationsRole;
+
+  if (typeof smaugLocalizationsRole === "undefined") {
+    localizationsRole = localizationsRoles.BIBDK;
+  } else if (smaugLocalizationsRole === localizationsRoles.BIBDK) {
+    localizationsRole = localizationsRoles.BIBDK;
+  } else if (smaugLocalizationsRole !== null) {
+    localizationsRole = localizationsRoles.DANBIB;
+  }
+
   // get localizations from openholdingstatus
   const localizationsRes = await context.datasources
     .getLoader("localizations")
     .load({
       pids: pids,
-      localizationsRole: context?.smaug?.gateway?.localizationsRole,
+      localizationsRole,
     });
+
+  if (localizationsRole === localizationsRoles.DANBIB) {
+    // Pass through the localizationsRes for Danbib
+    return localizationsRes;
+  }
 
   const realAgenciesMap = {};
   for (let i = 0; i < localizationsRes?.agencies?.length || 0; i++) {
@@ -1037,4 +1088,86 @@ export function periodicalFiltersToCql(filters) {
     cql += ` AND phrase.subject=(${filters?.subjects.map((value) => `"${value.replace(/"/g, "")}"`).join(" OR ")})`;
   }
   return cql;
+}
+
+/**
+ *  Map a localized object with 'da'/'en' keys to LocalizedString or null
+ */
+export function mapLocalized(obj) {
+  if (!obj) return null;
+  const da = obj?.da ?? null;
+  const en = obj?.en ?? null;
+  if (da == null && en == null) return null;
+  return { da, en };
+}
+
+/**
+ * Map raw image object to CreatorImage; returns null if no usable URL
+ */
+export function mapImage(wikidataImage) {
+  const img = wikidataImage;
+  if (!img?.small && !img?.medium && !img?.large) return null;
+
+  return {
+    small: img?.small || null,
+    medium: img?.medium || null,
+    large: img?.large || null,
+    attributionText: img?.attributionText || null,
+  };
+}
+
+/**
+ * Map raw editorialData object to API EditorialData type or null
+ */
+export function mapEditorialData(creatorInfoRaw) {
+  const img = creatorInfoRaw?.editorialData?.image;
+  if (!img?.small && !img?.medium && !img?.large) {
+    return null;
+  }
+
+  return {
+    image: {
+      small: img?.small || null,
+      medium: img?.medium || null,
+      large: img?.large || null,
+      alt: img?.alt || null,
+      credits: img?.credits || null,
+    },
+  };
+}
+
+/**
+ * Map raw wikidata object to API Wikidata type or null
+ */
+export function mapWikidata(creatorInfoRaw) {
+  const wikidataRaw = creatorInfoRaw?.wikidata;
+  const education = Array.isArray(wikidataRaw?.education)
+    ? wikidataRaw.education.map((entry) => mapLocalized(entry)).filter((v) => v)
+    : [];
+  const image = mapImage(wikidataRaw?.image);
+  const nationality = mapLocalized(wikidataRaw?.nationality);
+  const occupation = Array.isArray(wikidataRaw?.occupations)
+    ? wikidataRaw.occupations
+        .map((entry) => mapLocalized(entry))
+        .filter((v) => v)
+    : [];
+  const wikidataId = wikidataRaw?.wikidataId || null;
+  const description = mapLocalized(wikidataRaw?.description);
+  const awards = Array.isArray(wikidataRaw?.awards)
+    ? wikidataRaw.awards.map((entry) => mapLocalized(entry)).filter((v) => v)
+    : [];
+
+  // const hasContent =
+  //   education.length || image || nationality || occupation.length || wikidataId || description || awards.length;
+  // if (!hasContent) return null;
+
+  return {
+    education,
+    image,
+    nationality,
+    occupation,
+    wikidataId,
+    description,
+    awards,
+  };
 }

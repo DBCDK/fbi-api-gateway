@@ -23,6 +23,10 @@ export const options = {
   redis: {
     prefix: `rel-${prefix}`,
     ttl,
+    dedupe: {
+      waitTimeoutMs: 5_000,
+      lockTtlMs: 8_000,
+    },
   },
 };
 

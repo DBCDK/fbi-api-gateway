@@ -1,0 +1,14 @@
+.form {
+  position: relative;
+  width: 450px;
+  padding-top: var(--pt1);
+}
+
+.formWithSteps {
+}
+
+@media screen and (max-width: 576px) {
+  .form {
+    width: 320px;
+  }
+}

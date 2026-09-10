@@ -1,4 +1,4 @@
-import { del } from "./redis.datasource";
+import { del } from "./redis/redis.datasource";
 
 export async function load({ accessToken }) {
   const key = `session_${accessToken}`;

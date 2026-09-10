@@ -1,0 +1,61 @@
+import { useEffect } from "react";
+
+import FilterDropdown from "@/components/base/filter-dropdown";
+import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
+import { hasAvailableAgency } from "@/utils/configuration";
+
+import styles from "./Profile.module.css";
+
+export default function Profile({ id = "dropdown", className = "" }) {
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { selectCredential: setSelectedToken } = useCredentialMutations();
+  const { configuration } = useResolvedConfiguration(selectedToken);
+
+  const isToken = selectedToken?.token && hasAvailableAgency(configuration);
+  const hasProfile = selectedToken?.profile;
+  const hasProfiles = configuration?.profiles;
+
+  const sortedProfiles = hasProfiles ? [...hasProfiles].sort() : [];
+
+  const isProfile =
+    hasProfile && hasProfiles && configuration?.profiles.includes(hasProfile);
+
+  useEffect(() => {
+    if (hasProfiles) {
+      if ((isToken && !hasProfile) || !isProfile) {
+        const profile = configuration?.profiles?.[0];
+        setSelectedToken(selectedToken?.token, profile);
+      }
+    }
+  }, [
+    configuration?.profiles,
+    hasProfile,
+    hasProfiles,
+    isProfile,
+    isToken,
+    selectedToken?.token,
+    setSelectedToken,
+  ]);
+
+  const selectedProfile =
+    (isProfile && selectedToken?.profile) || configuration?.profiles?.[0];
+
+  if (!(isToken && hasProfiles)) {
+    return null;
+  }
+
+  return (
+    <FilterDropdown
+      id={id}
+      className={`${styles.dropdown} ${className}`}
+      items={sortedProfiles}
+      selectedItem={selectedProfile}
+      onSelect={(profile) => setSelectedToken(selectedToken?.token, profile)}
+      filterPlaceholder="Filter profiles ..."
+      menuLabel="Profiles"
+      noResultsLabel="No profiles found"
+    />
+  );
+}

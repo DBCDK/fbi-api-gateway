@@ -27,19 +27,24 @@ export default function useQueryDepth(query) {
 
   // Memoize AST node to avoid recalculating it on every render
   const astNode = useMemo(() => {
+    const trimmed = query?.trim();
+    if (!trimmed) {
+      return null;
+    }
     try {
-      return query ? parse(query) : null;
-    } catch (e) {
-      console.error("Failed to parse GraphQL query", e);
+      return parse(trimmed);
+    } catch {
+      // Incomplete or invalid queries are expected while editing in GraphiQL
       return null;
     }
   }, [query]);
 
   useEffect(() => {
-    if (astNode) {
-      const calculatedDepth = calculateDepth(astNode.definitions[0]);
-      setDepth(calculatedDepth);
+    if (!astNode?.definitions?.[0]) {
+      setDepth(0);
+      return;
     }
+    setDepth(calculateDepth(astNode.definitions[0]));
   }, [astNode]);
 
   // const maxDepth = config?.query?.maxDepth;

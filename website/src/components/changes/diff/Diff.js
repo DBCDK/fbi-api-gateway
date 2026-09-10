@@ -2,14 +2,14 @@ import { useMemo } from "react";
 
 import styles from "./Diff.module.css";
 
-import useStorage from "@/hooks/useStorage";
 import useSchema, { useGraphQLUrl } from "@/hooks/useSchema";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 
 import diff from "./diff";
 
 export default function Diff({ options }) {
   const url = useGraphQLUrl("https://fbi-api.dbc.dk");
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
   const { json: remoteSchema } = useSchema(selectedToken, url);
 
   const types = remoteSchema?.data?.__schema?.types;

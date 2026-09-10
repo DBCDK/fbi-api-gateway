@@ -18,11 +18,11 @@ const defaultSettings = {
     "recommend",
     "recommendations",
     "infomedia",
+    "retriever",
     "refWorks",
     "ris",
     "elba",
     "library",
-    "relatedSubjects",
     "linkCheck",
     "series",
     "universe",
@@ -34,8 +34,16 @@ const defaultSettings = {
     "SEO",
     "WorkExtensionUnion",
     "MarcRecord",
+    "CreatorInfo",
   ],
-  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
+  denyFields: [
+    "HoldingsItem.reservable",
+    "HoldingsResponse.reservable",
+    "SearchResponse.creatorHit",
+    "SearchResponse.seriesHit",
+    "ComplexSearchResponse.creatorHit",
+    "ComplexSearchResponse.seriesHit",
+  ],
 };
 
 /**
@@ -48,7 +56,6 @@ const bibdk = {
     "bibdk",
     "monitor",
     "complexFacets",
-    "help",
     "branches",
     "session",
     "localizations",
@@ -60,6 +67,8 @@ const bibdk = {
     "user",
     // mutation
     "submitOrder",
+    "submitSkafOrder",
+    "closeOrder",
     "submitMultipleOrders",
     "data_collect",
     "deleteOrder",
@@ -67,13 +76,14 @@ const bibdk = {
     "submitSession",
     "deleteSession",
     "users",
-    // drupal
-    "nodeById",
-    "nodeQuery",
+    "bibliotekdkCms",
     "periodica",
+    "creatorByViafid",
+    "creatorByDisplay",
+    "patron",
   ],
   denyTypes: ["MarcRecord"],
-  denyFields: [...defaultSettings.denyFields],
+  denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
 };
 
 /**
@@ -87,18 +97,23 @@ export default {
   "fbs:system": {
     allowRootFields: [
       ...defaultSettings.allowRootFields,
-      // "culr", // disabled for now because of security issues with the culr rest service
+      "culr",
       "vip",
       "marc",
       "holdingsItems",
       "ors",
       "rawrepo",
+      "submitOrder",
     ],
-    denyTypes: [],
+    denyTypes: ["CreatorInfo"],
     denyFields: [...defaultSettings.denyFields],
   },
   ddbcms: {
-    allowRootFields: [...defaultSettings.allowRootFields, "submitOrder"],
+    allowRootFields: [
+      ...defaultSettings.allowRootFields,
+      "submitOrder",
+      "patron",
+    ],
     denyTypes: [...defaultSettings.denyTypes, "WorkReview"],
     denyFields: [...defaultSettings.denyFields],
   },
@@ -110,6 +125,7 @@ export default {
       "SEO",
       "WorkExtensionUnion",
       "WorkReview",
+      "CreatorInfo",
     ],
     denyFields: [...defaultSettings.denyFields],
   },

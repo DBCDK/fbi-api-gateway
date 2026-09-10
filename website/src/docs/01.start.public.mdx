@@ -1,52 +1,108 @@
 # Get started :coffee:
 
-Welcome to the documentation page of the FBI API.
+Welcome to the FBI API documentation.
 
-The API is powered by GraphQL, learn about that [here](https://graphql.org/learn).
+The API is powered by GraphQL. You can learn more about GraphQL [here](https://graphql.org/learn).
 
-On this page you will be able to get an overview of the API. We have included a
-bunch of examples, which you can modify right in the browser.
+On this page, you can get an overview of the API and try out examples directly in the browser.
 
-You need to _configure access_ to see the examples, and you will need an access token to do so.
-Read on, and learn how to get one.
+To use the examples, you need to configure access in the documentation interface by adding an access token or client credentials. The FBI API itself still requires OAuth 2 access tokens in the `Authorization: Bearer ...` header.
 
-## How to get access?
+## Register your application/project 📝
 
-You can get usage rights to FBI-API if you have access to FBI (Fælles BiblioteksInfastruktur), which is governed by KOMBIT.
-Currently only Danish libraries can get access to the API. So, in order to get started, you will need an agreement with a library.
+You can get access to the FBI API if you have access to FBI (Fælles Biblioteksinfrastruktur), which is governed by KOMBIT.
 
-1. First of all, you need to obtain a _CLIENT_ID_ and a _SECRET_ for your application/project
+Currently, only Danish libraries can get access to the API. To get started, you need an agreement with a library and a registered application/project.
 
-   Send a request via [customer support](https://kundeservice.dbc.dk) and include the following information:
+You will need a `client_id` and `client_secret` for your application/project.
 
-   - Project owner (library, email, phone)
-   - Technical contact person (name, email, phone)
-   - Name and description of the application/project
+Send a request via [customer support](https://kundeservice.dbc.dk) and include the following information:
 
-2. Obtain an access token
+- Project owner (library, email, phone)
+- Technical contact person (name, email, phone)
+- Name and description of the application/project
 
-   Get an _anonymous access token_ to access the API on behalf of the application:
+## Connect your application 🔌
 
-   ```
-   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://login.bib.dk/oauth/token -d "grant_type=password&username=@&password=@"
-   ```
+This section describes the options available in the **documentation interface**.
 
-   Or get an _authenticated access token_ to access the API on behalf of an end user.
+Your application is registered as a client and receives a `client_id` and `client_secret`. The documentation interface can use this information to obtain and renew access tokens for the built-in examples and tools.
 
-   ```
-   curl --user "${CLIENT_ID}:${CLIENT_SECRET}" -X POST https://login.bib.dk/oauth/token -d "grant_type=password&username=${USERNAME}&password=${PASSWORD}"
-   ```
+This means:
 
-   `${USERNAME}` is Loanernumber@library-agencyId and `${PASSWORD}` is the end user's pincode.
+- If you add an access token, the documentation interface will validate it and resolve it to the client it belongs to
+- If the token resolves to a client, that client can later be extended with a `client_secret`
+- If a client has only been added through a token, it will work only for as long as that token remains valid
+- If a client is associated with a `client_secret`, the documentation interface can obtain a new access token automatically
 
-3. Begin using the API
+### Recommended setup
 
-   Configure access on this site (you will need to fill in an access token in the field where it reads "Drop token here ..."), to see
-   examples and build your own queries.
+For long-lived use, we recommend configuring access with:
 
-   The examples show how to include the access token as a header when calling the API.
+- `client_id`
+- `client_secret`
 
-   The api is continously expanding with new functionality.
+This is more stable than relying on a manually inserted access token, because the documentation interface can obtain a new token automatically when the current token expires.
+
+### Using tokens directly
+
+The FBI API accepts OAuth 2 access tokens issued by `login.bib.dk`.
+
+When calling the API directly, send the token in the `Authorization` header:
+
+```http
+Authorization: Bearer <access_token>
+```
+
+The client and secret handling described above is only available in this documentation interface. It is a convenience for using the built-in examples and tools.
+
+### Persistence in the documentation site
+
+Clients, secrets, and tokens added in this documentation site should be considered a convenience for the current setup and testing flow.
+
+They should **not** be treated as guaranteed or permanently persistent storage.
+
+## Obtain an access token 🔐
+
+Access tokens are the credentials sent with each API request.
+
+The API accepts OAuth 2 access tokens issued by `login.bib.dk`.
+
+Access tokens can be obtained using the following grant types:
+
+### Client Credentials Grant
+
+Used when the application needs to access the API **as itself**, without any end user involved. This is typically used for backend-to-backend integration, scheduled jobs, or server-side processing.
+
+```bash
+curl --user "${CLIENT_ID}:${CLIENT_SECRET}" \
+  -X POST https://login.bib.dk/oauth/token \
+  -d "grant_type=client_credentials"
+```
+
+### Authorization Code Grant
+
+Used when the application needs to access the API **on behalf of an authenticated end user**. This flow requires redirecting the user to the login page and exchanging an authorization code for an access token.
+
+### Password Grant (legacy)
+
+For legacy integrations, it is possible to obtain an access token **on behalf of an authenticated end user** using the Password Grant.
+
+This grant type should only be used for existing legacy integrations unless otherwise agreed.
+
+```bash
+curl --user "${CLIENT_ID}:${CLIENT_SECRET}" \
+  -X POST https://login.bib.dk/oauth/token \
+  -d "grant_type=password&username=${USERNAME}&password=${PASSWORD}"
+```
+
+## Begin using the API 🚀
+
+Configure access on this site by providing either a `client_id` and `client_secret`, or an access token.
+
+The examples show how to include the access token as a header when calling the API.
+
+The API is continuously expanding with new functionality.
 
 ## Developer tools 🧰
 
@@ -61,7 +117,24 @@ Press `CTRL+SPACE` to autocomplete inside GraphiQL.
 Another tool that we included is _Voyager_, which gives a bird's-eye view of the
 GraphQL schema. See how different types are connected and zoom in for more details.
 
-## Complexity
+### Settings ⚙️
+
+The documentation interface also includes a `Settings` menu for adjusting how the built-in tools behave. You can find it floating in the bottom-right corner of the window.
+
+- **Network** 🌍 lets eligible users switch between the available network modes in the documentation interface.
+- **Mode** 🤖 controls the visual theme of the documentation interface.
+- **Execute** 🛵 lets you choose whether queries should run automatically or only when you execute them manually.
+- **Cleanup** 🧹 clears local preferences and saved session data.
+
+#### Cleanup options
+
+- **Reset preferences** ⚙️ restores saved interface preferences such as theme and execution behavior.
+- **Clear current session** 📍 removes the currently selected access setup from the active session.
+- **Clear GraphiQL tabs** 🧪 removes saved GraphiQL tab state.
+- **Clear applications** 🔐 removes saved clients, secrets, and tokens from the documentation interface session.
+- **Restore news** ✨ makes dismissed news messages visible again when restorable news is available.
+
+## Complexity 📊
 
 When making an API request for data, a complexity value will be computed by considering the query fields.
 Certain fields have a higher cost associated with querying them compared to others.
@@ -84,7 +157,7 @@ The complexity value can be reduced by minimizing the amount of data requested. 
 Other complexity reducements can be attained by breaking down requests to the API into parallel requests and merging the responses on the client-side.
 Lazy loading is also an effective method, which defers content loading until necessary, improving performance and reducing initial load times.
 
-## Query Depth
+## Query Depth 🪜
 
 In addition to complexity calculations, a query depth limit has been implemented.
 Queries exceeding **15** levels will be rejected to prevent server overloads, mitigate DDOS attacks, and ensure system stability.
@@ -96,9 +169,11 @@ Queries exceeding **15** levels will be rejected to prevent server overloads, mi
 To ensure a stable and fair distribution of resources, we apply rate limiting to our API. Rate limiting restricts the number of requests a client can make within a given time period. This helps protect the API from overload, abuse, and unwanted traffic.
 
 ### How does it work?
+
 Each client is identified by a unique ID and assigned a quota for the number of requests allowed within a specific timeframe. If this limit is exceeded, the API will return an error message indicating that too many requests have been sent.
 
 ### How to avoid hitting the rate limit?
+
 To ensure smooth operation and avoid disruptions, we recommend implementing some of the following strategies:
 
 - **Caching Responses:** Store frequently requested data locally or in a caching layer to reduce the number of identical API requests.
@@ -110,10 +185,10 @@ To ensure smooth operation and avoid disruptions, we recommend implementing some
 <br />
 
 ### Rate Limits and Agreements
+
 The exact rate limit applied to your application may depend on your agreement with DBC DIGITAL. Some clients may have access to higher limits based on their specific needs and usage patterns. If your application requires a higher request quota, please contact us to discuss available options.
 
-
-## Deprecation
+## Deprecation 🕰️
 
 FBI-API is a versionless API, which enables the continuous addition of new types and fields to the API. However, this also means that data models can change, and fields can be renamed, moved, or removed, resulting in breaking changes.
 
@@ -124,6 +199,8 @@ Deprecation details will include:
 - Type and field
 - Reason and/or alternative options
 - Expiration date
+
+Draft fields may also be present in the schema. They are marked separately, may change without the same stability guarantees, and are listed in the Draft Log for the selected token.
 
 Furthermore, if an entire section in the documentation, with its own heading or subheading, is deprecated, the section title will be flagged deprecated to alert users.
 
@@ -137,26 +214,11 @@ Furthermore a deprecation box including detailed information about the deprecati
 >   Some deprecation example ...
 > </DeprecationBox>
 
-🔔 Get notified when the schema changes. See the [Schema Changes](#4627-h2-schema-changes-🔔-Schema-Changes-🔔) section for more
+🔔 Get notified when the schema changes. See the [Stay Updated](#h2-stay-updated-za0t8b-stay-updated) section for more
 
-History for deprecated fields (caused breaking changes) can be found in the [changelog](#4926-h2-changelog-Changelog)
+History for deprecated fields (caused breaking changes) can be found in the [Changelog](#h2-changelog-dtkj2k-changelog)
 
-## Schema Changes 🔔
-
-Get notified when the FBI-API GraphQL schema changes. Subscribe to concise emails about **deprecations** and **breaking changes**, including guidance on which fields to use instead. 
-
-Managed via Mailchimp — you can unsubscribe at any time.
-
-<Link href="http://eepurl.com/jlfdkE" animation={false} target="_blank">
-  <Button > Join the update list </Button>
-</Link>
-
-<br />
-<br />
-
-For additional information about deprecation and schema changes, see the [changelog](#4926-h2-changelog-Changelog) and [deprecation](#3580-h2-deprecation-Deprecation) section
-
-## Changelog
+## Changelog 📜
 
 The changelog table contains a list of both previous and current deprecated fields that will cause breaking changes to the API. This information enables users to stay informed about any deprecations that may affect their use of the API and take appropriate action to mitigate any potential issues.
 
@@ -164,7 +226,17 @@ The changelog table contains a list of both previous and current deprecated fiel
 
 <Changelog />
 
-## Tracking user interactions 👣
+## Draft 🧪
+
+The draft log contains fields currently marked as draft in the schema for the selected token.
+
+Draft fields, including all of their subfields, are available to use but may change or be removed without prior notice. Unlike established fields, changes to draft fields and their subfields are not subject to the standard three-month deprecation notice.
+
+<br />
+
+<DraftLog />
+
+## Tracing User Actions 👣
 
 Trace IDs play a crucial role in tracking and linking user actions across API requests.
 By including these identifiers, you can connect current user actions to previous ones, providing valuable insights into user behavior.
@@ -205,32 +277,47 @@ One of the traceIds from the response should be used as the x-caused-by in subse
 
 ```bash
 curl -X POST \
-  -H "Content-Type: application/json" \
-  -H "Authorization: bearer ..." \
-  -H "x-tracking-consent: true" \
-  -H "x-session-token: test-session-token" \
-  -H "x-caused-by: test-trace-id" \
-  -d '{
-    "query": "query Example_SearchWithTrace($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!) {
-      search(q: $q) {
-        works(offset: $offset, limit: $limit) {
-          workId
-          traceId
-        }
+-H "Content-Type: application/json" \
+-H "Authorization: bearer ..." \
+-H "x-tracking-consent: true" \
+-H "x-session-token: test-session-token" \
+-H "x-caused-by: test-trace-id" \
+-d '{
+  "query": "query Example_SearchWithTrace($q: SearchQueryInput!, $offset: Int!, $limit: PaginationLimitScalar!) {
+    search(q: $q) {
+      works(offset: $offset, limit: $limit) {
+        workId
+        traceId
       }
-   }",
-    "variables": {
-      "q": { "all": "test" },
-      "offset": 0,
-      "limit": 10
     }
-  }' \
-  https://fbi-api.dbc.dk/opac/graphql
+ }",
+  "variables": {
+    "q": { "all": "test" },
+    "offset": 0,
+    "limit": 10
+  }
+}' \
+https://fbi-api.dbc.dk/opac/graphql
 ```
 
-## Feedback
+## Feedback 💬
 
 If you have any ideas on how to improve the developer experience, don't hesitate to contact us at [kundeservice@dbc.dk](mailto:kundeservice@dbc.dk).
 
 We encourage you to add any issues/bugs you experience while using the api to the [issues page](https://github.com/DBCDK/fbi-api-gateway/issues).
 Please attach the query that caused the bug in the issue.
+
+## <Highlight>Stay Updated 📬</Highlight>
+
+Get notified when the FBI-API GraphQL schema changes. Subscribe to concise emails about **deprecations** and **breaking changes**, including guidance on which fields to use instead.
+
+Managed via Mailchimp — you can unsubscribe at any time.
+
+<Link href="http://eepurl.com/jlfdkE" animation={false} target="_blank">
+  <Button tabIndex="-1"> Join the update list </Button>
+</Link>
+
+<br />
+<br />
+
+For additional information about deprecation and schema changes, see the [Changelog](#h2-changelog-dtkj2k-changelog) and [Deprecation](#h2-deprecation-rya8bw-deprecation) section

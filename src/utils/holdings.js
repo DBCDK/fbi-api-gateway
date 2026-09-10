@@ -1,3 +1,8 @@
+export const localizationsRoles = {
+  BIBDK: "bibdk",
+  DANBIB: "danbib",
+};
+
 export const itemStatusEnumMap = {
   DISCARDED: "Discarded",
   LOST: "Lost",
@@ -8,37 +13,10 @@ export const itemStatusEnumMap = {
 };
 
 export function checkUserRights(user) {
-  const isAuthenticated = !!user?.userId;
-  const loggedInAgencyId = user?.loggedInAgencyId;
-  const dbcidp = user?.dbcidp;
-
-  // Check if user is authenticated
-  if (!isAuthenticated) {
-    return {
-      ok: false,
-      status: "ERROR_UNAUTHENTICATED_TOKEN",
-      message:
-        "Anonymous token detected. Please provide an authenticated token.",
-    };
-  }
-
-  // Missing agencyId for provided user token (e.g. nemlogin)
-  if (!loggedInAgencyId) {
-    return {
-      ok: false,
-      status: "ERROR_INVALID_AGENCY",
-      message:
-        "Invalid token: Missing agencyId. Ensure your login method provides an agencyId.",
-    };
-  }
-
-  // check that user has correct idp rights
-  const rights = dbcidp?.find(
-    (obj) => obj?.agencyId === loggedInAgencyId
-  )?.rights;
+  const idpRights = user?.dbcidp;
 
   // holdingsupdate write access
-  const hasWriteAccess = !!rights?.find(
+  const hasWriteAccess = !!idpRights?.find(
     (obj) => obj.productName === "HOLDINGSUPDATE" && obj.name === "WRITE"
   );
 

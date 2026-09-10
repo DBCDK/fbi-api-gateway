@@ -1,10 +1,10 @@
 .menu {
   max-width: 300px;
   min-width: 250px;
-  top: 100px;
+  top: var(--pt14);
   position: sticky;
   list-style: none;
-  padding: var(--pt2) 0;
+  padding: 0 0 var(--pt2) 0;
 
   /* scroll */
   height: 85vh;
@@ -30,8 +30,13 @@
   padding-left: var(--pt3);
 }
 
+.item.h2:last-child {
+  margin-bottom: var(--pt1);
+}
+
 .item.active > p > a {
   color: var(--primary-dark);
+  font-family: var(--font-mono-semibold);
 }
 
 .item a::before {

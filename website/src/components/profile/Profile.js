@@ -2,17 +2,20 @@ import { useEffect } from "react";
 
 import Dropdown from "react-bootstrap/Dropdown";
 
-import useStorage from "@/hooks/useStorage";
-import useConfiguration from "@/hooks/useConfiguration";
+import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
+import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
+import { hasAvailableAgency } from "@/utils/configuration";
 
 import styles from "./Profile.module.css";
 
 export default function Profile({ id = "dropdown", className = "" }) {
   // useToken custom hook
-  const { selectedToken, setSelectedToken } = useStorage();
-  const { configuration } = useConfiguration(selectedToken);
+  const { selectedCredential: selectedToken } = useSelectedCredential();
+  const { selectCredential: setSelectedToken } = useCredentialMutations();
+  const { configuration } = useResolvedConfiguration(selectedToken);
 
-  const isToken = selectedToken?.token && configuration?.agency;
+  const isToken = selectedToken?.token && hasAvailableAgency(configuration);
   const hasProfile = selectedToken?.profile;
   const hasProfiles = configuration?.profiles;
 

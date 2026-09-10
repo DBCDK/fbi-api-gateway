@@ -122,7 +122,7 @@ test("limited access to root fields", async () => {
       accessToken: "DUMMY_TOKEN",
       smaug: {},
     },
-    clientPermissions: { gateway: { allowRootFields: ["help"] } },
+    clientPermissions: { gateway: { allowRootFields: ["monitor"] } },
   });
 
   expect(printSchema(buildClientSchema(result.data))).toMatchSnapshot();

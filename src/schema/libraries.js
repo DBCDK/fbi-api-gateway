@@ -3,7 +3,11 @@
  *
  */
 import { orderBy } from "lodash";
-import { resolveBorrowerCheck, resolveLocalizations } from "../utils/utils";
+import {
+  resolveBorrowerCheck,
+  resolveLocalizations,
+  resolveBorrowerCheckSystem,
+} from "../utils/utils";
 import getUserBorrowerStatus from "../utils/getUserBorrowerStatus";
 import isEmpty from "lodash/isEmpty";
 import { isFFUAgency, hasCulrDataSync } from "../utils/agency";
@@ -44,6 +48,13 @@ export const typeDef = `
   type Branch{
     """Whether this branch's agency supports borrowerCheck"""
     borrowerCheck: Boolean!
+
+    """Whether this branch's agency supports borrowerCheck for Bibliotek.dk"""
+    borrowerCheckBibliotekdk: Boolean!
+
+    """Whether this branch's agency supports borrowerCheck with pincode"""
+    borrowerCheckUsePincode: Boolean!
+
     culrDataSync: Boolean!
     agencyName: String
     autoIll: AutomationParams!
@@ -66,7 +77,7 @@ export const typeDef = `
     highlights: [Highlight!]!
     debug: MinisearchDebug
     infomediaAccess: Boolean!
-    digitalCopyAccess: Boolean!
+    digitalCopyAccess: Boolean!    
     userStatusUrl: String
     holdingStatus(pids:[String]): DetailedHoldings @complexity(value: 5, multipliers: ["pids"])
     branchWebsiteUrl: String
@@ -142,6 +153,30 @@ export const resolvers = {
         : parent?.branchId || parent?.agencyId;
 
       return await resolveBorrowerCheck(libraryId, context);
+    },
+    async borrowerCheckBibliotekdk(parent, args, context, info) {
+      const isFFU = await isFFUAgency(parent?.agencyId);
+
+      const libraryId = !isFFU
+        ? parent?.agencyId
+        : parent?.branchId || parent?.agencyId;
+
+      return await resolveBorrowerCheckSystem(
+        libraryId,
+        "bibliotek.dk",
+        context
+      );
+    },
+    async borrowerCheckUsePincode(parent, args, context, info) {
+      const isFFU = await isFFUAgency(parent?.agencyId);
+
+      const libraryId = !isFFU
+        ? parent?.agencyId
+        : parent?.branchId || parent?.agencyId;
+
+      return await context.datasources
+        .getLoader("vipcore_BorrowerCheckUsePincode")
+        .load(libraryId);
     },
     async culrDataSync(parent, args, context, info) {
       return await hasCulrDataSync(parent.agencyId, context);

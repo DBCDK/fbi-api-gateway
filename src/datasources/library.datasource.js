@@ -224,6 +224,17 @@ async function fetchIfOld(getFunc, fetch = defaultFetch) {
   }
 }
 /**
+ * A library number may be given as ISIL, fx. "DK-721900". The indexer tokenizes on
+ * punctuation, and no branch is indexed with a "dk" term, so an AND-combined search
+ * for the ISIL matches nothing - and the fuzzy fallback then returns unrelated
+ * branches. Strip the prefix, and search on the library number itself.
+ *
+ * Only a query that is entirely an ISIL is rewritten. Stripping the prefix anywhere
+ * it occurs would ruin searches for libraries actually named "DK-5-basen".
+ */
+const stripIsilPrefix = (q) => q?.replace(/^\s*DK-?(\d{6})\s*$/i, "$1");
+
+/**
  * Search on given query.
  * @param props
  * @param getFunc
@@ -231,7 +242,6 @@ async function fetchIfOld(getFunc, fetch = defaultFetch) {
  */
 export async function search(props, getFunc = doRequest, fetch = defaultFetch) {
   const {
-    q,
     limit = 10,
     offset = 0,
     agencyid,
@@ -244,6 +254,8 @@ export async function search(props, getFunc = doRequest, fetch = defaultFetch) {
     bibdkExcludeBranches,
     sortPickupAllowed = false,
   } = props;
+
+  const q = stripIsilPrefix(props?.q);
 
   // ensure lowercased language prop
   const language = props?.language?.toLowerCase() || "da";

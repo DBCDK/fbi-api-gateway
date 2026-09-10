@@ -140,9 +140,7 @@ export const resolvers = {
         }))
       );
 
-      const results = resolvedResults.filter(
-        (_v, index) => !!resolvedResults[index]
-      );
+      const results = resolvedResults.filter((entry) => !!entry?.work);
 
       // create the datahub event
       context?.dataHub?.createSeriesEvent({
@@ -208,6 +206,12 @@ export const resolvers = {
       const seriesById = await context.datasources
         .getLoader("seriesById")
         .load({ seriesId: args.seriesId, profile: context.profile });
+
+      // Avoid returning malformed Series objects that would violate
+      // non-nullable Series.title in the schema.
+      if (!seriesById?.seriesTitle) {
+        return null;
+      }
 
       return {
         ...seriesById,

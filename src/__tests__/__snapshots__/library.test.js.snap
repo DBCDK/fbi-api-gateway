@@ -1,12 +1,12 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`library - get all 1`] = `
-Object {
-  "data": Object {
-    "branches": Object {
+{
+  "data": {
+    "branches": {
       "hitcount": 6541,
-      "result": Array [
-        Object {
+      "result": [
+        {
           "agencyId": "800010",
           "agencyName": "Det Kgl. Bibliotek",
           "borrowerCheck": true,
@@ -18,18 +18,18 @@ Object {
           "pickupAllowed": true,
           "postalAddress": "Bartholins Allé 11",
           "postalCode": "8000",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "800010",
           "agencyName": "Det Kgl. Bibliotek",
           "borrowerCheck": true,
@@ -41,18 +41,18 @@ Object {
           "pickupAllowed": true,
           "postalAddress": "Birk Centerpark 15",
           "postalCode": "7400",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "800010",
           "agencyName": "Det Kgl. Bibliotek",
           "borrowerCheck": true,
@@ -64,18 +64,18 @@ Object {
           "pickupAllowed": true,
           "postalAddress": "Tuborgvvej 164",
           "postalCode": "2400",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "800010",
           "agencyName": "Det Kgl. Bibliotek",
           "borrowerCheck": true,
@@ -87,18 +87,18 @@ Object {
           "pickupAllowed": true,
           "postalAddress": "Fuglesangs Alle 4",
           "postalCode": "8210",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "800010",
           "agencyName": "Det Kgl. Bibliotek",
           "borrowerCheck": true,
@@ -110,18 +110,18 @@ Object {
           "pickupAllowed": true,
           "postalAddress": "Langelandsgade 151",
           "postalCode": "8000",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "800010",
           "agencyName": "Det Kgl. Bibliotek",
           "borrowerCheck": true,
@@ -133,18 +133,18 @@ Object {
           "pickupAllowed": true,
           "postalAddress": "Finlandsgade 21, 1. sal",
           "postalCode": "8200",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "852130",
           "agencyName": "AU Library, Kalø",
           "borrowerCheck": true,
@@ -157,18 +157,18 @@ Object {
           "postalAddress": "Grenåvej 14
 Kalø",
           "postalCode": "8410",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "831040",
           "agencyName": "AU Library Katrinebjerg",
           "borrowerCheck": true,
@@ -180,18 +180,18 @@ Kalø",
           "pickupAllowed": true,
           "postalAddress": "Helsingforsgade 12 Bygning 5335 - 1. sal",
           "postalCode": "8200",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "820010",
           "agencyName": "Det Kgl. Bibliotek - Aarhus",
           "borrowerCheck": true,
@@ -207,18 +207,18 @@ Fredag   kl. 9-15",
           "pickupAllowed": true,
           "postalAddress": "Skovagervej 2, Indg. 34,  1. sal tv.",
           "postalCode": "8240",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "850800",
           "agencyName": "AU Library, Silkeborg",
           "borrowerCheck": true,
@@ -230,12 +230,12 @@ Fredag   kl. 9-15",
           "pickupAllowed": true,
           "postalAddress": "Frederiksborgvej 399",
           "postalCode": "4000",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
@@ -248,12 +248,12 @@ Fredag   kl. 9-15",
 `;
 
 exports[`library - get branches for agency 1`] = `
-Object {
-  "data": Object {
-    "branches": Object {
+{
+  "data": {
+    "branches": {
       "hitcount": 25,
-      "result": Array [
-        Object {
+      "result": [
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710110",
@@ -266,18 +266,18 @@ bibliotek.kk.dk/biblioteker/",
           "pickupAllowed": true,
           "postalAddress": "Rentemestervej 76",
           "postalCode": "2400",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710114",
@@ -290,18 +290,18 @@ bibliotek.kk.dk/biblioteker/",
           "pickupAllowed": true,
           "postalAddress": "Rodosvej 4",
           "postalCode": "2300",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710104",
@@ -314,18 +314,18 @@ bibliotek.kk.dk/biblioteker",
           "pickupAllowed": true,
           "postalAddress": "Blågårds Plads 5",
           "postalCode": "2200",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710105",
@@ -339,18 +339,18 @@ bibliotek.kk.dk/biblioteker/",
           "postalAddress": "Krabbesholmvej 3
 ",
           "postalCode": "2700",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710106",
@@ -363,18 +363,18 @@ bibliotek.kk.dk/biblioteker/",
           "pickupAllowed": true,
           "postalAddress": "Dronningensgade 53",
           "postalCode": "1420",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710100",
@@ -383,22 +383,22 @@ bibliotek.kk.dk/biblioteker/",
           "name": "Hovedbiblioteket, Krystalgade",
           "openingHours": "Åbningstider
 Se åbningstider på:
-<a href=\\"https://bibliotek.kk.dk/biblioteker/\\">bibliotek.kk.dk/biblioteker</a>",
+<a href="https://bibliotek.kk.dk/biblioteker/">bibliotek.kk.dk/biblioteker</a>",
           "pickupAllowed": true,
           "postalAddress": "Krystalgade 15",
           "postalCode": "1172",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710107",
@@ -411,18 +411,18 @@ bibliotek.kk.dk/biblioteker/",
           "pickupAllowed": true,
           "postalAddress": "Frederikssundsvej 290",
           "postalCode": "2700",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710108",
@@ -435,18 +435,18 @@ bibliotek.kk.dk/biblioteker/",
           "pickupAllowed": true,
           "postalAddress": "Njalsgade 15",
           "postalCode": "2300",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710118",
@@ -459,18 +459,18 @@ bibliotek.kk.dk/biblioteker/",
           "pickupAllowed": true,
           "postalAddress": "Jernbane Alle 38",
           "postalCode": "2720",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },
           ],
         },
-        Object {
+        {
           "agencyId": "710100",
           "borrowerCheck": true,
           "branchId": "710111",
@@ -484,12 +484,12 @@ bibliotek.kk.dk/biblioteker/",
           "postalAddress": "Nørrebrohallen
 Nørrebrogade 208",
           "postalCode": "2200",
-          "userParameters": Array [
-            Object {
+          "userParameters": [
+            {
               "parameterRequired": true,
               "userParameterType": "USERID",
             },
-            Object {
+            {
               "parameterRequired": false,
               "userParameterType": "USERMAIL",
             },

@@ -29,11 +29,7 @@ type CatalogueCodes {
   """
   otherCatalogues: [String!]!
 }
-type TableOfContent {
-  heading: String
-  content: String
-  listOfContent: [TableOfContent!]
-}
+  
 type Shelfmark {
   """
   A postfix to the shelfmark, eg. 99.4 Christensen, Inger. f. 1935
@@ -187,7 +183,7 @@ type Note {
   """
   Heading before note
   """
-  heading: String
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   The actual notes
@@ -199,64 +195,7 @@ type Note {
   """
   urls: [AccessUrl]
 }
-enum ManifestationPartTypeEnum {
-  MUSIC_TRACKS
-  SHEET_MUSIC_CONTENT
-  PARTS_OF_BOOK
-  NOT_SPECIFIED @fallback
-}
-type ManifestationPart {
-  """
-  The title of the entry (music track or title of a literary analysis)
-  """
-  title: String!
 
-  """
-  The creator of the music track or literary analysis
-  """
-  creators: [CreatorInterface!]!
-
-  """
-  Classification of this entry (music track or literary analysis)
-  """
-  classifications: [Classification!]!
-
-  """
-  Subjects of this entry (music track or literary analysis)
-  """
-  subjects: [SubjectInterface!]
-
-  """
-  Additional creator or contributor to this entry (music track or literary analysis) as described on the publication. E.g. 'arr.: H. Cornell'
-  """
-  creatorsFromDescription: [String!]!
-  
-  """
-  Contributors from description - additional contributor to this entry
-  """
-  contributorsFromDescription: [String!]!
-  
-  """
-  The playing time for this specific part (i.e. the duration of a music track) 
-  """
-  playingTime: String
-}
-type ManifestationParts {
-  """
-  Heading for the music content note
-  """
-  heading: String
-
-  """
-  The creator and title etc of the individual parts
-  """
-  parts: [ManifestationPart!]!
-
-  """
-  The type of manifestation parts, is this music tracks, book parts etc.
-  """
-  type: ManifestationPartTypeEnum!
-}
 type Languages {
   """
   Notes of the languages that describe subtitles, spoken/written (original, dubbed/synchonized), visual interpretation, parallel (notes are written in Danish)
@@ -425,7 +364,7 @@ type Edition {
   """
   Quotation of contributor statements related to the edition
   """
-  contributors: [String!]! 
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   A year as displayable text and as number
@@ -550,11 +489,6 @@ type Audience {
   """
   PEGI age rating for games 
   """
-  PEGI: PEGI @deprecated(reason: "Use 'Audience.pegi' instead expires: 01/06-2025")
-
-  """
-  PEGI age rating for games 
-  """
   pegi: PEGI
 
   """
@@ -562,6 +496,25 @@ type Audience {
   """
   mediaCouncilAgeRestriction: MediaCouncilAgeRestriction
 
+  """
+  Appropriate audience for this manifestation
+  """
+  audienceGeneral: [AudienceGeneral!]!
+}
+
+"""
+A single general audience object containing a subject word and a possible associated language
+"""
+type AudienceGeneral{
+  """
+  Appropriate audience for this manifestation
+  """
+  display: String
+
+  """
+  The associated language of the audience term, if applicable
+  """
+  language: Language
 }
 
 type LevelForAudience {
@@ -600,7 +553,13 @@ type Manifestations {
   first: Manifestation!
   latest: Manifestation!
   all: [Manifestation!]! @complexity(value: 50)
+  """
+  The best representation of all manifestations. Corresponds to the first element in the bestRepresentations list.
+  """
   bestRepresentation: Manifestation! 
+  """
+  All manifestations sorted after best representation. Newer is better. Records from DBC or KB are considered better. MaterialType.specific 'bog', 'music (cd)', and 'film (dvd)' are also considered better
+  """
   bestRepresentations: [Manifestation!]! 
   mostRelevant: [Manifestation!]! @complexity(value: 25)
 
@@ -612,6 +571,143 @@ type Manifestations {
   Only one manifestation per unit is returned.
   """
   searchHits: [SearchHit!]
+}
+
+"""
+Metadata related to material selection, including publication status,
+selection group, and librarian assessment.
+"""
+type MaterialSelection {
+  """
+  Publication status of the manifestation (e.g. new title, new edition, new print run).
+  """
+  cataloguedPublicationStatus: [MaterialSelectionCataloguedPublicationStatus!]!
+
+  """
+  Recommended selection group for the manifestation: adult, children, or school libraries.
+  """
+  selectionGroup: [MaterialSelectionSelectionGroup!]!
+
+  """
+  The type of library assessment associated with the manifestation:
+  literature, movie, or multimedia.
+  """
+  librarianAssessment: [MaterialSelectionLibrarianAssessment!]!
+}
+
+enum MaterialSelectionPublicationStatusEnum {
+  """
+  New title. Display label example: "Ny titel".
+  """
+  NEW_TITLE
+
+  """
+  New edition. Display label example: "Ny udgave".
+  """
+  NEW_EDITION
+
+  """
+  New print run. Display label example: "Nyt oplag".
+  """
+  NEW_PRINT
+}
+
+enum MaterialSelectionGroupEnum {
+  """
+  Adult. Display label example: "Voksenafdelinger".
+  """
+  ADULT
+
+  """
+  Children. Display label example: "Børnebiblioteker".
+  """
+  CHILDREN
+
+  """
+  School. Display label example: "Skolebiblioteker".
+  """
+  SCHOOL
+}
+
+enum MaterialSelectionLibrarianAssessmentEnum {
+  """
+  Literature assessment.
+  Display label example: "Har lektørudtalelse (materialevurdering)".
+  """
+  LITERATURE
+
+  """
+  Has a film review. Display label example: "Har filmvurdering".
+  """
+  MOVIE
+
+  """
+  Has a multimedia review. Display label example: "Har multimedievurdering".
+  """
+  MULTIMEDIA
+}
+
+"""
+Publication status entry within material selection.
+"""
+type MaterialSelectionCataloguedPublicationStatus {
+  """
+  The publication status enum value.
+  """
+  type: MaterialSelectionPublicationStatusEnum!
+
+  """
+  Values that can be used for Complex Search filtering, e.g. ["nt", "ny titel"].
+  Use these values with term.cataloguedPublicationStatus in Complex Search.
+  """
+  searchValues: [String!]!
+
+  """
+  Danish display label for the publication status, e.g. "Ny titel".
+  """
+  display: String
+}
+
+"""
+Selection group entry within material selection.
+"""
+type MaterialSelectionSelectionGroup {
+  """
+  The selection group enum value.
+  """
+  type: MaterialSelectionGroupEnum!
+
+  """
+  Values that can be used for Complex Search filtering, e.g. ["v", "voksen"].
+  Use these values with term.selectionGroup in Complex Search.
+  """
+  searchValues: [String!]!
+
+  """
+  Danish display label for the selection group, e.g. "Voksenafdelinger".
+  """
+  display: String
+}
+
+"""
+Librarian assessment entry within material selection.
+"""
+type MaterialSelectionLibrarianAssessment {
+  """
+  The librarian assessment enum value.
+  """
+  type: MaterialSelectionLibrarianAssessmentEnum!
+
+  """
+  Values that can be used for Complex Search filtering, e.g. ["l", "lektørudtalelse"].
+  Use these values with term.librarianAssessment in Complex Search.
+  """
+  searchValues: [String!]!
+
+  """
+  Danish display label for the assessment, e.g. "Har lektørudtalelse (materialevurdering)".
+  """
+  display: String
 }
 
 type Manifestation {
@@ -728,14 +824,15 @@ type Manifestation {
   languages: Languages
 
   """
-  Tracks on music album, sheet music content, or articles/short stories etc. in this manifestation
-  """
-  manifestationParts: ManifestationParts @deprecated(reason: "Use 'Manifestation.contents' instead expires: 01/11-2025")
-
-  """
   Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
   """
   contents: [ContentsEntity!]
+
+  """
+  Metadata related to material selection, including publication status,
+  selection group, and librarian assessment.
+  """
+  materialSelection: MaterialSelection
 
   """
   The type of material of the manifestation based on bibliotek.dk types
@@ -755,7 +852,7 @@ type Manifestation {
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
-  relatedPublications: [RelatedPublication!]!
+  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
   
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
@@ -766,6 +863,11 @@ type Manifestation {
   Publisher of this manifestion
   """
   publisher: [String!]!
+
+  """
+  The city or place where the item was published
+  """
+  placeOfPublication: [String!]!
 
   """
   The creation date of the record describing this manifestation in the format YYYYMMDD
@@ -803,11 +905,6 @@ type Manifestation {
   volume: String
 
   """
-  Quotation of the manifestation's table of contents or a similar content list
-  """
-  tableOfContents: TableOfContent @deprecated(reason: "Use 'Manifestation.contents' instead expires: 01/11-2025")
-
-  """
   Worktypes for this manifestations work
   """
   workTypes: [WorkTypeEnum!]!
@@ -823,6 +920,11 @@ type Manifestation {
   unit : Unit
 
   """
+  automation material group info
+  """
+  illAutomationMaterialGroup : IllAutomationMaterialGroup
+
+  """
   Identification of the local id of this manifestation
   """
   localId: String
@@ -835,7 +937,121 @@ type Manifestation {
   """
   The publication status of a catalogued manifestation.
   """
-  cataloguedPublicationStatus: CataloguedPublicationStatus
+  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 05/12-2026")
+
+  """
+  The genre and (literary) form of this manifestation
+  """
+  genreForm: [GenreForm!]!
+
+  """
+  The records type of sound recording - excluding music recordings and its material
+  """
+  soundRecording: SoundRecording
+
+  """
+  Code for type of periodical
+  """
+  periodicalType: PeriodicalType
+
+  """
+  Code for bibliographic category
+  """
+  bibliographicCategory: BibliographicCategory
+
+  """
+  Code for comics, children's picture books and drama
+  """
+  specialMaterialGroup: SpecialMaterialGroup
+
+  """
+  The creator of the manifestation that the material can be located under on the shelf
+  """
+  shelfCreator: ShelfCreator
+
+  """
+  Information on music shelving
+  """
+  musicShelf: MusicShelf
+}
+
+type ShelfCreator {
+  """
+  The display name of the creator
+  """
+  display: String
+
+  """
+  The sort version of the creator name
+  """
+  sort: String
+}
+
+type MusicShelf {
+  """
+  The sort version of 'display'
+  """
+  sort: String
+  """
+  The shelf where the material can be found
+  """
+  display: String
+}
+
+type SpecialMaterialGroup {
+  """
+  A code for the type of the special material group
+  """
+  code: String
+  """
+  The code as displayable text
+  """
+  display: String
+}
+
+type BibliographicCategory {
+  """
+  Code for bibliographic category
+  """
+  code: String
+
+  """
+  The code as displayable text
+  """
+  display: String
+}
+
+type PeriodicalType {
+  """
+  A code for the type of periodical
+  """
+  code: String
+  """
+  The code as displayable text
+  """
+  display: String
+}
+
+type SoundRecording {
+  """
+  A code for the type of sound recording
+  """
+  code: String
+  """
+  The code as displayable text
+  """
+  display: String
+}
+
+type GenreForm {
+  """
+  The genre/form term
+  """
+  display: String
+  """
+  Language of the genre/form term, if applicable
+  """
+  language: Language
 }
 
 """
@@ -901,6 +1117,17 @@ type Unit {
   manifestations: [Manifestation!]! @complexity(value: 3)
 }
 
+type IllAutomationMaterialGroup {
+  """
+  The material group (1-9)
+  """
+  id: Int!
+  """
+  The name of the material group
+  """
+  name: String!
+}
+
 type ManifestationTitles {
   """
   The main title(s) of the work
@@ -940,7 +1167,7 @@ type ManifestationTitles {
   """
   The standard title of the entity, used for music and movies
   """
-  standard: String
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -950,7 +1177,7 @@ type ManifestationTitles {
   """
   Danish translation of the main title
   """
-  translated: [String!]
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   detailed title for tv series 
@@ -985,10 +1212,6 @@ type ManifestationTitles {
     """
     corporations: [Corporation!]
   }
-
-
-
-
 
   type ContentEntry {
     """
@@ -1104,42 +1327,13 @@ export const resolvers = {
     pegi(parent) {
       return parent?.PEGI;
     },
+    audienceGeneral(parent) {
+      return parent?.audienceGeneral || [];
+    },
   },
   Identifier: {
     type(parent) {
       return IDENTIFIER_TYPES.has(parent.type) ? parent.type : "NOT_SPECIFIED";
-    },
-  },
-  ManifestationParts: {
-    parts(parent) {
-      return parent?.parts?.filter(
-        (part) => !Object.hasOwn(part.title, "forSearchIndexOnly")
-      );
-    },
-  },
-  ManifestationPart: {
-    title(parent) {
-      return parent?.title?.display || "";
-    },
-    creators(parent) {
-      if (Array.isArray(parent?.creators)) {
-        return parent?.creators;
-      }
-      if (!parent?.creators) {
-        return [];
-      }
-
-      // Handle difference in structure from JED service
-      return [
-        ...parent?.creators?.persons?.map((person) => ({
-          ...person,
-          __typename: "Person",
-        })),
-        ...parent?.creators?.corporations?.map((person) => ({
-          ...person,
-          __typename: "Corporation",
-        })),
-      ];
     },
   },
   Unit: {
@@ -1334,17 +1528,6 @@ export const resolvers = {
         })),
       ];
     },
-
-    // here is a discrepancy with fbi-api and jed-api .. FIX IT when we are allowed to
-    shelfmark(parent, args, context, info) {
-      if (parent?.shelfmark) {
-        return {
-          postfix: parent?.shelfmark?.postfix || "",
-          shelfmark: parent?.shelfmark?.shelfmark || "",
-        };
-      }
-      return null;
-    },
     subjects(parent, args, context, info) {
       return {
         all: Array.isArray(parent?.subjects?.all)
@@ -1371,9 +1554,20 @@ export const resolvers = {
     async unit(parent, args, context, info) {
       return parent;
     },
-
     contents(parent, args, context, info) {
       return parent?.contents;
+    },
+    placeOfPublication(parent) {
+      return parent?.placeOfPublication ?? [];
+    },
+    genreForm(parent) {
+      return parent?.genreForm || [];
+    },
+  },
+
+  Shelfmark: {
+    shelfmark(parent) {
+      return parent?.shelfmark || "";
     },
   },
 

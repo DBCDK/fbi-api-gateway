@@ -1,5 +1,13 @@
 import { log } from "dbc-node-logger";
 import { resolveWork } from "../utils/utils";
+import {
+  getWorkAuthors,
+  getSeriesIdsFromWork,
+  getCreatorInfo,
+  resolveWorksByIds,
+  selectPrimaryAuthor,
+  selectPrimarySeriesId,
+} from "../utils/search";
 import { createTraceId } from "../utils/trace";
 
 export const typeDef = `
@@ -26,7 +34,7 @@ input ComplexSearchFiltersInput {
   """
   Onloan or OnShelf.
   """
-  status: [HoldingsStatusEnum!]
+  status: [CSHoldingsStatusEnum!]
   """
   Id of agency.
   """
@@ -47,9 +55,68 @@ input ComplexSearchFiltersInput {
   Date of first accession
   """
   firstAccessionDate: String
+  """
+  The circulationrule of the item
+  """
+  circulationRule: [String!]
+  """
+  The section which the item belongs to
+  """
+  section: [String!]
+  """
+  The floatgroup of the item
+  """
+  floatGroup: [String!]
+  """
+  Boolean to denote whether to include or exclude online holdingsitems
+  """
+  useOnlineHoldings: Boolean
+  """
+  The last loan date of the item
+  """
+  lastloandate: String
+  """
+  The loan restriction of the item, g, a or nothing
+  """
+  loanrestriction: [String!]
 }
 
+"""
+CQL based filters. Mutually exclusive with ComplexSearchFiltersInput.
+"""
+input ComplexSearchCQLFiltersInput {
+  """
+  A CQL expression used to filter the search result.
+  """
+  cqlfilterquery: String
+}
 
+enum CSHoldingsStatusEnum {
+  """
+  Item is physically available at the branch
+  """
+  ONSHELF
+  """
+  Item is on loan and not available
+  """
+  ONLOAN
+  """
+  Item is discarded by the branch
+  """
+  DISCARDED
+  """
+  Item is lost by the branch and not available
+  """
+  LOST
+  """
+  Item is not for loan by the branch
+  """
+  NOTFORLOAN
+  """
+  Item is on order by the branch
+  """
+  ONORDER
+}
 
 enum SortOrderEnum {
   ASC
@@ -92,6 +159,7 @@ enum ComplexSearchFacetsEnum {
   TYPEOFSCORE,
   SUBJECT,
   HOSTPUBLICATION,
+  HOSTPUBLICATIONTYPE,
   SERIES,
   MEDIACOUNCILAGERESTRICTION,
   ACCESSTYPE,
@@ -105,7 +173,8 @@ enum ComplexSearchFacetsEnum {
   SOURCE,
   INSTRUMENT,
   CHOIRTYPE,
-  CHAMBERMUSICTYPE
+  CHAMBERMUSICTYPE,
+  DATEFIRSTEDITION
   }
 
 """
@@ -161,6 +230,16 @@ type ComplexSearchResponse {
   Error message, for instance if CQL is invalid
   """
   errorMessage: String
+
+  """
+  Returned when at least 3 of the top 5 works share the same creator.
+  """
+  creatorHit: CreatorInfo
+
+  """
+  Returned when at least 3 of the top 5 works belong to the same series.
+  """
+  seriesHit: Series
 }
 `;
 
@@ -178,6 +257,7 @@ function setPost(parent, context, args) {
     cql: parent.cql,
     profile: context.profile,
     filters: parent.filters,
+    cqlfilter: parent.cqlfilter,
     facets: parent?.facets?.facets,
     facetLimit: parent?.facets?.facetLimit,
     includeFilteredPids: parent?.includeFilteredPids || false,
@@ -242,6 +322,70 @@ export const resolvers = {
         .load(setPost(parent, context, args));
       return res?.hitcount || 0;
     },
+    async creatorHit(parent, args, context) {
+      // Get top 5 workIds and resolve works
+      const res = await context.datasources
+        .getLoader("complexsearch")
+        .load(setPost(parent, context, args));
+      const workIds = res?.works || [];
+      if (!workIds || workIds?.length === 0) return null;
+
+      const works = await resolveWorksByIds(workIds, context);
+
+      // Collect authors across works
+      const authorEntries = getWorkAuthors(works);
+
+      if (authorEntries.length === 0) return null;
+
+      // Choose dominant author (appears at least 3 times in top 5)
+      const primaryAuthor = selectPrimaryAuthor(authorEntries);
+
+      if (!primaryAuthor) return null;
+
+      // Fetch CreatorInfo details
+      try {
+        return await getCreatorInfo(primaryAuthor, context);
+      } catch (e) {
+        return null;
+      }
+    },
+    async seriesHit(parent, args, context) {
+      // Get top 5 workIds and resolve works
+      const res = await context.datasources
+        .getLoader("complexsearch")
+        .load(setPost(parent, context, args));
+      const workIds = res?.works || [];
+      const searchHits = res?.searchHits;
+
+      if (!workIds || workIds.length === 0) return null;
+
+      const works = await resolveWorksByIds(workIds, context, searchHits);
+
+      // get series ids from works
+      const seriesPerWork = await Promise.all(
+        works.map((work) => getSeriesIdsFromWork(work, context))
+      );
+
+      // return seriesid if it appears more than 3 times
+      const selectedSeriesId = selectPrimarySeriesId(seriesPerWork);
+      if (!selectedSeriesId) {
+        return null;
+      }
+
+      const seriesById = await context.datasources
+        .getLoader("seriesById")
+        .load({ seriesId: selectedSeriesId, profile: context.profile });
+
+      if (!seriesById?.seriesTitle) {
+        return null;
+      }
+
+      return {
+        ...seriesById,
+        seriesId: selectedSeriesId,
+        traceId: createTraceId(),
+      };
+    },
     async errorMessage(parent, args, context) {
       const res = await context.datasources
         .getLoader("complexsearch")
@@ -250,7 +394,7 @@ export const resolvers = {
     },
     async facets(parent, args, context) {
       const res = await context.datasources
-        .getLoader("complexsearch")
+        .getLoader("complexFacetsWithLimit")
         .load(setPost(parent, context, args));
 
       const facetsWithTraceIds = await traceFacets({

@@ -1,7 +1,6 @@
 import config from "../config";
 const { url, ttl, prefix, teamLabel } = config.datasources.universe;
 
-const { url: jedUrl } = config.datasources.jed; // todo what to do here
 // These are hardcoded for now
 const allowedLanguages = new Set([
   "dansk",
@@ -10,16 +9,6 @@ const allowedLanguages = new Set([
   "flere sprog",
 ]);
 
-const WORKTYPES_QUERY = `query($id: String! ) {
-  work(id: $id) {
-    workTypes
-    mainLanguages {
-      display
-      isoCode
-    }
-  }
-}
-`;
 export async function load({ workId, trackingId = null, profile }, context) {
   const { agency, name } = profile;
   // trackingId can be added to the params by adding /${trackingId} to the end
@@ -46,25 +35,19 @@ export async function load({ workId, trackingId = null, profile }, context) {
                   return entry;
                 }
 
-                // Fetch workTypes via jed graphql for a single work
-                // This is way faster than fetching via the REST endpoint
-                const jedRes = await context?.fetch(`${jedUrl}/graphql`, {
-                  method: "POST",
-                  body: JSON.stringify({
-                    query: WORKTYPES_QUERY,
-                    variables: {
-                      profile: `${agency}-${name}`,
-                      id: entry.persistentWorkId,
-                    },
-                  }),
-                  allowedErrorStatusCodes: [404, 500],
-                });
-                if (!jedRes?.body?.data?.work) {
+                const jedRecord = await context
+                  .getLoader("jedRecord")
+                  .load({
+                    id: entry.persistentWorkId,
+                    profile,
+                  });
+                if (!jedRecord) {
                   return null;
                 }
                 return {
                   ...entry,
-                  ...jedRes?.body?.data?.work,
+                  workTypes: jedRecord.workTypes,
+                  mainLanguages: jedRecord.mainLanguages,
                 };
               })
             )

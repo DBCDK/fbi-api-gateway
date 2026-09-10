@@ -3,6 +3,7 @@
  */
 
 import { filterDuplicateAgencies, resolveManifestation } from "./utils";
+import { getGaleAgencyConfig } from "./galeAgencyConfig";
 
 /**
  *
@@ -20,13 +21,13 @@ import { filterDuplicateAgencies, resolveManifestation } from "./utils";
 async function infomedia(context) {
   const user = context?.user;
 
-  // get rights from idp
-  const idpRights = await context.datasources.getLoader("idp").load("");
+  // get allowed agencies from subscribersbyproductname/INFOMEDIA
+  const infomediaRights = await context.datasources.getLoader("idp").load("");
 
   // check if users loggedInAgency has infomedia access
   const loggedInAgencyId = user?.loggedInAgencyId;
 
-  if (loggedInAgencyId && idpRights[loggedInAgencyId]) {
+  if (loggedInAgencyId && infomediaRights[loggedInAgencyId]) {
     return loggedInAgencyId;
   }
 
@@ -38,7 +39,7 @@ async function infomedia(context) {
   const userInfoAccounts = filterDuplicateAgencies(user.agencies);
 
   const hasAccess = userInfoAccounts?.filter(
-    ({ agencyId }) => idpRights[agencyId]
+    ({ agencyId }) => infomediaRights[agencyId]
   );
 
   // check for infomedia access - if any of users agencies subscribes
@@ -80,13 +81,17 @@ export async function hasInfomediaAccess(context) {
  * @param context
  * @returns {Promise<*>}
  */
-export async function resolveAccess(manifestation, context) {
+export async function resolveAccess(
+  manifestation,
+  context,
+  { includeInfomediaAccess = true } = {}
+) {
   // We parse the access structure from JED, and convert it
   // to the union type structure.
   // At some point we may choose to follow the structure of JED closely,
   // but it has to be coordinated with stakeholders
 
-  const parent =
+  let parent =
     typeof manifestation === "object"
       ? manifestation
       : await resolveManifestation({ pid: manifestation }, context);
@@ -96,7 +101,7 @@ export async function resolveAccess(manifestation, context) {
   // use linkchecker to check status of a single accessUrl
   // linkchecker does NOT handle proxy urls, so we skip ebookcentral and ebsco urls
   const linkStatus = async (url) => {
-    if (url?.includes("ebookcentral") || url?.includes("ebscohost")) {
+    if (shouldProxyUrl(url)) {
       return "OK";
     }
 
@@ -111,23 +116,28 @@ export async function resolveAccess(manifestation, context) {
   parent?.access?.accessUrls?.forEach((entry) => {
     const { proxyUrl, loginRequired } = getProxyUrl(
       entry.url || "",
-      context?.user
+      context?.user,
+      {
+        collectionIdentifiers: parent?.collectionIdentifiers,
+      }
     );
 
     res.push({
       __typename: "AccessUrl",
       origin: parseOnlineUrlToOrigin(entry.url),
-      url: proxyUrl,
+      url: entry.url || "",
+      proxyUrl,
       loginRequired,
       note: entry.note,
       type: entry.type,
-      status: linkStatus(proxyUrl) || "OK",
+      status: linkStatus(proxyUrl || entry.url || "") || "OK",
+      urlText: entry.urlText,
     });
   });
 
   if (parent?.access?.dbcWebArchive) {
     const archives = await context.datasources
-      .getLoader("moreinfoWebarchive")
+      .getLoader("fbiArchive")
       .load(parent.pid);
 
     archives.forEach((archive) => {
@@ -154,16 +164,51 @@ export async function resolveAccess(manifestation, context) {
     });
   });
 
-  if (parent?.access?.infomediaService?.id) {
+  // While we transition from Infomedia to Retriever, we need to support both services.
+  // But we always prefer the Retriever article if it exists.
+  // Legacy queries expect the InfomediaService union type in the access list,
+  // so we need to return that type whenever the query contain InfomediaAccess as inline fragment (... on InfomediaService).
+  // This is accepted in the deprecation period. After that, we will only return RetrieverService.
+  const retrieverOrInfomediaId =
+    parent?.access?.retrieverService?.id ||
+    parent?.access?.infomediaService?.id;
+  const retrieverOrInfomediaLicense =
+    parent?.access?.retrieverService?.license ||
+    parent?.access?.infomediaService?.license;
+  const retrieverOrInfomediaType = includeInfomediaAccess
+    ? "InfomediaService"
+    : "RetrieverService";
+
+  if (retrieverOrInfomediaId) {
+    // Check if token has access to INFOMEDIAPRO
+    const hasInfomediaProRights = context?.user?.dbcidp?.some(
+      (entry) => entry.name === "INFOMEDIAPRO"
+    );
+
     if (
-      !["politiken", "jyllands-posten"].some((publication) =>
-        parent?.hostPublication?.title?.toLowerCase()?.includes(publication)
-      )
+      retrieverOrInfomediaLicense === "UNRESTRICTED" ||
+      (retrieverOrInfomediaLicense === "PROFESSIONALS" && hasInfomediaProRights)
     ) {
       res.push({
-        __typename: "InfomediaService",
-        id: parent.access.infomediaService.id,
+        __typename: retrieverOrInfomediaType,
+        id: retrieverOrInfomediaId,
       });
+    } else {
+      const hasPhysical = parent?.accessTypes?.some(
+        (t) => (t?.code ?? "").toUpperCase() === "PHYSICAL"
+      );
+
+      // And the item has physical access - then we set interLibraryLoanIsPossible to true
+      // This makes the article available for interlibrary loan
+      if (hasPhysical) {
+        parent = {
+          ...parent,
+          access: {
+            ...(parent.access ?? {}),
+            interLibraryLoanIsPossible: true,
+          },
+        };
+      }
     }
   }
 
@@ -199,8 +244,31 @@ export async function resolveAccess(manifestation, context) {
     });
   }
 
-  // Return array containing all types of access
-  return _sortOnlineAccess(res);
+  if (parent?.identifiers) {
+    const publizonIdentifier = parent?.identifiers?.find(
+      ({ type, value }) => type === "PUBLIZON" && value
+    );
+
+    const isbn = publizonIdentifier?.value;
+    const workId = parent?.workId;
+
+    if (isbn) {
+      res.push({
+        __typename: "Publizon",
+        isbn,
+        workId,
+      });
+    }
+  }
+
+  // Ensure client can access the returned union types
+  const denyTypes = context?.clientPermissions?.denyTypes || [];
+
+  // remove restricted __typenames
+  const filtered = res.filter((obj) => !denyTypes.includes(obj.__typename));
+
+  // Return array containing all types of allowed access
+  return _sortOnlineAccess(filtered);
 }
 
 /**
@@ -212,29 +280,106 @@ function parseForMunicipalityNumber(agencyId) {
   return agencyId?.substring(1, 4);
 }
 
+function shouldProxyUrl(url = "") {
+  const PROXY_URL_PATTERNS = ["ebookcentral", "ebscohost", "link.gale"];
+  return PROXY_URL_PATTERNS.some((pattern) => url.includes(pattern));
+}
+
+function isGaleUrl(url = "") {
+  return url.includes("link.gale");
+}
+
+function hasGaleCollectionAccess(agencyId, collectionIdentifiers = []) {
+  const accessTo = getGaleAgencyConfig(agencyId)?.accessTo || [];
+
+  if (collectionIdentifiers.length === 0 || accessTo.length === 0) {
+    return true;
+  }
+
+  return collectionIdentifiers.some((identifier) =>
+    accessTo.includes(identifier)
+  );
+}
+
+function replaceGaleProvidersLibraryId(
+  url,
+  agencyId,
+  collectionIdentifiers = []
+) {
+  if (!isGaleUrl(url)) {
+    return url;
+  }
+
+  if (!hasGaleCollectionAccess(agencyId, collectionIdentifiers)) {
+    return url;
+  }
+
+  const providersLibraryId = getGaleAgencyConfig(agencyId)?.providersLibraryId;
+
+  if (!providersLibraryId) {
+    return url;
+  }
+
+  return url.replace("[PROVIDERSLIBRARYID]", providersLibraryId);
+}
+
+function shouldUseProxy(url, agencyId, collectionIdentifiers = []) {
+  if (!isGaleUrl(url)) {
+    return shouldProxyUrl(url);
+  }
+
+  const providersLibraryId = getGaleAgencyConfig(agencyId)?.providersLibraryId;
+
+  return (
+    shouldProxyUrl(url) &&
+    !!providersLibraryId &&
+    hasGaleCollectionAccess(agencyId, collectionIdentifiers)
+  );
+}
+
 /**
  * This one is for ebook.plus - we need to go via a proxy url (if user is logged in)
  * @param url
  * @param user
+ * @param options
  * @returns {*}
  */
-export function getProxyUrl(url, user) {
+export function getProxyUrl(url, user, options = {}) {
+  const { collectionIdentifiers = [] } = options;
   const municipality =
     user?.municipality ||
     parseForMunicipalityNumber(user?.municipalityAgencyId);
+  const agencyId = user?.municipalityAgencyId || user?.loggedInAgencyId;
+  const requiresLogin = shouldProxyUrl(url);
 
-  // check if we should proxy this url - for now it is ebookcentral and ebscohost
-  const proxyMe =
-    url.indexOf("ebookcentral") !== -1 || url.indexOf("ebscohost") !== -1;
+  // check if we should proxy this url - for now it is ebookcentral, ebscohost and gale
+  const proxyMe = shouldUseProxy(url, agencyId, collectionIdentifiers);
+  const proxiedTargetUrl = isGaleUrl(url)
+    ? replaceGaleProvidersLibraryId(url, agencyId, collectionIdentifiers)
+    : url;
+
   if (proxyMe) {
     // check if user is logged in
     if (user?.userId) {
-      const realUrl = `https://bib${municipality}.bibbaser.dk/login?url=${url}`;
-      return { proxyUrl: realUrl, loginRequired: proxyMe };
+      const realUrl = `https://bib${municipality}.bibbaser.dk/login?qurl=${encodeURIComponent(
+        proxiedTargetUrl
+      )}`;
+      return {
+        proxyUrl: realUrl,
+        loginRequired: requiresLogin,
+      };
     }
+
+    return {
+      proxyUrl: null,
+      loginRequired: requiresLogin,
+    };
   }
 
-  return { proxyUrl: url, loginRequired: proxyMe };
+  return {
+    proxyUrl: null,
+    loginRequired: requiresLogin,
+  };
 }
 
 /**
@@ -276,7 +421,7 @@ function checkInterLibraryLoan(parent, context) {
 export function parseOnlineUrlToOrigin(url) {
   try {
     const parsedUrl = new URL(url);
-    if (parsedUrl["host"] === "moreinfo.addi.dk") {
+    if (parsedUrl["host"] === "fbi-arkiv.dbc.dk") {
       return "DBC Webarkiv";
     } else {
       return (parsedUrl["host"] && parsedUrl["host"]) || "";

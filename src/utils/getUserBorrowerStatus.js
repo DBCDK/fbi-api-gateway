@@ -134,23 +134,10 @@ async function userBorrowerStatus(
     }
   }
 
-  // If user is NOT Authenticated! We check the provided userIds
-  const anonResult = await anonUserBorrowerStatus(
-    { agencyId, userIds },
-    context
-  );
-
-  if (anonResult?.statusCode) {
-    return {
-      ...anonResult,
-      summary,
-    };
-  }
-
-  // No result was found
+  // No result was found or token was anonymous
   return {
-    status: false,
-    statusCode: "UNKNOWN_USER",
+    status: true,
+    statusCode: "OK",
     summary,
   };
 }
@@ -223,69 +210,6 @@ async function authUserBorrowerStatus({ agencyId, userPincode }, context) {
     statusCode: result.statusCode,
     userId: _userId,
     summary,
-  };
-}
-
-/**
- * Handle anonymous token users - where credentials is given as query arguments
- *
- * @param {string} props.agencyId
- * @param {object} props.userIds
- * @param {object} context
- * @returns {object}
- */
-async function anonUserBorrowerStatus({ agencyId, userIds }, context) {
-  // if no userIds was provided, no check can be performed
-  if (!userIds) {
-    return {
-      status: false,
-      statusCode: "UNKNOWN_USER",
-    };
-  }
-
-  // Check all the provided userIds
-  const statusMap = await Promise.all(
-    Object.entries(userIds).map(async ([k, v]) => ({
-      ...(await checkUserBorrowerStatus({ agencyId, userId: v }, context)),
-      type: k,
-    }))
-  );
-
-  // Evaluate status'
-
-  // Ensure no checks returned blocked
-  const hasBlocked = statusMap.find((obj) => obj.borchk?.blocked);
-
-  // user is blocked by agency
-  if (hasBlocked) {
-    return {
-      status: false,
-      statusCode: hasBlocked.statusCode,
-      userId: hasBlocked.userId,
-    };
-  }
-
-  // Find match (with status 'true') according to prioritized Type array
-  let match;
-  USER_ID_TYPES.forEach((type) => {
-    const res = statusMap.find((s) => s.type === type && s.status);
-    if (res && !match) {
-      match = res;
-    }
-  });
-
-  // Return match
-  if (match) {
-    return {
-      status: match.status,
-      statusCode: match.statusCode,
-      userId: match.userId,
-    };
-  }
-
-  return {
-    status: false,
-    statusCode: "UNKNOWN_USER",
   };
 }
 

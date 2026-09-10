@@ -4,5 +4,5 @@
 
 .wrapper {
   position: relative;
-  height: calc(100vh - var(--pt9));
+  height: calc(100dvh - (60px + var(--pt4)));
 }

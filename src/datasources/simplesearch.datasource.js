@@ -45,8 +45,8 @@ export async function load(
 
   // Select range between offset and limit
   return {
-    result: response.result,
-    hitcount,
+    result: response?.result || [],
+    hitcount: hitcount || 0,
   };
 }
 

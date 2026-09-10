@@ -7,12 +7,19 @@
   margin: 0;
 }
 
+.text0 {
+  font-size: 12px;
+}
+
 .text1 {
   font-size: 14px;
 }
 
 .text2 {
   font-size: 16px;
+}
+.text2 strong {
+  font-family: var(--font-mono-semibold);
 }
 
 .text3 {

@@ -179,12 +179,9 @@ export const resolvers = {
           workId: parent?.workId,
           manifestation,
           hostIssn,
-          parentIssue: await resolvePeriodicalIssue(
-            hostIssn,
-            issue,
-            {},
-            context
-          ),
+          parentIssue: issue
+            ? await resolvePeriodicalIssue(hostIssn, issue, {}, context)
+            : null,
         };
       }
 

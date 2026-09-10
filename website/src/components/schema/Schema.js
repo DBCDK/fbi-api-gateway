@@ -4,15 +4,15 @@ import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import { Col, Row } from "react-bootstrap";
 
-import useStorage from "@/hooks/useStorage";
 import useSchema from "@/hooks/useSchema";
+import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
 import Schema from "@/components/base/graphql/schema/Schema";
 import Link from "@/components/base/link";
 
 import styles from "./Schema.module.css";
 
 export default function Wrap() {
-  const { selectedToken } = useStorage();
+  const { selectedCredential: selectedToken } = useSelectedCredential();
   const { schemaStr } = useSchema(selectedToken);
 
   return (

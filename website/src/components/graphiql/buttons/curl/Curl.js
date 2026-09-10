@@ -4,7 +4,7 @@ import Overlay from "@/components/base/overlay";
 import Input from "@/components/base/input";
 import Button from "@/components/base/button";
 
-import useStorage from "@/hooks/useStorage";
+import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 import useParseCurl from "@/hooks/useParseCurl";
 import useQuery from "@/hooks/useQuery";
 
@@ -17,7 +17,7 @@ import styles from "./Curl.module.css";
 import { debounce } from "lodash";
 
 export default function CurlButton({ className }) {
-  const { setSelectedToken } = useStorage();
+  const { selectCredential: setSelectedToken } = useCredentialMutations();
   const { params, trimmedParams, updateInitialParams } = useQuery();
 
   const { run = null } = useExecutionContext({
@@ -60,11 +60,11 @@ export default function CurlButton({ className }) {
     if (submitting) {
       // Run if no curl parse errors found
       if (!hasError) {
-        // submitted curl params + profile and token
-        const { data: params, token, profile } = json;
+        // submitted curl params + agency/profile and token
+        const { data: params, token, agency, profile } = json;
 
         updateInitialParams({ ...params });
-        token && profile && setSelectedToken(token, profile);
+        token && profile && setSelectedToken(token, profile, agency);
 
         // Run if no empty query
         if (!hasEmptyQuery) {

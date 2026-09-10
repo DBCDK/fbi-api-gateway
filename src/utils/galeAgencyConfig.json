@@ -1,0 +1,297 @@
+{
+  "710100": {
+    "providersLibraryId": "45kobenh",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "714700": {
+    "providersLibraryId": "fkb",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "715100": {
+    "providersLibraryId": "ballerup",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres"
+    ]
+  },
+  "715700": {
+    "providersLibraryId": "45gentko",
+    "accessTo": ["150023-stucon"]
+  },
+  "715900": {
+    "providersLibraryId": "gladsaxe",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "716300": {
+    "providersLibraryId": "herlev",
+    "accessTo": ["150023-sicref"]
+  },
+  "716700": {
+    "providersLibraryId": "hvidovre",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "716900": {
+    "providersLibraryId": "taastrup",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "717300": {
+    "providersLibraryId": "lyngby",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "717500": {
+    "providersLibraryId": "rodovre",
+    "accessTo": ["150023-stucon"]
+  },
+  "718500": {
+    "providersLibraryId": "taarnby",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "719000": {
+    "providersLibraryId": "vaerlose",
+    "accessTo": ["150023-sicref"]
+  },
+  "720100": {
+    "providersLibraryId": "allerodb",
+    "accessTo": []
+  },
+  "721700": {
+    "providersLibraryId": "helsingor",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "723000": {
+    "providersLibraryId": "sollerod",
+    "accessTo": []
+  },
+  "724000": {
+    "providersLibraryId": "egedal",
+    "accessTo": ["150023-sicref"]
+  },
+  "725900": {
+    "providersLibraryId": "koge",
+    "accessTo": ["150023-sicref"]
+  },
+  "726900": {
+    "providersLibraryId": "solrod",
+    "accessTo": ["150023-stucon"]
+  },
+  "732000": {
+    "providersLibraryId": "haslev",
+    "accessTo": []
+  },
+  "732600": {
+    "providersLibraryId": "kalundborg",
+    "accessTo": ["150023-sicref", "150023-litres"]
+  },
+  "737600": {
+    "providersLibraryId": "45nykob",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "739000": {
+    "providersLibraryId": "vording",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "741000": {
+    "providersLibraryId": "middelfartclc",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "742000": {
+    "providersLibraryId": "assens",
+    "accessTo": ["150023-sicref"]
+  },
+  "743000": {
+    "providersLibraryId": "faaborg",
+    "accessTo": ["150023-sicref"]
+  },
+  "746100": {
+    "providersLibraryId": "45odense",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "747900": {
+    "providersLibraryId": "svendborg",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "753000": {
+    "providersLibraryId": "grindsted",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "754000": {
+    "providersLibraryId": "sonder",
+    "accessTo": ["150023-sicref"]
+  },
+  "755000": {
+    "providersLibraryId": "toender",
+    "accessTo": ["150023-sicref"]
+  },
+  "756100": {
+    "providersLibraryId": "45esbjer",
+    "accessTo": ["150023-sicref", "150023-litres"]
+  },
+  "757300": {
+    "providersLibraryId": "vardeclc",
+    "accessTo": ["150023-litres"]
+  },
+  "758000": {
+    "providersLibraryId": "abenra",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "760700": {
+    "providersLibraryId": "fredericia",
+    "accessTo": ["150023-sicref"]
+  },
+  "762100": {
+    "providersLibraryId": "kolding",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "763000": {
+    "providersLibraryId": "vejle",
+    "accessTo": ["150023-stucon"]
+  },
+  "765700": {
+    "providersLibraryId": "45hernin",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "766100": {
+    "providersLibraryId": "holstebro",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "771000": {
+    "providersLibraryId": "favrskov",
+    "accessTo": ["150023-sicref"]
+  },
+  "773000": {
+    "providersLibraryId": "randers",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "774000": {
+    "providersLibraryId": "silkeborg",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "775100": {
+    "providersLibraryId": "aarkomm",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "775600": {
+    "providersLibraryId": "ikast",
+    "accessTo": []
+  },
+  "778700": {
+    "providersLibraryId": "",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres",
+      "150023-gsex"
+    ]
+  },
+  "779100": {
+    "providersLibraryId": "viborg",
+    "accessTo": ["150023-stucon", "150023-sicref"]
+  },
+  "781000": {
+    "providersLibraryId": "bronderslev",
+    "accessTo": ["150023-stucon"]
+  },
+  "781300": {
+    "providersLibraryId": "frederikshavn",
+    "accessTo": []
+  },
+  "785100": {
+    "providersLibraryId": "45aalborgland",
+    "accessTo": [
+      "150023-glicon",
+      "150023-biocon",
+      "150023-stucon",
+      "150023-sicref",
+      "150023-litres"
+    ]
+  }
+}

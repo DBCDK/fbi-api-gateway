@@ -1,0 +1,55 @@
+.steps {
+  position: absolute;
+  top: calc((var(--pt2) + var(--pt05)) * -1);
+  left: 50%;
+  width: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--pt8);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, var(--pt1));
+  transition:
+    opacity 0.2s ease,
+    transform 0.24s ease;
+}
+
+.stepsVisible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pt05);
+  opacity: 0.88;
+  white-space: nowrap;
+  color: var(--text-light);
+}
+
+.stepIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pt2);
+}
+
+@media screen and (max-width: 576px) {
+  .steps {
+    width: 320px;
+    gap: var(--pt2);
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steps {
+    transition: none;
+  }
+}
+
+:global(body.dark) .step {
+  color: var(--text-dark);
+}

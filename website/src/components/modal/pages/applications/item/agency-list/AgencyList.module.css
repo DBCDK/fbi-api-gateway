@@ -1,0 +1,57 @@
+.agencies {
+  margin-top: var(--pt1);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pt1);
+  max-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: var(--pt05);
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-light) transparent;
+}
+
+.listItem {
+  background-color: var(--divider);
+  padding: var(--pt05);
+  white-space: nowrap;
+}
+
+.list::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: var(--text-light);
+  border-radius: 999px;
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dark);
+}
+
+:global(body.dark) .list {
+  scrollbar-color: var(--divider-dark) transparent;
+}
+
+:global(body.dark) .listItem {
+  background-color: var(--dark-light);
+  color: var(--text-dark);
+}
+
+:global(body.dark) .list::-webkit-scrollbar-thumb {
+  background: var(--divider-dark);
+}
+
+:global(body.dark) .list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-light);
+}

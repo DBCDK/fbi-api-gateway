@@ -81,26 +81,94 @@ export function filterAccountsByProps(accounts = [], props = {}) {
 }
 
 /**
- *
- * Function to select a specific agency from a userinfo agencies list
+ * Filter agencies by the given properties.
  *
  * @param {Array} agencies
- * @param {object} props - Filter agencies by given props (optional)
- * @param {string} props.id (optional)
- * @param {string} props.agency (optional)
- * @param {string} props.type - (optional)
+ * @param {object} props
+ * @param {string} props.id
+ * @param {string} props.agency
+ * @param {string} props.type
+ * @param {boolean} props.useLocalFallbackForUnrepresentedAgencies
+ * @param {boolean} props.limitToOneAccountPerAgency
  *
  * @returns {Array}
  */
-export function filterAgenciesByProps(agencies = [], props = {}) {
-  if (props.agency) {
-    agencies = agencies?.filter(({ agencyId }) => agencyId === props.agency);
+export function filterAgenciesByProps(
+  agencies = [],
+  {
+    id,
+    agency,
+    type,
+    useLocalFallbackForUnrepresentedAgencies = false,
+    limitToOneAccountPerAgency = false,
+  } = {}
+) {
+  if (agency) {
+    agencies = agencies.filter(({ agencyId }) => agencyId === agency);
   }
-  if (props.id) {
-    agencies = agencies?.filter(({ userId }) => userId === props.id);
+
+  if (id) {
+    agencies = agencies.filter(({ userId }) => userId === id);
   }
-  if (props.type) {
-    agencies = agencies?.filter(({ userIdType }) => userIdType === props.type);
+
+  if (type) {
+    const agenciesBeforeTypeFilter = agencies;
+
+    agencies = agencies.filter(({ userIdType }) => userIdType === type);
+
+    if (useLocalFallbackForUnrepresentedAgencies) {
+      agencies = addLocalFallbackForUnrepresentedAgencies(
+        agencies,
+        agenciesBeforeTypeFilter
+      );
+    }
   }
+
+  if (limitToOneAccountPerAgency) {
+    const representedAgencyIds = new Set();
+
+    agencies = agencies.filter(({ agencyId }) => {
+      if (representedAgencyIds.has(agencyId)) {
+        return false;
+      }
+
+      representedAgencyIds.add(agencyId);
+      return true;
+    });
+  }
+
   return agencies;
+}
+
+/**
+ * Add one LOCAL account for each agency that is not represented
+ * in the filtered result.
+ *
+ * @param {Array} filteredAgencies
+ * @param {Array} sourceAgencies
+ *
+ * @returns {Array}
+ */
+function addLocalFallbackForUnrepresentedAgencies(
+  filteredAgencies = [],
+  sourceAgencies = []
+) {
+  const representedAgencyIds = new Set(
+    filteredAgencies.map(({ agencyId }) => agencyId)
+  );
+
+  const localFallbacks = sourceAgencies.filter(({ agencyId, userIdType }) => {
+    if (userIdType !== "LOCAL") {
+      return false;
+    }
+
+    if (representedAgencyIds.has(agencyId)) {
+      return false;
+    }
+
+    representedAgencyIds.add(agencyId);
+    return true;
+  });
+
+  return [...filteredAgencies, ...localFallbacks];
 }

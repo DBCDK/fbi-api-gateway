@@ -107,7 +107,6 @@ export default function useInsights(auth, options = {}) {
     const variables = { clientId: cid || null, days: d };
 
     if (process.env.NODE_ENV !== "production") {
-      // eslint-disable-next-line no-console
       console.info("[useInsights] fetch", {
         url: u,
         clientId: cid || null,

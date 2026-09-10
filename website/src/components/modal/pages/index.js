@@ -1,7 +1,7 @@
 import Menu from "./menu";
-import History from "./history";
+import Applications from "./applications";
 
 export default {
   Menu,
-  History,
+  Applications,
 };

@@ -1,4 +1,5 @@
 import { log } from "dbc-node-logger";
+import { getIsIdpSystemUser } from "../../commonUtils";
 
 /**
  * Middleware for fetching user information (for authenticated tokens)
@@ -11,8 +12,11 @@ export async function fetchUserInfo(req, res, next) {
   // isUnknownSmaugUser is currently a nemlogin user with no associated agencies
   const isUnknownSmaugUser = !user?.agency && !user?.pin && !user?.uniqueId;
 
+  const isIdpSystemUser = getIsIdpSystemUser({ smaug: req?.smaug, user });
+
   // skip userinfo if token is anonymous
-  if (!isAuthenticated && !isUnknownSmaugUser) {
+  // and if it doesn't belong to an IDP system user
+  if (!isAuthenticated && !isUnknownSmaugUser && !isIdpSystemUser) {
     return next();
   }
 

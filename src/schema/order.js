@@ -397,7 +397,7 @@ export async function getAvailablePids(pids, context) {
 
   // Fill result and removed arrays based on availability
   availability.forEach((item) => {
-    if (item.availability.librariesLend > 0) {
+    if ((item?.availability?.librariesLend || 0) > 0) {
       available.push(item.pid);
     } else {
       removed.push(item.pid);

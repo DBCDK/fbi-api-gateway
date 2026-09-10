@@ -1,0 +1,35 @@
+# Retriever
+
+Retriever is a media monitoring service that provides access to articles from Danish newspapers
+and other news sources, including full text and publication metadata.
+
+🔒 Retriever requires a user authenticated token. Access is granted when the municipality
+in which the user resides is subscribed to Retriever.
+
+**Transition period:** While Infomedia is being replaced by Retriever, article IDs are interchangeable. An Infomedia ID works with `retriever`, and a Retriever document ID works with `infomedia`. New integrations should use `retriever`; `infomedia` will be removed once all clients have migrated.
+
+Using a Retriever document ID, one may look up article content from the Retriever service.
+Check out how to obtain IDs in the [Reviews](#h2-reviews) section, and [Manifestation Access](#h2-manifestation-access)
+section.
+
+<InlineGraphiQL
+  query={`query Example_Retriever ($id: String!) {
+    retriever(id: $id) {
+      error
+      article {
+        id
+        headline
+        subHeadline
+        byLine
+        publishingDate
+        sourceName
+        fullText
+        thumbnail
+      }
+    }
+  }
+`}
+  variables={{
+    id: "03500720190206USxcSVBSMm7TFltHiQDFw",
+  }}
+/>

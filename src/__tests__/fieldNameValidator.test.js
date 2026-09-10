@@ -20,7 +20,7 @@ function ObjectTypeDefinition(name, fields = []) {
         value: obj.name,
       },
       arguments: [],
-      directives: [obj.isDeprecated && DEPRECATED],
+      directives: [obj.isDeprecated && createDeprecatedDirective(obj.reason)],
     })),
   };
 }
@@ -89,26 +89,32 @@ function EnumTypeDefinition(name, fields = []) {
   };
 }
 
-const DEPRECATED = {
-  kind: "Directive",
-  name: {
-    kind: "Name",
-    value: "deprecated",
-  },
-  arguments: [
-    {
-      kind: "Argument",
-      name: {
-        kind: "Name",
-        value: "reason",
-      },
-      value: {
-        kind: "StringValue",
-        value: "some valuable reason... expires: 31/12-2024",
-      },
+function createDeprecatedDirective(
+  reason = "some valuable reason... expires: 31/12-2024"
+) {
+  return {
+    kind: "Directive",
+    name: {
+      kind: "Name",
+      value: "deprecated",
     },
-  ],
-};
+    arguments: [
+      {
+        kind: "Argument",
+        name: {
+          kind: "Name",
+          value: "reason",
+        },
+        value: {
+          kind: "StringValue",
+          value: reason,
+        },
+      },
+    ],
+  };
+}
+
+const DEPRECATED = createDeprecatedDirective();
 
 describe("fieldNameValidator error message testing", () => {
   test("sholud throw 'PascalCase error'", async () => {
@@ -180,6 +186,65 @@ describe("fieldNameValidator error message testing", () => {
     expect(test).toThrow(Error);
     expect(test).toThrow(
       "Field 'not_valid_enum' in type 'LowerCasedValuesEnum' (EnumValueDefinition) is an enum and should be written all UPPERCASE"
+    );
+  });
+
+  test("sholud validate draft fields against naming conventions", async () => {
+    const SCHEMA = {
+      typeDefs: {
+        definitions: [
+          ObjectTypeDefinition("SomeDraftType", [
+            { name: "someFieldNAME", isDeprecated: true, reason: "@draft" },
+            { name: "someFieldName", isDeprecated: false },
+          ]),
+        ],
+      },
+    };
+
+    const test = () => fieldNameValidator(SCHEMA, "THROW");
+
+    expect(test).toThrow(Error);
+    expect(test).toThrow(
+      "Field name 'someFieldName' in 'SomeDraftType' is already used"
+    );
+  });
+
+  test("sholud allow draft deprecations without expires", async () => {
+    const SCHEMA = {
+      typeDefs: {
+        definitions: [
+          ObjectTypeDefinition("SomeDraftOnlyType", [
+            { name: "someFieldName", isDeprecated: true, reason: "@draft" },
+          ]),
+        ],
+      },
+    };
+
+    const test = () => fieldNameValidator(SCHEMA, "THROW");
+
+    expect(test).not.toThrow(Error);
+  });
+
+  test("sholud still require expires for true deprecations", async () => {
+    const SCHEMA = {
+      typeDefs: {
+        definitions: [
+          ObjectTypeDefinition("SomeDeprecatedType", [
+            {
+              name: "someFieldName",
+              isDeprecated: true,
+              reason: "use another field",
+            },
+          ]),
+        ],
+      },
+    };
+
+    const test = () => fieldNameValidator(SCHEMA, "THROW");
+
+    expect(test).toThrow(Error);
+    expect(test).toThrow(
+      "Deprecated field name 'someFieldName' in 'SomeDeprecatedType' has wrong deprecation format."
     );
   });
 
