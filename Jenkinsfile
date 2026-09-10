@@ -183,7 +183,7 @@ pipeline {
         }
 
 
-       stage("Update 'future'  version number") {
+       stage("Update 'integration'  version number") {
 			agent {
 				docker {
 					label 'devel11'
@@ -193,12 +193,12 @@ pipeline {
 			}
 
 			when {
-				branch 'future'
+				branch 'prod'
 			}
 			steps {
 				dir("deploy") {
 					sh """#!/usr/bin/env bash
-						set-new-version configuration.yaml ${env.GITLAB_PRIVATE_TOKEN} ${env.GITLAB_ID} ${env.DOCKER_TAG} -b future
+						set-new-version configuration.yaml ${env.GITLAB_PRIVATE_TOKEN} ${env.GITLAB_ID} ${env.DOCKER_TAG} -b integration
 					"""
 				}
 			}
