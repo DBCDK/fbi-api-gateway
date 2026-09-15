@@ -356,7 +356,7 @@ type Query {
     sortPickupAllowed: Boolean
   ): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
-  infomedia(id: String!): InfomediaResponse!
+  infomedia(id: String!): InfomediaResponse! @deprecated(reason: "Use 'retriever' instead expires: 18/12-2026")
   session: Session
   howru: String
   localizations(pids: [String!]!): Localizations
@@ -6469,7 +6469,7 @@ type Query {
 
   """Get recommendations"""
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-  infomedia(id: String!): InfomediaResponse!
+  infomedia(id: String!): InfomediaResponse! @deprecated(reason: "Use 'retriever' instead expires: 18/12-2026")
   refWorks(pids: [String!]!): String!
 
   """
