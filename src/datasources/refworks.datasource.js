@@ -1,48 +1,29 @@
 import config from "../config";
 
-const { url, ttl, teamLabel } = config.datasources.openformat;
-
-async function postObject(pids, uuid) {
-  const repositoryIds = pids.map((pid) => ({
-    repositoryId: pid,
-  }));
-
-  return {
-    formats: [
-      {
-        name: "refWorks",
-        mediaType: "text/plain",
-      },
-    ],
-    objects: repositoryIds,
-    trackingId: "some-uuid",
-  };
-}
+const { url, ttl, prefix, teamLabel } =
+  config.datasources.referencePresentation;
 
 export function parseResponse(response) {
-  const refWorksArray = response?.body?.objects?.map(
-    (obj) => obj?.refWorks?.[0]?.formatted
-  );
-
-  return refWorksArray.join("\n");
+  return response?.body?.content?.["reference-data"] || "";
 }
 
-export async function load({ pids }, context) {
-  const params = await postObject(pids);
-  const response = await context.fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(params),
-  });
+export async function load({ pid }, context) {
+  const response = await context.fetch(
+    `${url}/presentations/refworks/${encodeURIComponent(pid)}`,
+    {
+      headers: {
+        accept: "application/json",
+      },
+      allowedErrorStatusCodes: [404],
+    }
+  );
 
-  return parseResponse(response, context?.trackingId);
+  return parseResponse(response);
 }
 
 export const options = {
   redis: {
-    prefix: "refworks-1",
+    prefix: prefix + "-refworks",
     ttl,
   },
 };
