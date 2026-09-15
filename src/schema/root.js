@@ -232,10 +232,14 @@ export const resolvers = {
       return risRecords.filter(Boolean).join("\n");
     },
     async refWorks(parent, args, context, info) {
-      const ref = await context.datasources
-        .getLoader("refworks")
-        .load({ pids: args.pids });
-      return ref;
+      const refworksRecords = await Promise.all(
+        args.pids.map((pid) =>
+          context.datasources.getLoader("refworks").load({ pid })
+        )
+      );
+
+      return refworksRecords.filter(Boolean).join("\n");
+
     },
     async localizations(parent, args, context, info) {
       return await resolveLocalizations(args, context);
