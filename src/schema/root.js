@@ -125,7 +125,7 @@ type Query {
   ): BranchResult! @complexity(value: 5, multipliers: ["limit"])
 
   deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
-  infomedia(id: String!): InfomediaResponse!
+  infomedia(id: String!): InfomediaResponse! @deprecated(reason: "Use 'retriever' instead expires: 18/12-2026")
   session: Session
   howru:String
   localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
