@@ -28,6 +28,7 @@ import { dataHubMiddleware } from "./middlewares/dataHubMiddleware";
 import { validateRateLimit } from "./middlewares/validateRateLimit";
 import estimatedCpuTimeMs from "./middlewares/estimatedCpuTime";
 import { resolveClientPermissions } from "./middlewares/resolveClientPermissions";
+import { traceqlUsageMiddleware } from "./middlewares/traceqlUsage";
 
 // this is a quick-fix for macOS users, who get an EPIPE error when starting fbi-api
 process.stdout.on("error", function (err) {
@@ -97,6 +98,7 @@ prometheusServer.on("error", (error) => {
       dataCollectMiddleware,
       dataHubMiddleware,
       initDataloaders,
+      traceqlUsageMiddleware,
       validateToken,
       validateRateLimit,
       validateAgencyId,
@@ -116,6 +118,7 @@ prometheusServer.on("error", (error) => {
       dataCollectMiddleware,
       dataHubMiddleware,
       initDataloaders,
+      traceqlUsageMiddleware,
       validateToken,
       validateRateLimit,
       validateAgencyId,
@@ -189,6 +192,12 @@ prometheusServer.on("error", (error) => {
   }
   server = app.listen(SOCKET_PATH, () => {
     log.info(`Running GraphQL API at http://localhost:${config.port}/graphql`);
+    log.info("TraceQL integration configured", {
+      url: config.datasources.traceql.url,
+      usageEnabled: config.datasources.traceql.enabled,
+      insightsEnabled: config.datasources.traceql.insightsEnabled,
+      eventLoggingEnabled: config.datasources.traceql.logEvents,
+    });
   });
   server.on("connection", (socket) => {
     socket.socketInit = performance.now();

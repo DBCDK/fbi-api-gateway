@@ -1,7 +1,7 @@
 //
 import { createHandler } from "graphql-http/lib/use/express";
 //
-import { GraphQLError } from "graphql";
+import { getOperationAST, GraphQLError } from "graphql";
 import {
   validateQueryComplexity,
   getQueryComplexity,
@@ -12,6 +12,7 @@ import hasExternalRequest from "../utils/externalRequest";
 
 import isFastLaneQuery, { getFastLane } from "../middlewares/fastLane";
 import { log } from "dbc-node-logger";
+import { queueTraceqlUsage } from "./traceqlUsage";
 
 /**
  * Resolves the GraphQL query
@@ -22,7 +23,7 @@ export async function resolveGraphQLQuery(req, res, next) {
     hasAccessToken: !!req.accessToken,
   });
 
-  const { query, variables } = req.body;
+  const { query, variables, operationName } = req.body;
 
   // smaug client custom complexity limit
   const maxQueryComplexity = req?.smaug?.gateway?.maxQueryComplexity;
@@ -58,6 +59,7 @@ export async function resolveGraphQLQuery(req, res, next) {
     req.fastLaneKey = JSON.stringify({
       query,
       variables,
+      operationName,
       profile: req.profile,
     });
     const fastLaneRes = await getFastLane(
@@ -66,6 +68,18 @@ export async function resolveGraphQLQuery(req, res, next) {
     );
     if (fastLaneRes) {
       req.fastLaneRes = true;
+      const operation = getOperationAST(req.queryDocument, operationName);
+      if (operation) {
+        queueTraceqlUsage(
+          req,
+          {
+            schema,
+            document: req.queryDocument,
+            operationName,
+          },
+          { data: true }
+        );
+      }
       return res.send(fastLaneRes);
     }
   }
@@ -78,6 +92,7 @@ export async function resolveGraphQLQuery(req, res, next) {
     context: req,
     onOperation: async (_, arg, graphQLRes) => {
       const now = performance.now();
+      queueTraceqlUsage(req, arg, graphQLRes);
       if (Array.isArray(req.onOperationComplete)) {
         for (let i = 0; i < req.onOperationComplete.length; i++) {
           const func = req.onOperationComplete[i];

@@ -379,6 +379,18 @@ export default {
       url: process.env.SMAUG_URL || "https://auth-config.dbc.dk",
       teamLabel: "febib",
     },
+    authAdmin: {
+      url: process.env.AUTH_ADMIN_URL || "https://auth-admin.dbc.dk",
+      user: process.env.AUTH_ADMIN_USER,
+      password: process.env.AUTH_ADMIN_PASSWORD,
+      timeoutMs: process.env.AUTH_ADMIN_TIMEOUT_MS
+        ? parseInt(process.env.AUTH_ADMIN_TIMEOUT_MS, 10)
+        : 2000,
+      cacheTtlSeconds: process.env.AUTH_ADMIN_CACHE_TTL_SECONDS
+        ? parseInt(process.env.AUTH_ADMIN_CACHE_TTL_SECONDS, 10)
+        : 60 * 60,
+      teamLabel: "febib",
+    },
     culr: {
       url:
         process.env.CULR_URL ||
@@ -424,6 +436,25 @@ export default {
       password: process.env.ELK_PASSWORD,
       prefix: process.env.ELK_PREFIX || "elk-1",
       teamLabel: "platform", //todo: double check if correct
+    },
+    traceql: {
+      url: process.env.TRACEQL_URL || "http://traceql:3003",
+      enabled: isTruthy(process.env.TRACEQL_ENABLED),
+      insightsEnabled: isTruthy(process.env.TRACEQL_INSIGHTS_ENABLED),
+      timeoutMs: process.env.TRACEQL_TIMEOUT_MS
+        ? parseInt(process.env.TRACEQL_TIMEOUT_MS, 10)
+        : 1000,
+      queueMaxSize: process.env.TRACEQL_QUEUE_MAX_SIZE
+        ? parseInt(process.env.TRACEQL_QUEUE_MAX_SIZE, 10)
+        : 1000,
+      concurrency: process.env.TRACEQL_CONCURRENCY
+        ? parseInt(process.env.TRACEQL_CONCURRENCY, 10)
+        : 4,
+      maxRetries: process.env.TRACEQL_MAX_RETRIES
+        ? parseInt(process.env.TRACEQL_MAX_RETRIES, 10)
+        : 2,
+      logEvents: isTruthy(process.env.TRACEQL_LOG_EVENTS),
+      teamLabel: "fbiscrum",
     },
     infomedia: {
       url:

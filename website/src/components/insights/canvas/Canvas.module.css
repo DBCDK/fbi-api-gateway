@@ -15,6 +15,13 @@
   border-bottom: 1px solid var(--divider, #e5e7eb);
 }
 
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: var(--pt2);
+  min-width: 0;
+}
+
 .canvasTitle {
   margin: 0;
   display: inline-flex;
@@ -29,6 +36,10 @@
   );
   font-size: 14px;
   line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .canvasCode {
@@ -60,6 +71,22 @@
 }
 .canvasClose:hover {
   opacity: 1;
+  background: rgba(127, 127, 127, 0.08);
+}
+
+.backButton {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  color: inherit;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+
+.backButton:hover {
   background: rgba(127, 127, 127, 0.08);
 }
 
@@ -126,6 +153,63 @@
 .result {
   transition: background-color 120ms ease;
 }
+
+.clientSelect {
+  appearance: none;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  gap: var(--pt2);
+  justify-content: space-between;
+  margin: calc(var(--cell-pad-y) * -1) calc(var(--cell-pad-x) * -1);
+  padding: var(--cell-pad-y) var(--cell-pad-x);
+  text-align: left;
+  width: calc(100% + var(--cell-pad-x) * 2);
+}
+
+.clientSelect:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -3px;
+}
+
+.chevron {
+  color: var(--text-muted, #8a8f98);
+  font-size: 20px;
+}
+
+.clientName {
+  color: var(--text-dark);
+  display: block;
+  font-weight: 600;
+}
+
+.clientId {
+  padding: 0;
+  color: var(--text-light);
+  font-size: 12px;
+}
+
+.clientMeta {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted, #8a8f98);
+  line-height: 1.35;
+}
+
+.requestCount {
+  display: block;
+  white-space: nowrap;
+}
+
+.percentage {
+  color: var(--text-muted, #8a8f98);
+  display: block;
+  font-weight: 400;
+  white-space: nowrap;
+}
 .table :global(tbody tr:hover > td),
 .table :global(tbody tr:hover > th) {
   background-color: var(--row-hover, rgba(127, 127, 127, 0.08));
@@ -139,4 +223,100 @@
 .empty {
   color: var(--text-muted, #8a8f98);
   font-size: 13px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt4);
+  overflow: auto;
+}
+
+.detailClientName {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.clientIdRow {
+  align-items: center;
+  display: flex;
+  gap: var(--pt2);
+}
+
+.clientIdRow code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.textButton {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--link-color, #1261a0);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+
+.detailSection {
+  border-top: 1px solid var(--divider, #e5e7eb);
+  padding-top: var(--pt3);
+}
+
+.detailSection h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 var(--pt3);
+}
+
+.sectionHeading {
+  margin-bottom: var(--pt3);
+}
+
+.sectionHeading h4 {
+  margin-bottom: 4px;
+}
+
+.sectionHeading small {
+  color: var(--text-muted, #8a8f98);
+  display: block;
+  line-height: 1.4;
+}
+
+.sectionHeading code {
+  overflow-wrap: anywhere;
+}
+
+.metrics {
+  display: grid;
+  gap: var(--pt3);
+  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.metrics div {
+  min-width: 0;
+}
+
+.metrics dt {
+  color: var(--text-muted, #8a8f98);
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+.metrics dd {
+  font-size: 13px;
+  margin: 0;
+}
+
+.metrics dd small {
+  color: var(--text-muted, #8a8f98);
+}
+
+.primaryAction {
+  align-self: flex-start;
+  min-width: max-content;
 }

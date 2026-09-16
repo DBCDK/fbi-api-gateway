@@ -1,6 +1,6 @@
 .shell {
   --canvas-width: 420px;
-  --header-h: 68px;
+  --header-h: var(--insights-header-height, 68px);
   --canvas-gap-v: var(--pt2);
   --canvas-gap-h: var(--pt2);
 
@@ -56,23 +56,12 @@
   pointer-events: auto;
 }
 
-/* INDHOLD: isolér layout/paint for smidig padding-left transition */
+/* Panelet er et overlay, så åbning og lukning aldrig flytter indholdet. */
 .content {
   flex: 1 1 auto;
   min-width: 0;
   overflow-x: clip;
-  transition: padding-left 240ms ease;
-
-  /* ↓↓↓ reducer jank ved at isolere layout og signalere til browseren */
   contain: layout paint;
-  will-change: padding-left;
-}
-
-/* Desktop: “del” skærmen via padding-left; content reflow er afkoblet af contain */
-@media (min-width: 993px) {
-  .shell[data-open="true"] .content {
-    padding-left: var(--canvas-width);
-  }
 }
 
 /* Mobil: overlay – content skubbes ikke, og vi viser backdrop */
@@ -105,9 +94,26 @@
   }
 }
 
-/* Page styles */
-.container {
-  padding-top: var(--pt10);
+/* Page grid mirrors /docs: a flexible left column and a 992px content column. */
+.pageGrid {
+  margin: 0;
+  margin-bottom: var(--pt15);
+}
+
+.pageSpacer {
+  display: none;
+  padding: 0;
+}
+
+.main {
+  position: relative;
+  flex-grow: 99;
+  max-width: 992px;
+  padding: var(--pt10) 0 var(--pt15);
+}
+
+.intro {
+  max-width: 720px;
 }
 
 .title {
@@ -118,39 +124,77 @@
 }
 
 .settings {
-  padding-top: var(--pt6);
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+}
+
+.controls {
+  padding-top: var(--pt6);
 }
 
 .filters {
   padding-top: var(--pt2);
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: var(--pt2);
 }
 
-.options > button {
-  margin-right: var(--pt2);
+.options {
+  display: flex;
+  min-height: var(--pt6);
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--pt1);
+}
+
+.results {
+  position: relative;
+}
+
+.error {
+  margin-top: var(--pt2);
+  color: var(--error, #b42318);
 }
 
 .loadingOverlay {
-  position: sticky;
-  top: calc(var(--header-h) + 8px);
+  position: absolute;
+  top: calc(var(--gap-height, 60px) + 8px);
+  left: 50%;
   z-index: 5;
+  transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid var(--border, #e5e7eb);
   border-radius: 8px;
   padding: 6px 10px;
-  display: inline-block;
-  margin-bottom: 8px;
+  pointer-events: none;
+}
+
+@media screen and (min-width: 992px) {
+  .pageSpacer {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .main {
+    padding-top: var(--pt2);
+  }
+
+  .filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filters > :last-child {
+    align-self: flex-end;
+  }
 }
 
 /* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .canvasWrap {
-    transition: none;
-  }
-  .content {
     transition: none;
   }
 }

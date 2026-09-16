@@ -1,45 +1,88 @@
+.period {
+  display: flex;
+  align-items: center;
+  gap: var(--pt1);
+}
+
 .period button,
-.period input {
-  background-color: transparent;
-  width: var(--pt5);
+.period input,
+.period select {
   height: var(--pt5);
-
-  font-size: 14px;
-  font-family: var(--font-mono-semibold);
-
-  border-radius: calc(var(--pt5) / 2);
-
-  cursor: pointer;
-
+  border: 2px solid var(--divider);
+  background-color: transparent;
   color: var(--text-light);
+  font-family: var(--font-mono-semibold);
+  font-size: 14px;
+}
 
-  border: solid 2px var(--divider);
-
-  -moz-user-select: -moz-none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+.period button {
+  width: var(--pt5);
+  border-radius: 50%;
+  cursor: pointer;
   user-select: none;
 }
 
+.period button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
 .period input {
-  margin: 0 var(--pt1);
-  width: var(--pt8);
+  width: var(--pt6);
+  border-radius: calc(var(--pt5) / 2);
   text-align: center;
 }
 
-.period input:focus-visible {
-  border: 2px solid var(--text-dark);
+.period select {
+  appearance: none;
+  min-width: 94px;
+  border-radius: calc(var(--pt5) / 2);
+  padding: 0 var(--pt4) 0 var(--pt2);
+  cursor: pointer;
 }
 
-/* Skjul number-input pile i Chrome, Safari, Edge (WebKit/Blink) */
-.period input[type="number"]::-webkit-outer-spin-button,
-.period input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.selectWrap {
+  position: relative;
 }
 
-/* Skjul i Firefox */
+.selectWrap::after {
+  content: "▾";
+  position: absolute;
+  top: 50%;
+  right: var(--pt2);
+  color: var(--text-light);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.period input:focus,
+.period select:focus,
+.period button:focus-visible {
+  border-color: var(--text-dark);
+  outline: none;
+}
+
 .period input[type="number"] {
-  -moz-appearance: textfield;
-  appearance: textfield; /* moderne fallback */
+  appearance: textfield;
+}
+
+.period input[type="number"]::-webkit-inner-spin-button,
+.period input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .period {
+    flex-wrap: wrap;
+  }
 }

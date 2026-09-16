@@ -258,7 +258,7 @@ type Query {
   culr: CulrQuery!
   debug: Debug
   holdingsItems: HoldingsItemsQuery!
-  insights(days: Int): Insight
+  insights(from: String, to: String, days: Int, clientId: String, excludeClientId: String, agencyId: String, excludeAgencyId: String, profileName: String, excludeProfileName: String): Insight
 
   """Field for presenting bibliographic records in MARC format"""
   marc: Marc!
@@ -2292,6 +2292,32 @@ type FieldInsight {
   kind: String
   field: String!
   count: Int!
+  clientCount: Int
+  operationCount: Int
+  firstSeen: String
+  lastSeen: String
+}
+
+type FieldClientInsight {
+  clientId: String!
+  count: Int!
+  operationCount: Int
+  firstSeen: String
+  lastSeen: String
+  configuration: InsightClientConfiguration
+}
+
+type InsightClientConfiguration {
+  displayName: String
+}
+
+type SchemaElementInsight {
+  key: String!
+  count: Int!
+  clientCount: Int
+  operationCount: Int
+  firstSeen: String
+  lastSeen: String
 }
 
 type ClientInsight {
@@ -2302,7 +2328,13 @@ type ClientInsight {
 type Insight {
   start: String!
   end: String!
-  clients(clientId: String): [ClientInsight!]!
+  fields: [FieldInsight!]!
+  arguments: [SchemaElementInsight!]!
+  inputFields: [SchemaElementInsight!]!
+  fieldClients(field: String!): [FieldClientInsight!]!
+  argumentClients(argument: String!): [FieldClientInsight!]!
+  inputFieldClients(inputField: String!): [FieldClientInsight!]!
+  clients(clientId: String): [ClientInsight!]! @deprecated(reason: "Use fields and fieldClients expires: 01/03-2027")
 }
 
 input CategoryFilterInput {

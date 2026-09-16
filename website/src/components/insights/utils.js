@@ -33,6 +33,14 @@ function selectArgFields(arg) {
   };
 }
 
+function getSchemaFlags(item) {
+  const isDraft = item?.deprecationReason === "@draft";
+  return {
+    isDraft,
+    isDeprecated: Boolean(item?.isDeprecated && !isDraft),
+  };
+}
+
 // combines the the type/field to a changelog obj structure
 function selectFields(type, field) {
   const split = field?.deprecationReason?.split("expires:");
@@ -89,14 +97,61 @@ export function buildTemplates(data) {
     return [];
   }
 
-  return data.map(({ type, field }) => ({
-    kind: type.kind,
-    type: type.name,
-    field: field.name,
-    arguments: field.args,
-    isDeprecated: field.isDeprecated,
-    description: field.description,
-    reason: field.deprecationReason,
-    expires: field.expires,
-  }));
+  return data
+    .filter(({ type }) => ["OBJECT", "INTERFACE"].includes(type.kind))
+    .map(({ type, field }) => {
+      const schemaFlags = getSchemaFlags(field);
+      return {
+        path: `${type.name}.${field.name}`,
+        kind: type.kind,
+        type: type.name,
+        field: field.name,
+        arguments: field.args,
+        ...schemaFlags,
+        description: field.description,
+        reason: field.deprecationReason,
+        expires: field.expires,
+      };
+    });
+}
+
+export function buildArgumentTemplates(data) {
+  if (!data?.length) return [];
+
+  return data
+    .filter(({ type }) => ["OBJECT", "INTERFACE"].includes(type.kind))
+    .flatMap(({ type, field }) =>
+      (field.args || []).map((argument) => {
+        const schemaFlags = getSchemaFlags(argument);
+        return {
+          path: `${type.name}.${field.name}.${argument.name}`,
+          kind: "ARGUMENT",
+          type: `${type.name}.${field.name}`,
+          field: argument.name,
+          ...schemaFlags,
+          reason: argument.deprecationReason,
+          expires: argument.expires,
+        };
+      })
+    );
+}
+
+export function buildInputFieldTemplates(data) {
+  if (!data?.length) return [];
+
+  return data
+    .filter(({ type }) => type.kind === "INPUT_OBJECT")
+    .map(({ type, field }) => {
+      const schemaFlags = getSchemaFlags(field);
+      return {
+        path: `${type.name}.${field.name}`,
+        kind: "INPUT_FIELD",
+        type: type.name,
+        field: field.name,
+        ...schemaFlags,
+        description: field.description,
+        reason: field.deprecationReason,
+        expires: field.expires,
+      };
+    });
 }

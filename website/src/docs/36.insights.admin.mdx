@@ -1,0 +1,207 @@
+# Insights
+
+Insights provides an admin-only view of how clients use the FBI API's GraphQL schema. Open the [Insights dashboard](/insights) to explore fields, arguments, and input fields across a selected time range.
+
+## How it works
+
+After a valid GraphQL operation has completed, the FBI API creates a small usage event and sends it to TraceQL in the background. This is best-effort telemetry: a TraceQL timeout or error never changes the GraphQL response returned to the client.
+
+TraceQL validates the request's bearer token with Smaug and derives the client ID from `app.clientId`. Reading Insights data requires a token where `gateway.admin` is `true`.
+
+Each event may contain:
+
+- The selected operation's type, name, and a normalized operation hash
+- Canonical GraphQL field keys, such as `Query.search` and `Work.title`
+- Supplied argument keys, such as `Query.search.q`
+- Supplied input-field keys, such as `SearchInput.filters`
+- Available agency, profile, outcome, duration, and timestamp metadata
+
+Aliases do not change the recorded keys. A field such as `results: search(...)` is recorded using the schema name `Query.search`.
+
+### From GraphQL AST to a usage event
+
+FBI API does not send the GraphQL document or an AST node to TraceQL. It reuses the validated GraphQL AST locally to select the executed operation and every fragment reachable from it. The schema and GraphQL.js `TypeInfo` are then used to resolve aliases and produce canonical schema keys.
+
+For example, assume the schema contains `Query.search`, `SearchResponse.works`, `Work.title`, and the input type `SearchInput`:
+
+```graphql
+query FindWorks($input: SearchInput!) {
+  results: search(input: $input) {
+    works {
+      title
+    }
+  }
+}
+```
+
+With variables containing the input fields `query` and `filters`, FBI API extracts:
+
+```json
+{
+  "fields": ["Query.search", "SearchResponse.works", "Work.title"],
+  "arguments": ["Query.search.input"],
+  "inputFields": ["SearchInput.filters", "SearchInput.query"]
+}
+```
+
+Only names from the schema are included. The alias `results`, the value of `$input`, and all nested search and filter values are omitted.
+
+The `operationHash` is created locally by:
+
+1. Selecting the executed operation and its transitively referenced fragments from the AST.
+2. Removing the operation name, so renaming an otherwise identical operation does not create a new identity.
+3. Sorting the selected fragment definitions and printing the resulting AST deterministically.
+4. Calculating SHA-256 and prefixing the result with `v1:sha256:`.
+
+Runtime variable values never enter the hash. In the v1 algorithm, aliases, variable names, selection order, and inline literals remain part of the normalized operation and can therefore change the hash. The version prefix allows this normalization to evolve later without mixing identities.
+
+The resulting request to `POST /v1/usage` has this shape:
+
+```json
+{
+  "requestId": "0e1df440-e19c-41c0-bc4b-fa9a6b2e733d",
+  "operationType": "query",
+  "operationName": "FindWorks",
+  "operationHash": "v1:sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "agencyId": "190101",
+  "profileName": "bibdk21",
+  "outcome": "success",
+  "durationMs": 28,
+  "fields": ["Query.search", "SearchResponse.works", "Work.title"],
+  "arguments": ["Query.search.input"],
+  "inputFields": ["SearchInput.filters", "SearchInput.query"],
+  "usedAt": "2026-09-11T09:56:00.000Z"
+}
+```
+
+The original bearer token is forwarded in the HTTP `Authorization` header, not in the JSON event. TraceQL validates it with Smaug and derives the stable client ID from `app.clientId`; FBI API does not supply a client ID that TraceQL has to trust.
+
+This JSON event is the integration's storage boundary and the format FBI API guarantees. TraceQL may normalize it into multiple database tables or indexes internally, so its physical database schema is deliberately not part of the FBI API contract. Conceptually, TraceQL records the accepted event identity and metadata, the derived client identity, and the canonical field, argument, and input-field associations used by its aggregations.
+
+## Privacy
+
+TraceQL records schema usage, not request contents. The usage event never contains the raw GraphQL document, bearer token, variables, search strings, argument values, input values, session IDs, or end-user identifiers.
+
+The FBI API may inspect a variable's local object structure to identify which input-field names were supplied. Only canonical schema keys are sent to TraceQL. For example, `SearchInput.query` can be recorded, but its value cannot.
+
+## What the numbers mean
+
+- **Count** is the number of requests in which the schema key occurred. Repeating the same key within one operation still counts once for that request.
+- **Client count** is the number of distinct clients that used the key.
+- **Operation count** is the number of distinct normalized GraphQL operations that used the key. The operation name is not part of this identity.
+- **First seen** and **last seen** describe the first and latest matching events in the selected interval.
+
+`isDeprecated` and `isDraft` come from the current FBI API schema, while usage counts come from TraceQL. Draft elements use the deprecation reason `@draft` and are treated as a separate status, not as deprecated. A deprecated or draft field can therefore remain active, and an available field can have a count of zero.
+
+## Time ranges and retention
+
+The dashboard sends an inclusive `from` timestamp. When `to` is omitted, TraceQL uses its current time as the exclusive end of the interval. Months and years in the dashboard are calendar periods rather than fixed numbers of days.
+
+TraceQL can only answer within its configured raw-event retention window. Requests outside that window are rejected instead of returning partial or misleading totals. Increasing or removing retention is therefore a TraceQL storage and operations decision, not only a dashboard setting.
+
+## Query field usage
+
+The following example returns field usage for the last seven days. The dates returned as `start` and `end` are the effective interval used by the service.
+
+<InlineGraphiQL
+  query={`
+    query Example_InsightsFields($from: String!) {
+      insights(from: $from) {
+        start
+        end
+        fields {
+          path
+          type
+          field
+          kind
+          count
+          clientCount
+          operationCount
+          firstSeen
+          lastSeen
+        }
+      }
+    }
+  `}
+  variables={{
+    from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+  }}
+/>
+
+## Query arguments and input fields
+
+Arguments use `ParentType.fieldName.argumentName` keys. Input fields use `InputType.fieldName` keys. Only arguments and input fields explicitly present in the selected operation are counted.
+
+<InlineGraphiQL
+  query={`
+    query Example_InsightsInputs($from: String!) {
+      insights(from: $from) {
+        arguments {
+          key
+          count
+          clientCount
+          operationCount
+          firstSeen
+          lastSeen
+        }
+        inputFields {
+          key
+          count
+          clientCount
+          operationCount
+          firstSeen
+          lastSeen
+        }
+      }
+    }
+  `}
+  variables={{
+    from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+  }}
+/>
+
+## Filter by client context
+
+Filters are applied by TraceQL before aggregation, so matching is not limited to the first page of results. Client, agency, and profile chips cycle through inactive, include, and exclude states. Inclusion uses `clientId`, `agencyId`, or `profileName`; exclusion uses `excludeClientId`, `excludeAgencyId`, or `excludeProfileName`. Filters across dimensions can be combined and use AND semantics, but a dimension cannot be included and excluded at the same time.
+
+<InlineGraphiQL
+  query={`
+    query Example_InsightsForClient(
+      $from: String!
+      $clientId: String
+      $excludeClientId: String
+      $agencyId: String
+      $excludeAgencyId: String
+      $profileName: String
+      $excludeProfileName: String
+    ) {
+      insights(
+        from: $from
+        clientId: $clientId
+        excludeClientId: $excludeClientId
+        agencyId: $agencyId
+        excludeAgencyId: $excludeAgencyId
+        profileName: $profileName
+        excludeProfileName: $excludeProfileName
+      ) {
+        fields {
+          path
+          count
+        }
+      }
+    }
+  `}
+  variables={{
+    from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    clientId: null,
+    agencyId: "190101",
+    profileName: null,
+    excludeClientId: "load-test-client",
+    excludeAgencyId: null,
+    excludeProfileName: "test",
+  }}
+/>
+
+Select a row in the dashboard to see the matching usage distributed by client. The same selected time range and context filters are applied to that detail view.
+
+Client rows are supplemented with the client's display name from Auth Admin. This lookup is cached and best-effort: an unavailable name does not change the usage result. Auth Admin credentials remain server-side, and the rest of the administrative configuration is not exposed through the Insights schema.

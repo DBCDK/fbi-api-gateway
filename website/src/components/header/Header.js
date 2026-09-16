@@ -26,6 +26,7 @@ import More from "../more";
 
 export default function Header() {
   const router = useRouter();
+  const isInsights = router.pathname === "/insights";
   const elRef = useRef();
   const infoRef = useRef(null);
   const lastScrollYRef = useRef(0);
@@ -94,6 +95,31 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const header = elRef.current;
+    if (!isInsights || !header) return undefined;
+
+    const updateHeaderHeight = () => {
+      const height = Math.ceil(header.getBoundingClientRect().height);
+      document.documentElement.style.setProperty(
+        "--insights-header-height",
+        `${height}px`
+      );
+    };
+
+    updateHeaderHeight();
+
+    const observer = new ResizeObserver(updateHeaderHeight);
+    observer.observe(header);
+
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty(
+        "--insights-header-height"
+      );
+    };
+  }, [isInsights]);
+
   const { selectedCredential: selectedToken } = useSelectedCredential();
   const { getCredentialEntry } = useCredentialEntries();
   const { configuration, status, isLoading } =
@@ -124,6 +150,7 @@ export default function Header() {
     : null;
   const displayName = selectedEntry?.note || configuration?.displayName;
   const isAuthenticated = user?.isAuthenticated;
+  const isAdmin = configuration?.permissions?.admin === true;
 
   const isIndex = router.pathname === "/";
   const isDocumentation = router.pathname === "/documentation";
@@ -139,14 +166,16 @@ export default function Header() {
   const indexStyles = isIndex ? styles.index : "";
   const documentationStyles = isDocumentation ? styles.documentation : "";
   const schemaStyles = isSchema ? styles.schema : "";
+  const insightsStyles = isInsights ? styles.insights : "";
   const shouldKeepTopVisible = isVoyager || isGraphiql;
 
   const stickyClass = isSticky ? styles.sticky : "";
 
   return (
     <header
-      className={`${styles.header} ${stickyClass} ${indexStyles} ${documentationStyles} ${schemaStyles}`}
+      className={`${styles.header} ${stickyClass} ${indexStyles} ${documentationStyles} ${schemaStyles} ${insightsStyles}`}
       ref={elRef}
+      data-page-header
     >
       <Top
         className={
@@ -176,6 +205,13 @@ export default function Header() {
               <Text type="text5" className={styles.link}>
                 <Link href="/documentation">Docs</Link>
               </Text>
+              {isAdmin && (
+                <Text type="text5" className={styles.link}>
+                  <Link href="/insights" disabled={!isValidToken}>
+                    Insights
+                  </Link>
+                </Text>
+              )}
               <Text type="text5" className={styles.link}>
                 <Link href="/graphiql" disabled={!isValidToken}>
                   GraphiQL

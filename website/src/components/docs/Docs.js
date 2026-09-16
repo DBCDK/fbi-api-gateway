@@ -101,6 +101,10 @@ export default function Docs() {
   const accessibleDocs = useMemo(
     () =>
       docs?.filter((doc) => {
+        if (doc.name.endsWith(".admin")) {
+          return effectivePermissions?.admin === true;
+        }
+
         let state = false;
 
         // return all

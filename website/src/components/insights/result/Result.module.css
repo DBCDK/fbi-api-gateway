@@ -1,6 +1,8 @@
 /* Justér kun luftens højde her */
 .tableWrap {
   --gap-height: 60px;
+  --header-height: var(--insights-header-height, 68px);
+  --sticky-overlap: 2px;
 
   position: relative;
   overflow: visible; /* vi bruger hovedscrollbaren */
@@ -16,8 +18,9 @@
 /* Sticky spacer: ren hvid luft under topbaren, ingen kanter */
 .stickyGap {
   position: sticky;
-  top: 68px; /* din sticky header-højde */
-  height: var(--gap-height); /* <- rent hvidt felt */
+  top: calc(var(--header-height) - var(--sticky-overlap));
+  height: calc(var(--gap-height) + var(--sticky-overlap));
+  margin-bottom: calc(-1 * var(--sticky-overlap));
   background: var(--bg, #fff);
   z-index: 2;
 }
@@ -43,12 +46,13 @@
 /* Sticky header: lige under spacerens bund, med bund-separator */
 .thead th {
   position: sticky;
-  top: calc(68px + var(--gap-height));
+  top: calc(var(--header-height) + var(--gap-height));
   z-index: 3;
   background: var(--bg, #fff);
   /* bund-linje */
   box-shadow: inset 0 -1px 0 var(--divider, #e5e7eb);
   padding: var(--cell-pad-y) var(--cell-pad-x);
+  text-align: left;
   white-space: nowrap;
 }
 
@@ -66,7 +70,7 @@
 .thead::after {
   content: "";
   position: sticky;
-  top: calc(68px + var(--gap-height) + 38px); /* header-row højde ≈38px */
+  top: calc(var(--header-height) + var(--gap-height) + 38px);
   display: block;
   height: 0;
   box-shadow: 0 6px 10px -6px rgba(0, 0, 0, 0.12);
@@ -78,6 +82,7 @@
   padding: var(--cell-pad-y) var(--cell-pad-x);
   vertical-align: middle;
   border-top: 1px solid var(--divider, #e5e7eb);
+  text-align: left;
 }
 
 /* Zebra-stripes */
@@ -116,7 +121,7 @@
   display: inline-block;
   margin-left: 6px;
   border: 5px solid transparent;
-  transform: translateY(-1px);
+  vertical-align: middle;
 }
 .thAsc::after {
   border-bottom-color: currentColor;
@@ -138,4 +143,9 @@
     "Courier New",
     monospace
   );
+}
+
+.lastUsed {
+  color: var(--text-muted, #6c757d);
+  white-space: nowrap;
 }

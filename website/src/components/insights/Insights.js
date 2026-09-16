@@ -1,16 +1,21 @@
 // views/insights/Insights.jsx
-import { useMemo, useState, useCallback } from "react";
-import { Col, Row } from "react-bootstrap";
+import { useMemo, useState, useCallback, useEffect } from "react";
+import { Col, Container, Row } from "react-bootstrap";
 import { orderBy } from "lodash";
 
 import useSchema from "@/hooks/useSchema";
-import useStorage from "@/hooks/useStorage";
 import useInsights from "@/hooks/useInsights";
+import useEffectiveSelectedCredential from "@/hooks/credentials/useEffectiveSelectedCredential";
 
-import { buildTemplates, getFields } from "./utils";
+import {
+  buildArgumentTemplates,
+  buildInputFieldTemplates,
+  buildTemplates,
+  getFields,
+} from "./utils";
 
-import Layout from "@/components/base/layout";
 import Header from "@/components/header";
+import Link from "@/components/base/link";
 import Title from "@/components/base/title";
 import Text from "@/components/base/text";
 import Chip from "../base/chip";
@@ -24,20 +29,66 @@ import Canvas from "./canvas";
 
 import styles from "./Insights.module.css";
 
+const SCOPE_UI = {
+  fields: { label: "Field", buildTemplates },
+  arguments: { label: "Argument", buildTemplates: buildArgumentTemplates },
+  inputFields: {
+    label: "Input field",
+    buildTemplates: buildInputFieldTemplates,
+  },
+};
+
+function subtractCalendarMonths(date, months) {
+  const day = date.getUTCDate();
+  date.setUTCDate(1);
+  date.setUTCMonth(date.getUTCMonth() - months);
+  const lastDay = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)
+  ).getUTCDate();
+  date.setUTCDate(Math.min(day, lastDay));
+}
+
+function getPeriodRange({ amount, unit }) {
+  const end = new Date();
+  const start = new Date(end);
+
+  if (unit === "weeks") start.setUTCDate(start.getUTCDate() - amount * 7);
+  else if (unit === "months") subtractCalendarMonths(start, amount);
+  else if (unit === "years") subtractCalendarMonths(start, amount * 12);
+  else start.setUTCDate(start.getUTCDate() - amount);
+
+  const format = new Intl.DateTimeFormat("da-DK", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+  return {
+    from: start.toISOString(),
+    to: null,
+    label: `${format.format(start)} – now`,
+  };
+}
+
 /* ========================= UI (presentation) ========================= */
 function InsightsUI({
   data,
   byFieldMap,
-  days,
+  scope,
+  dimensionFilters,
+  period,
+  periodLabel,
   settings,
   panel,
   clientUsage,
-  totalCount,
-  isFetching,
-  onDaysChange,
+  isInitialLoading,
+  isClientLoading,
+  error,
+  onPeriodChange,
   onUpdateSettings,
+  onScopeChange,
+  onDimensionFiltersChange,
   onSelectRow,
   onClosePanel,
+  onFilterClient,
 }) {
   return (
     <>
@@ -50,80 +101,116 @@ function InsightsUI({
             <Canvas
               show={panel?.open}
               onHide={onClosePanel}
-              type={panel?.type}
-              field={panel?.field}
+              onFilterClient={onFilterClient}
+              elementKey={panel?.key}
+              elementLabel={SCOPE_UI[scope].label}
               isDeprecated={panel?.isDeprecated}
-              totalCount={totalCount}
+              isDraft={panel?.isDraft}
               clientUsage={clientUsage}
+              isLoading={isClientLoading}
             />
           </div>
         </aside>
 
         {/* INDHOLD */}
         <div className={styles.content}>
-          <Layout className={styles.container}>
-            <Row>
-              <Col>
-                <Title as="h1" type="title6" className={styles.title}>
-                  FBI-API <strong>[Insights]</strong>
-                </Title>
-                <Text>
-                  Insights viser hvordan vores GraphQL API bruges i praksis –
-                  per klient og per felt. Vælg periode, sortér på aktivitet, og
-                  filtrér for at se deprecated eller inaktive felter.
-                </Text>
-              </Col>
-            </Row>
-
-            <Row className={styles.wrap}>
-              <Col>
-                <div className={styles.settings}>
-                  <Period
-                    className={styles.period}
-                    value={days}
-                    onChange={onDaysChange}
-                  />
+          <Container fluid>
+            <Row className={styles.pageGrid}>
+              <Col className={styles.pageSpacer} aria-hidden="true" />
+              <Col className={styles.main}>
+                <div className={styles.intro}>
+                  <Title as="h1" type="title6" className={styles.title}>
+                    FBI-API <strong>[Insights]</strong>
+                  </Title>
+                  <Text>
+                    Insights shows how clients use the FBI API across GraphQL
+                    fields, arguments, and input fields. Choose a time range,
+                    compare activity, and filter by schema status or client
+                    context to understand adoption and identify unused or
+                    deprecated API surface.
+                  </Text>
+                  <Text>
+                    <Link href="/documentation#h1-insights-a31ukb" underline>
+                      Learn how Insights data is collected and counted.
+                    </Link>
+                  </Text>
                 </div>
 
-                <div className={styles.filters}>
-                  <div className={styles.options}>
-                    <Chip
-                      mode="tri"
-                      state={settings?.deprecatedFilter}
-                      onChange={(next) =>
-                        onUpdateSettings({ deprecatedFilter: next })
-                      }
-                    >
-                      {"isDeprecated"}
-                    </Chip>
-                    <Chip
-                      mode="tri"
-                      state={settings?.countFilter}
-                      onChange={(next) =>
-                        onUpdateSettings({ countFilter: next })
-                      }
-                    >
-                      {"hasCount"}
-                    </Chip>
+                <div className={styles.controls}>
+                  <div className={styles.settings}>
+                    <Period
+                      className={styles.period}
+                      value={period}
+                      title={periodLabel}
+                      onChange={onPeriodChange}
+                    />
                   </div>
 
-                  <Search
-                    onChange={(val) => onUpdateSettings({ filter: val })}
-                  />
+                  <div className={styles.filters}>
+                    <div className={styles.options}>
+                      <Chip
+                        mode="tri"
+                        state={settings?.deprecatedFilter}
+                        onChange={(next) =>
+                          onUpdateSettings({ deprecatedFilter: next })
+                        }
+                      >
+                        {"isDeprecated"}
+                      </Chip>
+                      <Chip
+                        mode="tri"
+                        state={settings?.draftFilter}
+                        onChange={(next) =>
+                          onUpdateSettings({ draftFilter: next })
+                        }
+                      >
+                        {"isDraft"}
+                      </Chip>
+                      <Chip
+                        mode="tri"
+                        state={settings?.countFilter}
+                        onChange={(next) =>
+                          onUpdateSettings({ countFilter: next })
+                        }
+                      >
+                        {"hasCount"}
+                      </Chip>
+                    </div>
+
+                    <Search
+                      value={settings?.filter || ""}
+                      scope={scope}
+                      filters={dimensionFilters}
+                      onChange={(val) => onUpdateSettings({ filter: val })}
+                      onScopeChange={onScopeChange}
+                      onFiltersChange={onDimensionFiltersChange}
+                    />
+                  </div>
                 </div>
 
-                {isFetching && (
-                  <div className={styles.loadingOverlay}>Loading…</div>
-                )}
+                <div
+                  className={styles.results}
+                  aria-busy={isInitialLoading ? "true" : "false"}
+                >
+                  {error && (
+                    <Text className={styles.error}>
+                      Insights kunne ikke hentes: {error.message}
+                    </Text>
+                  )}
+                  {isInitialLoading && (
+                    <div className={styles.loadingOverlay}>Loading…</div>
+                  )}
 
-                <Result
-                  data={data}
-                  byFieldMap={byFieldMap}
-                  onSelect={onSelectRow}
-                />
+                  <Result
+                    data={data}
+                    byFieldMap={byFieldMap}
+                    onSelect={onSelectRow}
+                    elementLabel={SCOPE_UI[scope].label}
+                  />
+                </div>
               </Col>
             </Row>
-          </Layout>
+          </Container>
 
           {/* Backdrop (mobil) */}
           <button
@@ -141,22 +228,55 @@ function InsightsUI({
 
 /* ========================= WRAP (data/state/handlers) ========================= */
 export default function Insights() {
-  const { selectedToken } = useStorage();
-  const { json } = useSchema(selectedToken);
-
-  // 1) Byg basisliste KUN når schema ændrer sig
-  const baseData = useMemo(() => buildTemplates(getFields(json)), [json]);
-
-  const [days, setDays] = useState(3);
-  const { byFieldMap, byClient, isFetching } = useInsights(selectedToken, {
-    days,
+  const { effectiveCredential } = useEffectiveSelectedCredential();
+  const { json } = useSchema(effectiveCredential);
+  const [scope, setScope] = useState("fields");
+  const [dimensionFilters, setDimensionFilters] = useState({
+    clientId: { mode: "off", value: "" },
+    agencyId: { mode: "off", value: "" },
+    profileName: { mode: "off", value: "" },
   });
+
+  const schemaElements = useMemo(() => getFields(json), [json]);
+  const baseData = useMemo(
+    () => SCOPE_UI[scope].buildTemplates(schemaElements),
+    [schemaElements, scope]
+  );
+
+  const [period, setPeriod] = useState({ amount: 3, unit: "days" });
+  const [periodRange, setPeriodRange] = useState({
+    from: "",
+    to: null,
+    label: "",
+  });
+
+  useEffect(() => {
+    setPeriodRange(getPeriodRange(period));
+  }, [period]);
+
+  // Panel
+  const [panel, setPanel] = useState({
+    open: false,
+    key: null,
+    isDeprecated: false,
+    isDraft: false,
+  });
+
+  const { byFieldMap, clientUsage, isInitialLoading, isClientLoading, error } =
+    useInsights(effectiveCredential, {
+      from: periodRange.from,
+      to: periodRange.to,
+      scope,
+      elementKey: panel.open ? panel.key : null,
+      ...dimensionFilters,
+    });
 
   const [settings, setSettings] = useState({
     filter: null,
     sort: null,
     sortDirection: "asc",
     deprecatedFilter: "off",
+    draftFilter: "off",
     countFilter: "off",
   });
   const updateSettings = useCallback(
@@ -167,11 +287,8 @@ export default function Insights() {
   // 2) Slank getCount der ikke alokerer nye strings unødigt
   const getCount = useCallback(
     (row) => {
-      const t = row?.type;
-      const f = row?.field;
-      if (!t || !f || !byFieldMap) return 0;
-      const k = t + "." + f;
-      const hit = byFieldMap[k];
+      if (!row?.path || !byFieldMap) return 0;
+      const hit = byFieldMap[row.path];
       return hit ? hit.count || 0 : 0;
     },
     [byFieldMap]
@@ -186,20 +303,19 @@ export default function Insights() {
     // filter
     if (settings.filter) {
       const q = settings.filter.toLowerCase();
-      out = out.filter(({ field, type }) => {
-        const combo = `${type}.${field}`.toLowerCase();
-        return (
-          (field && field.toLowerCase().includes(q)) ||
-          (type && type.toLowerCase().includes(q)) ||
-          combo.includes(q)
-        );
-      });
+      out = out.filter(({ path }) => path?.toLowerCase().includes(q));
     }
 
     // deprecated
     if (settings.deprecatedFilter !== "off") {
       const inc = settings.deprecatedFilter === "include";
       out = out.filter((d) => (inc ? !!d.isDeprecated : !d.isDeprecated));
+    }
+
+    // draft
+    if (settings.draftFilter !== "off") {
+      const inc = settings.draftFilter === "include";
+      out = out.filter((d) => (inc ? !!d.isDraft : !d.isDraft));
     }
 
     // count
@@ -216,24 +332,20 @@ export default function Insights() {
     return out;
   }, [baseData, settings, getCount]);
 
-  // Panel
-  const [panel, setPanel] = useState({
-    open: false,
-    key: null,
-    type: null,
-    field: null,
-    isDeprecated: false,
-  });
-
   const handleSelectRow = useCallback((r) => {
-    if (!r?.type || !r?.field) return;
+    if (!r?.path) return;
     setPanel({
       open: true,
-      key: `${r.type}.${r.field}`,
-      type: r.type,
-      field: r.field,
+      key: r.path,
       isDeprecated: !!r.isDeprecated,
+      isDraft: !!r.isDraft,
     });
+  }, []);
+
+  const handleScopeChange = useCallback((nextScope) => {
+    if (!SCOPE_UI[nextScope]) return;
+    setScope(nextScope);
+    setPanel((current) => ({ ...current, open: false, key: null }));
   }, []);
 
   const handleClosePanel = useCallback(
@@ -241,38 +353,35 @@ export default function Insights() {
     []
   );
 
-  // Udregn clientUsage + totalCount
-  const clientUsage = useMemo(() => {
-    if (!panel.key || !Array.isArray(byClient)) return [];
-    const list = [];
-    for (const c of byClient) {
-      const { clientId, fields } = c || {};
-      if (!clientId || !Array.isArray(fields)) continue;
-      const m = fields.find((f) => `${f.type}.${f.field}` === panel.key);
-      if (m?.count > 0) list.push({ clientId, count: m.count });
-    }
-    list.sort(
-      (a, b) => b.count - a.count || a.clientId.localeCompare(b.clientId)
-    );
-    return list;
-  }, [panel.key, byClient]);
-
-  const totalCount = byFieldMap?.[panel.key]?.count ?? 0;
+  const handleFilterClient = useCallback((clientId) => {
+    setDimensionFilters((current) => ({
+      ...current,
+      clientId: { mode: "include", value: clientId },
+    }));
+    setPanel((current) => ({ ...current, open: false }));
+  }, []);
 
   return (
     <InsightsUI
       data={data}
       byFieldMap={byFieldMap}
-      days={days}
+      scope={scope}
+      dimensionFilters={dimensionFilters}
+      period={period}
+      periodLabel={periodRange.label}
       settings={settings}
       panel={panel}
       clientUsage={clientUsage}
-      totalCount={totalCount}
-      isFetching={isFetching}
-      onDaysChange={setDays}
+      isInitialLoading={isInitialLoading}
+      isClientLoading={isClientLoading}
+      error={error}
+      onPeriodChange={setPeriod}
       onUpdateSettings={updateSettings}
+      onScopeChange={handleScopeChange}
+      onDimensionFiltersChange={setDimensionFilters}
       onSelectRow={handleSelectRow}
       onClosePanel={handleClosePanel}
+      onFilterClient={handleFilterClient}
     />
   );
 }

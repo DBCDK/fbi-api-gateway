@@ -35,6 +35,7 @@ function Menu({ modal, context }) {
 
   const isTemp = theme === "temp";
   const isFuture = theme === "future";
+  const isAdmin = configuration?.permissions?.admin === true;
 
   return (
     <div className={`${styles.menu}`}>
@@ -50,6 +51,16 @@ function Menu({ modal, context }) {
             <Link href="/documentation">Docs</Link>
           </Text>
         </Col>
+
+        {isAdmin && (
+          <Col xs={12} as="li">
+            <Text type="text5" className={styles.link}>
+              <Link href="/insights" disabled={!isValidToken}>
+                Insights
+              </Link>
+            </Text>
+          </Col>
+        )}
 
         <Col xs={12} as="li">
           <Text type="text5">

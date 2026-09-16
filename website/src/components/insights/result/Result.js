@@ -5,15 +5,42 @@ import styles from "./Result.module.css";
 
 const COL = {
   FIELD: "field",
-  DEPRECATED: "deprecated",
+  STATUS: "status",
   COUNT: "count",
+  LAST_USED: "lastUsed",
 };
 
 const DEFAULT_DIR = {
   [COL.FIELD]: "asc",
-  [COL.DEPRECATED]: "asc",
+  [COL.STATUS]: "asc",
   [COL.COUNT]: "desc",
+  [COL.LAST_USED]: "desc",
 };
+
+const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+  dateStyle: "medium",
+  timeZone: "UTC",
+});
+
+const dateTimeFormatter = new Intl.DateTimeFormat("en-GB", {
+  dateStyle: "medium",
+  timeStyle: "short",
+  timeZone: "UTC",
+});
+
+function formatLastUsed(value) {
+  if (!value) return "Never";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : dateFormatter.format(date);
+}
+
+function formatLastUsedTitle(value) {
+  if (!value) return "No recorded usage";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? value
+    : `${dateTimeFormatter.format(date)} UTC`;
+}
 
 function nextDir(currentKey, currentDir, clickedKey) {
   if (currentKey !== clickedKey) return DEFAULT_DIR[clickedKey];
@@ -31,21 +58,29 @@ function nextDir(currentKey, currentDir, clickedKey) {
  *   onSelect?: (row:any)=>void
  * }} props
  */
-export default function Result({ data, byFieldMap, onSelect }) {
+export default function Result({
+  data,
+  byFieldMap,
+  onSelect,
+  elementLabel = "Field",
+}) {
   const [sort, setSort] = useState({ key: COL.COUNT, dir: "desc" });
 
   const rows = useMemo(() => {
     if (!Array.isArray(data)) return [];
     return data.map((obj, idx) => {
-      const { field, type } = obj || {};
-      const key = type && field ? `${type}.${field}` : null;
+      const { field, type, path } = obj || {};
+      const key = path || (type && field ? `${type}.${field}` : null);
       const count = key && byFieldMap ? (byFieldMap[key]?.count ?? 0) : 0;
+      const lastSeen = key && byFieldMap ? byFieldMap[key]?.lastSeen : null;
       return {
         ...obj,
         __key: key || `${idx}-${field}`,
         __count: count,
+        __lastSeen: lastSeen || null,
+        __lastUsedTimestamp: lastSeen ? Date.parse(lastSeen) : null,
         __index: idx,
-        __fieldLabel: type && field ? `${String(type)}.${String(field)}` : "",
+        __fieldLabel: key ? String(key) : "",
       };
     });
   }, [data, byFieldMap]);
@@ -67,16 +102,24 @@ export default function Result({ data, byFieldMap, onSelect }) {
           const cmp = a.__fieldLabel.localeCompare(b.__fieldLabel);
           return sign * (cmp || a.__index - b.__index);
         }
-        case COL.DEPRECATED: {
-          const av = a?.isDeprecated ? 1 : 0;
-          const bv = b?.isDeprecated ? 1 : 0;
+        case COL.STATUS: {
+          const av = a?.isDraft ? 2 : a?.isDeprecated ? 1 : 0;
+          const bv = b?.isDraft ? 2 : b?.isDeprecated ? 1 : 0;
           const cmp = av - bv;
           return sign * (cmp || byFieldAsc);
         }
-        case COL.COUNT:
-        default: {
+        case COL.COUNT: {
           const cmp = a.__count - b.__count;
           return sign * (cmp || byFieldAsc);
+        }
+        case COL.LAST_USED:
+        default: {
+          const av = a.__lastUsedTimestamp;
+          const bv = b.__lastUsedTimestamp;
+          if (!Number.isFinite(av) && !Number.isFinite(bv)) return byFieldAsc;
+          if (!Number.isFinite(av)) return 1;
+          if (!Number.isFinite(bv)) return -1;
+          return sign * (av - bv || byFieldAsc);
         }
       }
     });
@@ -86,11 +129,6 @@ export default function Result({ data, byFieldMap, onSelect }) {
 
   function onHeaderClick(colKey) {
     setSort((s) => ({ key: colKey, dir: nextDir(s.key, s.dir, colKey) }));
-  }
-
-  function renderSortIcon(colKey) {
-    if (sort.key !== colKey || sort.dir === "off") return null;
-    return sort.dir === "asc" ? " ↑" : " ↓";
   }
 
   const isActive = (colKey) => sort.key === colKey && sort.dir !== "off";
@@ -120,28 +158,48 @@ export default function Result({ data, byFieldMap, onSelect }) {
     const sentinel = sentinelRef.current;
     if (!wrap || !sentinel) return;
 
-    // Læs --gap-height (px) fra CSS for korrekt offset
-    const cs = getComputedStyle(wrap);
-    const gapVar = cs.getPropertyValue("--gap-height").trim() || "12px";
-    const gap = parseFloat(gapVar) || 12;
+    const header = document.querySelector("[data-page-header]");
+    let intersectionObserver;
+    let animationFrame;
 
-    const TOP_BAR = 68; // din sticky header-højde
-    const offset = TOP_BAR + gap; // samme som sticky top på thead
+    const observeSentinel = () => {
+      intersectionObserver?.disconnect();
 
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        // når sentinel passerer offset, er headeren stuck
-        setStuck(!entry.isIntersecting);
-      },
-      {
-        root: null, // viewport
-        rootMargin: `-${offset}px 0px 0px 0px`,
-        threshold: 0,
-      }
-    );
+      const cs = getComputedStyle(wrap);
+      const gapVar = cs.getPropertyValue("--gap-height").trim() || "12px";
+      const gap = parseFloat(gapVar) || 12;
+      const headerHeight = header?.getBoundingClientRect().height || 68;
+      const offset = Math.ceil(headerHeight) + gap;
 
-    io.observe(sentinel);
-    return () => io.disconnect();
+      intersectionObserver = new IntersectionObserver(
+        ([entry]) => setStuck(!entry.isIntersecting),
+        {
+          root: null,
+          rootMargin: `-${offset}px 0px 0px 0px`,
+          threshold: 0,
+        }
+      );
+      intersectionObserver.observe(sentinel);
+    };
+
+    const scheduleObservation = () => {
+      window.cancelAnimationFrame(animationFrame);
+      animationFrame = window.requestAnimationFrame(observeSentinel);
+    };
+
+    observeSentinel();
+
+    const resizeObserver = new ResizeObserver(scheduleObservation);
+    if (header) resizeObserver.observe(header);
+    resizeObserver.observe(wrap);
+    window.addEventListener("resize", scheduleObservation);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      intersectionObserver?.disconnect();
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", scheduleObservation);
+    };
   }, []);
 
   return (
@@ -173,21 +231,21 @@ export default function Result({ data, byFieldMap, onSelect }) {
                 data-sort-active={isActive(COL.FIELD)}
                 data-sort-dir={isActive(COL.FIELD) ? sort.dir : "off"}
                 aria-sort={ariaSort(COL.FIELD)}
-                title="Sort by Field (a–z / z–a / off)"
+                title={`Sort by ${elementLabel} (a–z / z–a / off)`}
               >
-                Field {renderSortIcon(COL.FIELD)}
+                {elementLabel}
               </th>
 
               <th
                 role="button"
-                onClick={() => onHeaderClick(COL.DEPRECATED)}
-                className={thClass(COL.DEPRECATED)}
-                data-sort-active={isActive(COL.DEPRECATED)}
-                data-sort-dir={isActive(COL.DEPRECATED) ? sort.dir : "off"}
-                aria-sort={ariaSort(COL.DEPRECATED)}
-                title="Sort by Deprecated (false/true)"
+                onClick={() => onHeaderClick(COL.STATUS)}
+                className={thClass(COL.STATUS)}
+                data-sort-active={isActive(COL.STATUS)}
+                data-sort-dir={isActive(COL.STATUS) ? sort.dir : "off"}
+                aria-sort={ariaSort(COL.STATUS)}
+                title="Sort by schema status"
               >
-                Deprecated {renderSortIcon(COL.DEPRECATED)}
+                Status
               </th>
 
               <th
@@ -199,15 +257,37 @@ export default function Result({ data, byFieldMap, onSelect }) {
                 aria-sort={ariaSort(COL.COUNT)}
                 title="Sort by Count (low/high)"
               >
-                Count {renderSortIcon(COL.COUNT)}
+                Count
+              </th>
+
+              <th
+                role="button"
+                onClick={() => onHeaderClick(COL.LAST_USED)}
+                className={thClass(COL.LAST_USED)}
+                data-sort-active={isActive(COL.LAST_USED)}
+                data-sort-dir={isActive(COL.LAST_USED) ? sort.dir : "off"}
+                aria-sort={ariaSort(COL.LAST_USED)}
+                title="Sort by last used (newest/oldest/off)"
+              >
+                Last used
               </th>
             </tr>
           </thead>
 
           <tbody className={styles.body}>
             {sorted.map((r, idx) => {
-              const { field, type, isDeprecated, description, __key, __count } =
-                r || {};
+              const {
+                isDeprecated,
+                isDraft,
+                description,
+                __key,
+                __count,
+                __lastSeen,
+                __fieldLabel,
+              } = r || {};
+              const separator = __fieldLabel.lastIndexOf(".");
+              const prefix = __fieldLabel.slice(0, separator);
+              const name = __fieldLabel.slice(separator + 1);
               return (
                 <tr
                   key={__key}
@@ -225,10 +305,22 @@ export default function Result({ data, byFieldMap, onSelect }) {
                 >
                   <td>{idx + 1}</td>
                   <td>
-                    <span className={styles.type}>{type}</span>.{field}
+                    {prefix && <span className={styles.type}>{prefix}</span>}
+                    {prefix && "."}
+                    {name}
                   </td>
-                  <td>{isDeprecated ? "true" : "false"}</td>
+                  <td>
+                    {isDraft ? "draft" : isDeprecated ? "deprecated" : "active"}
+                  </td>
                   <td>{__count}</td>
+                  <td className={styles.lastUsed}>
+                    <time
+                      dateTime={__lastSeen || undefined}
+                      title={formatLastUsedTitle(__lastSeen)}
+                    >
+                      {formatLastUsed(__lastSeen)}
+                    </time>
+                  </td>
                 </tr>
               );
             })}

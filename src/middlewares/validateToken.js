@@ -16,7 +16,7 @@ export async function validateToken(req, res, next) {
   try {
     const graphQLParams = req.body;
     const document = parse(graphQLParams.query);
-    const ast = getOperationAST(document);
+    const ast = getOperationAST(document, graphQLParams.operationName);
     req.operationName = ast?.kind === "OperationDefinition" && ast?.name?.value;
 
     req.queryVariables = graphQLParams.variables;

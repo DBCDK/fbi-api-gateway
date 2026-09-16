@@ -1,17 +1,200 @@
 .container {
+  position: relative;
+  display: flex;
+  flex: 0 1 430px;
+  min-width: 260px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--pt1);
+  transition: flex-basis 240ms ease;
+}
+
+.container:has(.input:focus) {
+  flex-basis: 500px;
+}
+
+.control {
+  display: flex;
+  height: var(--pt6);
+  border: 2px solid var(--divider);
+  border-radius: calc(var(--pt6) / 2);
+  background: var(--white);
+  transition: border-color 160ms ease;
+}
+
+.control:focus-within {
+  border-color: var(--text-dark);
+}
+
+.scopeLabel {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  border-right: 1px solid var(--divider);
+}
+
+.scope {
+  height: 100%;
+  max-width: 132px;
+  appearance: none;
+  border: 0;
+  outline: 0;
+  padding: 0 var(--pt5) 0 var(--pt2);
+  background: transparent;
+  color: var(--text-dark);
+  font-family: var(--font-mono-semibold);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.scopeLabel::after {
+  content: "▾";
+  position: absolute;
+  right: var(--pt2);
+  color: var(--text-light);
+  pointer-events: none;
+}
+
+.inputWrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .input {
-  width: 200px;
-  border-color: var(--divider);
-  background-color: transparent;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  border: 0 !important;
+  border-radius: 0 calc(var(--pt6) / 2) calc(var(--pt6) / 2) 0;
+  background: transparent;
   color: var(--text-dark);
 }
 
 .input:focus {
-  width: 250px;
+  outline: 0;
 }
 
-.input:global(.hasValue) {
-  border-color: var(--secondary);
+.commands {
+  position: absolute;
+  top: calc(100% + var(--pt1));
+  right: 0;
+  left: 0;
+  z-index: 20;
+  overflow: hidden;
+  border: 1px solid var(--divider);
+  border-radius: var(--pt1);
+  background: var(--white);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.commands button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--pt2);
+  border: 0;
+  padding: var(--pt2);
+  background: transparent;
+  color: var(--text-dark);
+  text-align: left;
+}
+
+.commands button:hover,
+.commands button:focus-visible,
+.commands button[aria-selected="true"] {
+  background: var(--divider);
+}
+
+.commands code {
+  min-width: 72px;
+  color: var(--secondary);
+}
+
+.commands span {
+  color: var(--text-light);
+  font-size: 13px;
+}
+
+.activeFilters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--pt1);
+}
+
+.filterChip {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+}
+
+.filterChip > button:first-child {
+  max-width: 100%;
+  padding-right: var(--pt5);
+}
+
+.filterChip code {
+  overflow: hidden;
+  max-width: 150px;
+  padding: 0;
+  color: inherit;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.removeFilter {
+  position: absolute;
+  top: 50%;
+  right: var(--pt1);
+  display: inline-grid;
+  width: var(--pt3);
+  height: var(--pt3);
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.removeFilter:hover,
+.removeFilter:focus-visible {
+  color: var(--text-dark);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .container {
+    width: 100%;
+    min-width: 0;
+    flex-basis: auto;
+  }
+
+  .container:has(.input:focus) {
+    flex-basis: auto;
+  }
+
+  .activeFilters {
+    justify-content: flex-start;
+  }
+}
+
+:global(body.dark) .control,
+:global(body.dark) .commands {
+  background: var(--dark);
 }
