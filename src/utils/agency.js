@@ -12,36 +12,33 @@ export function _isFFUAgency(branchId) {
   return branchId.length === LENGTH && list.includes(branchId.charAt(0));
 }
 
+const CULR_DATA_SYNC_BRANCH_IDS = [
+  // Gymnasier
+  "872960", // Odense Katedralskole
+  "872600", // Roskilde Gymnasium
+  "861640", // Sorø Akademis Skole
+  "872320", // Slagelse Gymnasium biblioteket
+  "874260", // Greve Gymnasium, Biblioteket
+  "875140", // Stenhus Gymnasium
+  "871890", // Sct. Knuds Gymnasium
+  "861160", // Erhvervsakademiet Aarhus
+
+  "820050", // Aalborg Universitetsbibliotek
+  "820051", // Aalborg Universitetsbibliotek Esbjerg
+  "820052", // Aalborg Universitetsbibliotek København
+
+  "820030", // Syddansk Universitetsbibliotek, Odense
+  "820031", // Syddansk Universitetsbibliotek, Esbjerg
+  "820032", // Syddansk Universitetsbibliotek, Kolding
+  "820033", // Syddansk Universitetsbibliotek, Sønderborg
+  "820039", // Syddansk Universitetsbibliotek, Slagelse
+
+  // Login with mitId, when no library accounts
+  "190101",
+];
+
 export function _hasCulrDataSync(branchId) {
-  /**
-   * Odense Katedralskole, 872960,
-   * Roskilde Gymnasium, 872600
-   * Sorø Akademis Skole, 861640
-   * Slagelse Gymnasium, biblioteket 872320
-   * Greve Gymnasium, Biblioteket 874260
-   * Stenhus Gymnasium, 875140
-   * Sct. Knuds Gymnasium, 871890
-   */
-
-  const whitelist = [
-    // Gymnasier
-    "872960",
-    "872600",
-    "861640",
-    "872320",
-    "874260",
-    "875140",
-    "871890",
-
-    // Login with mitId, when no library accounts
-    "190101",
-  ];
-
-  if (whitelist.includes(branchId)) {
-    return true;
-  }
-
-  return false;
+  return CULR_DATA_SYNC_BRANCH_IDS.includes(branchId);
 }
 
 /**
@@ -97,25 +94,7 @@ export async function isFolkAgency(branchId, context) {
  */
 export async function hasCulrDataSync(branchId, context) {
   // Check if branch is a FFU library, as these are known to sync data with culr.
-  const whitelist = [
-    // Gymnasier
-    "872960", // Odense Katedralskole
-    "872600", // Roskilde Gymnasium
-    "861640", // Sorø Akademis Skole
-    "872320", // Slagelse Gymnasium biblioteket
-    "874260", // Greve Gymnasium, Biblioteket
-    "875140", // Stenhus Gymnasium
-    "871890", // Sct. Knuds Gymnasium
-    "861160", // Erhvervsakademiet Aarhus
-    "820050", // Aalborg Universitetsbibliotek
-    "820051", // Aalborg Universitetsbibliotek Esbjerg
-    "820052", // Aalborg Universitetsbibliotek København
-
-    // Login with mitId, when no library accounts
-    "190101",
-  ];
-
-  if (whitelist.includes(branchId)) {
+  if (_hasCulrDataSync(branchId)) {
     return true;
   }
 
