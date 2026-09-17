@@ -27,6 +27,14 @@ export async function fetchUserInfo(req, res, next) {
         accessToken: req.accessToken,
       }));
 
+    if (userinfo?.statusCode === 401) {
+      res.status(401);
+      return res.send({
+        statusCode: 401,
+        message: "Invalid access token",
+      });
+    }
+
     req.user = userinfo?.attributes || null;
   } catch (e) {
     log.error("Error fetching from userinfo", { response: e });

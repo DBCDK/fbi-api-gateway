@@ -113,7 +113,10 @@ export async function load({ accessToken }, context) {
     };
   }
 
-  return res.body;
+  return {
+    ...(res.body || {}),
+    statusCode: res.status,
+  };
 }
 
 /**
