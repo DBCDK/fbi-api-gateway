@@ -425,15 +425,6 @@ export default {
       prefix: process.env.ELK_PREFIX || "elk-1",
       teamLabel: "platform", //todo: double check if correct
     },
-    infomedia: {
-      url:
-        process.env.INFOMEDIA_URL ||
-        "http://infomedia-master.frontend-prod.svc.cloud.dbc.dk/1.5/server.php",
-      id: process.env.INFOMEDIA_ID || "infomedia_fra_netpunkt",
-      ttl: process.env.INFOMEDIA_TIME_TO_LIVE_SECONDS || 60 * 60,
-      prefix: process.env.INFOMEDIA_PREFIX || "infomedia-1",
-      teamLabel: "febib",
-    },
     retriever: {
       url: process.env.RETRIEVER_URL || "https://port.retriever-info.com",
       token: process.env.RETRIEVER_API_TOKEN,
