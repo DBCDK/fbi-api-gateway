@@ -1,0 +1,24 @@
+# Semantic Search
+
+Search for works based on the meaning of a natural-language query.
+_Threshold_ controls the minimum semantic similarity from 0 to 1 and
+defaults to 0. Higher values return only more similar results.
+
+<InlineGraphiQL
+  query={`query Example_SemanticSearch ($q: String!, $threshold: Float, $offset: Int!, $limit: PaginationLimitScalar!) {
+    semanticSearch(q: $q, threshold: $threshold) {
+      hitcount
+      works(offset: $offset, limit: $limit) {
+        titles {
+          main
+        }
+      }
+    }
+  }`}
+  variables={{
+    q: "Hvordan påvirker sociale medier unges trivsel?",
+    threshold: 0,
+    offset: 0,
+    limit: 5,
+  }}
+/>
