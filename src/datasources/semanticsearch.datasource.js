@@ -29,10 +29,8 @@ export async function load(
     })
   ).body;
 
-  const results = Array.isArray(response) ? response : [];
-
-  // TODO: Use the actual hitcount when it is implemented by semantic-search.
-  const hitcount = 0;
+  const results = Array.isArray(response?.results) ? response.results : [];
+  const hitcount = response?.hit_count || 0;
 
   return {
     result: results.map((item) => ({

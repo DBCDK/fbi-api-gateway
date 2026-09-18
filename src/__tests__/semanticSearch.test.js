@@ -7,10 +7,13 @@ describe("semanticSearch datasource", () => {
   test("maps the request and response without exposing debug", async () => {
     const context = {
       fetch: jest.fn().mockResolvedValue({
-        body: [
-          { persistent_work_id: "work-2" },
-          { persistent_work_id: "work-3" },
-        ],
+        body: {
+          hit_count: 40,
+          results: [
+            { persistent_work_id: "work-2" },
+            { persistent_work_id: "work-3" },
+          ],
+        },
       }),
     };
 
@@ -27,7 +30,7 @@ describe("semanticSearch datasource", () => {
       )
     ).resolves.toEqual({
       result: [{ workid: "work-2" }, { workid: "work-3" }],
-      hitcount: 0,
+      hitcount: 40,
     });
 
     expect(context.fetch).toHaveBeenCalledWith(
