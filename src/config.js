@@ -276,6 +276,14 @@ export default {
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
       teamLabel: "ai",
     },
+    semanticsearch: {
+      url:
+        process.env.SEMANTICSEARCH_URL ||
+        "http://semantic-search-1-0.ai-prod.svc.cloud.dbc.dk/search", // NOSONAR
+      prefix: process.env.SEMANTICSEARCH_PREFIX || "semanticsearch-1",
+      ttl: process.env.SEMANTICSEARCH_TIME_TO_LIVE_SECONDS || 10,
+      teamLabel: "ai",
+    },
     prosper: {
       url:
         process.env.PROSPER_URL ||
