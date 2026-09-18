@@ -37,4 +37,14 @@ describe("Permissions", () => {
     });
     expect(result).toMatchSnapshot();
   });
+  test("semantic search is only enabled for the bibliotek.dk role", () => {
+    const bibdk = parseClientPermissions({
+      smaug: { gateway: { role: "bibdk" } },
+    });
+
+    const defaults = parseClientPermissions({ smaug: {} });
+
+    expect(bibdk.allowRootFields).toContain("semanticSearch");
+    expect(defaults.allowRootFields).not.toContain("semanticSearch");
+  });
 });

@@ -62,6 +62,7 @@ const bibdk = {
     "localizationsWithHoldings",
     "ris",
     "inspiration",
+    "semanticSearch",
     "orderStatus",
     "test",
     "user",

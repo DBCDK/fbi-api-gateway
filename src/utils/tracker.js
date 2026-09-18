@@ -14,6 +14,8 @@ function createTrackEntry() {
     totalSum: 0,
     bytesSum: 0,
     redisTimeSum: 0,
+    dedupeWaitMs: 0,
+    dedupeEnabled: false,
   };
 }
 
@@ -36,6 +38,9 @@ export function createTracker(uuid) {
       incrementRedisHits(key, count, trackerObj),
     incrementRedisLookups: (key, count) =>
       incrementRedisLookups(key, count, trackerObj),
+    enableDedupe: (key) => enableDedupe(key, trackerObj),
+    addDedupeWait: (key, milliseconds) =>
+      addDedupeWait(key, milliseconds, trackerObj),
     summary: () => summary(trackerObj),
     uuid,
   };
@@ -53,6 +58,9 @@ function summary(trackerObj) {
         cacheLookups: timings.redisLookups,
         jsonProcessingMs: timings.jsonParseSum + timings.jsonStringifySum,
         avgCacheTimeMs: timings.redisTimeSum / timings.redisLookups || 0,
+        ...(timings.dedupeEnabled && {
+          dedupeWaitMs: Math.round(timings.dedupeWaitMs),
+        }),
       };
     }
   );
@@ -114,4 +122,13 @@ function incrementRedisLookups(key, count, trackerObj) {
   createEntry(key, trackerObj);
   trackerObj.overall.redisLookups += count;
   trackerObj.datasources[key].redisLookups += count;
+}
+function enableDedupe(key, trackerObj) {
+  createEntry(key, trackerObj);
+  trackerObj.datasources[key].dedupeEnabled = true;
+}
+function addDedupeWait(key, milliseconds, trackerObj) {
+  createEntry(key, trackerObj);
+  trackerObj.overall.dedupeWaitMs += milliseconds;
+  trackerObj.datasources[key].dedupeWaitMs += milliseconds;
 }

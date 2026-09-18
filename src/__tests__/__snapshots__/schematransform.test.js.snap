@@ -3,6 +3,8 @@
 exports[`complete access to whole schema 1`] = `
 "directive @fallback on ENUM_VALUE
 
+directive @oneOf on INPUT_OBJECT
+
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
@@ -289,6 +291,13 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work
   works(id: [String!], faust: [String!], pid: [String!], oclc: [String!], language: LanguageCodeEnum): [Work]!
   search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+
+  """
+  Search for works based on the meaning of a natural-language query.
+  Threshold controls the minimum semantic similarity from 0 to 1 and
+  defaults to 0. Higher values return only more similar results.
+  """
+  semanticSearch(q: String!, threshold: Float = 0): SemanticSearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFiltersInput, cqlfilter: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService!
 
@@ -354,7 +363,7 @@ type Query {
     sortPickupAllowed: Boolean
   ): BranchResult!
   deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
-  infomedia(id: String!): InfomediaResponse!
+  infomedia(id: String!): InfomediaResponse! @deprecated(reason: "Use 'retriever' instead expires: 18/12-2026")
   session: Session
   howru: String
   localizations(pids: [String!]!): Localizations
@@ -1130,6 +1139,12 @@ type Person implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this person made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the person is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed persons contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -1181,6 +1196,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this corporation made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the corporation is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed corporations contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -1200,6 +1221,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the creator is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed creators contributed to this creation
+  """
+  andOthers: Boolean
 
   """VIAF identifier of the creator"""
   viafid: String
@@ -2548,7 +2575,7 @@ type Note {
   type: NoteTypeEnum!
 
   """Heading before note"""
-  heading: String
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """The actual notes"""
   display: [String!]!
@@ -2691,7 +2718,7 @@ type Edition {
   edition: String
 
   """Quotation of contributor statements related to the edition"""
-  contributors: [String!]!
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """A year as displayable text and as number"""
   publicationYear: PublicationYear
@@ -3075,7 +3102,7 @@ type Manifestation {
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
-  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
@@ -3136,7 +3163,7 @@ type Manifestation {
   sheetMusicCategories: SheetMusicCategory
 
   """The publication status of a catalogued manifestation."""
-  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 26/11-2026")
+  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 05/12-2026")
 
   """The genre and (literary) form of this manifestation"""
   genreForm: [GenreForm!]!
@@ -3317,7 +3344,7 @@ type ManifestationTitles {
   parallel: [String!]!
 
   """The standard title of the entity, used for music and movies"""
-  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -3325,7 +3352,7 @@ type ManifestationTitles {
   titlePlusLanguage: String
 
   """Danish translation of the main title"""
-  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """detailed title for tv series """
   tvSeries: TvSeries
@@ -4141,10 +4168,13 @@ type BookmarkItem {
   """
   The bibliographic record associated with the bookmark, if it can still be resolved.
   """
-  material: MaterialUnion
+  material: BookmarkMaterial!
+
+  """The selection applied to the bookmarked work."""
+  selection: BookmarkSelection
 
   """Stored metadata captured when the bookmark was created."""
-  snapshot: PatronMaterialSnapshot!
+  snapshot: BookmarkSnapshot!
 
   """creation date of the bookmark"""
   createdAt: DateTime!
@@ -4153,8 +4183,41 @@ type BookmarkItem {
   application: String!
 }
 
-"""Union type for different material types that can be bookmarked"""
-union MaterialUnion = Work | Manifestation
+type BookmarkMaterial {
+  work: Work
+  manifestation: Manifestation
+
+  """
+  Manifestations matching the bookmark selection. This is not necessarily
+  every manifestation in the work.
+  """
+  manifestations: [Manifestation!]
+}
+
+type BookmarkSnapshot {
+  version: Int
+  pid: String
+  workId: String
+  title: String
+  creator: String
+
+  """
+  Stored material types for a manifestation or a work selection. This is
+  null for a bookmark of an entire work.
+  """
+  materialTypes: [PatronMaterialTypeSnapshot!]
+  workType: String
+  periodical: PeriodicalSnapshot
+}
+
+type BookmarkSelection {
+  materialTypes: BookmarkMaterialTypesSelection!
+}
+
+type BookmarkMaterialTypesSelection {
+  general: [GeneralMaterialTypeCodeEnum!]
+  specific: [String!]
+}
 
 """Enum for sorting bookmarks"""
 enum OrderBookmarksByEnum {
@@ -4165,10 +4228,17 @@ enum OrderBookmarksByEnum {
 }
 
 input BookmarksInput {
-  """
-  The unique identifier for the material being bookmarked (e.g., a PID or work ID).
-  """
   materialId: String!
+  selection: BookmarkSelectionInput
+}
+
+input BookmarkSelectionInput {
+  materialTypes: BookmarkMaterialTypesSelectionInput!
+}
+
+input BookmarkMaterialTypesSelectionInput {
+  general: [GeneralMaterialTypeCodeEnum!]
+  specific: [String!]
 }
 
 type AddBookmarksResponse {
@@ -4205,8 +4275,11 @@ type BookmarksStatusItem {
   """
   materialId: String
 
+  """The normalized selection for the bookmark operation."""
+  selection: BookmarkSelection
+
   """The material for which bookmark addition failed."""
-  material: MaterialUnion
+  material: BookmarkMaterial
 }
 
 enum BookmarksOverallStatusEnum {
@@ -4449,11 +4522,24 @@ type PatronMaterialSnapshot {
   """Stored material type for the material."""
   materialType: String
 
+  """Stored general and specific material types."""
+  materialTypes: [PatronMaterialTypeSnapshot!]!
+
   """Stored work type for the material."""
   workType: String
 
   """Stored metadata about the periodical host publication, when relevant."""
   periodical: PeriodicalSnapshot
+}
+
+type PatronMaterialTypeSnapshot {
+  materialTypeGeneral: PatronMaterialTypeValueSnapshot!
+  materialTypeSpecific: PatronMaterialTypeValueSnapshot!
+}
+
+type PatronMaterialTypeValueSnapshot {
+  code: String
+  display: String
 }
 
 type RawRepo {
@@ -4860,6 +4946,18 @@ type SearchResponse {
 
   """A list of alternative search queries"""
   didYouMean(limit: Int): [DidYouMean!]!
+}
+
+"""The semantic search response"""
+type SemanticSearchResponse {
+  """Total number of works found."""
+  hitcount: Int!
+
+  """
+  The works that are semantically similar to the query.
+  Use offset and limit for pagination.
+  """
+  works(offset: Int!, limit: PaginationLimitScalar!): [Work!]!
 }
 
 type DidYouMean {
@@ -6136,7 +6234,7 @@ type WorkTitles {
   original: [String!]
 
   """The standard title of the entity, used for music and movies"""
-  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -6144,7 +6242,7 @@ type WorkTitles {
   titlePlusLanguage: String
 
   """Danish translation of the main title"""
-  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """detailed title for tv series """
   tvSeries: TvSeries
@@ -6155,7 +6253,7 @@ type TvSeries {
   title: String
 
   """Dansih translated title of the tv serie"""
-  danishLaunchTitle: String
+  danishLaunchTitle: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """Detailed information about the episode"""
   episode: TvSeriesDetails
@@ -6182,6 +6280,8 @@ type TvSeriesDetails {
 
 exports[`default schema transform 1`] = `
 "directive @fallback on ENUM_VALUE
+
+directive @oneOf on INPUT_OBJECT
 
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
@@ -6388,7 +6488,7 @@ type Query {
 
   """Get recommendations"""
   recommend(id: String, pid: String, faust: String, limit: Int, branchId: String): RecommendationResponse!
-  infomedia(id: String!): InfomediaResponse!
+  infomedia(id: String!): InfomediaResponse! @deprecated(reason: "Use 'retriever' instead expires: 18/12-2026")
   refWorks(pids: [String!]!): String!
 
   """
@@ -6661,6 +6761,12 @@ type Person implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this person made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the person is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed persons contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -6702,6 +6808,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this corporation made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the corporation is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed corporations contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -6721,6 +6833,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the creator is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed creators contributed to this creation
+  """
+  andOthers: Boolean
 
   """VIAF identifier of the creator"""
   viafid: String
@@ -7049,7 +7167,7 @@ type Note {
   type: NoteTypeEnum!
 
   """Heading before note"""
-  heading: String
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """The actual notes"""
   display: [String!]!
@@ -7192,7 +7310,7 @@ type Edition {
   edition: String
 
   """Quotation of contributor statements related to the edition"""
-  contributors: [String!]!
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """A year as displayable text and as number"""
   publicationYear: PublicationYear
@@ -7576,7 +7694,7 @@ type Manifestation {
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
-  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
@@ -7637,7 +7755,7 @@ type Manifestation {
   sheetMusicCategories: SheetMusicCategory
 
   """The publication status of a catalogued manifestation."""
-  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 26/11-2026")
+  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 05/12-2026")
 
   """The genre and (literary) form of this manifestation"""
   genreForm: [GenreForm!]!
@@ -7815,7 +7933,7 @@ type ManifestationTitles {
   parallel: [String!]!
 
   """The standard title of the entity, used for music and movies"""
-  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -7823,7 +7941,7 @@ type ManifestationTitles {
   titlePlusLanguage: String
 
   """Danish translation of the main title"""
-  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """detailed title for tv series """
   tvSeries: TvSeries
@@ -8820,7 +8938,7 @@ type WorkTitles {
   original: [String!]
 
   """The standard title of the entity, used for music and movies"""
-  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -8828,7 +8946,7 @@ type WorkTitles {
   titlePlusLanguage: String
 
   """Danish translation of the main title"""
-  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """detailed title for tv series """
   tvSeries: TvSeries
@@ -8839,7 +8957,7 @@ type TvSeries {
   title: String
 
   """Dansih translated title of the tv serie"""
-  danishLaunchTitle: String
+  danishLaunchTitle: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """Detailed information about the episode"""
   episode: TvSeriesDetails
@@ -8867,6 +8985,8 @@ type TvSeriesDetails {
 exports[`limited access to root fields 1`] = `
 "directive @fallback on ENUM_VALUE
 
+directive @oneOf on INPUT_OBJECT
+
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
 
@@ -8878,6 +8998,8 @@ type Query {
 
 exports[`remove all fields by type 1`] = `
 "directive @fallback on ENUM_VALUE
+
+directive @oneOf on INPUT_OBJECT
 
 """Complexity directive to evaluate query complexity """
 directive @complexity(value: Int!, multipliers: [String!]) on FIELD_DEFINITION
@@ -9180,6 +9302,12 @@ type Person implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this person made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the person is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed persons contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -9231,6 +9359,12 @@ type Corporation implements SubjectInterface & CreatorInterface {
   A list of which kinds of contributions this corporation made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the corporation is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed corporations contributed to this creation
+  """
+  andOthers: Boolean
   type: SubjectTypeEnum!
   language: Language
   local: Boolean
@@ -9250,6 +9384,12 @@ interface CreatorInterface {
   A list of which kinds of contributions this creator made to this creation
   """
   roles: [Role!]!
+
+  """
+  True when the creator is followed by 'm.fl.' (and others) in the publication,
+  meaning that additional unnamed creators contributed to this creation
+  """
+  andOthers: Boolean
 
   """VIAF identifier of the creator"""
   viafid: String
@@ -9555,7 +9695,7 @@ type Note {
   type: NoteTypeEnum!
 
   """Heading before note"""
-  heading: String
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """The actual notes"""
   display: [String!]!
@@ -9698,7 +9838,7 @@ type Edition {
   edition: String
 
   """Quotation of contributor statements related to the edition"""
-  contributors: [String!]!
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """A year as displayable text and as number"""
   publicationYear: PublicationYear
@@ -10079,7 +10219,7 @@ type Manifestation {
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
-  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
@@ -10140,7 +10280,7 @@ type Manifestation {
   sheetMusicCategories: SheetMusicCategory
 
   """The publication status of a catalogued manifestation."""
-  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 26/11-2026")
+  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 05/12-2026")
 
   """The genre and (literary) form of this manifestation"""
   genreForm: [GenreForm!]!
@@ -10321,7 +10461,7 @@ type ManifestationTitles {
   parallel: [String!]!
 
   """The standard title of the entity, used for music and movies"""
-  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -10329,7 +10469,7 @@ type ManifestationTitles {
   titlePlusLanguage: String
 
   """Danish translation of the main title"""
-  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """detailed title for tv series """
   tvSeries: TvSeries
@@ -10927,7 +11067,7 @@ type WorkTitles {
   original: [String!]
 
   """The standard title of the entity, used for music and movies"""
-  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -10935,7 +11075,7 @@ type WorkTitles {
   titlePlusLanguage: String
 
   """Danish translation of the main title"""
-  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 26/11-2026")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """detailed title for tv series """
   tvSeries: TvSeries
@@ -10946,7 +11086,7 @@ type TvSeries {
   title: String
 
   """Dansih translated title of the tv serie"""
-  danishLaunchTitle: String
+  danishLaunchTitle: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """Detailed information about the episode"""
   episode: TvSeriesDetails

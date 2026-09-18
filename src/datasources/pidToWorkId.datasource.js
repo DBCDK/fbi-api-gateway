@@ -39,6 +39,10 @@ export const options = {
   redis: {
     prefix: `pidtowork-${prefix}`,
     ttl,
+    dedupe: {
+      waitTimeoutMs: 5_000,
+      lockTtlMs: 8_000,
+    },
   },
 };
 

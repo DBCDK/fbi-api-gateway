@@ -276,6 +276,14 @@ export default {
       ttl: process.env.SIMPLESEARCH_TIME_TO_LIVE_SECONDS || 10,
       teamLabel: "ai",
     },
+    semanticsearch: {
+      url:
+        process.env.SEMANTICSEARCH_URL ||
+        "http://semantic-search-1-0.ai-prod.svc.cloud.dbc.dk/search", // NOSONAR
+      prefix: process.env.SEMANTICSEARCH_PREFIX || "semanticsearch-1",
+      ttl: process.env.SEMANTICSEARCH_TIME_TO_LIVE_SECONDS || 10,
+      teamLabel: "ai",
+    },
     prosper: {
       url:
         process.env.PROSPER_URL ||
@@ -424,15 +432,6 @@ export default {
       password: process.env.ELK_PASSWORD,
       prefix: process.env.ELK_PREFIX || "elk-1",
       teamLabel: "platform", //todo: double check if correct
-    },
-    infomedia: {
-      url:
-        process.env.INFOMEDIA_URL ||
-        "http://infomedia-master.frontend-prod.svc.cloud.dbc.dk/1.5/server.php",
-      id: process.env.INFOMEDIA_ID || "infomedia_fra_netpunkt",
-      ttl: process.env.INFOMEDIA_TIME_TO_LIVE_SECONDS || 60 * 60,
-      prefix: process.env.INFOMEDIA_PREFIX || "infomedia-1",
-      teamLabel: "febib",
     },
     retriever: {
       url: process.env.RETRIEVER_URL || "https://port.retriever-info.com",

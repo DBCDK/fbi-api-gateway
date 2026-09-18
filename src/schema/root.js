@@ -40,6 +40,12 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCodeEnum): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  """
+  Search for works based on the meaning of a natural-language query.
+  Threshold controls the minimum semantic similarity from 0 to 1 and
+  defaults to 0. Higher values return only more similar results.
+  """
+  semanticSearch(q: String!, threshold: Float = 0): SemanticSearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFiltersInput, cqlfilter: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
   """
@@ -125,7 +131,7 @@ type Query {
   ): BranchResult! @complexity(value: 5, multipliers: ["limit"])
 
   deleteOrder(orderId: String!, orderType: OrderTypeEnum!): SubmitOrder
-  infomedia(id: String!): InfomediaResponse!
+  infomedia(id: String!): InfomediaResponse! @deprecated(reason: "Use 'retriever' instead expires: 18/12-2026")
   session: Session
   howru:String
   localizations(pids:[String!]!): Localizations @complexity(value: 35, multipliers: ["pids"])
@@ -232,10 +238,14 @@ export const resolvers = {
       return risRecords.filter(Boolean).join("\n");
     },
     async refWorks(parent, args, context, info) {
-      const ref = await context.datasources
-        .getLoader("refworks")
-        .load({ pids: args.pids });
-      return ref;
+      const refworksRecords = await Promise.all(
+        args.pids.map((pid) =>
+          context.datasources.getLoader("refworks").load({ pid })
+        )
+      );
+
+      return refworksRecords.filter(Boolean).join("\n");
+
     },
     async localizations(parent, args, context, info) {
       return await resolveLocalizations(args, context);
@@ -370,6 +380,13 @@ export const resolvers = {
       if (args.filters) {
         const filters = translateFilters(args.filters);
         return { ...args, filters };
+      }
+
+      return args;
+    },
+    async semanticSearch(parent, args, context, info) {
+      if (args.threshold < 0 || args.threshold > 1) {
+        throw new GraphQLError("Threshold must be between 0 and 1");
       }
 
       return args;

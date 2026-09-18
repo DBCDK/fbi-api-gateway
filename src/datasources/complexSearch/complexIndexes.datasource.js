@@ -27,6 +27,10 @@ export const options = {
     prefix: prefix + "indexes-2",
     ttl: 60 * 60,
     staleWhileRevalidate: 2 * 60 * 60,
+    dedupe: {
+      waitTimeoutMs: 5_000,
+      lockTtlMs: 8_000,
+    },
   },
 };
 

@@ -1,5 +1,3 @@
-import { getInfomediaAgencyId } from "./access";
-
 export async function fetchArticle(parent, context) {
   const id = parent?.id;
 
@@ -7,22 +5,7 @@ export async function fetchArticle(parent, context) {
     return null;
   }
 
-  const retrieverArticle = await context.datasources
+  return await context.datasources
     .getLoader("retriever")
     .load({ docId: id });
-
-  if (retrieverArticle) {
-    return retrieverArticle;
-  }
-
-  const agencyId = await getInfomediaAgencyId(context);
-
-  if (!agencyId) {
-    return null;
-  }
-
-  return await context.datasources.getLoader("infomedia").load({
-    articleId: id,
-    agencyId,
-  });
 }

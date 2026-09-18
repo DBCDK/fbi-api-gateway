@@ -213,6 +213,22 @@ type SearchResponse {
   didYouMean(limit: Int ): [DidYouMean!]! @complexity(value: 2, multipliers: ["limit"])
 }
 
+"""
+The semantic search response
+"""
+type SemanticSearchResponse {
+  """
+  Total number of works found.
+  """
+  hitcount: Int!
+
+  """
+  The works that are semantically similar to the query.
+  Use offset and limit for pagination.
+  """
+  works(offset: Int! limit: PaginationLimitScalar!): [Work!]! @complexity(value: 5, multipliers: ["limit"])
+}
+
 type DidYouMean {
   """
   A unique identifier for tracking user interactions with this didYouMean value. 
@@ -451,6 +467,45 @@ export const resolvers = {
       });
 
       return response;
+    },
+  },
+  SemanticSearchResponse: {
+    async hitcount(parent, args, context) {
+      const response = await context.datasources
+        .getLoader("semanticsearch")
+        .load({
+          ...parent,
+          profile: context.profile,
+        });
+
+      return response?.hitcount || 0;
+    },
+    async works(parent, args, context) {
+      const response = await context.datasources
+        .getLoader("semanticsearch")
+        .load({
+          ...parent,
+          ...args,
+          profile: context.profile,
+        });
+
+      const expanded = await Promise.all(
+        response.result
+          .map(({ workid }) => workid)
+          .filter(Boolean)
+          .map(async (workid) => {
+            const work = await resolveWork({ id: workid }, context);
+
+            if (!work) {
+              log.error("WORKID NOT FOUND in jed-presentation service", {
+                workId: workid,
+              });
+            }
+            return work;
+          })
+      );
+
+      return expanded.filter(Boolean);
     },
   },
 };
