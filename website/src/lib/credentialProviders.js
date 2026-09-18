@@ -351,9 +351,9 @@ export async function getAccessTokenForClient({
   network = null,
   req = null,
 }) {
-  const isInternal =
-    network === "internal" ||
-    (network === null && req && isInternalRequest(req));
+  const isInternal = network
+    ? network === "internal"
+    : Boolean(req && isInternalRequest(req));
   const effectiveClientSecret =
     clientSecret || (isInternal ? getInternalClientSecretForDate() : null);
 
