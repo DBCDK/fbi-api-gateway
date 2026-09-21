@@ -32,7 +32,7 @@ const MIN_PENDING_DURATION_MS = 1000;
  */
 
 function ApplicationsPage({ modal }) {
-  const { applications, setCredentialEntry: setApplicationEntry, removeCredentialEntry: removeApplicationEntry } =
+  const { applications, maxClientEntries = MAX_APPLICATION_ENTRIES, setCredentialEntry: setApplicationEntry, removeCredentialEntry: removeApplicationEntry } =
     useCredentialEntries();
   const { selectedCredential: selectedToken } = useSelectedCredential();
   const {
@@ -143,7 +143,7 @@ function ApplicationsPage({ modal }) {
 
     return [...transientEntries, ...preservedEntries, ...newEntries].slice(
       0,
-      MAX_APPLICATION_ENTRIES
+      maxClientEntries
     );
   }
 
@@ -247,7 +247,7 @@ function ApplicationsPage({ modal }) {
         return itemIdentifier !== identifier;
       });
 
-      return [entry, ...filtered].slice(0, MAX_APPLICATION_ENTRIES);
+      return [entry, ...filtered].slice(0, maxClientEntries);
     });
   }
 
@@ -370,11 +370,8 @@ function ApplicationsPage({ modal }) {
           null
         : applications?.find?.((item) => item?.token === filter.trim()) || null;
 
-    if (
-      !existingEntry &&
-      (applications?.length || 0) >= MAX_APPLICATION_ENTRIES
-    ) {
-      setInputError(`Max ${MAX_APPLICATION_ENTRIES} applications.`);
+    if (!existingEntry && (applications?.length || 0) >= maxClientEntries) {
+      setInputError(`Max ${maxClientEntries} applications.`);
       return;
     }
 
@@ -467,7 +464,7 @@ function ApplicationsPage({ modal }) {
               );
             }),
             ...applications,
-          ].slice(0, MAX_APPLICATION_ENTRIES);
+          ].slice(0, maxClientEntries);
 
       return areApplicationListsEqual(current, nextState) ? current : nextState;
     });
