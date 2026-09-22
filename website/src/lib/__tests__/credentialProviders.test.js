@@ -34,14 +34,16 @@ jest.mock("../../../../src/datasources/library.datasource", () => ({
   search: jest.fn(),
 }));
 
-jest.mock("../../../../src/datasources/culrGetAccountsByLocalId.datasource", () => ({
-  load: jest.fn(),
-}));
+jest.mock(
+  "../../../../src/datasources/culrGetAccountsByLocalId.datasource",
+  () => ({
+    load: jest.fn(),
+  })
+);
 
 jest.mock("../../../../src/utils/agency", () => ({
   _isFFUAgency: jest.fn(() => false),
   _hasCulrDataSync: jest.fn(() => false),
-  getAgencyIdByBranchId: jest.fn(),
 }));
 
 const fetch = require("isomorphic-unfetch");
@@ -52,12 +54,9 @@ const {
   load: getAccountsByLocalId,
 } = require("../../../../src/datasources/culrGetAccountsByLocalId.datasource");
 const {
-  getAgencyIdByBranchId,
-} = require("../../../../src/utils/agency");
-
-const {
   buildConfigurationResponse,
   buildUserResponse,
+  getAgencyInfoByBranchIdFromVipCore,
 } = require("../credentialProviders");
 
 describe("credentialProviders optional enrichment guards", () => {
@@ -106,6 +105,83 @@ describe("credentialProviders optional enrichment guards", () => {
     });
   });
 
+  test("gets agencyId for a branch from the targeted VIP Core endpoint", async () => {
+    fetch.mockResolvedValueOnce({
+      status: 200,
+      json: async () => ({
+        agencyInfo: [
+          {
+            pickupAgency: {
+              branchId: "800022",
+              agencyId: "800010",
+              agencyType: "Forskningsbibliotek",
+            },
+          },
+        ],
+      }),
+    });
+
+    const result = await getAgencyInfoByBranchIdFromVipCore("800022");
+
+    expect(result).toEqual({
+      agencyId: "800010",
+      agencyType: "Forskningsbibliotek",
+    });
+    expect(fetch).toHaveBeenCalledWith(
+      "https://example.test/vipcore/agencyinfo",
+      expect.objectContaining({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ branchId: "800022" }),
+        signal: expect.any(Object),
+      })
+    );
+  });
+
+  test("uses VIP agencyType when determining whether the login is FFU", async () => {
+    fetch
+      .mockResolvedValueOnce({
+        status: 200,
+        json: async () => ({ user: { agency: "800022" } }),
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        json: async () => ({
+          attributes: {
+            idpUsed: "borchk",
+            uniqueId: "guid-1",
+            userId: "user-1",
+            agencies: [],
+          },
+        }),
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        json: async () => ({
+          agencyInfo: [
+            {
+              pickupAgency: {
+                agencyId: "800010",
+                agencyType: "Forskningsbibliotek",
+              },
+            },
+          ],
+        }),
+      })
+      .mockRejectedValueOnce(new Error("openuserstatus timeout"));
+
+    const result = await buildUserResponse("token-ffu");
+
+    expect(result.body).toEqual(
+      expect.objectContaining({
+        loggedInAgencyId: "800010",
+        loggedInBranchId: "800022",
+        isAuthenticated: true,
+        hasCulrUniqueId: false,
+      })
+    );
+  });
+
   test("returns authenticated user data even when optional enrichment steps fail", async () => {
     fetch
       .mockResolvedValueOnce({
@@ -124,14 +200,18 @@ describe("credentialProviders optional enrichment guards", () => {
             uniqueId: "guid-1",
             userId: "0102033690",
             municipalityAgencyId: "740000",
-            agencies: [{ agencyId: "790900", userIdType: "CPR", userId: "0102033690" }],
+            agencies: [
+              { agencyId: "790900", userIdType: "CPR", userId: "0102033690" },
+            ],
           },
         }),
       })
+      .mockRejectedValueOnce(new Error("agencyinfo timeout"))
       .mockRejectedValueOnce(new Error("openuserstatus timeout"));
 
-    getAgencyIdByBranchId.mockRejectedValue(new Error("agency lookup timeout"));
-    setMunicipalityAgencyId.mockRejectedValue(new Error("municipality timeout"));
+    setMunicipalityAgencyId.mockRejectedValue(
+      new Error("municipality timeout")
+    );
     getAccountsByLocalId.mockRejectedValue(new Error("culr timeout"));
 
     const result = await buildUserResponse("token-2");
@@ -147,7 +227,6 @@ describe("credentialProviders optional enrichment guards", () => {
         agencies: ["790900"],
       }),
     });
-    expect(getAgencyIdByBranchId).toHaveBeenCalled();
     expect(setMunicipalityAgencyId).toHaveBeenCalled();
   });
 });

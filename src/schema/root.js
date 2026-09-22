@@ -40,6 +40,12 @@ type Query {
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCodeEnum): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
   search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  """
+  Search for works based on the meaning of a natural-language query.
+  Threshold controls the minimum semantic similarity from 0 to 1 and
+  defaults to 0. Higher values return only more similar results.
+  """
+  semanticSearch(q: String!, threshold: Float = 0): SemanticSearchResponse!
   complexSearch(cql: String!, filters: ComplexSearchFiltersInput, cqlfilter: ComplexSearchCQLFiltersInput, facets: ComplexSearchFacetsInput): ComplexSearchResponse!
   linkCheck: LinkCheckService! @complexity(value: 10, multipliers: ["urls"])
   """
@@ -374,6 +380,13 @@ export const resolvers = {
       if (args.filters) {
         const filters = translateFilters(args.filters);
         return { ...args, filters };
+      }
+
+      return args;
+    },
+    async semanticSearch(parent, args, context, info) {
+      if (args.threshold < 0 || args.threshold > 1) {
+        throw new GraphQLError("Threshold must be between 0 and 1");
       }
 
       return args;
