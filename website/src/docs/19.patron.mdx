@@ -205,6 +205,54 @@ present for manifestation bookmarks and bookmarks with a selection, and is
   }}
 />
 
+### Filter bookmarks
+
+The optional `filter` accepts a work ID and returns every bookmark associated
+with that work: bookmarks for the whole work, selections, and individual
+manifestations.
+
+A `hitcount` greater than zero means that the patron has bookmarked something
+in the work. It does not necessarily mean that a particular PID is bookmarked.
+To determine that, inspect `materialId` and `selection` on every matching item.
+Clients must fetch pages until they have received `hitcount` items; using a
+high `limit` alone does not guarantee that every item has been returned.
+
+<InlineGraphiQL
+  query={`
+    query Example_FilterPatronBookmarks(
+      $workId: String!
+      $offset: Int
+      $limit: PaginationLimitScalar
+    ) {
+      patron {
+        bookmarks(
+          filter: { workId: $workId }
+          offset: $offset
+          limit: $limit
+        ) {
+          hitcount
+          status
+          items {
+            id
+            materialId
+            selection {
+              materialTypes {
+                general
+                specific
+              }
+            }
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    workId: "work-of:870970-basis:54029519",
+    offset: 0,
+    limit: 10,
+  }}
+/>
+
 Bookmark collection status values:
 
 <DescribeEnum name="BookmarksOverallStatusEnum" />
@@ -215,8 +263,8 @@ Bookmark collection status values:
 selection. A selection must contain either general or specific codes, never
 both. A manifestation must contain every code in the selected array to match.
 When a PID has a selection, the API resolves its work and stores the normalized
-work ID with the selection. Snapshot metadata is resolved and created by the
-API.
+work ID with the selection. The API also resolves the owning work when storing
+a PID bookmark. Snapshot metadata is resolved and created by the API.
 
 When `dryRun` is `true`, identifiers and materials are validated without
 storing bookmarks. Existing bookmarks are reported as `ALREADY_EXISTS` and are

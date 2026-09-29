@@ -4,13 +4,21 @@ import { getBookmarkV2Response } from "./userDataBookmarksV2.utils";
 const { url, teamLabel } = config.datasources.userdata;
 
 export async function load(
-  { accessToken, filterApplications, orderBy, offset, limit },
+  {
+    accessToken,
+    filterApplications,
+    filterWorkId,
+    orderBy,
+    offset,
+    limit,
+  },
   context
 ) {
   const query = new URLSearchParams();
   filterApplications?.forEach((application) =>
     query.append("filterApplications", application)
   );
+  if (filterWorkId) query.set("filterWorkId", filterWorkId);
   if (orderBy) query.set("orderBy", orderBy);
   if (offset !== undefined) query.set("offset", offset);
   if (limit !== undefined) query.set("limit", limit);

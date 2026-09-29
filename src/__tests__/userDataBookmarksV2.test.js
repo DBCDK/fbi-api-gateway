@@ -45,6 +45,7 @@ describe("UserData Bookmark V2 datasources", () => {
     const context = createContext({ results: [] });
     const bookmarks = [
       {
+        workId: "work-of:pid:1",
         materialId: "pid:1",
         snapshot: {
           workId: "work-of:pid:1",
@@ -67,6 +68,28 @@ describe("UserData Bookmark V2 datasources", () => {
         },
         method: "POST",
         body: JSON.stringify({ bookmarks }),
+      }
+    );
+  });
+
+  test("GET forwards the work filter", async () => {
+    const context = createContext({ hitcount: 0, items: [] });
+
+    await getBookmarks(
+      {
+        accessToken,
+        filterWorkId: "work-of:pid:1",
+        offset: 0,
+        limit: 10,
+      },
+      context
+    );
+
+    expect(context.fetch).toHaveBeenCalledWith(
+      `${config.datasources.userdata.url}v2/bookmark/get?filterWorkId=work-of%3Apid%3A1&offset=0&limit=10`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        method: "GET",
       }
     );
   });
