@@ -125,10 +125,12 @@ async function resolveBookmarkInput(input, context) {
 
   if (!selection && isManifestation) {
     const obj = await resolveManifestation({ pid: materialId }, context);
+    const workId = obj?.workId || obj?.ownerWork?.workId || null;
     return {
+      workId,
       materialId,
       selection,
-      obj,
+      obj: workId ? obj : null,
       snapshotMaterial: obj,
       invalidMaterialId: false,
     };
@@ -136,10 +138,12 @@ async function resolveBookmarkInput(input, context) {
 
   if (!selection) {
     const obj = await resolveWork({ id: materialId }, context);
+    const workId = obj?.workId || null;
     return {
+      workId,
       materialId,
       selection,
-      obj,
+      obj: workId ? obj : null,
       snapshotMaterial: obj,
       invalidMaterialId: false,
     };
@@ -149,7 +153,7 @@ async function resolveBookmarkInput(input, context) {
     isWork ? { id: materialId } : { pid: materialId },
     context
   );
-  if (!work) {
+  if (!work?.workId) {
     return { materialId, selection, obj: null, invalidMaterialId: false };
   }
 
@@ -158,6 +162,7 @@ async function resolveBookmarkInput(input, context) {
   );
 
   return {
+    workId: work.workId,
     materialId: work.workId,
     selection,
     obj: manifestations.length > 0 ? { work, manifestations } : null,
@@ -206,6 +211,7 @@ export const typeDef = `
         """
         bookmarks(
           applications: [String!]
+          filter: BookmarkFilterInput
           orderBy: OrderBookmarksByEnum
           offset: Int
           limit: PaginationLimitScalar
@@ -330,6 +336,16 @@ export const typeDef = `
       selection: BookmarkSelectionInput
     }
 
+    """
+    Returns all bookmarks associated with a work.
+    """
+    input BookmarkFilterInput {
+      """
+      The ID of the work to filter by.
+      """
+      workId: String!
+    }
+
     input BookmarkSelectionInput {
       materialTypes: BookmarkMaterialTypesSelectionInput!
     }
@@ -418,6 +434,7 @@ export const resolvers = {
       const accessToken = context?.accessToken;
       const {
         applications,
+        filter,
         orderBy = "CREATEDAT_DESC",
         offset = 0,
         limit = 10,
@@ -425,6 +442,10 @@ export const resolvers = {
 
       if (offset < 0) {
         throw badUserInput("offset must be greater than or equal to 0");
+      }
+
+      if (filter && !isWorkId(filter.workId)) {
+        throw badUserInput("filter.workId must be a valid work ID");
       }
 
       try {
@@ -449,6 +470,7 @@ export const resolvers = {
           .load({
             accessToken,
             filterApplications: applications,
+            ...(filter && { filterWorkId: filter.workId }),
             orderBy,
             offset,
             limit,
@@ -523,7 +545,8 @@ export const resolvers = {
 
         const data = resolved
           .filter(({ obj }) => obj)
-          .map(({ materialId, selection, snapshotMaterial }) => ({
+          .map(({ workId, materialId, selection, snapshotMaterial }) => ({
+            workId,
             materialId,
             ...(selection && { selection }),
             snapshot: buildPatronMaterialSnapshot(snapshotMaterial, {

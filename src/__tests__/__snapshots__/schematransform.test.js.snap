@@ -3944,7 +3944,7 @@ type Patron {
   """
   Retrieves the list of bookmarks for the patron, including pagination and sorting options.
   """
-  bookmarks(applications: [String!], orderBy: OrderBookmarksByEnum, offset: Int, limit: PaginationLimitScalar): Bookmarks!
+  bookmarks(applications: [String!], filter: BookmarkFilterInput, orderBy: OrderBookmarksByEnum, offset: Int, limit: PaginationLimitScalar): Bookmarks!
 
   """Name of the current patron."""
   name: String
@@ -4230,6 +4230,12 @@ enum OrderBookmarksByEnum {
 input BookmarksInput {
   materialId: String!
   selection: BookmarkSelectionInput
+}
+
+"""Returns all bookmarks associated with a work."""
+input BookmarkFilterInput {
+  """The ID of the work to filter by."""
+  workId: String!
 }
 
 input BookmarkSelectionInput {
