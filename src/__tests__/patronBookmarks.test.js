@@ -146,6 +146,59 @@ describe("Patron bookmarks", () => {
     });
   });
 
+  test("bookmarks forwards the work filter and exposes its paginated result", async () => {
+    const workId = "work-of:pid:1";
+    const items = [
+      { id: "work", workId, materialId: workId },
+      {
+        id: "selection",
+        workId,
+        materialId: workId,
+        selection: { materialTypes: { specific: ["BOOK"] } },
+      },
+      { id: "pid", workId, materialId: "pid:1" },
+    ];
+    const load = jest.fn().mockResolvedValue({ hitcount: 7, items });
+
+    const result = await resolvers.Patron.bookmarks(
+      null,
+      {
+        applications: ["BIBLIOTEKDK"],
+        filter: { workId },
+        orderBy: "TITLE_ASC",
+        offset: 1,
+        limit: 3,
+      },
+      createContext(load)
+    );
+
+    expect(load).toHaveBeenCalledWith({
+      accessToken: "access-token",
+      filterApplications: ["BIBLIOTEKDK"],
+      filterWorkId: workId,
+      orderBy: "TITLE_ASC",
+      offset: 1,
+      limit: 3,
+    });
+    expect(result).toEqual({ hitcount: 7, items, status: "OK" });
+  });
+
+  test("bookmarks rejects a filter containing an invalid work id", async () => {
+    const context = createContext();
+
+    await expect(
+      resolvers.Patron.bookmarks(
+        null,
+        { filter: { workId: "pid:1" } },
+        context
+      )
+    ).rejects.toMatchObject({
+      message: "filter.workId must be a valid work ID",
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+  });
+
   test("Bookmarks exposes the service page without local sorting", () => {
     const items = [
       { id: bookmarkId, title: "Zulu" },
@@ -228,6 +281,25 @@ describe("Patron bookmarks", () => {
     });
   });
 
+  test("addBookmarks does not store a manifestation without a work id", async () => {
+    resolveManifestation.mockResolvedValueOnce({ pid: "pid:1" });
+    const context = createContext();
+
+    const result = await resolvers.PatronMutation.addBookmarks(
+      null,
+      { bookmarks: [{ materialId: "pid:1" }] },
+      context
+    );
+
+    expect(context.datasources.getLoader).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      status: "FAILED",
+      items: [
+        { materialId: "pid:1", selection: null, status: "NOT_FOUND" },
+      ],
+    });
+  });
+
   test("addBookmarks sends snapshots and maps ordered V2 results", async () => {
     resolveManifestation
       .mockResolvedValueOnce({
@@ -286,6 +358,7 @@ describe("Patron bookmarks", () => {
       accessToken: "access-token",
       bookmarks: [
         {
+          workId: "work-1",
           materialId: "pid:1",
           snapshot: {
             pid: "pid:1",
@@ -314,6 +387,7 @@ describe("Patron bookmarks", () => {
           },
         },
         {
+          workId: "work-of:pid:3",
           materialId: "work-of:pid:3",
           snapshot: {
             pid: null,
@@ -420,6 +494,7 @@ describe("Patron bookmarks", () => {
       accessToken: "access-token",
       bookmarks: [
         {
+          workId: "work-of:pid:1",
           materialId: "work-of:pid:1",
           selection: {
             materialTypes: {
