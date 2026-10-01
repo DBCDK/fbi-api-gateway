@@ -7,6 +7,19 @@
   isolation: isolate;
 }
 
+.hero.halloween {
+  overflow: visible;
+}
+
+.background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  z-index: -1;
+  pointer-events: none;
+}
+
 .silhouette,
 .color {
   width: 100%;

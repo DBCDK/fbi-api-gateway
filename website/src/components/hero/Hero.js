@@ -93,9 +93,14 @@ export default function Hero({ className = "" }) {
   }
 
   return (
-    <section className={`${styles.hero} ${className}`} id="hero">
-      <div className={styles.color} />
-      <div className={styles.silhouette} />
+    <section
+      className={`${styles.hero} ${isHalloween ? styles.halloween : ""} ${className}`}
+      id="hero"
+    >
+      <div className={styles.background}>
+        <div className={styles.color} />
+        <div className={styles.silhouette} />
+      </div>
       {isChristmas && <Christmas />}
       {isEaster && <Chicken />}
       {isPride && <Pride />}
