@@ -1,6 +1,3 @@
-/**
- * default rootfields and denytypes
- */
 const defaultSettings = {
   allowRootFields: [
     "debug",
@@ -46,10 +43,6 @@ const defaultSettings = {
   ],
 };
 
-/**
- * Roles
- */
-
 const bibdk = {
   allowRootFields: [
     ...defaultSettings.allowRootFields,
@@ -60,13 +53,11 @@ const bibdk = {
     "session",
     "localizations",
     "localizationsWithHoldings",
-    "ris",
     "inspiration",
     "semanticSearch",
     "orderStatus",
     "test",
     "user",
-    // mutation
     "submitOrder",
     "submitSkafOrder",
     "closeOrder",
@@ -87,14 +78,16 @@ const bibdk = {
   denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
 };
 
-/**
- *
- */
-
-// smaug roles map in fbi-api
 export default {
+  default: defaultSettings,
+
   bibdk,
-  studiesoeg: { ...bibdk, denyFields: [] },
+
+  studiesoeg: {
+    ...bibdk,
+    denyFields: [],
+  },
+
   "fbs:system": {
     allowRootFields: [
       ...defaultSettings.allowRootFields,
@@ -109,6 +102,15 @@ export default {
     denyTypes: ["CreatorInfo"],
     denyFields: [...defaultSettings.denyFields],
   },
+
+  reindex: {
+    allowRootFields: [...defaultSettings.allowRootFields, "marc"],
+    denyTypes: defaultSettings.denyTypes.filter(
+      (type) => type !== "MarcRecord"
+    ),
+    denyFields: [...defaultSettings.denyFields],
+  },
+
   ddbcms: {
     allowRootFields: [
       ...defaultSettings.allowRootFields,
@@ -118,17 +120,13 @@ export default {
     denyTypes: [...defaultSettings.denyTypes, "WorkReview"],
     denyFields: [...defaultSettings.denyFields],
   },
+
   "donotuse-ddbcms-marc-enabled": {
     allowRootFields: [...defaultSettings.allowRootFields, "submitOrder"],
     denyTypes: [
-      "CheckOrderPolicy",
-      "Availability",
-      "SEO",
-      "WorkExtensionUnion",
+      ...defaultSettings.denyTypes.filter((type) => type !== "MarcRecord"),
       "WorkReview",
-      "CreatorInfo",
     ],
     denyFields: [...defaultSettings.denyFields],
   },
-  default: defaultSettings,
 };
