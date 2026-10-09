@@ -22,6 +22,27 @@ describe("getProxyUrl", () => {
     );
   });
 
+  test("omits Gale provider library id for Copenhagen", () => {
+    const url =
+      "https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB&u=[PROVIDERSLIBRARYID]";
+
+    const result = getProxyUrl(url, {
+      userId: "some-user",
+      municipality: "101",
+      municipalityAgencyId: "710100",
+    });
+
+    expect(result).toEqual({
+      proxyUrl:
+        "https://bib101.bibbaser.dk/login?qurl=https%3A%2F%2Flink.gale.com%2Fapps%2Fdoc%2FEJ2156000312%2FSUIC%3Fsid%3DDDB",
+      loginRequired: true,
+    });
+
+    expect(new URL(result.proxyUrl).searchParams.get("qurl")).toBe(
+      "https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB"
+    );
+  });
+
   test("returns null proxy url but still requires login when agency has no configured Gale provider library id", () => {
     const url =
       "https://link.gale.com/apps/doc/EJ2156000312/SUIC?sid=DDB&u=[PROVIDERSLIBRARYID]";

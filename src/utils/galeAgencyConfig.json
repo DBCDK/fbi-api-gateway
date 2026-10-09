@@ -1,6 +1,7 @@
 {
   "710100": {
-    "providersLibraryId": "45kobenh",
+    "providersLibraryId": null,
+    "omitProvidersLibraryId": true,
     "accessTo": [
       "150023-glicon",
       "150023-biocon",
