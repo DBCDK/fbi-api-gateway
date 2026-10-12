@@ -2638,10 +2638,7 @@ type Identifier {
   value: String!
 }
 
-"""
-The publication's status according to the Norwegian Register for Scientific
-Journals, Series and Publishers.
-"""
+"""The scientific publication status of the publication."""
 type PublicationStatus {
   """Displayable publication status, e.g. "Videnskabelig"."""
   display: String!
@@ -7259,10 +7256,7 @@ type Identifier {
   value: String!
 }
 
-"""
-The publication's status according to the Norwegian Register for Scientific
-Journals, Series and Publishers.
-"""
+"""The scientific publication status of the publication."""
 type PublicationStatus {
   """Displayable publication status, e.g. "Videnskabelig"."""
   display: String!
@@ -9810,10 +9804,7 @@ type Identifier {
   value: String!
 }
 
-"""
-The publication's status according to the Norwegian Register for Scientific
-Journals, Series and Publishers.
-"""
+"""The scientific publication status of the publication."""
 type PublicationStatus {
   """Displayable publication status, e.g. "Videnskabelig"."""
   display: String!

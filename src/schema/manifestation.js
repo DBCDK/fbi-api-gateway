@@ -259,8 +259,7 @@ type Identifier {
 }
 
 """
-The publication's status according to the Norwegian Register for Scientific
-Journals, Series and Publishers.
+The scientific publication status of the publication.
 """
 type PublicationStatus {
   """
