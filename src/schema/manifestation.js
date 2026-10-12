@@ -257,6 +257,30 @@ type Identifier {
   """
   value: String!
 }
+
+"""
+The publication's status according to the Norwegian Register for Scientific
+Journals, Series and Publishers.
+"""
+type PublicationStatus {
+  """
+  Displayable publication status, e.g. "Videnskabelig".
+  """
+  display: String!
+
+  """
+  Machine-readable publication status.
+  """
+  code: PublicationStatusCodeEnum!
+}
+
+enum PublicationStatusCodeEnum {
+  """
+  The publication is recognized as scientific.
+  """
+  SCIENTIFIC
+}
+
 type HostPublication {
   """
   Publication this manifestation can be found in
@@ -277,6 +301,11 @@ type HostPublication {
   ISSN of the publication this manifestation can be found in
   """
   issn: String
+
+  """
+  The host publication's scientific publication status.
+  """
+  publicationStatus: PublicationStatus
 
   """
   ISBN of the publication this manifestation can be found in
@@ -812,6 +841,11 @@ type Manifestation {
   Details about the host publications of this manifestation
   """
   hostPublication: HostPublication
+
+  """
+  The manifestation's scientific publication status.
+  """
+  publicationStatus: PublicationStatus
 
   """
   Identifiers for this manifestation - often used for search indexes

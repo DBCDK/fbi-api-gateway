@@ -49,6 +49,8 @@ const ALLOWED_TYPES = {
   PhysicalDescription: true,
   Edition: true,
   PublicationYear: true,
+  PublicationStatus: true,
+  PublicationStatusCodeEnum: true,
   HostPublication: true,
   AccessType: true,
   AccessUnion: false, // Disabled: Uniontype which can hold a user-specific url (proxy)
