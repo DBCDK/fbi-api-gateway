@@ -259,7 +259,7 @@ type Identifier {
 }
 
 """
-The scientific publication status of the publication.
+The status of the publication.
 """
 type PublicationStatus {
   """

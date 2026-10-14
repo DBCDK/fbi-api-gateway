@@ -2638,7 +2638,7 @@ type Identifier {
   value: String!
 }
 
-"""The scientific publication status of the publication."""
+"""The status of the publication."""
 type PublicationStatus {
   """Displayable publication status, e.g. "Videnskabelig"."""
   display: String!
@@ -7256,7 +7256,7 @@ type Identifier {
   value: String!
 }
 
-"""The scientific publication status of the publication."""
+"""The status of the publication."""
 type PublicationStatus {
   """Displayable publication status, e.g. "Videnskabelig"."""
   display: String!
@@ -9804,7 +9804,7 @@ type Identifier {
   value: String!
 }
 
-"""The scientific publication status of the publication."""
+"""The status of the publication."""
 type PublicationStatus {
   """Displayable publication status, e.g. "Videnskabelig"."""
   display: String!
