@@ -2665,7 +2665,7 @@ type HostPublication {
   """ISSN of the publication this manifestation can be found in"""
   issn: String
 
-  """The host publication's scientific publication status."""
+  """The status of the host publication."""
   publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""
@@ -3090,7 +3090,7 @@ type Manifestation {
   """Details about the host publications of this manifestation"""
   hostPublication: HostPublication
 
-  """The manifestation's scientific publication status."""
+  """The status of the manifestation."""
   publicationStatus: PublicationStatus
 
   """Identifiers for this manifestation - often used for search indexes"""
@@ -7283,7 +7283,7 @@ type HostPublication {
   """ISSN of the publication this manifestation can be found in"""
   issn: String
 
-  """The host publication's scientific publication status."""
+  """The status of the host publication."""
   publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""
@@ -7708,7 +7708,7 @@ type Manifestation {
   """Details about the host publications of this manifestation"""
   hostPublication: HostPublication
 
-  """The manifestation's scientific publication status."""
+  """The status of the manifestation."""
   publicationStatus: PublicationStatus
 
   """Identifiers for this manifestation - often used for search indexes"""
@@ -9831,7 +9831,7 @@ type HostPublication {
   """ISSN of the publication this manifestation can be found in"""
   issn: String
 
-  """The host publication's scientific publication status."""
+  """The status of the host publication."""
   publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""
@@ -10253,7 +10253,7 @@ type Manifestation {
   """Details about the host publications of this manifestation"""
   hostPublication: HostPublication
 
-  """The manifestation's scientific publication status."""
+  """The status of the manifestation."""
   publicationStatus: PublicationStatus
 
   """Identifiers for this manifestation - often used for search indexes"""

@@ -302,7 +302,7 @@ type HostPublication {
   issn: String
 
   """
-  The host publication's scientific publication status.
+  The status of the host publication.
   """
   publicationStatus: PublicationStatus
 
@@ -842,7 +842,7 @@ type Manifestation {
   hostPublication: HostPublication
 
   """
-  The manifestation's scientific publication status.
+  The status of the manifestation.
   """
   publicationStatus: PublicationStatus
 
