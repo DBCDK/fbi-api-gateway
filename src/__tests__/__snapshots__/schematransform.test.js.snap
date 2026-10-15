@@ -2640,10 +2640,10 @@ type Identifier {
 
 """The status of the publication."""
 type PublicationStatus {
-  """Displayable publication status, e.g. "Videnskabelig"."""
+  """The publication status type as display text"""
   display: String!
 
-  """Machine-readable publication status."""
+  """The publication status code"""
   code: PublicationStatusCodeEnum!
 }
 
@@ -2665,7 +2665,7 @@ type HostPublication {
   """ISSN of the publication this manifestation can be found in"""
   issn: String
 
-  """The status of the host publication."""
+  """The publication status of the host publication"""
   publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""
@@ -3090,7 +3090,7 @@ type Manifestation {
   """Details about the host publications of this manifestation"""
   hostPublication: HostPublication
 
-  """The status of the manifestation."""
+  """The publication status of the manifestation"""
   publicationStatus: PublicationStatus
 
   """Identifiers for this manifestation - often used for search indexes"""
@@ -7258,10 +7258,10 @@ type Identifier {
 
 """The status of the publication."""
 type PublicationStatus {
-  """Displayable publication status, e.g. "Videnskabelig"."""
+  """The publication status type as display text"""
   display: String!
 
-  """Machine-readable publication status."""
+  """The publication status code"""
   code: PublicationStatusCodeEnum!
 }
 
@@ -7283,7 +7283,7 @@ type HostPublication {
   """ISSN of the publication this manifestation can be found in"""
   issn: String
 
-  """The status of the host publication."""
+  """The publication status of the host publication"""
   publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""
@@ -7708,7 +7708,7 @@ type Manifestation {
   """Details about the host publications of this manifestation"""
   hostPublication: HostPublication
 
-  """The status of the manifestation."""
+  """The publication status of the manifestation"""
   publicationStatus: PublicationStatus
 
   """Identifiers for this manifestation - often used for search indexes"""
@@ -9806,10 +9806,10 @@ type Identifier {
 
 """The status of the publication."""
 type PublicationStatus {
-  """Displayable publication status, e.g. "Videnskabelig"."""
+  """The publication status type as display text"""
   display: String!
 
-  """Machine-readable publication status."""
+  """The publication status code"""
   code: PublicationStatusCodeEnum!
 }
 
@@ -9831,7 +9831,7 @@ type HostPublication {
   """ISSN of the publication this manifestation can be found in"""
   issn: String
 
-  """The status of the host publication."""
+  """The publication status of the host publication"""
   publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""
@@ -10253,7 +10253,7 @@ type Manifestation {
   """Details about the host publications of this manifestation"""
   hostPublication: HostPublication
 
-  """The status of the manifestation."""
+  """The publication status of the manifestation"""
   publicationStatus: PublicationStatus
 
   """Identifiers for this manifestation - often used for search indexes"""

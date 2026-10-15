@@ -263,12 +263,12 @@ The status of the publication.
 """
 type PublicationStatus {
   """
-  Displayable publication status, e.g. "Videnskabelig".
+  The publication status type as display text
   """
   display: String!
 
   """
-  Machine-readable publication status.
+  The publication status code
   """
   code: PublicationStatusCodeEnum!
 }
@@ -302,7 +302,7 @@ type HostPublication {
   issn: String
 
   """
-  The status of the host publication.
+  The publication status of the host publication
   """
   publicationStatus: PublicationStatus
 
@@ -842,7 +842,7 @@ type Manifestation {
   hostPublication: HostPublication
 
   """
-  The status of the manifestation.
+  The publication status of the manifestation
   """
   publicationStatus: PublicationStatus
 
