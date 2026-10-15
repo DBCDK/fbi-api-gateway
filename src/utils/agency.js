@@ -14,6 +14,7 @@ export function _isFFUAgency(branchId) {
 
 const CULR_DATA_SYNC_BRANCH_IDS = [
   // Gymnasier
+  "872140", // Aalborghus Gymnasium
   "872960", // Odense Katedralskole
   "872600", // Roskilde Gymnasium
   "861640", // Sorø Akademis Skole
