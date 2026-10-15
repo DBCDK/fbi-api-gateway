@@ -2668,7 +2668,7 @@ type HostPublication {
   """ISSN of the publication this manifestation can be found in"""
   issn: String
 
-  """The publication status of the host publication"""
+  """The publication status of the manifestation"""
   publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""
@@ -9817,7 +9817,7 @@ type HostPublication {
   """ISSN of the publication this manifestation can be found in"""
   issn: String
 
-  """The publication status of the host publication"""
+  """The publication status of the manifestation"""
   publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""

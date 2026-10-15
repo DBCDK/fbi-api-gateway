@@ -307,7 +307,7 @@ type HostPublication {
   issn: String
 
   """
-  The publication status of the host publication
+  The publication status of the manifestation
   """
   publicationStatus: PublicationStatus
 
