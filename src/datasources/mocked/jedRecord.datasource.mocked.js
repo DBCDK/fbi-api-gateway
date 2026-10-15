@@ -26,6 +26,16 @@ export function load({ id }) {
     };
   }
 
+  if (id === "test_publicationStatus_other") {
+    return {
+      pid: id,
+      publicationStatus: {
+        display: "Faglig",
+        code: "PROFESSIONAL",
+      },
+    };
+  }
+
   if (id === "test_publicationStatus_article") {
     return {
       pid: id,

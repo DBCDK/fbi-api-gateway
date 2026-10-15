@@ -278,6 +278,11 @@ enum PublicationStatusCodeEnum {
   The publication is recognized as scientific.
   """
   SCIENTIFIC
+
+  """
+  Other publication statuses
+  """
+  OTHER @fallback
 }
 
 type HostPublication {
