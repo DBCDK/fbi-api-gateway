@@ -257,6 +257,34 @@ type Identifier {
   """
   value: String!
 }
+
+"""
+The status of the publication.
+"""
+type PublicationStatus {
+  """
+  The publication status type as display text
+  """
+  display: String!
+
+  """
+  The publication status code
+  """
+  code: PublicationStatusCodeEnum!
+}
+
+enum PublicationStatusCodeEnum {
+  """
+  The publication is recognized as scientific.
+  """
+  SCIENTIFIC
+
+  """
+  Other publication statuses
+  """
+  OTHER @fallback
+}
+
 type HostPublication {
   """
   Publication this manifestation can be found in
@@ -277,6 +305,11 @@ type HostPublication {
   ISSN of the publication this manifestation can be found in
   """
   issn: String
+
+  """
+  The publication status of the manifestation
+  """
+  publicationStatus: PublicationStatus
 
   """
   ISBN of the publication this manifestation can be found in
@@ -812,6 +845,11 @@ type Manifestation {
   Details about the host publications of this manifestation
   """
   hostPublication: HostPublication
+
+  """
+  The publication status of the manifestation
+  """
+  publicationStatus: PublicationStatus
 
   """
   Identifiers for this manifestation - often used for search indexes

@@ -16,6 +16,38 @@ export function load({ id }) {
     return null;
   }
 
+  if (id === "test_publicationStatus_periodical") {
+    return {
+      pid: id,
+      publicationStatus: {
+        display: "Videnskabelig",
+        code: "SCIENTIFIC",
+      },
+    };
+  }
+
+  if (id === "test_publicationStatus_other") {
+    return {
+      pid: id,
+      publicationStatus: {
+        display: "Faglig",
+        code: "PROFESSIONAL",
+      },
+    };
+  }
+
+  if (id === "test_publicationStatus_article") {
+    return {
+      pid: id,
+      hostPublication: {
+        publicationStatus: {
+          display: "Videnskabelig",
+          code: "SCIENTIFIC",
+        },
+      },
+    };
+  }
+
   if (
     id.startsWith(
       "test_catalogueCodes_nationalBibliography_and_otherCatalogues"

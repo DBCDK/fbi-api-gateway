@@ -68,6 +68,82 @@ describe("Manifestation", () => {
     });
     expect(result).toMatchSnapshot();
   });
+  test("publicationStatus is exposed for periodicals", async () => {
+    const result = await performTestQuery({
+      query: `query {
+        manifestation(pid: "test_publicationStatus_periodical") {
+          publicationStatus {
+            display
+            code
+          }
+        }
+      }`,
+      context: { datasources: createMockedDataLoaders() },
+    });
+
+    expect(result).toEqual({
+      data: {
+        manifestation: {
+          publicationStatus: {
+            display: "Videnskabelig",
+            code: "SCIENTIFIC",
+          },
+        },
+      },
+    });
+  });
+  test("unsupported publicationStatus codes fall back without changing display", async () => {
+    const result = await performTestQuery({
+      query: `query {
+        manifestation(pid: "test_publicationStatus_other") {
+          publicationStatus {
+            display
+            code
+          }
+        }
+      }`,
+      context: { datasources: createMockedDataLoaders() },
+    });
+
+    expect(result).toEqual({
+      data: {
+        manifestation: {
+          publicationStatus: {
+            display: "Faglig",
+            code: "OTHER",
+          },
+        },
+      },
+    });
+  });
+  test("publicationStatus is exposed on hostPublication for articles", async () => {
+    const result = await performTestQuery({
+      query: `query {
+        manifestation(pid: "test_publicationStatus_article") {
+          hostPublication {
+            publicationStatus {
+              display
+              code
+            }
+          }
+        }
+      }`,
+      context: { datasources: createMockedDataLoaders() },
+    });
+
+    expect(result).toEqual({
+      data: {
+        manifestation: {
+          hostPublication: {
+            publicationStatus: {
+              display: "Videnskabelig",
+              code: "SCIENTIFIC",
+            },
+          },
+        },
+      },
+    });
+  });
   test("CatalogueCodes nationalBibliography and otherCatalogues", async () => {
     const pid = "test_catalogueCodes_nationalBibliography_and_otherCatalogues";
     const result = await catalogueCodesQuery(pid);
