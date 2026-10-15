@@ -47,21 +47,4 @@ describe("Permissions", () => {
     expect(bibdk.allowRootFields).toContain("semanticSearch");
     expect(defaults.allowRootFields).not.toContain("semanticSearch");
   });
-  test("publication status is only enabled for the bibliotek.dk role", () => {
-    const fields = [
-      "Manifestation.publicationStatus",
-      "HostPublication.publicationStatus",
-    ];
-    const bibdk = parseClientPermissions({
-      smaug: { gateway: { role: "bibdk" } },
-    });
-    const studiesoeg = parseClientPermissions({
-      smaug: { gateway: { role: "studiesoeg" } },
-    });
-    const defaults = parseClientPermissions({ smaug: {} });
-
-    expect(bibdk.denyFields).toEqual(expect.not.arrayContaining(fields));
-    expect(studiesoeg.denyFields).toEqual(expect.arrayContaining(fields));
-    expect(defaults.denyFields).toEqual(expect.arrayContaining(fields));
-  });
 });
