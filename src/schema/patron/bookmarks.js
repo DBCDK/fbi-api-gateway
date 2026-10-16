@@ -202,6 +202,19 @@ async function resolveStoredBookmarkMaterial(parent, context) {
   return { work: null, manifestation, manifestations: null };
 }
 
+async function resolveBookmarkAgency(parent, args, context) {
+  if (!parent?.agencyId) {
+    return null;
+  }
+
+  const agency = await context.datasources.getLoader("library").load({
+    agencyid: parent.agencyId,
+    limit: 50,
+  });
+
+  return agency?.hitcount ? agency : null;
+}
+
 export const typeDef = `
     directive @oneOf on INPUT_OBJECT
 
@@ -248,6 +261,11 @@ export const typeDef = `
     }
 
     type BookmarkItem {
+        """
+        Branch information for the agency stored with the bookmark, if available.
+        """
+        agency: PatronAgency
+
         """
         The unique identifier for the bookmark
         """
@@ -380,6 +398,12 @@ export const typeDef = `
     }
 
     type BookmarksStatusItem {
+      """
+      Stored agency for a confirmed addition or existing bookmark.
+      Null for dry runs, errors and deletions.
+      """
+      agency: PatronAgency
+
       """
       Status of the bookmark addition or deletion attempt for a specific material.
       """
@@ -548,6 +572,9 @@ export const resolvers = {
           .map(({ workId, materialId, selection, snapshotMaterial }) => ({
             workId,
             materialId,
+            ...(context.profile?.agency != null && {
+              agencyId: context.profile.agency,
+            }),
             ...(selection && { selection }),
             snapshot: buildPatronMaterialSnapshot(snapshotMaterial, {
               includeMaterialType: false,
@@ -583,6 +610,11 @@ export const resolvers = {
           return {
             ...item,
             id: normalizeBookmarkId(serviceResult?.id),
+            agencyId:
+              serviceResult?.status === "ok" ||
+              serviceResult?.status === "already_exists"
+                ? serviceResult?.agencyId
+                : undefined,
             selection: serviceResult?.selection || item.selection,
             status: mapServiceStatus(serviceResult?.status),
           };
@@ -712,6 +744,7 @@ export const resolvers = {
     },
   },
   BookmarkItem: {
+    agency: resolveBookmarkAgency,
     id(parent) {
       return normalizeBookmarkId(parent.id);
     },
@@ -737,6 +770,7 @@ export const resolvers = {
   },
 
   BookmarksStatusItem: {
+    agency: resolveBookmarkAgency,
     async material(parent, args, context, info) {
       return resolveStoredBookmarkMaterial(parent, context);
     },

@@ -326,7 +326,7 @@ export const typeDef = `
           status: PatronLoanStatusEnum
           offset: Int
           limit: PaginationLimitScalar
-        ): PatronCurrentLoans!
+        ): PatronCurrentLoans! @deprecated(reason: "@draft")
 
         """
         Retrieves historical loans stored in UserData.
@@ -334,12 +334,12 @@ export const typeDef = `
         historicalLoans(
           offset: Int
           limit: PaginationLimitScalar
-        ): PatronHistoricalLoans!
+        ): PatronHistoricalLoans! @deprecated(reason: "@draft")
 
         """
         Retrieves consent for storing historical loans and whether the patron is old enough to change it.
         """
-        historicalLoanConsent: PatronHistoricalLoanConsent!
+        historicalLoanConsent: PatronHistoricalLoanConsent! @deprecated(reason: "@draft")
     }
 
     extend type PatronMutation {
@@ -350,7 +350,7 @@ export const typeDef = `
         addHistoricalLoans(
           loans: [PatronHistoricalLoanInput!]!
           dryRun: Boolean
-        ): AddHistoricalLoansResponse!
+        ): AddHistoricalLoansResponse! @deprecated(reason: "@draft")
 
         """
         Deletes one or more historical loans by their public UserData IDs.
@@ -358,7 +358,7 @@ export const typeDef = `
         deleteHistoricalLoans(
           ids: [String!]!
           dryRun: Boolean
-        ): DeleteHistoricalLoansResponse!
+        ): DeleteHistoricalLoansResponse! @deprecated(reason: "@draft")
 
         """
         Changes consent for storing historical loans.
@@ -366,7 +366,7 @@ export const typeDef = `
         setHistoricalLoanConsent(
           consent: Boolean!
           dryRun: Boolean
-        ): SetHistoricalLoanConsentResponse!
+        ): SetHistoricalLoanConsentResponse! @deprecated(reason: "@draft")
     }
 
     type PatronCurrentLoans {
