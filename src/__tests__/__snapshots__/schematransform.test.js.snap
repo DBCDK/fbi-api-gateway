@@ -206,7 +206,7 @@ type Mutation {
   submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
 
   """Updates patron information, such as adding or removing bookmarks."""
-  patron: PatronMutation @deprecated(reason: "@draft")
+  patron: PatronMutation
 
   """
   Represents the overall reservability status across all items according to the Cicero API (booking allowed).
@@ -267,7 +267,7 @@ type Query {
   """
   Retrieves information about the patron, such as bookmarks, reservations, and loans.
   """
-  patron: Patron @deprecated(reason: "@draft")
+  patron: Patron
 
   """Access to various types of recommendations."""
   recommendations: Recommendations!
@@ -3977,15 +3977,15 @@ type Patron {
   blocked: Boolean!
 
   """Retrieves current loans live from OpenUserStatus."""
-  currentLoans(orderBy: OrderLoansByEnum, status: PatronLoanStatusEnum, offset: Int, limit: PaginationLimitScalar): PatronCurrentLoans!
+  currentLoans(orderBy: OrderLoansByEnum, status: PatronLoanStatusEnum, offset: Int, limit: PaginationLimitScalar): PatronCurrentLoans! @deprecated(reason: "@draft")
 
   """Retrieves historical loans stored in UserData."""
-  historicalLoans(offset: Int, limit: PaginationLimitScalar): PatronHistoricalLoans!
+  historicalLoans(offset: Int, limit: PaginationLimitScalar): PatronHistoricalLoans! @deprecated(reason: "@draft")
 
   """
   Retrieves consent for storing historical loans and whether the patron is old enough to change it.
   """
-  historicalLoanConsent: PatronHistoricalLoanConsent!
+  historicalLoanConsent: PatronHistoricalLoanConsent! @deprecated(reason: "@draft")
 }
 
 type PatronAccount {
@@ -4138,13 +4138,13 @@ type PatronMutation {
   Adds one or more manual historical loans for integration testing.
   Snapshot data is resolved by the gateway and cannot be supplied by the client.
   """
-  addHistoricalLoans(loans: [PatronHistoricalLoanInput!]!, dryRun: Boolean): AddHistoricalLoansResponse!
+  addHistoricalLoans(loans: [PatronHistoricalLoanInput!]!, dryRun: Boolean): AddHistoricalLoansResponse! @deprecated(reason: "@draft")
 
   """Deletes one or more historical loans by their public UserData IDs."""
-  deleteHistoricalLoans(ids: [String!]!, dryRun: Boolean): DeleteHistoricalLoansResponse!
+  deleteHistoricalLoans(ids: [String!]!, dryRun: Boolean): DeleteHistoricalLoansResponse! @deprecated(reason: "@draft")
 
   """Changes consent for storing historical loans."""
-  setHistoricalLoanConsent(consent: Boolean!, dryRun: Boolean): SetHistoricalLoanConsentResponse!
+  setHistoricalLoanConsent(consent: Boolean!, dryRun: Boolean): SetHistoricalLoanConsentResponse! @deprecated(reason: "@draft")
 }
 
 type Bookmarks {
@@ -4159,6 +4159,11 @@ type Bookmarks {
 }
 
 type BookmarkItem {
+  """
+  Branch information for the agency stored with the bookmark, if available.
+  """
+  agency: PatronAgency
+
   """The unique identifier for the bookmark"""
   id: String!
 
@@ -4266,6 +4271,12 @@ type DeleteBookmarksResponse {
 }
 
 type BookmarksStatusItem {
+  """
+  Stored agency for a confirmed addition or existing bookmark.
+  Null for dry runs, errors and deletions.
+  """
+  agency: PatronAgency
+
   """
   Status of the bookmark addition or deletion attempt for a specific material.
   """
