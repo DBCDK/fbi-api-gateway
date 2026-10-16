@@ -16,6 +16,31 @@ function createContext(body) {
 }
 
 describe("UserData Bookmark V2 datasources", () => {
+  test.each(["710100", null, undefined])(
+    "preserves agency %s in requests and responses",
+    async (agencyId) => {
+      const bookmark = {
+        materialId: "pid:1",
+        ...(agencyId !== undefined && { agencyId }),
+      };
+      const addResponse = {
+        results: [{ ...bookmark, status: "already_exists" }],
+      };
+      const addContext = createContext(addResponse);
+      await expect(
+        addBookmarks({ accessToken, bookmarks: [bookmark] }, addContext)
+      ).resolves.toEqual(addResponse);
+      expect(JSON.parse(addContext.fetch.mock.calls[0][1].body)).toEqual({
+        bookmarks: [bookmark],
+      });
+
+      const getResponse = { hitcount: 1, items: [bookmark] };
+      await expect(
+        getBookmarks({ accessToken }, createContext(getResponse))
+      ).resolves.toEqual(getResponse);
+    }
+  );
+
   test("GET forwards the bearer token and functional read options", async () => {
     const context = createContext({ hitcount: 0, items: [] });
 

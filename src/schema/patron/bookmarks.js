@@ -249,6 +249,11 @@ export const typeDef = `
 
     type BookmarkItem {
         """
+        Branch information for the agency stored with the bookmark, if available.
+        """
+        agency: PatronAgency
+
+        """
         The unique identifier for the bookmark
         """
         id: String!
@@ -380,6 +385,12 @@ export const typeDef = `
     }
 
     type BookmarksStatusItem {
+      """
+      Stored agency for a confirmed addition or existing bookmark.
+      Null for dry runs, errors and deletions.
+      """
+      agency: PatronAgency
+
       """
       Status of the bookmark addition or deletion attempt for a specific material.
       """
@@ -545,15 +556,24 @@ export const resolvers = {
 
         const data = resolved
           .filter(({ obj }) => obj)
-          .map(({ workId, materialId, selection, snapshotMaterial }) => ({
-            workId,
-            materialId,
-            ...(selection && { selection }),
-            snapshot: buildPatronMaterialSnapshot(snapshotMaterial, {
-              includeMaterialType: false,
-              includeMaterialTypes: Boolean(selection) || isPid(materialId),
-            }),
-          }));
+          .map(({ workId, materialId, selection, snapshotMaterial }) => {
+            const bookmark = {
+              workId,
+              materialId,
+              ...(selection && { selection }),
+              snapshot: buildPatronMaterialSnapshot(snapshotMaterial, {
+                includeMaterialType: false,
+                includeMaterialTypes: Boolean(selection) || isPid(materialId),
+              }),
+            };
+
+            const agencyId = context.profile?.agency;
+            if (agencyId != null) {
+              bookmark.agencyId = agencyId;
+            }
+
+            return bookmark;
+          });
 
         // Early return for dry run to avoid unnecessary calls to userData service
         if (dryRun) {
@@ -580,9 +600,14 @@ export const resolvers = {
           if (item.status !== "OK") return item;
 
           const serviceResult = res?.results?.[serviceResultIndex++];
+          const hasStoredBookmark =
+            serviceResult?.status === "ok" ||
+            serviceResult?.status === "already_exists";
+
           return {
             ...item,
             id: normalizeBookmarkId(serviceResult?.id),
+            agencyId: hasStoredBookmark ? serviceResult.agencyId : undefined,
             selection: serviceResult?.selection || item.selection,
             status: mapServiceStatus(serviceResult?.status),
           };
@@ -712,6 +737,18 @@ export const resolvers = {
     },
   },
   BookmarkItem: {
+    async agency(parent, args, context) {
+      if (!parent?.agencyId) {
+        return null;
+      }
+
+      const agency = await context.datasources.getLoader("library").load({
+        agencyid: parent.agencyId,
+        limit: 50,
+      });
+
+      return agency?.hitcount ? agency : null;
+    },
     id(parent) {
       return normalizeBookmarkId(parent.id);
     },
@@ -737,6 +774,18 @@ export const resolvers = {
   },
 
   BookmarksStatusItem: {
+    async agency(parent, args, context) {
+      if (!parent?.agencyId) {
+        return null;
+      }
+
+      const agency = await context.datasources.getLoader("library").load({
+        agencyid: parent.agencyId,
+        limit: 50,
+      });
+
+      return agency?.hitcount ? agency : null;
+    },
     async material(parent, args, context, info) {
       return resolveStoredBookmarkMaterial(parent, context);
     },
