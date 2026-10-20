@@ -39,7 +39,19 @@ type Query {
   monitor(name: String!): String!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCodeEnum): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
-  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  search(
+    q: SearchQueryInput!
+    filters: SearchFiltersInput
+    search_exact: Boolean
+    """
+    Include online/electronic materials. Defaults to true.
+    When false, only works with a physical holding at the agency (and at any
+    branch/department/... given in the holdings filters) are returned -
+    online/electronic materials are excluded.
+    Applies to results, facets and intelligentFacets, but not suggester.
+    """
+    includeOnlineMaterials: Boolean! = true
+  ): SearchResponse!
   """
   Search for works based on the meaning of a natural-language query.
   Threshold controls the minimum semantic similarity from 0 to 1 and
