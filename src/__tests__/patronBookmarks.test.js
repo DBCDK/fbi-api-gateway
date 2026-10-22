@@ -60,12 +60,12 @@ describe("Patron bookmarks", () => {
       context.smaug.gateway.bookmarks.app = "STUDIESOEG";
       const configuration = {
         gateway: {
-          bookmarks: { app: application, displayName: "Applikationens navn" },
+          bookmarks: { app: application, display: "Applikationens navn" },
           ...(agencyBased && { agencies: { ids: ["872600", "872960"] } }),
         },
       };
       context.smaug.gateway.agencies = configuration.gateway.agencies;
-      const clientLoad = jest.fn().mockResolvedValue(configuration);
+      const clientLoad = jest.fn().mockResolvedValue({ config: configuration });
       context.datasources.getLoader = jest.fn((name) => ({
         load:
           name === "authAdminClient"
@@ -129,9 +129,11 @@ describe("Patron bookmarks", () => {
           ? jest
               .fn()
               .mockResolvedValue({
-                gateway: {
-                  bookmarks: { app: "BIBLIOTEKDK" },
-                  agencies: { ids: ["872600"] },
+                config: {
+                  gateway: {
+                    bookmarks: { app: "BIBLIOTEKDK" },
+                    agencies: { ids: ["872600"] },
+                  },
                 },
               })
           : jest.fn().mockRejectedValue(new Error("Library unavailable")),

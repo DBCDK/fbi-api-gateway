@@ -252,7 +252,7 @@ export const typeDef = `
         Source name and comparisons with the current API context.
         Existing application and agency fields remain available independently.
         """
-        source: BookmarkSource!
+        source: BookmarkSource! @deprecated(reason: "@draft")
 
         """
         Branch information for the agency stored with the bookmark, if available.
