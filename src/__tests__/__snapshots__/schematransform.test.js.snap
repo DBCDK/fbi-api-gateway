@@ -4183,10 +4183,10 @@ type Bookmarks {
 
 type BookmarkItem {
   """
-  Source name and comparisons with the current API context.
+  Origin name and comparisons with the current API context.
   Existing application and agency fields remain available independently.
   """
-  source: BookmarkSource! @deprecated(reason: "@draft")
+  origin: BookmarkOrigin! @deprecated(reason: "@draft")
 
   """
   Branch information for the agency stored with the bookmark, if available.
@@ -4217,9 +4217,9 @@ type BookmarkItem {
   application: String!
 }
 
-type BookmarkSource {
+type BookmarkOrigin {
   """
-  Library name for agency-based sources; otherwise the configured application
+  Library name for agency-based origins; otherwise the configured application
   display name. Null when unavailable. Clients compose their own label.
   """
   displayName: String
@@ -4231,11 +4231,11 @@ type BookmarkSource {
   isCurrentApplication: Boolean
 
   """
-  Whether the application and source type match, and, for agency-based
-  sources, the stored agency matches the current request agency.
+  Whether the application and origin type match, and, for agency-based
+  origins, the stored agency matches the current request agency.
   Null when the comparison cannot be determined.
   """
-  isCurrentSource: Boolean
+  isCurrentOrigin: Boolean
 }
 
 type BookmarkMaterial {

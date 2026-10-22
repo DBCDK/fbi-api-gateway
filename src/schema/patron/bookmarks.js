@@ -249,10 +249,10 @@ export const typeDef = `
 
     type BookmarkItem {
         """
-        Source name and comparisons with the current API context.
+        Origin name and comparisons with the current API context.
         Existing application and agency fields remain available independently.
         """
-        source: BookmarkSource! @deprecated(reason: "@draft")
+        origin: BookmarkOrigin! @deprecated(reason: "@draft")
 
         """
         Branch information for the agency stored with the bookmark, if available.
@@ -295,9 +295,9 @@ export const typeDef = `
         application: String!
     }
 
-    type BookmarkSource {
+    type BookmarkOrigin {
       """
-      Library name for agency-based sources; otherwise the configured application
+      Library name for agency-based origins; otherwise the configured application
       display name. Null when unavailable. Clients compose their own label.
       """
       displayName: String
@@ -309,11 +309,11 @@ export const typeDef = `
       isCurrentApplication: Boolean
 
       """
-      Whether the application and source type match, and, for agency-based
-      sources, the stored agency matches the current request agency.
+      Whether the application and origin type match, and, for agency-based
+      origins, the stored agency matches the current request agency.
       Null when the comparison cannot be determined.
       """
-      isCurrentSource: Boolean
+      isCurrentOrigin: Boolean
     }
 
     type BookmarkMaterial {
@@ -764,21 +764,21 @@ export const resolvers = {
     },
   },
   BookmarkItem: {
-    async source(parent, args, context) {
+    async origin(parent, args, context) {
       const currentApplication = context.smaug?.gateway?.bookmarks?.app;
       const isCurrentApplication =
         parent.application && currentApplication
           ? parent.application === currentApplication
           : null;
 
-      const source = {
+      const origin = {
         displayName: null,
         isCurrentApplication,
-        isCurrentSource: isCurrentApplication === false ? false : null,
+        isCurrentOrigin: isCurrentApplication === false ? false : null,
       };
 
       try {
-        if (!parent.clientId) return source;
+        if (!parent.clientId) return origin;
 
         const response = await context.datasources
           .getLoader("authAdminClient")
@@ -789,7 +789,7 @@ export const resolvers = {
         const config = obj.config;
 
         // client has missing bookmarks config
-        if (!config?.gateway?.bookmarks) return source;
+        if (!config?.gateway?.bookmarks) return origin;
 
         // client uses multiple agencies
         const agencyBased = Array.isArray(config.gateway.agencies?.ids);
@@ -801,11 +801,11 @@ export const resolvers = {
 
         if (isCurrentApplication === true) {
           if (agencyBased !== currentAgencyBased) {
-            source.isCurrentSource = false;
+            origin.isCurrentOrigin = false;
           } else if (!agencyBased) {
-            source.isCurrentSource = true;
+            origin.isCurrentOrigin = true;
           } else if (parent.agencyId && context.profile?.agency) {
-            source.isCurrentSource =
+            origin.isCurrentOrigin =
               String(parent.agencyId) === String(context.profile.agency);
           }
         }
@@ -822,20 +822,20 @@ export const resolvers = {
                 agency.result?.find(
                   (branch) => branch?.agencyId === branch?.branchId
                 ) || agency.result?.[0];
-              source.displayName = branch?.agencyName || null;
+              origin.displayName = branch?.agencyName || null;
             }
           }
         } else {
-          source.displayName = config.gateway.bookmarks.display || null;
+          origin.displayName = config.gateway.bookmarks.display || null;
         }
       } catch (error) {
-        log.error("Failed to resolve bookmark source", {
+        log.error("Failed to resolve bookmark origin", {
           clientId: parent.clientId,
           message: error.message,
         });
       }
 
-      return source;
+      return origin;
     },
     async agency(parent, args, context) {
       if (!parent?.agencyId) {

@@ -37,7 +37,7 @@ describe("Patron bookmarks", () => {
   });
 
   test.each([
-    // Application, source agency, current agency, agency-based, same app, same source
+    // Application, origin agency, current agency, agency-based, same app, same origin
     ["STUDIESOEG", "872600", "872600", true, true, true],
     ["STUDIESOEG", "872600", "872960", true, true, false],
     ["DDBCMS", "872600", "872600", true, false, false],
@@ -46,14 +46,14 @@ describe("Patron bookmarks", () => {
     ["STUDIESOEG", "872600", "872960", false, true, true],
     ["BIBLIOTEKDK", "872600", "872600", false, false, false],
   ])(
-    "source comparison: application=%s agency=%s currentAgency=%s agencyBased=%s",
+    "origin comparison: application=%s agency=%s currentAgency=%s agencyBased=%s",
     async (
       application,
       agencyId,
       currentAgency,
       agencyBased,
       sameApp,
-      sameSource
+      sameOrigin
     ) => {
       const context = createContext();
       context.profile = { agency: currentAgency };
@@ -88,7 +88,7 @@ describe("Patron bookmarks", () => {
       }));
 
       await expect(
-        resolvers.BookmarkItem.source(
+        resolvers.BookmarkItem.origin(
           { clientId: "source-client", application, agencyId },
           {},
           context
@@ -100,13 +100,13 @@ describe("Patron bookmarks", () => {
             : null
           : "Applikationens navn",
         isCurrentApplication: sameApp,
-        isCurrentSource: sameSource,
+        isCurrentOrigin: sameOrigin,
       });
       expect(clientLoad).toHaveBeenCalledWith("source-client");
     }
   );
 
-  test("unavailable source metadata preserves known comparisons", async () => {
+  test("unavailable origin metadata preserves known comparisons", async () => {
     const context = createContext(
       jest.fn().mockRejectedValue(new Error("Unavailable"))
     );
@@ -116,11 +116,11 @@ describe("Patron bookmarks", () => {
       agencyId: "872600",
     };
     await expect(
-      resolvers.BookmarkItem.source(bookmark, {}, context)
+      resolvers.BookmarkItem.origin(bookmark, {}, context)
     ).resolves.toEqual({
       displayName: null,
       isCurrentApplication: true,
-      isCurrentSource: null,
+      isCurrentOrigin: null,
     });
 
     context.datasources.getLoader = jest.fn((name) => ({
@@ -141,11 +141,11 @@ describe("Patron bookmarks", () => {
     context.smaug.gateway.agencies = { ids: ["872600"] };
     context.profile = { agency: "872600" };
     await expect(
-      resolvers.BookmarkItem.source(bookmark, {}, context)
+      resolvers.BookmarkItem.origin(bookmark, {}, context)
     ).resolves.toEqual({
       displayName: null,
       isCurrentApplication: true,
-      isCurrentSource: true,
+      isCurrentOrigin: true,
     });
   });
 
