@@ -4219,23 +4219,19 @@ type BookmarkItem {
 
 type BookmarkOrigin {
   """
-  Library name when the originating client is configured to act on behalf of
-  multiple agencies via gateway.agencies.ids; otherwise the configured
-  application display name. Null when unavailable. Clients compose their own label.
+  Library name for multi-agency clients; otherwise the application display name.
+  Null when unavailable.
   """
   displayName: String
 
   """
-  Whether the stored application matches the current application, regardless
-  of agency. Null when the comparison cannot be determined.
+  Matches the current application, regardless of agency. Null if unknown.
   """
   isCurrentApplication: Boolean
 
   """
-  Whether the application and client agency modes (single or multiple) match.
-  For clients configured to act on behalf of multiple agencies, the stored
-  agency must also match the current request agency.
-  Null when the comparison cannot be determined.
+  Matches the current application and client agency mode (single or multiple).
+  Multi-agency clients must also match the current agency. Null if unknown.
   """
   isCurrentOrigin: Boolean
 }
