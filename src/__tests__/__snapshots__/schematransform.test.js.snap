@@ -4183,6 +4183,12 @@ type Bookmarks {
 
 type BookmarkItem {
   """
+  Origin name and comparisons with the current API context.
+  Existing application and agency fields remain available independently.
+  """
+  origin: BookmarkOrigin! @deprecated(reason: "@draft")
+
+  """
   Branch information for the agency stored with the bookmark, if available.
   """
   agency: PatronAgency
@@ -4209,6 +4215,25 @@ type BookmarkItem {
 
   """The application the bookmark belongs to"""
   application: String!
+}
+
+type BookmarkOrigin {
+  """
+  Library name for multi-agency clients; otherwise the application display name.
+  Null when unavailable.
+  """
+  displayName: String
+
+  """
+  Matches the current application, regardless of agency. Null if unknown.
+  """
+  isCurrentApplication: Boolean
+
+  """
+  Matches the current application and client agency mode (single or multiple).
+  Multi-agency clients must also match the current agency. Null if unknown.
+  """
+  isCurrentOrigin: Boolean
 }
 
 type BookmarkMaterial {

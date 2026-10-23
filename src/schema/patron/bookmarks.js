@@ -249,6 +249,12 @@ export const typeDef = `
 
     type BookmarkItem {
         """
+        Origin name and comparisons with the current API context.
+        Existing application and agency fields remain available independently.
+        """
+        origin: BookmarkOrigin! @deprecated(reason: "@draft")
+
+        """
         Branch information for the agency stored with the bookmark, if available.
         """
         agency: PatronAgency
@@ -287,6 +293,25 @@ export const typeDef = `
         The application the bookmark belongs to
         """
         application: String!
+    }
+
+    type BookmarkOrigin {
+      """
+      Library name for multi-agency clients; otherwise the application display name.
+      Null when unavailable.
+      """
+      displayName: String
+
+      """
+      Matches the current application, regardless of agency. Null if unknown.
+      """
+      isCurrentApplication: Boolean
+
+      """
+      Matches the current application and client agency mode (single or multiple).
+      Multi-agency clients must also match the current agency. Null if unknown.
+      """
+      isCurrentOrigin: Boolean
     }
 
     type BookmarkMaterial {
@@ -737,6 +762,78 @@ export const resolvers = {
     },
   },
   BookmarkItem: {
+    async origin(parent, args, context) {
+      const currentApplication = context.smaug?.gateway?.bookmarks?.app;
+      const isCurrentApplication =
+        parent.application && currentApplication
+          ? parent.application === currentApplication
+          : null;
+
+      const origin = {
+        displayName: null,
+        isCurrentApplication,
+        isCurrentOrigin: isCurrentApplication === false ? false : null,
+      };
+
+      try {
+        if (!parent.clientId) return origin;
+
+        const response = await context.datasources
+          .getLoader("authAdminClient")
+          .load(parent.clientId);
+
+        // Auth Admin response formats also supported by insights.
+        const obj = Array.isArray(response) ? response[0] : response;
+        const config = obj.config;
+
+        // client has missing bookmarks config
+        if (!config?.gateway?.bookmarks) return origin;
+
+        // Originating client is configured to act on behalf of multiple agencies.
+        const isMultiAgencyClient = Array.isArray(config.gateway.agencies?.ids);
+
+        // Check whether the current request client also supports multiple agencies.
+        const isCurrentMultiAgencyClient = Array.isArray(
+          context.smaug?.gateway?.agencies?.ids
+        );
+
+        if (isCurrentApplication === true) {
+          if (isMultiAgencyClient !== isCurrentMultiAgencyClient) {
+            origin.isCurrentOrigin = false;
+          } else if (!isMultiAgencyClient) {
+            origin.isCurrentOrigin = true;
+          } else if (parent.agencyId && context.profile?.agency) {
+            origin.isCurrentOrigin =
+              String(parent.agencyId) === String(context.profile.agency);
+          }
+        }
+
+        if (isMultiAgencyClient) {
+          if (parent.agencyId) {
+            const agency = await context.datasources.getLoader("library").load({
+              agencyid: parent.agencyId,
+              limit: 50,
+            });
+            if (agency?.hitcount) {
+              const branch =
+                agency.result?.find(
+                  (branch) => branch?.agencyId === branch?.branchId
+                ) || agency.result?.[0];
+              origin.displayName = branch?.agencyName || null;
+            }
+          }
+        } else {
+          origin.displayName = config.gateway.bookmarks.display || null;
+        }
+      } catch (error) {
+        log.error("Failed to resolve bookmark origin", {
+          clientId: parent.clientId,
+          message: error.message,
+        });
+      }
+
+      return origin;
+    },
     async agency(parent, args, context) {
       if (!parent?.agencyId) {
         return null;

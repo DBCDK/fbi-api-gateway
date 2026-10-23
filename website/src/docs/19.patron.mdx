@@ -54,44 +54,16 @@ agency.
           email
           municipalityNumber
           municipalityAgencyId
-          address
-          postalCode
-          country
           blocked
           agency {
             id
             name
             names
             type
-            openingHours
-            status
-            city
-            postalCode
-            address
-            phone
-            email
-            websiteUrl
-            catalogueUrl
-            lookupUrl
-            temporarilyClosed
-            pickupAllowed
-            numberOfBranches
             branches {
               id
               name
               type
-              openingHours
-              status
-              city
-              postalCode
-              address
-              phone
-              email
-              websiteUrl
-              catalogueUrl
-              lookupUrl
-              temporarilyClosed
-              pickupAllowed
               agency {
                 id
                 name
@@ -143,7 +115,6 @@ present for manifestation bookmarks and bookmarks with a selection, and is
           items {
             id
             materialId
-            createdAt
             application
             agency {
               id
@@ -156,28 +127,9 @@ present for manifestation bookmarks and bookmarks with a selection, and is
               }
             }
             snapshot {
-              version
               pid
-              workId
               title
               creator
-              materialTypes {
-                materialTypeGeneral {
-                  code
-                  display
-                }
-                materialTypeSpecific {
-                  code
-                  display
-                }
-              }
-              workType
-              periodical {
-                edition
-                pages
-                publisher
-                language
-              }
             }
             material {
               work {
