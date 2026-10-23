@@ -22,6 +22,26 @@ useful when one does not know if the query matches a title, a creator or a subje
   variables={{ q: { all: "harry" }, offset: 0, limit: 10 }}
 />
 
+## Search Without Online Materials
+
+`search` accepts `includeOnlineMaterials` (boolean, default `true`).
+When `false`, only works with a physical holding at the agency (and at any
+branch/department/... given in the holdings filters) are returned - online/electronic materials
+are excluded. This applies to search results, `facets` and `intelligentFacets`, but not suggester.
+
+<InlineGraphiQL
+  query={`query Example_SearchWithoutOnlineMaterials ($q: SearchQueryInput!, $includeOnlineMaterials: Boolean!, $offset: Int!, $limit: PaginationLimitScalar!) {
+      search(q: $q, includeOnlineMaterials: $includeOnlineMaterials) {
+        works(offset: $offset, limit: $limit) {
+          titles {
+            main
+          }
+        }
+      }
+    }`}
+  variables={{ q: { all: "harry" }, includeOnlineMaterials: false, offset: 0, limit: 10 }}
+/>
+
 ## Pagination
 
 In the example above, only 10 works are returned, but what if we want to browse the entire search
