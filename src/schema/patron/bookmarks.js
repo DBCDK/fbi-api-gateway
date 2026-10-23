@@ -297,8 +297,9 @@ export const typeDef = `
 
     type BookmarkOrigin {
       """
-      Library name for agency-based origins; otherwise the configured application
-      display name. Null when unavailable. Clients compose their own label.
+      Library name when the originating client is configured to act on behalf of
+      multiple agencies via gateway.agencies.ids; otherwise the configured
+      application display name. Null when unavailable. Clients compose their own label.
       """
       displayName: String
 
@@ -309,8 +310,9 @@ export const typeDef = `
       isCurrentApplication: Boolean
 
       """
-      Whether the application and origin type match, and, for agency-based
-      origins, the stored agency matches the current request agency.
+      Whether the application and client agency modes (single or multiple) match.
+      For clients configured to act on behalf of multiple agencies, the stored
+      agency must also match the current request agency.
       Null when the comparison cannot be determined.
       """
       isCurrentOrigin: Boolean
@@ -791,18 +793,18 @@ export const resolvers = {
         // client has missing bookmarks config
         if (!config?.gateway?.bookmarks) return origin;
 
-        // client uses multiple agencies
-        const agencyBased = Array.isArray(config.gateway.agencies?.ids);
+        // Originating client is configured to act on behalf of multiple agencies.
+        const isMultiAgencyClient = Array.isArray(config.gateway.agencies?.ids);
 
-        // token client is using multiple agencies
-        const currentAgencyBased = Array.isArray(
+        // Check whether the current request client also supports multiple agencies.
+        const isCurrentMultiAgencyClient = Array.isArray(
           context.smaug?.gateway?.agencies?.ids
         );
 
         if (isCurrentApplication === true) {
-          if (agencyBased !== currentAgencyBased) {
+          if (isMultiAgencyClient !== isCurrentMultiAgencyClient) {
             origin.isCurrentOrigin = false;
-          } else if (!agencyBased) {
+          } else if (!isMultiAgencyClient) {
             origin.isCurrentOrigin = true;
           } else if (parent.agencyId && context.profile?.agency) {
             origin.isCurrentOrigin =
@@ -810,8 +812,7 @@ export const resolvers = {
           }
         }
 
-        // client only support single agency (agencyId)
-        if (agencyBased) {
+        if (isMultiAgencyClient) {
           if (parent.agencyId) {
             const agency = await context.datasources.getLoader("library").load({
               agencyid: parent.agencyId,

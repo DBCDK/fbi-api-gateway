@@ -37,7 +37,7 @@ describe("Patron bookmarks", () => {
   });
 
   test.each([
-    // Application, origin agency, current agency, agency-based, same app, same origin
+    // Application, origin agency, current agency, multi-agency client, same app, same origin
     ["STUDIESOEG", "872600", "872600", true, true, true],
     ["STUDIESOEG", "872600", "872960", true, true, false],
     ["DDBCMS", "872600", "872600", true, false, false],
@@ -46,12 +46,12 @@ describe("Patron bookmarks", () => {
     ["STUDIESOEG", "872600", "872960", false, true, true],
     ["BIBLIOTEKDK", "872600", "872600", false, false, false],
   ])(
-    "origin comparison: application=%s agency=%s currentAgency=%s agencyBased=%s",
+    "origin comparison: application=%s agency=%s currentAgency=%s isMultiAgencyClient=%s",
     async (
       application,
       agencyId,
       currentAgency,
-      agencyBased,
+      isMultiAgencyClient,
       sameApp,
       sameOrigin
     ) => {
@@ -61,7 +61,7 @@ describe("Patron bookmarks", () => {
       const configuration = {
         gateway: {
           bookmarks: { app: application, display: "Applikationens navn" },
-          ...(agencyBased && { agencies: { ids: ["872600", "872960"] } }),
+          ...(isMultiAgencyClient && { agencies: { ids: ["872600", "872960"] } }),
         },
       };
       context.smaug.gateway.agencies = configuration.gateway.agencies;
@@ -94,7 +94,7 @@ describe("Patron bookmarks", () => {
           context
         )
       ).resolves.toEqual({
-        displayName: agencyBased
+        displayName: isMultiAgencyClient
           ? agencyId
             ? "Roskilde Gymnasium"
             : null
