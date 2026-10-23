@@ -66,6 +66,11 @@ type Relations {
     This movie is based on this or these books
     """
     isAdaptationOf: [Manifestation!]!
+
+    """
+    This movie is based on this or these books in Danish
+    """
+    isAdaptationOfDk: [Manifestation!]!
     
     """
     This manifestation is an analysis of these manifestations
@@ -157,6 +162,7 @@ export const resolvers = {
     hasReview: relationsResolver,
     hasSoundtrack: relationsResolver,
     isAdaptationOf: relationsResolver,
+    isAdaptationOfDk: relationsResolver,
     isAnalysisOf: relationsResolver,
     isDescriptionFromPublisherOf: relationsResolver,
     isManuscriptOf: relationsResolver,

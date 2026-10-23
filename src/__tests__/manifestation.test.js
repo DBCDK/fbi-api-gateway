@@ -144,6 +144,69 @@ describe("Manifestation", () => {
       },
     });
   });
+  test("periodicalTitleHistory is exposed with URLs", async () => {
+    const result = await performTestQuery({
+      query: `query {
+        manifestation(pid: "test_periodicalTitleHistory") {
+          periodicalTitleHistory {
+            heading
+            title
+            issn
+            urls
+          }
+        }
+      }`,
+      context: { datasources: createMockedDataLoaders() },
+    });
+
+    expect(result).toEqual({
+      data: {
+        manifestation: {
+          periodicalTitleHistory: [
+            {
+              heading: "Også på internettet",
+              title: ["Balder"],
+              issn: "1903-2625",
+              urls: ["https://example.com/balder"],
+            },
+          ],
+        },
+      },
+    });
+  });
+  test("isAdaptationOfDk exposes related Danish books", async () => {
+    const datasources = createMockedDataLoaders();
+    datasources.jedRelations = {
+      load: jest.fn().mockResolvedValue({
+        relations: {
+          isAdaptationOfDk: ["test_danish_book"],
+        },
+      }),
+    };
+
+    const result = await performTestQuery({
+      query: `query {
+        manifestation(pid: "test_danish_film") {
+          relations {
+            isAdaptationOfDk {
+              pid
+            }
+          }
+        }
+      }`,
+      context: { datasources },
+    });
+
+    expect(result).toEqual({
+      data: {
+        manifestation: {
+          relations: {
+            isAdaptationOfDk: [{ pid: "test_danish_book" }],
+          },
+        },
+      },
+    });
+  });
   test("CatalogueCodes nationalBibliography and otherCatalogues", async () => {
     const pid = "test_catalogueCodes_nationalBibliography_and_otherCatalogues";
     const result = await catalogueCodesQuery(pid);
