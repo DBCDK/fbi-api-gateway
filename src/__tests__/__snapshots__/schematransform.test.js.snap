@@ -206,7 +206,7 @@ type Mutation {
   submitMultipleOrders(input: SubmitMultipleOrdersInput!, dryRun: Boolean): SubmitMultipleOrders
 
   """Updates patron information, such as adding or removing bookmarks."""
-  patron: PatronMutation @deprecated(reason: "@draft")
+  patron: PatronMutation
 
   """
   Represents the overall reservability status across all items according to the Cicero API (booking allowed).
@@ -267,7 +267,7 @@ type Query {
   """
   Retrieves information about the patron, such as bookmarks, reservations, and loans.
   """
-  patron: Patron @deprecated(reason: "@draft")
+  patron: Patron
 
   """Access to various types of recommendations."""
   recommendations: Recommendations!
@@ -2638,6 +2638,23 @@ type Identifier {
   value: String!
 }
 
+"""The status of the publication."""
+type PublicationStatus {
+  """The publication status type as display text"""
+  display: String!
+
+  """The publication status code"""
+  code: PublicationStatusCodeEnum!
+}
+
+enum PublicationStatusCodeEnum {
+  """The publication is recognized as scientific."""
+  SCIENTIFIC
+
+  """Other publication statuses"""
+  OTHER
+}
+
 type HostPublication {
   """Publication this manifestation can be found in"""
   title: String!
@@ -2650,6 +2667,9 @@ type HostPublication {
 
   """ISSN of the publication this manifestation can be found in"""
   issn: String
+
+  """The publication status of the manifestation"""
+  publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""
   isbn: String
@@ -3072,6 +3092,9 @@ type Manifestation {
 
   """Details about the host publications of this manifestation"""
   hostPublication: HostPublication
+
+  """The publication status of the manifestation"""
+  publicationStatus: PublicationStatus
 
   """Identifiers for this manifestation - often used for search indexes"""
   identifiers: [Identifier!]!
@@ -3977,15 +4000,15 @@ type Patron {
   blocked: Boolean!
 
   """Retrieves current loans live from OpenUserStatus."""
-  currentLoans(orderBy: OrderLoansByEnum, status: PatronLoanStatusEnum, offset: Int, limit: PaginationLimitScalar): PatronCurrentLoans!
+  currentLoans(orderBy: OrderLoansByEnum, status: PatronLoanStatusEnum, offset: Int, limit: PaginationLimitScalar): PatronCurrentLoans! @deprecated(reason: "@draft")
 
   """Retrieves historical loans stored in UserData."""
-  historicalLoans(offset: Int, limit: PaginationLimitScalar): PatronHistoricalLoans!
+  historicalLoans(offset: Int, limit: PaginationLimitScalar): PatronHistoricalLoans! @deprecated(reason: "@draft")
 
   """
   Retrieves consent for storing historical loans and whether the patron is old enough to change it.
   """
-  historicalLoanConsent: PatronHistoricalLoanConsent!
+  historicalLoanConsent: PatronHistoricalLoanConsent! @deprecated(reason: "@draft")
 }
 
 type PatronAccount {
@@ -4138,13 +4161,13 @@ type PatronMutation {
   Adds one or more manual historical loans for integration testing.
   Snapshot data is resolved by the gateway and cannot be supplied by the client.
   """
-  addHistoricalLoans(loans: [PatronHistoricalLoanInput!]!, dryRun: Boolean): AddHistoricalLoansResponse!
+  addHistoricalLoans(loans: [PatronHistoricalLoanInput!]!, dryRun: Boolean): AddHistoricalLoansResponse! @deprecated(reason: "@draft")
 
   """Deletes one or more historical loans by their public UserData IDs."""
-  deleteHistoricalLoans(ids: [String!]!, dryRun: Boolean): DeleteHistoricalLoansResponse!
+  deleteHistoricalLoans(ids: [String!]!, dryRun: Boolean): DeleteHistoricalLoansResponse! @deprecated(reason: "@draft")
 
   """Changes consent for storing historical loans."""
-  setHistoricalLoanConsent(consent: Boolean!, dryRun: Boolean): SetHistoricalLoanConsentResponse!
+  setHistoricalLoanConsent(consent: Boolean!, dryRun: Boolean): SetHistoricalLoanConsentResponse! @deprecated(reason: "@draft")
 }
 
 type Bookmarks {
@@ -4159,6 +4182,17 @@ type Bookmarks {
 }
 
 type BookmarkItem {
+  """
+  Origin name and comparisons with the current API context.
+  Existing application and agency fields remain available independently.
+  """
+  origin: BookmarkOrigin! @deprecated(reason: "@draft")
+
+  """
+  Branch information for the agency stored with the bookmark, if available.
+  """
+  agency: PatronAgency
+
   """The unique identifier for the bookmark"""
   id: String!
 
@@ -4181,6 +4215,25 @@ type BookmarkItem {
 
   """The application the bookmark belongs to"""
   application: String!
+}
+
+type BookmarkOrigin {
+  """
+  Library name for multi-agency clients; otherwise the application display name.
+  Null when unavailable.
+  """
+  displayName: String
+
+  """
+  Matches the current application, regardless of agency. Null if unknown.
+  """
+  isCurrentApplication: Boolean
+
+  """
+  Matches the current application and client agency mode (single or multiple).
+  Multi-agency clients must also match the current agency. Null if unknown.
+  """
+  isCurrentOrigin: Boolean
 }
 
 type BookmarkMaterial {
@@ -4266,6 +4319,12 @@ type DeleteBookmarksResponse {
 }
 
 type BookmarksStatusItem {
+  """
+  Stored agency for a confirmed addition or existing bookmark.
+  Null for dry runs, errors and deletions.
+  """
+  agency: PatronAgency
+
   """
   Status of the bookmark addition or deletion attempt for a specific material.
   """
@@ -9764,6 +9823,23 @@ type Identifier {
   value: String!
 }
 
+"""The status of the publication."""
+type PublicationStatus {
+  """The publication status type as display text"""
+  display: String!
+
+  """The publication status code"""
+  code: PublicationStatusCodeEnum!
+}
+
+enum PublicationStatusCodeEnum {
+  """The publication is recognized as scientific."""
+  SCIENTIFIC
+
+  """Other publication statuses"""
+  OTHER
+}
+
 type HostPublication {
   """Publication this manifestation can be found in"""
   title: String!
@@ -9776,6 +9852,9 @@ type HostPublication {
 
   """ISSN of the publication this manifestation can be found in"""
   issn: String
+
+  """The publication status of the manifestation"""
+  publicationStatus: PublicationStatus
 
   """ISBN of the publication this manifestation can be found in"""
   isbn: String
@@ -10195,6 +10274,9 @@ type Manifestation {
 
   """Details about the host publications of this manifestation"""
   hostPublication: HostPublication
+
+  """The publication status of the manifestation"""
+  publicationStatus: PublicationStatus
 
   """Identifiers for this manifestation - often used for search indexes"""
   identifiers: [Identifier!]!

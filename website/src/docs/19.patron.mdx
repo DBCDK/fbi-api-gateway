@@ -54,44 +54,16 @@ agency.
           email
           municipalityNumber
           municipalityAgencyId
-          address
-          postalCode
-          country
           blocked
           agency {
             id
             name
             names
             type
-            openingHours
-            status
-            city
-            postalCode
-            address
-            phone
-            email
-            websiteUrl
-            catalogueUrl
-            lookupUrl
-            temporarilyClosed
-            pickupAllowed
-            numberOfBranches
             branches {
               id
               name
               type
-              openingHours
-              status
-              city
-              postalCode
-              address
-              phone
-              email
-              websiteUrl
-              catalogueUrl
-              lookupUrl
-              temporarilyClosed
-              pickupAllowed
               agency {
                 id
                 name
@@ -143,8 +115,11 @@ present for manifestation bookmarks and bookmarks with a selection, and is
           items {
             id
             materialId
-            createdAt
             application
+            agency {
+              id
+              name
+            }
             selection {
               materialTypes {
                 general
@@ -152,28 +127,9 @@ present for manifestation bookmarks and bookmarks with a selection, and is
               }
             }
             snapshot {
-              version
               pid
-              workId
               title
               creator
-              materialTypes {
-                materialTypeGeneral {
-                  code
-                  display
-                }
-                materialTypeSpecific {
-                  code
-                  display
-                }
-              }
-              workType
-              periodical {
-                edition
-                pages
-                publisher
-                language
-              }
             }
             material {
               work {
@@ -259,16 +215,20 @@ Bookmark collection status values:
 
 ### Add bookmarks
 
-`addBookmarks` accepts a PID or work ID and an optional material type
-selection. A selection must contain either general or specific codes, never
-both. A manifestation must contain every code in the selected array to match.
-When a PID has a selection, the API resolves its work and stores the normalized
-work ID with the selection. The API also resolves the owning work when storing
-a PID bookmark. Snapshot metadata is resolved and created by the API.
+`addBookmarks` accepts a PID or work ID with an optional material type
+selection: either general or specific codes, all of which must match.
+The API resolves the owning work and creates a snapshot; a PID with a
+selection is stored as its work ID.
 
-When `dryRun` is `true`, identifiers and materials are validated without
-storing bookmarks. Existing bookmarks are reported as `ALREADY_EXISTS` and are
-considered successful by the overall status.
+`agencyId` is set automatically from the agency in the URL, falling back to
+the client configuration. Missing values are stored as `null`. Lists and add results
+expose `agency` as the same `PatronAgency` type used by loans, or `null` if
+unavailable. Read its ID through `agency { id }`.
+
+Duplicates return `ALREADY_EXISTS` (counted as success) and keep their stored
+agency, including `null`. Agency does not affect bookmark identity.
+`dryRun: true` validates without saving. Dry-run, delete and unconfirmed error
+results return `null` for `agency`.
 
 <InlineGraphiQL
   query={`
@@ -282,6 +242,10 @@ considered successful by the overall status.
           items {
             id
             materialId
+            agency {
+              id
+              name
+            }
             status
             selection {
               materialTypes {

@@ -1,4 +1,5 @@
-import { resolvers } from "../schema/patron/bookmarks";
+import { parse } from "graphql";
+import { resolvers, typeDef } from "../schema/patron/bookmarks";
 import { resolveManifestation, resolveWork } from "../utils/utils";
 
 jest.mock("../utils/utils", () => ({
@@ -34,6 +35,249 @@ describe("Patron bookmarks", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
+  test.each([
+    // Application, origin agency, current agency, multi-agency client, same app, same origin
+    ["STUDIESOEG", "872600", "872600", true, true, true],
+    ["STUDIESOEG", "872600", "872960", true, true, false],
+    ["DDBCMS", "872600", "872600", true, false, false],
+    ["STUDIESOEG", null, "872600", true, true, null],
+    ["STUDIESOEG", "872600", null, true, true, null],
+    ["STUDIESOEG", "872600", "872960", false, true, true],
+    ["BIBLIOTEKDK", "872600", "872600", false, false, false],
+  ])(
+    "origin comparison: application=%s agency=%s currentAgency=%s isMultiAgencyClient=%s",
+    async (
+      application,
+      agencyId,
+      currentAgency,
+      isMultiAgencyClient,
+      sameApp,
+      sameOrigin
+    ) => {
+      const context = createContext();
+      context.profile = { agency: currentAgency };
+      context.smaug.gateway.bookmarks.app = "STUDIESOEG";
+      const configuration = {
+        gateway: {
+          bookmarks: { app: application, display: "Applikationens navn" },
+          ...(isMultiAgencyClient && { agencies: { ids: ["872600", "872960"] } }),
+        },
+      };
+      context.smaug.gateway.agencies = configuration.gateway.agencies;
+      const clientLoad = jest.fn().mockResolvedValue({ config: configuration });
+      context.datasources.getLoader = jest.fn((name) => ({
+        load:
+          name === "authAdminClient"
+            ? clientLoad
+            : jest.fn().mockResolvedValue({
+                hitcount: 2,
+                result: [
+                  {
+                    agencyId,
+                    branchId: "other-branch",
+                    agencyName: "Other branch",
+                  },
+                  {
+                    agencyId,
+                    branchId: agencyId,
+                    agencyName: "Roskilde Gymnasium",
+                  },
+                ],
+              }),
+      }));
+
+      await expect(
+        resolvers.BookmarkItem.origin(
+          { clientId: "source-client", application, agencyId },
+          {},
+          context
+        )
+      ).resolves.toEqual({
+        displayName: isMultiAgencyClient
+          ? agencyId
+            ? "Roskilde Gymnasium"
+            : null
+          : "Applikationens navn",
+        isCurrentApplication: sameApp,
+        isCurrentOrigin: sameOrigin,
+      });
+      expect(clientLoad).toHaveBeenCalledWith("source-client");
+    }
+  );
+
+  test("unavailable origin metadata preserves known comparisons", async () => {
+    const context = createContext(
+      jest.fn().mockRejectedValue(new Error("Unavailable"))
+    );
+    const bookmark = {
+      clientId: "source-client",
+      application: "BIBLIOTEKDK",
+      agencyId: "872600",
+    };
+    await expect(
+      resolvers.BookmarkItem.origin(bookmark, {}, context)
+    ).resolves.toEqual({
+      displayName: null,
+      isCurrentApplication: true,
+      isCurrentOrigin: null,
+    });
+
+    context.datasources.getLoader = jest.fn((name) => ({
+      load:
+        name === "authAdminClient"
+          ? jest
+              .fn()
+              .mockResolvedValue({
+                config: {
+                  gateway: {
+                    bookmarks: { app: "BIBLIOTEKDK" },
+                    agencies: { ids: ["872600"] },
+                  },
+                },
+              })
+          : jest.fn().mockRejectedValue(new Error("Library unavailable")),
+    }));
+    context.smaug.gateway.agencies = { ids: ["872600"] };
+    context.profile = { agency: "872600" };
+    await expect(
+      resolvers.BookmarkItem.origin(bookmark, {}, context)
+    ).resolves.toEqual({
+      displayName: null,
+      isCurrentApplication: true,
+      isCurrentOrigin: true,
+    });
+  });
+
+  test("bookmark schema exposes agency instead of agencyId", () => {
+    const document = parse(typeDef);
+    for (const name of ["BookmarkItem", "BookmarksStatusItem"]) {
+      const type = document.definitions.find(
+        (definition) => definition.name?.value === name
+      );
+      expect(type.fields.map((field) => field.name.value)).not.toContain(
+        "agencyId"
+      );
+      expect(
+        type.fields.find((field) => field.name.value === "agency").type.name
+          .value
+      ).toBe("PatronAgency");
+    }
+  });
+
+  test.each(["710100", null, undefined])(
+    "addBookmarks forwards profile agency %s when available",
+    async (agency) => {
+      resolveWork.mockResolvedValueOnce({ workId: "work-of:test:1" });
+      const load = jest.fn().mockResolvedValue({ results: [] });
+      const context = createContext(load);
+      context.profile = { agency };
+      context.smaug.agencyId = "different-smaug-agency";
+
+      await resolvers.PatronMutation.addBookmarks(
+        null,
+        { bookmarks: [{ materialId: "work-of:test:1" }] },
+        context
+      );
+
+      const sent = load.mock.calls[0][0].bookmarks[0];
+      if (agency == null) {
+        expect(sent).not.toHaveProperty("agencyId");
+      } else {
+        expect(sent.agencyId).toBe(agency);
+      }
+    }
+  );
+
+  test.each([
+    ["ok", "710100", "710100"],
+    ["already_exists", "720100", "720100"],
+    ["already_exists", null, null],
+    ["already_exists", undefined, null],
+    ["unknown_error", "720100", null],
+  ])(
+    "add result %s exposes stored agency %s",
+    async (status, agencyId, expected) => {
+      resolveWork.mockResolvedValueOnce({ workId: "work-of:test:1" });
+      const context = createContext(
+        jest.fn().mockResolvedValue({
+          results: [{ id: bookmarkId, status, agencyId }],
+        })
+      );
+      context.profile = { agency: "710100" };
+      const result = await resolvers.PatronMutation.addBookmarks(
+        null,
+        { bookmarks: [{ materialId: "work-of:test:1" }] },
+        context
+      );
+      expect(result.items[0].agencyId ?? null).toBe(expected);
+      const agency = { hitcount: 1, result: [{ agencyId: expected }] };
+      const load = jest.fn().mockResolvedValue(agency);
+      await expect(
+        resolvers.BookmarksStatusItem.agency(
+          result.items[0],
+          {},
+          createContext(load)
+        )
+      ).resolves.toBe(expected ? agency : null);
+      if (expected) {
+        expect(load).toHaveBeenCalledWith({ agencyid: expected, limit: 50 });
+      } else {
+        expect(load).not.toHaveBeenCalled();
+      }
+    }
+  );
+
+  test.each(["710100", null, undefined])(
+    "get exposes stored agency %s",
+    async (agencyId) => {
+      const context = createContext(
+        jest.fn().mockResolvedValue({
+          hitcount: 1,
+          items: [{ id: bookmarkId, agencyId }],
+        })
+      );
+      context.profile = { agency: "different-request-agency" };
+      const result = await resolvers.Patron.bookmarks(null, {}, context);
+      expect(result.items[0].agencyId ?? null).toBe(agencyId ?? null);
+    }
+  );
+
+  test.each(["dryRun", "error", "delete"])(
+    "%s returns null agency",
+    async (operation) => {
+      if (operation !== "delete") {
+        resolveWork.mockResolvedValueOnce({ workId: "work-of:test:1" });
+      }
+      const load =
+        operation === "error"
+          ? jest.fn().mockRejectedValue(new Error("Unavailable"))
+          : jest.fn().mockResolvedValue({
+              results: [{ status: "ok", agencyId: "710100" }],
+            });
+      const context = createContext(load);
+      context.profile = { agency: "710100" };
+      const result =
+        operation === "delete"
+          ? await resolvers.PatronMutation.deleteBookmarks(
+              null,
+              { ids: [bookmarkId] },
+              context
+            )
+          : await resolvers.PatronMutation.addBookmarks(
+              null,
+              {
+                bookmarks: [{ materialId: "work-of:test:1" }],
+                dryRun: operation === "dryRun",
+              },
+              context
+            );
+      await expect(
+        resolvers.BookmarksStatusItem.agency(result.items[0], {}, context)
+      ).resolves.toBeNull();
+      if (operation === "dryRun") expect(load).not.toHaveBeenCalled();
+    }
+  );
 
   test("bookmarks forwards filters and pagination to UserData V2", async () => {
     const load = jest.fn().mockResolvedValue({
@@ -240,6 +484,46 @@ describe("Patron bookmarks", () => {
       "pid:123"
     );
   });
+
+  test("BookmarkItem.agency resolves the stored agency using the loans library lookup", async () => {
+    const agency = {
+      hitcount: 1,
+      result: [
+        { agencyId: "710100", branchId: "710100", agencyName: "Library" },
+      ],
+    };
+    const load = jest.fn().mockResolvedValue(agency);
+    const context = createContext(load);
+    context.profile = { agency: "720100" };
+
+    await expect(
+      resolvers.BookmarkItem.agency({ agencyId: "710100" }, {}, context)
+    ).resolves.toBe(agency);
+    expect(context.datasources.getLoader).toHaveBeenCalledWith("library");
+    expect(load).toHaveBeenCalledWith({ agencyid: "710100", limit: 50 });
+  });
+
+  test.each([null, undefined])(
+    "BookmarkItem.agency skips lookup for missing ID %s",
+    async (agencyId) => {
+      const context = createContext();
+      context.profile = { agency: "720100" };
+      await expect(
+        resolvers.BookmarkItem.agency({ agencyId }, {}, context)
+      ).resolves.toBeNull();
+      expect(context.datasources.getLoader).not.toHaveBeenCalled();
+    }
+  );
+
+  test.each([{ hitcount: 0, result: [] }, null, undefined])(
+    "BookmarkItem.agency returns null when the library lookup finds no agency",
+    async (response) => {
+      const context = createContext(jest.fn().mockResolvedValue(response));
+      await expect(
+        resolvers.BookmarkItem.agency({ agencyId: "710100" }, {}, context)
+      ).resolves.toBeNull();
+    }
+  );
 
   test("BookmarkItem.material returns an empty material wrapper without a material id", async () => {
     await expect(resolvers.BookmarkItem.material({}, {}, {})).resolves.toEqual(

@@ -40,6 +40,8 @@ const defaultSettings = {
     "SearchResponse.seriesHit",
     "ComplexSearchResponse.creatorHit",
     "ComplexSearchResponse.seriesHit",
+    "Manifestation.publicationStatus", //hidden for now. make visible when JED is ready.
+    "HostPublication.publicationStatus", //hidden for now. make visible when JED is ready.
   ],
 };
 
