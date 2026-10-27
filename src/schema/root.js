@@ -45,10 +45,6 @@ type Query {
     search_exact: Boolean
     """
     Include online/electronic materials. Defaults to true.
-    When false, only works with a physical holding at the agency (and at any
-    branch/department/... given in the holdings filters) are returned -
-    online/electronic materials are excluded.
-    Applies to results, facets and intelligentFacets, but not suggester.
     """
     includeOnlineMaterials: Boolean! = true
   ): SearchResponse!
@@ -257,7 +253,6 @@ export const resolvers = {
       );
 
       return refworksRecords.filter(Boolean).join("\n");
-
     },
     async localizations(parent, args, context, info) {
       return await resolveLocalizations(args, context);
