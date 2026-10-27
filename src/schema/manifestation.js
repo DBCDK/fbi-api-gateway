@@ -17,13 +17,6 @@ const IDENTIFIER_TYPES = new Set([
   "BARCODE",
 ]);
 
-// Convert JED URL objects to the GraphQL list of URL strings.
-function resolveRelatedPublicationUrls(parent) {
-  return (parent?.urls || [])
-    .map((url) => (typeof url === "string" ? url : url?.url))
-    .filter(Boolean);
-}
-
 export const typeDef = `
 type CatalogueCodes {
   """
@@ -1433,15 +1426,17 @@ export const resolvers = {
   },
   RelatedPublication: {
     url(parent) {
-      return resolveRelatedPublicationUrls(parent)[0] || null;
+      return parent?.urls?.[0]?.url || null;
     },
     urls(parent) {
-      return resolveRelatedPublicationUrls(parent);
+      return parent?.urls?.map((url) => url.url);
     },
   },
   PeriodicalTitleHistory: {
     urls(parent) {
-      return resolveRelatedPublicationUrls(parent);
+      return (parent?.urls || [])
+        .map((url) => (typeof url === "string" ? url : url?.url))
+        .filter(Boolean);
     },
   },
 
