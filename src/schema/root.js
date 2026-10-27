@@ -39,7 +39,15 @@ type Query {
   monitor(name: String!): String!
   work(id: String, faust: String, pid: String, oclc: String, language: LanguageCodeEnum): Work @complexity(value: 5)
   works(id: [String!], faust: [String!], pid: [String!], oclc:[String!], language: LanguageCodeEnum): [Work]! @complexity(value: 5, multipliers: ["id", "pid", "faust", "oclc"])
-  search(q: SearchQueryInput!, filters: SearchFiltersInput, search_exact: Boolean): SearchResponse!
+  search(
+    q: SearchQueryInput!
+    filters: SearchFiltersInput
+    search_exact: Boolean
+    """
+    Include online/electronic materials. Defaults to true.
+    """
+    includeOnlineMaterials: Boolean! = true
+  ): SearchResponse!
   """
   Search for works based on the meaning of a natural-language query.
   Threshold controls the minimum semantic similarity from 0 to 1 and
@@ -245,7 +253,6 @@ export const resolvers = {
       );
 
       return refworksRecords.filter(Boolean).join("\n");
-
     },
     async localizations(parent, args, context, info) {
       return await resolveLocalizations(args, context);
