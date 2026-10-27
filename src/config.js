@@ -387,6 +387,14 @@ export default {
       url: process.env.SMAUG_URL || "https://auth-config.dbc.dk",
       teamLabel: "febib",
     },
+    authAdmin: {
+      url: process.env.AUTH_ADMIN_URL || "https://auth-admin.dbc.dk",
+      user: process.env.AUTH_ADMIN_USER,
+      password: process.env.AUTH_ADMIN_PASSWORD,
+      prefix: process.env.AUTH_ADMIN_PREFIX || "auth-admin-client-2",
+      ttl: process.env.AUTH_ADMIN_CACHE_TTL_SECONDS || 60,
+      teamLabel: "febib",
+    },
     culr: {
       url:
         process.env.CULR_URL ||
