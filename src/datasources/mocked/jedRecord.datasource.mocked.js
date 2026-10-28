@@ -48,6 +48,20 @@ export function load({ id }) {
     };
   }
 
+  if (id === "test_periodicalTitleHistory") {
+    return {
+      pid: id,
+      periodicalTitleHistory: [
+        {
+          heading: "Også på internettet",
+          title: ["Balder"],
+          issn: "1903-2625",
+          urls: [{ url: "https://example.com/balder" }],
+        },
+      ],
+    };
+  }
+
   if (
     id.startsWith(
       "test_catalogueCodes_nationalBibliography_and_otherCatalogues"

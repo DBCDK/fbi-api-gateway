@@ -2534,6 +2534,25 @@ type RelatedPublication {
   url: String
 }
 
+"""
+Notes about relations to this manifestation - like previous names or related journals, or publications in different form
+"""
+type PeriodicalTitleHistory {
+  """
+  Notes describing the relation of the related periodical/journal/publication
+  """
+  heading: String!
+
+  """Titles of the related periodical/journal"""
+  title: [String!]!
+
+  """ISSN of the related periodical/journal/publication"""
+  issn: String
+
+  """URLs of the related publication and possible link text"""
+  urls: [String!]!
+}
+
 enum NoteTypeEnum {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
@@ -3133,6 +3152,11 @@ type Manifestation {
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
   relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+
+  """
+  Notes on relations to this manifestation - e.g. previous/later names or related journals
+  """
+  periodicalTitleHistory: [PeriodicalTitleHistory!]!
 
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
@@ -4715,6 +4739,9 @@ type Relations {
 
   """This movie is based on this or these books"""
   isAdaptationOf: [Manifestation!]!
+
+  """This movie is based on this or these books in Danish"""
+  isAdaptationOfDk: [Manifestation!]!
 
   """This manifestation is an analysis of these manifestations"""
   isAnalysisOf: [Manifestation!]!
@@ -7198,6 +7225,25 @@ type RelatedPublication {
   url: String
 }
 
+"""
+Notes about relations to this manifestation - like previous names or related journals, or publications in different form
+"""
+type PeriodicalTitleHistory {
+  """
+  Notes describing the relation of the related periodical/journal/publication
+  """
+  heading: String!
+
+  """Titles of the related periodical/journal"""
+  title: [String!]!
+
+  """ISSN of the related periodical/journal/publication"""
+  issn: String
+
+  """URLs of the related publication and possible link text"""
+  urls: [String!]!
+}
+
 enum NoteTypeEnum {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
@@ -7776,6 +7822,11 @@ type Manifestation {
   relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
+  Notes on relations to this manifestation - e.g. previous/later names or related journals
+  """
+  periodicalTitleHistory: [PeriodicalTitleHistory!]!
+
+  """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   """
   physicalDescription: PhysicalUnitDescription
@@ -8312,6 +8363,9 @@ type Relations {
 
   """This movie is based on this or these books"""
   isAdaptationOf: [Manifestation!]!
+
+  """This movie is based on this or these books in Danish"""
+  isAdaptationOfDk: [Manifestation!]!
 
   """This manifestation is an analysis of these manifestations"""
   isAnalysisOf: [Manifestation!]!
@@ -9726,6 +9780,25 @@ type RelatedPublication {
   url: String
 }
 
+"""
+Notes about relations to this manifestation - like previous names or related journals, or publications in different form
+"""
+type PeriodicalTitleHistory {
+  """
+  Notes describing the relation of the related periodical/journal/publication
+  """
+  heading: String!
+
+  """Titles of the related periodical/journal"""
+  title: [String!]!
+
+  """ISSN of the related periodical/journal/publication"""
+  issn: String
+
+  """URLs of the related publication and possible link text"""
+  urls: [String!]!
+}
+
 enum NoteTypeEnum {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
@@ -10324,6 +10397,11 @@ type Manifestation {
   relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
 
   """
+  Notes on relations to this manifestation - e.g. previous/later names or related journals
+  """
+  periodicalTitleHistory: [PeriodicalTitleHistory!]!
+
+  """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
   """
   physicalDescription: PhysicalUnitDescription
@@ -10760,6 +10838,9 @@ type Relations {
 
   """This movie is based on this or these books"""
   isAdaptationOf: [Manifestation!]!
+
+  """This movie is based on this or these books in Danish"""
+  isAdaptationOfDk: [Manifestation!]!
 
   """This manifestation is an analysis of these manifestations"""
   isAnalysisOf: [Manifestation!]!
