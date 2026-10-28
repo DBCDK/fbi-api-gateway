@@ -94,7 +94,7 @@ export default function Hero({ className = "" }) {
 
   return (
     <section
-      className={`${styles.hero} ${isHalloween ? styles.halloween : ""} ${className}`}
+      className={`${styles.hero} ${className}`}
       id="hero"
     >
       <div className={styles.background}>

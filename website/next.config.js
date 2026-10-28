@@ -21,7 +21,6 @@ module.exports = {
     defaultLocale: "en",
   },
   env: {
-    NEXT_PUBLIC_WEBSITE_THEME: process.env.WEBSITE_THEME || "default",
     NEXT_PUBLIC_MAX_CLIENT_ENTRIES:
       process.env.MAX_CLIENT_ENTRIES || String(defaultMaxClientEntries),
     NEXT_PUBLIC_WHATS_NEW_ENABLED: whatsNewEnabled || "",
