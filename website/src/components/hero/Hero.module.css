@@ -3,12 +3,9 @@
   height: 75vh;
   padding: var(--pt12) 0;
   text-align: center;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.hero.halloween {
+  /* Let theme decorations extend beyond the hero; clip the background below. */
   overflow: visible;
+  isolation: isolate;
 }
 
 .background {

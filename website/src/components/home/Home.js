@@ -29,8 +29,8 @@ export default function Home() {
           <Col>
             <Text className={styles.text}>Hello! You have found the</Text>
             <Title as="h1" type="title6" className={styles.title}>
-              {(isTemp || isFuture) && <strong>[Temporary]</strong>}
-              {(isTemp || isFuture) && <strong>[Temporary]</strong>}
+              {isTemp && <strong>[Temporary]</strong>}
+              {isFuture && <strong>[Future]</strong>}
               {isOld && <strong>[Old]</strong>}
               {isTest && <strong>[{theme}]</strong>} FBI API
             </Title>
@@ -41,7 +41,8 @@ export default function Home() {
           <Row className={styles.content}>
             <Col>
               <Title as="h2" type="title1" className={styles.title}>
-                What does this <strong>{"'Temporary'"}</strong> thing mean?
+                What does this{" "}
+                <strong>{isTemp ? "Temporary" : "Future"}</strong> thing mean?
               </Title>
               <Text className={styles.text}>
                 This version of the FBI-API is designed for a more significant

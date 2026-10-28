@@ -1,4 +1,6 @@
-import { useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
+
+export const ThemeContext = createContext("default");
 
 /**
  * calculates easter day for a given year
@@ -109,7 +111,7 @@ const holidays = {
  */
 export default function useTheme() {
   const hasDynamic = getHoliday();
-  const hasStatic = process.env.NEXT_PUBLIC_WEBSITE_THEME || "default";
+  const hasStatic = useContext(ThemeContext);
 
   // Prioritize the static - but on default - prioritize the dynamic
   const theme = (hasStatic === "default" && hasDynamic) || hasStatic;
