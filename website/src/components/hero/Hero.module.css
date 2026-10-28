@@ -55,7 +55,7 @@
   background-size: 180% 180%;
   filter: saturate(118%);
   transform: scale(1.1);
-  animation: heroGradientFlow 30s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite
+  animation: heroGradientFlow var(--hero-gradient-duration, 30s) cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite
     alternate;
 }
 
@@ -206,15 +206,15 @@
 
 @keyframes heroGradientFlow {
   0% {
-    background-position: 0% 18%;
+    background-position: var(--hero-gradient-start-position, 0% 18%);
     transform: scale(1.08) translate3d(-1%, 0, 0) rotate(-1deg);
   }
   35% {
-    background-position: 40% 46%;
+    background-position: var(--hero-gradient-mid-position, 40% 46%);
     transform: scale(1.13) translate3d(1%, -2%, 0) rotate(0.8deg);
   }
   68% {
-    background-position: 74% 62%;
+    background-position: var(--hero-gradient-late-position, 74% 62%);
     transform: scale(1.16) translate3d(-1%, 2%, 0) rotate(-0.4deg);
   }
   100% {
@@ -301,7 +301,7 @@
 
   .color {
     background-size: 220% 220%;
-    animation-duration: 22s;
+    animation-duration: var(--hero-gradient-duration, 22s);
   }
 
   .color::before {

@@ -167,14 +167,6 @@
   padding: 0;
 }
 
-.links .link.changes a {
-  color: var(--secondary);
-}
-
-.links .link.changes a[disabled] {
-  color: var(--text-light);
-}
-
 /* documentation */
 
 .header.documentation {

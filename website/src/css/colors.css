@@ -75,11 +75,15 @@ body.future {
   --secondary: #f50057;
   --secondary-light: #ff4081;
 
-  --hero-gradient-primary: #7c4dff;
+  --hero-gradient-primary: #9068ff;
   --hero-gradient-secondary: #ff4081;
   --hero-gradient-tertiary: #6d3ff2;
   --hero-gradient-shadow: #120a2f;
   --hero-gradient-glow: rgba(124, 77, 255, 0.38);
+  --hero-gradient-start-position: 55% 65%;
+  --hero-gradient-mid-position: 80% 80%;
+  --hero-gradient-late-position: 92% 86%;
+  --hero-gradient-duration: 14s;
 }
 body.easter {
   --primary: #ffca28;
