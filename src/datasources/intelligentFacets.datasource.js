@@ -8,7 +8,10 @@ import { mapFilters, mapToFacetEnum } from "../utils/filtersAndFacetsMap";
 const { url, prefix, ttl, token, firstHits, disableFuzzySearch, teamLabel } =
   config.datasources.facets;
 
-export async function load({ q, filters = {}, profile, limit = 10 }, context) {
+export async function load(
+  { q, filters = {}, profile, limit = 10, includeOnlineMaterials = true },
+  context
+) {
   const { agency, name } = profile;
   // get parsed arguments for query
   // static parameters for the search
@@ -24,6 +27,7 @@ export async function load({ q, filters = {}, profile, limit = 10 }, context) {
   // merge variables and statics
   const query = {
     q,
+    includeOnlineMaterials,
     // Rename some of the filter names
     filters: mapFilters(filters),
     "facet.limit": limit,

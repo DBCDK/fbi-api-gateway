@@ -9,7 +9,10 @@ import { mapFromFacetEnums, mapFilters } from "../utils/filtersAndFacetsMap";
 const { url, prefix, ttl, token, firstHits, disableFuzzySearch, teamLabel } =
   config.datasources.facets;
 
-export async function load({ q, filters = {}, facets = [], profile }, context) {
+export async function load(
+  { q, filters = {}, facets = [], profile, includeOnlineMaterials = true },
+  context
+) {
   const { agency, name } = profile;
   // get parsed arguments for query
   // static parameters for the search
@@ -29,6 +32,7 @@ export async function load({ q, filters = {}, facets = [], profile }, context) {
     q,
     filters: mappedFilters,
     facets: uniq(mappedFacets),
+    includeOnlineMaterials,
     disable_fuzzy_search: disableFuzzySearch,
     ...statics,
   };

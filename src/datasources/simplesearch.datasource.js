@@ -8,7 +8,15 @@ import { mapFilters } from "../utils/filtersAndFacetsMap";
 const { url, prefix, ttl, token, teamLabel } = config.datasources.simplesearch;
 
 export async function load(
-  { q, filters = {}, limit = 10, offset = 0, profile, search_exact = false },
+  {
+    q,
+    filters = {},
+    limit = 10,
+    offset = 0,
+    profile,
+    search_exact = false,
+    includeOnlineMaterials = true,
+  },
   context
 ) {
   const { agency, name } = profile;
@@ -33,6 +41,7 @@ export async function load(
     agency,
     profile: name,
     search_exact,
+    includeOnlineMaterials,
   };
 
   // do the request
