@@ -130,8 +130,6 @@ export default function Header() {
   const isSchema = router.pathname === "/schema";
   const isVoyager = router.pathname === "/voyager";
   const isGraphiql = router.pathname === "/graphiql";
-  const isTemp = theme === "temp";
-  const isFuture = theme === "future";
   const isOld = theme === "old";
 
   const isTest = theme === "test" || theme === "fbstest";
@@ -191,16 +189,6 @@ export default function Header() {
                   Schema
                 </Link>
               </Text>
-              {(isTemp || isFuture) && (
-                <Text
-                  type="text5"
-                  className={`${styles.link} ${styles.changes}`}
-                >
-                  <Link href="/changes" disabled={!isValidToken}>
-                    [Changes]
-                  </Link>
-                </Text>
-              )}
             </nav>
 
             {!isIndex && selectedToken && !isLoading && !hasValidationError && (

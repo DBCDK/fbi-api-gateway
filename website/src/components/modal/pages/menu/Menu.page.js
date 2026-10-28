@@ -11,7 +11,6 @@ import Link from "@/components/base/link";
 import Label from "@/components/base/label";
 
 import styles from "./Menu.module.css";
-import useTheme from "@/hooks/useTheme";
 
 /**
  * The Component function
@@ -25,7 +24,6 @@ import useTheme from "@/hooks/useTheme";
 function Menu({ modal, context }) {
   const { selectedCredential: selectedToken } = useSelectedCredential();
   const { configuration } = useResolvedConfiguration(selectedToken);
-  const { theme } = useTheme();
 
   const isValidToken =
     selectedToken &&
@@ -33,8 +31,6 @@ function Menu({ modal, context }) {
     Object?.keys(configuration).length &&
     hasAvailableAgency(configuration);
 
-  const isTemp = theme === "temp";
-  const isFuture = theme === "future";
 
   return (
     <div className={`${styles.menu}`}>
@@ -76,15 +72,6 @@ function Menu({ modal, context }) {
             </Link>
           </Text>
         </Col>
-        {(isTemp || isFuture) && (
-          <Col xs={12} as="li">
-            <Text type="text5" className={`${styles.link} ${styles.changes}`}>
-              <Link href="/schema" disabled={!isValidToken}>
-                view schema <strong>[changes]</strong>
-              </Link>
-            </Text>
-          </Col>
-        )}
       </Row>
     </div>
   );

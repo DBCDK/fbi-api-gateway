@@ -14,8 +14,8 @@
 
 .container span {
   width: 100px;
-  height: 1px;
-  background-color: var(--divider);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(181, 245, 255, 0.8));
   position: absolute;
   left: -130px;
 }
@@ -108,5 +108,11 @@
 }
 
 :global(body.dark) .container span {
-  background-color: var(--text-light);
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .container span {
+    animation: none;
+  }
 }
