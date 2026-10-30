@@ -108,7 +108,6 @@ app.enable("trust proxy");
 
 app.use("/:profile/graphql", graphQLProxy);
 app.use("/:agencyId/:profile/graphql", graphQLProxy);
-app.use("/howru", graphQLProxy);
 app.use("/complexity", graphQLProxy);
 app.use("/metrics", graphQLProxy);
 

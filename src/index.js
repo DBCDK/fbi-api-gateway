@@ -45,8 +45,9 @@ let server;
 //prometheus endpoint for monitoring
 const prometheusApp = express();
 prometheusApp.get("/metrics", metricsHandler);
+prometheusApp.get("/howru", howruHandler);
 const prometheusServer = prometheusApp.listen(9599, () => {
-  log.info(`Running metrics endpoint at http://localhost:9599/metrics`);
+  log.info(`Running monitoring endpoints at http://localhost:9599`);
 });
 
 prometheusServer.on("error", (error) => {
@@ -125,9 +126,6 @@ prometheusServer.on("error", (error) => {
       resolveGraphQLQuery,
     ].filter(Boolean)
   );
-
-  // Setup route handler for howru - triggers an alert in prod
-  app.get("/howru", howruHandler);
 
   /**
    * Query complexity endpoint
