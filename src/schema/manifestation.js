@@ -137,6 +137,32 @@ type RelatedPublication {
   """
   url: String
 }
+
+"""
+Notes about relations to this manifestation - like previous names or related journals, or publications in different form
+"""
+type PeriodicalTitleHistory {
+  """
+  Notes describing the relation of the related periodical/journal/publication
+  """
+  heading: String!
+
+  """
+  Titles of the related periodical/journal
+  """
+  title: [String!]!
+
+  """
+  ISSN of the related periodical/journal/publication
+  """
+  issn: String
+
+  """
+  URLs of the related publication and possible link text
+  """
+  urls: [String!]!
+}
+
 enum NoteTypeEnum {
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
@@ -891,6 +917,11 @@ type Manifestation {
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
   relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+
+  """
+  Notes on relations to this manifestation - e.g. previous/later names or related journals
+  """
+  periodicalTitleHistory: [PeriodicalTitleHistory!]!
   
   """
   Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
@@ -1399,6 +1430,13 @@ export const resolvers = {
     },
     urls(parent) {
       return parent?.urls?.map((url) => url.url);
+    },
+  },
+  PeriodicalTitleHistory: {
+    urls(parent) {
+      return (parent?.urls || [])
+        .map((url) => (typeof url === "string" ? url : url?.url))
+        .filter(Boolean);
     },
   },
 
