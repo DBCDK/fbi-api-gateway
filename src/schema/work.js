@@ -1,4 +1,8 @@
 import { parseJedSubjects, resolveSearchHits } from "../utils/utils";
+import {
+  resolveGenreAndForm,
+  resolveGenreForm,
+} from "../utils/jedCompatibility";
 
 export const typeDef = `
 type Language {
@@ -36,7 +40,11 @@ type GeneralMaterialType {
   
 type SpecificMaterialType {
   """
-  code for materialType
+  Code for the specific material type. Values are passed through from JED.
+  ARCHITECHTURAL_DRAWING, FLONNELLOGRAPH_MATERIAL and LABORTORY_MATERIAL
+  are deprecated until 12/02-2027; use ARCHITECTURAL_DRAWING,
+  FLANNELGRAPH_MATERIAL and LABORATORY_MATERIAL respectively.
+  GRAPHIC_MAGAZINE is deprecated until 12/02-2027 without a direct replacement.
   """
   code: String!
   """
@@ -152,7 +160,12 @@ type Work {
   """
   The genre, (literary) form, type etc. of this work
   """
-  genreAndForm: [String!]!
+  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 12/02-2027")
+
+  """
+  The genre, (literary) form, type etc. of this work, with optional language
+  """
+  genreForm: [GenreForm!]!
 
   """
   Worktypes for this work - 'none' replaced by 'other'
@@ -221,7 +234,7 @@ type WorkTitles {
   """
   The standard title of the entity, used for music and movies
   """
-  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -231,7 +244,7 @@ type WorkTitles {
   """
   Danish translation of the main title
   """
-  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
 
   """
   detailed title for tv series 
@@ -248,7 +261,7 @@ type TvSeries {
   """
   Dansih translated title of the tv serie
   """
-  danishLaunchTitle: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+  danishLaunchTitle: String @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
 
   """
   Detailed information about the episode
@@ -284,6 +297,8 @@ type TvSeriesDetails {
 
 export const resolvers = {
   Work: {
+    genreAndForm: resolveGenreAndForm,
+    genreForm: resolveGenreForm,
     creators(parent, args, context, info) {
       // Handle difference in structure from JED service
       if (Array.isArray(parent?.creators)) {
