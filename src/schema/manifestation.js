@@ -1,4 +1,8 @@
 import { entries } from "lodash";
+import {
+  resolveGenreAndForm,
+  resolveGenreForm,
+} from "../utils/jedCompatibility";
 import { parseJedSubjects, resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
 
@@ -164,6 +168,10 @@ type PeriodicalTitleHistory {
 }
 
 enum NoteTypeEnum {
+  NUMBERING_AND_DATING
+  CONNECTION_TO_OTHER_PERIODICALS
+  PUBLISHED_OTHER_MATERIALTYPE
+  CAST_AND_SCENES
   CONNECTION_TO_OTHER_WORKS
   DESCRIPTION_OF_MATERIAL
   DISSERTATION
@@ -209,7 +217,7 @@ type Note {
   """
   Heading before note
   """
-  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
 
   """
   The actual notes
@@ -423,7 +431,7 @@ type Edition {
   """
   Quotation of contributor statements related to the edition
   """
-  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
 
   """
   A year as displayable text and as number
@@ -433,7 +441,8 @@ type Edition {
 enum EntryTypeEnum {
   ADDITIONAL_ENTRY @fallback
   MAIN_ENTRY
-  NATIONAL_BIBLIOGRAPHY_ENTRY
+  NATIONAL_BIBLIOGRAPHY_ENTRY @deprecated(reason: "Use NATIONAL_BIBLIOGRAPHY_MAIN_ENTRY instead expires: 12/02-2027")
+  NATIONAL_BIBLIOGRAPHY_MAIN_ENTRY
   NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY
 }
 type Classification {
@@ -498,7 +507,7 @@ type Audience {
   """
   Appropriate audience for this manifestation
   """
-  generalAudience: [String!]!
+  generalAudience: [String!]! @deprecated(reason: "Use 'audienceGeneral' instead expires: 12/02-2027")
 
   """
   Range of numbers with either beginning of range or end of range or both e.g. 6-10, 1980-1999
@@ -865,7 +874,7 @@ type Manifestation {
   """
   The genre, (literary) form, type etc. of this manifestation
   """
-  genreAndForm: [String!]!
+  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 12/02-2027")
 
   """
   Details about the host publications of this manifestation
@@ -916,7 +925,7 @@ type Manifestation {
   """
   Notes about relations to this book/periodical/journal, - like previous names or related journals
   """
-  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Use 'periodicalTitleHistory' and 'notes' instead expires: 05/12-2026")
 
   """
   Notes on relations to this manifestation - e.g. previous/later names or related journals
@@ -1006,7 +1015,7 @@ type Manifestation {
   """
   The publication status of a catalogued manifestation.
   """
-  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 05/12-2026")
+  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 12/02-2027")
 
   """
   The genre and (literary) form of this manifestation
@@ -1130,17 +1139,17 @@ enum CataloguedPublicationStatusEnum {
   """
   New title
   """
-  NT
+  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE via materialSelection.cataloguedPublicationStatus instead expires: 12/02-2027")
 
   """
   New edition
   """
-  NU
+  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION via materialSelection.cataloguedPublicationStatus instead expires: 12/02-2027")
 
   """
   New print run
   """
-  OP
+  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT via materialSelection.cataloguedPublicationStatus instead expires: 12/02-2027")
 }
 type CataloguedPublicationStatus {
   """
@@ -1236,7 +1245,7 @@ type ManifestationTitles {
   """
   The standard title of the entity, used for music and movies
   """
-  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -1246,7 +1255,7 @@ type ManifestationTitles {
   """
   Danish translation of the main title
   """
-  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 05/12-2026")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
 
   """
   detailed title for tv series 
@@ -1374,6 +1383,11 @@ type ManifestationTitles {
 `;
 
 export const resolvers = {
+  Edition: {
+    contributors(parent) {
+      return parent?.contributors ?? [];
+    },
+  },
   CataloguedPublicationStatus: {
     code(parent) {
       return parent?.code?.toUpperCase?.();
@@ -1396,8 +1410,21 @@ export const resolvers = {
     pegi(parent) {
       return parent?.PEGI;
     },
+    generalAudience(parent) {
+      return (
+        parent?.audienceGeneral
+          ?.map((entry) => entry.display)
+          .filter((display) => display != null) ??
+        parent?.generalAudience ??
+        []
+      );
+    },
     audienceGeneral(parent) {
-      return parent?.audienceGeneral || [];
+      return (
+        parent?.audienceGeneral ??
+        parent?.generalAudience?.map((display) => ({ display })) ??
+        []
+      );
     },
   },
   Identifier: {
@@ -1426,10 +1453,13 @@ export const resolvers = {
   },
   RelatedPublication: {
     url(parent) {
-      return parent?.urls?.[0]?.url || null;
+      const first = parent?.urls?.[0];
+      return (typeof first === "string" ? first : first?.url) ?? null;
     },
     urls(parent) {
-      return parent?.urls?.map((url) => url.url);
+      return (parent?.urls ?? [])
+        .map((url) => (typeof url === "string" ? url : url?.url))
+        .filter((url) => url != null);
     },
   },
   PeriodicalTitleHistory: {
@@ -1441,6 +1471,33 @@ export const resolvers = {
   },
 
   Manifestation: {
+    genreAndForm: resolveGenreAndForm,
+    genreForm: resolveGenreForm,
+    cataloguedPublicationStatus(parent) {
+      const statuses = parent?.materialSelection?.cataloguedPublicationStatus;
+      if (statuses == null) {
+        return parent?.cataloguedPublicationStatus ?? null;
+      }
+      const first = statuses[0];
+      const code = {
+        NEW_TITLE: "NT",
+        NEW_EDITION: "NU",
+        NEW_PRINT: "OP",
+      }[first?.type];
+      return code ? { code, display: first?.display ?? "" } : null;
+    },
+    relatedPublications(parent) {
+      return (
+        parent?.relatedPublications ??
+        parent?.periodicalTitleHistory?.map((entry) => ({
+          heading: entry.heading ?? "",
+          title: (entry.title ?? []).filter((title) => title != null),
+          issn: entry.issn ?? null,
+          urls: entry.urls ?? [],
+        })) ??
+        []
+      );
+    },
     catalogueCodes(parent) {
       return {
         nationalBibliography: parent.catalogueCodes?.nationalBibliography || [],
@@ -1635,9 +1692,6 @@ export const resolvers = {
     },
     placeOfPublication(parent) {
       return parent?.placeOfPublication ?? [];
-    },
-    genreForm(parent) {
-      return parent?.genreForm || [];
     },
   },
 
