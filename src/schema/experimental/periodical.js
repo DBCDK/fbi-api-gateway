@@ -170,7 +170,10 @@ function getMonth(dateString) {
 export const resolvers = {
   Work: {
     async extendedWork(parent, args, context) {
-      const manifestation = parent?.manifestations?.all?.[0];
+      // Periodical.articles selects first/latest explicitly; otherwise use JED's best representation.
+      const manifestation =
+        parent?._periodicalManifestation ||
+        parent?.manifestations?.bestRepresentations?.[0];
       const hostIssn = manifestation?.hostPublication?.issn;
       const issue = manifestation?.hostPublication?.issue;
       if (hostIssn) {
@@ -356,10 +359,19 @@ export const resolvers = {
           sort: [{ index: "sort.latestpublicationdate", order: "DESC" }],
         });
 
+      const first = await resolveWork({ id: resFirst?.works?.[0] }, context);
+      const last = await resolveWork({ id: resLast?.works?.[0] }, context);
+
       return {
         hitcount: resFirst.hitcount,
-        first: await resolveWork({ id: resFirst?.works?.[0] }, context),
-        last: await resolveWork({ id: resLast?.works?.[0] }, context),
+        first: first && {
+          ...first,
+          _periodicalManifestation: first.manifestations?.first,
+        },
+        last: last && {
+          ...last,
+          _periodicalManifestation: last.manifestations?.latest,
+        },
       };
     },
   },
