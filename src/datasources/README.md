@@ -21,6 +21,6 @@ If staleWhileRevalidate is set, a cached value exceeding ttl will be returned to
 
 If inMemory is set to true, an additional cache layer in local memory is used. If key is not found locally, it will check redis.
 
-Add howru check to datasource by exporting a function named status. Checks are executed when visiting http:localhost:3000/howru.
+Add howru check to datasource by exporting a function named status. Checks are executed when visiting http://localhost:9599/howru.
 
 Override default batch loader by exporting a function named batchLoader.
