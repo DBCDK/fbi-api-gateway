@@ -438,6 +438,10 @@ export async function resolveManifestation(args, context) {
     pid = await context.datasources
       .getLoader("faustToPid")
       .load({ faust: args.faust, profile: context.profile });
+  } else if (args.isbn) {
+    pid = await context.datasources
+      .getLoader("isbnToPid")
+      .load({ isbn: args.isbn, profile: context.profile });
   }
   if (!pid) {
     return null;
