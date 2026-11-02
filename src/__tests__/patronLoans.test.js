@@ -291,25 +291,34 @@ describe("Patron historical loans", () => {
   });
 
   test.each([
-    ["FAUST", { faust: "23424916" }],
-    ["PID", { pid: "870970-basis:23424916" }],
-  ])("resolves historical %s identifiers", async (type, expected) => {
+    [
+      "FAUST",
+      "23424916",
+      { faust: "23424916", profile: "profile" },
+    ],
+    [
+      "PID",
+      "870970-basis:23424916",
+      { id: "870970-basis:23424916", profile: "profile" },
+    ],
+    [
+      "ISBN13",
+      "9788776552176",
+      { isbn: "9788776552176", profile: "profile" },
+    ],
+  ])("resolves historical %s identifiers", async (type, materialId, expected) => {
     const load = jest.fn().mockResolvedValue(null);
     const context = createContext(load, { profile: "profile" });
 
     await resolvers.HistoricalLoan.manifestation(
       {
-        materialId: type === "FAUST" ? "23424916" : "870970-basis:23424916",
+        materialId,
         materialIdType: type,
       },
       {},
       context
     );
-    expect(load).toHaveBeenCalledWith(
-      type === "FAUST"
-        ? { ...expected, profile: "profile" }
-        : { id: expected.pid, profile: "profile" }
-    );
+    expect(load).toHaveBeenCalledWith(expected);
   });
 
   test("add resolves material and sends dates plus a grouped snapshot", async () => {
