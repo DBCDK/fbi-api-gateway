@@ -1,4 +1,7 @@
-import { periodicalFiltersToCql } from "../../utils/utils";
+import {
+  periodicalFiltersToCql,
+  periodicalIssnsToCql,
+} from "../../utils/utils";
 
 const teamLabel = "febib";
 
@@ -67,8 +70,8 @@ export function sortIssues(a, b) {
   );
 }
 
-export async function load({ issn, profile, filters }, context) {
-  let cql = `term.issn=${issn}`;
+export async function load({ issns, profile, filters }, context) {
+  let cql = periodicalIssnsToCql(issns);
   cql += periodicalFiltersToCql(filters);
 
   const res = await context.getLoader("complexFacets").load({

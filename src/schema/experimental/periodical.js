@@ -11,7 +11,11 @@
  * of a dedicated service for handling periodicals.
  */
 
-import { periodicalFiltersToCql, resolveWork } from "../../utils/utils";
+import {
+  periodicalFiltersToCql,
+  periodicalIssnsToCql,
+  resolveWork,
+} from "../../utils/utils";
 
 export const typeDef = `
 
@@ -183,17 +187,24 @@ export const resolvers = {
           manifestation,
           hostIssn,
           parentIssue: issue
-            ? await resolvePeriodicalIssue(hostIssn, issue, {}, context)
+            ? await resolvePeriodicalIssue([hostIssn], issue, {}, context)
             : null,
         };
       }
 
-      const issn = manifestation?.identifiers?.find(
-        (entry) => entry?.type === "ISSN"
-      )?.value;
+      // Include every ISSN represented by the work, including title changes.
+      const issns = [
+        ...new Set(
+          parent?.manifestations?.all
+            ?.flatMap((entry) => entry?.identifiers || [])
+            ?.filter((entry) => entry?.type === "ISSN")
+            ?.map((entry) => entry?.value)
+            ?.filter(Boolean) || []
+        ),
+      ];
 
-      if (issn) {
-        return resolvePeriodical(issn, context);
+      if (issns.length > 0) {
+        return resolvePeriodical(issns, context);
       }
 
       return null;
@@ -230,10 +241,10 @@ export const resolvers = {
   PeriodicalEntriesResponse: {
     async hitcount(parent, args, context) {
       const filters = parent?.issuesArgs?.filters;
-      const issn = parent?.issn;
+      const issns = parent?.issns;
       const res = await context.datasources
         .getLoader("periodicaIssues")
-        .load({ issn, profile: context.profile, filters });
+        .load({ issns, profile: context.profile, filters });
 
       return res.hitcount || 0;
     },
@@ -244,24 +255,24 @@ export const resolvers = {
         100,
         typeof args?.limit === "undefined" ? 10 : args?.limit
       );
-      const issn = parent?.issn;
+      const issns = parent?.issns;
       const res = await context.datasources
         .getLoader("periodicaIssues")
-        .load({ issn, profile: context.profile, filters });
+        .load({ issns, profile: context.profile, filters });
       const entries = res?.entries?.slice?.(offset, offset + limit) || [];
 
       // fetch works of issues via complex search
       return await Promise.all(
         entries?.map((issue) =>
-          resolvePeriodicalIssue(issn, issue, filters, context)
+          resolvePeriodicalIssue(issns, issue, filters, context)
         )
       );
     },
     async subjects(parent, args, context) {
       const filters = parent?.issuesArgs?.filters;
-      const issn = parent?.issn;
+      const issns = parent?.issns;
       const res = await context.datasources.getLoader("periodicalFacets").load({
-        issn,
+        issns,
         profile: context.profile,
         facet: "SUBJECT",
         sort: "score",
@@ -272,9 +283,9 @@ export const resolvers = {
     },
     async publicationYears(parent, args, context) {
       const filters = parent?.issuesArgs?.filters;
-      const issn = parent?.issn;
+      const issns = parent?.issns;
       const res = await context.datasources.getLoader("periodicalFacets").load({
-        issn,
+        issns,
         profile: context.profile,
         facet: "PUBLICATIONYEAR",
         sort: "alpha",
@@ -285,10 +296,10 @@ export const resolvers = {
     },
     async publicationMonths(parent, args, context) {
       const filters = parent?.issuesArgs?.filters;
-      const issn = parent?.issn;
+      const issns = parent?.issns;
       const res = await context.datasources
         .getLoader("periodicaIssues")
-        .load({ issn, profile: context.profile, filters });
+        .load({ issns, profile: context.profile, filters });
 
       const entriesMap = {};
       res?.entries?.forEach((entry) => {
@@ -338,12 +349,12 @@ export const resolvers = {
       return { ...parent, issuesArgs: parsedArgs };
     },
     async articles(parent, args, context) {
-      const issn = parent.issn;
+      const issnsCql = periodicalIssnsToCql(parent.issns);
 
       const resFirst = await context.datasources
         .getLoader("complexsearch")
         .load({
-          cql: `term.issn="${issn}" AND worktype="Article"`,
+          cql: `${issnsCql} AND worktype="Article"`,
           profile: context.profile,
           offset: 0,
           limit: 1,
@@ -352,7 +363,7 @@ export const resolvers = {
       const resLast = await context.datasources
         .getLoader("complexsearch")
         .load({
-          cql: `term.issn="${issn}" AND worktype="Article"`,
+          cql: `${issnsCql} AND worktype="Article"`,
           profile: context.profile,
           offset: 0,
           limit: 1,
@@ -377,24 +388,24 @@ export const resolvers = {
   },
 };
 
-export async function resolvePeriodical(issn, context) {
-  if (!issn) {
+export async function resolvePeriodical(issns, context) {
+  if (!issns?.length) {
     return null;
   }
 
   return {
     __typename: "Periodical",
-    issn,
+    issns,
     issues: {
-      issn,
+      issns,
     },
   };
 }
 
-export async function resolvePeriodicalIssue(issn, issue, filters, context) {
+export async function resolvePeriodicalIssue(issns, issue, filters, context) {
   const res = await context.datasources.getLoader("complexsearch").load({
     cql:
-      `term.issn="${issn}" AND phrase.issue="${issue}"` +
+      `${periodicalIssnsToCql(issns)} AND phrase.issue="${issue}"` +
       periodicalFiltersToCql(filters),
     profile: context.profile,
     offset: 0,
@@ -424,7 +435,7 @@ export async function resolveSimilarArticles(
   const periodicaSubjects = await context.datasources
     .getLoader("periodicalFacets")
     .load({
-      issn: hostIssn,
+      issns: [hostIssn],
       profile: context.profile,
       facet: "SUBJECT",
       sort: "score",
