@@ -30,7 +30,7 @@ export const typeDef = `
     orderSystem: String
     orderType: OrderTypeEnum
     originalOrderId: String
-    pagination: String
+    pagesOfComponent: String
     pickUpAgencyId: String!
     pickUpAgencySubdivision: String
     pids: [String!]!
