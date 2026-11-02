@@ -1,4 +1,4 @@
-const { sortIssues } = require("../periodicaIssues.datasource"); // Tilpas sti ved behov
+const { load, sortIssues } = require("../periodicaIssues.datasource"); // Tilpas sti ved behov
 
 describe("sortIssues", () => {
   test("sorts a mixed list of date/year/volume/issue strings in correct order", () => {
@@ -31,5 +31,28 @@ describe("sortIssues", () => {
       "9,16,26.2. (1973)",
       "jylp 15. 4.",
     ]);
+  });
+});
+
+describe("load", () => {
+  test("searches across all ISSNs", async () => {
+    const loadFacets = jest.fn().mockResolvedValue({ facets: [] });
+    const context = {
+      getLoader: () => ({ load: loadFacets }),
+    };
+
+    await load(
+      {
+        issns: ["0806-3915", "0000-0000", "0806-3915"],
+        profile: { agency: "190101", name: "bibdk21" },
+      },
+      context
+    );
+
+    expect(loadFacets).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cql: 'term.issn=("0806-3915" OR "0000-0000")',
+      })
+    );
   });
 });

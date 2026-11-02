@@ -1090,6 +1090,14 @@ export function periodicalFiltersToCql(filters) {
   return cql;
 }
 
+export function periodicalIssnsToCql(issns) {
+  const values = [...new Set(issns || [])]
+    .filter(Boolean)
+    .map((value) => `"${value.replace(/"/g, "")}"`);
+
+  return `term.issn=(${values.join(" OR ")})`;
+}
+
 /**
  *  Map a localized object with 'da'/'en' keys to LocalizedString or null
  */
