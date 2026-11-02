@@ -170,9 +170,10 @@ function getMonth(dateString) {
 export const resolvers = {
   Work: {
     async extendedWork(parent, args, context) {
-      // Periodical.articles selects first/latest explicitly; otherwise retain the existing fallback.
+      // Periodical.articles selects first/latest explicitly; otherwise use JED's best representation.
       const manifestation =
-        parent?._periodicalManifestation || parent?.manifestations?.all?.[0];
+        parent?._periodicalManifestation ||
+        parent?.manifestations?.bestRepresentations?.[0];
       const hostIssn = manifestation?.hostPublication?.issn;
       const issue = manifestation?.hostPublication?.issue;
       if (hostIssn) {
