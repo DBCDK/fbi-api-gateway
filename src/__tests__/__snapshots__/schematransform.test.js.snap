@@ -3330,13 +3330,13 @@ type GenreForm {
 """Represents the publication status of a catalogued manifestation."""
 enum CataloguedPublicationStatusEnum {
   """New title"""
-  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE expires: 01/03-2027")
 
   """New edition"""
-  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION expires: 01/03-2027")
 
   """New print run"""
-  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT expires: 01/03-2027")
 }
 
 type CataloguedPublicationStatus {
@@ -6265,13 +6265,7 @@ type GeneralMaterialType {
 }
 
 type SpecificMaterialType {
-  """
-  Code for the specific material type. Values are passed through from JED.
-  ARCHITECHTURAL_DRAWING, FLONNELLOGRAPH_MATERIAL and LABORTORY_MATERIAL
-  are deprecated until 01/03-2027; use ARCHITECTURAL_DRAWING,
-  FLANNELGRAPH_MATERIAL and LABORATORY_MATERIAL respectively.
-  GRAPHIC_MAGAZINE is deprecated until 01/03-2027 without a direct replacement.
-  """
+  """Code for the specific material type."""
   code: String!
 
   """Ths string to display"""
@@ -8011,13 +8005,13 @@ type GenreForm {
 """Represents the publication status of a catalogued manifestation."""
 enum CataloguedPublicationStatusEnum {
   """New title"""
-  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE expires: 01/03-2027")
 
   """New edition"""
-  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION expires: 01/03-2027")
 
   """New print run"""
-  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT expires: 01/03-2027")
 }
 
 type CataloguedPublicationStatus {
@@ -9019,13 +9013,7 @@ type GeneralMaterialType {
 }
 
 type SpecificMaterialType {
-  """
-  Code for the specific material type. Values are passed through from JED.
-  ARCHITECHTURAL_DRAWING, FLONNELLOGRAPH_MATERIAL and LABORTORY_MATERIAL
-  are deprecated until 01/03-2027; use ARCHITECTURAL_DRAWING,
-  FLANNELGRAPH_MATERIAL and LABORATORY_MATERIAL respectively.
-  GRAPHIC_MAGAZINE is deprecated until 01/03-2027 without a direct replacement.
-  """
+  """Code for the specific material type."""
   code: String!
 
   """Ths string to display"""
@@ -10605,13 +10593,13 @@ type GenreForm {
 """Represents the publication status of a catalogued manifestation."""
 enum CataloguedPublicationStatusEnum {
   """New title"""
-  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE expires: 01/03-2027")
 
   """New edition"""
-  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION expires: 01/03-2027")
 
   """New print run"""
-  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT expires: 01/03-2027")
 }
 
 type CataloguedPublicationStatus {
@@ -11214,13 +11202,7 @@ type GeneralMaterialType {
 }
 
 type SpecificMaterialType {
-  """
-  Code for the specific material type. Values are passed through from JED.
-  ARCHITECHTURAL_DRAWING, FLONNELLOGRAPH_MATERIAL and LABORTORY_MATERIAL
-  are deprecated until 01/03-2027; use ARCHITECTURAL_DRAWING,
-  FLANNELGRAPH_MATERIAL and LABORATORY_MATERIAL respectively.
-  GRAPHIC_MAGAZINE is deprecated until 01/03-2027 without a direct replacement.
-  """
+  """Code for the specific material type."""
   code: String!
 
   """Ths string to display"""

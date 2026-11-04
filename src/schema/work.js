@@ -40,11 +40,7 @@ type GeneralMaterialType {
   
 type SpecificMaterialType {
   """
-  Code for the specific material type. Values are passed through from JED.
-  ARCHITECHTURAL_DRAWING, FLONNELLOGRAPH_MATERIAL and LABORTORY_MATERIAL
-  are deprecated until 01/03-2027; use ARCHITECTURAL_DRAWING,
-  FLANNELGRAPH_MATERIAL and LABORATORY_MATERIAL respectively.
-  GRAPHIC_MAGAZINE is deprecated until 01/03-2027 without a direct replacement.
+  Code for the specific material type.
   """
   code: String!
   """

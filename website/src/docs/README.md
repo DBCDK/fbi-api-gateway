@@ -7,11 +7,10 @@ and Settings → Network is set to Internal. Selecting External hides both secti
 and their menu entries.
 Their headings are then picked up by the documentation menu. Set the website's
 runtime `INTERNAL_MONITORING_URL` to the deployment's internal monitoring base URL
-(including port 9599 if applicable) to enable direct links. On localhost or a
-loopback IP, links default to HTTP on the same host, port 9599. Otherwise, without
-the setting, the sections
-describe the endpoint paths without creating links to a guessed host. This setting
-does not proxy or expose monitoring endpoints through the public website.
+(including port 9599 if applicable). The fallback in `src/config.js` is
+`http://localhost:9599` for local development, so deployed environments must set
+the variable to their internal monitoring address. This setting does not proxy
+or expose monitoring endpoints through the public website.
 
 
 ## These are the examples

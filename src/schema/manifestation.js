@@ -1139,17 +1139,17 @@ enum CataloguedPublicationStatusEnum {
   """
   New title
   """
-  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE expires: 01/03-2027")
 
   """
   New edition
   """
-  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION expires: 01/03-2027")
 
   """
   New print run
   """
-  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
+  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT expires: 01/03-2027")
 }
 type CataloguedPublicationStatus {
   """
