@@ -12,7 +12,7 @@ export default {
   },
   port: process.env.PORT || 3000,
   monitoring: {
-    url: process.env.INTERNAL_MONITORING_URL || "http://localhost:9599",
+    url: process.env.INTERNAL_MONITORING_URL || null,
   },
   allowDebug: isTruthy(process.env.ALLOW_DEBUG),
   enableCpuUsagePerRequest: isTruthy(process.env.ENABLE_CPU_USAGE_PER_REQUEST),

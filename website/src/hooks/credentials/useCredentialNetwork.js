@@ -18,10 +18,18 @@ const fetcher = async (url) => {
 
 export default function useCredentialNetwork() {
   const { data, error } = useSWR("/api/credentials/network", fetcher);
+  const isInternal = data?.isInternal === true;
+  const hostname = typeof window !== "undefined" ? window.location.hostname : "";
+  const canInferAddress =
+    hostname.endsWith(".svc.cloud.dbc.dk") ||
+    ["localhost", "127.0.0.1", "[::1]"].includes(hostname);
+  const monitoringBaseUrl =
+    data?.monitoringBaseUrl ||
+    (canInferAddress ? `http://${hostname}:9599` : null);
 
   return {
-    isInternal: data?.isInternal === true,
-    monitoringBaseUrl: data?.monitoringBaseUrl || null,
+    isInternal,
+    monitoringBaseUrl: isInternal ? monitoringBaseUrl : null,
     detectedIp: data?.detectedIp || null,
     isLoading: !data && !error,
   };
