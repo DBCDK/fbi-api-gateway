@@ -30,9 +30,11 @@ import Button from "@/components/base/button/Button";
 import Highlight from "@/components/base/highlight";
 
 import styles from "./Docs.module.css";
+import InternalMonitoring from "./InternalMonitoring";
 
 // Custom components to be used in MDX.
 const customComponents = {
+  InternalMonitoring,
   InlineGraphiQL,
   DeprecationBox,
   DeprecationBorder,

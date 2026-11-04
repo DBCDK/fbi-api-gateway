@@ -134,11 +134,12 @@
 }
 
 /* 
-* Halloween theme
+* Themes with white text on primary buttons
 *
 */
 
-:global(body.halloween:not(.dark)) .button.primary:not(.disabled) {
+:global(body.halloween:not(.dark)) .button.primary:not(.disabled),
+:global(body.future:not(.dark)) .button.primary:not(.disabled) {
   color: var(--white);
 }
 

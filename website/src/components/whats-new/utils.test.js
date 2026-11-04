@@ -9,6 +9,24 @@ import {
 const NOW = Date.parse("2026-07-30T12:00:00Z");
 
 describe("what's new visibility", () => {
+  test.each(["internal-services-v1", "internal-howru-v1"])(
+    "shows %s only internally during its publication window",
+    (id) => {
+      const news = whatsNewNews.filter((item) => item.id === id);
+      const now = Date.parse("2026-11-04T12:00:00Z");
+      expect(getVisibleWhatsNew(news, { now, storage: null })).toEqual([]);
+      expect(
+        getVisibleWhatsNew(news, { now, storage: null, allowInternal: true })
+      ).toHaveLength(1);
+      expect(
+        getVisibleWhatsNew(news, {
+          now: Date.parse("2026-12-04"),
+          storage: null,
+          allowInternal: true,
+        })
+      ).toEqual([]);
+    }
+  );
   beforeEach(() => {
     localStorage.clear();
     delete process.env.NEXT_PUBLIC_WHATS_NEW_ENABLED;
@@ -99,17 +117,16 @@ describe("what's new visibility", () => {
   });
 
   test("ignores the previous carousel dismissal", () => {
-    localStorage.setItem(
-      "fbi:news:client-based-access-v1:dismissed",
-      "true"
-    );
+    localStorage.setItem("fbi:news:client-based-access-v1:dismissed", "true");
 
     expect(
       getVisibleWhatsNew(whatsNewNews, {
         now: NOW,
         storage: localStorage,
       }).map((item) => item.id)
-    ).toEqual(whatsNewNews.map((item) => item.id));
+    ).toEqual(
+      whatsNewNews.filter((item) => !item.internalOnly).map((item) => item.id)
+    );
   });
 
   test("restores all individually viewed active news", () => {
@@ -128,6 +145,8 @@ describe("what's new visibility", () => {
         now: NOW,
         storage: localStorage,
       }).map((item) => item.id)
-    ).toEqual(whatsNewNews.map((item) => item.id));
+    ).toEqual(
+      whatsNewNews.filter((item) => !item.internalOnly).map((item) => item.id)
+    );
   });
 });
