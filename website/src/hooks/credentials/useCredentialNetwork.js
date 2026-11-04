@@ -21,6 +21,7 @@ export default function useCredentialNetwork() {
 
   return {
     isInternal: data?.isInternal === true,
+    monitoringBaseUrl: data?.monitoringBaseUrl || null,
     detectedIp: data?.detectedIp || null,
     isLoading: !data && !error,
   };

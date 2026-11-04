@@ -1,5 +1,25 @@
 const whatsNewNews = [
   {
+    id: "internal-services-v1",
+    publishedAt: "2026-11-03",
+    expiresAfterDays: 30,
+    internalOnly: true,
+    eyebrow: "Internal tools",
+    icon: "🔗",
+    title: "Service URLs in the docs",
+    body: "See service URLs grouped by team with [/services](/documentation#h2-services) under Get started. Only visible on the internal network.",
+  },
+  {
+    id: "internal-howru-v1",
+    publishedAt: "2026-11-03",
+    expiresAfterDays: 30,
+    internalOnly: true,
+    eyebrow: "Internal tools",
+    icon: "🩺",
+    title: "Health checks in the docs",
+    body: "Check the gateway and its services with [/howru](/documentation#h2-howru) under Get started. Only visible on the internal network.",
+  },
+  {
     id: "july-2026-overview-v1",
     publishedAt: "2026-07-29",
     expiresAfterDays: 30,

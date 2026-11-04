@@ -71,3 +71,18 @@ We use Prometheus to monitor the health of services in fbi-api. Prometheus scrap
 ### ```Important```
 When adding a new service in the configuration, always include a teamLabel. This ensures that alerts are sent to the correct team. 
 
+### Service URLs
+
+`GET /services` on monitoring port **9599** returns the loaded datasource URLs
+(including environment overrides), grouped by `teamLabel` and sorted by team and
+service name. It uses the same listener as `/howru`; Kubernetes must keep this port
+internal and exclude it from public ingress.
+
+Example response: `{"fbiscrum":[{"name":"culr","urls":{"url":"https://example.org/api","soap_url":"https://example.org/soap?wsdl"}}]}`.
+
+Only `url` and `soap_url` are included; host/port-only datasources such as Redis
+are omitted. Services with explicit enabled/disabled settings include an `enabled`
+boolean matching the configuration's runtime truthiness. Missing teams use `unknown`.
+Credentials and fragments are removed from URLs, and non-empty query values are
+redacted. Invalid or non-HTTP(S) URLs appear as `null`. No other configuration fields
+are exposed and no downstream health checks are performed.

@@ -162,7 +162,7 @@ pipeline {
             }
         }
 
-        stage("Update 'staging' version number") {
+        stage("Update 'staging' and 'datawell-test' version numbers") {
             agent {
                 docker {
                     label 'devel11'
@@ -176,7 +176,9 @@ pipeline {
             steps {
                 dir("deploy") {
                     sh """#!/usr/bin/env bash
+						set -e
 						set-new-version configuration.yaml ${env.GITLAB_PRIVATE_TOKEN} ${env.GITLAB_ID} ${env.DOCKER_TAG} -b staging
+						set-new-version configuration.yaml ${env.GITLAB_PRIVATE_TOKEN} ${env.GITLAB_ID} ${env.DOCKER_TAG} -b datawell-test
 					"""
                 }
             }

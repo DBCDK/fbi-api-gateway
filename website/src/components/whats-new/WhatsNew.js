@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import useCredentialNetwork from "@/hooks/credentials/useCredentialNetwork";
+import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
+import { getDisableInternalNetworkCheck } from "@/utils/credentialSettings";
 
 import Carousel from "@/components/base/carousel";
 import Link from "@/components/base/link";
@@ -47,7 +50,7 @@ function renderBody(body = "", { interactive = true } = {}) {
     const href = body.slice(hrefStart + 1, hrefEnd);
     const isValidHref =
       label.trim() !== "" &&
-      /^https?:\/\//.test(href) &&
+      (/^https?:\/\//.test(href) || /^\/(?!\/)/.test(href)) &&
       !/\s/.test(href);
 
     if (!isValidHref) {
@@ -64,7 +67,7 @@ function renderBody(body = "", { interactive = true } = {}) {
         <Link
           key={`${href}-${labelStart}`}
           href={href}
-          target="_blank"
+          target={href.startsWith("/") ? "_self" : "_blank"}
           underline
         >
           {label}
@@ -86,19 +89,27 @@ function renderBody(body = "", { interactive = true } = {}) {
 }
 
 export default function WhatsNew() {
+  const { isInternal, isLoading } = useCredentialNetwork();
+  const { disableInternalNetworkCheck } = useInternalNetworkCheck();
+  const allowInternal =
+    isInternal &&
+    !isLoading &&
+    !disableInternalNetworkCheck &&
+    !getDisableInternalNetworkCheck();
   const [isHydrated, setIsHydrated] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
-  const [visibleNews, setVisibleNews] = useState([]);
+  const [news, setNews] = useState([]);
+  const visibleNews = news.filter(
+    (item) => !item.internalOnly || allowInternal
+  );
 
   useEffect(() => {
-    setVisibleNews(getVisibleWhatsNew(whatsNewNews));
+    setNews(getVisibleWhatsNew(whatsNewNews, { allowInternal }));
     setIsHydrated(true);
-  }, []);
+  }, [allowInternal]);
 
   useEffect(() => {
     function handleNewsRestored() {
-      setVisibleNews(getVisibleWhatsNew(whatsNewNews));
-      setIsDismissed(false);
+      setNews(getVisibleWhatsNew(whatsNewNews, { allowInternal }));
     }
 
     window.addEventListener(WHATS_NEW_RESTORED_EVENT, handleNewsRestored);
@@ -106,14 +117,14 @@ export default function WhatsNew() {
     return () => {
       window.removeEventListener(WHATS_NEW_RESTORED_EVENT, handleNewsRestored);
     };
-  }, []);
+  }, [allowInternal]);
 
   function dismissNews() {
     markWhatsNewSeen(visibleNews);
-    setIsDismissed(true);
+    setNews([]);
   }
 
-  if (!isHydrated || isDismissed || visibleNews.length === 0) {
+  if (!isHydrated || visibleNews.length === 0) {
     return null;
   }
 

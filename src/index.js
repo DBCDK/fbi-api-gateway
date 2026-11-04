@@ -9,6 +9,7 @@ import express from "express";
 import config from "./config";
 import howruHandler from "./howru";
 import metricsHandler from "./metrics";
+import servicesHandler from "./services";
 
 import {
   getQueryComplexity,
@@ -46,6 +47,7 @@ let server;
 const prometheusApp = express();
 prometheusApp.get("/metrics", metricsHandler);
 prometheusApp.get("/howru", howruHandler);
+prometheusApp.get("/services", servicesHandler);
 const prometheusServer = prometheusApp.listen(9599, () => {
   log.info(`Running monitoring endpoints at http://localhost:9599`);
 });

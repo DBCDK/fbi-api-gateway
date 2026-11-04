@@ -53,10 +53,7 @@ export function isPublished({ publishedAt }, now = Date.now()) {
   return !Number.isFinite(publishedAtTime) || publishedAtTime <= now;
 }
 
-export function isExpired(
-  { publishedAt, expiresAfterDays },
-  now = Date.now()
-) {
+export function isExpired({ publishedAt, expiresAfterDays }, now = Date.now()) {
   if (!publishedAt || !expiresAfterDays) {
     return false;
   }
@@ -113,7 +110,7 @@ function getSeenAt(newsId, storage = getLocalStorage()) {
 
 export function getVisibleWhatsNew(
   news = whatsNewNews,
-  { now = Date.now(), storage = getLocalStorage() } = {}
+  { now = Date.now(), storage = getLocalStorage(), allowInternal = false } = {}
 ) {
   const resolvedNews = getResolvedWhatsNew(news);
 
@@ -123,6 +120,7 @@ export function getVisibleWhatsNew(
       !item.title ||
       !item.body ||
       !item.active ||
+      (item.internalOnly && !allowInternal) ||
       !isPublished(item, now) ||
       isExpired(item, now)
     ) {
@@ -136,8 +134,7 @@ export function getVisibleWhatsNew(
     }
 
     return Boolean(
-      item.repeatAfterDays &&
-        seenAt + item.repeatAfterDays * DAY_IN_MS <= now
+      item.repeatAfterDays && seenAt + item.repeatAfterDays * DAY_IN_MS <= now
     );
   });
 }
