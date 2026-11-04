@@ -24,7 +24,7 @@ function sanitizeUrl(value) {
 
 export function getServices(datasources) {
   const teams = new Map();
-  for (const name of Object.keys(datasources).sort()) {
+  for (const name of Object.keys(datasources).sort((a, b) => a.localeCompare(b))) {
     const datasource = datasources[name];
     const urls = {};
     for (const field of ["url", "soap_url"]) {

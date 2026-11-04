@@ -24,6 +24,11 @@
   vertical-align: middle;
 }
 
+.table th:last-child,
+.table tbody td:last-child {
+  white-space: nowrap;
+}
+
 /* striped */
 .table tbody tr {
   background-color: var(--divider);

@@ -217,7 +217,7 @@ type Note {
   """
   Heading before note
   """
-  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
+  heading: String @deprecated(reason: "Field is discontinued and will be removed expires: 01/03-2027")
 
   """
   The actual notes
@@ -431,7 +431,7 @@ type Edition {
   """
   Quotation of contributor statements related to the edition
   """
-  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
+  contributors: [String!]! @deprecated(reason: "Field is discontinued and will be removed expires: 01/03-2027")
 
   """
   A year as displayable text and as number
@@ -441,7 +441,7 @@ type Edition {
 enum EntryTypeEnum {
   ADDITIONAL_ENTRY @fallback
   MAIN_ENTRY
-  NATIONAL_BIBLIOGRAPHY_ENTRY @deprecated(reason: "Use NATIONAL_BIBLIOGRAPHY_MAIN_ENTRY instead expires: 12/02-2027")
+  NATIONAL_BIBLIOGRAPHY_ENTRY @deprecated(reason: "Use NATIONAL_BIBLIOGRAPHY_MAIN_ENTRY instead expires: 01/03-2027")
   NATIONAL_BIBLIOGRAPHY_MAIN_ENTRY
   NATIONAL_BIBLIOGRAPHY_ADDITIONAL_ENTRY
 }
@@ -507,7 +507,7 @@ type Audience {
   """
   Appropriate audience for this manifestation
   """
-  generalAudience: [String!]! @deprecated(reason: "Use 'audienceGeneral' instead expires: 12/02-2027")
+  generalAudience: [String!]! @deprecated(reason: "Use 'audienceGeneral' instead expires: 01/03-2027")
 
   """
   Range of numbers with either beginning of range or end of range or both e.g. 6-10, 1980-1999
@@ -874,7 +874,7 @@ type Manifestation {
   """
   The genre, (literary) form, type etc. of this manifestation
   """
-  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 12/02-2027")
+  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 01/03-2027")
 
   """
   Details about the host publications of this manifestation
@@ -1015,7 +1015,7 @@ type Manifestation {
   """
   The publication status of a catalogued manifestation.
   """
-  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 12/02-2027")
+  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 01/03-2027")
 
   """
   The genre and (literary) form of this manifestation
@@ -1139,17 +1139,17 @@ enum CataloguedPublicationStatusEnum {
   """
   New title
   """
-  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE via materialSelection.cataloguedPublicationStatus instead expires: 12/02-2027")
+  NT @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_TITLE via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
 
   """
   New edition
   """
-  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION via materialSelection.cataloguedPublicationStatus instead expires: 12/02-2027")
+  NU @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_EDITION via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
 
   """
   New print run
   """
-  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT via materialSelection.cataloguedPublicationStatus instead expires: 12/02-2027")
+  OP @deprecated(reason: "Use MaterialSelectionPublicationStatusEnum.NEW_PRINT via materialSelection.cataloguedPublicationStatus instead expires: 01/03-2027")
 }
 type CataloguedPublicationStatus {
   """
@@ -1245,7 +1245,7 @@ type ManifestationTitles {
   """
   The standard title of the entity, used for music and movies
   """
-  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
+  standard: String @deprecated(reason: "Field is discontinued and will be removed expires: 01/03-2027")
 
   """
   The title of the entity with the language of the entity in parenthesis after. This field is only generated for non-danish titles.
@@ -1255,7 +1255,7 @@ type ManifestationTitles {
   """
   Danish translation of the main title
   """
-  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 12/02-2027")
+  translated: [String!] @deprecated(reason: "Field is discontinued and will be removed expires: 01/03-2027")
 
   """
   detailed title for tv series 
