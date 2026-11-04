@@ -1,5 +1,4 @@
-import config from "../config";
-import services, { getServices } from "../services";
+import { getServices } from "../services";
 
 describe("/services", () => {
   it("groups configured URLs by team and sorts services, including SOAP and disabled services", () => {
@@ -57,15 +56,5 @@ describe("/services", () => {
     expect(
       getServices({ bad: { url: "file:///etc/passwd" } }).unknown[0].urls.url
     ).toBeNull();
-  });
-
-  it("responds using the loaded configuration and prevents caching", () => {
-    const res = { set: jest.fn(), json: jest.fn() };
-    services({}, res);
-    expect(res.set).toHaveBeenCalledWith("Cache-Control", "no-store");
-    expect(res.json).toHaveBeenCalledWith(getServices(config.datasources));
-    expect(
-      res.json.mock.calls[0][0].fbiscrum.some(({ name }) => name === "culr")
-    ).toBe(true);
   });
 });

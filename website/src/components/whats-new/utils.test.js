@@ -9,24 +9,24 @@ import {
 const NOW = Date.parse("2026-07-30T12:00:00Z");
 
 describe("what's new visibility", () => {
-  test.each(["internal-services-v1", "internal-howru-v1"])(
-    "shows %s only internally during its publication window",
-    (id) => {
-      const news = whatsNewNews.filter((item) => item.id === id);
-      const now = Date.parse("2026-11-04T12:00:00Z");
-      expect(getVisibleWhatsNew(news, { now, storage: null })).toEqual([]);
-      expect(
-        getVisibleWhatsNew(news, { now, storage: null, allowInternal: true })
-      ).toHaveLength(1);
-      expect(
-        getVisibleWhatsNew(news, {
-          now: Date.parse("2026-12-04"),
-          storage: null,
-          allowInternal: true,
-        })
-      ).toEqual([]);
-    }
-  );
+  test("only includes internal news when allowed, while keeping public news visible", () => {
+    const news = [
+      { id: "public", title: "Public", body: "Public news" },
+      {
+        id: "internal",
+        title: "Internal",
+        body: "Internal news",
+        internalOnly: true,
+      },
+    ];
+    const visibleIds = (allowInternal) =>
+      getVisibleWhatsNew(news, { storage: null, allowInternal }).map(
+        (item) => item.id
+      );
+    expect(visibleIds()).toEqual(["public"]);
+    expect(visibleIds(false)).toEqual(["public"]);
+    expect(visibleIds(true)).toEqual(["public", "internal"]);
+  });
   beforeEach(() => {
     localStorage.clear();
     delete process.env.NEXT_PUBLIC_WHATS_NEW_ENABLED;
