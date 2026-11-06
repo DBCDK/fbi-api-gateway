@@ -3620,12 +3620,38 @@ input KidRecommenderTagsInput {
   weight: Int
 }
 
+"""Holdings status used for filtering in moodRecommendKids"""
+enum MoodKidsHoldingsStatusEnum {
+  ONSHELF
+  ONLOAN
+}
+
 input MoodKidsRecommendFiltersInput {
   difficulty: [Int!]
   illustrationsLevel: [Int!]
   length: [Int!]
   realisticVsFictional: [Int!]
   fictionNonfiction: FictionNonfictionCodeEnum
+
+  """Holdings filter: branch ids, ie. ["610162", "610134"]"""
+  branchId: [String!]
+
+  """Holdings filter: departments, ie. ["basissamling"]"""
+  department: [String!]
+
+  """Holdings filter: matches the location of the item"""
+  location: [String!]
+
+  """Holdings filter: matches the sublocation of the item"""
+  sublocation: [String!]
+
+  """Holdings filter: item status. ONSHELF, ONLOAN or both"""
+  status: [MoodKidsHoldingsStatusEnum!]
+
+  """
+  When true or omitted, include works in the eReolen collection, if false falls back to the physical holdings.
+  """
+  useOnlineHoldings: Boolean
 }
 
 """The response from moodsearch"""
@@ -8263,12 +8289,38 @@ input KidRecommenderTagsInput {
   weight: Int
 }
 
+"""Holdings status used for filtering in moodRecommendKids"""
+enum MoodKidsHoldingsStatusEnum {
+  ONSHELF
+  ONLOAN
+}
+
 input MoodKidsRecommendFiltersInput {
   difficulty: [Int!]
   illustrationsLevel: [Int!]
   length: [Int!]
   realisticVsFictional: [Int!]
   fictionNonfiction: FictionNonfictionCodeEnum
+
+  """Holdings filter: branch ids, ie. ["610162", "610134"]"""
+  branchId: [String!]
+
+  """Holdings filter: departments, ie. ["basissamling"]"""
+  department: [String!]
+
+  """Holdings filter: matches the location of the item"""
+  location: [String!]
+
+  """Holdings filter: matches the sublocation of the item"""
+  sublocation: [String!]
+
+  """Holdings filter: item status. ONSHELF, ONLOAN or both"""
+  status: [MoodKidsHoldingsStatusEnum!]
+
+  """
+  When true or omitted, include works in the eReolen collection, if false falls back to the physical holdings.
+  """
+  useOnlineHoldings: Boolean
 }
 
 """The response from moodsearch"""

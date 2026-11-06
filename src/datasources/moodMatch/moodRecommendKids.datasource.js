@@ -9,6 +9,9 @@ work: Persistent workid to base recommendations on
 filters: Filter pids based on filtertype and values. Can filter by the following types:
 difficulty, illustrations_level, length, realistic_vs_fictional: A list of values, ie [5] or [2, 3]
 lit_type: Can be either "fiction", "nonfiction" or "not_specified"
+branch_id, department, location, sublocation: Holdings filters, each a list of strings, ie ["610162", "610134"] or ["basissamling"]
+status: A list containing "ONSHELF", "ONLOAN", or both. Case-sensitive.
+use_online_holdings: Boolean. When true or omitted, include works in the eReolen collection, if false falls back to the physical holdings.
 dislikes: A list of persistent workids that will not occur in result
 agency: The agency with which to filter results.
 profile: The profile name with which to filter results. Only profile names that exist with the provided agency are valid.
@@ -48,8 +51,8 @@ function parseFilters(filters) {
     ...(filters?.illustrationsLevel && {
       illustrations_level: filters.illustrationsLevel,
     }),
-    ...(filters?.realisticVsFctional && {
-      realistic_vs_fictional: filters.realisticVsFctional,
+    ...(filters?.realisticVsFictional && {
+      realistic_vs_fictional: filters.realisticVsFictional,
     }),
     ...(filters?.fictionNonfiction && {
       lit_type: filters.fictionNonfiction.toLowerCase(),
@@ -59,6 +62,24 @@ function parseFilters(filters) {
     }),
     ...(filters?.length && {
       length: filters.length,
+    }),
+    ...(filters?.branchId && {
+      branch_id: filters.branchId,
+    }),
+    ...(filters?.department && {
+      department: filters.department,
+    }),
+    ...(filters?.location && {
+      location: filters.location,
+    }),
+    ...(filters?.sublocation && {
+      sublocation: filters.sublocation,
+    }),
+    ...(filters?.status && {
+      status: filters.status,
+    }),
+    ...(typeof filters?.useOnlineHoldings === "boolean" && {
+      use_online_holdings: filters.useOnlineHoldings,
     }),
   };
 
