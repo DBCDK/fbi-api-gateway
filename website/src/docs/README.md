@@ -1,6 +1,18 @@
 # Documentation readme
 This readme is for the developers of the FBI-API. 
 
+The Get started page includes `<InternalMonitoring />`. It renders Services and
+Howru sections only when `useCredentialNetwork()` reports an internal request
+and Settings → Network is set to Internal. Selecting External hides both sections
+and their menu entries.
+Their headings are then picked up by the documentation menu. On browser hostnames
+ending in `.svc.cloud.dbc.dk`, localhost, or loopback addresses, monitoring links
+default to HTTP on the same hostname, port 9599. The Kubernetes Service must expose
+that port. `INTERNAL_MONITORING_URL` in
+`src/config.js` overrides this address. On public hostnames, no link is shown
+unless an override is configured. This setting does not proxy or expose monitoring
+endpoints through the public website.
+
 
 ## These are the examples
 

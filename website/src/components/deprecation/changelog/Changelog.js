@@ -118,7 +118,7 @@ export default function Changelog() {
           <th>#</th>
           <th>Path</th>
           <th>Reason / Alternative</th>
-          <th>Expires / Expired</th>
+          <th>Expiry</th>
         </tr>
       </thead>
 

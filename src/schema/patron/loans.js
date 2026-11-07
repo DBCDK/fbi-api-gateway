@@ -265,6 +265,10 @@ function resolveHistoricalLoanManifestation(loan, context) {
     return resolveManifestation({ pid: materialId }, context);
   }
 
+  if (materialIdType === "ISBN13") {
+    return resolveManifestation({ isbn: materialId }, context);
+  }
+
   return null;
 }
 

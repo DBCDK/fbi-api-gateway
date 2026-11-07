@@ -9,6 +9,24 @@ import {
 const NOW = Date.parse("2026-07-30T12:00:00Z");
 
 describe("what's new visibility", () => {
+  test("only includes internal news when allowed, while keeping public news visible", () => {
+    const news = [
+      { id: "public", title: "Public", body: "Public news" },
+      {
+        id: "internal",
+        title: "Internal",
+        body: "Internal news",
+        internalOnly: true,
+      },
+    ];
+    const visibleIds = (allowInternal) =>
+      getVisibleWhatsNew(news, { storage: null, allowInternal }).map(
+        (item) => item.id
+      );
+    expect(visibleIds()).toEqual(["public"]);
+    expect(visibleIds(false)).toEqual(["public"]);
+    expect(visibleIds(true)).toEqual(["public", "internal"]);
+  });
   beforeEach(() => {
     localStorage.clear();
     delete process.env.NEXT_PUBLIC_WHATS_NEW_ENABLED;
@@ -99,17 +117,16 @@ describe("what's new visibility", () => {
   });
 
   test("ignores the previous carousel dismissal", () => {
-    localStorage.setItem(
-      "fbi:news:client-based-access-v1:dismissed",
-      "true"
-    );
+    localStorage.setItem("fbi:news:client-based-access-v1:dismissed", "true");
 
     expect(
       getVisibleWhatsNew(whatsNewNews, {
         now: NOW,
         storage: localStorage,
       }).map((item) => item.id)
-    ).toEqual(whatsNewNews.map((item) => item.id));
+    ).toEqual(
+      whatsNewNews.filter((item) => !item.internalOnly).map((item) => item.id)
+    );
   });
 
   test("restores all individually viewed active news", () => {
@@ -128,6 +145,8 @@ describe("what's new visibility", () => {
         now: NOW,
         storage: localStorage,
       }).map((item) => item.id)
-    ).toEqual(whatsNewNews.map((item) => item.id));
+    ).toEqual(
+      whatsNewNews.filter((item) => !item.internalOnly).map((item) => item.id)
+    );
   });
 });
