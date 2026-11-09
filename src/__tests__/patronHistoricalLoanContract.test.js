@@ -1,4 +1,5 @@
 import { performTestQuery } from "../utils/utils";
+import { resolvers } from "../schema/patron/loans";
 
 test("exposes stored provenance and metadata without inventing missing snapshot data", async () => {
   const items = [
@@ -6,7 +7,7 @@ test("exposes stored provenance and metadata without inventing missing snapshot 
       id: "manual-loan",
       materialId: "23424916",
       materialIdType: "FAUST",
-      application: "BIBLIOTEKDK",
+      clientId: "history-client",
       isManuallyAdded: true,
       snapshot: {
         title: "Stored title",
@@ -17,12 +18,15 @@ test("exposes stored provenance and metadata without inventing missing snapshot 
       id: "stream-loan",
       materialId: "870970-basis:23424916",
       materialIdType: "PID",
-      application: null,
+      clientId: null,
       isManuallyAdded: false,
       snapshot: null,
     },
   ];
   const load = jest.fn().mockResolvedValue({ hitcount: 2, items });
+  const loadClient = jest.fn().mockResolvedValue({
+    config: { gateway: { bookmarks: { app: "BIBLIOTEKDK" } } },
+  });
   const result = await performTestQuery({
     query: `{
       patron {
@@ -43,7 +47,11 @@ test("exposes stored provenance and metadata without inventing missing snapshot 
     context: {
       accessToken: "DUMMY_TOKEN",
       user: { uniqueId: "test-user" },
-      datasources: { getLoader: jest.fn(() => ({ load })) },
+      datasources: {
+        getLoader: jest.fn((name) => ({
+          load: name === "authAdminClient" ? loadClient : load,
+        })),
+      },
     },
   });
   expect(result.errors).toBeUndefined();
@@ -70,4 +78,27 @@ test("exposes stored provenance and metadata without inventing missing snapshot 
     },
   ]);
   expect(load).toHaveBeenCalledTimes(1);
+  expect(loadClient).toHaveBeenCalledTimes(1);
+  expect(loadClient).toHaveBeenCalledWith("history-client");
+});
+
+test("application handles array responses, missing configuration and auth errors", async () => {
+  const load = jest
+    .fn()
+    .mockResolvedValueOnce([
+      { config: { gateway: { bookmarks: { app: "BIBLIOTEKDK" } } } },
+    ])
+    .mockResolvedValueOnce({ config: {} })
+    .mockResolvedValueOnce(null)
+    .mockRejectedValueOnce(new Error("Auth unavailable"));
+  const context = { datasources: { getLoader: () => ({ load }) } };
+  for (const expected of ["BIBLIOTEKDK", null, null, null]) {
+    await expect(
+      resolvers.HistoricalLoan.application(
+        { clientId: "history-client" },
+        {},
+        context
+      )
+    ).resolves.toBe(expected);
+  }
 });

@@ -1030,6 +1030,23 @@ export const resolvers = {
   },
 
   HistoricalLoan: {
+    async application(parent, args, context) {
+      if (!parent?.clientId) return null;
+
+      try {
+        const response = await context.datasources
+          .getLoader("authAdminClient")
+          .load(parent.clientId);
+        const client = Array.isArray(response) ? response[0] : response;
+        return client?.config?.gateway?.bookmarks?.app || null;
+      } catch (error) {
+        log.error("Failed to resolve historical loan application", {
+          clientId: parent.clientId,
+          message: error.message,
+        });
+        return null;
+      }
+    },
     material(parent) {
       return parent;
     },
