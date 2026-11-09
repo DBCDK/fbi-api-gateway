@@ -488,6 +488,18 @@ outer status explains why:
 Historical loans are only retained when historical-loan consent has been
 granted. Results are paginated and returned in their default order.
 
+Like bookmarks, each item exposes `materialId`, `material`, `snapshot`, and
+`application`. Historical-loan identifiers can be PIDs or faust numbers.
+`material.manifestation` contains current bibliographic data when resolvable;
+`snapshot` contains stored metadata with exactly the same fields and nullability
+as bookmark snapshots. The snapshot object is always present, but its fields may
+be null when no metadata was stored.
+
+`application` is the stored application code, or null when unknown.
+`isManuallyAdded` is always a boolean: true for loans added manually by the user,
+and false for loans ingested from events. It is determined from database
+provenance, not from the application or material identifier.
+
 If consent has not been granted, the collection has no items and returns
 `CONSENT_REQUIRED`:
 
@@ -511,6 +523,9 @@ If consent has not been granted, the collection has no items and returns
           status
           items {
             id
+            materialId
+            application
+            isManuallyAdded
             loanedAt
             returnedAt
             account {
@@ -526,13 +541,15 @@ If consent has not been granted, the collection has no items and returns
               id
               name
             }
-            manifestation {
-              pid
-              ownerWork {
-                workId
-              }
-              titles {
-                main
+            material {
+              manifestation {
+                pid
+                ownerWork {
+                  workId
+                }
+                titles {
+                  main
+                }
               }
             }
             snapshot {
@@ -541,7 +558,16 @@ If consent has not been granted, the collection has no items and returns
               workId
               title
               creator
-              materialType
+              materialTypes {
+                materialTypeGeneral {
+                  code
+                  display
+                }
+                materialTypeSpecific {
+                  code
+                  display
+                }
+              }
               workType
               periodical {
                 edition
@@ -577,6 +603,12 @@ resolved by the API and cannot be supplied by the client.
 When `dryRun` is true, identifiers, date ranges and material resolution are
 validated without storing loans.
 
+As with bookmarks, each operation result includes `status`, `id`, `materialId`,
+`agency`, and `material`. `agency` is the stored agency returned by UserData for
+successful additions or existing loans; it is null for errors, dry runs, and
+deletions. `material` is available when a supported material identifier is
+known, and its `manifestation` may be null if the record cannot be resolved.
+
 <InlineGraphiQL
   query={`
     mutation Example_AddPatronHistoricalLoans(
@@ -589,6 +621,15 @@ validated without storing loans.
           items {
             id
             materialId
+            agency {
+              id
+              name
+            }
+            material {
+              manifestation {
+                pid
+              }
+            }
             status
           }
         }
@@ -625,6 +666,15 @@ without deleting loans.
           items {
             id
             materialId
+            agency {
+              id
+              name
+            }
+            material {
+              manifestation {
+                pid
+              }
+            }
             status
           }
         }

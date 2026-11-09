@@ -279,7 +279,10 @@ function toServiceHistoricalLoan(loan, manifestation) {
     returnedAt: loan.returnedAt,
     materialId: loan.materialId,
     materialIdType: loan.materialIdType,
-    snapshot: buildPatronMaterialSnapshot(manifestation),
+    snapshot: buildPatronMaterialSnapshot(manifestation, {
+      includeMaterialType: false,
+      includeMaterialTypes: true,
+    }),
   };
 }
 
@@ -293,6 +296,8 @@ function accountForAgency(parent, context) {
   const account = filterDuplicateAgencies(user?.agencies).find(
     ({ agencyId }) => agencyId === parent.agencyId
   );
+
+  console.log("......", user?.agencies, account, parent.agencyId);
 
   if (!account) {
     return null;
@@ -450,6 +455,15 @@ export const typeDef = `
         """
         id: String!
 
+        """The stored PID or faust number identifying the borrowed material."""
+        materialId: String!
+
+        """The application the historical loan belongs to, when known."""
+        application: String
+
+        """Whether the loan was manually added by the user rather than ingested from an event."""
+        isManuallyAdded: Boolean!
+
         """
         Date on which the material was borrowed, when known.
         """
@@ -472,14 +486,18 @@ export const typeDef = `
         agency: PatronAgency
 
         """
-        The manifestation associated with the historical loan, when it can still be resolved.
+        The bibliographic record associated with the historical loan, if it can still be resolved.
         """
-        manifestation: Manifestation
+        material: HistoricalLoanMaterial!
 
         """
         Stored fallback metadata captured when the historical loan was ingested.
         """
-        snapshot: PatronMaterialSnapshot
+        snapshot: BookmarkSnapshot!
+    }
+
+    type HistoricalLoanMaterial {
+        manifestation: Manifestation
     }
 
     input PatronHistoricalLoanInput {
@@ -556,6 +574,15 @@ export const typeDef = `
         status: PatronLoanMutationStatusEnum!
         id: String
         materialId: String
+
+        """
+        Stored agency for a confirmed addition or existing historical loan.
+        Null for dry runs, errors and deletions.
+        """
+        agency: PatronAgency
+
+        """The associated bibliographic material, when its identifier is available."""
+        material: HistoricalLoanMaterial
     }
 
     enum PatronLoansOverallStatusEnum {
@@ -837,6 +864,11 @@ export const resolvers = {
           return {
             id: result?.id ?? null,
             materialId: result?.materialId ?? item.materialId,
+            ...(result?.materialIdType && {
+              materialIdType: result.materialIdType,
+            }),
+            ...(["ok", "already_exists"].includes(result?.status) &&
+              result?.agencyId && { agencyId: result.agencyId }),
             status: mapServiceStatus(result?.status),
           };
         });
@@ -911,6 +943,9 @@ export const resolvers = {
           return {
             id,
             materialId: result?.materialId || null,
+            ...(result?.materialIdType && {
+              materialIdType: result.materialIdType,
+            }),
             status: mapServiceStatus(result?.status),
           };
         });
@@ -997,6 +1032,12 @@ export const resolvers = {
   },
 
   HistoricalLoan: {
+    materialId(parent) {
+      return parent?.materialId || parent?.sourceMaterialId;
+    },
+    material(parent) {
+      return parent;
+    },
     account(parent, args, context) {
       return accountForAgency(parent, context);
     },
@@ -1004,9 +1045,28 @@ export const resolvers = {
       return agencyForLoan(parent, context);
     },
     snapshot(parent) {
-      return parent?.snapshot || null;
+      return parent?.snapshot || {};
     },
-    manifestation(parent, args, context, info) {
+  },
+  PatronHistoricalLoanStatusItem: {
+    agency(parent, args, context) {
+      return agencyForLoan(parent, context);
+    },
+    material(parent) {
+      if (!parent?.materialId) return null;
+
+      if (parent.materialIdType) return parent;
+
+      if (!isHistoricalLoanMaterialId(parent.materialId)) return null;
+
+      return {
+        ...parent,
+        materialIdType: isFaustNumber(parent.materialId) ? "FAUST" : "PID",
+      };
+    },
+  },
+  HistoricalLoanMaterial: {
+    manifestation(parent, args, context) {
       return resolveHistoricalLoanManifestation(parent, context);
     },
   },

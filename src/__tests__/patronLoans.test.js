@@ -291,35 +291,30 @@ describe("Patron historical loans", () => {
   });
 
   test.each([
-    [
-      "FAUST",
-      "23424916",
-      { faust: "23424916", profile: "profile" },
-    ],
+    ["FAUST", "23424916", { faust: "23424916", profile: "profile" }],
     [
       "PID",
       "870970-basis:23424916",
       { id: "870970-basis:23424916", profile: "profile" },
     ],
-    [
-      "ISBN13",
-      "9788776552176",
-      { isbn: "9788776552176", profile: "profile" },
-    ],
-  ])("resolves historical %s identifiers", async (type, materialId, expected) => {
-    const load = jest.fn().mockResolvedValue(null);
-    const context = createContext(load, { profile: "profile" });
+    ["ISBN13", "9788776552176", { isbn: "9788776552176", profile: "profile" }],
+  ])(
+    "resolves historical %s identifiers",
+    async (type, materialId, expected) => {
+      const load = jest.fn().mockResolvedValue(null);
+      const context = createContext(load, { profile: "profile" });
 
-    await resolvers.HistoricalLoan.manifestation(
-      {
-        materialId,
-        materialIdType: type,
-      },
-      {},
-      context
-    );
-    expect(load).toHaveBeenCalledWith(expected);
-  });
+      await resolvers.HistoricalLoanMaterial.manifestation(
+        {
+          materialId,
+          materialIdType: type,
+        },
+        {},
+        context
+      );
+      expect(load).toHaveBeenCalledWith(expected);
+    }
+  );
 
   test("add resolves material and sends dates plus a grouped snapshot", async () => {
     const load = jest.fn().mockResolvedValue({
@@ -353,7 +348,12 @@ describe("Patron historical loans", () => {
           workId: "work-of:870970-basis:23424916",
           title: "Efter uvejret",
           creator: "Kenneth Bøgh Andersen",
-          materialType: "BOOK",
+          materialTypes: [
+            {
+              materialTypeGeneral: { code: null, display: null },
+              materialTypeSpecific: { code: "BOOK", display: null },
+            },
+          ],
           workType: "LITERATURE",
           periodical: {
             edition: "Årg. 10",
@@ -372,6 +372,93 @@ describe("Patron historical loans", () => {
       accessToken,
       loans: serviceLoans,
     });
+  });
+
+  test.each(["ok", "already_exists"])(
+    "add exposes the stored agency for %s, rather than the input agency",
+    async (status) => {
+      const context = createAddContext(
+        jest.fn().mockResolvedValue({
+          results: [{ id: publicLoanId, agencyId: "720000", status }],
+        })
+      );
+      const response = await resolvers.PatronMutation.addHistoricalLoans(
+        null,
+        { loans: [{ materialId: "23424916", agencyId: "710100" }] },
+        context
+      );
+      expect(response.items[0].agencyId).toBe("720000");
+      const material = resolvers.PatronHistoricalLoanStatusItem.material(
+        response.items[0]
+      );
+      await expect(
+        resolvers.HistoricalLoanMaterial.manifestation(material, {}, context)
+      ).resolves.toMatchObject({ pid: resolvedManifestation.pid });
+    }
+  );
+
+  test("dry-run does not report the input agency as a stored agency", async () => {
+    const context = createAddContext(jest.fn());
+    const response = await resolvers.PatronMutation.addHistoricalLoans(
+      null,
+      { loans: [{ materialId: "23424916", agencyId: "710100" }], dryRun: true },
+      context
+    );
+    await expect(
+      resolvers.PatronHistoricalLoanStatusItem.agency(
+        response.items[0],
+        {},
+        context
+      )
+    ).resolves.toBeNull();
+  });
+
+  test("mutation material handles PID, FAUST and missing identifiers", () => {
+    for (const [materialId, materialIdType] of [
+      ["23424916", "FAUST"],
+      ["870970-basis:23424916", "PID"],
+    ]) {
+      expect(
+        resolvers.PatronHistoricalLoanStatusItem.material({ materialId })
+      ).toMatchObject({ materialId, materialIdType });
+    }
+    expect(resolvers.PatronHistoricalLoanStatusItem.material({})).toBeNull();
+    expect(
+      resolvers.PatronHistoricalLoanStatusItem.material({
+        materialId: "invalid",
+      })
+    ).toBeNull();
+  });
+
+  test("delete retains material identity but does not expose an agency", async () => {
+    const context = createContext(
+      jest.fn().mockResolvedValue({
+        results: [
+          {
+            id: publicLoanId,
+            status: "ok",
+            materialId: "23424916",
+            materialIdType: "FAUST",
+            agencyId: "710100",
+          },
+        ],
+      })
+    );
+    const response = await resolvers.PatronMutation.deleteHistoricalLoans(
+      null,
+      { ids: [publicLoanId] },
+      context
+    );
+    expect(
+      resolvers.PatronHistoricalLoanStatusItem.material(response.items[0])
+    ).toMatchObject({ materialId: "23424916", materialIdType: "FAUST" });
+    await expect(
+      resolvers.PatronHistoricalLoanStatusItem.agency(
+        response.items[0],
+        {},
+        context
+      )
+    ).resolves.toBeNull();
   });
 
   test("add does not send unresolved manifestations or client snapshots", async () => {
