@@ -297,8 +297,6 @@ function accountForAgency(parent, context) {
     ({ agencyId }) => agencyId === parent.agencyId
   );
 
-  console.log("......", user?.agencies, account, parent.agencyId);
-
   if (!account) {
     return null;
   }
@@ -1032,9 +1030,6 @@ export const resolvers = {
   },
 
   HistoricalLoan: {
-    materialId(parent) {
-      return parent?.materialId || parent?.sourceMaterialId;
-    },
     material(parent) {
       return parent;
     },
