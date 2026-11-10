@@ -426,7 +426,15 @@ export function parseOnlineUrlToOrigin(url) {
       return "DBC Webarkiv";
     } else {
       const hostname = domainToUnicode(parsedUrl.hostname);
-      return hostname ? `${hostname}${parsedUrl.port ? `:${parsedUrl.port}` : ""}` : "";
+      if (!hostname) {
+        return "";
+      }
+
+      let origin = hostname;
+      if (parsedUrl.port) {
+        origin += `:${parsedUrl.port}`;
+      }
+      return origin;
     }
   } catch (e) {
     return "";
