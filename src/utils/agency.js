@@ -34,6 +34,8 @@ const CULR_DATA_SYNC_BRANCH_IDS = [
   "820033", // Syddansk Universitetsbibliotek, Sønderborg
   "820039", // Syddansk Universitetsbibliotek, Slagelse
 
+  "830080", // Det Kongelige Akademi - Bibliotek
+
   // Login with mitId, when no library accounts
   "190101",
 ];
