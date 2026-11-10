@@ -28,12 +28,6 @@ const CULR_DATA_SYNC_BRANCH_IDS = [
   "820051", // Aalborg Universitetsbibliotek Esbjerg
   "820052", // Aalborg Universitetsbibliotek København
 
-  "820030", // Syddansk Universitetsbibliotek, Odense
-  "820031", // Syddansk Universitetsbibliotek, Esbjerg
-  "820032", // Syddansk Universitetsbibliotek, Kolding
-  "820033", // Syddansk Universitetsbibliotek, Sønderborg
-  "820039", // Syddansk Universitetsbibliotek, Slagelse
-
   "830080", // Det Kongelige Akademi - Bibliotek
 
   // Login with mitId, when no library accounts
