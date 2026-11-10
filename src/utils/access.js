@@ -2,6 +2,7 @@
  * @file access util functions
  */
 
+import { domainToUnicode } from "url";
 import { filterDuplicateAgencies, resolveManifestation } from "./utils";
 import { getGaleAgencyConfig } from "./galeAgencyConfig";
 
@@ -424,7 +425,8 @@ export function parseOnlineUrlToOrigin(url) {
     if (parsedUrl["host"] === "fbi-arkiv.dbc.dk") {
       return "DBC Webarkiv";
     } else {
-      return (parsedUrl["host"] && parsedUrl["host"]) || "";
+      const hostname = domainToUnicode(parsedUrl.hostname);
+      return hostname ? `${hostname}${parsedUrl.port ? `:${parsedUrl.port}` : ""}` : "";
     }
   } catch (e) {
     return "";
