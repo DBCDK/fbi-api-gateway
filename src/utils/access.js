@@ -425,6 +425,7 @@ export function parseOnlineUrlToOrigin(url) {
     if (parsedUrl["host"] === "fbi-arkiv.dbc.dk") {
       return "DBC Webarkiv";
     } else {
+      // Decode the hostname separately because host may also include a port.
       const hostname = domainToUnicode(parsedUrl.hostname);
       if (!hostname) {
         return "";
