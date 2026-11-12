@@ -195,22 +195,6 @@ type FacetResult {
 }
 
 """
-Public genre facet naming for intelligent facets.
-"""
-enum GenreFacetEnum {
-  GENREANDFORM @deprecated(reason: "Use GENREFORM instead expires: 01/03-2027")
-  GENREFORM
-}
-
-"""
-Public audience facet naming for intelligent facets.
-"""
-enum AudienceFacetEnum {
-  GENERALAUDIENCE @deprecated(reason: "Use AUDIENCEGENERAL instead expires: 01/03-2027")
-  AUDIENCEGENERAL
-}
-
-"""
 The simple search response
 """
 type SearchResponse {
@@ -241,12 +225,9 @@ type SearchResponse {
   facets(facets: [FacetFieldEnum!]!): [FacetResult!]! @complexity(value: 5, multipliers: ["facets"])
 
   """
-  Will return the facets that best match the input query and filters.
-  genreFacet and audienceFacet select the public names/types of genre and audience
-  facets. Legacy names are the defaults for backwards compatibility, regardless
-  of backend version.
+  Will return the facets that best match the input query and filters
   """
-  intelligentFacets(limit: Int, genreFacet: GenreFacetEnum! = GENREANDFORM, audienceFacet: AudienceFacetEnum! = GENERALAUDIENCE): [FacetResult!]! @complexity(value: 5, multipliers: ["limit"])
+  intelligentFacets(limit: Int): [FacetResult!]! @complexity(value: 5, multipliers: ["limit"])
 
   """
   A list of alternative search queries
@@ -395,22 +376,33 @@ export const resolvers = {
 
       const facets = Array.isArray(res?.facets) ? res.facets : [];
       // Prefer the new representation if a transitional backend returns both.
-      const returnedAliases = new Set();
+      const includedFacets = new Set();
+
       return facets
         .flatMap((facet) => {
-          const aliases = getFacetAliases(facet.name);
-          if (aliases.length === 1) return [facet];
-          const canonicalName = aliases[0];
-          if (returnedAliases.has(canonicalName)) return [];
-          returnedAliases.add(canonicalName);
-          const preferred = aliases
-            .map((name) => facets.find((item) => item.name === name))
-            .find(Boolean);
-          const type =
-            canonicalName === "genreForm"
-              ? args.genreFacet || "GENREANDFORM"
-              : args.audienceFacet || "GENERALAUDIENCE";
-          return [{ ...preferred, name: mapFromFacetEnum(type), type }];
+          const [newName, legacyName] = getFacetAliases(facet.name);
+
+          // Facets without aliases are returned unchanged.
+          if (!legacyName) return [facet];
+
+          // Return each aliased facet only once.
+          if (includedFacets.has(newName)) return [];
+
+          includedFacets.add(newName);
+
+          const preferredFacet =
+            facets.find((item) => item.name === newName) ?? facet;
+
+          // Preserve the existing public names regardless of backend version.
+          // TODO: Switch these output names only after a separate client migration;
+          // upgrading the backend does not retire the intelligentFacets contract.
+          return [
+            {
+              ...preferredFacet,
+              name: legacyName,
+              type: legacyName.toUpperCase(),
+            },
+          ];
         })
         .slice(0, args.limit || 10);
     },
@@ -479,11 +471,13 @@ export const resolvers = {
         const requestedName = mapFromFacetEnum(key);
         const aliases = getFacetAliases(requestedName);
         const hasAliases = aliases.length > 1;
-        const values = hasAliases
-          ? (parent?.filters?.[aliases[0]] ??
-            parent?.filters?.[aliases[1]] ??
-            [])
-          : parent?.filters?.[key] || [];
+        const filters = parent?.filters || {};
+        let values = filters[key] || [];
+
+        if (hasAliases) {
+          const [newName, legacyName] = aliases;
+          values = filters[newName] ?? filters[legacyName] ?? [];
+        }
 
         // maps result names to enum values
         const facet = aliases

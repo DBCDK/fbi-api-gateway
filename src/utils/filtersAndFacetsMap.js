@@ -7,6 +7,8 @@
 /** FILTERS **/
 
 // Prefer the new representation, including explicitly empty facet values.
+// TODO: Remove legacy aliases only when the deprecated GraphQL filters and
+// facet enums are retired and clients have migrated, not at the backend switch.
 export function getFacetAliases(name) {
   if (name === "genreAndForm" || name === "genreForm") {
     return ["genreForm", "genreAndForm"];
@@ -17,6 +19,8 @@ export function getFacetAliases(name) {
   return [name];
 }
 
+// TODO: Remove version detection once all search and facet endpoints support
+// the new names. Keep mapping legacy client names to the new backend names.
 function backendFacetName(name, serviceUrl) {
   const aliases = getFacetAliases(name);
   if (aliases.length === 1) return name;

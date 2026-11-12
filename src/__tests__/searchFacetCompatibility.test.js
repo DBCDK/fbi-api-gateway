@@ -8,13 +8,11 @@ const families = [
   {
     old: "genreAndForm",
     modern: "genreForm",
-    argument: "genreFacet",
     value: "fantasy",
   },
   {
     old: "generalAudience",
     modern: "audienceGeneral",
-    argument: "audienceFacet",
     value: "for højtlæsning",
   },
 ];
@@ -70,7 +68,7 @@ function setup(searchHost, facetHost, data) {
 }
 
 describe.each(families)("$modern compatibility", (family) => {
-  const { old, modern, argument, value } = family;
+  const { old, modern, value } = family;
   const query = `query Compatibility($filters: SearchFiltersInput) {
     search(q: {all: "harry"}, filters: $filters) {
       hitcount
@@ -78,7 +76,6 @@ describe.each(families)("$modern compatibility", (family) => {
         name type values(limit: 5) { key score }
       }
       legacy: intelligentFacets { name type values(limit: 5) { key score } }
-      modern: intelligentFacets(${argument}: ${modern.toUpperCase()}) { name type values(limit: 5) { key score } }
     }
   }`;
   const values = [{ key: value, score: 3 }];
@@ -106,9 +103,8 @@ describe.each(families)("$modern compatibility", (family) => {
           hitcount: 3,
           facets: [facet(old, values), facet(modern, values)],
           legacy: [facet(old, values)],
-          modern: [facet(modern, values)],
         });
-        expect(fetch).toHaveBeenCalledTimes(4);
+        expect(fetch).toHaveBeenCalledTimes(3);
         for (const [url, options] of fetch.mock.calls) {
           const body = JSON.parse(options.body);
           const name = url.startsWith(newHost) ? modern : old;
@@ -172,12 +168,11 @@ describe.each(families)("$modern compatibility", (family) => {
       hitcount: 3,
       facets: [facet(old), facet(modern)],
       legacy: [facet(old)],
-      modern: [facet(modern)],
     });
   });
 });
 
-test("genre and audience names are independent and other facets are preserved", async () => {
+test("intelligent facets preserve legacy genre and audience names and other facets", async () => {
   const { context, fetch } = setup(oldHost, newHost, {
     genreAndForm: { legacy: 99 },
     genreForm: { fantasy: 2 },
@@ -189,8 +184,6 @@ test("genre and audience names are independent and other facets are preserved", 
     query: `{
       search(q: {all: "harry"}, filters: {generalAudience: ["voksne"], genreForm: ["fantasy"]}) {
         legacy: intelligentFacets { name type values(limit: 5) { key score } }
-        audienceOnly: intelligentFacets(audienceFacet: AUDIENCEGENERAL) { name type }
-        modern: intelligentFacets(audienceFacet: AUDIENCEGENERAL, genreFacet: GENREFORM) { name type }
       }
     }`,
     context,
@@ -200,16 +193,6 @@ test("genre and audience names are independent and other facets are preserved", 
     facet("genreAndForm", [{ key: "fantasy", score: 2 }]),
     facet("mainLanguages", [{ key: "dan", score: 7 }]),
     facet("generalAudience", [{ key: "voksne", score: 3 }]),
-  ]);
-  expect(result.data.search.audienceOnly).toEqual([
-    { name: "genreAndForm", type: "GENREANDFORM" },
-    { name: "mainLanguages", type: "MAINLANGUAGES" },
-    { name: "audienceGeneral", type: "AUDIENCEGENERAL" },
-  ]);
-  expect(result.data.search.modern).toEqual([
-    { name: "genreForm", type: "GENREFORM" },
-    { name: "mainLanguages", type: "MAINLANGUAGES" },
-    { name: "audienceGeneral", type: "AUDIENCEGENERAL" },
   ]);
   for (const [, options] of fetch.mock.calls) {
     expect(JSON.parse(options.body).filters).toEqual({

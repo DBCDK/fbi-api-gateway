@@ -5047,18 +5047,6 @@ type FacetResult {
   values(limit: Int!): [FacetValue!]!
 }
 
-"""Public genre facet naming for intelligent facets."""
-enum GenreFacetEnum {
-  GENREANDFORM @deprecated(reason: "Use GENREFORM instead expires: 01/03-2027")
-  GENREFORM
-}
-
-"""Public audience facet naming for intelligent facets."""
-enum AudienceFacetEnum {
-  GENERALAUDIENCE @deprecated(reason: "Use AUDIENCEGENERAL instead expires: 01/03-2027")
-  AUDIENCEGENERAL
-}
-
 """The simple search response"""
 type SearchResponse {
   """Total number of works found. May be used for pagination."""
@@ -5081,13 +5069,8 @@ type SearchResponse {
   """
   facets(facets: [FacetFieldEnum!]!): [FacetResult!]!
 
-  """
-  Will return the facets that best match the input query and filters.
-  genreFacet and audienceFacet select the public names/types of genre and audience
-  facets. Legacy names are the defaults for backwards compatibility, regardless
-  of backend version.
-  """
-  intelligentFacets(limit: Int, genreFacet: GenreFacetEnum! = GENREANDFORM, audienceFacet: AudienceFacetEnum! = GENERALAUDIENCE): [FacetResult!]!
+  """Will return the facets that best match the input query and filters"""
+  intelligentFacets(limit: Int): [FacetResult!]!
 
   """A list of alternative search queries"""
   didYouMean(limit: Int): [DidYouMean!]!
@@ -8717,18 +8700,6 @@ type FacetResult {
   values(limit: Int!): [FacetValue!]!
 }
 
-"""Public genre facet naming for intelligent facets."""
-enum GenreFacetEnum {
-  GENREANDFORM @deprecated(reason: "Use GENREFORM instead expires: 01/03-2027")
-  GENREFORM
-}
-
-"""Public audience facet naming for intelligent facets."""
-enum AudienceFacetEnum {
-  GENERALAUDIENCE @deprecated(reason: "Use AUDIENCEGENERAL instead expires: 01/03-2027")
-  AUDIENCEGENERAL
-}
-
 """The simple search response"""
 type SearchResponse {
   """Total number of works found. May be used for pagination."""
@@ -8745,13 +8716,8 @@ type SearchResponse {
   """
   facets(facets: [FacetFieldEnum!]!): [FacetResult!]!
 
-  """
-  Will return the facets that best match the input query and filters.
-  genreFacet and audienceFacet select the public names/types of genre and audience
-  facets. Legacy names are the defaults for backwards compatibility, regardless
-  of backend version.
-  """
-  intelligentFacets(limit: Int, genreFacet: GenreFacetEnum! = GENREANDFORM, audienceFacet: AudienceFacetEnum! = GENERALAUDIENCE): [FacetResult!]!
+  """Will return the facets that best match the input query and filters"""
+  intelligentFacets(limit: Int): [FacetResult!]!
 
   """A list of alternative search queries"""
   didYouMean(limit: Int): [DidYouMean!]!
