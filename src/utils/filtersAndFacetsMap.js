@@ -6,6 +6,37 @@
 
 /** FILTERS **/
 
+// Prefer the new representation, including explicitly empty facet values.
+export function getFacetAliases(name) {
+  if (name === "genreAndForm" || name === "genreForm") {
+    return ["genreForm", "genreAndForm"];
+  }
+  if (name === "generalAudience" || name === "audienceGeneral") {
+    return ["audienceGeneral", "generalAudience"];
+  }
+  return [name];
+}
+
+function backendFacetName(name, serviceUrl) {
+  const aliases = getFacetAliases(name);
+  if (aliases.length === 1) return name;
+  // Simple-search 1.10 introduced the new names. Unknown/unversioned hosts
+  // retain the existing contract; only the actual destination host is inspected.
+  let version;
+  try {
+    version = new URL(serviceUrl).hostname.match(
+      /^simple-search-fbiapi(?:-[a-z][a-z0-9]*)*-(\d+)-(\d+)(?:-\d+)?(?:\.|$)/
+    );
+  } catch {
+    return aliases[1];
+  }
+  const modern =
+    version &&
+    (Number(version[1]) > 1 ||
+      (Number(version[1]) === 1 && Number(version[2]) >= 10));
+  return aliases[modern ? 0 : 1];
+}
+
 /**
  * Holds filters that needs to  be renamed for search service
  * @type {{ageRange: string, letRange: string, lixRange: string}}
@@ -29,14 +60,21 @@ const mappedFilterValues = {
  * @param filters
  * @returns {*}
  */
-export function mapFilters(filters) {
+export function mapFilters(filters, serviceUrl) {
   const obj = {};
   Object.entries(filters).forEach(([key, value]) => {
+    if (getFacetAliases(key).length > 1) return;
     if (mappedFilterValues[key]) {
       value = [mappedFilterValues[key][value]] || value;
     }
     obj[mappedFilters[key] || key] = value;
   });
+  // The new alias wins, including an explicitly empty list.
+  const genre = filters.genreForm ?? filters.genreAndForm;
+  if (genre != null) obj[backendFacetName("genreForm", serviceUrl)] = genre;
+  const audience = filters.audienceGeneral ?? filters.generalAudience;
+  if (audience != null)
+    obj[backendFacetName("audienceGeneral", serviceUrl)] = audience;
   return obj;
 }
 
@@ -49,6 +87,7 @@ const mapFromFacetEnumList = {
   MATERIALTYPESSPECIFIC: "materialTypesSpecific",
   FICTIONALCHARACTERS: "fictionalCharacters",
   GENREANDFORM: "genreAndForm",
+  GENREFORM: "genreForm",
   CHILDRENORADULTS: "childrenOrAdults",
   ACCESSTYPES: "accessTypes",
   FICTIONNONFICTION: "fictionNonfiction",
@@ -61,6 +100,7 @@ const mapFromFacetEnumList = {
   LIX: "lix_range",
   LET: "let_range",
   GENERALAUDIENCE: "generalAudience",
+  AUDIENCEGENERAL: "audienceGeneral",
   LIBRARYRECOMMENDATION: "libraryRecommendation",
   GAMEPLATFORM: "gamePlatform",
 };
@@ -93,9 +133,10 @@ export function mapFromFacetEnum(facet) {
  * @param facets
  * @returns {*}
  */
-export function mapFromFacetEnums(facets) {
+export function mapFromFacetEnums(facets, serviceUrl) {
   const mapped = facets?.map((facet) => {
-    return mapFromFacetEnumList[facet] || facet;
+    const name = mapFromFacetEnum(facet);
+    return backendFacetName(name, serviceUrl);
   });
   return mapped;
 }

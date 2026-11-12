@@ -1,7 +1,11 @@
 import translations from "../utils/translations.json";
 import { resolveWork } from "../utils/utils";
 import { log } from "dbc-node-logger";
-import { mapFacet, mapFromFacetEnum } from "../utils/filtersAndFacetsMap";
+import {
+  mapFacet,
+  mapFromFacetEnum,
+  getFacetAliases,
+} from "../utils/filtersAndFacetsMap";
 import { createTraceId } from "../utils/trace";
 import {
   getWorkAuthors,
@@ -62,7 +66,8 @@ enum FacetFieldEnum {
   MATERIALTYPESGENERAL
   MATERIALTYPESSPECIFIC
   FICTIONALCHARACTERS
-  GENREANDFORM
+  GENREANDFORM @deprecated(reason: "Use GENREFORM instead expires: 01/03-2027")
+  GENREFORM
   CHILDRENORADULTS
   ACCESSTYPES
   FICTIONNONFICTION
@@ -74,7 +79,8 @@ enum FacetFieldEnum {
   AGE
   LIX
   LET
-  GENERALAUDIENCE
+  GENERALAUDIENCE @deprecated(reason: "Use AUDIENCEGENERAL instead expires: 01/03-2027")
+  AUDIENCEGENERAL
   LIBRARYRECOMMENDATION
   GAMEPLATFORM
 }
@@ -88,7 +94,15 @@ input SearchFiltersInput {
   creators: [String!]
   fictionNonfiction: [String!]
   fictionalCharacters: [String!]
-  genreAndForm: [String!]
+  """
+  Legacy alias of genreForm. Kept for backwards compatibility.
+  """
+  genreAndForm: [String!] @deprecated(reason: "Use genreForm instead expires: 01/03-2027")
+  """
+  Filter by genre/form. Takes precedence over genreAndForm when both are provided,
+  including an explicitly empty list.
+  """
+  genreForm: [String!]
   mainLanguages: [String!]
   materialTypesGeneral: [String!]
   materialTypesSpecific: [String!]
@@ -109,7 +123,15 @@ input SearchFiltersInput {
   ageRange: [String!]
   lixRange: [String!]
   letRange: [String!]
-  generalAudience: [String!]
+  """
+  Legacy alias of audienceGeneral. Kept for backwards compatibility.
+  """
+  generalAudience: [String!] @deprecated(reason: "Use audienceGeneral instead expires: 01/03-2027")
+  """
+  Filter by general audience. Takes precedence over generalAudience when both
+  are provided, including an explicitly empty list.
+  """
+  audienceGeneral: [String!]
   libraryRecommendation: [String!]
 }
 
@@ -173,6 +195,22 @@ type FacetResult {
 }
 
 """
+Public genre facet naming for intelligent facets.
+"""
+enum GenreFacetEnum {
+  GENREANDFORM @deprecated(reason: "Use GENREFORM instead expires: 01/03-2027")
+  GENREFORM
+}
+
+"""
+Public audience facet naming for intelligent facets.
+"""
+enum AudienceFacetEnum {
+  GENERALAUDIENCE @deprecated(reason: "Use AUDIENCEGENERAL instead expires: 01/03-2027")
+  AUDIENCEGENERAL
+}
+
+"""
 The simple search response
 """
 type SearchResponse {
@@ -203,9 +241,12 @@ type SearchResponse {
   facets(facets: [FacetFieldEnum!]!): [FacetResult!]! @complexity(value: 5, multipliers: ["facets"])
 
   """
-  Will return the facets that best match the input query and filters
+  Will return the facets that best match the input query and filters.
+  genreFacet and audienceFacet select the public names/types of genre and audience
+  facets. Legacy names are the defaults for backwards compatibility, regardless
+  of backend version.
   """
-  intelligentFacets(limit: Int): [FacetResult!]! @complexity(value: 5, multipliers: ["limit"])
+  intelligentFacets(limit: Int, genreFacet: GenreFacetEnum! = GENREANDFORM, audienceFacet: AudienceFacetEnum! = GENERALAUDIENCE): [FacetResult!]! @complexity(value: 5, multipliers: ["limit"])
 
   """
   A list of alternative search queries
@@ -352,11 +393,26 @@ export const resolvers = {
         .getLoader("intelligentFacets")
         .load(input);
 
-      return (
-        (Array.isArray(res?.facets) &&
-          res?.facets?.slice(0, args.limit || 10)) ||
-        []
-      );
+      const facets = Array.isArray(res?.facets) ? res.facets : [];
+      // Prefer the new representation if a transitional backend returns both.
+      const returnedAliases = new Set();
+      return facets
+        .flatMap((facet) => {
+          const aliases = getFacetAliases(facet.name);
+          if (aliases.length === 1) return [facet];
+          const canonicalName = aliases[0];
+          if (returnedAliases.has(canonicalName)) return [];
+          returnedAliases.add(canonicalName);
+          const preferred = aliases
+            .map((name) => facets.find((item) => item.name === name))
+            .find(Boolean);
+          const type =
+            canonicalName === "genreForm"
+              ? args.genreFacet || "GENREANDFORM"
+              : args.audienceFacet || "GENERALAUDIENCE";
+          return [{ ...preferred, name: mapFromFacetEnum(type), type }];
+        })
+        .slice(0, args.limit || 10);
     },
     async didYouMean(parent, args, context) {
       const res = await context.datasources.getLoader("didYouMean").load({
@@ -420,21 +476,30 @@ export const resolvers = {
       const response = [];
 
       args.facets?.forEach((key) => {
-        const values = parent?.filters?.[key] || [];
+        const requestedName = mapFromFacetEnum(key);
+        const aliases = getFacetAliases(requestedName);
+        const hasAliases = aliases.length > 1;
+        const values = hasAliases
+          ? (parent?.filters?.[aliases[0]] ??
+            parent?.filters?.[aliases[1]] ??
+            [])
+          : parent?.filters?.[key] || [];
 
         // maps result names to enum values
-        const facet = res?.find((obj) => obj?.name === mapFromFacetEnum(key));
+        const facet = aliases
+          .map((name) => res?.find((obj) => obj?.name === name))
+          .find(Boolean);
         // now we find the facet
         const copy = {
           /** we need to map some facets - name has changed in response : lix -> lix_range, let->let_range **/
-          name: mapFacet(facet?.name),
+          name: mapFacet(hasAliases ? requestedName : facet?.name),
           type: key,
           values: [],
         };
 
         values.forEach((value) => {
           // get selected term props
-          const selected = facet?.values.find((obj) => obj.term === value);
+          const selected = facet?.values?.find((obj) => obj.term === value);
           // Push to copy values
           // If the selected value is missing a count (because it does not exist in the return data (res)) count will be set to null
           copy.values.push({
