@@ -30,6 +30,8 @@ const CULR_DATA_SYNC_BRANCH_IDS = [
 
   "830080", // Det Kongelige Akademi - Bibliotek
 
+  "872100", // Vesthimmerlands Gymnasium & HF. Biblioteket
+
   // Login with mitId, when no library accounts
   "190101",
 ];
