@@ -4943,7 +4943,8 @@ enum FacetFieldEnum {
   MATERIALTYPESGENERAL
   MATERIALTYPESSPECIFIC
   FICTIONALCHARACTERS
-  GENREANDFORM
+  GENREANDFORM @deprecated(reason: "Use GENREFORM instead expires: 01/03-2027")
+  GENREFORM
   CHILDRENORADULTS
   ACCESSTYPES
   FICTIONNONFICTION
@@ -4955,7 +4956,8 @@ enum FacetFieldEnum {
   AGE
   LIX
   LET
-  GENERALAUDIENCE
+  GENERALAUDIENCE @deprecated(reason: "Use AUDIENCEGENERAL instead expires: 01/03-2027")
+  AUDIENCEGENERAL
   LIBRARYRECOMMENDATION
   GAMEPLATFORM
 }
@@ -4967,7 +4969,15 @@ input SearchFiltersInput {
   creators: [String!]
   fictionNonfiction: [String!]
   fictionalCharacters: [String!]
-  genreAndForm: [String!]
+
+  """Legacy alias of genreForm. Kept for backwards compatibility."""
+  genreAndForm: [String!] @deprecated(reason: "Use genreForm instead expires: 01/03-2027")
+
+  """
+  Filter by genre/form. Takes precedence over genreAndForm when both are provided,
+  including an explicitly empty list.
+  """
+  genreForm: [String!]
   mainLanguages: [String!]
   materialTypesGeneral: [String!]
   materialTypesSpecific: [String!]
@@ -4986,7 +4996,15 @@ input SearchFiltersInput {
   ageRange: [String!]
   lixRange: [String!]
   letRange: [String!]
-  generalAudience: [String!]
+
+  """Legacy alias of audienceGeneral. Kept for backwards compatibility."""
+  generalAudience: [String!] @deprecated(reason: "Use audienceGeneral instead expires: 01/03-2027")
+
+  """
+  Filter by general audience. Takes precedence over generalAudience when both
+  are provided, including an explicitly empty list.
+  """
+  audienceGeneral: [String!]
   libraryRecommendation: [String!]
 }
 
@@ -8578,7 +8596,8 @@ enum FacetFieldEnum {
   MATERIALTYPESGENERAL
   MATERIALTYPESSPECIFIC
   FICTIONALCHARACTERS
-  GENREANDFORM
+  GENREANDFORM @deprecated(reason: "Use GENREFORM instead expires: 01/03-2027")
+  GENREFORM
   CHILDRENORADULTS
   ACCESSTYPES
   FICTIONNONFICTION
@@ -8590,7 +8609,8 @@ enum FacetFieldEnum {
   AGE
   LIX
   LET
-  GENERALAUDIENCE
+  GENERALAUDIENCE @deprecated(reason: "Use AUDIENCEGENERAL instead expires: 01/03-2027")
+  AUDIENCEGENERAL
   LIBRARYRECOMMENDATION
   GAMEPLATFORM
 }
@@ -8602,7 +8622,15 @@ input SearchFiltersInput {
   creators: [String!]
   fictionNonfiction: [String!]
   fictionalCharacters: [String!]
-  genreAndForm: [String!]
+
+  """Legacy alias of genreForm. Kept for backwards compatibility."""
+  genreAndForm: [String!] @deprecated(reason: "Use genreForm instead expires: 01/03-2027")
+
+  """
+  Filter by genre/form. Takes precedence over genreAndForm when both are provided,
+  including an explicitly empty list.
+  """
+  genreForm: [String!]
   mainLanguages: [String!]
   materialTypesGeneral: [String!]
   materialTypesSpecific: [String!]
@@ -8621,7 +8649,15 @@ input SearchFiltersInput {
   ageRange: [String!]
   lixRange: [String!]
   letRange: [String!]
-  generalAudience: [String!]
+
+  """Legacy alias of audienceGeneral. Kept for backwards compatibility."""
+  generalAudience: [String!] @deprecated(reason: "Use audienceGeneral instead expires: 01/03-2027")
+
+  """
+  Filter by general audience. Takes precedence over generalAudience when both
+  are provided, including an explicitly empty list.
+  """
+  audienceGeneral: [String!]
   libraryRecommendation: [String!]
 }
 

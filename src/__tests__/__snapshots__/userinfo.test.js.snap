@@ -101,7 +101,7 @@ exports[`userinfo FFU authenticated user for independent library enriched with a
   "attributes": {
     "agencies": [
       {
-        "agencyId": "872100",
+        "agencyId": "872120",
         "userId": "some-localId",
         "userIdType": "LOCAL",
       },
@@ -109,10 +109,10 @@ exports[`userinfo FFU authenticated user for independent library enriched with a
     "blocked": false,
     "idpUsed": "borchk",
     "isIdpSystemUser": false,
-    "loggedInAgencyId": "872100",
-    "loggedInBranchId": "872100",
+    "loggedInAgencyId": "872120",
+    "loggedInBranchId": "872120",
     "municipality": null,
-    "municipalityAgencyId": "872100",
+    "municipalityAgencyId": "872120",
     "uniqueId": null,
     "userId": "some-userId",
   },
@@ -124,7 +124,7 @@ exports[`userinfo FFU authenticated user for independent library should find hid
   "attributes": {
     "agencies": [
       {
-        "agencyId": "872100",
+        "agencyId": "872120",
         "userId": "some-localId",
         "userIdType": "LOCAL",
       },
@@ -132,10 +132,10 @@ exports[`userinfo FFU authenticated user for independent library should find hid
     "blocked": false,
     "idpUsed": "borchk",
     "isIdpSystemUser": false,
-    "loggedInAgencyId": "872100",
-    "loggedInBranchId": "872100",
+    "loggedInAgencyId": "872120",
+    "loggedInBranchId": "872120",
     "municipality": null,
-    "municipalityAgencyId": "872100",
+    "municipalityAgencyId": "872120",
     "omittedCulrData": {
       "hasOmittedCulrAccounts": false,
       "hasOmittedCulrMunicipality": true,

@@ -29,7 +29,7 @@ export async function load(
     q,
     includeOnlineMaterials,
     // Rename some of the filter names
-    filters: mapFilters(filters),
+    filters: mapFilters(filters, url),
     "facet.limit": limit,
     disable_fuzzy_search: disableFuzzySearch,
     ...statics,
