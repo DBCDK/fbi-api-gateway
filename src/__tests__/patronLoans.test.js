@@ -310,7 +310,7 @@ describe("Patron historical loans", () => {
     const load = jest.fn().mockResolvedValue(null);
     const context = createContext(load, { profile: "profile" });
 
-    await resolvers.HistoricalLoan.manifestation(
+    await resolvers.HistoricalLoanMaterial.manifestation(
       {
         materialId,
         materialIdType: type,
@@ -321,9 +321,16 @@ describe("Patron historical loans", () => {
     expect(load).toHaveBeenCalledWith(expected);
   });
 
-  test("add resolves material and sends dates plus a grouped snapshot", async () => {
+  test.each(["ok", "already_exists"])("add resolves material and snapshot (%s)", async (status) => {
     const load = jest.fn().mockResolvedValue({
-      results: [{ id: publicLoanId, materialId: "23424916", status: "ok" }],
+      results: [
+        {
+          id: publicLoanId,
+          materialId: "23424916",
+          agencyId: "720000",
+          status,
+        },
+      ],
     });
     const context = createAddContext(load);
     const loans = [
@@ -335,12 +342,28 @@ describe("Patron historical loans", () => {
       },
     ];
 
-    await expect(
-      resolvers.PatronMutation.addHistoricalLoans(null, { loans }, context)
-    ).resolves.toEqual({
+    const response = await resolvers.PatronMutation.addHistoricalLoans(
+      null,
+      { loans },
+      context
+    );
+    expect(response).toEqual({
       status: "OK",
-      items: [{ id: publicLoanId, materialId: "23424916", status: "OK" }],
+      items: [
+        {
+          id: publicLoanId,
+          materialId: "23424916",
+          agencyId: "720000",
+          status: status === "ok" ? "OK" : "ALREADY_EXISTS",
+        },
+      ],
     });
+    const material = resolvers.PatronHistoricalLoanStatusItem.material(
+      response.items[0]
+    );
+    await expect(
+      resolvers.HistoricalLoanMaterial.manifestation(material, {}, context)
+    ).resolves.toMatchObject({ pid: resolvedManifestation.pid });
     const serviceLoans = [
       {
         agencyId: "710100",
@@ -353,7 +376,12 @@ describe("Patron historical loans", () => {
           workId: "work-of:870970-basis:23424916",
           title: "Efter uvejret",
           creator: "Kenneth Bøgh Andersen",
-          materialType: "BOOK",
+          materialTypes: [
+            {
+              materialTypeGeneral: { code: null, display: null },
+              materialTypeSpecific: { code: "BOOK", display: null },
+            },
+          ],
           workType: "LITERATURE",
           periodical: {
             edition: "Årg. 10",
@@ -482,26 +510,49 @@ describe("Patron historical loans", () => {
     const invalidId = "not-a-uuid";
     const load = jest.fn().mockResolvedValue({
       results: [
-        { id: publicLoanId, materialId: "pid:1", status: "ok" },
+        {
+          id: publicLoanId,
+          materialId: "pid:1",
+          materialIdType: "PID",
+          agencyId: "710100",
+          status: "ok",
+        },
         { id: secondPublicLoanId, status: "not_found" },
       ],
     });
     const context = createContext(load);
 
-    await expect(
-      resolvers.PatronMutation.deleteHistoricalLoans(
-        null,
-        { ids: [publicLoanId, invalidId, secondPublicLoanId] },
-        context
-      )
-    ).resolves.toEqual({
+    const response = await resolvers.PatronMutation.deleteHistoricalLoans(
+      null,
+      { ids: [publicLoanId, invalidId, secondPublicLoanId] },
+      context
+    );
+    expect(response).toEqual({
       status: "PARTIALLY_FAILED",
       items: [
-        { id: publicLoanId, materialId: "pid:1", status: "OK" },
+        {
+          id: publicLoanId,
+          materialId: "pid:1",
+          materialIdType: "PID",
+          status: "OK",
+        },
         { id: invalidId, status: "INVALID_ID" },
         { id: secondPublicLoanId, materialId: null, status: "NOT_FOUND" },
       ],
     });
+    expect(
+      resolvers.PatronHistoricalLoanStatusItem.material(response.items[0])
+    ).toMatchObject({ materialId: "pid:1", materialIdType: "PID" });
+    expect(
+      resolvers.PatronHistoricalLoanStatusItem.material(response.items[2])
+    ).toBeNull();
+    await expect(
+      resolvers.PatronHistoricalLoanStatusItem.agency(
+        response.items[0],
+        {},
+        context
+      )
+    ).resolves.toBeNull();
     expect(load).toHaveBeenCalledWith({
       accessToken,
       ids: [publicLoanId, secondPublicLoanId],

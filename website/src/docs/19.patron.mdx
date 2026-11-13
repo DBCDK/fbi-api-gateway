@@ -488,6 +488,10 @@ outer status explains why:
 Historical loans are only retained when historical-loan consent has been
 granted. Results are paginated and returned in their default order.
 
+`material.manifestation` contains current bibliographic data when available;
+`snapshot` contains stored metadata. `isManuallyAdded` indicates whether the user
+added the loan manually. `application` identifies the application, when known.
+
 If consent has not been granted, the collection has no items and returns
 `CONSENT_REQUIRED`:
 
@@ -511,6 +515,9 @@ If consent has not been granted, the collection has no items and returns
           status
           items {
             id
+            materialId
+            application
+            isManuallyAdded
             loanedAt
             returnedAt
             account {
@@ -526,13 +533,15 @@ If consent has not been granted, the collection has no items and returns
               id
               name
             }
-            manifestation {
-              pid
-              ownerWork {
-                workId
-              }
-              titles {
-                main
+            material {
+              manifestation {
+                pid
+                ownerWork {
+                  workId
+                }
+                titles {
+                  main
+                }
               }
             }
             snapshot {
@@ -541,7 +550,16 @@ If consent has not been granted, the collection has no items and returns
               workId
               title
               creator
-              materialType
+              materialTypes {
+                materialTypeGeneral {
+                  code
+                  display
+                }
+                materialTypeSpecific {
+                  code
+                  display
+                }
+              }
               workType
               periodical {
                 edition
@@ -577,6 +595,9 @@ resolved by the API and cannot be supplied by the client.
 When `dryRun` is true, identifiers, date ranges and material resolution are
 validated without storing loans.
 
+Each item has its own `status`. `agency` is only available for successful adds
+or existing loans. Material details may be null if unavailable.
+
 <InlineGraphiQL
   query={`
     mutation Example_AddPatronHistoricalLoans(
@@ -589,6 +610,15 @@ validated without storing loans.
           items {
             id
             materialId
+            agency {
+              id
+              name
+            }
+            material {
+              manifestation {
+                pid
+              }
+            }
             status
           }
         }
@@ -625,6 +655,15 @@ without deleting loans.
           items {
             id
             materialId
+            agency {
+              id
+              name
+            }
+            material {
+              manifestation {
+                pid
+              }
+            }
             status
           }
         }
