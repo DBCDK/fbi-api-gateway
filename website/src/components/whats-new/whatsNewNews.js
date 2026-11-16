@@ -1,5 +1,15 @@
 const whatsNewNews = [
   {
+    id: "internal-environments-v1",
+    publishedAt: "2026-11-16",
+    expiresAfterDays: 30,
+    internalOnly: true,
+    eyebrow: "Internal tools",
+    icon: "🪐",
+    title: "Switch environments",
+    body: "Use the new environment dropdown to switch environments while keeping your selected application. [Read more](/documentation#h2-environments).",
+  },
+  {
     id: "internal-services-v1",
     publishedAt: "2026-11-03",
     expiresAfterDays: 30,
