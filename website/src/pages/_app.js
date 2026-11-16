@@ -1,4 +1,4 @@
-import ClientLink from "@/components/client-link";
+import useClientLink from "@/hooks/useClientLink";
 import Head from "next/head";
 
 import useMode from "@/hooks/useMode";
@@ -10,6 +10,7 @@ import WhatsNew from "@/components/whats-new";
 
 function MyApp({ Component, pageProps, router }) {
   useMode();
+  useClientLink();
   const { icon } = useTheme();
 
   return (
@@ -22,7 +23,7 @@ function MyApp({ Component, pageProps, router }) {
         <title>FBI API</title>
       </Head>
       <WhatsNew />
-      <ClientLink><Component {...pageProps} /></ClientLink>
+      <Component {...pageProps} />
     </>
   );
 }

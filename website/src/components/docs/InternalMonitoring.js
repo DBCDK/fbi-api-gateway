@@ -33,14 +33,9 @@ export default function InternalMonitoring() {
         Environments 🪐
       </Title>
       <Text type="text2">
-        Use the environment dropdown in the top bar to switch environments.
-        Select a name to switch in the current tab, or use the icon on the right
-        to open it in a new tab. The current page and section are preserved.
-      </Text>
-      <Text type="text2">
-        If a clientId is selected, the destination connects that application
-        using its own session. Agency and profile are carried over when available;
-        otherwise, you will be notified of the replacement selections.
+        Use the environment dropdown in the top bar to switch environments
+        while keeping your selected application. You can switch in the current
+        tab or open an environment in a new tab.
       </Text>
       {environments.length > 0 && (
         <ul>

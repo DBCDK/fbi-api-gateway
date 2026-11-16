@@ -101,8 +101,8 @@ queries or credentials. An empty list hides the selector.
 
 Switching environments preserves the page, anchor, clientId, agency and profile.
 The destination establishes its own session. Direct links also work:
-`/documentation?clientId=<id>#<section>`. Connection errors and unavailable
-agency/profile selections are shown before continuing.
+`/documentation?clientId=<id>#<section>`. Existing clients are selected directly; new clients are connected automatically.
+If the connection fails, use the Clients modal to complete the setup.
 
 Token links accept a local destination via
 `/token/<accessToken>?returnTo=%2Fdocumentation%23<section>`.
