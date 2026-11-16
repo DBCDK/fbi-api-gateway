@@ -1,3 +1,4 @@
+import { localReturnTo } from "@/utils/environmentNavigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { Spinner } from "react-bootstrap";
@@ -5,7 +6,7 @@ import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 
 export default function TokenPage() {
   const router = useRouter();
-  const { accessToken } = router.query;
+  const { accessToken, returnTo } = router.query;
   const { resolveCredentialValue } = useCredentialMutations();
 
   const [isClient, setIsClient] = useState(false);
@@ -17,7 +18,7 @@ export default function TokenPage() {
   }, []);
 
   useEffect(() => {
-    if (!isClient || typeof accessToken !== "string") return;
+    if (!isClient || !router.isReady || typeof accessToken !== "string") return;
 
     if (handledToken.current === accessToken) {
       return;
@@ -33,13 +34,13 @@ export default function TokenPage() {
         return;
       }
 
-      await router.replace("/documentation");
+      await router.replace(localReturnTo(returnTo));
     }
 
     resolveAndRedirect().catch(() => {
       setError("The access token could not be resolved.");
     });
-  }, [isClient, accessToken, resolveCredentialValue, router]);
+  }, [isClient, accessToken, returnTo, resolveCredentialValue, router]);
 
   return (
     <div

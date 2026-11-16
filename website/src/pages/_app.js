@@ -1,3 +1,4 @@
+import ClientLink from "@/components/ClientLink";
 import Head from "next/head";
 
 import useMode from "@/hooks/useMode";
@@ -21,7 +22,7 @@ function MyApp({ Component, pageProps, router }) {
         <title>FBI API</title>
       </Head>
       <WhatsNew />
-      <Component {...pageProps} />
+      <ClientLink><Component {...pageProps} /></ClientLink>
     </>
   );
 }

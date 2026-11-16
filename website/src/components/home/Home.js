@@ -27,22 +27,45 @@ export default function Home() {
       <Layout className={styles.container}>
         <Row>
           <Col>
-            <Text className={styles.text}>Hello! You have found the</Text>
+            <Text className={styles.text}>
+              {isFuture ? "GREAT SCOTT!" : "Hello! You have found the"}
+            </Text>
             <Title as="h1" type="title6" className={styles.title}>
+              {isFuture ? <>FBI API <strong>Future Edition</strong></> : <>
               {isTemp && <strong>[Temporary]</strong>}
-              {isFuture && <strong>[Future]</strong>}
               {isOld && <strong>[Old]</strong>}
               {isTest && <strong>[{theme}]</strong>} FBI API
+              </>}
             </Title>
+            {isFuture && (
+              <Text className={styles.text}>
+                <em>Powered by 1.21 gigawatts of tomorrow&apos;s technology.</em>
+              </Text>
+            )}
           </Col>
         </Row>
 
-        {(isTemp || isFuture) && (
+        {isFuture && (
+          <Row className={styles.content}>
+            <Col>
+              <Text className={styles.text}>
+                Take a sneak peek at the next generation of FBI API, powered by
+                upcoming services and experimental changes.
+              </Text>
+              <Text className={styles.text}>
+                Looking for the current FBI API?{" "}
+                <Link href="https://fbi-api.dbc.dk/" underline>
+                  Back to the present.
+                </Link>
+              </Text>
+            </Col>
+          </Row>
+        )}
+        {isTemp && (
           <Row className={styles.content}>
             <Col>
               <Title as="h2" type="title1" className={styles.title}>
-                What does this{" "}
-                <strong>{isTemp ? "Temporary" : "Future"}</strong> thing mean?
+                What does this <strong>Temporary</strong> thing mean?
               </Title>
               <Text className={styles.text}>
                 This version of the FBI-API is designed for a more significant

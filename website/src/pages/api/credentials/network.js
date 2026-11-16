@@ -2,6 +2,7 @@
  * @file API route for reporting the actual request network classification used
  * to decide whether the local-network override setting should be visible.
  */
+import { parseEnvironments } from "@/utils/environmentNavigation";
 import config from "../../../../../src/config.js";
 import {
   getRequestIp,
@@ -16,6 +17,7 @@ export default function handler(req, res) {
   return res.status(200).send({
     detectedIp: getRequestIp(req),
     isInternal,
+    environments: isInternal ? parseEnvironments(process.env.WEBSITE_ENVIRONMENTS) : [],
     monitoringBaseUrl: isInternal ? config.monitoring.url : null,
   });
 }
