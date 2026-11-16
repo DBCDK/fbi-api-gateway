@@ -6,7 +6,7 @@ import Text from "@/components/base/text";
 import Link from "@/components/base/link";
 
 export default function InternalMonitoring() {
-  const { isInternal, monitoringBaseUrl } = useCredentialNetwork();
+  const { isInternal, monitoringBaseUrl, environments } = useCredentialNetwork();
   const { disableInternalNetworkCheck } = useInternalNetworkCheck();
   if (!isInternal || disableInternalNetworkCheck) return null;
 
@@ -29,6 +29,31 @@ export default function InternalMonitoring() {
 
   return (
     <>
+      <Title type="title4" as="h2">
+        Environments 🪐
+      </Title>
+      <Text type="text2">
+        Use the environment dropdown in the top bar to switch environments
+        while keeping your selected application. You can switch in the current
+        tab or open an environment in a new tab.
+      </Text>
+      {environments.length > 0 && (
+        <ul>
+          {environments.map(({ name, url }) => (
+            <li key={url}>
+              <Link href={url} target="_blank" rel="noopener noreferrer" underline>
+                {name}
+              </Link>{" "}
+              — {url}
+            </li>
+          ))}
+        </ul>
+      )}
+      <Text type="text1">
+        - This section is only visible on the internal network. Most environments
+        are only accessible internally.
+      </Text>
+
       <Title type="title4" as="h2">
         Services 🔗
       </Title>

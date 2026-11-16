@@ -1,5 +1,6 @@
 import fetch from "isomorphic-unfetch";
 import useSWR from "swr";
+import useInternalNetworkCheck from "./useInternalNetworkCheck";
 
 const fetcher = async (url) => {
   const response = await fetch(url, {
@@ -17,6 +18,7 @@ const fetcher = async (url) => {
 };
 
 export default function useCredentialNetwork() {
+  const { disableInternalNetworkCheck } = useInternalNetworkCheck();
   const { data, error } = useSWR("/api/credentials/network", fetcher);
   const isInternal = data?.isInternal === true;
   const hostname = typeof window !== "undefined" ? window.location.hostname : "";
@@ -29,6 +31,8 @@ export default function useCredentialNetwork() {
 
   return {
     isInternal,
+    environments:
+      isInternal && !disableInternalNetworkCheck ? data?.environments || [] : [],
     monitoringBaseUrl: isInternal ? monitoringBaseUrl : null,
     detectedIp: data?.detectedIp || null,
     isLoading: !data && !error,

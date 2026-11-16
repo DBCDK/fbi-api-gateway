@@ -1,3 +1,4 @@
+import useClientLink from "@/hooks/useClientLink";
 import Head from "next/head";
 
 import useMode from "@/hooks/useMode";
@@ -9,6 +10,7 @@ import WhatsNew from "@/components/whats-new";
 
 function MyApp({ Component, pageProps, router }) {
   useMode();
+  useClientLink();
   const { icon } = useTheme();
 
   return (
