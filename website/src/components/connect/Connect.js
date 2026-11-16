@@ -1,3 +1,4 @@
+import useClientLinkStatus from "@/hooks/useClientLinkStatus";
 import ConnectFeedback from "./connect-feedback";
 import ConnectField from "./connect-field";
 import ConnectSteps from "./connect-steps";
@@ -6,6 +7,7 @@ import styles from "./Connect.module.css";
 import useConnectController from "@/hooks/controllers/useConnectController";
 
 export default function Connect(props) {
+  const { isLoading: isClientLinkLoading } = useClientLinkStatus();
   const {
     id,
     className = "",
@@ -68,7 +70,7 @@ export default function Connect(props) {
         hasMissingConfigurationWarning={hasMissingConfigurationWarning}
         isResolvingCredential={isResolvingCredential}
         isLoading={isLoading}
-        showLoadingSpinner={showLoadingSpinner}
+        showLoadingSpinner={isClientLinkLoading || showLoadingSpinner}
         onWrapPointerDown={focusActiveInput}
         onCredentialChange={handleCredentialChange}
         onCredentialPaste={handleCredentialPaste}
@@ -80,10 +82,10 @@ export default function Connect(props) {
 
       <ConnectFeedback
         containerRef={containerRef}
-        activeCheckMessage={activeCheckMessage}
+        activeCheckMessage={isClientLinkLoading ? "Fetching client…" : activeCheckMessage}
         showPendingClientMessage={showPendingClientMessage}
         showReadyMessage={showReadyMessage}
-        showFeedbackOverlay={showFeedbackOverlay}
+        showFeedbackOverlay={!isClientLinkLoading && showFeedbackOverlay}
         feedbackMessage={feedbackMessage}
       />
     </form>

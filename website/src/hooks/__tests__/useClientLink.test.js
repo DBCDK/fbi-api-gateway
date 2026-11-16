@@ -1,3 +1,5 @@
+import { SWRConfig } from "swr";
+import useClientLinkStatus from "../useClientLinkStatus";
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import useClientLink from "../useClientLink";
@@ -12,8 +14,9 @@ jest.mock("@/hooks/credentials/useCredentialResolve", () => ({ __esModule: true,
 jest.mock("@/hooks/credentials/useCredentialMutations", () => ({ __esModule: true, default: jest.fn() }));
 
 global.IS_REACT_ACT_ENVIRONMENT = true;
-let container, root, resolve, persist, select, clear, replace;
+let container, root, resolve, persist, select, clear, replace, swrConfig;
 beforeEach(() => {
+  swrConfig = { provider: () => new Map() };
   container = document.createElement("div");
   root = createRoot(container);
   resolve = jest.fn(); persist = jest.fn(); select = jest.fn(); clear = jest.fn(); replace = jest.fn();
@@ -29,9 +32,10 @@ afterEach(async () => {
 });
 function TestPage() {
   useClientLink();
-  return "Documentation";
+  const { isLoading } = useClientLinkStatus();
+  return isLoading ? "Fetching client…" : "Documentation";
 }
-const render = () => act(async () => root.render(<React.StrictMode><TestPage /></React.StrictMode>));
+const render = () => act(async () => root.render(<SWRConfig value={swrConfig}><React.StrictMode><TestPage /></React.StrictMode></SWRConfig>));
 
 test("selects an existing client after the client list loads without resolving again", async () => {
   const entry = { clientId: "chosen", token: "existing" };
@@ -39,9 +43,11 @@ test("selects an existing client after the client list loads without resolving a
   await render();
   expect(resolve).not.toHaveBeenCalled();
   expect(select).not.toHaveBeenCalled();
+  expect(container.textContent).toBe("Fetching client…");
   useCredentialEntries.mockReturnValue({ applications: [entry], hasFetchedApplications: true });
   await render();
   expect(select).toHaveBeenCalledWith("existing", "test", "123", entry);
+  expect(container.textContent).toBe("Documentation");
   expect(resolve).not.toHaveBeenCalled();
 });
 test("connects a new client once and removes connection parameters while preserving the anchor", async () => {
@@ -64,12 +70,14 @@ test("handles a new client link after navigation and ignores the previous pendin
   let finishFirst;
   resolve.mockImplementationOnce(() => new Promise((done) => { finishFirst = done; }));
   await render();
+  expect(container.textContent).toBe("Fetching client…");
   const router = useRouter();
   useRouter.mockReturnValue({ ...router, asPath: "/documentation?clientId=next", query: { clientId: "next" } });
   window.history.replaceState({}, "", "/documentation?clientId=next#next-section");
   resolve.mockResolvedValue({ safeEntry: { clientId: "next", token: "next-token" } });
   await render();
   await act(async () => finishFirst({ safeEntry: { clientId: "chosen", token: "old-token" } }));
+  expect(container.textContent).toBe("Documentation");
   expect(persist).toHaveBeenCalledTimes(1);
   expect(persist).toHaveBeenCalledWith(expect.objectContaining({ clientId: "next" }), { select: true });
   expect(replace).toHaveBeenCalledTimes(1);

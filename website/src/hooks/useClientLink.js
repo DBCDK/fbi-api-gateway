@@ -1,3 +1,4 @@
+import useClientLinkStatus from "./useClientLinkStatus";
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import useCredentialEntries from "@/hooks/credentials/useCredentialEntries";
@@ -6,6 +7,7 @@ import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 
 export default function useClientLink() {
   const router = useRouter();
+  const { setCompletedPath } = useClientLinkStatus();
   const clientId = typeof router.query.clientId === "string" ? router.query.clientId : "";
   const { applications, hasFetchedApplications } = useCredentialEntries();
   const { resolveCredential } = useCredentialResolve();
@@ -21,6 +23,7 @@ export default function useClientLink() {
   useEffect(() => {
     if (!router.isReady || !clientId) {
       activeRequest.current = null;
+      setCompletedPath(null, false);
       return;
     }
     if (activeRequest.current?.path !== router.asPath) activeRequest.current = null;
@@ -52,6 +55,7 @@ export default function useClientLink() {
         // Connection problems are handled through the existing Clients modal.
       } finally {
         if (isCurrent()) {
+          setCompletedPath(request.path, false);
           const url = new URL(window.location.href);
           ["clientId", "agency", "profile"].forEach((key) => url.searchParams.delete(key));
           await router.replace(url.pathname + url.search + url.hash, undefined, {
@@ -64,5 +68,5 @@ export default function useClientLink() {
 
     connect().catch(() => {});
   }, [applications, hasFetchedApplications, clientId, router, router.isReady, router.asPath, resolveCredential,
-    persistResolvedEntry, selectCredential, clearSelectedCredential]);
+    persistResolvedEntry, selectCredential, clearSelectedCredential, setCompletedPath]);
 }
