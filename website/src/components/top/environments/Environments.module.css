@@ -1,0 +1,36 @@
+.dropdown {
+  width: 210px;
+}
+
+.itemLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pt1);
+}
+
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.newTab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.newTab:hover,
+.newTab:focus-visible {
+  color: var(--primary);
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}

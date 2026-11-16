@@ -2,12 +2,15 @@ import { useRouter } from "next/router";
 import { Container } from "react-bootstrap";
 import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
+import Environments from "./environments";
+import useCredentialNetwork from "@/hooks/credentials/useCredentialNetwork";
 import Agencies from "./agencies";
 import Profile from "./profile";
 import Styles from "./Top.module.css";
 
 export default function Top({ className = "" }) {
   const router = useRouter();
+  const { isInternal, environments } = useCredentialNetwork();
   const { selectedCredential: selectedToken } = useSelectedCredential();
 
   const { status, isLoading } = useResolvedConfiguration(selectedToken);
@@ -17,15 +20,16 @@ export default function Top({ className = "" }) {
 
   const isIndex = router.pathname === "/";
 
-  if (isIndex || !selectedToken?.token || hasValidationError) {
+  const showCredentials = !isIndex && selectedToken?.token && !hasValidationError;
+  if (isIndex || (!showCredentials && !(isInternal && environments.length))) {
     return null;
   }
 
   return (
     <div className={`${Styles.top} ${className}`.trim()}>
       <Container fluid className={Styles.container}>
-        <Agencies />
-        <Profile />
+        <Environments />
+        {showCredentials && <><Agencies /><Profile /></>}
       </Container>
     </div>
   );
