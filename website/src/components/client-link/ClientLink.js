@@ -5,7 +5,7 @@ import useCredentialResolve from "@/hooks/credentials/useCredentialResolve";
 import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 import { getCredentialRequestHeaders } from "@/utils/credentialSettings";
 import { getAvailableAgencies } from "@/utils/configuration";
-import Environments from "@/components/top/Environments";
+import Environments from "@/components/top/environments";
 
 export default function ClientLink({ children }) {
   const router = useRouter();

@@ -5,7 +5,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
 
 import styles from "./Network.module.css";
-import indicatorStyles from "../NetworkOverride.module.css";
+import Badge from "@/components/base/badge";
 
 const modes = [
   { label: "Internal", value: "enabled", icon: "🏠" },
@@ -35,13 +35,13 @@ export function Network({ mode, onClick, hasNetworkOverride = false, className =
         }
       >
         <Dropdown.Toggle
-          className={`${styles.toggle} ${indicatorStyles.toggle}`}
+          className={styles.toggle}
           id="dropdown-network-select"
           aria-label={label}
         >
           {isSelected?.icon}
           {hasNetworkOverride && (
-            <span className={indicatorStyles.badge} aria-hidden="true">!</span>
+            <Badge aria-hidden="true" />
           )}
         </Dropdown.Toggle>
       </OverlayTrigger>

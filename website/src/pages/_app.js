@@ -1,4 +1,4 @@
-import ClientLink from "@/components/ClientLink";
+import ClientLink from "@/components/client-link";
 import Head from "next/head";
 
 import useMode from "@/hooks/useMode";

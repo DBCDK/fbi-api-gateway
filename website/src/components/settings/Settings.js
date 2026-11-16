@@ -8,7 +8,7 @@ import Network from "./network";
 import Storage from "./storage";
 import useCredentialNetwork from "@/hooks/credentials/useCredentialNetwork";
 import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
-import indicatorStyles from "./NetworkOverride.module.css";
+import Badge from "@/components/base/badge";
 
 import styles from "./Settings.module.css";
 
@@ -36,13 +36,13 @@ export default function Settings({ className = "" }) {
         }
       >
         <Dropdown.Toggle
-          className={`${styles.toggle} ${indicatorStyles.toggle}`}
+          className={styles.toggle}
           id="dropdown-settings-select"
           aria-label={label}
         >
           {"⚙️"}
           {hasNetworkOverride && (
-            <span className={indicatorStyles.badge} aria-hidden="true">!</span>
+            <Badge aria-hidden="true" />
           )}
         </Dropdown.Toggle>
       </OverlayTrigger>

@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { Container } from "react-bootstrap";
 import useResolvedConfiguration from "@/hooks/resolved/useResolvedConfiguration";
 import useSelectedCredential from "@/hooks/credentials/useSelectedCredential";
-import Environments from "./Environments";
+import Environments from "./environments";
 import useCredentialNetwork from "@/hooks/credentials/useCredentialNetwork";
 import Agencies from "./agencies";
 import Profile from "./profile";

@@ -8,7 +8,7 @@ import useCredentialMutations from "@/hooks/credentials/useCredentialMutations";
 jest.mock("next/router", () => ({ useRouter: jest.fn() }));
 jest.mock("@/hooks/credentials/useCredentialResolve", () => ({ __esModule: true, default: jest.fn() }));
 jest.mock("@/hooks/credentials/useCredentialMutations", () => ({ __esModule: true, default: jest.fn() }));
-jest.mock("@/components/top/Environments", () => ({ __esModule: true, default: () => null }));
+jest.mock("@/components/top/environments", () => ({ __esModule: true, default: () => null }));
 
 global.IS_REACT_ACT_ENVIRONMENT = true;
 const originalFetch = global.fetch;
