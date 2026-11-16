@@ -116,6 +116,7 @@ export default {
   ddbcms: {
     allowRootFields: [
       ...defaultSettings.allowRootFields,
+      "semanticSearch",
       "submitOrder",
       "patron",
     ],
