@@ -86,3 +86,23 @@ boolean matching the configuration's runtime truthiness. Missing teams use `unkn
 Credentials and fragments are removed from URLs, and non-empty query values are
 redacted. Invalid or non-HTTP(S) URLs appear as `null`. No other configuration fields
 are exposed and no downstream health checks are performed.
+
+### Website environment navigation
+
+Set `WEBSITE_ENVIRONMENTS` to a JSON array of named origins, for example:
+
+```sh
+WEBSITE_ENVIRONMENTS='[{"name":"Local","url":"http://localhost:3000"},{"name":"Test","url":"https://test.example.org"}]'
+```
+
+Use the same list on each deployment. Only internal requests receive the list;
+External mode hides the selector. URLs must be HTTP(S) origins without paths,
+queries or credentials. An empty list hides the selector.
+
+Switching environments preserves the page, anchor, clientId, agency and profile.
+The destination establishes its own session. Direct links also work:
+`/documentation?clientId=<id>#<section>`. Existing clients are selected directly; new clients are connected automatically.
+If the connection fails, use the Clients modal to complete the setup.
+
+Token links accept a local destination via
+`/token/<accessToken>?returnTo=%2Fdocumentation%23<section>`.

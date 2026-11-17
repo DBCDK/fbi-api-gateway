@@ -5,13 +5,17 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
 
 import styles from "./Network.module.css";
+import Badge from "@/components/base/badge";
 
 const modes = [
   { label: "Internal", value: "enabled", icon: "🏠" },
   { label: "External", value: "disabled", icon: "🌍" },
 ];
 
-export function Network({ mode, onClick, className = "", ...props }) {
+export function Network({ mode, onClick, hasNetworkOverride = false, className = "", ...props }) {
+  const label = hasNetworkOverride
+    ? "External mode enabled"
+    : "Network";
   const isSelected =
     modes.find((item) => item.value === mode) || modes[modes.length - 1];
 
@@ -26,12 +30,19 @@ export function Network({ mode, onClick, className = "", ...props }) {
         placement="top"
         overlay={
           <Tooltip className={styles.tooltip} id="tooltip-network">
-            {"Network"}
+            {label}
           </Tooltip>
         }
       >
-        <Dropdown.Toggle className={styles.toggle} id="dropdown-network-select">
+        <Dropdown.Toggle
+          className={styles.toggle}
+          id="dropdown-network-select"
+          aria-label={label}
+        >
           {isSelected?.icon}
+          {hasNetworkOverride && (
+            <Badge aria-hidden="true" />
+          )}
         </Dropdown.Toggle>
       </OverlayTrigger>
 

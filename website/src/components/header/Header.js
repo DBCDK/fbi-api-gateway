@@ -1,3 +1,5 @@
+import Spinner from "react-bootstrap/Spinner";
+import useClientLinkStatus from "@/hooks/useClientLinkStatus";
 import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Container from "react-bootstrap/Container";
@@ -26,6 +28,7 @@ import More from "../more";
 
 export default function Header() {
   const router = useRouter();
+  const { isLoading: isClientLinkLoading } = useClientLinkStatus();
   const elRef = useRef();
   const infoRef = useRef(null);
   const lastScrollYRef = useRef(0);
@@ -191,7 +194,15 @@ export default function Header() {
               </Text>
             </nav>
 
-            {!isIndex && selectedToken && !isLoading && !hasValidationError && (
+            {!isIndex && (isClientLinkLoading || (selectedToken && isLoading)) && (
+              <div className={styles.info} role="status" aria-live="polite">
+                <Text type="text4">
+                  <Spinner as="span" animation="border" size="sm" aria-hidden="true" />{" "}
+                  Fetching client…
+                </Text>
+              </div>
+            )}
+            {!isIndex && !isClientLinkLoading && selectedToken && !isLoading && !hasValidationError && (
               <div ref={infoRef} className={styles.info}>
                 <div>
                   <Text type="text4">{displayName}</Text>

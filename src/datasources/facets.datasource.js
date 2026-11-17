@@ -24,8 +24,8 @@ export async function load(
     profile: name,
   };
 
-  const mappedFacets = mapFromFacetEnums(facets);
-  const mappedFilters = mapFilters(filters);
+  const mappedFacets = mapFromFacetEnums(facets, url);
+  const mappedFilters = mapFilters(filters, url);
 
   // merge variables and statics
   const query = {

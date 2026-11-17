@@ -38,11 +38,11 @@ const SMAUG = (accessToken) => {
         agency: "872960",
       },
     },
-    // Nordjyske Gymnasiebiblioteker (Selvstændigt opfattende bibliotek på branchId fremfor agencyId)
+    // Mock independent library outside the CULR sync list (branchId used for login).
     FFU_BRANCH_INDEPENDENT_TOKEN: {
       user: {
         id: "some-id",
-        agency: "872100",
+        agency: "872120",
       },
     },
     // Token for connected user (FFU & Folk) which has loggedIn by an FFU branch
@@ -79,7 +79,7 @@ const LIBRARY = (branchId) => {
     190101: {
       result: [{ agencyType: "ANDRE", agencyId: "190101" }],
     },
-    872100: {
+    872120: {
       result: [{ agencyType: "FORSKNINGSBIBLIOTEK", agencyId: "876040" }],
     },
     800021: {
@@ -91,7 +91,7 @@ const LIBRARY = (branchId) => {
 const VIP = () => {
   return {
     737000: { loginAgencyId: "737000" },
-    872100: { loginAgencyId: "872100" },
+    872120: { loginAgencyId: "872120" },
     800010: { loginAgencyId: "800010" },
   };
 };
@@ -397,7 +397,7 @@ describe("userinfo", () => {
   });
 
   /**
-   * FFU authenticated user for "Nordjyske Gymnasiebiblioteker", agency/loggedInAgencyId AND agency/loggedInBranchId from smaug should be added here.
+   * FFU authenticated user for an independent library, agency/loggedInAgencyId AND agency/loggedInBranchId from smaug should be added here.
    * loggedInAgencyId AND loggedInBranchId should NOT differ (branch was selected for login).
    * Users with no uniqueId should not recieve the omittedCulrData object.
    * Should NOT get the culrOmittedData prop
@@ -414,7 +414,7 @@ describe("userinfo", () => {
             municipality: null,
             agencies: [
               {
-                agencyId: "872100",
+                agencyId: "872120",
                 userId: "some-localId",
                 userIdType: "LOCAL",
               },
@@ -433,7 +433,7 @@ describe("userinfo", () => {
   });
 
   /**
-   * FFU authenticated user for "Nordjyske Gymnasiebiblioteker", agency/loggedInAgencyId AND agency/loggedInBranchId from smaug should be added here.
+   * FFU authenticated user for an independent library, agency/loggedInAgencyId AND agency/loggedInBranchId from smaug should be added here.
    * loggedInAgencyId AND loggedInBranchId should NOT differ (branch was selected for login).
    * Should get the culrOmittedData prop
    */
@@ -446,7 +446,7 @@ describe("userinfo", () => {
             ...DEFAULT_USERINFO.attributes,
             agencies: [
               {
-                agencyId: "872100",
+                agencyId: "872120",
                 userId: "some-localId",
                 userIdType: "LOCAL",
               },

@@ -104,7 +104,10 @@
   flex-shrink: 0;
 }
 
-.menu {
+.menu:global(.dropdown-menu) {
+  --bs-dropdown-padding-x: 0;
+  --bs-dropdown-padding-y: 0;
+  --bs-dropdown-zindex: 1000;
   width: calc(100% + var(--pt4));
   margin-top: 0 !important;
   padding: 0;
@@ -117,7 +120,7 @@
   top: 0 !important;
   left: calc(var(--pt2) * -1) !important;
   transform: none !important;
-  z-index: 100;
+  z-index: var(--bs-dropdown-zindex);
   transform-origin: top left;
   animation: dropdown-menu-in 180ms ease-out;
 }

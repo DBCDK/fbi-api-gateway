@@ -84,6 +84,7 @@ exports[`Permissions Role from gateway object in smaug configuration gives the r
     "series",
     "universe",
     "mood",
+    "semanticSearch",
     "submitOrder",
     "patron",
   ],

@@ -40,7 +40,7 @@ fragment FullType on __Type {
     isDeprecated
     deprecationReason
   }
-  inputFields {
+  inputFields(includeDeprecated: true) {
     ...InputValue
   }
   interfaces {
@@ -62,6 +62,8 @@ fragment InputValue on __InputValue {
   description
   type { ...TypeRef }
   defaultValue
+  isDeprecated
+  deprecationReason
 }
 
 fragment TypeRef on __Type {

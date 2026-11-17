@@ -412,8 +412,8 @@ export default {
     },
     marc: {
       url:
-        "http://marc-presentation-service.cisterne.svc.cloud.dbc.dk/api/v1" ||
-        process.env.MARC_URL,
+        process.env.MARC_URL ||
+        "http://marc-presentation-service.cisterne.svc.cloud.dbc.dk/api/v1",
       prefix: process.env.MARC_PREFIX || "MARC-1",
       ttl: process.env.MARC_TIME_TO_LIVE_SECONDS || 60 * 60,
       teamLabel: "de-team", //todo: double check if correct

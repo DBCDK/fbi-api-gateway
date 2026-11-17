@@ -203,6 +203,7 @@ function translateFilters(filters) {
 
   // Reverse translate facet terms
   Object.entries(filters).forEach(([filter, values]) => {
+    if (values == null) return;
     res[filter] = [];
 
     // Get entries for the filter/facet in an array

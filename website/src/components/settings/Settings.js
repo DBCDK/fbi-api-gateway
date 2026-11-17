@@ -7,11 +7,18 @@ import Execute from "./execute";
 import Network from "./network";
 import Storage from "./storage";
 import useCredentialNetwork from "@/hooks/credentials/useCredentialNetwork";
+import useInternalNetworkCheck from "@/hooks/credentials/useInternalNetworkCheck";
+import Badge from "@/components/base/badge";
 
 import styles from "./Settings.module.css";
 
 export default function Settings({ className = "" }) {
   const { isInternal } = useCredentialNetwork();
+  const { disableInternalNetworkCheck } = useInternalNetworkCheck();
+  const hasNetworkOverride = isInternal && disableInternalNetworkCheck;
+  const label = hasNetworkOverride
+    ? "External mode enabled"
+    : "Settings";
 
   return (
     <Dropdown
@@ -24,15 +31,19 @@ export default function Settings({ className = "" }) {
         placement="bottom"
         overlay={
           <Tooltip className={styles.tooltip} id={`tooltip-settings`}>
-            {"Settings"}
+            {label}
           </Tooltip>
         }
       >
         <Dropdown.Toggle
           className={styles.toggle}
           id="dropdown-settings-select"
+          aria-label={label}
         >
           {"⚙️"}
+          {hasNetworkOverride && (
+            <Badge aria-hidden="true" />
+          )}
         </Dropdown.Toggle>
       </OverlayTrigger>
 
@@ -51,6 +62,7 @@ export default function Settings({ className = "" }) {
         />
         {isInternal && (
           <Network
+            hasNetworkOverride={hasNetworkOverride}
             className={styles.item}
             style={{ "--settings-item-delay": "0.18s" }}
           />

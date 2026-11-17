@@ -4,6 +4,17 @@ import { parseJSON, stringifyJSON } from "../../utils/json";
 import monitor from "../../utils/monitor";
 import { createRedisConnection } from "./index";
 
+/**
+ * Creates a bounded text summary without exposing nested values as log fields.
+ */
+function summarize(value) {
+  try {
+    return JSON.stringify(value).slice(0, 1000);
+  } catch {
+    return String(value).slice(0, 1000);
+  }
+}
+
 const { teamLabel } = config.datasources.redis;
 const localStore = {};
 const connection = createRedisConnection({
@@ -72,11 +83,9 @@ export const set = monitor(
       const now = performance.now();
       await redis.set(key, str, "EX", seconds);
       timings.redisTime += performance.now() - now;
-    } catch (e) {
-      log.error(`Redis setex failed`, {
-        key,
-        val,
-        seconds,
+    } catch {
+      log.error("Redis setex failed", {
+        summary: `Failed to cache the val: ${summarize(val)}`,
       });
     } finally {
       stats?.addRedisSet(datasourceName, timings);

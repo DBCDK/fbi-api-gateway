@@ -30,7 +30,7 @@ export async function load(
     search_exact: search_exact,
   };
 
-  const mappedFilters = mapFilters(filters);
+  const mappedFilters = mapFilters(filters, url);
   // merge variables and statics
   const query = {
     q,
