@@ -67,9 +67,10 @@ describe("dataHubMiddleware context", () => {
     });
   });
 
-  test("leaves ip fields empty when only internal ips are present", async () => {
+  test("sets nullable fields to null when values are missing", async () => {
     const datahubLoad = jest.fn();
     const req = createReq({ datahubLoad, ips: ["10.0.0.1", "127.0.0.1"] });
+    req.get = jest.fn(() => undefined);
 
     dataHubMiddleware(req, null, jest.fn());
     await req.dataHub.createWorkEvent({
@@ -78,6 +79,8 @@ describe("dataHubMiddleware context", () => {
     });
 
     expect(datahubLoad.mock.calls[0][0].context).toMatchObject({
+      isBot: false,
+      userAgent: null,
       hashedMaskedIp: null,
       ipCountry: null,
     });

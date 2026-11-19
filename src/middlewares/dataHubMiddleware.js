@@ -64,7 +64,7 @@ export function dataHubMiddleware(req, res, next) {
       profile: req.profile?.name,
       // uniqueKey: uniqueKey,
       isBot,
-      userAgent: userAgent || "",
+      userAgent: userAgent || null,
       hashedMaskedIp: hashMaskedIp(ip, ipSalt),
       ipCountry: getIpCountry(ip),
     };
