@@ -1,6 +1,10 @@
 import isbot from "isbot";
+import config from "../config";
 import { findAliasesAndArgs } from "../utils/graphQLQueryTools";
 import { createTraceId } from "../utils/trace";
+import { findPublicIp, getIpCountry, hashMaskedIp } from "../utils/ip";
+
+const { ipSalt } = config.datasources.datahub;
 // import createHash from "../utils/hash";
 
 function getDate() {
@@ -15,7 +19,7 @@ function getDate() {
 // TODO add descriptions of headers in our documentation
 export function dataHubMiddleware(req, res, next) {
   const userAgent = req?.get?.("User-Agent");
-  const isBot = isbot(userAgent);
+  const isBot = !!isbot(userAgent);
 
   async function getContext() {
     if (isBot) {
@@ -48,6 +52,9 @@ export function dataHubMiddleware(req, res, next) {
 
     // const uniqueKey = createHash(req.accessToken);
 
+    // First public ip in the X-Forwarded-For chain (clients may forward the end user ip)
+    const ip = findPublicIp(req.smaug?.app?.ips);
+
     let res = {
       systemId,
       sessionToken,
@@ -56,6 +63,10 @@ export function dataHubMiddleware(req, res, next) {
       agency: req.profile?.agency,
       profile: req.profile?.name,
       // uniqueKey: uniqueKey,
+      isBot,
+      userAgent: userAgent || null,
+      hashedMaskedIp: hashMaskedIp(ip, ipSalt),
+      ipCountry: getIpCountry(ip),
     };
 
     if (userTokenBeforePseudo) {

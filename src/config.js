@@ -496,6 +496,7 @@ export default {
       url:
         process.env.DATAHUB_URL ||
         "http://apievent-collector.de-staging.svc.cloud.dbc.dk",
+      ipSalt: process.env.DATAHUB_IP_SALT,
       teamLabel: "de-team",
     },
     pseudonymizer: {
