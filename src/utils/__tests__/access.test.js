@@ -1,4 +1,24 @@
-import { getProxyUrl } from "../access";
+import { getProxyUrl, parseOnlineUrlToOrigin } from "../access";
+
+describe("parseOnlineUrlToOrigin", () => {
+  test("decodes an internationalized domain name", () => {
+    expect(
+      parseOnlineUrlToOrigin("https://xn--brnebiffen-0cb.dk/vaerk/103984")
+    ).toBe("børnebiffen.dk");
+  });
+
+  test("preserves the port when decoding the hostname", () => {
+    expect(
+      parseOnlineUrlToOrigin("https://xn--brnebiffen-0cb.dk:8443/vaerk/103984")
+    ).toBe("børnebiffen.dk:8443");
+  });
+
+  test("preserves the DBC Webarkiv display name", () => {
+    expect(
+      parseOnlineUrlToOrigin("https://fbi-arkiv.dbc.dk/resource")
+    ).toBe("DBC Webarkiv");
+  });
+});
 
 describe("getProxyUrl", () => {
   test("replaces Gale provider library id for known agency", () => {
