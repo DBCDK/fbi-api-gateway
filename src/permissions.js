@@ -75,6 +75,7 @@ const bibdk = {
     "creatorByViafid",
     "creatorByDisplay",
     "patron",
+    "holdings"
   ],
   denyTypes: ["MarcRecord"],
   denyFields: ["HoldingsItem.reservable", "HoldingsResponse.reservable"],
