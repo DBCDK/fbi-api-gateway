@@ -4458,6 +4458,17 @@ type HistoricalLoan {
   """
   id: String!
 
+  """The stored PID or faust number identifying the borrowed material."""
+  materialId: String!
+
+  """The application the historical loan belongs to, when known."""
+  application: String
+
+  """
+  Whether the loan was manually added by the user rather than ingested from an event.
+  """
+  isManuallyAdded: Boolean!
+
   """Date on which the material was borrowed, when known."""
   loanedAt: Date
 
@@ -4474,14 +4485,18 @@ type HistoricalLoan {
   agency: PatronAgency
 
   """
-  The manifestation associated with the historical loan, when it can still be resolved.
+  The bibliographic record associated with the historical loan, if it can still be resolved.
   """
-  manifestation: Manifestation
+  material: HistoricalLoanMaterial!
 
   """
   Stored fallback metadata captured when the historical loan was ingested.
   """
-  snapshot: PatronMaterialSnapshot
+  snapshot: BookmarkSnapshot!
+}
+
+type HistoricalLoanMaterial {
+  manifestation: Manifestation
 }
 
 input PatronHistoricalLoanInput {
@@ -4562,6 +4577,17 @@ type PatronHistoricalLoanStatusItem {
   status: PatronLoanMutationStatusEnum!
   id: String
   materialId: String
+
+  """
+  Stored agency for a confirmed addition or existing historical loan.
+  Null for dry runs, errors and deletions.
+  """
+  agency: PatronAgency
+
+  """
+  The associated bibliographic material, when its identifier is available.
+  """
+  material: HistoricalLoanMaterial
 }
 
 enum PatronLoansOverallStatusEnum {
