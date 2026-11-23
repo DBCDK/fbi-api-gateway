@@ -39,7 +39,7 @@ enum PublicLibraryLoanRestrictionEnum {
 }
 
 """
-A single branch's holdings of the unit. branchId and status are always present, and so is copyCount, except for a periodical; onShelfCount belongs to ON_SHELF and ON_SHELF_RESTRICTED, restriction to ON_SHELF_RESTRICTED. A branch carries no expectedAvailable: Rega reports dispatch dates per record and agency, not per branch.
+A single branch's holdings for the edition. branchId and status are always present, and so is copyCount, except for a periodical; onShelfCount belongs to ON_SHELF and ON_SHELF_RESTRICTED, restriction to ON_SHELF_RESTRICTED. A branch carries no expectedAvailable: Rega reports dispatch dates per record and agency, not per branch.
 """
 type PublicLibraryBranchHoldings {
   branchId: String!
@@ -47,7 +47,7 @@ type PublicLibraryBranchHoldings {
   branch: PatronBranch
 
   """
-  Copies the branch holds, whatever their availability and loan restriction. Left out when the unit is a periodical (PublicLibraryAgencyHoldings.isPeriodical).
+  Copies the branch holds, whatever their availability and loan restriction. Left out when the edition is a periodical (PublicLibraryAgencyHoldings.isPeriodical).
   """
   copyCount: Int
 
@@ -57,7 +57,7 @@ type PublicLibraryBranchHoldings {
   status: PublicLibraryHoldingsStatusEnum!
 
   """
-  The present copies the status rests on. For ON_SHELF the unrestricted copies on the shelf, for ON_SHELF_RESTRICTED the copies carrying restriction. Left out for the other statuses. Also left out, whatever the status, when the unit is a periodical (PublicLibraryAgencyHoldings.isPeriodical).
+  The present copies the status rests on. For ON_SHELF the unrestricted copies on the shelf, for ON_SHELF_RESTRICTED the copies carrying restriction. Left out for the other statuses. Also left out, whatever the status, when the edition is a periodical (PublicLibraryAgencyHoldings.isPeriodical).
   """
   onShelfCount: Int
 
@@ -68,7 +68,7 @@ type PublicLibraryBranchHoldings {
 }
 
 """
-An agency's holdings of the unit, from a local-loan perspective. agencyId, status and branches are always present, and so is copyCount, except for a periodical. The remaining properties belong to a status and are left out otherwise. onShelfBranchCount belongs to ON_SHELF and ON_SHELF_RESTRICTED, restriction to ON_SHELF_RESTRICTED, expectedAvailable to NOT_ON_SHELF. The copies behind a status are counted per branch, by PublicLibraryBranchHoldings.onShelfCount.
+An agency's holdings for the edition, from a local-loan perspective. agencyId, status and branches are always present, and so is copyCount, except for a periodical. The remaining properties belong to a status and are left out otherwise. onShelfBranchCount belongs to ON_SHELF and ON_SHELF_RESTRICTED, restriction to ON_SHELF_RESTRICTED, expectedAvailable to NOT_ON_SHELF. The copies behind a status are counted per branch, by PublicLibraryBranchHoldings.onShelfCount.
 """
 type PublicLibraryAgencyHoldings {
   agencyId: String!
@@ -86,7 +86,7 @@ type PublicLibraryAgencyHoldings {
   status: PublicLibraryHoldingsStatusEnum!
 
   """
-  ON_SHELF and ON_SHELF_RESTRICTED: branches with the unit on the shelf, whether or not their copies carry a loan restriction. Left out when the unit is not on the shelf or when branch data is unavailable.
+  ON_SHELF and ON_SHELF_RESTRICTED: branches with the edition on the shelf, whether or not their copies carry a loan restriction. Left out when the edition is not on the shelf or when branch data is unavailable.
   """
   onShelfBranchCount: Int
 
@@ -106,7 +106,7 @@ type PublicLibraryAgencyHoldings {
   note: String
 
   """
-  The agency's branches holding the unit.
+  The agency's branches holding the edition.
   """
   branches: [PublicLibraryBranchHoldings!]!
 
@@ -116,17 +116,17 @@ type PublicLibraryAgencyHoldings {
   incomplete: Boolean
 
   """
-  Present, and true, when the unit is a periodical. Holdings of a periodical describe the periodical as a whole, not its volumes or issues, so the copy counts are left out; the status is still given. Left out when the unit is not a periodical, or when that is unknown.
+  Present, and true, when the edition is a periodical. Holdings of a periodical describe the periodical as a whole, not its volumes or issues, so the copy counts are left out; the status is still given. Left out when the edition is not a periodical, or when that is unknown.
   """
   isPeriodical: Boolean
 }
 
 """
-The requested ids belonging to one unit, summarised per agency.
+Requested ids considered to represent the same edition, with holdings summarised per agency.
 """
 type PublicLibrarySummaryGroup {
   """
-  The requested ids that resolved to this unit, sorted.
+  The requested ids in this edition group, sorted.
   """
   ids: [String!]!
 
@@ -137,11 +137,11 @@ type PublicLibrarySummaryGroup {
 }
 
 """
-Patron-facing holdings status, grouped by corepo unit.
+Patron-facing holdings status, grouped by edition.
 """
 type PublicLibrarySummaryResponse {
   """
-  One group per corepo unit covered by the requested ids.
+  One group per edition represented by the requested ids.
   """
   groups: [PublicLibrarySummaryGroup!]!
 
@@ -155,26 +155,26 @@ type Holdings {
   """
   Patron-facing holdings status for the requested id(s).
 
-  For each requested pid/unit-id, group the ids by corepo unit and return, per agency and per branch, the holdings status patrons see. Ids that resolve to no unit are silently skipped. They produce no group rather than an error. If mergePids is set the units are merged into one group before it is summarised: the sorted union of their ids, and the localizations of all the units, each localization counted once, in the request order of the agency.
+  Group ids considered to represent the same edition and return, per agency and branch, the holdings status patrons see. Ids that cannot be matched to an edition are silently skipped. If mergePids is set, all editions are combined into one group before the holdings are summarised.
   """
   publicLibraries(
     """
-    Agency to order localizations for (using vipcore:request-order).
+    Agency used to determine the ordering of libraries in the response.
     """
     agencyId: String!
 
     """
-    Manifestation id (pid) or unit id.
+    Material id.
     """
     id: [String!]!
 
     """
-    If the response should be merged into one group, rather than grouped per unit.
+    Merge all requested editions into one group.
     """
     mergePids: Boolean = false
 
     """
-    Wait longer (default 30s instead of 3s) for live holdings from the local systems. Agencies that don't answer in time are marked incomplete. If a response is incomplete, call again with complete=true and replace the whole affected groups, as their agencies may change.
+    Wait up to 30 seconds instead of 3 seconds for live holdings from the local systems. Agencies that don't answer in time are marked incomplete. If a response is incomplete, call again with complete=true and replace the affected groups, as their agencies may change.
     """
     complete: Boolean = false
   ): PublicLibrarySummaryResponse!
