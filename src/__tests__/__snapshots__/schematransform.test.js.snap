@@ -877,8 +877,10 @@ enum ComplexSearchFacetsEnum {
   FILMNATIONALITY
   GAMEPLATFORM
   GENERALAUDIENCE
+  AUDIENCEGENERAL
   GENERALMATERIALTYPE
   GENREANDFORM
+  GENREFORM
   ISSUE
   LANGUAGE
   LIBRARYRECOMMENDATION
@@ -4629,6 +4631,9 @@ type PatronMaterialSnapshot {
   """Stored material type for the material."""
   materialType: String
 
+  """Original material type label supplied by the source, if known."""
+  sourceMaterialType: String
+
   """Stored general and specific material types."""
   materialTypes: [PatronMaterialTypeSnapshot!]!
 
@@ -6755,8 +6760,10 @@ enum ComplexSearchFacetsEnum {
   FILMNATIONALITY
   GAMEPLATFORM
   GENERALAUDIENCE
+  AUDIENCEGENERAL
   GENERALMATERIALTYPE
   GENREANDFORM
+  GENREFORM
   ISSUE
   LANGUAGE
   LIBRARYRECOMMENDATION

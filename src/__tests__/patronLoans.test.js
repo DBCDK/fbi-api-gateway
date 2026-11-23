@@ -34,7 +34,12 @@ const resolvedManifestation = {
   workId: "work-of:870970-basis:23424916",
   titles: { main: ["Efter uvejret"] },
   creators: { persons: [{ display: "Kenneth Bøgh Andersen" }] },
-  materialTypes: [{ specific: { code: "BOOK" } }],
+  materialTypes: [
+    {
+      general: { code: "BOOKS", display: "Bøger" },
+      specific: { code: "BOOK", display: "Bog" },
+    },
+  ],
   workTypes: ["LITERATURE"],
   hostPublication: {
     edition: "Årg. 10",
@@ -291,88 +296,95 @@ describe("Patron historical loans", () => {
   });
 
   test.each([
-    [
-      "FAUST",
-      "23424916",
-      { faust: "23424916", profile: "profile" },
-    ],
+    ["FAUST", "23424916", { faust: "23424916", profile: "profile" }],
     [
       "PID",
       "870970-basis:23424916",
       { id: "870970-basis:23424916", profile: "profile" },
     ],
-    [
-      "ISBN13",
-      "9788776552176",
-      { isbn: "9788776552176", profile: "profile" },
-    ],
-  ])("resolves historical %s identifiers", async (type, materialId, expected) => {
-    const load = jest.fn().mockResolvedValue(null);
-    const context = createContext(load, { profile: "profile" });
+    ["ISBN13", "9788776552176", { isbn: "9788776552176", profile: "profile" }],
+  ])(
+    "resolves historical %s identifiers",
+    async (type, materialId, expected) => {
+      const load = jest.fn().mockResolvedValue(null);
+      const context = createContext(load, { profile: "profile" });
 
-    await resolvers.HistoricalLoan.manifestation(
-      {
-        materialId,
-        materialIdType: type,
-      },
-      {},
-      context
-    );
-    expect(load).toHaveBeenCalledWith(expected);
-  });
+      await resolvers.HistoricalLoan.manifestation(
+        {
+          materialId,
+          materialIdType: type,
+        },
+        {},
+        context
+      );
+      expect(load).toHaveBeenCalledWith(expected);
+    }
+  );
 
-  test("add resolves material and sends dates plus a grouped snapshot", async () => {
-    const load = jest.fn().mockResolvedValue({
-      results: [{ id: publicLoanId, materialId: "23424916", status: "ok" }],
-    });
-    const context = createAddContext(load);
-    const loans = [
-      {
-        agencyId: "710100",
-        materialId: "23424916",
-        loanedAt: new Date("2026-05-01T00:00:00.000Z"),
-        returnedAt: new Date("2026-05-20T00:00:00.000Z"),
-      },
-    ];
+  test.each([
+    ["23424916", "FAUST"],
+    ["870970-basis:23424916", "PID"],
+  ])(
+    "add sends a UserData snapshot for %s",
+    async (materialId, materialIdType) => {
+      const load = jest.fn().mockResolvedValue({
+        results: [{ id: publicLoanId, materialId, status: "ok" }],
+      });
+      const context = createAddContext(load);
+      const loans = [
+        {
+          agencyId: "710100",
+          materialId,
+          loanedAt: new Date("2026-05-01T00:00:00.000Z"),
+          returnedAt: new Date("2026-05-20T00:00:00.000Z"),
+        },
+      ];
 
-    await expect(
-      resolvers.PatronMutation.addHistoricalLoans(null, { loans }, context)
-    ).resolves.toEqual({
-      status: "OK",
-      items: [{ id: publicLoanId, materialId: "23424916", status: "OK" }],
-    });
-    const serviceLoans = [
-      {
-        agencyId: "710100",
-        materialId: "23424916",
-        materialIdType: "FAUST",
-        loanedAt: "2026-05-01",
-        returnedAt: "2026-05-20",
-        snapshot: {
-          pid: "870970-basis:23424916",
-          workId: "work-of:870970-basis:23424916",
-          title: "Efter uvejret",
-          creator: "Kenneth Bøgh Andersen",
-          materialType: "BOOK",
-          workType: "LITERATURE",
-          periodical: {
-            edition: "Årg. 10",
-            pages: "S. 12-15",
-            publisher: "Eksempelbladet",
-            language: "dan",
+      await expect(
+        resolvers.PatronMutation.addHistoricalLoans(null, { loans }, context)
+      ).resolves.toEqual({
+        status: "OK",
+        items: [{ id: publicLoanId, materialId, status: "OK" }],
+      });
+      const serviceLoans = [
+        {
+          agencyId: "710100",
+          materialId,
+          materialIdType,
+          loanedAt: "2026-05-01",
+          returnedAt: "2026-05-20",
+          snapshot: {
+            pid: "870970-basis:23424916",
+            workId: "work-of:870970-basis:23424916",
+            title: "Efter uvejret",
+            creator: "Kenneth Bøgh Andersen",
+            sourceMaterialType: null,
+            materialTypes: [
+              {
+                materialTypeGeneral: { code: "BOOKS", display: "Bøger" },
+                materialTypeSpecific: { code: "BOOK", display: "Bog" },
+              },
+            ],
+            workType: "LITERATURE",
+            periodical: {
+              edition: "Årg. 10",
+              pages: "S. 12-15",
+              publisher: "Eksempelbladet",
+              language: "dan",
+            },
           },
         },
-      },
-    ];
-    expect(context.datasources.getLoader).toHaveBeenCalledWith(
-      "userDataV2AddHistoricalLoans"
-    );
-    expect(load).toHaveBeenCalledWith({ accessToken, loans: serviceLoans });
-    expect(context._loader.clear).toHaveBeenCalledWith({
-      accessToken,
-      loans: serviceLoans,
-    });
-  });
+      ];
+      expect(context.datasources.getLoader).toHaveBeenCalledWith(
+        "userDataV2AddHistoricalLoans"
+      );
+      expect(load).toHaveBeenCalledWith({ accessToken, loans: serviceLoans });
+      expect(context._loader.clear).toHaveBeenCalledWith({
+        accessToken,
+        loans: serviceLoans,
+      });
+    }
+  );
 
   test("add does not send unresolved manifestations or client snapshots", async () => {
     const serviceLoad = jest.fn();
