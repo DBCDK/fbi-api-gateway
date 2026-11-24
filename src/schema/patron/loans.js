@@ -279,7 +279,13 @@ function toServiceHistoricalLoan(loan, manifestation) {
     returnedAt: loan.returnedAt,
     materialId: loan.materialId,
     materialIdType: loan.materialIdType,
-    snapshot: buildPatronMaterialSnapshot(manifestation),
+    snapshot: {
+      ...buildPatronMaterialSnapshot(manifestation, {
+        includeMaterialType: false,
+        includeMaterialTypes: true,
+      }),
+      sourceMaterialType: null,
+    },
   };
 }
 
