@@ -172,6 +172,9 @@ export const resolvers = {
     },
   },
   PatronMaterialSnapshot: {
+    materialType(parent) {
+      return parent?.materialType ?? parent?.sourceMaterialType ?? null;
+    },
     materialTypes(parent) {
       return parent?.materialTypes || [];
     },

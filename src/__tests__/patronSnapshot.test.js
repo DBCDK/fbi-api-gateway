@@ -4,6 +4,19 @@ import {
 } from "../schema/patron/snapshot";
 
 describe("Patron material snapshot", () => {
+  test.each([
+    [{ materialType: "BOOK", sourceMaterialType: "Bog" }, "BOOK"],
+    [{ materialType: null, sourceMaterialType: "Bog" }, "Bog"],
+    [{ sourceMaterialType: "Bog" }, "Bog"],
+    [{ materialType: "", sourceMaterialType: "Bog" }, ""],
+    [{}, null],
+    [{ sourceMaterialType: null }, null],
+  ])("resolves materialType from snapshot %j", (snapshot, expected) => {
+    expect(resolvers.PatronMaterialSnapshot.materialType(snapshot)).toBe(
+      expected
+    );
+  });
+
   test("keeps legacy materialType by default and allows Bookmarks V2 to omit it", () => {
     const material = {
       materialTypes: [{ specific: { code: "BOOK" } }],
