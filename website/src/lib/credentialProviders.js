@@ -15,7 +15,10 @@ import { DISABLE_INTERNAL_NETWORK_CHECK_HEADER } from "../utils/credentialSettin
 
 const { authenticationUser, authenticationGroup, authenticationPassword } =
   config.datasources.openorder;
-const TOKEN_ENDPOINT_URL = "https://login.bib.dk/oauth/token";
+const TOKEN_ENDPOINT_URL = new URL(
+  "/oauth/token",
+  config.datasources.userInfo.url
+).href;
 const CREDENTIAL_FETCH_TIMEOUT_MS = Number.parseInt(
   process.env.CREDENTIAL_FETCH_TIMEOUT_MS || config.fetchDefaultTimeoutMs,
   10
