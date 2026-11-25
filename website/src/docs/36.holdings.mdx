@@ -1,0 +1,99 @@
+# Holdings
+
+Holdings data provides an overview of which libraries hold a material, whether copies are available, and which lending restrictions apply. The data is returned as summaries from two perspectives: `publicLibraries` shows where patrons can find and borrow materials, while `ill` shows what libraries can offer for inter-library loan.
+
+## Live data and `complete`
+
+The service waits up to 3 seconds for live holdings from the libraries' local systems. If a local system doesn't answer in time, the corresponding agency entry gets `incomplete: true` and uses pre-computed data. The top-level summary also gets `incomplete: true`, so you can tell whether any part of the summary is incomplete without checking every agency entry. This keeps the initial response fast while still allowing clients to request more complete live data when needed.
+
+If the response is `incomplete`, make the request again with `complete: true`. The service will then wait up to 30 seconds for the live data. Replace each affected group with the corresponding group from the new response, as its list of agencies may have changed.
+
+## Public libraries
+
+Use `publicLibraries` to give patrons an overview of where they can borrow the material in person. The response lists the agencies that own copies, together with their holdings status and the branches that hold them.
+
+Each library and branch includes an availability status. It shows whether copies are:
+
+- on the shelf
+- on the shelf with a lending restriction
+- not on the shelf
+- of unknown availability
+
+If no copy is on the shelf, the library entry may include the earliest expected availability date.
+
+<InlineGraphiQL
+  query={`query Example_HoldingsPublicLibraries($agencyId: String!, $id: [String!]!, $complete: Boolean = false) {
+  holdings {
+    publicLibraries(agencyId: $agencyId, id: $id, complete: $complete) {
+      incomplete
+      groups {
+        ids
+        agencies {
+          agencyId
+          incomplete
+          agency {
+            name
+          }
+          status
+          copyCount
+          onShelfBranchCount
+          restriction
+          expectedAvailable
+          note
+          branches {
+            branchId
+            branch {
+              name
+            }
+            status
+            copyCount
+            onShelfCount
+            restriction
+          }
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    agencyId: "190101",
+    id: ["870970-basis:25912233"],
+    complete: false,
+  }}
+/>
+
+## Inter-library loan
+
+Use `ill` to get an inter-library-loan summary for the material. For each agency, the response shows how many copies it holds, how many may be lent to other libraries, and how many of those are currently available.
+
+<InlineGraphiQL
+  query={`query Example_HoldingsIll($agencyId: String!, $id: [String!]!, $complete: Boolean = false) {
+  holdings {
+    ill(agencyId: $agencyId, id: $id, complete: $complete) {
+      incomplete
+      groups {
+        ids
+        agencies {
+          agencyId
+          incomplete
+          agency {
+            name
+          }
+          status
+          copyCount
+          illTotal
+          illAvailable
+          expectedAvailable
+          note
+          setNote
+        }
+      }
+    }
+  }
+}`}
+  variables={{
+    agencyId: "190101",
+    id: ["870970-basis:25912233"],
+    complete: false,
+  }}
+/>
