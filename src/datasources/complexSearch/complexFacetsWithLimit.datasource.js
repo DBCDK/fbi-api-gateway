@@ -6,6 +6,7 @@
 import config from "../../config";
 import { log } from "dbc-node-logger";
 import { prefixFacets } from "../../utils/utils";
+import { resolveFacetAliases } from "./facetAliases";
 
 const { url, ttl, prefix, teamLabel } = config.datasources.complexsearch;
 
@@ -16,6 +17,11 @@ export async function load(
   { cql, profile, filters, cqlfilter, facets, facetLimit },
   context
 ) {
+  const aliases = await resolveFacetAliases(
+    prefixFacets(facets || []),
+    `${url}/facets`,
+    context
+  );
   const body = {
     cqlQuery: cql,
     searchProfile: {
@@ -24,7 +30,7 @@ export async function load(
     },
     filters: filters,
     cqlfilter: cqlfilter,
-    facets: prefixFacets(facets || []),
+    facets: aliases.facets,
     facetLimit: facetLimit,
     trackingId: context?.trackingId,
   };
@@ -50,13 +56,7 @@ export async function load(
 
   return {
     errorMessage: json?.errorMessage,
-    facets: (json?.facets || []).slice().sort(
-      (() => {
-        const order = new Map(body.facets.map((name, i) => [name, i]));
-        return (a, b) =>
-          (order.get(a?.name) ?? Infinity) - (order.get(b?.name) ?? Infinity);
-      })()
-    ),
+    facets: aliases.restore(json?.facets),
   };
 }
 

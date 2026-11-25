@@ -6,7 +6,7 @@ const { url, prefix, teamLabel } = config.datasources.complexsearch;
  * Fetch complex search indexes
  */
 export async function load(args, context) {
-  const res = await context?.fetch(`${url}/indexes/json`, {
+  const res = await context?.fetch(`${args?.url || url}/indexes/json`, {
     method: "GET",
     timeoutMs: 60000,
   });
