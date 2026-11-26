@@ -144,6 +144,15 @@ export default {
       prefix: process.env.REFERENCE_PRESENTATION_PREFIX || "ref-presentation-2",
       teamLabel: "de-team",
     },
+    metadataPresentation: {
+      url:
+        process.env.METADATA_PRESENTATION_URL ||
+        "http://metadata-presentation.cisterne.svc.cloud.dbc.dk/api/v1",
+      ttl: process.env.METADATA_PRESENTATION_TIME_TO_LIVE_SECONDS || 60 * 10,
+      prefix:
+        process.env.METADATA_PRESENTATION_PREFIX || "metadata-presentation-1",
+      teamLabel: "de-team",
+    },
     bibliotekdkCms: {
       url:
         process.env.BIBLIOTEKDK_CMS_URL ||

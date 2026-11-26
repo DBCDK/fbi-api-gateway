@@ -3255,6 +3255,12 @@ type Manifestation {
   """Information on music shelving"""
   musicShelf: MusicShelf
 
+  """
+  Label data for this manifestation, e.g. for printing shelf labels and spine labels.
+  Returns null if no label data exists for the manifestation.
+  """
+  labelData: ManifestationLabelData
+
   """Field for presenting bibliographic records in MARC format"""
   marc: MarcRecord
 
@@ -3517,6 +3523,54 @@ type ContentSublevel {
   Possible entry data (title, contributors, playingtime) subordinate to the entry's sublevel 1
   """
   sublevel: [ContentSublevelLast!]
+}
+
+"""
+A value presented in two variants: one for the label and one for the spine of the material
+"""
+type ManifestationLabelText {
+  """Text for the label"""
+  label: String
+
+  """Text for the spine"""
+  spine: String
+}
+
+"""Title presented in two variants. Each variant is a list of lines."""
+type ManifestationLabelTitle {
+  """Title lines for the label"""
+  label: [String!]!
+
+  """Title lines for the spine"""
+  spine: [String!]!
+}
+
+type ManifestationLabelPhysicalDescription {
+  """Attachments, if any"""
+  attachments: String
+
+  """Material units, e.g. '1 dvd-video'"""
+  materialUnits: String
+}
+
+"""
+Data used for printing labels for a manifestation, e.g. shelf labels and spine labels
+"""
+type ManifestationLabelData {
+  """Title of the manifestation"""
+  title: ManifestationLabelTitle
+
+  """Edition statements, e.g. '1. udgave'"""
+  edition: [String!]!
+
+  """Creator used for shelving"""
+  creatorForShelf: ManifestationLabelText
+
+  """Physical description of the manifestation"""
+  physicalDescription: ManifestationLabelPhysicalDescription
+
+  """Classification used for shelving"""
+  classificationForShelf: ManifestationLabelText
 }
 
 type MarcRecord {
@@ -7952,6 +8006,12 @@ type Manifestation {
   """Information on music shelving"""
   musicShelf: MusicShelf
 
+  """
+  Label data for this manifestation, e.g. for printing shelf labels and spine labels.
+  Returns null if no label data exists for the manifestation.
+  """
+  labelData: ManifestationLabelData
+
   """Relations to other manifestations"""
   relations: Relations!
 
@@ -8211,6 +8271,54 @@ type ContentSublevel {
   Possible entry data (title, contributors, playingtime) subordinate to the entry's sublevel 1
   """
   sublevel: [ContentSublevelLast!]
+}
+
+"""
+A value presented in two variants: one for the label and one for the spine of the material
+"""
+type ManifestationLabelText {
+  """Text for the label"""
+  label: String
+
+  """Text for the spine"""
+  spine: String
+}
+
+"""Title presented in two variants. Each variant is a list of lines."""
+type ManifestationLabelTitle {
+  """Title lines for the label"""
+  label: [String!]!
+
+  """Title lines for the spine"""
+  spine: [String!]!
+}
+
+type ManifestationLabelPhysicalDescription {
+  """Attachments, if any"""
+  attachments: String
+
+  """Material units, e.g. '1 dvd-video'"""
+  materialUnits: String
+}
+
+"""
+Data used for printing labels for a manifestation, e.g. shelf labels and spine labels
+"""
+type ManifestationLabelData {
+  """Title of the manifestation"""
+  title: ManifestationLabelTitle
+
+  """Edition statements, e.g. '1. udgave'"""
+  edition: [String!]!
+
+  """Creator used for shelving"""
+  creatorForShelf: ManifestationLabelText
+
+  """Physical description of the manifestation"""
+  physicalDescription: ManifestationLabelPhysicalDescription
+
+  """Classification used for shelving"""
+  classificationForShelf: ManifestationLabelText
 }
 
 enum GeneralMaterialTypeCodeEnum {
@@ -10555,6 +10663,12 @@ type Manifestation {
   """Information on music shelving"""
   musicShelf: MusicShelf
 
+  """
+  Label data for this manifestation, e.g. for printing shelf labels and spine labels.
+  Returns null if no label data exists for the manifestation.
+  """
+  labelData: ManifestationLabelData
+
   """Field for presenting bibliographic records in MARC format"""
   marc: MarcRecord
 
@@ -10817,6 +10931,54 @@ type ContentSublevel {
   Possible entry data (title, contributors, playingtime) subordinate to the entry's sublevel 1
   """
   sublevel: [ContentSublevelLast!]
+}
+
+"""
+A value presented in two variants: one for the label and one for the spine of the material
+"""
+type ManifestationLabelText {
+  """Text for the label"""
+  label: String
+
+  """Text for the spine"""
+  spine: String
+}
+
+"""Title presented in two variants. Each variant is a list of lines."""
+type ManifestationLabelTitle {
+  """Title lines for the label"""
+  label: [String!]!
+
+  """Title lines for the spine"""
+  spine: [String!]!
+}
+
+type ManifestationLabelPhysicalDescription {
+  """Attachments, if any"""
+  attachments: String
+
+  """Material units, e.g. '1 dvd-video'"""
+  materialUnits: String
+}
+
+"""
+Data used for printing labels for a manifestation, e.g. shelf labels and spine labels
+"""
+type ManifestationLabelData {
+  """Title of the manifestation"""
+  title: ManifestationLabelTitle
+
+  """Edition statements, e.g. '1. udgave'"""
+  edition: [String!]!
+
+  """Creator used for shelving"""
+  creatorForShelf: ManifestationLabelText
+
+  """Physical description of the manifestation"""
+  physicalDescription: ManifestationLabelPhysicalDescription
+
+  """Classification used for shelving"""
+  classificationForShelf: ManifestationLabelText
 }
 
 type MarcRecord {

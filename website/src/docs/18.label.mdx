@@ -1,0 +1,37 @@
+# Label
+
+Label data is used for printing labels for a manifestation, e.g. shelf labels and spine labels. Most values come in two variants: `label` for the shelf label and `spine` for the spine of the material.
+
+Label data is fetched on each manifestation via the `labelData` field. If no label data exists for a manifestation, `labelData` is null.
+
+<InlineGraphiQL
+  query={`
+    query Example_Label($pids: [String!]!) {
+      manifestations(pid: $pids) {
+        pid
+        labelData {
+          title {
+            label
+            spine
+          }
+          edition
+          creatorForShelf {
+            label
+            spine
+          }
+          physicalDescription {
+            attachments
+            materialUnits
+          }
+          classificationForShelf {
+            label
+            spine
+          }
+        }
+      }
+    }
+  `}
+  variables={{
+    pids: ["870970-basis:29913285", "870970-basis:55132194"],
+  }}
+/>
