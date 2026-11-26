@@ -1,6 +1,6 @@
 import config from "../../config";
 import { load } from "../../datasources/label.datasource";
-import { resolvers } from "../../schema/manifestationLabel";
+import { resolvers } from "../../schema/label";
 
 const pid = "870970-basis:29913285";
 const content = {

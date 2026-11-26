@@ -1,61 +1,59 @@
-/**
- * @file Type definitions and resolvers for label data (shelf and spine labels)
- */
+// Label data for printing, used by Saxo.
 
 export const typeDef = `
 """
-A value presented in two variants: one for the label and one for the spine of the material
+A value with separate label and spine variants
 """
 type ManifestationLabelText {
-  """Text for the label"""
+  """Value for the label"""
   label: String
 
-  """Text for the spine"""
+  """Value for the spine"""
   spine: String
 }
 
 """
-Title presented in two variants. Each variant is a list of lines.
+Title content with separate label and spine variants
 """
 type ManifestationLabelTitle {
-  """Title lines for the label"""
+  """Title content for the label"""
   label: [String!]!
 
-  """Title lines for the spine"""
+  """Title content for the spine"""
   spine: [String!]!
 }
 
 type ManifestationLabelPhysicalDescription {
-  """Attachments, if any"""
+  """Attachment information"""
   attachments: String
 
-  """Material units, e.g. '1 dvd-video'"""
+  """Material unit information, e.g. '1 dvd-video'"""
   materialUnits: String
 }
 
 """
-Data used for printing labels for a manifestation, e.g. shelf labels and spine labels
+Data used for printing labels for a manifestation
 """
 type ManifestationLabelData {
-  """Title of the manifestation"""
+  """Title content formatted for the label and spine"""
   title: ManifestationLabelTitle
 
-  """Edition statements, e.g. '1. udgave'"""
+  """Edition information"""
   edition: [String!]!
 
-  """Creator used for shelving"""
+  """Creator content for the label and spine"""
   creatorForShelf: ManifestationLabelText
 
-  """Physical description of the manifestation"""
+  """Physical description included in the label data"""
   physicalDescription: ManifestationLabelPhysicalDescription
 
-  """Classification used for shelving"""
+  """Classification content for the label and spine"""
   classificationForShelf: ManifestationLabelText
 }
 
 extend type Manifestation {
   """
-  Label data for this manifestation, e.g. for printing shelf labels and spine labels.
+  Label data for printing labels for this manifestation.
   Returns null if no label data exists for the manifestation.
   """
   labelData: ManifestationLabelData
