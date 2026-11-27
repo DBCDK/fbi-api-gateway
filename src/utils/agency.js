@@ -36,6 +36,9 @@ const CULR_DATA_SYNC_BRANCH_IDS = [
   "860893", // UCN Bibliotek, Sofiendalsvej
   "874350", // UCN Bibliotek, Lerpyttervej
 
+  "872340", // Frederikshavn Gymnasium. Gymnasiebiblioteket
+  "872090", // Brønderslev Gymnasium og HF. Biblioteket
+
   "872100", // Vesthimmerlands Gymnasium & HF. Biblioteket
 
   "872520", // Aalborg Katedralskole. Biblioteket
