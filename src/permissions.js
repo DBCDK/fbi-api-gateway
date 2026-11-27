@@ -42,6 +42,7 @@ const defaultSettings = {
     "ComplexSearchResponse.seriesHit",
     "Manifestation.publicationStatus", //hidden for now. make visible when JED is ready.
     "HostPublication.publicationStatus", //hidden for now. make visible when JED is ready.
+    "Manifestation.labelData",
   ],
 };
 
@@ -88,7 +89,7 @@ export default {
 
   studiesoeg: {
     ...bibdk,
-    denyFields: [],
+    denyFields: ["Manifestation.labelData"],
   },
 
   "fbs:system": {

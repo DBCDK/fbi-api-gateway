@@ -2589,6 +2589,277 @@ type Inspiration {
   categories(filter: [CategoryFilterInput!]): [Categories]!
 }
 
+"""A value with separate label and spine variants"""
+type ManifestationLabelText {
+  """Value for the label"""
+  label: String
+
+  """Value for the spine"""
+  spine: String
+}
+
+"""Title content with separate label and spine variants"""
+type ManifestationLabelTitle {
+  """Title content for the label"""
+  label: [String!]!
+
+  """Title content for the spine"""
+  spine: [String!]!
+}
+
+type ManifestationLabelPhysicalDescription {
+  """Attachment information"""
+  attachments: String
+
+  """Material unit information, e.g. '1 dvd-video'"""
+  materialUnits: String
+}
+
+"""Data used for printing labels for a manifestation"""
+type ManifestationLabelData {
+  """Title content formatted for the label and spine"""
+  title: ManifestationLabelTitle
+
+  """Edition information"""
+  edition: [String!]!
+
+  """Creator content for the label and spine"""
+  creatorForShelf: ManifestationLabelText
+
+  """Physical description included in the label data"""
+  physicalDescription: ManifestationLabelPhysicalDescription
+
+  """Classification content for the label and spine"""
+  classificationForShelf: ManifestationLabelText
+}
+
+type Manifestation {
+  """
+  Label data for printing labels for this manifestation.
+  Returns null if no label data exists for the manifestation.
+  """
+  labelData: ManifestationLabelData
+
+  """
+  A unique identifier for tracking user interactions with this manifestation. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  """
+  traceId: String!
+
+  """Unique identification of the manifestation e.g 870970-basis:54029519"""
+  pid: String!
+
+  """Different kinds of titles for this work"""
+  titles: ManifestationTitles!
+
+  """Abstract of the entity"""
+  abstract: [String!]!
+
+  """Access type of this manifestation"""
+  accessTypes: [AccessType!]!
+
+  """Different options to access manifestation"""
+  access: [AccessUnion!]!
+
+  """
+  Different kinds of definitions of appropriate audience for this manifestation
+  """
+  audience: Audience
+
+  """
+  CatalogueCodes divided in codes from the national bibliography and other codes
+  """
+  catalogueCodes: CatalogueCodes!
+
+  """
+  Classification codes for this manifestation from any classification system
+  """
+  classifications: [Classification!]!
+
+  """Contributors to the manifestation, actors, illustrators etc"""
+  contributors: [CreatorInterface!]!
+
+  """
+  Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
+  """
+  contributorsFromDescription: [String!]!
+
+  """Cover for this manifestation"""
+  cover: Cover!
+
+  """
+  Primary creators of the manifestation e.g. authors, directors, musicians etc
+  """
+  creators: [CreatorInterface!]!
+
+  """
+  Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
+  """
+  creatorsFromDescription: [String!]!
+
+  """The year for the publication of the first edition for this work """
+  dateFirstEdition: PublicationYear
+
+  """Edition details for this manifestation"""
+  edition: Edition
+
+  """Details about the latest printing of this manifestation"""
+  latestPrinting: Printing
+
+  """
+  Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  """
+  fictionNonfiction: FictionNonfiction
+
+  """The genre, (literary) form, type etc. of this manifestation"""
+  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 01/03-2027")
+
+  """Details about the host publications of this manifestation"""
+  hostPublication: HostPublication
+
+  """The publication status of the manifestation"""
+  publicationStatus: PublicationStatus
+
+  """Identifiers for this manifestation - often used for search indexes"""
+  identifiers: [Identifier!]!
+
+  """Languages in this manifestation"""
+  languages: Languages
+
+  """
+  Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
+  """
+  contents: [ContentsEntity!]
+
+  """
+  Metadata related to material selection, including publication status,
+  selection group, and librarian assessment.
+  """
+  materialSelection: MaterialSelection
+
+  """The type of material of the manifestation based on bibliotek.dk types"""
+  materialTypes: [MaterialType!]!
+
+  """Notes about the manifestation"""
+  notes: [Note!]!
+
+  """The work that this manifestation is part of"""
+  ownerWork: Work!
+
+  """
+  Notes about relations to this book/periodical/journal, - like previous names or related journals
+  """
+  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Use 'periodicalTitleHistory' and 'notes' instead expires: 05/12-2026")
+
+  """
+  Notes on relations to this manifestation - e.g. previous/later names or related journals
+  """
+  periodicalTitleHistory: [PeriodicalTitleHistory!]!
+
+  """
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  """
+  physicalDescription: PhysicalUnitDescription
+
+  """Publisher of this manifestion"""
+  publisher: [String!]!
+
+  """The city or place where the item was published"""
+  placeOfPublication: [String!]!
+
+  """
+  The creation date of the record describing this manifestation in the format YYYYMMDD
+  """
+  recordCreationDate: String!
+
+  """Series for this manifestation"""
+  series: [Series!]!
+
+  """Universes for this manifestation"""
+  universes: [Universe!]!
+
+  """
+  Information about on which shelf in the library this manifestation can be found
+  """
+  shelfmark: Shelfmark
+
+  """
+  The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
+  """
+  source: [String!]!
+
+  """Subjects for this manifestation"""
+  subjects: SubjectContainer!
+
+  """
+  Information about on which volume this manifestation is in multi volume work
+  """
+  volume: String
+
+  """Worktypes for this manifestations work"""
+  workTypes: [WorkTypeEnum!]!
+
+  """The year this manifestation was originally published or produced"""
+  workYear: PublicationYear
+
+  """id of the manifestaion unit"""
+  unit: Unit
+
+  """automation material group info"""
+  illAutomationMaterialGroup: IllAutomationMaterialGroup
+
+  """Identification of the local id of this manifestation"""
+  localId: String
+
+  """Material that can be identified as sheet music"""
+  sheetMusicCategories: SheetMusicCategory
+
+  """The publication status of a catalogued manifestation."""
+  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 01/03-2027")
+
+  """The genre and (literary) form of this manifestation"""
+  genreForm: [GenreForm!]!
+
+  """
+  The records type of sound recording - excluding music recordings and its material
+  """
+  soundRecording: SoundRecording
+
+  """Code for type of periodical"""
+  periodicalType: PeriodicalType
+
+  """Code for bibliographic category"""
+  bibliographicCategory: BibliographicCategory
+
+  """Code for comics, children's picture books and drama"""
+  specialMaterialGroup: SpecialMaterialGroup
+
+  """
+  The creator of the manifestation that the material can be located under on the shelf
+  """
+  shelfCreator: ShelfCreator
+
+  """Information on music shelving"""
+  musicShelf: MusicShelf
+
+  """Field for presenting bibliographic records in MARC format"""
+  marc: MarcRecord
+
+  """Relations to other manifestations"""
+  relations: Relations!
+
+  """Some review data, if this manifestation is a review"""
+  review: ManifestationReview
+
+  """
+  Bibliographic reference data for this manifestation formatted as RIS.
+  When fetching RIS for multiple manifestations, each record is returned on the
+  manifestation. To combine them into a single RIS file, join the records with a newline.
+  """
+  ris: String
+}
+
 enum LanguageCodeEnum {
   DA
   EN
@@ -3311,227 +3582,6 @@ type MaterialSelectionLibrarianAssessment {
   Danish display label for the assessment, e.g. "Har lektørudtalelse (materialevurdering)".
   """
   display: String
-}
-
-type Manifestation {
-  """
-  A unique identifier for tracking user interactions with this manifestation. 
-  It is generated in the response and should be included in subsequent
-  API calls when this manifestation is selected.
-  """
-  traceId: String!
-
-  """Unique identification of the manifestation e.g 870970-basis:54029519"""
-  pid: String!
-
-  """Different kinds of titles for this work"""
-  titles: ManifestationTitles!
-
-  """Abstract of the entity"""
-  abstract: [String!]!
-
-  """Access type of this manifestation"""
-  accessTypes: [AccessType!]!
-
-  """Different options to access manifestation"""
-  access: [AccessUnion!]!
-
-  """
-  Different kinds of definitions of appropriate audience for this manifestation
-  """
-  audience: Audience
-
-  """
-  CatalogueCodes divided in codes from the national bibliography and other codes
-  """
-  catalogueCodes: CatalogueCodes!
-
-  """
-  Classification codes for this manifestation from any classification system
-  """
-  classifications: [Classification!]!
-
-  """Contributors to the manifestation, actors, illustrators etc"""
-  contributors: [CreatorInterface!]!
-
-  """
-  Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
-  """
-  contributorsFromDescription: [String!]!
-
-  """Cover for this manifestation"""
-  cover: Cover!
-
-  """
-  Primary creators of the manifestation e.g. authors, directors, musicians etc
-  """
-  creators: [CreatorInterface!]!
-
-  """
-  Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
-  """
-  creatorsFromDescription: [String!]!
-
-  """The year for the publication of the first edition for this work """
-  dateFirstEdition: PublicationYear
-
-  """Edition details for this manifestation"""
-  edition: Edition
-
-  """Details about the latest printing of this manifestation"""
-  latestPrinting: Printing
-
-  """
-  Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  """
-  fictionNonfiction: FictionNonfiction
-
-  """The genre, (literary) form, type etc. of this manifestation"""
-  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 01/03-2027")
-
-  """Details about the host publications of this manifestation"""
-  hostPublication: HostPublication
-
-  """The publication status of the manifestation"""
-  publicationStatus: PublicationStatus
-
-  """Identifiers for this manifestation - often used for search indexes"""
-  identifiers: [Identifier!]!
-
-  """Languages in this manifestation"""
-  languages: Languages
-
-  """
-  Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
-  """
-  contents: [ContentsEntity!]
-
-  """
-  Metadata related to material selection, including publication status,
-  selection group, and librarian assessment.
-  """
-  materialSelection: MaterialSelection
-
-  """The type of material of the manifestation based on bibliotek.dk types"""
-  materialTypes: [MaterialType!]!
-
-  """Notes about the manifestation"""
-  notes: [Note!]!
-
-  """The work that this manifestation is part of"""
-  ownerWork: Work!
-
-  """
-  Notes about relations to this book/periodical/journal, - like previous names or related journals
-  """
-  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Use 'periodicalTitleHistory' and 'notes' instead expires: 05/12-2026")
-
-  """
-  Notes on relations to this manifestation - e.g. previous/later names or related journals
-  """
-  periodicalTitleHistory: [PeriodicalTitleHistory!]!
-
-  """
-  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  physicalDescription: PhysicalUnitDescription
-
-  """Publisher of this manifestion"""
-  publisher: [String!]!
-
-  """The city or place where the item was published"""
-  placeOfPublication: [String!]!
-
-  """
-  The creation date of the record describing this manifestation in the format YYYYMMDD
-  """
-  recordCreationDate: String!
-
-  """Series for this manifestation"""
-  series: [Series!]!
-
-  """Universes for this manifestation"""
-  universes: [Universe!]!
-
-  """
-  Information about on which shelf in the library this manifestation can be found
-  """
-  shelfmark: Shelfmark
-
-  """
-  The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
-  """
-  source: [String!]!
-
-  """Subjects for this manifestation"""
-  subjects: SubjectContainer!
-
-  """
-  Information about on which volume this manifestation is in multi volume work
-  """
-  volume: String
-
-  """Worktypes for this manifestations work"""
-  workTypes: [WorkTypeEnum!]!
-
-  """The year this manifestation was originally published or produced"""
-  workYear: PublicationYear
-
-  """id of the manifestaion unit"""
-  unit: Unit
-
-  """automation material group info"""
-  illAutomationMaterialGroup: IllAutomationMaterialGroup
-
-  """Identification of the local id of this manifestation"""
-  localId: String
-
-  """Material that can be identified as sheet music"""
-  sheetMusicCategories: SheetMusicCategory
-
-  """The publication status of a catalogued manifestation."""
-  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 01/03-2027")
-
-  """The genre and (literary) form of this manifestation"""
-  genreForm: [GenreForm!]!
-
-  """
-  The records type of sound recording - excluding music recordings and its material
-  """
-  soundRecording: SoundRecording
-
-  """Code for type of periodical"""
-  periodicalType: PeriodicalType
-
-  """Code for bibliographic category"""
-  bibliographicCategory: BibliographicCategory
-
-  """Code for comics, children's picture books and drama"""
-  specialMaterialGroup: SpecialMaterialGroup
-
-  """
-  The creator of the manifestation that the material can be located under on the shelf
-  """
-  shelfCreator: ShelfCreator
-
-  """Information on music shelving"""
-  musicShelf: MusicShelf
-
-  """Field for presenting bibliographic records in MARC format"""
-  marc: MarcRecord
-
-  """Relations to other manifestations"""
-  relations: Relations!
-
-  """Some review data, if this manifestation is a review"""
-  review: ManifestationReview
-
-  """
-  Bibliographic reference data for this manifestation formatted as RIS.
-  When fetching RIS for multiple manifestations, each record is returned on the
-  manifestation. To combine them into a single RIS file, join the records with a newline.
-  """
-  ris: String
 }
 
 type ShelfCreator {
@@ -7411,6 +7461,221 @@ type InfomediaArticle {
   html: String
 }
 
+type Manifestation {
+  """
+  A unique identifier for tracking user interactions with this manifestation. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  """
+  traceId: String!
+
+  """Unique identification of the manifestation e.g 870970-basis:54029519"""
+  pid: String!
+
+  """Different kinds of titles for this work"""
+  titles: ManifestationTitles!
+
+  """Abstract of the entity"""
+  abstract: [String!]!
+
+  """Access type of this manifestation"""
+  accessTypes: [AccessType!]!
+
+  """Different options to access manifestation"""
+  access: [AccessUnion!]!
+
+  """
+  Different kinds of definitions of appropriate audience for this manifestation
+  """
+  audience: Audience
+
+  """
+  CatalogueCodes divided in codes from the national bibliography and other codes
+  """
+  catalogueCodes: CatalogueCodes!
+
+  """
+  Classification codes for this manifestation from any classification system
+  """
+  classifications: [Classification!]!
+
+  """Contributors to the manifestation, actors, illustrators etc"""
+  contributors: [CreatorInterface!]!
+
+  """
+  Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
+  """
+  contributorsFromDescription: [String!]!
+
+  """Cover for this manifestation"""
+  cover: Cover!
+
+  """
+  Primary creators of the manifestation e.g. authors, directors, musicians etc
+  """
+  creators: [CreatorInterface!]!
+
+  """
+  Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
+  """
+  creatorsFromDescription: [String!]!
+
+  """The year for the publication of the first edition for this work """
+  dateFirstEdition: PublicationYear
+
+  """Edition details for this manifestation"""
+  edition: Edition
+
+  """Details about the latest printing of this manifestation"""
+  latestPrinting: Printing
+
+  """
+  Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  """
+  fictionNonfiction: FictionNonfiction
+
+  """The genre, (literary) form, type etc. of this manifestation"""
+  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 01/03-2027")
+
+  """Details about the host publications of this manifestation"""
+  hostPublication: HostPublication
+
+  """Identifiers for this manifestation - often used for search indexes"""
+  identifiers: [Identifier!]!
+
+  """Languages in this manifestation"""
+  languages: Languages
+
+  """
+  Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
+  """
+  contents: [ContentsEntity!]
+
+  """
+  Metadata related to material selection, including publication status,
+  selection group, and librarian assessment.
+  """
+  materialSelection: MaterialSelection
+
+  """The type of material of the manifestation based on bibliotek.dk types"""
+  materialTypes: [MaterialType!]!
+
+  """Notes about the manifestation"""
+  notes: [Note!]!
+
+  """The work that this manifestation is part of"""
+  ownerWork: Work!
+
+  """
+  Notes about relations to this book/periodical/journal, - like previous names or related journals
+  """
+  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Use 'periodicalTitleHistory' and 'notes' instead expires: 05/12-2026")
+
+  """
+  Notes on relations to this manifestation - e.g. previous/later names or related journals
+  """
+  periodicalTitleHistory: [PeriodicalTitleHistory!]!
+
+  """
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  """
+  physicalDescription: PhysicalUnitDescription
+
+  """Publisher of this manifestion"""
+  publisher: [String!]!
+
+  """The city or place where the item was published"""
+  placeOfPublication: [String!]!
+
+  """
+  The creation date of the record describing this manifestation in the format YYYYMMDD
+  """
+  recordCreationDate: String!
+
+  """Series for this manifestation"""
+  series: [Series!]!
+
+  """Universes for this manifestation"""
+  universes: [Universe!]!
+
+  """
+  Information about on which shelf in the library this manifestation can be found
+  """
+  shelfmark: Shelfmark
+
+  """
+  The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
+  """
+  source: [String!]!
+
+  """Subjects for this manifestation"""
+  subjects: SubjectContainer!
+
+  """
+  Information about on which volume this manifestation is in multi volume work
+  """
+  volume: String
+
+  """Worktypes for this manifestations work"""
+  workTypes: [WorkTypeEnum!]!
+
+  """The year this manifestation was originally published or produced"""
+  workYear: PublicationYear
+
+  """id of the manifestaion unit"""
+  unit: Unit
+
+  """automation material group info"""
+  illAutomationMaterialGroup: IllAutomationMaterialGroup
+
+  """Identification of the local id of this manifestation"""
+  localId: String
+
+  """Material that can be identified as sheet music"""
+  sheetMusicCategories: SheetMusicCategory
+
+  """The publication status of a catalogued manifestation."""
+  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 01/03-2027")
+
+  """The genre and (literary) form of this manifestation"""
+  genreForm: [GenreForm!]!
+
+  """
+  The records type of sound recording - excluding music recordings and its material
+  """
+  soundRecording: SoundRecording
+
+  """Code for type of periodical"""
+  periodicalType: PeriodicalType
+
+  """Code for bibliographic category"""
+  bibliographicCategory: BibliographicCategory
+
+  """Code for comics, children's picture books and drama"""
+  specialMaterialGroup: SpecialMaterialGroup
+
+  """
+  The creator of the manifestation that the material can be located under on the shelf
+  """
+  shelfCreator: ShelfCreator
+
+  """Information on music shelving"""
+  musicShelf: MusicShelf
+
+  """Relations to other manifestations"""
+  relations: Relations!
+
+  """Some review data, if this manifestation is a review"""
+  review: ManifestationReview
+
+  """
+  Bibliographic reference data for this manifestation formatted as RIS.
+  When fetching RIS for multiple manifestations, each record is returned on the
+  manifestation. To combine them into a single RIS file, join the records with a newline.
+  """
+  ris: String
+}
+
 enum LanguageCodeEnum {
   DA
   EN
@@ -8013,221 +8278,6 @@ type MaterialSelectionLibrarianAssessment {
   Danish display label for the assessment, e.g. "Har lektørudtalelse (materialevurdering)".
   """
   display: String
-}
-
-type Manifestation {
-  """
-  A unique identifier for tracking user interactions with this manifestation. 
-  It is generated in the response and should be included in subsequent
-  API calls when this manifestation is selected.
-  """
-  traceId: String!
-
-  """Unique identification of the manifestation e.g 870970-basis:54029519"""
-  pid: String!
-
-  """Different kinds of titles for this work"""
-  titles: ManifestationTitles!
-
-  """Abstract of the entity"""
-  abstract: [String!]!
-
-  """Access type of this manifestation"""
-  accessTypes: [AccessType!]!
-
-  """Different options to access manifestation"""
-  access: [AccessUnion!]!
-
-  """
-  Different kinds of definitions of appropriate audience for this manifestation
-  """
-  audience: Audience
-
-  """
-  CatalogueCodes divided in codes from the national bibliography and other codes
-  """
-  catalogueCodes: CatalogueCodes!
-
-  """
-  Classification codes for this manifestation from any classification system
-  """
-  classifications: [Classification!]!
-
-  """Contributors to the manifestation, actors, illustrators etc"""
-  contributors: [CreatorInterface!]!
-
-  """
-  Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
-  """
-  contributorsFromDescription: [String!]!
-
-  """Cover for this manifestation"""
-  cover: Cover!
-
-  """
-  Primary creators of the manifestation e.g. authors, directors, musicians etc
-  """
-  creators: [CreatorInterface!]!
-
-  """
-  Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
-  """
-  creatorsFromDescription: [String!]!
-
-  """The year for the publication of the first edition for this work """
-  dateFirstEdition: PublicationYear
-
-  """Edition details for this manifestation"""
-  edition: Edition
-
-  """Details about the latest printing of this manifestation"""
-  latestPrinting: Printing
-
-  """
-  Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  """
-  fictionNonfiction: FictionNonfiction
-
-  """The genre, (literary) form, type etc. of this manifestation"""
-  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 01/03-2027")
-
-  """Details about the host publications of this manifestation"""
-  hostPublication: HostPublication
-
-  """Identifiers for this manifestation - often used for search indexes"""
-  identifiers: [Identifier!]!
-
-  """Languages in this manifestation"""
-  languages: Languages
-
-  """
-  Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
-  """
-  contents: [ContentsEntity!]
-
-  """
-  Metadata related to material selection, including publication status,
-  selection group, and librarian assessment.
-  """
-  materialSelection: MaterialSelection
-
-  """The type of material of the manifestation based on bibliotek.dk types"""
-  materialTypes: [MaterialType!]!
-
-  """Notes about the manifestation"""
-  notes: [Note!]!
-
-  """The work that this manifestation is part of"""
-  ownerWork: Work!
-
-  """
-  Notes about relations to this book/periodical/journal, - like previous names or related journals
-  """
-  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Use 'periodicalTitleHistory' and 'notes' instead expires: 05/12-2026")
-
-  """
-  Notes on relations to this manifestation - e.g. previous/later names or related journals
-  """
-  periodicalTitleHistory: [PeriodicalTitleHistory!]!
-
-  """
-  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  physicalDescription: PhysicalUnitDescription
-
-  """Publisher of this manifestion"""
-  publisher: [String!]!
-
-  """The city or place where the item was published"""
-  placeOfPublication: [String!]!
-
-  """
-  The creation date of the record describing this manifestation in the format YYYYMMDD
-  """
-  recordCreationDate: String!
-
-  """Series for this manifestation"""
-  series: [Series!]!
-
-  """Universes for this manifestation"""
-  universes: [Universe!]!
-
-  """
-  Information about on which shelf in the library this manifestation can be found
-  """
-  shelfmark: Shelfmark
-
-  """
-  The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
-  """
-  source: [String!]!
-
-  """Subjects for this manifestation"""
-  subjects: SubjectContainer!
-
-  """
-  Information about on which volume this manifestation is in multi volume work
-  """
-  volume: String
-
-  """Worktypes for this manifestations work"""
-  workTypes: [WorkTypeEnum!]!
-
-  """The year this manifestation was originally published or produced"""
-  workYear: PublicationYear
-
-  """id of the manifestaion unit"""
-  unit: Unit
-
-  """automation material group info"""
-  illAutomationMaterialGroup: IllAutomationMaterialGroup
-
-  """Identification of the local id of this manifestation"""
-  localId: String
-
-  """Material that can be identified as sheet music"""
-  sheetMusicCategories: SheetMusicCategory
-
-  """The publication status of a catalogued manifestation."""
-  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 01/03-2027")
-
-  """The genre and (literary) form of this manifestation"""
-  genreForm: [GenreForm!]!
-
-  """
-  The records type of sound recording - excluding music recordings and its material
-  """
-  soundRecording: SoundRecording
-
-  """Code for type of periodical"""
-  periodicalType: PeriodicalType
-
-  """Code for bibliographic category"""
-  bibliographicCategory: BibliographicCategory
-
-  """Code for comics, children's picture books and drama"""
-  specialMaterialGroup: SpecialMaterialGroup
-
-  """
-  The creator of the manifestation that the material can be located under on the shelf
-  """
-  shelfCreator: ShelfCreator
-
-  """Information on music shelving"""
-  musicShelf: MusicShelf
-
-  """Relations to other manifestations"""
-  relations: Relations!
-
-  """Some review data, if this manifestation is a review"""
-  review: ManifestationReview
-
-  """
-  Bibliographic reference data for this manifestation formatted as RIS.
-  When fetching RIS for multiple manifestations, each record is returned on the
-  manifestation. To combine them into a single RIS file, join the records with a newline.
-  """
-  ris: String
 }
 
 type ShelfCreator {
@@ -10012,6 +10062,274 @@ type Work {
   manifestations: Manifestations!
 }
 
+"""A value with separate label and spine variants"""
+type ManifestationLabelText {
+  """Value for the label"""
+  label: String
+
+  """Value for the spine"""
+  spine: String
+}
+
+"""Title content with separate label and spine variants"""
+type ManifestationLabelTitle {
+  """Title content for the label"""
+  label: [String!]!
+
+  """Title content for the spine"""
+  spine: [String!]!
+}
+
+type ManifestationLabelPhysicalDescription {
+  """Attachment information"""
+  attachments: String
+
+  """Material unit information, e.g. '1 dvd-video'"""
+  materialUnits: String
+}
+
+"""Data used for printing labels for a manifestation"""
+type ManifestationLabelData {
+  """Title content formatted for the label and spine"""
+  title: ManifestationLabelTitle
+
+  """Edition information"""
+  edition: [String!]!
+
+  """Creator content for the label and spine"""
+  creatorForShelf: ManifestationLabelText
+
+  """Physical description included in the label data"""
+  physicalDescription: ManifestationLabelPhysicalDescription
+
+  """Classification content for the label and spine"""
+  classificationForShelf: ManifestationLabelText
+}
+
+type Manifestation {
+  """
+  Label data for printing labels for this manifestation.
+  Returns null if no label data exists for the manifestation.
+  """
+  labelData: ManifestationLabelData
+
+  """
+  A unique identifier for tracking user interactions with this manifestation. 
+  It is generated in the response and should be included in subsequent
+  API calls when this manifestation is selected.
+  """
+  traceId: String!
+
+  """Unique identification of the manifestation e.g 870970-basis:54029519"""
+  pid: String!
+
+  """Different kinds of titles for this work"""
+  titles: ManifestationTitles!
+
+  """Abstract of the entity"""
+  abstract: [String!]!
+
+  """Access type of this manifestation"""
+  accessTypes: [AccessType!]!
+
+  """Different options to access manifestation"""
+  access: [AccessUnion!]!
+
+  """
+  Different kinds of definitions of appropriate audience for this manifestation
+  """
+  audience: Audience
+
+  """
+  CatalogueCodes divided in codes from the national bibliography and other codes
+  """
+  catalogueCodes: CatalogueCodes!
+
+  """
+  Classification codes for this manifestation from any classification system
+  """
+  classifications: [Classification!]!
+
+  """Contributors to the manifestation, actors, illustrators etc"""
+  contributors: [CreatorInterface!]!
+
+  """
+  Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
+  """
+  contributorsFromDescription: [String!]!
+
+  """
+  Primary creators of the manifestation e.g. authors, directors, musicians etc
+  """
+  creators: [CreatorInterface!]!
+
+  """
+  Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
+  """
+  creatorsFromDescription: [String!]!
+
+  """The year for the publication of the first edition for this work """
+  dateFirstEdition: PublicationYear
+
+  """Edition details for this manifestation"""
+  edition: Edition
+
+  """Details about the latest printing of this manifestation"""
+  latestPrinting: Printing
+
+  """
+  Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
+  """
+  fictionNonfiction: FictionNonfiction
+
+  """The genre, (literary) form, type etc. of this manifestation"""
+  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 01/03-2027")
+
+  """Details about the host publications of this manifestation"""
+  hostPublication: HostPublication
+
+  """The publication status of the manifestation"""
+  publicationStatus: PublicationStatus
+
+  """Identifiers for this manifestation - often used for search indexes"""
+  identifiers: [Identifier!]!
+
+  """Languages in this manifestation"""
+  languages: Languages
+
+  """
+  Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
+  """
+  contents: [ContentsEntity!]
+
+  """
+  Metadata related to material selection, including publication status,
+  selection group, and librarian assessment.
+  """
+  materialSelection: MaterialSelection
+
+  """The type of material of the manifestation based on bibliotek.dk types"""
+  materialTypes: [MaterialType!]!
+
+  """Notes about the manifestation"""
+  notes: [Note!]!
+
+  """The work that this manifestation is part of"""
+  ownerWork: Work!
+
+  """
+  Notes about relations to this book/periodical/journal, - like previous names or related journals
+  """
+  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Use 'periodicalTitleHistory' and 'notes' instead expires: 05/12-2026")
+
+  """
+  Notes on relations to this manifestation - e.g. previous/later names or related journals
+  """
+  periodicalTitleHistory: [PeriodicalTitleHistory!]!
+
+  """
+  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
+  """
+  physicalDescription: PhysicalUnitDescription
+
+  """Publisher of this manifestion"""
+  publisher: [String!]!
+
+  """The city or place where the item was published"""
+  placeOfPublication: [String!]!
+
+  """
+  The creation date of the record describing this manifestation in the format YYYYMMDD
+  """
+  recordCreationDate: String!
+
+  """Series for this manifestation"""
+  series: [Series!]!
+
+  """Universes for this manifestation"""
+  universes: [Universe!]!
+
+  """
+  Information about on which shelf in the library this manifestation can be found
+  """
+  shelfmark: Shelfmark
+
+  """
+  The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
+  """
+  source: [String!]!
+
+  """Subjects for this manifestation"""
+  subjects: SubjectContainer!
+
+  """
+  Information about on which volume this manifestation is in multi volume work
+  """
+  volume: String
+
+  """Worktypes for this manifestations work"""
+  workTypes: [WorkTypeEnum!]!
+
+  """The year this manifestation was originally published or produced"""
+  workYear: PublicationYear
+
+  """id of the manifestaion unit"""
+  unit: Unit
+
+  """automation material group info"""
+  illAutomationMaterialGroup: IllAutomationMaterialGroup
+
+  """Identification of the local id of this manifestation"""
+  localId: String
+
+  """Material that can be identified as sheet music"""
+  sheetMusicCategories: SheetMusicCategory
+
+  """The publication status of a catalogued manifestation."""
+  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 01/03-2027")
+
+  """The genre and (literary) form of this manifestation"""
+  genreForm: [GenreForm!]!
+
+  """
+  The records type of sound recording - excluding music recordings and its material
+  """
+  soundRecording: SoundRecording
+
+  """Code for type of periodical"""
+  periodicalType: PeriodicalType
+
+  """Code for bibliographic category"""
+  bibliographicCategory: BibliographicCategory
+
+  """Code for comics, children's picture books and drama"""
+  specialMaterialGroup: SpecialMaterialGroup
+
+  """
+  The creator of the manifestation that the material can be located under on the shelf
+  """
+  shelfCreator: ShelfCreator
+
+  """Information on music shelving"""
+  musicShelf: MusicShelf
+
+  """Field for presenting bibliographic records in MARC format"""
+  marc: MarcRecord
+
+  """Relations to other manifestations"""
+  relations: Relations!
+
+  """Some review data, if this manifestation is a review"""
+  review: ManifestationReview
+
+  """
+  Bibliographic reference data for this manifestation formatted as RIS.
+  When fetching RIS for multiple manifestations, each record is returned on the
+  manifestation. To combine them into a single RIS file, join the records with a newline.
+  """
+  ris: String
+}
+
 enum LanguageCodeEnum {
   DA
   EN
@@ -10616,224 +10934,6 @@ type MaterialSelectionLibrarianAssessment {
   Danish display label for the assessment, e.g. "Har lektørudtalelse (materialevurdering)".
   """
   display: String
-}
-
-type Manifestation {
-  """
-  A unique identifier for tracking user interactions with this manifestation. 
-  It is generated in the response and should be included in subsequent
-  API calls when this manifestation is selected.
-  """
-  traceId: String!
-
-  """Unique identification of the manifestation e.g 870970-basis:54029519"""
-  pid: String!
-
-  """Different kinds of titles for this work"""
-  titles: ManifestationTitles!
-
-  """Abstract of the entity"""
-  abstract: [String!]!
-
-  """Access type of this manifestation"""
-  accessTypes: [AccessType!]!
-
-  """Different options to access manifestation"""
-  access: [AccessUnion!]!
-
-  """
-  Different kinds of definitions of appropriate audience for this manifestation
-  """
-  audience: Audience
-
-  """
-  CatalogueCodes divided in codes from the national bibliography and other codes
-  """
-  catalogueCodes: CatalogueCodes!
-
-  """
-  Classification codes for this manifestation from any classification system
-  """
-  classifications: [Classification!]!
-
-  """Contributors to the manifestation, actors, illustrators etc"""
-  contributors: [CreatorInterface!]!
-
-  """
-  Additional contributors of this manifestation as described on the publication. E.g. 'på dansk ved Vivi Berendt'
-  """
-  contributorsFromDescription: [String!]!
-
-  """
-  Primary creators of the manifestation e.g. authors, directors, musicians etc
-  """
-  creators: [CreatorInterface!]!
-
-  """
-  Additional creators of this manifestation as described on the publication. E.g. 'tekst af William Warren'
-  """
-  creatorsFromDescription: [String!]!
-
-  """The year for the publication of the first edition for this work """
-  dateFirstEdition: PublicationYear
-
-  """Edition details for this manifestation"""
-  edition: Edition
-
-  """Details about the latest printing of this manifestation"""
-  latestPrinting: Printing
-
-  """
-  Overall literary category/genre of this manifestation. e.g. fiction or nonfiction. In Danish skønlitteratur/faglitteratur for literature, fiktion/nonfiktion for other types.
-  """
-  fictionNonfiction: FictionNonfiction
-
-  """The genre, (literary) form, type etc. of this manifestation"""
-  genreAndForm: [String!]! @deprecated(reason: "Use 'genreForm' instead expires: 01/03-2027")
-
-  """Details about the host publications of this manifestation"""
-  hostPublication: HostPublication
-
-  """The publication status of the manifestation"""
-  publicationStatus: PublicationStatus
-
-  """Identifiers for this manifestation - often used for search indexes"""
-  identifiers: [Identifier!]!
-
-  """Languages in this manifestation"""
-  languages: Languages
-
-  """
-  Content title entries with possible creators, contributors and playing time for music tracks, sheet music titles, articles, poems, short stories etc.
-  """
-  contents: [ContentsEntity!]
-
-  """
-  Metadata related to material selection, including publication status,
-  selection group, and librarian assessment.
-  """
-  materialSelection: MaterialSelection
-
-  """The type of material of the manifestation based on bibliotek.dk types"""
-  materialTypes: [MaterialType!]!
-
-  """Notes about the manifestation"""
-  notes: [Note!]!
-
-  """The work that this manifestation is part of"""
-  ownerWork: Work!
-
-  """
-  Notes about relations to this book/periodical/journal, - like previous names or related journals
-  """
-  relatedPublications: [RelatedPublication!]! @deprecated(reason: "Use 'periodicalTitleHistory' and 'notes' instead expires: 05/12-2026")
-
-  """
-  Notes on relations to this manifestation - e.g. previous/later names or related journals
-  """
-  periodicalTitleHistory: [PeriodicalTitleHistory!]!
-
-  """
-  Physical description  of this manifestation like extent (pages/minutes), illustrations etc.
-  """
-  physicalDescription: PhysicalUnitDescription
-
-  """Publisher of this manifestion"""
-  publisher: [String!]!
-
-  """The city or place where the item was published"""
-  placeOfPublication: [String!]!
-
-  """
-  The creation date of the record describing this manifestation in the format YYYYMMDD
-  """
-  recordCreationDate: String!
-
-  """Series for this manifestation"""
-  series: [Series!]!
-
-  """Universes for this manifestation"""
-  universes: [Universe!]!
-
-  """
-  Information about on which shelf in the library this manifestation can be found
-  """
-  shelfmark: Shelfmark
-
-  """
-  The source of the manifestation, e.g. own library catalogue (Bibliotekskatalog) or online source e.g. Filmstriben, Ebook Central, eReolen Global etc.
-  """
-  source: [String!]!
-
-  """Subjects for this manifestation"""
-  subjects: SubjectContainer!
-
-  """
-  Information about on which volume this manifestation is in multi volume work
-  """
-  volume: String
-
-  """Worktypes for this manifestations work"""
-  workTypes: [WorkTypeEnum!]!
-
-  """The year this manifestation was originally published or produced"""
-  workYear: PublicationYear
-
-  """id of the manifestaion unit"""
-  unit: Unit
-
-  """automation material group info"""
-  illAutomationMaterialGroup: IllAutomationMaterialGroup
-
-  """Identification of the local id of this manifestation"""
-  localId: String
-
-  """Material that can be identified as sheet music"""
-  sheetMusicCategories: SheetMusicCategory
-
-  """The publication status of a catalogued manifestation."""
-  cataloguedPublicationStatus: CataloguedPublicationStatus @deprecated(reason: "Use 'Manifestation.materialSelection.cataloguedPublicationStatus' instead expires: 01/03-2027")
-
-  """The genre and (literary) form of this manifestation"""
-  genreForm: [GenreForm!]!
-
-  """
-  The records type of sound recording - excluding music recordings and its material
-  """
-  soundRecording: SoundRecording
-
-  """Code for type of periodical"""
-  periodicalType: PeriodicalType
-
-  """Code for bibliographic category"""
-  bibliographicCategory: BibliographicCategory
-
-  """Code for comics, children's picture books and drama"""
-  specialMaterialGroup: SpecialMaterialGroup
-
-  """
-  The creator of the manifestation that the material can be located under on the shelf
-  """
-  shelfCreator: ShelfCreator
-
-  """Information on music shelving"""
-  musicShelf: MusicShelf
-
-  """Field for presenting bibliographic records in MARC format"""
-  marc: MarcRecord
-
-  """Relations to other manifestations"""
-  relations: Relations!
-
-  """Some review data, if this manifestation is a review"""
-  review: ManifestationReview
-
-  """
-  Bibliographic reference data for this manifestation formatted as RIS.
-  When fetching RIS for multiple manifestations, each record is returned on the
-  manifestation. To combine them into a single RIS file, join the records with a newline.
-  """
-  ris: String
 }
 
 type ShelfCreator {
