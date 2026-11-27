@@ -29,6 +29,45 @@ describe("UserData Historical Loan V2 datasources", () => {
     );
   });
 
+  test.each([true, false])(
+    "GET forwards includeFacets=%s",
+    async (includeFacets) => {
+      const context = createContext({ hitcount: 0, items: [] });
+      await getHistoricalLoans({ accessToken, includeFacets }, context);
+      const url = new URL(context.fetch.mock.calls[0][0]);
+      expect(url.searchParams.get("includeFacets")).toBe(String(includeFacets));
+    }
+  );
+
+  test("GET encodes repeated application filters, work and sort order", async () => {
+    const context = createContext({ hitcount: 2, items: [] });
+    await getHistoricalLoans(
+      {
+        accessToken,
+        filterApplications: ["BIBLO", "MITBIBLO"],
+        filterWorkId: "work-of:870970-basis:23424916",
+        orderBy: "TITLE_ASC",
+        offset: 5,
+        limit: 10,
+      },
+      context
+    );
+    const url = new URL(context.fetch.mock.calls[0][0]);
+    expect(url.searchParams.getAll("filterApplications")).toEqual([
+      "BIBLO",
+      "MITBIBLO",
+    ]);
+    expect(url.searchParams.get("filterWorkId")).toBe(
+      "work-of:870970-basis:23424916"
+    );
+    expect(url.searchParams.get("orderBy")).toBe("TITLE_ASC");
+    await getHistoricalLoans(
+      { accessToken, filterApplications: [""] },
+      context
+    );
+    expect(context.fetch.mock.calls[1][0]).toContain("filterApplications=");
+  });
+
   test("ADD forwards historical loans built by the Patron resolver", async () => {
     const context = createContext({ results: [] });
     const loans = [

@@ -1,4 +1,27 @@
-import { parse } from "graphql";
+import { getNamedType, parse } from "graphql";
+import { collectFields } from "graphql/execution/execute";
+
+/** Check immediate fields using GraphQL's fragment and directive semantics. */
+export function isFieldRequested(info, fieldName) {
+  if (!info) return false;
+
+  const fields = Object.create(null);
+  const visitedFragments = Object.create(null);
+  for (const node of info.fieldNodes) {
+    if (node.selectionSet) {
+      collectFields(
+        info,
+        getNamedType(info.returnType),
+        node.selectionSet,
+        fields,
+        visitedFragments
+      );
+    }
+  }
+  return Object.values(fields).some((nodes) =>
+    nodes.some((node) => node.name.value === fieldName)
+  );
+}
 
 /**
  * Recursively checks whether a selection set includes an inline fragment

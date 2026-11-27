@@ -502,17 +502,27 @@ If consent has not been granted, the collection has no items and returns
 <InlineGraphiQL
   query={`
     query Example_PatronHistoricalLoans(
+      $filters: HistoricalLoanFilterInput
+      $orderBy: OrderHistoricalLoansByEnum
       $offset: Int
       $limit: PaginationLimitScalar
     ) {
       patron {
-        historicalLoans(offset: $offset, limit: $limit) {
+        historicalLoans(filters: $filters, orderBy: $orderBy, offset: $offset, limit: $limit) {
           hitcount
           status
+          facets {
+            name
+            values { key score }
+          }
           items {
             id
+            materialId
+            application
             loanedAt
+            loanedAtTimestamp
             returnedAt
+            returnedAtTimestamp
             account {
               name
               email
@@ -561,6 +571,44 @@ If consent has not been granted, the collection has no items and returns
   }}
 />
 
+Historical loans accept `filters: { applications, workId }`. Both fields are
+optional and can be used independently. Applications
+are combined with OR, and the work filter is combined with AND. Omit
+`filters.applications` (or pass an empty list) for all applications; `[""]` matches none.
+Filters apply before pagination; `hitcount` counts all matching loans, including
+repeated loans of the same material and different materials belonging to a work.
+
+Select `facets { name values { key score } }` to request application counts.
+The API automatically requests facets from UserData only when the field is
+selected, including through aliases and fragments. Fields excluded by `@skip`
+or `@include` do not trigger facet calculation. No additional argument is needed.
+`facets` is null when UserData omits it, including responses with `CONSENT_REQUIRED`.
+Facets use dedicated `HistoricalLoanFacet` and `HistoricalLoanFacetValue` types
+with the same structure as complex search. The application facet has
+`name: "applications"`; each value has the application code in `key` and the
+loan count in `score`. Historical loan facets have no `traceId` field. An available facet
+with no matching applications is `[{ "name": "applications", "values": [] }]`.
+
+Counts come directly from UserData, before pagination. They respect the user
+and `filters.workId`, but ignore `filters.applications` so other applications remain
+selectable. Loans with a null application are excluded from facet counts.
+Counts represent individual loans and are independent of the returned page of
+`items`; their sum can exceed the application-filtered `hitcount`.
+
+`orderBy` defaults to `RETURNEDAT_DESC`. It also supports `RETURNEDAT_ASC`,
+`TITLE_ASC`, `TITLE_DESC`, `CREATOR_ASC` and `CREATOR_DESC`. Missing values sort
+last in both directions, with a stable secondary order. Return-date sorting uses
+the timestamp when present, otherwise midnight in `Europe/Copenhagen`.
+Work filtering and title/creator sorting of older records are only complete
+after UserData backfill or reimport.
+
+`application` is the application code associated with the historical loan,
+mapped from UserData's `applicationName`, or null when unknown.
+
+`loanedAtTimestamp` and `returnedAtTimestamp` are UTC timestamps or null.
+The date fields remain calendar dates in `YYYY-MM-DD` format.
+These capabilities require deployment of the updated UserData HistoricalLoans contract.
+
 Loan collection and operation statuses:
 
 <DescribeEnum name="PatronLoansOverallStatusEnum" />
@@ -573,6 +621,16 @@ disabled by configuration. Consent is required before a loan can be stored.
 `materialId` accepts a PID or a numeric faust number. Dates use `YYYY-MM-DD`,
 and `returnedAt` cannot be earlier than `loanedAt`. Snapshot metadata is
 resolved by the API and cannot be supplied by the client.
+
+Optional `loanedAtTimestamp` and `returnedAtTimestamp` accept RFC 3339 strings
+with an explicit timezone and at most three fractional second digits, for example
+`2026-07-02T00:30:00+02:00`. The API derives the calendar date in
+`Europe/Copenhagen`. If both date and timestamp are supplied for an event, their
+Copenhagen dates must match; otherwise the API returns `BAD_USER_INPUT`.
+Omitted or null timestamps leave date-only inputs unchanged.
+Deduplication uses calendar dates, so different times on the same date do not
+create distinct otherwise identical loans. Existing duplicates return
+`ALREADY_EXISTS` without updating metadata.
 
 When `dryRun` is true, identifiers, date ranges and material resolution are
 validated without storing loans.
@@ -589,6 +647,8 @@ validated without storing loans.
           items {
             id
             materialId
+            agency { id name }
+            material { manifestation { pid } }
             status
           }
         }
@@ -610,8 +670,14 @@ validated without storing loans.
 
 ### Delete historical loans
 
-Historical loans are deleted by their public IDs. `dryRun` validates the IDs
-without deleting loans.
+Historical loans are deleted by their public IDs. Both manual and harvested loans
+are deleted directly; repeating a deletion returns `NOT_FOUND`. Deletion does
+not prevent later reimport of the loan. `dryRun` validates the IDs without deleting loans.
+
+ADD and DELETE results expose nullable `agency` and `material { manifestation }`.
+Agency information comes from the stored record returned by UserData and is
+unavailable during dry runs. DELETE of an unknown ID has neither agency nor
+material information. A manifestation can be null if the material no longer resolves.
 
 <InlineGraphiQL
   query={`
@@ -625,6 +691,8 @@ without deleting loans.
           items {
             id
             materialId
+            agency { id name }
+            material { manifestation { pid } }
             status
           }
         }

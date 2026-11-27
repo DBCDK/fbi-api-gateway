@@ -3,8 +3,25 @@ import { getHistoricalLoanV2Response } from "./userDataHistoricalLoansV2.utils";
 
 const { url, teamLabel } = config.datasources.userdata;
 
-export async function load({ accessToken, offset, limit }, context) {
+export async function load(
+  {
+    accessToken,
+    filterApplications,
+    filterWorkId,
+    orderBy,
+    includeFacets,
+    offset,
+    limit,
+  },
+  context
+) {
   const query = new URLSearchParams();
+  filterApplications?.forEach((application) =>
+    query.append("filterApplications", application)
+  );
+  if (filterWorkId) query.set("filterWorkId", filterWorkId);
+  if (orderBy) query.set("orderBy", orderBy);
+  if (includeFacets != null) query.set("includeFacets", includeFacets);
   if (offset !== undefined) query.set("offset", offset);
   if (limit !== undefined) query.set("limit", limit);
   const queryString = query.toString();

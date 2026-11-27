@@ -10,10 +10,12 @@ import {
 import {
   getOverallStatus,
   isFaustNumber,
+  isWorkId,
   isHistoricalLoanMaterialId,
   badUserInput,
 } from "./utils";
 import { buildPatronMaterialSnapshot } from "./snapshot";
+import { isFieldRequested } from "../../utils/graphQLQueryTools";
 
 const historicalLoanIdPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -236,10 +238,32 @@ function normalizeDate(value) {
 }
 
 function normalizeHistoricalLoanInput(loan) {
+  const dates = {};
+  for (const field of ["loanedAt", "returnedAt"]) {
+    const timestamp = loan[`${field}Timestamp`];
+    const date = normalizeDate(loan[field]);
+    if (timestamp != null) {
+      const instant = new Date(timestamp);
+      const calendarDate = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Copenhagen",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(instant);
+      if (date && date !== calendarDate) {
+        throw badUserInput(
+          `${field} must match the timestamp's Europe/Copenhagen date`
+        );
+      }
+      dates[field] = calendarDate;
+      dates[`${field}Timestamp`] = instant.toISOString();
+    } else {
+      dates[field] = date;
+    }
+  }
   return {
     agencyId: loan.agencyId || null,
-    loanedAt: normalizeDate(loan.loanedAt),
-    returnedAt: normalizeDate(loan.returnedAt),
+    ...dates,
     materialId: loan.materialId,
     materialIdType: isFaustNumber(loan.materialId) ? "FAUST" : "PID",
   };
@@ -277,6 +301,10 @@ function toServiceHistoricalLoan(loan, manifestation) {
     agencyId: loan.agencyId,
     loanedAt: loan.loanedAt,
     returnedAt: loan.returnedAt,
+    ...(loan.loanedAtTimestamp && { loanedAtTimestamp: loan.loanedAtTimestamp }),
+    ...(loan.returnedAtTimestamp && {
+      returnedAtTimestamp: loan.returnedAtTimestamp,
+    }),
     materialId: loan.materialId,
     materialIdType: loan.materialIdType,
     snapshot: {
@@ -342,6 +370,8 @@ export const typeDef = `
         Retrieves historical loans stored in UserData.
         """
         historicalLoans(
+          filters: HistoricalLoanFilterInput
+          orderBy: OrderHistoricalLoansByEnum
           offset: Int
           limit: PaginationLimitScalar
         ): PatronHistoricalLoans! @deprecated(reason: "@draft")
@@ -434,8 +464,11 @@ export const typeDef = `
     }
 
     type PatronHistoricalLoans {
+        """Application counts fetched when this field is selected. Null when absent from UserData."""
+        facets: [HistoricalLoanFacet!]
+
         """
-        The total number of historical loans before pagination.
+        The total number of matching historical loans before pagination.
         """
         hitcount: Int!
 
@@ -445,9 +478,40 @@ export const typeDef = `
         status: PatronLoansOverallStatusEnum!
 
         """
-        Historical loans in UserData service order.
+        Historical loans in the requested order; defaults to RETURNEDAT_DESC.
+        Missing sort values are placed last.
         """
         items: [HistoricalLoan!]!
+    }
+
+    type HistoricalLoanFacet {
+        name: String!
+        values: [HistoricalLoanFacetValue!]!
+    }
+
+    type HistoricalLoanFacetValue {
+        """Application code used with the applications filter."""
+        key: String!
+
+        """Number of loans before pagination, respecting workId but ignoring the applications filter."""
+        score: Int!
+    }
+
+    input HistoricalLoanFilterInput {
+        """Application codes to include. Omit for all applications."""
+        applications: [String!]
+
+        """Return every loan associated with this work, without deduplication."""
+        workId: String
+    }
+
+    enum OrderHistoricalLoansByEnum {
+        TITLE_ASC
+        TITLE_DESC
+        CREATOR_ASC
+        CREATOR_DESC
+        RETURNEDAT_ASC
+        RETURNEDAT_DESC
     }
 
     type HistoricalLoan {
@@ -455,6 +519,18 @@ export const typeDef = `
         Stable public UserData identifier used when deleting the historical loan.
         """
         id: String!
+
+        """Original material identifier, even when the material can no longer be resolved."""
+        materialId: String
+
+        """The application associated with the historical loan, when known."""
+        application: String
+
+        """Precise borrowing time in UTC, when known."""
+        loanedAtTimestamp: DateTimeScalar
+
+        """Precise return time in UTC, when known."""
+        returnedAtTimestamp: DateTimeScalar
 
         """
         Date on which the material was borrowed, when known.
@@ -489,6 +565,12 @@ export const typeDef = `
     }
 
     input PatronHistoricalLoanInput {
+        """RFC 3339 timestamp. If loanedAt is also supplied, its Copenhagen date must match."""
+        loanedAtTimestamp: HistoricalLoanTimestampScalar
+
+        """RFC 3339 timestamp. If returnedAt is also supplied, its Copenhagen date must match."""
+        returnedAtTimestamp: HistoricalLoanTimestampScalar
+
         """
         Agency ID for the library where the material was borrowed, when known.
         """
@@ -558,7 +640,13 @@ export const typeDef = `
         FAILED
     }
 
+    type HistoricalLoanMaterial {
+        manifestation: Manifestation
+    }
+
     type PatronHistoricalLoanStatusItem {
+        agency: PatronAgency
+        material: HistoricalLoanMaterial
         status: PatronLoanMutationStatusEnum!
         id: String
         materialId: String
@@ -644,7 +732,12 @@ export const resolvers = {
     async historicalLoans(parent, args, context, info) {
       const uniqueId = context?.user?.uniqueId;
       const accessToken = context?.accessToken;
-      const { offset = 0, limit = 10 } = args;
+      const {
+        filters,
+        orderBy = "RETURNEDAT_DESC",
+        offset = 0,
+        limit = 10,
+      } = args;
       if (!uniqueId || !accessToken) {
         return {
           hitcount: 0,
@@ -657,14 +750,27 @@ export const resolvers = {
         throw badUserInput("offset must be greater than or equal to 0");
       }
 
+      if (filters?.workId != null && !isWorkId(filters.workId)) {
+        throw badUserInput("filters.workId must be a valid work ID");
+      }
+
       try {
         const response = await context.datasources
           .getLoader("userDataV2GetHistoricalLoans")
-          .load({ accessToken, offset, limit });
+          .load({
+            accessToken,
+            filterApplications: filters?.applications,
+            includeFacets: isFieldRequested(info, "facets"),
+            ...(filters?.workId != null && { filterWorkId: filters.workId }),
+            orderBy,
+            offset,
+            limit,
+          });
 
         return {
           hitcount: response?.hitcount || 0,
           items: response?.items || [],
+          facets: response?.facets,
           status: response?.status || "OK",
         };
       } catch (error) {
@@ -809,6 +915,7 @@ export const resolvers = {
         const items = resolved.map(
           ({ loan, manifestation, invalidMaterialId, invalidDateRange }) => ({
             materialId: loan.materialId,
+            materialIdType: loan.materialIdType,
             status: invalidMaterialId
               ? "INVALID_MATERIAL_ID"
               : invalidDateRange
@@ -843,6 +950,8 @@ export const resolvers = {
           return {
             id: result?.id ?? null,
             materialId: result?.materialId ?? item.materialId,
+            materialIdType: result?.materialIdType ?? item.materialIdType,
+            agencyId: result?.agencyId,
             status: mapServiceStatus(result?.status),
           };
         });
@@ -917,6 +1026,8 @@ export const resolvers = {
           return {
             id,
             materialId: result?.materialId || null,
+            materialIdType: result?.materialIdType,
+            agencyId: result?.agencyId,
             status: mapServiceStatus(result?.status),
           };
         });
@@ -991,6 +1102,19 @@ export const resolvers = {
   },
 
   PatronHistoricalLoans: {
+    facets(parent) {
+      if (!parent?.facets) return null;
+
+      return [
+        {
+          name: "applications",
+          values: parent.facets.applications.map(({ value, count }) => ({
+            key: value,
+            score: count,
+          })),
+        },
+      ];
+    },
     hitcount(parent) {
       return parent?.hitcount || 0;
     },
@@ -1002,7 +1126,26 @@ export const resolvers = {
     },
   },
 
+  PatronHistoricalLoanStatusItem: {
+    agency(parent, args, context) {
+      return agencyForLoan(parent, context);
+    },
+    material(parent) {
+      return parent?.materialId && parent?.materialIdType ? parent : null;
+    },
+  },
+  HistoricalLoanMaterial: {
+    manifestation(parent, args, context) {
+      return resolveHistoricalLoanManifestation(parent, context);
+    },
+  },
   HistoricalLoan: {
+    application(parent) {
+      return parent?.applicationName ?? null;
+    },
+    materialId(parent) {
+      return parent?.materialId || parent?.sourceMaterialId || null;
+    },
     account(parent, args, context) {
       return accountForAgency(parent, context);
     },

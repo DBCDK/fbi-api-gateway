@@ -4307,7 +4307,7 @@ type Patron {
   currentLoans(orderBy: OrderLoansByEnum, status: PatronLoanStatusEnum, offset: Int, limit: PaginationLimitScalar): PatronCurrentLoans! @deprecated(reason: "@draft")
 
   """Retrieves historical loans stored in UserData."""
-  historicalLoans(offset: Int, limit: PaginationLimitScalar): PatronHistoricalLoans! @deprecated(reason: "@draft")
+  historicalLoans(filters: HistoricalLoanFilterInput, orderBy: OrderHistoricalLoansByEnum, offset: Int, limit: PaginationLimitScalar): PatronHistoricalLoans! @deprecated(reason: "@draft")
 
   """
   Retrieves consent for storing historical loans and whether the patron is old enough to change it.
@@ -4669,6 +4669,8 @@ enum BookmarksStatusEnum {
   UNKNOWN_ERROR
 }
 
+scalar HistoricalLoanTimestampScalar
+
 type PatronCurrentLoans {
   """The total number of current loans before filtering and pagination."""
   hitcount: Int!
@@ -4704,14 +4706,54 @@ type CurrentLoan {
 }
 
 type PatronHistoricalLoans {
-  """The total number of historical loans before pagination."""
+  """
+  Application counts fetched when this field is selected. Null when absent from UserData.
+  """
+  facets: [HistoricalLoanFacet!]
+
+  """The total number of matching historical loans before pagination."""
   hitcount: Int!
 
   """The overall status of the historical-loan lookup."""
   status: PatronLoansOverallStatusEnum!
 
-  """Historical loans in UserData service order."""
+  """
+  Historical loans in the requested order; defaults to RETURNEDAT_DESC.
+  Missing sort values are placed last.
+  """
   items: [HistoricalLoan!]!
+}
+
+type HistoricalLoanFacet {
+  name: String!
+  values: [HistoricalLoanFacetValue!]!
+}
+
+type HistoricalLoanFacetValue {
+  """Application code used with the applications filter."""
+  key: String!
+
+  """
+  Number of loans before pagination, respecting workId but ignoring the applications filter.
+  """
+  score: Int!
+}
+
+input HistoricalLoanFilterInput {
+  """Application codes to include. Omit for all applications."""
+  applications: [String!]
+
+  """Return every loan associated with this work, without deduplication."""
+  workId: String
+}
+
+enum OrderHistoricalLoansByEnum {
+  TITLE_ASC
+  TITLE_DESC
+  CREATOR_ASC
+  CREATOR_DESC
+  RETURNEDAT_ASC
+  RETURNEDAT_DESC
 }
 
 type HistoricalLoan {
@@ -4719,6 +4761,20 @@ type HistoricalLoan {
   Stable public UserData identifier used when deleting the historical loan.
   """
   id: String!
+
+  """
+  Original material identifier, even when the material can no longer be resolved.
+  """
+  materialId: String
+
+  """The application associated with the historical loan, when known."""
+  application: String
+
+  """Precise borrowing time in UTC, when known."""
+  loanedAtTimestamp: DateTime
+
+  """Precise return time in UTC, when known."""
+  returnedAtTimestamp: DateTime
 
   """Date on which the material was borrowed, when known."""
   loanedAt: Date
@@ -4747,6 +4803,16 @@ type HistoricalLoan {
 }
 
 input PatronHistoricalLoanInput {
+  """
+  RFC 3339 timestamp. If loanedAt is also supplied, its Copenhagen date must match.
+  """
+  loanedAtTimestamp: HistoricalLoanTimestampScalar
+
+  """
+  RFC 3339 timestamp. If returnedAt is also supplied, its Copenhagen date must match.
+  """
+  returnedAtTimestamp: HistoricalLoanTimestampScalar
+
   """Agency ID for the library where the material was borrowed, when known."""
   agencyId: String
 
@@ -4820,7 +4886,13 @@ enum SetHistoricalLoanConsentStatusEnum {
   FAILED
 }
 
+type HistoricalLoanMaterial {
+  manifestation: Manifestation
+}
+
 type PatronHistoricalLoanStatusItem {
+  agency: PatronAgency
+  material: HistoricalLoanMaterial
   status: PatronLoanMutationStatusEnum!
   id: String
   materialId: String
