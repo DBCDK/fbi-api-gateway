@@ -31,7 +31,14 @@ const CULR_DATA_SYNC_BRANCH_IDS = [
   "830080", // Det Kongelige Akademi - Bibliotek
 
   "872060", // Hjørring Gymnasium, STX og HF. Biblioteket
-  "830380", // UCN Bibliotek
+
+  "830380", // UCN Bibliotek, Mylius Erichsens Vej
+  "831000", // UCN Bibliotek, Skolevangen
+  "831080", // UCN Bibliotek, Selma Lagerløfs Vej
+  "860890", // UCN Bibliotek, Hobrovej
+  "860893", // UCN Bibliotek, Sofiendalsvej
+  "874350", // UCN Bibliotek, Lerpyttervej
+
   "872100", // Vesthimmerlands Gymnasium & HF. Biblioteket
 
   // Login with mitId, when no library accounts
