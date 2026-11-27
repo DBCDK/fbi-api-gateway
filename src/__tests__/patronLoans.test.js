@@ -1,3 +1,4 @@
+import { buildSchema, defaultFieldResolver, graphql, parse } from "graphql";
 import { log } from "dbc-node-logger";
 import { resolvers } from "../schema/patron/loans";
 
@@ -226,6 +227,13 @@ describe("Patron current loans", () => {
   });
 });
 
+const facetTestSchema = buildSchema(`
+  type Query { historicalLoans: PatronHistoricalLoans! }
+  type PatronHistoricalLoans { hitcount: Int! facets: [HistoricalLoanFacet!] }
+  type HistoricalLoanFacet { name: String! values: [HistoricalLoanFacetValue!]! }
+  type HistoricalLoanFacetValue { key: String! score: Int! }
+`);
+
 describe("Patron historical loans", () => {
   beforeEach(() => jest.clearAllMocks());
 
@@ -240,7 +248,331 @@ describe("Patron historical loans", () => {
     expect(context.datasources.getLoader).toHaveBeenCalledWith(
       "userDataV2GetHistoricalLoans"
     );
-    expect(load).toHaveBeenCalledWith({ accessToken, offset: 20, limit: 5 });
+    expect(load).toHaveBeenCalledWith({
+      accessToken,
+      offset: 20,
+      limit: 5,
+      orderBy: "RETURNEDAT_DESC",
+      includeFacets: false,
+    });
+  });
+
+  test.each([
+    ["OK", undefined],
+    ["CONSENT_REQUIRED", undefined],
+    ["OK", { applications: [] }],
+    [
+      "OK",
+      {
+        applications: [
+          { value: "BIBLO", count: 4 },
+          { value: "MITBIBLO", count: 3 },
+        ],
+      },
+    ],
+  ])("preserves optional facets for %s: %j", async (status, facets) => {
+    const response = {
+      status,
+      hitcount: status === "OK" ? 4 : 0,
+      items: [],
+      ...(facets && { facets }),
+    };
+    const load = jest.fn().mockResolvedValue(response);
+    const result = await resolvers.Patron.historicalLoans(
+      null,
+      {
+        filters: {
+          applications: ["BIBLO"],
+          workId: "work-of:870970-basis:23424916",
+        },
+        offset: 20,
+        limit: 5,
+      },
+      createContext(load),
+      {
+        schema: facetTestSchema,
+        returnType: facetTestSchema.getType("PatronHistoricalLoans"),
+        fieldNodes: parse(
+          "{ historicalLoans { facets { name values { key score } } } }"
+        ).definitions[0].selectionSet.selections,
+        fragments: {},
+        variableValues: {},
+      }
+    );
+    expect(load).toHaveBeenCalledWith(
+      expect.objectContaining({
+        includeFacets: true,
+        filterApplications: ["BIBLO"],
+        filterWorkId: "work-of:870970-basis:23424916",
+        offset: 20,
+        limit: 5,
+      })
+    );
+    expect(result).toEqual(response);
+    expect(resolvers.PatronHistoricalLoans.facets(result)).toEqual(
+      facets
+        ? [
+            {
+              name: "applications",
+              values: facets.applications.map(({ value, count }) => ({
+                key: value,
+                score: count,
+              })),
+            },
+          ]
+        : null
+    );
+  });
+
+  test.each([
+    ["{ historicalLoans { hitcount } }", {}, false],
+    [
+      "{ historicalLoans { alias: facets { name values { key score } } } }",
+      {},
+      true,
+    ],
+    [
+      "{ historicalLoans { ...F } } fragment F on PatronHistoricalLoans { ... on PatronHistoricalLoans { facets { name values { key score } } } }",
+      {},
+      true,
+    ],
+    [
+      "query($show: Boolean!) { historicalLoans { facets @include(if: $show) { name values { key score } } } }",
+      { show: false },
+      false,
+    ],
+    [
+      "query($show: Boolean! = true) { historicalLoans { ...F @include(if: $show) } } fragment F on PatronHistoricalLoans { facets { name values { key score } } }",
+      {},
+      true,
+    ],
+    [
+      "{ historicalLoans { ... on PatronHistoricalLoans @skip(if: true) { facets { name values { key score } } } } }",
+      {},
+      false,
+    ],
+    [
+      "{ historicalLoans { ...F @skip(if: true) } } fragment F on PatronHistoricalLoans { facets { name values { key score } } }",
+      {},
+      false,
+    ],
+    [
+      "{ historicalLoans { facets @skip(if: true) { name values { key score } } } historicalLoans { facets { name values { key score } } } }",
+      {},
+      true,
+    ],
+  ])(
+    "requests facets from active GraphQL selections: %s",
+    async (source, variableValues, includeFacets) => {
+      const facets = { applications: [{ value: "BIBLO", count: 4 }] };
+      const load = jest
+        .fn()
+        .mockResolvedValue({ hitcount: 4, items: [], facets });
+      const result = await graphql({
+        schema: facetTestSchema,
+        fieldResolver: (parent, args, context, info) => {
+          const resolve = resolvers[info.parentType.name]?.[info.fieldName];
+          return resolve
+            ? resolve(parent, args, context, info)
+            : defaultFieldResolver(parent, args, context, info);
+        },
+        source,
+        variableValues,
+        contextValue: createContext(load),
+        rootValue: {
+          historicalLoans: (args, context, info) =>
+            resolvers.Patron.historicalLoans(null, args, context, info),
+        },
+      });
+      expect(result.errors).toBeUndefined();
+      expect(load).toHaveBeenCalledTimes(1);
+      expect(load).toHaveBeenCalledWith(
+        expect.objectContaining({ includeFacets })
+      );
+      if (includeFacets) {
+        const returnedFacets =
+          result.data.historicalLoans.facets ||
+          result.data.historicalLoans.alias;
+        expect(returnedFacets).toEqual([
+          { name: "applications", values: [{ key: "BIBLO", score: 4 }] },
+        ]);
+      }
+    }
+  );
+
+  test.each([
+    { applications: ["BIBLO"] },
+    { workId: "work-of:870970-basis:23424916" },
+    {},
+    null,
+  ])("accepts independent optional filters: %j", async (filters) => {
+    const load = jest.fn().mockResolvedValue({ hitcount: 0, items: [] });
+    await resolvers.Patron.historicalLoans(
+      null,
+      { filters },
+      createContext(load)
+    );
+    expect(load).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filterApplications: filters?.applications,
+      })
+    );
+    expect(load.mock.calls[0][0].filterWorkId).toBe(filters?.workId);
+  });
+
+  test("forwards work and application filters with sorting", async () => {
+    const load = jest.fn().mockResolvedValue({ hitcount: 2, items: [] });
+    const context = createContext(load);
+    await resolvers.Patron.historicalLoans(
+      null,
+      {
+        filters: {
+          applications: ["BIBLO", "MITBIBLO"],
+          workId: "work-of:870970-basis:23424916",
+        },
+        orderBy: "CREATOR_ASC",
+      },
+      context
+    );
+    expect(load).toHaveBeenCalledWith({
+      accessToken,
+      includeFacets: false,
+      filterApplications: ["BIBLO", "MITBIBLO"],
+      filterWorkId: "work-of:870970-basis:23424916",
+      orderBy: "CREATOR_ASC",
+      offset: 0,
+      limit: 10,
+    });
+    load.mockClear();
+    await expect(
+      resolvers.Patron.historicalLoans(
+        null,
+        {
+          filters: { workId: "invalid" },
+        },
+        context
+      )
+    ).rejects.toMatchObject({ extensions: { code: "BAD_USER_INPUT" } });
+    expect(load).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ["2026-07-01T22:30:00.000Z", "2026-07-02"],
+    ["2026-01-01T23:30:00.000Z", "2026-01-02"],
+  ])(
+    "add derives Copenhagen dates from %s and preserves timestamps",
+    async (timestamp, date) => {
+      const load = jest.fn().mockResolvedValue({ results: [] });
+      const context = createAddContext(load);
+      await resolvers.PatronMutation.addHistoricalLoans(
+        null,
+        {
+          loans: [
+            {
+              materialId: "23424916",
+              loanedAtTimestamp: new Date(timestamp),
+              returnedAtTimestamp: new Date(timestamp),
+              returnedAt: date,
+            },
+          ],
+        },
+        context
+      );
+      expect(load).toHaveBeenCalledWith({
+        accessToken,
+        loans: [
+          expect.objectContaining({
+            loanedAt: date,
+            returnedAt: date,
+            loanedAtTimestamp: timestamp,
+            returnedAtTimestamp: timestamp,
+          }),
+        ],
+      });
+    }
+  );
+
+  test.each(["loanedAt", "returnedAt"])(
+    "rejects a conflicting %s even in dry runs",
+    async (field) => {
+      const load = jest.fn();
+      await expect(
+        resolvers.PatronMutation.addHistoricalLoans(
+          null,
+          {
+            dryRun: true,
+            loans: [
+              {
+                materialId: "23424916",
+                [field]: "2026-07-01",
+                [`${field}Timestamp`]: new Date("2026-07-01T22:30:00Z"),
+              },
+            ],
+          },
+          createAddContext(load)
+        )
+      ).rejects.toMatchObject({ extensions: { code: "BAD_USER_INPUT" } });
+      expect(load).not.toHaveBeenCalled();
+    }
+  );
+
+  test.each(["addHistoricalLoans", "deleteHistoricalLoans"])(
+    "%s retains stored agency and material for resolution",
+    async (mutation) => {
+      const stored = {
+        id: publicLoanId,
+        agencyId: "710100",
+        materialId: "23424916",
+        materialIdType: "FAUST",
+        status: "ok",
+      };
+      const load = jest.fn().mockResolvedValue({ results: [stored] });
+      const context = createAddContext(load);
+      const result = await resolvers.PatronMutation[mutation](
+        null,
+        {
+          ids: [publicLoanId],
+          loans: [{ materialId: "23424916" }],
+        },
+        context
+      );
+      const item = result.items[0];
+      expect(item).toMatchObject({ ...stored, status: "OK" });
+      const material = resolvers.PatronHistoricalLoanStatusItem.material(item);
+      expect(
+        await resolvers.HistoricalLoanMaterial.manifestation(
+          material,
+          {},
+          context
+        )
+      ).toBeTruthy();
+      load.mockResolvedValue({ hitcount: 1, result: [] });
+      expect(
+        await resolvers.PatronHistoricalLoanStatusItem.agency(item, {}, context)
+      ).toEqual({ hitcount: 1, result: [] });
+      expect(load).toHaveBeenLastCalledWith({ agencyid: "710100", limit: 50 });
+      expect(
+        resolvers.PatronHistoricalLoanStatusItem.material({ materialId: null })
+      ).toBeNull();
+    }
+  );
+
+  test.each(["BIBLO", null, undefined])(
+    "exposes applicationName %s as application",
+    (applicationName) => {
+      expect(resolvers.HistoricalLoan.application({ applicationName })).toBe(
+        applicationName ?? null
+      );
+    }
+  );
+
+  test("exposes the original material identifier including legacy records", () => {
+    expect(
+      resolvers.HistoricalLoan.materialId({ materialId: "23424916" })
+    ).toBe("23424916");
+    expect(
+      resolvers.HistoricalLoan.materialId({ sourceMaterialId: "pid:1" })
+    ).toBe("pid:1");
   });
 
   test("requires an authenticated user and access token", async () => {
@@ -344,7 +676,7 @@ describe("Patron historical loans", () => {
         resolvers.PatronMutation.addHistoricalLoans(null, { loans }, context)
       ).resolves.toEqual({
         status: "OK",
-        items: [{ id: publicLoanId, materialId, status: "OK" }],
+        items: [{ id: publicLoanId, materialId, materialIdType, status: "OK" }],
       });
       const serviceLoans = [
         {
@@ -405,7 +737,13 @@ describe("Patron historical loans", () => {
       )
     ).resolves.toEqual({
       status: "FAILED",
-      items: [{ materialId: "870970-basis:missing", status: "NOT_FOUND" }],
+      items: [
+        {
+          materialId: "870970-basis:missing",
+          materialIdType: "PID",
+          status: "NOT_FOUND",
+        },
+      ],
     });
     expect(serviceLoad).not.toHaveBeenCalled();
   });
@@ -422,7 +760,13 @@ describe("Patron historical loans", () => {
       )
     ).resolves.toEqual({
       status: "FAILED",
-      items: [{ materialId: "ostepops", status: "INVALID_MATERIAL_ID" }],
+      items: [
+        {
+          materialId: "ostepops",
+          materialIdType: "PID",
+          status: "INVALID_MATERIAL_ID",
+        },
+      ],
     });
     expect(context.datasources.getLoader).not.toHaveBeenCalled();
     expect(serviceLoad).not.toHaveBeenCalled();
@@ -447,7 +791,13 @@ describe("Patron historical loans", () => {
       )
     ).resolves.toEqual({
       status: "FAILED",
-      items: [{ materialId: "pid:1", status: "INVALID_DATE_RANGE" }],
+      items: [
+        {
+          materialId: "pid:1",
+          materialIdType: "PID",
+          status: "INVALID_DATE_RANGE",
+        },
+      ],
     });
     expect(context.datasources.getLoader).not.toHaveBeenCalled();
   });
@@ -471,8 +821,8 @@ describe("Patron historical loans", () => {
     ).resolves.toEqual({
       status: "OK",
       items: [
-        { materialId: "pid:1", status: "OK" },
-        { materialId: "pid:2", status: "OK" },
+        { materialId: "pid:1", materialIdType: "PID", status: "OK" },
+        { materialId: "pid:2", materialIdType: "PID", status: "OK" },
       ],
     });
     expect(serviceLoad).not.toHaveBeenCalled();

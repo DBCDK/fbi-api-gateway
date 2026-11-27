@@ -502,17 +502,27 @@ If consent has not been granted, the collection has no items and returns
 <InlineGraphiQL
   query={`
     query Example_PatronHistoricalLoans(
+      $filters: HistoricalLoanFilterInput
+      $orderBy: OrderHistoricalLoansByEnum
       $offset: Int
       $limit: PaginationLimitScalar
     ) {
       patron {
-        historicalLoans(offset: $offset, limit: $limit) {
+        historicalLoans(filters: $filters, orderBy: $orderBy, offset: $offset, limit: $limit) {
           hitcount
           status
+          facets {
+            name
+            values { key score }
+          }
           items {
             id
+            materialId
+            application
             loanedAt
+            loanedAtTimestamp
             returnedAt
+            returnedAtTimestamp
             account {
               name
               email
@@ -561,6 +571,13 @@ If consent has not been granted, the collection has no items and returns
   }}
 />
 
+Use `filters` to filter by `applications` and/or `workId`.
+`orderBy` defaults to `RETURNEDAT_DESC`.
+
+Select `facets` for application counts: `key` is the application code and `score`
+is the number of loans. Counts respect `workId`, but ignore the application
+filter and pagination.
+
 Loan collection and operation statuses:
 
 <DescribeEnum name="PatronLoansOverallStatusEnum" />
@@ -573,6 +590,10 @@ disabled by configuration. Consent is required before a loan can be stored.
 `materialId` accepts a PID or a numeric faust number. Dates use `YYYY-MM-DD`,
 and `returnedAt` cannot be earlier than `loanedAt`. Snapshot metadata is
 resolved by the API and cannot be supplied by the client.
+
+`loanedAtTimestamp` and `returnedAtTimestamp` accept RFC 3339 timestamps with
+an explicit timezone and up to three fractional second digits. Dates are derived
+in `Europe/Copenhagen`; any supplied date must match.
 
 When `dryRun` is true, identifiers, date ranges and material resolution are
 validated without storing loans.
@@ -589,6 +610,8 @@ validated without storing loans.
           items {
             id
             materialId
+            agency { id name }
+            material { manifestation { pid } }
             status
           }
         }
@@ -610,8 +633,8 @@ validated without storing loans.
 
 ### Delete historical loans
 
-Historical loans are deleted by their public IDs. `dryRun` validates the IDs
-without deleting loans.
+Delete loans by their public IDs. Unknown or already deleted IDs return
+`NOT_FOUND`. `dryRun` validates IDs without deleting loans.
 
 <InlineGraphiQL
   query={`
@@ -625,6 +648,8 @@ without deleting loans.
           items {
             id
             materialId
+            agency { id name }
+            material { manifestation { pid } }
             status
           }
         }
