@@ -7197,57 +7197,7 @@ type InfomediaArticle {
   html: String
 }
 
-"""A value with separate label and spine variants"""
-type ManifestationLabelText {
-  """Value for the label"""
-  label: String
-
-  """Value for the spine"""
-  spine: String
-}
-
-"""Title content with separate label and spine variants"""
-type ManifestationLabelTitle {
-  """Title content for the label"""
-  label: [String!]!
-
-  """Title content for the spine"""
-  spine: [String!]!
-}
-
-type ManifestationLabelPhysicalDescription {
-  """Attachment information"""
-  attachments: String
-
-  """Material unit information, e.g. '1 dvd-video'"""
-  materialUnits: String
-}
-
-"""Data used for printing labels for a manifestation"""
-type ManifestationLabelData {
-  """Title content formatted for the label and spine"""
-  title: ManifestationLabelTitle
-
-  """Edition information"""
-  edition: [String!]!
-
-  """Creator content for the label and spine"""
-  creatorForShelf: ManifestationLabelText
-
-  """Physical description included in the label data"""
-  physicalDescription: ManifestationLabelPhysicalDescription
-
-  """Classification content for the label and spine"""
-  classificationForShelf: ManifestationLabelText
-}
-
 type Manifestation {
-  """
-  Label data for printing labels for this manifestation.
-  Returns null if no label data exists for the manifestation.
-  """
-  labelData: ManifestationLabelData
-
   """
   A unique identifier for tracking user interactions with this manifestation. 
   It is generated in the response and should be included in subsequent

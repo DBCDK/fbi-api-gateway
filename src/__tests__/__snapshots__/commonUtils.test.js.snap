@@ -37,6 +37,7 @@ exports[`Permissions Empty gateway object in smaug configuration gives default p
     "ComplexSearchResponse.seriesHit",
     "Manifestation.publicationStatus",
     "HostPublication.publicationStatus",
+    "Manifestation.labelData",
   ],
   "denyTypes": [
     "CheckOrderPolicy",
@@ -97,6 +98,7 @@ exports[`Permissions Role from gateway object in smaug configuration gives the r
     "ComplexSearchResponse.seriesHit",
     "Manifestation.publicationStatus",
     "HostPublication.publicationStatus",
+    "Manifestation.labelData",
   ],
   "denyTypes": [
     "CheckOrderPolicy",
@@ -147,6 +149,7 @@ exports[`Permissions Unknown role from gateway object in smaug configuration giv
     "ComplexSearchResponse.seriesHit",
     "Manifestation.publicationStatus",
     "HostPublication.publicationStatus",
+    "Manifestation.labelData",
   ],
   "denyTypes": [
     "CheckOrderPolicy",
@@ -202,6 +205,7 @@ exports[`Permissions no gateway object in smaug configuration gives default perm
     "ComplexSearchResponse.seriesHit",
     "Manifestation.publicationStatus",
     "HostPublication.publicationStatus",
+    "Manifestation.labelData",
   ],
   "denyTypes": [
     "CheckOrderPolicy",
